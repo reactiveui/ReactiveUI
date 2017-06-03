@@ -2,21 +2,14 @@
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
+using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Xunit;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using ReactiveUI;
-using System.IO;
-using System.Text;
-using ReactiveUI.Testing;
-using ReactiveUI.Tests;
 using System.Threading;
-
-using Microsoft.Reactive.Testing;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -121,18 +114,18 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void MessageBusThreadingTest()
+        public async Task MessageBusThreadingTest()
         {
             var mb = new MessageBus();
             int? listenedThread = null;
             int? otherThread = null;
             int thisThread = Thread.CurrentThread.ManagedThreadId;
 
-            Task.Run(() => {
+            await Task.Run(() => {
                 otherThread = Thread.CurrentThread.ManagedThreadId;
                 mb.Listen<int>().Subscribe(_ => listenedThread = Thread.CurrentThread.ManagedThreadId);
                 mb.SendMessage<int>(42);
-            }).Wait();
+            });
 
             Assert.NotEqual(listenedThread.Value, thisThread);
             Assert.Equal(listenedThread.Value, otherThread.Value);

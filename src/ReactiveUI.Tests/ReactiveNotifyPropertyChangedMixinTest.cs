@@ -729,7 +729,7 @@ namespace ReactiveUI.Tests
 
     public class WhenAnyThroughDependencyObjectTests
     {
-        [Fact]
+        [WpfFact]
         public void WhenAnyThroughAViewShouldntGiveNullValues()
         {
             var vm = new HostTestFixture() {
