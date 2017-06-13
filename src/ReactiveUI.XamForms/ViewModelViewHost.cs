@@ -8,7 +8,7 @@ namespace ReactiveUI.XamForms
     /// <summary>
     /// This content view will automatically load and host the view for the given view model. The view model whose view is
     /// to be displayed should be assigned to the <see cref="ViewModel"/> property. Optionally, the chosen view can be
-    /// customized by specifying a contract via <see cref="ViewContractObservable"/>.
+    /// customized by specifying a contract via <see cref="ViewContractObservable"/> or <see cref="ViewContract"/>.
     /// </summary>
     public class ViewModelViewHost : ContentView, IViewFor
     {
@@ -69,6 +69,20 @@ namespace ReactiveUI.XamForms
             Observable<string>.Never,
             BindingMode.OneWay);
 
+        private string viewContract;
+
+        /// <summary>
+        /// A fixed contract to use when resolving the view for the given view model.
+        /// </summary>
+        /// <remarks>
+        /// This property is a mere convenience so that a fixed contract can be assigned directly in XAML.
+        /// </remarks>
+        public string ViewContract
+        {
+            get { return this.viewContract; }
+            set { ViewContractObservable = Observable.Return(value); }
+        }
+
         /// <summary>
         /// Can be used to override the view locator to use when resolving the view. If unspecified, <see cref="ViewLocator.Current"/> will be used.
         /// </summary>
@@ -82,26 +96,18 @@ namespace ReactiveUI.XamForms
                 return;
             }
 
+            ViewContractObservable = Observable<string>.Default;
+
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.ViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-            var platform = Locator.Current.GetService<IPlatformOperations>();
-
-            if (platform == null) {
-                throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
-            }
-
-            ViewContractObservable = Observable.FromEventPattern<EventHandler, EventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
-                .Select(_ => platform.GetOrientation())
-                .DistinctUntilChanged()
-                .StartWith(platform.GetOrientation())
-                .Select(x => x != null ? x.ToString() : default(string));
-
-            (this as IViewFor).WhenActivated(() => {
+            this.WhenActivated(() => {
                 return new[] {
                     vmAndContract.Subscribe(x => {
+                        this.viewContract = x.Contract;
+
                         if (x.ViewModel == null) {
                             this.Content = this.DefaultContent;
                             return;
