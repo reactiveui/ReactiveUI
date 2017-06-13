@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <PackageTargetFallback Condition="'$(TargetFramework)' == 'netstandard1.3'">
+      $(PackageTargetFallback);portable-win+net45+wp8+win81+wpa8
+    </PackageTargetFallback>
+    <AssemblyName>ReactiveUI.Events</AssemblyName>
+    <RootNamespace>ReactiveUI.Events</RootNamespace>
+    <Description>Provides Observable-based events API for Xamarin Forms UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
+    <PackageId>reactiveui-events-xamforms</PackageId>
+  </PropertyGroup>  
+
+  <ItemGroup>
+    <Compile Remove="*.cs" />
+    <None Include="*.cs" />
+    <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
+    <PackageReference Include="System.Reactive" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Forms" Version="2.3.3.193" />
+    <Compile Include="Events_XAMFORMS.cs" />
+  </ItemGroup>  
+
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+</Project>
