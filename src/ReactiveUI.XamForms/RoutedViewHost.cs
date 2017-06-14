@@ -45,7 +45,7 @@ namespace ReactiveUI.XamForms
                 var currentCount = previousCount.Skip(1);
 
                 d (Observable.Zip(previousCount, currentCount, (previous, current) => new { Delta = previous - current, Current = current })
-                    .Where(_ => !userInstigated)
+                    .Where(_ => !userInstigated && !popToRootPending)
                     .Where(x => x.Delta > 0)
                     .SelectMany(
                         async x =>
