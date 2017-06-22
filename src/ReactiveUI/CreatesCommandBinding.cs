@@ -21,11 +21,11 @@ namespace ReactiveUI
     {
         // NB: These are in priority order
         static readonly List<Tuple<string, Type>> defaultEventsToBind = new List<Tuple<string, Type>>() {
-#if !MONO && !PORTABLE
+#if !MONO && !PORTABLE && !NETCOREAPP
             Tuple.Create("Click", typeof (RoutedEventArgs)),
 #endif
             Tuple.Create("TouchUpInside", typeof (EventArgs)),
-#if !MONO && !NETFX_CORE && !PORTABLE
+#if !MONO && !NETFX_CORE && !PORTABLE && !NETCOREAPP
             Tuple.Create("MouseUp", typeof (MouseButtonEventArgs)),
 #elif NETFX_CORE
             Tuple.Create("PointerReleased", typeof(PointerRoutedEventArgs)),

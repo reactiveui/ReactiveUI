@@ -12,13 +12,15 @@ namespace ReactiveUI
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+#if !NETCOREAPP
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+#endif
 
-#if !NETFX_CORE && !WP8 && !WP81
+#if !NETFX_CORE && !WP8 && !WP81 && !NETCOREAPP
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 #endif
 
-#if !MONO
+#if !MONO && !NETCOREAPP
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
@@ -50,12 +52,17 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
 #endif
 
-#if !MONO && !NETFX_CORE
+#if !MONO && !NETFX_CORE && !NETCOREAPP
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
 #endif
 
 #if NETFX_CORE
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
+#endif
+
+#if NETCOREAPP
+            // TODO does something for the MainThreadScheduler need to go here?
+            // interesting to note that when MONO is defined, MainThreadScheduler does not get set.
 #endif
 
 #if ANDROID
