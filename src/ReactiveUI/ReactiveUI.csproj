@@ -7,6 +7,11 @@
     <PackageId>reactiveui</PackageId>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'tizen30' ">
+    <TargetFrameworkIdentifier>Tizen</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
