@@ -6,21 +6,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Controls;
-using ReactiveUI;
 using Xunit;
-using System.Reactive.Concurrency;
 
 namespace ReactiveUI.Tests
 {
     public class DepObjFixture : FrameworkElement
     {
-        public static readonly DependencyProperty TestStringProperty = 
+        public static readonly DependencyProperty TestStringProperty =
             DependencyProperty.Register("TestString", typeof(string), typeof(DepObjFixture), new PropertyMetadata(null));
 
-        public string TestString {
+        public string TestString
+        {
             get { return (string)GetValue(TestStringProperty); }
             set { SetValue(TestStringProperty, value); }
         }
@@ -28,7 +27,8 @@ namespace ReactiveUI.Tests
 
     public class DerivedDepObjFixture : DepObjFixture
     {
-        public string AnotherTestString {
+        public string AnotherTestString
+        {
             get { return (string)GetValue(AnotherTestStringProperty); }
             set { SetValue(AnotherTestStringProperty, value); }
         }
@@ -43,8 +43,8 @@ namespace ReactiveUI.Tests
         {
             var fixture = new DepObjFixture();
             var binder = new DependencyObjectObservableForProperty();
-            Assert.NotEqual(0, binder.GetAffinityForObject(typeof (DepObjFixture), "TestString"));
-            Assert.Equal(0, binder.GetAffinityForObject(typeof (DepObjFixture), "DoesntExist"));
+            Assert.NotEqual(0, binder.GetAffinityForObject(typeof(DepObjFixture), "TestString"));
+            Assert.Equal(0, binder.GetAffinityForObject(typeof(DepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
             Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
@@ -65,8 +65,8 @@ namespace ReactiveUI.Tests
         {
             var fixture = new DerivedDepObjFixture();
             var binder = new DependencyObjectObservableForProperty();
-            Assert.NotEqual(0, binder.GetAffinityForObject(typeof (DerivedDepObjFixture), "TestString"));
-            Assert.Equal(0, binder.GetAffinityForObject(typeof (DerivedDepObjFixture), "DoesntExist"));
+            Assert.NotEqual(0, binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "TestString"));
+            Assert.Equal(0, binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
             Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
@@ -85,10 +85,10 @@ namespace ReactiveUI.Tests
         [WpfFact]
         public void WhenAnyWithDependencyObjectTest()
         {
-            var inputs = new[] {"Foo", "Bar", "Baz"};
+            var inputs = new[] { "Foo", "Bar", "Baz" };
             var fixture = new DepObjFixture();
 
-            var outputs = fixture.WhenAnyValue(x => x.TestString).CreateCollection();
+            var outputs = fixture.WhenAnyValue(x => x.TestString).CreateCollection(scheduler: ImmediateScheduler.Instance);
             inputs.ForEach(x => fixture.TestString = x);
 
             Assert.Null(outputs.First());
