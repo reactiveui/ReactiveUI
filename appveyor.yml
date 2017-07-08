@@ -46,6 +46,7 @@
   branches:
       except:
           - master
+  skip_branch_with_pr: true
   version: 1.0.{build}
   environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
