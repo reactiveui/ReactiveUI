@@ -10,9 +10,7 @@ namespace ReactiveUI
     {
         public string GetOrientation()
         {
-#if WINRT80
-            return Windows.Graphics.Display.DisplayProperties.CurrentOrientation.ToString();
-#elif NETFX_CORE
+#if NETFX_CORE
             return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString(); 
 #elif SILVERLIGHT
             var app = System.Windows.Application.Current;
