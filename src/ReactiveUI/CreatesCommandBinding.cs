@@ -4,15 +4,20 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Windows;
 using System.Windows.Input;
 
 #if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
+#elif WPF
+using System.Windows;
 #endif
 
+#if WPF
+namespace ReactiveUI.Wpf
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// This binder is the default binder for connecting to arbitrary events
@@ -21,11 +26,11 @@ namespace ReactiveUI
     {
         // NB: These are in priority order
         static readonly List<Tuple<string, Type>> defaultEventsToBind = new List<Tuple<string, Type>>() {
-#if !MONO && !PORTABLE
+#if NETFX_CORE || WPF
             Tuple.Create("Click", typeof (RoutedEventArgs)),
 #endif
             Tuple.Create("TouchUpInside", typeof (EventArgs)),
-#if !MONO && !NETFX_CORE && !PORTABLE
+#if WPF
             Tuple.Create("MouseUp", typeof (MouseButtonEventArgs)),
 #elif NETFX_CORE
             Tuple.Create("PointerReleased", typeof(PointerRoutedEventArgs)),
