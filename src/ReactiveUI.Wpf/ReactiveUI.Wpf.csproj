@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
     <DefineConstants>$(DefineConstants);WPF</DefineConstants>
+    <Description>WPF specific extensions to ReactiveUI</Description>
+    <PackageId>reactiveui-wpf</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
