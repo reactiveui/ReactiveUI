@@ -8,7 +8,7 @@ namespace ReactiveUI.Wpf
     /// in order to register certain classes on startup that would be difficult
     /// to register otherwise.
     /// </summary>
-    public class PlatformRegistrations : IWantsToRegisterStuff
+    public class Registrations : IWantsToRegisterStuff
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
