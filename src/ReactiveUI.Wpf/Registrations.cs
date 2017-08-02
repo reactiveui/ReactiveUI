@@ -7,8 +7,6 @@ namespace ReactiveUI.Wpf
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
-            registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
-
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
@@ -17,7 +15,7 @@ namespace ReactiveUI.Wpf
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 
-            RxApp.TaskpoolScheduler = System.Reactive.Concurrency.TaskPoolScheduler.Default;
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
 
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
         }

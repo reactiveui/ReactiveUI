@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\ReactiveUI\CreatesCommandBinding.cs" Link="CreatesCommandBinding.cs" />
     <Compile Include="..\ReactiveUI\Platforms\windows-common\*.cs" Link="%(FileName).cs" />
   </ItemGroup>
 
