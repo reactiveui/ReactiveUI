@@ -89,8 +89,8 @@ namespace EventBuilder
                         platform = new Mac(_referenceAssembliesLocation);
                         break;
 
-                    case AutoPlatform.NET45:
-                        platform = new Net45();
+                    case AutoPlatform.WPF:
+                        platform = new WPF();
                         break;
 
                     case AutoPlatform.XamForms:
