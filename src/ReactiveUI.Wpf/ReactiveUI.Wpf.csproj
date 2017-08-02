@@ -9,14 +9,7 @@
 
   <ItemGroup>
     <Compile Include="..\ReactiveUI\CreatesCommandBinding.cs" Link="CreatesCommandBinding.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\ActivationForViewFetcher.cs" Link="windows-common/ActivationForViewFetcher.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\AutoDataTemplateBindingHook.cs" Link="windows-common/AutoDataTemplateBindingHook.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" Link="windows-common/BindingTypeConverters.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\PlatformOperations.cs" Link="windows-common/PlatformOperations.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\ReactiveUserControl.cs" Link="windows-common/ReactiveUserControl.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\RoutedViewHost.cs" Link="windows-common/RoutedViewHost.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\ViewModelViewHost.cs" Link="windows-common/ViewModelViewHost.cs" />
-    <Folder Include="windows-common" />
+    <Compile Include="..\ReactiveUI\Platforms\windows-common\*.cs" Link="%(FileName).cs" />
   </ItemGroup>
 
   <ItemGroup>
