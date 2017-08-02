@@ -237,7 +237,7 @@ tools/
 
 # ReactiveUI
 artifacts/
-src/ReactiveUI.Events/Events_*.cs
+src/ReactiveUI.Events*/Events_*.cs
 
 # macOS
 .DS_Store
