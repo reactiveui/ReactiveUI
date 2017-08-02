@@ -13,10 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
 
   <ItemGroup>

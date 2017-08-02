@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <DefineConstants>$(DefineConstants);WPF</DefineConstants>
+    <Description>WPF specific extensions to ReactiveUI</Description>
+    <PackageId>reactiveui-wpf</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI\Platforms\windows-common\*.cs" Link="%(FileName).cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Reactive" Version="3.1.0" />
+    <PackageReference Include="Splat" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="System.Xaml" />
+  </ItemGroup>
+
+</Project>

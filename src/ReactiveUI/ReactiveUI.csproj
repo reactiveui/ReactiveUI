@@ -21,19 +21,13 @@
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <Compile Include="Platforms\net45\**\*.cs" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.1'">
     <Compile Include="Platforms\shared\**\*.cs" />    
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Compile Include="Platforms\windows-common\**\*.cs" />
-    <Compile Include="Platforms\wpf\**\*.cs" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
