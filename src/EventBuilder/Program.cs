@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -89,8 +93,8 @@ namespace EventBuilder
                         platform = new Mac(_referenceAssembliesLocation);
                         break;
 
-                    case AutoPlatform.NET45:
-                        platform = new Net45();
+                    case AutoPlatform.WPF:
+                        platform = new WPF();
                         break;
 
                     case AutoPlatform.XamForms:

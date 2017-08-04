@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 
