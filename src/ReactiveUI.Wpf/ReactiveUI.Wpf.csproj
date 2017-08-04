@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\*.cs" Link="%(FileName).cs" />
+    <Compile Include="..\ReactiveUI\Platforms\windows-common\*.cs" Link="windows-common\%(FileName).cs" />
   </ItemGroup>
 
   <ItemGroup>
