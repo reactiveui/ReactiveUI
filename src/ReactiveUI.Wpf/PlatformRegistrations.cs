@@ -7,7 +7,7 @@ using System.Reactive.Concurrency;
 
 namespace ReactiveUI.Wpf
 {
-    public class Registrations : IWantsToRegisterStuff
+    public class PlatformRegistrations : IWantsToRegisterStuff
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
