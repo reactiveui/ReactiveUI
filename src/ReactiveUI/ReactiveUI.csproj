@@ -24,6 +24,12 @@
   
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
     <Compile Include="Platforms\net45\**\*.cs" />
+    
+    <Compile Remove="Platforms\net45\PlatformRegistrations.cs" Condition=" $(DefineConstants.Contains('WPF')) " />
+    <None Include="Platforms\net45\PlatformRegistrations.cs" Condition=" $(DefineConstants.Contains('WPF')) " />
+    
+    <Compile Remove="Platforms\net45\PlatformRegistrations.cs" Condition=" $(DefineConstants.Contains('WINFORMS')) " />
+    <None Include="Platforms\net45\PlatformRegistrations.cs" Condition=" $(DefineConstants.Contains('WINFORMS')) " />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">

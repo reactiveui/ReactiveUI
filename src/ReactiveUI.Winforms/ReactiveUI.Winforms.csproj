@@ -10,10 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\ReactiveUI\Platforms\windows-common\PlatformOperations.cs" Link="windows-common\%(FileName).cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 

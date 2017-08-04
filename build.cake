@@ -60,7 +60,9 @@ var buildVersion = gitVersion.FullBuildMetaData;
 
 // Artifacts
 var artifactDirectory = "./artifacts/";
-var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
+
+Func<string, string> testCoverageOutputFileFor = (platform) => { return string.Format("{0}OpenCover.{1}.xml", artifactDirectory, platform); };
+
 var packageWhitelist = new[] { "ReactiveUI-Testing",
                                "ReactiveUI-Events",
                                "ReactiveUI-Events-WPF",
@@ -219,26 +221,38 @@ Task("RunUnitTests")
     .IsDependentOn("BuildReactiveUI")
     .Does(() =>
 {
-    Action<ICakeContext> testAction = tool => {
+    Action<string,string> test = (assembly, platform) =>
+    {
+        Information("Testing {0}", assembly);
 
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
-            OutputDirectory = artifactDirectory,
-            XmlReportV1 = true,
-            NoAppDomain = true
-        });
+        var testCoverageOutputFile = testCoverageOutputFileFor(platform);
+
+        Action<ICakeContext> testAction = tool => {
+
+            tool.XUnit2(assembly, new XUnit2Settings {
+                OutputDirectory = artifactDirectory,
+                XmlReportV1 = true,
+                NoAppDomain = true
+            });
+        };
+
+        OpenCover(testAction,
+            testCoverageOutputFile,
+            new OpenCoverSettings {
+                ReturnTargetCodeOffset = 0,
+                ArgumentCustomization = args => args.Append("-mergeoutput")
+            }
+            .WithFilter("+[*]* -[*.Testing]* -[*.Tests*]* -[Playground*]* -[ReactiveUI.Events]* -[Splat*]*")
+            .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
+            .ExcludeByFile("*/*Designer.cs;*/*.g.cs;*/*.g.i.cs;*splat/splat*"));
+
+        ReportGenerator(testCoverageOutputFile, artifactDirectory + "coverage/" + platform);
     };
 
-    OpenCover(testAction,
-        testCoverageOutputFile,
-        new OpenCoverSettings {
-            ReturnTargetCodeOffset = 0,
-            ArgumentCustomization = args => args.Append("-mergeoutput")
-        }
-        .WithFilter("+[*]* -[*.Testing]* -[*.Tests*]* -[Playground*]* -[ReactiveUI.Events]* -[Splat*]*")
-        .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
-        .ExcludeByFile("*/*Designer.cs;*/*.g.cs;*/*.g.i.cs;*splat/splat*"));
+    test("./src/ReactiveUI.Tests/bin/**/ReactiveUI.Tests.dll", "net452");
+    test("./src/ReactiveUI.Tests.WPF/bin/**/ReactiveUI.Tests.WPF.dll", "wpf");
+    test("./src/ReactiveUI.Tests.Winforms/bin/**/ReactiveUI.Tests.Winforms.dll", "winforms");
 
-    ReportGenerator(testCoverageOutputFile, artifactDirectory);
 });
 
 Task("UploadTestCoverage")
@@ -254,7 +268,7 @@ Task("UploadTestCoverage")
         throw new Exception("The COVERALLS_TOKEN environment variable is not defined.");
     }
 
-    CoverallsIo(testCoverageOutputFile, new CoverallsIoSettings()
+    CoverallsIo(testCoverageOutputFileFor("wpf"), new CoverallsIoSettings()
     {
         RepoToken = token
     });

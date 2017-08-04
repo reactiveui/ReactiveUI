@@ -5,6 +5,8 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("ReactiveUI.Tests")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests.Wpf")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests.Winforms")]
 [assembly: InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: InternalsVisibleTo("ReactiveUI.XamForms")]

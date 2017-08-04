@@ -89,16 +89,28 @@ namespace ReactiveUI.Tests.Winforms
             var vm = new FakeWinformViewModel();
             var view = new FakeWinformsView(){ViewModel = vm};
 
+            // scenario: no data-binding
+            // - the viewmodel and view are set to different values
             vm.SomeText = "Foo";
             Assert.NotEqual(vm.SomeText, view.Property3.Text);
 
+            // scenario: data-binding
+            // - the viewmodel is updated 
+            // - the view is updated with the viewmodel value
             var disp = view.Bind(vm, x => x.SomeText, x => x.Property3.Text);
             vm.SomeText = "Bar";
             Assert.Equal(vm.SomeText,view.Property3.Text);
 
+            // scenario: data-binding
+            // - the view is updated 
+            // - the viewmodel is updated with the view value
             view.Property3.Text = "Bar2";
             Assert.Equal(vm.SomeText, view.Property3.Text);
 
+            // scenario: data-binding
+            // - viewmodel is updated with a double
+            // - the double is converted to a string
+            // - the view is updated with the viewmodel value but as a string
             var disp2 = view.Bind(vm, x => x.SomeDouble, x => x.Property3.Text);
             vm.SomeDouble = 123.4;
 
