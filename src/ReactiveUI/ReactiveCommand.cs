@@ -30,10 +30,12 @@ namespace ReactiveUI
     /// thread. Importantly, no scheduling is performed against input observables (the <c>canExecute</c> and execution pipelines).
     /// </para>
     /// <para>
-    /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
-    /// <see cref="Create"/> can be used when your execution logic is synchronous. <see cref="CreateFromObservable"/> and
-    /// <see cref="CreateFromTask"/> can be used for asynchronous execution logic. Optionally, you can provide an observable that
-    /// governs the availability of the command for execution, as well as a scheduler to which events will be delivered.
+    /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.    
+    /// <see cref="Create"/> can be used when your execution logic is synchronous.
+    /// <see cref="CreateFromObservable{TResult}(Func{IObservable{TResult}}, IObservable{bool}, IScheduler)"/> and
+    /// <see cref="CreateFromTask(Func{Task}, IObservable{bool}, IScheduler)"/> (and overloads) can be used for asynchronous 
+    /// execution logic. Optionally, you can provide an observable that governs the availability of the command for execution, 
+    /// as well as a scheduler to which events will be delivered.
     /// </para>
     /// <para>
     /// The <see cref="CanExecute"/> property provides an observable that can be used to determine whether the command is
@@ -685,7 +687,7 @@ namespace ReactiveUI
         /// </para>
         /// <para>
         /// In those cases where execution fails, there will be no result value. Instead, the failure will tick through the
-        /// <see cref="ThrownExceptions"/> observable.
+        /// <see cref="ReactiveCommand.ThrownExceptions"/> observable.
         /// </para>
         /// </remarks>
         /// <param name="parameter">
@@ -1055,17 +1057,18 @@ namespace ReactiveUI
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
+        public static IDisposable InvokeCommand<T>(this IObservable<T> @this, ICommand command)
         {
             var canExecuteChanged = Observable
                 .FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
                 .Select(_ => Unit.Default)
                 .StartWith(Unit.Default);
 
-            return This
+            return @this
                 .WithLatestFrom(canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => command.Execute(ii.Value))
@@ -1077,12 +1080,13 @@ namespace ReactiveUI
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, ReactiveCommandBase<T, TResult> command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> @this, ReactiveCommandBase<T, TResult> command)
         {
-            return This
+            return @this
                 .WithLatestFrom(command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
                 .Where(ii => ii.CanExecute)
                 .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
@@ -1094,11 +1098,12 @@ namespace ReactiveUI
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="target">The root object which has the Command.</param>
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
+        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
         {
             var command = target.WhenAnyValue(commandProperty);
             var commandCanExecuteChanged = command
@@ -1108,7 +1113,7 @@ namespace ReactiveUI
                     .StartWith(c))
                 .Switch();
 
-            return This
+            return @this
                 .WithLatestFrom(commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => ii.Command.Execute(ii.Value))
@@ -1120,11 +1125,12 @@ namespace ReactiveUI
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="target">The root object which has the Command.</param>
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>>> commandProperty)
         {
             var command = target.WhenAnyValue(commandProperty);
             var invocationInfo = command
@@ -1133,7 +1139,7 @@ namespace ReactiveUI
                     .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T))))
                 .Switch();
 
-            return This
+            return @this
                 .WithLatestFrom(invocationInfo, (value, ii) => ii.WithValue(value))
                 .Where(ii => ii.CanExecute)
                 .SelectMany(ii => ii.Command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
