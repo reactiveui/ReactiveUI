@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive;
@@ -16,7 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Splat;
-using LegacyRxCmd = ReactiveUI.Legacy.ReactiveCommand;
 
 namespace ReactiveUI.Legacy
 {
@@ -231,7 +229,26 @@ namespace ReactiveUI.Legacy
         /// calling executeAsync as a single stream.</returns>
         public static ReactiveCommand<T> CreateAsyncTask<T>(Func<object, CancellationToken, Task<T>> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<T>(Observables.True, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+            return new ReactiveCommand<T>(Observables.True, x => Observable.StartAsync(ct => executeAsync(x, ct)), scheduler);
+        }
+
+        /// <summary>
+        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
+        /// method that supports cancellation. Use this method if your background
+        /// method returns Task or uses async/await.
+        /// </summary>
+        /// <param name="executeAsync">Method to call that creates a Task
+        /// representing an operation to execute in the background. The Command's
+        /// CanExecute will be false until this Task completes. If this
+        /// Task terminates with an Exception, the Exception is marshaled to
+        /// ThrownExceptions.</param>
+        /// <param name="scheduler">The scheduler to deliver events on.
+        /// Defaults to RxApp.MainThreadScheduler.</param>
+        /// <returns>A ReactiveCommand which returns all items that are created via
+        /// calling executeAsync as a single stream.</returns>
+        public static ReactiveCommand<Unit> CreateAsyncTask(Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(Observables.True, x => Observable.StartAsync(ct => executeAsync(x, ct)), scheduler);
         }
 
         /// <summary>
@@ -250,28 +267,9 @@ namespace ReactiveUI.Legacy
         /// Defaults to RxApp.MainThreadScheduler.</param>
         /// <returns>A ReactiveCommand which returns all items that are created via
         /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<Unit> CreateAsyncTask(Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
-        {
-            return new ReactiveCommand<Unit>(Observables.True, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
-        }
-
-        /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method that supports cancellation. Use this method if your background
-        /// method returns Task or uses async/await.
-        /// </summary>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
         public static ReactiveCommand<Unit> CreateAsyncTask(IObservable<bool> canExecute, Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<Unit>(canExecute, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+            return new ReactiveCommand<Unit>(canExecute, x => Observable.StartAsync(ct => executeAsync(x, ct)), scheduler);
         }
 
         /// <summary>
@@ -335,7 +333,8 @@ namespace ReactiveUI.Legacy
 #else
         public event EventHandler CanExecuteChanged
         {
-            add {
+            add
+            {
                 if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
                 CanExecuteChangedEventManager.AddHandler(this, value);
             }
@@ -408,7 +407,8 @@ namespace ReactiveUI.Legacy
                     isExecuting.OnNext(true);
                 }
 
-                var decrement = new SerialDisposable() {
+                var decrement = new SerialDisposable()
+                {
                     Disposable = Disposable.Create(() => {
                         if (Interlocked.Decrement(ref inflightCount) == 0) {
                             isExecuting.OnNext(false);
@@ -458,8 +458,10 @@ namespace ReactiveUI.Legacy
         /// return at least one value immediately) representing the CanExecute
         /// state.
         /// </summary>
-        public IObservable<bool> CanExecuteObservable {
-            get {
+        public IObservable<bool> CanExecuteObservable
+        {
+            get
+            {
                 var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
 
                 if (canExecuteDisp != null) return ret;
@@ -476,7 +478,8 @@ namespace ReactiveUI.Legacy
             }
         }
 
-        public IObservable<bool> IsExecuting {
+        public IObservable<bool> IsExecuting
+        {
             get { return isExecuting.StartWith(inflightCount > 0); }
         }
 
@@ -528,12 +531,13 @@ namespace ReactiveUI.Legacy
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
+        public static IDisposable InvokeCommand<T>(this IObservable<T> @this, ICommand command)
         {
-            return This.Throttle(x => Observable.FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
+            return @this.Throttle(x => Observable.FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
                     .Select(_ => Unit.Default)
                     .StartWith(Unit.Default)
                     .Where(_ => command.CanExecute(x)))
@@ -547,13 +551,14 @@ namespace ReactiveUI.Legacy
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, IReactiveCommand<TResult> command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> @this, IReactiveCommand<TResult> command)
         {
-            return This.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
-		.Select(x => command.ExecuteAsync(x).Catch(Observable<TResult>.Empty))
+            return @this.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
+                .Select(x => command.ExecuteAsync(x).Catch(Observable<TResult>.Empty))
                 .Switch()
                 .Subscribe();
         }
@@ -563,13 +568,14 @@ namespace ReactiveUI.Legacy
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="target">The root object which has the Command.</param>
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
+        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
         {
-            return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
+            return @this.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .Throttle(x => Observable.FromEventPattern(h => x.cmd.CanExecuteChanged += h, h => x.cmd.CanExecuteChanged -= h)
                     .Select(_ => Unit.Default)
                     .StartWith(Unit.Default)
@@ -584,15 +590,16 @@ namespace ReactiveUI.Legacy
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="target">The root object which has the Command.</param>
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, IReactiveCommand<TResult>>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, IReactiveCommand<TResult>>> commandProperty)
         {
-            return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
+            return @this.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .Throttle(x => x.cmd.CanExecuteObservable.StartWith(x.cmd.CanExecute(x.val)).Where(b => b))
-		.Select(x => x.cmd.ExecuteAsync(x.val).Catch(Observable<TResult>.Empty))
+        .Select(x => x.cmd.ExecuteAsync(x.val).Catch(Observable<TResult>.Empty))
                 .Switch()
                 .Subscribe();
         }
@@ -602,14 +609,15 @@ namespace ReactiveUI.Legacy
         /// in the same call. Equivalent to Subscribing to the command, except
         /// there's no way to release your Subscription but that's probably fine.
         /// </summary>
-        public static ReactiveCommand<T> OnExecuteCompleted<T>(this ReactiveCommand<T> This, Action<T> onNext, Action<Exception> onError = null)
+        public static ReactiveCommand<T> OnExecuteCompleted<T>(this ReactiveCommand<T> @this, Action<T> onNext, Action<Exception> onError = null)
         {
             if (onError != null) {
-                This.Subscribe(onNext, onError);
-                return This;
+                @this.Subscribe(onNext, onError);
+                return @this;
             } else {
-                This.Subscribe(onNext);
-                return This;
+                @this.Subscribe(onNext);
+                return @this;
             }
         }
-    }}
+    }
+}
