@@ -14,15 +14,6 @@
     <PackageReference Include="System.Reactive" Version="3.1.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Compile Include="Events_NET45.cs" Condition="Exists('Events_NET45.cs')" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
     <SDKReference Include="WindowsDesktop, Version=10.0.14393.0">
