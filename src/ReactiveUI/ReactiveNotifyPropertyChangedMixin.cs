@@ -4,15 +4,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reactive.Disposables;
-using System.Linq;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Reflection;
-using System.Text;
 using Splat;
 
 namespace ReactiveUI
@@ -31,22 +26,25 @@ namespace ReactiveUI
         /// IObservedChange) guarantees that the Value property of
         /// the IObservedChange is set.
         /// </summary>
+        /// <param name="this">The source object to observe properties of</param>
         /// <param name="property">An Expression representing the property (i.e.
         /// 'x => x.SomeProperty.SomeOtherProperty'</param>
         /// <param name="beforeChange">If True, the Observable will notify
         /// immediately before a property is going to change.</param>
+        /// <param name="skipInitial">If true, the Observable will not notify 
+        /// with the initial value</param>
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
-                this TSender This,
+                this TSender @this,
                 Expression<Func<TSender, TValue>> property,
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
-            if (This == null) {
-                throw new ArgumentNullException("Sender");
+            if (@this == null) {
+                throw new ArgumentNullException(nameof(@this));
             }
-            
+
             /* x => x.Foo.Bar.Baz;
              * 
              * Subscribe to This, look for Foo
@@ -63,7 +61,7 @@ namespace ReactiveUI
              */
 
             return SubscribeToExpressionChain<TSender, TValue>(
-                This,
+                @this,
                 property.Body,
                 beforeChange,
                 skipInitial);
@@ -75,6 +73,7 @@ namespace ReactiveUI
         /// ReactiveObject, running the IObservedChange through a Selector
         /// function.
         /// </summary>
+        /// <param name="this">The source object to observe properties of</param>
         /// <param name="property">An Expression representing the property (i.e.
         /// 'x => x.SomeProperty'</param>
         /// <param name="selector">A Select function that will be run on each
@@ -84,30 +83,30 @@ namespace ReactiveUI
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
-                this TSender This,
+                this TSender @this,
                 Expression<Func<TSender, TValue>> property,
                 Func<TValue, TRet> selector,
                 bool beforeChange = false)
             where TSender : class
         {
             Contract.Requires(selector != null);
-            return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
+            return @this.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
         }
 
-        public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue> ( 
+        public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
             this TSender source,
-            Expression expression, 
+            Expression expression,
             bool beforeChange = false,
             bool skipInitial = true)
         {
-            IObservable<IObservedChange<object, object>> notifier = 
+            IObservable<IObservedChange<object, object>> notifier =
                 Observable.Return(new ObservedChange<object, object>(null, null, source));
 
             IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n
                 .Select(y => nestedObservedChanges(expr, y, beforeChange))
                 .Switch());
-            
+
             if (skipInitial) {
                 notifier = notifier.Skip(1);
             }
@@ -117,14 +116,14 @@ namespace ReactiveUI
             var r = notifier.Select(x => {
                 // ensure cast to TValue will succeed, throw useful exception otherwise
                 var val = x.GetValue();
-                if (val != null && ! (val is TValue)) {
+                if (val != null && !(val is TValue)) {
                     throw new InvalidCastException(string.Format("Unable to cast from {0} to {1}.", val.GetType(), typeof(TValue)));
                 }
 
-                return new ObservedChange<TSender, TValue>(source, expression, (TValue) val);
+                return new ObservedChange<TSender, TValue>(source, expression, (TValue)val);
             });
 
-            return r.DistinctUntilChanged(x=>x.Value);
+            return r.DistinctUntilChanged(x => x.Value);
         }
 
         static IObservedChange<object, object> observedChangeFor(Expression expression, IObservedChange<object, object> sourceChange)
@@ -174,10 +173,10 @@ namespace ReactiveUI
 
             if (result == null) {
                 throw new Exception(
-                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", 
+                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.",
                     sender.GetType()));
             }
-            
+
             return result.GetNotificationForProperty(sender, expression, beforeChange);
         }
     }
