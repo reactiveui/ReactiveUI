@@ -5,7 +5,7 @@
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>reactiveui-events</PackageId>
-  </PropertyGroup>  
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="*.cs" />
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <Compile Include="Events_UWP.cs" />
+    <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
     <SDKReference Include="WindowsDesktop, Version=10.0.14393.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>
@@ -25,15 +25,15 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
-    <Compile Include="Events_IOS.cs" />
+    <Compile Include="Events_IOS.cs" Condition="Exists('Events_IOS.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
-    <Compile Include="Events_MAC.cs" />
+    <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
-    <Compile Include="Events_ANDROID.cs" />
+    <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
   </ItemGroup>
 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
