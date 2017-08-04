@@ -1,3 +1,7 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 //////////////////////////////////////////////////////////////////////
 // ADDINS
 //////////////////////////////////////////////////////////////////////
@@ -57,7 +61,16 @@ var buildVersion = gitVersion.FullBuildMetaData;
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
-var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" };
+var packageWhitelist = new[] { "ReactiveUI-Testing",
+                               "ReactiveUI-Events",
+                               "ReactiveUI-Events-WPF",
+                               "ReactiveUI-Events-XamForms",
+                               "ReactiveUI",
+                               "ReactiveUI-AndroidSupport",
+                               "ReactiveUI-Blend",
+                               "ReactiveUI-WPF",
+                               "ReactiveUI-Winforms",
+                               "ReactiveUI-XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -170,8 +183,8 @@ Task("GenerateEvents")
     generate("android", "src/ReactiveUI.Events/");
     generate("ios", "src/ReactiveUI.Events/");
     generate("mac", "src/ReactiveUI.Events/");
-    generate("net45", "src/ReactiveUI.Events/");    
     generate("uwp", "src/ReactiveUI.Events/");
+    generate("wpf", "src/ReactiveUI.Events.WPF/");
     generate("xamforms", "src/ReactiveUI.Events.XamForms/");
 });
 
