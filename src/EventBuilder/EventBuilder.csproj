@@ -1,130 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A6B86E12-057F-4591-98A3-FD50E9CEAE69}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventBuilder</RootNamespace>
-    <AssemblyName>EventBuilder</AssemblyName>
-    <TargetFramework>net45</TargetFramework>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+  <OutputType>Exe</OutputType>
+  <TargetFramework>net452</TargetFramework>
+  <AssemblyName>EventBuilder</AssemblyName>
+  <RootNamespace>EventBuilder</RootNamespace>
+</PropertyGroup>
+
+
+<ItemGroup>
+  <Content Include="DefaultTemplate.mustache">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
+
+<ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="1.9.71" />
+    <PackageReference Include="Microsoft.Web.Xdt" Version="2.1.1" />
+    <PackageReference Include="Mono.Cecil" Version="0.9.6.1" />
+    <PackageReference Include="NuGet.Core" Version="2.10.1" />
+    <PackageReference Include="Nustache" Version="1.15.3.7" />
+    <PackageReference Include="Polly" Version="3.0.0" />
+    <PackageReference Include="Serilog" Version="1.5.14" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Cecil\DelegateTemplateInformation.cs" />
-    <Compile Include="Cecil\PathSearchAssemblyResolver.cs" />
-    <Compile Include="Cecil\EventTemplateInformation.cs" />
-    <Compile Include="Cecil\SafeTypes.cs" />
-    <Compile Include="CommandLineOptions.cs" />
-    <Compile Include="Entities\MultiParameterMethod.cs" />
-    <Compile Include="Entities\NamespaceInfo.cs" />
-    <Compile Include="Entities\ParentInfo.cs" />
-    <Compile Include="Entities\PublicEventInfo.cs" />
-    <Compile Include="Entities\PublicTypeInfo.cs" />
-    <Compile Include="Entities\SingleParameterMethod.cs" />
-    <Compile Include="PlatformHelper.cs" />
-    <Compile Include="Platforms\Android.cs" />
-    <Compile Include="Platforms\iOS.cs" />
-    <Compile Include="Platforms\IPlatform.cs" />
-    <Compile Include="Platforms\Mac.cs" />
-    <Compile Include="Platforms\WPF.cs" />
-    <Compile Include="Platforms\UWP.cs" />
-    <Compile Include="Platforms\XamForms.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Platforms\BasePlatform.cs" />
-    <Compile Include="Platforms\Bespoke.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="Cecil\README.md" />
-    <None Include="DefaultTemplate.mustache">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="CommandLineParser">
-      <Version>1.9.71</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Web.Xdt">
-      <Version>2.1.1</Version>
-    </PackageReference>
-    <PackageReference Include="Mono.Cecil">
-      <Version>0.9.6.1</Version>
-    </PackageReference>
-    <PackageReference Include="NuGet.Core">
-      <Version>2.10.1</Version>
-    </PackageReference>
-    <PackageReference Include="Nustache">
-      <Version>1.15.3.7</Version>
-    </PackageReference>
-    <PackageReference Include="Polly">
-      <Version>3.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Serilog">
-      <Version>1.5.14</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
