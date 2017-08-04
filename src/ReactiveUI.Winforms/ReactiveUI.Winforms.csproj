@@ -4,6 +4,7 @@
     <TargetFrameworks>net45</TargetFrameworks>
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
+    <DefineConstants>$(DefineConstants);WINFORMS</DefineConstants>
     <Description>Windows Forms specific extensions to ReactiveUI</Description>
     <PackageId>reactiveui-winforms</PackageId>
   </PropertyGroup>
