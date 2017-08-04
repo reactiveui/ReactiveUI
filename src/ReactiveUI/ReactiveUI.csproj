@@ -26,10 +26,6 @@
     <Compile Include="Platforms\net45\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.1'">
-    <Compile Include="Platforms\shared\**\*.cs" />    
-  </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Platforms\windows-common\**\*.cs" />
     <Compile Include="Platforms\uap10.0\**\*.cs" />
