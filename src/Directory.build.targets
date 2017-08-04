@@ -2,8 +2,8 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
     <DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
-    <DefineConstants>$(DefineConstants);NET_45;XAML</DefineConstants>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
+    <DefineConstants>$(DefineConstants);NET_452;XAML</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
     <DefineConstants>$(DefineConstants);NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;uap10.0</TargetFrameworks>
+    <TargetFrameworks>net452;uap10.0</TargetFrameworks>
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <Description>Blend behaviors for ReactiveUI</Description>
@@ -15,8 +15,8 @@
     <PackageReference Include="Splat" Version="2.0.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Compile Include="Platforms\net45\**\*.cs" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+    <Compile Include="Platforms\net452\**\*.cs" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net452</TargetFramework>
     <DefineConstants>$(DefineConstants);WPF</DefineConstants>
     <Description>WPF specific extensions to ReactiveUI</Description>
     <PackageId>reactiveui-wpf</PackageId>
