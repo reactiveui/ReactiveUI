@@ -16,7 +16,7 @@ using Splat;
 
 namespace ReactiveUI.Winforms
 {
-    public class Registrations : IWantsToRegisterStuff
+    public class PlatformRegistrations : IWantsToRegisterStuff
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
