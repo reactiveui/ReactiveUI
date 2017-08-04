@@ -234,6 +234,7 @@ _Pvt_Extensions
 
 # Tools
 tools/
+tools/nuget/nuget.exe
 
 # ReactiveUI
 artifacts/
