@@ -131,9 +131,6 @@ namespace ReactiveUI
 
         private static void Adopt(NSViewController parent, NSViewController child)
         {
-            parent.AddChildViewController(child);
-            parent.View.AddSubview(child.View);
-
             // ensure the child view fills our entire frame
             child.View.Frame = parent.View.Bounds;
 #if UIKIT
@@ -143,7 +140,25 @@ namespace ReactiveUI
 #endif
             child.View.TranslatesAutoresizingMaskIntoConstraints = true;
 
+            parent.AddChildViewController(child);
+
 #if UIKIT
+            var parentAlreadyVisible = parent.IsViewLoaded && parent.View.Window != null;
+
+            if (parentAlreadyVisible)
+            {
+                child.BeginAppearanceTransition(true, false);
+            }
+#endif
+
+            parent.View.AddSubview(child.View);
+
+#if UIKIT
+            if (parentAlreadyVisible)
+            {
+                child.EndAppearanceTransition();
+            }
+
             child.DidMoveToParentViewController(parent);
 #endif
         }
@@ -163,8 +178,8 @@ namespace ReactiveUI
     /// <summary>
     /// ViewModelViewHost is a helper class that will connect a ViewModel
     /// to an arbitrary NSView and attempt to load the View for the current
-    /// ViewModel as a child view of the target. 
-    /// 
+    /// ViewModel as a child view of the target.
+    ///
     /// This is a bit different than the XAML's ViewModelViewHost in the sense
     /// that this isn't a Control itself, it only manipulates other Views.
     /// </summary>
