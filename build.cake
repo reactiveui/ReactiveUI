@@ -136,8 +136,8 @@ Task("GenerateEvents")
     .IsDependentOn("BuildEventBuilder")
     .Does (() =>
 {
-    var eventBuilder = "./src/EventBuilder/bin/Release/EventBuilder.exe";
-    var workingDirectory = "./src/EventBuilder/bin/Release";
+    var eventBuilder = "./src/EventBuilder/bin/Release/net452/EventBuilder.exe";
+    var workingDirectory = "./src/EventBuilder/bin/Release/Net452";
     var referenceAssembliesPath = VSWhereLatest().CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
     Information(referenceAssembliesPath.ToString());
@@ -159,7 +159,7 @@ Task("GenerateEvents")
             platform = platform.ToUpper();
 
             Information("Generating events for '{0}'", platform);
-
+            
             int timeout = 10 * 60 * 1000;   // x Minute, y Second, z Millisecond
             process.WaitForExit(timeout);
 
@@ -169,6 +169,12 @@ Task("GenerateEvents")
             if (process.GetExitCode() != success)
             {
                 Error("Failed to generate events for '{0}'", platform);
+
+                foreach (var line in stdout)
+                {
+                    Error(line);
+                }
+
                 Abort();
             }
 
