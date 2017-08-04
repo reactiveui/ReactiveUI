@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Reactive" Version="3.1.0" />
+    <PackageReference Include="System.Reactive" Version="4.0.0-preview00001" />
     <PackageReference Include="Splat" Version="2.0.0" />
   </ItemGroup>
 
