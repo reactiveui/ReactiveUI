@@ -27,7 +27,7 @@ namespace ReactiveUI
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
-#if NET_45
+#if NET_452
         public event NotifyCollectionChangedEventHandler CollectionChanging;
 
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)

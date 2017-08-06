@@ -11,7 +11,7 @@ namespace EventBuilder.Platforms
         public WPF()
         {
             if (PlatformHelper.IsRunningOnMono()) {
-                throw new NotSupportedException("Building events for NET45 on Mac is not implemented.");
+                throw new NotSupportedException("Building events for WPF on Mac is not implemented.");
             } else {
                 Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\WindowsBase.dll");
                 Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\PresentationCore.dll");

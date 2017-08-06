@@ -6,7 +6,7 @@
     <PackageIconUrl>https://i.imgur.com/7WDbqSy.png</PackageIconUrl>
     <Authors>ReactiveUI contributors</Authors>
     <Owners>xpaulbettsx;flagbug;ghuntley;haacked;kent.boogaart;mteper;moswald;niik;onovotny;rdavisau;shiftkey</Owners>
-    <PackageTags>mvvm;reactiveui;Rx;Reactive Extensions;Observable;LINQ;Events;xamarin;android;ios;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;wpf;winforms;uwp;winrt;net45;netcore;wp;wpdev;windowsphone;windowsstore</PackageTags>
+    <PackageTags>mvvm;reactiveui;Rx;Reactive Extensions;Observable;LINQ;Events;xamarin;android;ios;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;wpf;winforms;uwp;winrt;net452;netcore;wp;wpdev;windowsphone;windowsstore</PackageTags>
     <PackageReleaseNotes>https://github.com/reactiveui/reactiveui/releases</PackageReleaseNotes>
 
     <NoWarn>$(NoWarn);1591</NoWarn>
