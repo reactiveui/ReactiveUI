@@ -1,13 +1,13 @@
 <Project>
   <PropertyGroup>
-    <Copyright>Copyright (c) ReactiveUI and contributors</Copyright>
+    <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
     <PackageLicenseUrl>http://opensource.org/licenses/ms-pl</PackageLicenseUrl>
-    <PackageProjectUrl>http://www.reactiveui.net</PackageProjectUrl>
+    <PackageProjectUrl>https://reactiveui.net</PackageProjectUrl>
     <PackageIconUrl>https://i.imgur.com/7WDbqSy.png</PackageIconUrl>
-    <Authors>ReactiveUI contributors</Authors>
-    <Owners>xpaulbettsx;flagbug;ghuntley;haacked;kent.boogaart;mteper;moswald;niik;onovotny;rdavisau;shiftkey</Owners>
-    <PackageTags>mvvm;reactiveui;Rx;Reactive Extensions;Observable;LINQ;Events;xamarin;android;ios;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;wpf;winforms;uwp;winrt;net45;netcore;wp;wpdev;windowsphone;windowsstore</PackageTags>
-    <PackageReleaseNotes>https://github.com/reactiveui/reactiveui/releases</PackageReleaseNotes>
+    <Authors>.NET Foundation and Contributors</Authors>
+    <Owners>xpaulbettsx;ghuntley</Owners>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;wpf;net;net45;uwp;tizen</PackageTags>
+    <PackageReleaseNotes>https://reactiveui.net/blog/</PackageReleaseNotes>
 
     <NoWarn>$(NoWarn);1591</NoWarn>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
