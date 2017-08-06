@@ -202,6 +202,8 @@ Task("BuildReactiveUI")
     {
         Information("Building {0}", solution);
 
+        NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
+
         FilePath msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
         MSBuild(solution, new MSBuildSettings() {
