@@ -7,7 +7,7 @@
     <Authors>.NET Foundation and Contributors</Authors>
     <Owners>xpaulbettsx;ghuntley</Owners>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;wpf;net;net45;uwp;tizen</PackageTags>
-    <PackageReleaseNotes>https://reactiveui.net/blog/release-notes/</PackageReleaseNotes>
+    <PackageReleaseNotes>https://reactiveui.net/blog/</PackageReleaseNotes>
 
     <NoWarn>$(NoWarn);1591</NoWarn>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
