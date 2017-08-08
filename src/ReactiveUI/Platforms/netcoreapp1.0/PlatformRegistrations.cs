@@ -12,6 +12,7 @@ namespace ReactiveUI
         public void Register(Action<Func<object>, Type> registerFunction)
         {
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxApp.MainThreadScheduler = DefaultScheduler.Instance;
         }
     }
 }
