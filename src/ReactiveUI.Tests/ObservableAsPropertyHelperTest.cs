@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -209,9 +210,9 @@ namespace ReactiveUI.Tests
             var dontcare = (fixture.FirstThreeLettersOfOneWord ?? "").Substring(0, 0);
 
             var resultChanging = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true)
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
             var resultChanged = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false)
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             Assert.Empty(resultChanging);
             Assert.Empty(resultChanged);
