@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,14 +26,14 @@ namespace ReactiveUI.Tests
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void FrameworkElementIsActivatedAndDeactivated()
         {
             var uc = new TestUserControl();
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
-            var activated = obs.CreateCollection();
+            var activated = obs.CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             RoutedEventArgs loaded = new RoutedEventArgs();
             loaded.RoutedEvent = FrameworkElement.LoadedEvent;
@@ -47,7 +50,7 @@ namespace ReactiveUI.Tests
             new[] { true, false }.AssertAreEqual(activated);
         }
 
-        [Fact]
+        [WpfFact]
         public void IsHitTestVisibleActivatesFrameworkElement()
         {
             var uc = new TestUserControl();
@@ -55,7 +58,7 @@ namespace ReactiveUI.Tests
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
-            var activated = obs.CreateCollection();
+            var activated = obs.CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             RoutedEventArgs loaded = new RoutedEventArgs();
             loaded.RoutedEvent = FrameworkElement.LoadedEvent;
@@ -78,14 +81,14 @@ namespace ReactiveUI.Tests
             new[] { true, false }.AssertAreEqual(activated);
         }
 
-        [Fact]
+        [WpfFact]
         public void IsHitTestVisibleDeactivatesFrameworkElement()
         {
             var uc = new TestUserControl();
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
-            var activated = obs.CreateCollection();
+            var activated = obs.CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             RoutedEventArgs loaded = new RoutedEventArgs();
             loaded.RoutedEvent = FrameworkElement.LoadedEvent;
@@ -99,14 +102,14 @@ namespace ReactiveUI.Tests
             new[] { true, false }.AssertAreEqual(activated);
         }
 
-        [Fact]
+        [WpfFact]
         public void FrameworkElementIsActivatedAndDeactivatedWithHitTest()
         {
             var uc = new TestUserControl();
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
-            var activated = obs.CreateCollection();
+            var activated = obs.CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             RoutedEventArgs loaded = new RoutedEventArgs();
             loaded.RoutedEvent = FrameworkElement.LoadedEvent;

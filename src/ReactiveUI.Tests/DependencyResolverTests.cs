@@ -80,7 +80,7 @@ namespace ReactiveUI.Tests
             resolver.RegisterViewsForViewModels(GetType().Assembly);
         }
 
-        [Fact]
+        [WpfFact]
         public void RegisterViewsForViewModelShouldRegisterAllViews()
         {
             using (resolver.WithResolver()) {
@@ -90,7 +90,7 @@ namespace ReactiveUI.Tests
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void RegisterViewsForViewModelShouldIncludeContracts()
         {
             using (resolver.WithResolver()) {
@@ -98,7 +98,7 @@ namespace ReactiveUI.Tests
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void NonContractRegistrationsShouldResolveCorrectly()
         {
             using (resolver.WithResolver()) {
@@ -106,7 +106,7 @@ namespace ReactiveUI.Tests
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void ContractRegistrationsShouldResolveCorrectly()
         {
             using (resolver.WithResolver()) {
@@ -122,7 +122,7 @@ namespace ReactiveUI.Tests
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
         {
             using (resolver.WithResolver()) {
@@ -138,7 +138,7 @@ namespace ReactiveUI.Tests
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void SingleInstanceViewsWithContractShouldResolveCorrectly()
         {
             using (resolver.WithResolver()) {

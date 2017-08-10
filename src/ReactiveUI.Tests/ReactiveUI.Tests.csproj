@@ -9,9 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit" Version="1.9.2" />
+    <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.console" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="Xunit.StaFact" Version="0.2.3-beta" />
   </ItemGroup>
 
   <ItemGroup>
