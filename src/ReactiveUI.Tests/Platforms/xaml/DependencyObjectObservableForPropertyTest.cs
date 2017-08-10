@@ -6,20 +6,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Controls;
-using ReactiveUI;
 using Xunit;
 
 namespace ReactiveUI.Tests
 {
     public class DepObjFixture : FrameworkElement
     {
-        public static readonly DependencyProperty TestStringProperty = 
+        public static readonly DependencyProperty TestStringProperty =
             DependencyProperty.Register("TestString", typeof(string), typeof(DepObjFixture), new PropertyMetadata(null));
 
-        public string TestString {
+        public string TestString
+        {
             get { return (string)GetValue(TestStringProperty); }
             set { SetValue(TestStringProperty, value); }
         }
@@ -27,7 +27,8 @@ namespace ReactiveUI.Tests
 
     public class DerivedDepObjFixture : DepObjFixture
     {
-        public string AnotherTestString {
+        public string AnotherTestString
+        {
             get { return (string)GetValue(AnotherTestStringProperty); }
             set { SetValue(AnotherTestStringProperty, value); }
         }
@@ -37,13 +38,13 @@ namespace ReactiveUI.Tests
 
     public class DependencyObjectObservableForPropertyTest
     {
-        [Fact]
+        [WpfFact]
         public void DependencyObjectObservableForPropertySmokeTest()
         {
             var fixture = new DepObjFixture();
             var binder = new DependencyObjectObservableForProperty();
-            Assert.NotEqual(0, binder.GetAffinityForObject(typeof (DepObjFixture), "TestString"));
-            Assert.Equal(0, binder.GetAffinityForObject(typeof (DepObjFixture), "DoesntExist"));
+            Assert.NotEqual(0, binder.GetAffinityForObject(typeof(DepObjFixture), "TestString"));
+            Assert.Equal(0, binder.GetAffinityForObject(typeof(DepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
             Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
@@ -59,13 +60,13 @@ namespace ReactiveUI.Tests
             disp2.Dispose();
         }
 
-        [Fact]
+        [WpfFact]
         public void DerivedDependencyObjectObservableForPropertySmokeTest()
         {
             var fixture = new DerivedDepObjFixture();
             var binder = new DependencyObjectObservableForProperty();
-            Assert.NotEqual(0, binder.GetAffinityForObject(typeof (DerivedDepObjFixture), "TestString"));
-            Assert.Equal(0, binder.GetAffinityForObject(typeof (DerivedDepObjFixture), "DoesntExist"));
+            Assert.NotEqual(0, binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "TestString"));
+            Assert.Equal(0, binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
             Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
@@ -81,13 +82,13 @@ namespace ReactiveUI.Tests
             disp2.Dispose();
         }
 
-        [Fact]
+        [WpfFact]
         public void WhenAnyWithDependencyObjectTest()
         {
-            var inputs = new[] {"Foo", "Bar", "Baz"};
+            var inputs = new[] { "Foo", "Bar", "Baz" };
             var fixture = new DepObjFixture();
 
-            var outputs = fixture.WhenAnyValue(x => x.TestString).CreateCollection();
+            var outputs = fixture.WhenAnyValue(x => x.TestString).CreateCollection(scheduler: ImmediateScheduler.Instance);
             inputs.ForEach(x => fixture.TestString = x);
 
             Assert.Null(outputs.First());
@@ -95,7 +96,7 @@ namespace ReactiveUI.Tests
             Assert.True(inputs.Zip(outputs.Skip(1), (expected, actual) => expected == actual).All(x => x));
         }
 
-        [Fact]
+        [WpfFact]
         public void ListBoxSelectedItemTest()
         {
             var input = new ListBox();
@@ -103,7 +104,7 @@ namespace ReactiveUI.Tests
             input.Items.Add("Bar");
             input.Items.Add("Baz");
 
-            var output = input.WhenAnyValue(x => x.SelectedItem).CreateCollection();
+            var output = input.WhenAnyValue(x => x.SelectedItem).CreateCollection(scheduler: ImmediateScheduler.Instance);
             Assert.Equal(1, output.Count);
 
             input.SelectedIndex = 1;

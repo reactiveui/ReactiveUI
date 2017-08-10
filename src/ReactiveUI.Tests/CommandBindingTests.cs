@@ -44,7 +44,7 @@ namespace ReactiveUI.Tests
 
     public class CreatesCommandBindingTests
     {
-        [Fact]
+        [WpfFact]
         public void CommandBinderBindsToButton()
         {
             var fixture = new CreatesCommandBindingViaCommandParameter();
@@ -87,7 +87,7 @@ namespace ReactiveUI.Tests
             Assert.False(wasCalled);
         }
 
-        [Fact]
+        [WpfFact]
         public void EventBinderBindsToExplicitInheritedEvent()
         {
             var fixture = new FakeView();
@@ -95,7 +95,7 @@ namespace ReactiveUI.Tests
         }
 
 #if !SILVERLIGHT
-        [Fact]
+        [WpfFact]
         public void EventBinderBindsToImplicitEvent()
         {
             var input = new Button();
@@ -191,7 +191,7 @@ namespace ReactiveUI.Tests
 
     public class CommandBindingImplementationTests
     {
-        [Fact]
+        [WpfFact]
         public void CommandBindByNameWireup()
         {
             var vm = new CommandBindViewModel();
@@ -210,7 +210,7 @@ namespace ReactiveUI.Tests
             Assert.Null(view.Command1.Command);
         }
 
-        [Fact]
+        [WpfFact]
         public void CommandBindNestedCommandWireup()
         {
             var vm = new CommandBindViewModel()
@@ -225,7 +225,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(vm.NestedViewModel.NestedCommand, view.Command1.Command);
         }
 
-        [Fact]
+        [WpfFact]
         public void CommandBindSetsInitialEnabledState_True()
         {
             var vm = new CommandBindViewModel();
@@ -240,7 +240,7 @@ namespace ReactiveUI.Tests
             Assert.True(view.Command1.IsEnabled);
         }
 
-        [Fact]
+        [WpfFact]
         public void CommandBindSetsDisablesCommandWhenCanExecuteChanged()
         {
             var vm = new CommandBindViewModel();
@@ -259,7 +259,7 @@ namespace ReactiveUI.Tests
             Assert.False(view.Command1.IsEnabled);
         }
 
-        [Fact]
+        [WpfFact]
         public void CommandBindSetsInitialEnabledState_False()
         {
             var vm = new CommandBindViewModel();
@@ -274,8 +274,7 @@ namespace ReactiveUI.Tests
             Assert.False(view.Command1.IsEnabled);
         }
 
-
-        [Fact]
+        [WpfFact]
         public void CommandBindRaisesCanExecuteChangedOnBind()
         {
             var vm = new CommandBindViewModel();
@@ -299,7 +298,7 @@ namespace ReactiveUI.Tests
         }
 
 #if !SILVERLIGHT
-        [Fact]
+        [WpfFact]
         public void CommandBindToExplicitEventWireup()
         {
             var vm = new CommandBindViewModel();
@@ -319,7 +318,7 @@ namespace ReactiveUI.Tests
         }
 #endif
 
-        [Fact]
+        [WpfFact]
         public void CommandBindWithParameterExpression()
         {
             var vm = new CommandBindViewModel();
@@ -340,7 +339,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(13, received);
         }
 
-        [Fact]
+        [WpfFact]
         public void CommandBindWithParameterObservable()
         {
             var vm = new CommandBindViewModel();

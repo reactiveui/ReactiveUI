@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -1017,7 +1018,7 @@ namespace ReactiveUI.Tests
                 using (resolver.WithResolver()) {
                     resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
 
-                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
+                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>(scheduler: CurrentThreadScheduler.Instance);
                     Assert.True(incc is INotifyCollectionChanged);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 
@@ -1051,7 +1052,7 @@ namespace ReactiveUI.Tests
                 using (resolver.WithResolver()) {
                     resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
 
-                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>();
+                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>(scheduler: CurrentThreadScheduler.Instance);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 
                     Assert.False(logger.Messages.Any(x => x.Item1.Contains("SuppressChangeNotifications")));
