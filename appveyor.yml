@@ -1,6 +1,6 @@
 # configuration for "master" branch
 -
-  image: Visual Studio 2017 Preview
+  image: Visual Studio 2017
   branches:
       only:
         - master
@@ -9,12 +9,12 @@
     ANDROID_HOME: "C:\\android-sdk-windows"
     COVERALLS_TOKEN: jLYKFVgST432LzbZeyLnLpoteXwQLveBw
     GITHUB_USERNAME:
-      secure: 0Q9MvUId56SizmZwCf0cgg==
+      secure: 4l81stjUdh712ndqnwBryw==
     GITHUB_TOKEN:
-      secure: 8MW7NQw/+0kKQAINvV7mxac+f7xqrLPkskONTyldqcYP6M1h9iej2p7rSva0/rXH
+      secure: TukU0LPvpoN1xkqjNNI8Ij7OxMnCmJxRnj6CsCDcAu+euK3eRTPRFJZl94na2+68
     NUGET_SOURCE: https://www.nuget.org/api/v2/package
     NUGET_APIKEY:
-      secure: 0g2AqQxgiAIFhqoJbbmEPrJa15Z8U5xYT6vQe43Gocuxbjw74hBAIKbU+Cj65UNd
+      secure: cANUegIQhgeZ7Yg4sosXNGmFF33i77nTriEjaeniQ4S26btcwYsopOO3qXKlbrvf
   init:
   - mkdir %ANDROID_HOME%"
   - cd "%ANDROID_HOME%"
@@ -53,7 +53,7 @@
     COVERALLS_TOKEN: jLYKFVgST432LzbZeyLnLpoteXwQLveBw
     NUGET_SOURCE: https://www.myget.org/F/reactiveui/api/v2/package
     NUGET_APIKEY:
-      secure: YP/3KxC2ffsuHNaolPXj66JVGzSjON9FcR2S2OEzn9c6SV14oPzUh1ySyeT+G+aA
+      secure: KTszzEEs33kbeqkpGGMvM58elvNLeTJhytpv7s9fPHoY4ZZmk5fMwofKDtK2lhno
   init:
   - mkdir %ANDROID_HOME%"
   - cd "%ANDROID_HOME%"
@@ -78,4 +78,3 @@
   - path: '**/bin/*'
   - path: src/ReactiveUI.Events/Events_*.cs
   test: off
-  
