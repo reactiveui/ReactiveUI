@@ -1,0 +1,13 @@
+{
+  "SignClient": {
+    "AzureAd": {
+      "AADInstance": "https://login.microsoftonline.com/",
+      "ClientId": "33c2e042-364a-4afa-aee4-49f7fb0a2cd1",
+      "TenantId": "dotnetfoundation.onmicrosoft.com"
+    },
+    "Service": {
+      "Url": "https://dnfsignservice.azurewebsites.net/",
+      "ResourceId": "http://sign.dotnetfoundation.org/server"
+    }
+  }
+}

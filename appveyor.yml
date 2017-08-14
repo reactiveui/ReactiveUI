@@ -15,6 +15,8 @@
     NUGET_SOURCE: https://www.nuget.org/api/v2/package
     NUGET_APIKEY:
       secure: 0g2AqQxgiAIFhqoJbbmEPrJa15Z8U5xYT6vQe43Gocuxbjw74hBAIKbU+Cj65UNd
+    SignClientSecret:
+      secure: MMu26EDCyAEM/Vfj2kyTMVdvVXd3jhpqYAogqQ9/+HYytbwOHvna7G0jSmrluhez
   init:
   - cd \
   - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
@@ -27,6 +29,7 @@
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
+  - cmd: nuget install SignClient -Version 0.7.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
   cache:
@@ -52,6 +55,8 @@
     NUGET_SOURCE: https://www.myget.org/F/reactiveui/api/v2/package
     NUGET_APIKEY:
       secure: YP/3KxC2ffsuHNaolPXj66JVGzSjON9FcR2S2OEzn9c6SV14oPzUh1ySyeT+G+aA
+    SignClientSecret:
+      secure: MMu26EDCyAEM/Vfj2kyTMVdvVXd3jhpqYAogqQ9/+HYytbwOHvna7G0jSmrluhez      
   init:
   - cd \
   - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
@@ -64,6 +69,7 @@
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
+  - cmd: nuget install SignClient -Version 0.7.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
   cache:

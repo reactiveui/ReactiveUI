@@ -4,6 +4,7 @@
 
 #addin "Cake.FileHelpers"
 #addin "Cake.Coveralls"
+#addin "Cake.Powershell"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -367,10 +368,21 @@ Task("UploadTestCoverage")
     });
 });
 
+Task("CodeSign")    
+    .WithCriteria(() => isRunningOnAppVeyor)
+    .Does(() =>
+{
+    StartPowershellFile("./script/Sign-Package.ps1", args =>
+        {
+        });
+});
+
+
 Task("Package")
     .IsDependentOn("PackageEvents")
-    .IsDependentOn("PackageReactiveUI")
-    .IsDependentOn("UploadTestCoverage")
+    .IsDependentOn("PackageReactiveUI")    
+    .IsDependentOn("CodeSign")
+    .IsDependentOn("UploadTestCoverage")    
     .Does (() =>
 {
 
