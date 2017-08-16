@@ -60,6 +60,7 @@
   - appveyor DownloadFile "https://dl.google.com/android/repository/tools_r25.2.3-windows.zip"
   - 7z x "tools_r25.2.3-windows.zip" > nul
   - cd "C:\projects\reactiveui"
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   install: 
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
@@ -78,3 +79,5 @@
   - path: '**/bin/*'
   - path: src/ReactiveUI.Events/Events_*.cs
   test: off
+  on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
