@@ -125,7 +125,11 @@ Task("BuildEventBuilder")
 
     NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
 
-    MSBuild(solution, new MSBuildSettings()
+    FilePath msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+
+    MSBuild(solution, new MSBuildSettings() {
+            ToolPath = msBuildPath
+        }
         .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
@@ -201,11 +205,11 @@ Task("BuildReactiveUI")
     Action<string> build = (solution) =>
     {
         Information("Building {0}", solution);
-
+    
         FilePath msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
         MSBuild(solution, new MSBuildSettings() {
-                ToolPath= msBuildPath
+                ToolPath = msBuildPath
             }
             .WithTarget("restore;pack")
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
