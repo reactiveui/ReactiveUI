@@ -6,7 +6,6 @@
         - master
   version: 1.0.{build}
   environment:
-    ANDROID_HOME: "C:\\android-sdk-windows"
     COVERALLS_TOKEN: jLYKFVgST432LzbZeyLnLpoteXwQLveBw
     GITHUB_USERNAME:
       secure: 4l81stjUdh712ndqnwBryw==
@@ -15,9 +14,12 @@
     NUGET_SOURCE: https://www.nuget.org/api/v2/package
     NUGET_APIKEY:
       secure: cANUegIQhgeZ7Yg4sosXNGmFF33i77nTriEjaeniQ4S26btcwYsopOO3qXKlbrvf
+    SIGNCLIENT_SECRET:
+      secure: MMu26EDCyAEM/Vfj2kyTMVdvVXd3jhpqYAogqQ9/+HYytbwOHvna7G0jSmrluhez
   init:
   - cd "C:\projects\reactiveui"
-  install: 
+  install:
+  - cmd: nuget install SignClient -Version 0.7.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
   cache:
@@ -40,14 +42,16 @@
   skip_branch_with_pr: true
   version: 1.0.{build}
   environment:
-    ANDROID_HOME: "C:\\android-sdk-windows"
     COVERALLS_TOKEN: jLYKFVgST432LzbZeyLnLpoteXwQLveBw
     NUGET_SOURCE: https://www.myget.org/F/reactiveui/api/v2/package
     NUGET_APIKEY:
       secure: KTszzEEs33kbeqkpGGMvM58elvNLeTJhytpv7s9fPHoY4ZZmk5fMwofKDtK2lhno
+    SIGNCLIENT_SECRET:
+      secure: MMu26EDCyAEM/Vfj2kyTMVdvVXd3jhpqYAogqQ9/+HYytbwOHvna7G0jSmrluhez
   init:
   - cd "C:\projects\reactiveui"
   install: 
+  - cmd: nuget install SignClient -Version 0.7.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
   cache:
