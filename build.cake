@@ -9,6 +9,7 @@
 #addin "Cake.FileHelpers"
 #addin "Cake.Coveralls"
 #addin "Cake.PinNuGetDependency"
+#addin "Cake.Powershell"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -19,7 +20,7 @@
 #tool "coveralls.io"
 #tool "OpenCover"
 #tool "ReportGenerator"
-#tool nuget:?package=vswhere
+#tool "nuget:?package=vswhere"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -271,11 +272,22 @@ Task("UploadTestCoverage")
     });
 });
 
+Task("SignPackages")
+    .WithCriteria(() => !local)
+    .WithCriteria(() => !isPullRequest)
+    .Does(() =>
+{
+    StartPowershellFile("./SignPackages.ps1", args =>
+    {
+    });
+});
+
 Task("Package")
     .IsDependentOn("BuildReactiveUI")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("UploadTestCoverage")
     .IsDependentOn("PinNuGetDependencies")
+    .IsDependentOn("SignPackages")
     .Does (() =>
 {
 });
@@ -298,6 +310,7 @@ Task("PinNuGetDependencies")
 Task("PublishPackages")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("Package")
+    .IsDependentOn("SignPackages")
     .WithCriteria(() => !local)
     .WithCriteria(() => !isPullRequest)
     .WithCriteria(() => isRepository)
