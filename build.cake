@@ -273,7 +273,7 @@ Task("UploadTestCoverage")
 });
 
 Task("SignPackages")
-    .WithCriteria(() => isRunningOnAppVeyor)
+    .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
     .Does(() =>
 {
     StartPowershellFile("./SignPackages.ps1", args =>
@@ -309,6 +309,7 @@ Task("PinNuGetDependencies")
 Task("PublishPackages")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("Package")
+    .IsDependentOn("SignPackages")
     .WithCriteria(() => !local)
     .WithCriteria(() => !isPullRequest)
     .WithCriteria(() => isRepository)
