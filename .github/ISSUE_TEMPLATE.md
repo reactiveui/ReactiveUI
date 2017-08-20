@@ -20,7 +20,7 @@
 
 
 
-**Which versions of ReactiveUI, and which platform / OS are affected by this issue? Did this work in previous versions of ReativeUI? Please also test with the latest stable and snapshot (http://docs.reactiveui.net/en/contributing/snapshot/index.html) versions.**
+**Which versions of ReactiveUI, and which platform / OS are affected by this issue? Did this work in previous versions of ReativeUI? Please also test with the latest stable and snapshot (https://reactiveui.net/contribute/software/testing/pre-release-builds) versions.**
 
 
 
