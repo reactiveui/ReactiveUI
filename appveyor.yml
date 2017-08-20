@@ -37,6 +37,7 @@
   artifacts:
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
+  - path: '**/*.binlog'
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
   
@@ -77,6 +78,7 @@
   artifacts:
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
+  - path: '**/*.binlog'
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
   on_finish:

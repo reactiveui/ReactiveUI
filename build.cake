@@ -128,9 +128,9 @@ Task("BuildEventBuilder")
 
     NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
 
-
     MSBuild(solution, new MSBuildSettings() {
-            ToolPath = msBuildPath
+            ToolPath = msBuildPath,
+            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog")
         }
         .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
@@ -209,7 +209,8 @@ Task("BuildReactiveUI")
         Information("Building {0} using {1}", solution, msBuildPath);
 
         MSBuild(solution, new MSBuildSettings() {
-                ToolPath = msBuildPath
+                ToolPath = msBuildPath,
+                ArgumentCustomization = args => args.Append("/bl:reactiveui.binlog")
             }
             .WithTarget("restore;pack")
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
