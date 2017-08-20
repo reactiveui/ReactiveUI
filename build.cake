@@ -51,6 +51,8 @@ var githubOwner = "reactiveui";
 var githubRepository = "reactiveui";
 var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubRepository);
 
+var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+
 // Version
 var gitVersion = GitVersion();
 var majorMinorPatch = gitVersion.MajorMinorPatch;
@@ -122,10 +124,14 @@ Task("BuildEventBuilder")
     .Does (() =>
 {
     var solution = "./src/EventBuilder.sln";
+    Information("Building {0} using {1}", solution, msBuildPath);
 
     NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
 
-    MSBuild(solution, new MSBuildSettings()
+    MSBuild(solution, new MSBuildSettings() {
+            ToolPath = msBuildPath,
+            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog")
+        }
         .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
@@ -200,14 +206,13 @@ Task("BuildReactiveUI")
 {
     Action<string> build = (solution) =>
     {
-        Information("Building {0}", solution);
-
-        FilePath msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+        Information("Building {0} using {1}", solution, msBuildPath);
 
         MSBuild(solution, new MSBuildSettings() {
-                ToolPath= msBuildPath
+                ToolPath = msBuildPath,
+                ArgumentCustomization = args => args.Append("/bl:reactiveui.binlog")
             }
-            .WithTarget("restore;pack")
+            .WithTarget("restore;build;pack")
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
