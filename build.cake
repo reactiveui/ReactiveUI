@@ -281,7 +281,6 @@ Task("SignPackages")
     });
 });
 
-
 Task("Package")
     .IsDependentOn("BuildReactiveUI")
     .IsDependentOn("RunUnitTests")
