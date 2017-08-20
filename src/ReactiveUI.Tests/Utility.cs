@@ -1,3 +1,7 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
@@ -7,6 +11,7 @@ using System.Reflection;
 using System.Threading;
 using Xunit;
 using Xunit.Sdk;
+using System.Diagnostics;
 
 namespace ReactiveUI.Tests
 {
@@ -27,10 +32,8 @@ namespace ReactiveUI.Tests
             }
             catch
             {
-                Console.Error.WriteLine("lhs: [{0}]",
-                    String.Join(",", lhs.ToArray()));
-                Console.Error.WriteLine("rhs: [{0}]",
-                    String.Join(",", rhs.ToArray()));
+                Debug.WriteLine("lhs: [{0}]", String.Join(",", lhs.ToArray()));
+                Debug.WriteLine("rhs: [{0}]", String.Join(",", rhs.ToArray()));
                 throw;
             }
         }

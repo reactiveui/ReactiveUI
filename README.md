@@ -1,52 +1,56 @@
-# ![ReactiveUI Logo](https://i.imgur.com/23kfbS9.png) ReactiveUI
+[![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build status](https://ci.appveyor.com/api/projects/status/nhsndp7v788t6a2m/branch/develop?svg=true)](https://ci.appveyor.com/project/ghuntley/reactiveui/branch/develop) [![Coverage Status](https://coveralls.io/repos/github/reactiveui/ReactiveUI/badge.svg?branch=develop)](https://coveralls.io/github/reactiveui/ReactiveUI?branch=develop) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI?ref=badge_shield)
 
-  [![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/reactiveui/ReactiveUI/issues?utf8=%E2%9C%93&q=label%3Afirst-timers-only+) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Build status](https://ci.appveyor.com/api/projects/status/nhsndp7v788t6a2m/branch/develop?svg=true)](https://ci.appveyor.com/project/ghuntley/reactiveui/branch/develop) [![Coverage Status](https://coveralls.io/repos/github/reactiveui/ReactiveUI/badge.svg?branch=develop)](https://coveralls.io/github/reactiveui/ReactiveUI?branch=develop) [![OpenCollective](https://opencollective.com/reactiveui/backers/badge.svg)](#backers) 
-[![OpenCollective](https://opencollective.com/reactiveui/sponsors/badge.svg)](#sponsors)
 
-Use the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8, Windows Store and Universal Windows Platform (UWP).
+<div align="center">
+  <a href="https://github.com/reactiveui/reactiveui">
+    <img width="200" heigth="200" src="https://i.imgur.com/23kfbS9.png">
+  </a>
+  <br>
+  <br>
+	<a href="https://https://www.nuget.org/packages/reactiveui">
+		<img src="https://img.shields.io/nuget/dt/reactiveui-core.svg">
+	</a>
+	<a href="#backers">
+		<img src="https://opencollective.com/reactiveui/backers/badge.svg">
+	</a>
+	<a href="#sponsors">
+		<img src="https://opencollective.com/reactiveui/sponsors/badge.svg">
+	</a>
+	<a href="https://reactiveui.net/slack">
+		<img src="https://img.shields.io/badge/chat-slack-blue.svg">
+	</a>
+  <h1>ReactiveUI</h1>
+  <p>
+    ReactiveUI is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming which is a paradigm that allows you to abstract mutable state away from your user interfaces and express the idea around a feature in one readable place and improve the testability of your application.
+  <p>
+</div>
 
-If you’re already familiar with [functional reactive programming](http://docs.reactiveui.net/en/fundamentals/history.html) or what ReactiveUI is about, check out the [documentation](http://docs.reactiveui.net/en/index.html) for more in-depth information about how it all works or our comprehensive [collection of samples](https://github.com/reactiveui/samples).
+<h2 align="center">Table of Contents</h2>
 
-If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
-
-We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [hello@reactiveui.net](mailto:hello@reactiveui.net) with the email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
-#### Table of Contents
 * [Introduction](#introduction)
-* [Fundamentals](#fundamentals)
 * [A Compelling Example](#a-compelling-example)
-* [Slack](#slack)
 * [Support](#support)
 * [Contribute](#contribute)
 * [Showcase](#showcase)
 * [Licensing](#licensing)
 * [Sponsorship](#sponsorship)
 
-## Introduction
+<h2 align="center">Introduction</h2>
 
-ReactiveUI is inspired by [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) and is the father of the [ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa) (Cocoa/Swift) framework. Rather than using mutable variables which are replaced and modified in-place, ReactiveUI offers "event streams", represented by the `IObserver` and `IObservable` types, that send values over time.
+Long ago, when computer programming first came to be, machines had to be programmed quite manually. If the technician entered the correct sequence of machine codes in the correct order, then the resulting program behavior would satisfy the business requirements. Instead of telling a computer how to do its job, which error-prone and relies too heavily on the infallibility of the programmer, why don't we just tell it what it's job is and let it figure the rest out?
 
-If you are new to these concepts then we highly recommend watching the following videos before progressing too far:
+ReactiveUI is inspired by the paradigm of Functional Reactive Programming, which allows you to model user input as a function that changes over time. This is super cool because it allows you to abstract mutable state away from your user interfaces and express the idea around a feature in one readable place whilst improving application testability. Reactive programming can look scary and complex at first glance, but the best way to describe reactive programming is to think of a spreadsheet:
 
-* [Rx Under the Hood (Video #1)](https://channel9.msdn.com/Shows/Going+Deep/E2E-Erik-Meijer-and-Wes-Dyer-Reactive-Framework-Rx-Under-the-Hood-1-of-2) by Erik Meijer (Inventor of Reactive Extensions/Microsoft Research)
-* [Rx Under the Hood (Video #2)](https://channel9.msdn.com/Shows/Going+Deep/E2E-Erik-Meijer-and-Wes-Dyer-Reactive-Framework-Rx-Under-the-Hood-2-of-2) by Erik Meijer (Inventor of Reactive Extensions/Microsoft Research)
-* [Controlling Time and Space: understanding the many formulations of FRP](https://www.youtube.com/watch?v=Agu6jipKfYw) by Evan Czaplicki (Elm language designer/Prezi)
-* [FRP In Practice: Taking a look at Reactive[UI/Cocoa]](https://www.youtube.com/watch?v=1XNATGjqM6U) by Paul Betts (Slack/GitHub)
-* [ReactiveUI - It's pretty neat](https://www.youtube.com/watch?v=HPyKHxy7X0w) by Brendan Forster (GitHub)
-* [ReactiveUI - Turning MVVM up to 11](https://vimeo.com/97329155) by Brendan Forster (GitHub)
-* [Let Me Tell You About Our Lord And Saviour FRP](https://www.youtube.com/watch?v=0_LX3zT4m9I) by Brendan Forster (GitHub)
-
-## Fundamentals 
-
-One of the most confusing aspects of the Reactive Extensions is that of ["hot" and "cold" observables](http://www.introtorx.com/content/v1.0.10621.0/14_HotAndColdObservables.html) (event streams). In short, given just a method or function declaration like this:
-
-	IObservable<string> Search(string query)
-
-It is impossible to tell whether subscribing to (observing) that `IObservable` will involve side effects. If it does involve side effects, it’s also impossible to tell whether each subscription has a side effect, or if only the first one does. Whilst this example is contrived, it demonstrates a real, pervasive problem that makes it harder  at first for newcomers to understand Rx code at first glance. 
-
-As such we also recommend [watching this video](https://www.youtube.com/watch?v=IDy21J75eyU), reading [our documentation](http://docs.reactiveui.net/en/fundamentals/reactive-extensions.html) and [playing with the marbles](http://rxmarbles.com/) to familiarize yourself with the fundamentals.
+![](https://reactiveui.net/images/frp-excel.gif)
 
 
-## A Compelling Example
+* Three cells, A, B, and C.
+* C is defined as the sum of A and B.
+* Whenever A or B changes, C reacts to update itself.
+
+That's reactive programming: changes propagate throughout a system automatically. Welcome to the peanut butter and jelly of programming paradigms. For further information please watch the this video from the Xamarin Evolve conference - [Why You Should Be Building Better Mobile Apps with Reactive Programming](http://www.youtube.com/watch?v=DYEbUF4xs1Q) by Michael Stonis.
+
+<h2 align="center">A Compelling Example</h2>
 
 Let’s say you have a text field, and whenever the user types something into it, you want to make a network request which searches for that query.
 
@@ -62,7 +66,8 @@ public interface ISearchViewModel
     ISearchService SearchService { get; }
 }
 ```
-#### Define under what conditions a network request will be made
+
+<h3 align="center">Define under what conditions a network request will be made</h3>
 
 ```csharp
 // Here we're describing here, in a *declarative way*, the conditions in
@@ -71,7 +76,9 @@ public interface ISearchViewModel
 // when it should change.
 var canSearch = this.WhenAny(x => x.SearchQuery, x => !String.IsNullOrWhiteSpace(x.Value));
 ```
-#### Make the network connection
+
+<h3 align="center">Make the network connection</h3>
+
 ```csharp
 // ReactiveCommand has built-in support for background operations and
 // guarantees that this block will only run exactly once at a time, and
@@ -81,7 +88,8 @@ Search = ReactiveCommand.CreateFromTask<string, List<SearchResults>>(_ =>
         searchService.Search(this.SearchQuery), canSearch);
 ```
 
-#### Update the user interface 
+<h3 align="center">Update the user interface</h3>
+
 ```csharp
 // ReactiveCommands are themselves IObservables, whose value are the results
 // from the async method, guaranteed to arrive on the UI thread. We're going
@@ -93,7 +101,9 @@ Search.Subscribe(results => {
 });
 
 ```
-#### Handling failures
+
+<h3 align="center">Handling failures</h3>
+
 ```csharp
 // ThrownExceptions is any exception thrown from the CreateAsyncTask piped
 // to this Observable. Subscribing to this allows you to handle errors on
@@ -103,7 +113,9 @@ Search.ThrownExceptions
         UserError.Throw("Potential Network Connectivity Error", ex);
     });
 ```
-#### Throttling network requests and automatic search execution behaviour
+
+<h3 align="center">Throttling network requests and automatic search execution behaviour</h3>
+
 ```csharp
 // Whenever the Search query changes, we're going to wait for one second
 // of "dead airtime", then automatically invoke the subscribe command.
@@ -112,28 +124,30 @@ this.WhenAnyValue(x => x.SearchQuery)
     .InvokeCommand(Search);
 ```
 
-## Slack
+<h2 align="center">Support</h2>
 
-We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [hello@reactiveui.net](mailto:hello@reactiveui.net) with the Email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
+If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
 
-## Support
+If you want to discuss something or just need help, here is our [Slack room](https://reactiveui.net/slack) where there are always individuals looking to help out!
 
-ReactiveUI is an open source project that is community supported by people just like you. We keep [a bunch of curated tasks specifically for new contributors](https://github.com/reactiveui/reactiveui/labels/up-for-grabs) which are [a great way to get started with open source](https://yourfirstpr.github.io/). They also provide a fantastic avenue for getting to know the ReactiveUI maintainers.
+If you are twitter savvy you can tweet #reactiveui with your question and someone should be able to reach out and help also.
 
-If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
+If you have discovered a 🐜 or have a feature suggestion, feel free to create an issue on GitHub.
 
 
-## Contribute
+<h2 align="center">Contribute</h2>
 
-Here are some pointers for anyone looking for mini-features and work items that would make a positive contribution to ReactiveUI.
 
-* Let us know if (and how) [you are using ReactiveUI in production](https://github.com/reactiveui/ReactiveUI/issues/979).
-* We keep [a bunch of curated tasks specifically for new contributors](https://github.com/reactiveui/reactiveui/labels/up-for-grabs), which are a great way to get started with open source and provide a fantastic avenue for getting to know the ReactiveUI maintainers.
-* Write a blog post about `#ReactiveUI` and then [tweet the link to our twitter account](https://twitter.com/ReactiveXUI). We will retweet you.
-* Contribute [a repro case](https://quaid.fedorapeople.org/TOS/Practical_Open_Source_Software_Exploration/html/sn-Debugging_the_Code-The_Anatomy_of_a_Good_Bug_Report.html) or [help resolve known issues](https://github.com/reactiveui/ReactiveUI/issues?q=is%3Aopen).
-* Help flesh out and [improve our documentation](https://github.com/reactiveui/ReactiveUI/pull/771) by providing [content writing](https://jacobian.org/writing/what-to-write/), [structure enforcement](https://jacobian.org/writing/technical-style/) or [editing](https://jacobian.org/writing/editors/) services.
+ReactiveUI is developed under an OSI-approved open source license, making it freely usable and distributable, even for commercial use. Because of our Open Collective model for funding and transparency, we are able to funnel support and funds through to our contributors and community. We ❤ the people who are involved in this project, and we’d love to have you on board, especially if you are just getting started or have never contributed to open-source before.
 
-We try not to be too OCD about coding style wars, but we do [have our own convention](https://github.com/reactiveui/ReactiveUI/blob/master/CONTRIBUTING.md) and [best design practices documented](https://github.com/reactiveui/rxui-design-guidelines) - please respect them and your pull-request experience will be much smoother. If you are using Visual Studio, please [install the rebracer plugin](https://visualstudiogallery.msdn.microsoft.com/410e9b9f-65f3-4495-b68e-15567e543c58) which will automatically apply the correct source formatting settings.
+So here's to you, lovely person who wants to join us — this is how you can support us:
+
+* [Responding to questions on StackExchange](https://reactiveui.net/stackoverflow)
+* [Passing on knowledge and teaching the next generation of developers](http://ericsink.com/entries/dont_use_rxui.html)
+* [Donations](https://reactiveui.net/donate) and [Corporate Sponsorships](https://reactiveui.net/sponsorship)
+* [Submitting documentation updates where you see fit or lacking](https://reactiveui.net/documentation)
+* [Making contributions to the code base](https://docs.reactiveui.net/en/contributing/)
+* [Asking your employer to reciprocate and contribute to open-source](https://github.com/github/balanced-employee-ip-agreement)
 
 We're also looking for people to assist with code reviews of ReactiveUI contributions. If you're experienced with any of the below technologies, you can join the team and receive notifications:
 
@@ -146,20 +160,94 @@ We're also looking for people to assist with code reviews of ReactiveUI contribu
  - [WPF reviewers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
  - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xf)
 
-## Showcase
-We encourage our community to [showcase where and how they have used ReactiveUI in their applications](https://github.com/reactiveui/ReactiveUI/issues/979), some members have even gone as far as open-sourcing their app and [sharing their entire codebase](https://github.com/reactiveui/ReactiveUI/issues/687#issuecomment-166772487). You are of course under no-obligation share these insights (or code) with us but it is greatly appreciated by the project maintainers and you'll usually get a [retweet out of it](https://twitter.com/ReactiveXUI/status/679532005155966977).
+<img src="https://opencollective.com/reactiveui/contributors.png?avatarHeight=64&button=true&width=1400&margin=3"/>
 
-## Licensing
+<h2 align="center">License</h2>
 
-The ReactiveUI project is licensed under the [MS-PL license](http://opensource.org/licenses/ms-pl.html).
+Microsoft Public License (MS-PL)
+This license governs use of the accompanying software. If you use the software, you
+accept this license. If you do not accept the license, do not use the software.
 
-## Sponsorship
+1. Definitions
+The terms "reproduce," "reproduction," "derivative works," and "distribution" have the
+same meaning here as under U.S. copyright law.
+A "contribution" is the original software, or any additions or changes to the software.
+A "contributor" is any person that distributes its contribution under this license.
+"Licensed patents" are a contributor's patent claims that read directly on its contribution.
 
-Through contributions, donations, and sponsorship, you allow ReactiveUI to thrive. Your donations directly support meetups, office hours, continued enhancements, and most importantly, great documentation and learning material!
+2. Grant of Rights
+(A) Copyright Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor grants you a non-exclusive, worldwide, royalty-free copyright license to reproduce its contribution, prepare derivative works of its contribution, and distribute its contribution or any derivative works that you create.
+(B) Patent Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor grants you a non-exclusive, worldwide, royalty-free license under its licensed patents to make, have made, use, sell, offer for sale, import, and/or otherwise dispose of its contribution in the software or derivative works of the contribution in the software.
 
-### Backers 
+3. Conditions and Limitations
+(A) No Trademark License- This license does not grant you rights to use any contributors' name, logo, or trademarks.
+(B) If you bring a patent claim against any contributor over patents that you claim are infringed by the software, your patent license from such contributor to the software ends automatically.
+(C) If you distribute any portion of the software, you must retain all copyright, patent, trademark, and attribution notices that are present in the software.
+(D) If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.
+(E) The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.
 
-[[Become a backer](https://opencollective.com/reactiveui#backer)]
+## Core Team
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">
+        <img width="150" height="150" src="https://github.com/ghuntley.png?s=150">
+        <br>
+        <a href="https://github.com/ghuntley">Geoffrey Huntley</a>
+        <p>Sydney, Australia</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="150" height="150" src="https://github.com/kentcb.png?s=150">
+        <br>
+        <a href="https://github.com/kentcb">Kent Boogaart</a>
+        <p>Adelaide, Australia</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="150" height="150" src="https://github.com/olevett.png?s=150">
+        <br>
+        <a href="https://github.com/olevett">Olly Levett</a>
+        <p>London, United Kingdom</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="150" height="150" src="https://github.com/paulcbetts.png?s=150">
+        <br>
+        <a href="https://github.com/paulcbetts">Paul Betts</a>
+        <p>San Francisco, USA</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="150" height="150" src="https://github.com/shiftkey.png?s=150">
+        <br>
+        <a href="https://github.com/shiftkey">Brendan Forster</a>
+        <p>Melbourne, Australia</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="150" height="150" src="https://github.com/onovotny.png?s=150">
+        <br>
+        <a href="https://github.com/onovotny">Oren Novotny</a>
+        <p>New York, USA</p>
+      </td>
+     </tr>
+  </tbody>
+</table>
+
+
+<h2 align="center">Sponsorship</h2>
+
+The core team members, ReactiveUI contributors and contributors in the ecosystem do this open source work in their free time. If you use ReactiveUI a serious task, and you'd like us to invest more time on it, please donate. This project increases your income/productivity too. It makes development and applications faster and it reduces the required bandwidth.
+
+This is how we use the donations:
+
+* Allow the core team to work on ReactiveUI
+* Thank contributors if they invested a large amount of time in contributing
+* Support projects in the ecosystem that are of great value for users
+* Support projects that are voted most (work in progress)
+* Infrastructure cost
+* Fees for money handling
+
+<h2 align="center">Backers</h2>
+
+[Become a backer](https://opencollective.com/reactiveui#backer) and get your image on our README on Github with a link to your site.
 
 <a href="https://opencollective.com/reactiveui/backer/0/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/0/avatar.svg"></a>
 <a href="https://opencollective.com/reactiveui/backer/1/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/1/avatar.svg"></a>
@@ -192,8 +280,9 @@ Through contributions, donations, and sponsorship, you allow ReactiveUI to thriv
 <a href="https://opencollective.com/reactiveui/backer/28/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/28/avatar.svg"></a>
 <a href="https://opencollective.com/reactiveui/backer/29/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/29/avatar.svg"></a>
 
-### Sponsors
- [[Become a sponsor](https://opencollective.com/reactiveui#sponsor)]
+<h2 align="center">Sponsors</h2>
+
+[Become a sponsor](https://opencollective.com/reactiveui#sponsor) and get your logo on our README on Github with a link to your site.
 
 <a href="https://opencollective.com/reactiveui/sponsor/0/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/reactiveui/sponsor/1/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/1/avatar.svg"></a>

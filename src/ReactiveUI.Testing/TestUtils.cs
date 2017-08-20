@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using System;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading;
@@ -141,7 +145,6 @@ namespace ReactiveUI.Testing
         /// Override the default Message Bus during the specified block.
         /// </summary>
         /// <param name="messageBus">The message bus to use for the block.</param>
-        /// <param name="sched">The scheduler to use.</param>
         /// <param name="block">The action to execute.</param>
         public static void With(this IMessageBus messageBus, Action block)
         {
@@ -154,6 +157,7 @@ namespace ReactiveUI.Testing
         /// AdvanceToMs moves the TestScheduler to the specified time in
         /// milliseconds.
         /// </summary>
+        /// <param name="sched">The scheduler to advance.</param>
         /// <param name="milliseconds">The time offset to set the TestScheduler
         /// to, in milliseconds. Note that this is *not* additive or
         /// incremental, it sets the time.</param>
@@ -166,6 +170,7 @@ namespace ReactiveUI.Testing
         /// AdvanceByMs moves the TestScheduler along by the specified time in
         /// milliseconds.
         /// </summary>
+        /// <param name="sched">The scheduler to advance.</param>
         /// <param name="milliseconds">The relative time to advance the TestScheduler 
         /// by, in milliseconds.</param>
         public static void AdvanceByMs(this TestScheduler sched, double milliseconds)
@@ -177,6 +182,7 @@ namespace ReactiveUI.Testing
         /// OnNextAt is a method to help create simulated input Observables in
         /// conjunction with CreateHotObservable or CreateColdObservable.
         /// </summary>
+        /// <param name="sched">The scheduler to fire from.</param>
         /// <param name="milliseconds">The time offset to fire the notification
         /// on the recorded notification.</param>
         /// <param name="value">The value to produce.</param>
@@ -193,9 +199,10 @@ namespace ReactiveUI.Testing
         /// OnErrorAt is a method to help create simulated input Observables in
         /// conjunction with CreateHotObservable or CreateColdObservable.
         /// </summary>
+        /// <param name="sched">The scheduler to fire from.</param>
         /// <param name="milliseconds">The time offset to fire the notification
         /// on the recorded notification.</param>
-        /// <param name="exception">The exception to terminate the Observable
+        /// <param name="ex">The exception to terminate the Observable
         /// with.</param>
         /// <returns>A recorded notification that can be provided to
         /// TestScheduler.CreateHotObservable.</returns>
@@ -210,6 +217,7 @@ namespace ReactiveUI.Testing
         /// OnCompletedAt is a method to help create simulated input Observables in
         /// conjunction with CreateHotObservable or CreateColdObservable.
         /// </summary>
+        /// <param name="sched">The scheduler to fire from.</param>
         /// <param name="milliseconds">The time offset to fire the notification
         /// on the recorded notification.</param>
         /// <returns>A recorded notification that can be provided to
@@ -221,6 +229,12 @@ namespace ReactiveUI.Testing
                 Notification.CreateOnCompleted<T>());
         }
 
+        /// <summary>
+        /// Converts a timespan to a virtual time for testing.
+        /// </summary>
+        /// <param name="sched">The scheduler</param>
+        /// <param name="span">Timespan to convert.</param>
+        /// <returns>Timespan for virtual scheduler to use.</returns>
         public static long FromTimeSpan(this TestScheduler sched, TimeSpan span)
         {
             return span.Ticks;

@@ -1,15 +1,18 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using ReactiveUI;
-using ReactiveUI.Testing;
-using Xunit;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using System.Reactive.Disposables;
 using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
 using Splat;
+using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -41,7 +44,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void OAPHShouldFireChangeNotifications()
         {
-            var input = new[] {1, 2, 3, 3, 4}.ToObservable();
+            var input = new[] { 1, 2, 3, 3, 4 }.ToObservable();
             var output = new List<int>();
 
             (new TestScheduler()).With(sched => {
@@ -114,8 +117,7 @@ namespace ReactiveUI.Tests
         {
             bool isSubscribed = false;
 
-            var observable = Observable.Create<int>(o =>
-            {
+            var observable = Observable.Create<int>(o => {
                 isSubscribed = true;
                 o.OnNext(42);
                 o.OnCompleted();
@@ -134,8 +136,7 @@ namespace ReactiveUI.Tests
         {
             bool isSubscribed = false;
 
-            var observable = Observable.Create<int>(o =>
-            {
+            var observable = Observable.Create<int>(o => {
                 isSubscribed = true;
                 o.OnNext(42);
                 o.OnCompleted();
@@ -182,19 +183,19 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched => {
                 var input = new Subject<int>();
                 var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5);
-    
+
                 Assert.Equal(-5, fixture.Value);
                 (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
-    
+
                 input.OnError(new Exception("Die!"));
-    
+
                 bool failed = true;
                 try {
                     sched.Start();
                 } catch (Exception ex) {
                     failed = ex.InnerException.Message != "Die!";
                 }
-    
+
                 Assert.False(failed);
                 Assert.Equal(4, fixture.Value);
             });
@@ -206,12 +207,12 @@ namespace ReactiveUI.Tests
             var fixture = new OaphTestFixture();
 
             // NB: This is a hack to connect up the OAPH
-            var dontcare = (fixture.FirstThreeLettersOfOneWord ?? "").Substring(0,0);
+            var dontcare = (fixture.FirstThreeLettersOfOneWord ?? "").Substring(0, 0);
 
             var resultChanging = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true)
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
             var resultChanged = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false)
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             Assert.Empty(resultChanging);
             Assert.Empty(resultChanged);
@@ -238,7 +239,7 @@ namespace ReactiveUI.Tests
                 // be called recursively thus cause the subscription
                 // to be called twice. Not sure if this is a reactive UI
                 // or RX bug.
-                f.PropertyChanged += (e, s) => Console.WriteLine(f.A);
+                f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
 
                 // Trigger subscription to the underlying observable.
                 Assert.Equal(true, f.A);

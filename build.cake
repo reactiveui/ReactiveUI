@@ -1,9 +1,14 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 //////////////////////////////////////////////////////////////////////
 // ADDINS
 //////////////////////////////////////////////////////////////////////
 
 #addin "Cake.FileHelpers"
 #addin "Cake.Coveralls"
+#addin "Cake.PinNuGetDependency"
 #addin "Cake.Powershell"
 
 //////////////////////////////////////////////////////////////////////
@@ -12,10 +17,10 @@
 
 #tool "GitReleaseManager"
 #tool "GitVersion.CommandLine"
-#tool "GitLink"
 #tool "coveralls.io"
 #tool "OpenCover"
 #tool "ReportGenerator"
+#tool "nuget:?package=vswhere"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -31,15 +36,11 @@ if (string.IsNullOrWhiteSpace(target))
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-// Should MSBuild & GitLink treat any errors as warnings?
+// Should MSBuild treat any errors as warnings?
 var treatWarningsAsErrors = false;
 
 // Build configuration
 var local = BuildSystem.IsLocalBuild;
-var isRunningOnUnix = IsRunningOnUnix();
-var isRunningOnWindows = IsRunningOnWindows();
-
-var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", AppVeyor.Environment.Repository.Name);
 
@@ -51,10 +52,11 @@ var githubOwner = "reactiveui";
 var githubRepository = "reactiveui";
 var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubRepository);
 
+var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+
 // Version
 var gitVersion = GitVersion();
 var majorMinorPatch = gitVersion.MajorMinorPatch;
-var semVersion = gitVersion.SemVer;
 var informationalVersion = gitVersion.InformationalVersion;
 var nugetVersion = gitVersion.NuGetVersion;
 var buildVersion = gitVersion.FullBuildMetaData;
@@ -62,64 +64,33 @@ var buildVersion = gitVersion.FullBuildMetaData;
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
-var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" };
+var packageWhitelist = new[] { "ReactiveUI-Testing",
+                               "ReactiveUI-Events",
+                               "ReactiveUI-Events-WPF",
+                               "ReactiveUI-Events-XamForms",
+                               "ReactiveUI",
+                               "ReactiveUI-AndroidSupport",
+                               "ReactiveUI-Blend",
+                               "ReactiveUI-WPF",
+                               "ReactiveUI-Winforms",
+                               "ReactiveUI-XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
-
-Action<string> RestorePackages = (solution) =>
-{
-    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
-};
-
-Action<string, string> Package = (nuspec, basePath) =>
-{
-    CreateDirectory(artifactDirectory);
-
-    Information("Packaging {0} using {1} as the BasePath.", nuspec, basePath);
-
-    NuGetPack(nuspec, new NuGetPackSettings {
-        Authors                  = new [] {"ReactiveUI contributors"},
-        Owners                   = new [] {"xpaulbettsx", "flagbug", "ghuntley", "haacked", "kent.boogaart", "mteper", "moswald", "niik", "onovotny", "rdavisau", "shiftkey"},
-
-        ProjectUrl               = new Uri("http://www.reactiveui.net"),
-        IconUrl                  = new Uri("https://i.imgur.com/7WDbqSy.png"),
-        LicenseUrl               = new Uri("https://opensource.org/licenses/ms-pl.html"),
-        Copyright                = "Copyright (c) ReactiveUI and contributors",
-        RequireLicenseAcceptance = false,
-
-        Version                  = nugetVersion,
-        Tags                     = new [] {"mvvm", "reactiveui", "Rx", "Reactive Extensions", "Observable", "LINQ", "Events", "xamarin", "android", "ios", "forms", "monodroid", "monotouch", "xamarin.android", "xamarin.ios", "xamarin.forms", "wpf", "winforms", "uwp", "winrt", "net45", "netcore", "wp", "wpdev", "windowsphone", "windowsstore"},
-        ReleaseNotes             = new [] { string.Format("{0}/releases", githubUrl) },
-
-        Symbols                  = false,
-        Verbosity                = NuGetVerbosity.Detailed,
-        OutputDirectory          = artifactDirectory,
-        BasePath                 = basePath,
-    });
-};
-
-Action<string> SourceLink = (solutionFileName) =>
-{
-    GitLink("./", new GitLinkSettings() {
-        RepositoryUrl = "https://github.com/reactiveui/ReactiveUI",
-        SolutionFileName = solutionFileName,
-        ErrorsAsWarnings = treatWarningsAsErrors,
-    });
-};
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
-    if (!isRunningOnWindows)
+    if (!IsRunningOnWindows())
     {
         throw new NotImplementedException("ReactiveUI will only build on Windows (w/Xamarin installed) because it's not possible to target UWP, WPF and Windows Forms from UNIX.");
     }
 
     Information("Building version {0} of ReactiveUI. (isTagged: {1})", informationalVersion, isTagged);
+
+    CreateDirectory(artifactDirectory);
 });
 
 Teardown(context =>
@@ -131,160 +102,8 @@ Teardown(context =>
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
-Task("BuildEventBuilder")
-    .IsDependentOn("RestorePackages")
-    .IsDependentOn("UpdateAssemblyInfo")
-    .Does (() =>
-{
-    var solution = "./src/EventBuilder.sln";
-
-    MSBuild(solution, new MSBuildSettings()
-        .SetConfiguration("Release")
-        .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-        .SetVerbosity(Verbosity.Minimal)
-        .SetNodeReuse(false));
-
-    SourceLink(solution);
-});
-
-Task("GenerateEvents")
-    .IsDependentOn("BuildEventBuilder")
-    .Does (() =>
-{
-    var eventBuilder = "./src/EventBuilder/bin/Release/EventBuilder.exe";
-    var workingDirectory = "./src/EventBuilder/bin/Release";
-
-    Action<string> generate = (string platform) =>
-    {
-        using(var process = StartAndReturnProcess(eventBuilder,
-            new ProcessSettings{
-                Arguments = "--platform=" + platform,
-                WorkingDirectory = workingDirectory,
-                RedirectStandardOutput = true }))
-        {
-            // super important to ensure that the platform is always
-            // uppercase so that the events are written to the write
-            // filename as UNIX is case-sensitive - even though OSX
-            // isn't by default.
-            platform = platform.ToUpper();
-
-            Information("Generating events for '{0}'", platform);
-
-            int timeout = 10 * 60 * 1000;   // x Minute, y Second, z Millisecond
-            process.WaitForExit(timeout);
-
-            var stdout = process.GetStandardOutput();
-
-            int success = 0;    // exit code aka %ERRORLEVEL% or $?
-            if (process.GetExitCode() != success)
-            {
-                Error("Failed to generate events for '{0}'", platform);
-                Abort();
-            }
-
-            var directory = "src/ReactiveUI.Events/";
-            var filename = String.Format("Events_{0}.cs", platform);
-            var output = System.IO.Path.Combine(directory, filename);
-
-            FileWriteLines(output, stdout.ToArray());
-            Information("The events have been written to '{0}'", output);
-        }
-    };
-
-    generate("android");
-    generate("ios");
-    generate("mac");
-    generate("xamforms");
-
-    generate("net45");
-    
-    generate("wpa81");
-    generate("uwp");
-});
-
-Task("BuildEvents")
-    .IsDependentOn("GenerateEvents")
-    .Does (() =>
-{
-    Action<string> build = (filename) =>
-    {
-        var solution = System.IO.Path.Combine("./src/ReactiveUI.Events/", filename);
-
-        // UWP (project.json) needs to be restored before it will build.
-        RestorePackages (solution);
-
-        Information("Building {0}", solution);
-
-        MSBuild(solution, new MSBuildSettings()
-            .SetConfiguration("Release")
-            .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
-            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-            .SetVerbosity(Verbosity.Minimal)
-            .SetNodeReuse(false));
-
-        SourceLink(solution);
-    };
-
-    build("ReactiveUI.Events_Android.sln");
-    build("ReactiveUI.Events_iOS.sln");
-    build("ReactiveUI.Events_MAC.sln");
-    build("ReactiveUI.Events_XamForms.sln");
-
-    build("ReactiveUI.Events_NET45.sln");
-
-    build("ReactiveUI.Events_WPA81.sln");
-    build("ReactiveUI.Events_UWP.sln");
-});
-
-Task("PackageEvents")
-    .IsDependentOn("BuildEvents")
-    .Does (() =>
-{
-    Package("./src/ReactiveUI-Events.nuspec", "./src/ReactiveUI.Events");
-    Package("./src/ReactiveUI-Events-XamForms.nuspec", "./src/ReactiveUI.Events");
-});
-
-Task("BuildReactiveUI")
-    .IsDependentOn("RestorePackages")
-    .IsDependentOn("UpdateAssemblyInfo")
-    .Does (() =>
-{
-    Action<string> build = (solution) =>
-    {
-        Information("Building {0}", solution);
-
-        MSBuild(solution, new MSBuildSettings()
-            .SetConfiguration("Release")
-            .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
-            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-            .SetVerbosity(Verbosity.Minimal)
-            .SetNodeReuse(false));
-
-        SourceLink(solution);
-    };
-
-    build("./src/ReactiveUI.sln");
-});
-
-
-Task("PackageReactiveUI")
-    .IsDependentOn("BuildReactiveUI")
-    .IsDependentOn("RunUnitTests")
-    .Does (() =>
-{
-    // use pwd as as cake needs a basePath, even if making a meta-package that contains no files.
-    Package("./src/ReactiveUI.nuspec", "./");
-    Package("./src/ReactiveUI-Core.nuspec", "./src/ReactiveUI");
-
-    Package("./src/ReactiveUI-AndroidSupport.nuspec", "./src/ReactiveUI.AndroidSupport");
-    Package("./src/ReactiveUI-Blend.nuspec", "./src/ReactiveUI.Blend");
-    Package("./src/ReactiveUI-Testing.nuspec", "./src/ReactiveUI.Testing");
-    Package("./src/ReactiveUI-Winforms.nuspec", "./src/ReactiveUI.Winforms");
-    Package("./src/ReactiveUI-XamForms.nuspec", "./src/ReactiveUI.XamForms");
-});
-
 Task("UpdateAppVeyorBuildNumber")
-    .WithCriteria(() => isRunningOnAppVeyor)
+    .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
     .Does(() =>
 {
     AppVeyor.UpdateBuildVersion(buildVersion);
@@ -302,25 +121,110 @@ Task("UpdateAppVeyorBuildNumber")
     Warning("Build with version {0} already exists.", buildVersion);
 });
 
-Task("UpdateAssemblyInfo")
-    .IsDependentOn("UpdateAppVeyorBuildNumber")
+Task("BuildEventBuilder")
     .Does (() =>
 {
-    var file = "./src/CommonAssemblyInfo.cs";
+    var solution = "./src/EventBuilder.sln";
+    Information("Building {0} using {1}", solution, msBuildPath);
 
-    CreateAssemblyInfo(file, new AssemblyInfoSettings {
-        Product = "ReactiveUI",
-        Version = majorMinorPatch,
-        FileVersion = majorMinorPatch,
-        InformationalVersion = informationalVersion,
-        Copyright = "Copyright (c) ReactiveUI and contributors"
-    });
+    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
+
+    MSBuild(solution, new MSBuildSettings() {
+            ToolPath = msBuildPath,
+            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog")
+        }
+        .SetConfiguration("Release")
+        .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+        .SetVerbosity(Verbosity.Minimal)
+        .SetNodeReuse(false));
 });
 
-Task("RestorePackages").Does (() =>
+Task("GenerateEvents")
+    .IsDependentOn("BuildEventBuilder")
+    .Does (() =>
 {
-    RestorePackages("./src/EventBuilder.sln");
-    RestorePackages("./src/ReactiveUI.sln");
+    var eventBuilder = "./src/EventBuilder/bin/Release/net452/EventBuilder.exe";
+    var workingDirectory = "./src/EventBuilder/bin/Release/Net452";
+    var referenceAssembliesPath = VSWhereLatest().CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
+
+    Information(referenceAssembliesPath.ToString());
+
+    Action<string, string> generate = (string platform, string directory) =>
+    {
+        using(var process = StartAndReturnProcess(eventBuilder,
+            new ProcessSettings{
+                Arguments = new ProcessArgumentBuilder()
+                    .AppendSwitch("--platform","=", platform)
+                    .AppendSwitchQuoted("--reference","=", referenceAssembliesPath.ToString()),
+                WorkingDirectory = workingDirectory,
+                RedirectStandardOutput = true }))
+        {
+            // super important to ensure that the platform is always
+            // uppercase so that the events are written to the write
+            // filename as UNIX is case-sensitive - even though OSX
+            // isn't by default.
+            platform = platform.ToUpper();
+
+            Information("Generating events for '{0}'", platform);
+            
+            int timeout = 10 * 60 * 1000;   // x Minute, y Second, z Millisecond
+            process.WaitForExit(timeout);
+
+            var stdout = process.GetStandardOutput();
+
+            int success = 0;    // exit code aka %ERRORLEVEL% or $?
+            if (process.GetExitCode() != success)
+            {
+                Error("Failed to generate events for '{0}'", platform);
+
+                foreach (var line in stdout)
+                {
+                    Error(line);
+                }
+
+                Abort();
+            }
+
+            var filename = String.Format("Events_{0}.cs", platform);
+            var output = System.IO.Path.Combine(directory, filename);
+
+            FileWriteLines(output, stdout.ToArray());
+            Information("The events have been written to '{0}'", output);
+        }
+    };
+
+    generate("android", "src/ReactiveUI.Events/");
+    generate("ios", "src/ReactiveUI.Events/");
+    generate("mac", "src/ReactiveUI.Events/");
+    generate("uwp", "src/ReactiveUI.Events/");
+    generate("wpf", "src/ReactiveUI.Events.WPF/");
+    generate("xamforms", "src/ReactiveUI.Events.XamForms/");
+});
+
+Task("BuildReactiveUI")
+    .IsDependentOn("GenerateEvents")
+    .Does (() =>
+{
+    Action<string> build = (solution) =>
+    {
+        Information("Building {0} using {1}", solution, msBuildPath);
+
+        MSBuild(solution, new MSBuildSettings() {
+                ToolPath = msBuildPath,
+                ArgumentCustomization = args => args.Append("/bl:reactiveui.binlog")
+            }
+            .WithTarget("restore;build;pack")
+            .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
+            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+            .SetConfiguration("Release")
+            // Due to https://github.com/NuGet/Home/issues/4790 and https://github.com/NuGet/Home/issues/4337 we
+            // have to pass a version explicitly
+            .WithProperty("Version", nugetVersion.ToString())
+            .SetVerbosity(Verbosity.Minimal)
+            .SetNodeReuse(false));
+    };
+
+    build("./src/ReactiveUI.sln");
 });
 
 Task("RunUnitTests")
@@ -329,7 +233,7 @@ Task("RunUnitTests")
 {
     Action<ICakeContext> testAction = tool => {
 
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/Release/Net45/ReactiveUI.Tests_Net45.dll", new XUnit2Settings {
+        tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReportV1 = true,
             NoAppDomain = true
@@ -368,25 +272,40 @@ Task("UploadTestCoverage")
     });
 });
 
-Task("CodeSign")    
+Task("SignPackages")
     .WithCriteria(() => isRunningOnAppVeyor)
     .Does(() =>
 {
-    StartPowershellFile("./script/Sign-Package.ps1", args =>
-        {
-        });
+    StartPowershellFile("./SignPackages.ps1", args =>
+    {
+    });
 });
 
 
 Task("Package")
-    .IsDependentOn("PackageEvents")
-    .IsDependentOn("PackageReactiveUI")    
-    .IsDependentOn("CodeSign")
-    .IsDependentOn("UploadTestCoverage")    
+    .IsDependentOn("BuildReactiveUI")
+    .IsDependentOn("RunUnitTests")
+    .IsDependentOn("UploadTestCoverage")
+    .IsDependentOn("PinNuGetDependencies")
+    .IsDependentOn("SignPackages")
     .Does (() =>
 {
-
 });
+
+Task("PinNuGetDependencies")
+    .Does (() =>
+{
+    // only pin whitelisted packages.
+    foreach(var package in packageWhitelist)
+    {
+        // only pin the package which was created during this build run.
+        var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
+
+        // see https://github.com/cake-contrib/Cake.PinNuGetDependency
+        PinNuGetDependency(packagePath, "reactiveui");
+    }
+});
+
 
 Task("PublishPackages")
     .IsDependentOn("RunUnitTests")
@@ -499,12 +418,12 @@ Task("PublishRelease")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
+    .IsDependentOn("UpdateAppVeyorBuildNumber")
     .IsDependentOn("CreateRelease")
     .IsDependentOn("PublishPackages")
     .IsDependentOn("PublishRelease")
     .Does (() =>
 {
-
 });
 
 //////////////////////////////////////////////////////////////////////

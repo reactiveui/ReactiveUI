@@ -1,6 +1,11 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 using System;
 using System.Collections.Generic;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -32,7 +37,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.Create(() => Observables.Unit);
             var canExecute = fixture
                 .CanExecute
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             Assert.Equal(1, canExecute.Count);
             Assert.True(canExecute[0]);
@@ -45,7 +50,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject);
             var canExecute = fixture
                 .CanExecute
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             canExecuteSubject.OnNext(false);
             canExecuteSubject.OnNext(false);
@@ -66,7 +71,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject);
             var canExecute = fixture
                 .CanExecute
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             canExecuteSubject.OnNext(true);
             canExecuteSubject.OnNext(false);
@@ -85,7 +90,7 @@ namespace ReactiveUI.Tests
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 var canExecute = fixture
                     .CanExecute
-                    .CreateCollection();
+                    .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
                 fixture.Execute().Subscribe();
                 sched.AdvanceByMs(100);
@@ -120,7 +125,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject);
             var thrownExceptions = fixture
                 .ThrownExceptions
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
@@ -165,7 +170,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.Create(() => Observables.Unit);
             var isExecuting = fixture
                 .IsExecuting
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             Assert.Equal(1, isExecuting.Count);
             Assert.False(isExecuting[0]);
@@ -179,7 +184,7 @@ namespace ReactiveUI.Tests
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 var isExecuting = fixture
                     .IsExecuting
-                    .CreateCollection();
+                    .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
                 fixture.Execute().Subscribe();
                 sched.AdvanceByMs(100);
@@ -296,9 +301,9 @@ namespace ReactiveUI.Tests
         {
             var parameters = new List<int>();
             var fixture = ReactiveCommand.CreateFromObservable<int, Unit>(param => {
-                    parameters.Add(param);
-                    return Observables.Unit;
-                });
+                parameters.Add(param);
+                return Observables.Unit;
+            });
 
             fixture.Execute(1).Subscribe();
             fixture.Execute(42).Subscribe();
@@ -332,7 +337,7 @@ namespace ReactiveUI.Tests
             var num = 0;
             var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Return(num));
             var results = fixture
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             num = 1;
             fixture.Execute().Subscribe();
@@ -352,7 +357,7 @@ namespace ReactiveUI.Tests
         {
             var fixture = ReactiveCommand.CreateFromObservable(() => new[] { 1, 2, 3 }.ToObservable());
             var results = fixture
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture.Execute().Subscribe();
 
@@ -405,7 +410,7 @@ namespace ReactiveUI.Tests
                 var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), sched);
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 var executed = fixture
-                    .CreateCollection();
+                    .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
                 var sub1 = fixture.Execute().Subscribe();
                 var sub2 = fixture.Execute().Subscribe();
@@ -447,9 +452,9 @@ namespace ReactiveUI.Tests
         {
             var executed = false;
             ICommand fixture = ReactiveCommand.Create(() => {
-                    executed = true;
-                    return Observables.Unit;
-                });
+                executed = true;
+                return Observables.Unit;
+            });
 
             fixture.Execute(null);
             Assert.True(executed);
@@ -488,7 +493,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched => {
                 var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: sched);
                 var results = fixture
-                    .CreateCollection();
+                    .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
                 fixture.Execute().Subscribe();
                 Assert.Empty(results);
@@ -504,7 +509,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
             var thrownExceptions = fixture
                 .ThrownExceptions
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture
                 .Execute()
@@ -522,7 +527,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => { throw new InvalidOperationException("oops"); });
             var thrownExceptions = fixture
                 .ThrownExceptions
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture
                 .Execute()
@@ -540,10 +545,10 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
             var canExecute = fixture
                 .CanExecute
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
             var thrownExceptions = fixture
                 .ThrownExceptions
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture
                 .Execute()
@@ -565,7 +570,7 @@ namespace ReactiveUI.Tests
         {
             var fixture = ReactiveCommand.CreateFromTask(() => Task.FromResult(13));
             var results = fixture
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture.Execute().Subscribe();
 
@@ -578,7 +583,7 @@ namespace ReactiveUI.Tests
         {
             var fixture = ReactiveCommand.CreateFromTask<int, int>(param => Task.FromResult(param + 1));
             var results = fixture
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture.Execute(3).Subscribe();
             fixture.Execute(41).Subscribe();
@@ -986,7 +991,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateCombined(childCommands);
             var canExecute = fixture
                 .CanExecute
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             Assert.Equal(1, canExecute.Count);
             Assert.False(canExecute[0]);
@@ -1001,7 +1006,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateCombined(childCommands, Observables.False);
             var canExecute = fixture
                 .CanExecute
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             Assert.Equal(1, canExecute.Count);
             Assert.False(canExecute[0]);
@@ -1017,7 +1022,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateCombined(childCommands, canExecuteSubject);
             var thrownExceptions = fixture
                 .ThrownExceptions
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
@@ -1035,7 +1040,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateCombined(childCommands);
             var thrownExceptions = fixture
                 .ThrownExceptions
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
@@ -1054,16 +1059,16 @@ namespace ReactiveUI.Tests
 
             var isExecuting = fixture
                 .IsExecuting
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
             var child1IsExecuting = child1
                 .IsExecuting
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
             var child2IsExecuting = child2
                 .IsExecuting
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
             var child3IsExecuting = child3
                 .IsExecuting
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture.Execute().Subscribe();
 
@@ -1097,7 +1102,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateCombined(childCommands);
 
             var results = fixture
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture.Execute().Subscribe();
 
@@ -1116,7 +1121,7 @@ namespace ReactiveUI.Tests
                 var childCommands = new[] { child1, child2 };
                 var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);
                 var results = fixture
-                    .CreateCollection();
+                    .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
                 fixture.Execute().Subscribe();
                 Assert.Empty(results);
@@ -1135,7 +1140,7 @@ namespace ReactiveUI.Tests
             var fixture = ReactiveCommand.CreateCombined(childCommands);
             var thrownExceptions = fixture
                 .ThrownExceptions
-                .CreateCollection();
+                .CreateCollection(scheduler: ImmediateScheduler.Instance);
 
             fixture
                 .Execute()

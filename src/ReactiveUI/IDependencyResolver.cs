@@ -1,3 +1,7 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,8 +13,8 @@ namespace ReactiveUI
     public static class DependencyResolverMixins
     {
         /// <summary>
-        /// This method allows you to initialize resolvers with the default 
-        /// ReactiveUI types. All resolvers used as the default 
+        /// This method allows you to initialize resolvers with the default
+        /// ReactiveUI types. All resolvers used as the default
         /// Locator.Current
         /// </summary>
         /// <param name="resolver">The resolver to initialize.</param>
@@ -18,7 +22,8 @@ namespace ReactiveUI
         {
             var extraNs = new[] {
                 "ReactiveUI.XamForms",
-                "ReactiveUI.Winforms", 
+                "ReactiveUI.Winforms",
+                "ReactiveUI.Wpf"
             };
 
             // Set up the built-in registration
@@ -52,16 +57,6 @@ namespace ReactiveUI
                     registerType(resolver, ti, ivf, contract);
                 }
             }
-        }
-
-        public static void Register<TService>(this IMutableDependencyResolver resolver, Func<object> factory, string contract = null)
-        {
-            resolver.Register(factory, typeof(TService), contract);
-        }
-
-        public static void RegisterConstant<TService>(this IMutableDependencyResolver resolver, TService value, string contract = null)
-        {
-            resolver.RegisterConstant(value, typeof(TService), contract);
         }
 
         static void registerType(IMutableDependencyResolver resolver, TypeInfo ti, Type serviceType, string contract)
