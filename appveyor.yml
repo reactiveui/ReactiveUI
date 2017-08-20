@@ -16,18 +16,8 @@
     NUGET_APIKEY:
       secure: cANUegIQhgeZ7Yg4sosXNGmFF33i77nTriEjaeniQ4S26btcwYsopOO3qXKlbrvf
   init:
-  - mkdir %ANDROID_HOME%"
-  - cd "%ANDROID_HOME%"
-  - appveyor DownloadFile "https://dl.google.com/android/repository/tools_r25.2.3-windows.zip"
-  - 7z x "tools_r25.2.3-windows.zip" > nul
   - cd "C:\projects\reactiveui"
   install: 
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-25.0.2
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-25
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
   build_script:
   - ./build.cmd
   cache:
@@ -35,9 +25,10 @@
   - src\packages -> **\packages.config
   - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
-  - path: artifacts/*
+  - path: artifacts/*.nupkg
   - path: '**/bin/*'
-  - path: src/ReactiveUI.Events/Events_*.cs
+  - path: '**/*.binlog'
+  - path: src/ReactiveUI.**/Events_*.cs
   test: off
   
 # configuration for "develop" branch
@@ -55,18 +46,8 @@
     NUGET_APIKEY:
       secure: KTszzEEs33kbeqkpGGMvM58elvNLeTJhytpv7s9fPHoY4ZZmk5fMwofKDtK2lhno
   init:
-  - mkdir %ANDROID_HOME%"
-  - cd "%ANDROID_HOME%"
-  - appveyor DownloadFile "https://dl.google.com/android/repository/tools_r25.2.3-windows.zip"
-  - 7z x "tools_r25.2.3-windows.zip" > nul
   - cd "C:\projects\reactiveui"
   install: 
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-25.0.2
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-25
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
   build_script:
   - ./build.cmd
   cache:
@@ -74,7 +55,8 @@
   - src\packages -> **\packages.config
   - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
-  - path: artifacts/*
+  - path: artifacts/*.nupkg
   - path: '**/bin/*'
-  - path: src/ReactiveUI.Events/Events_*.cs
+  - path: '**/*.binlog'
+  - path: src/ReactiveUI.**/Events_*.cs
   test: off
