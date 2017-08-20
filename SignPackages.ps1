@@ -3,7 +3,7 @@ $currentDirectory = split-path $MyInvocation.MyCommand.Definition
 # See if we have the ClientSecret available
 if([string]::IsNullOrEmpty($env:SIGNCLIENT_SECRET)){
 	Write-Host "Client Secret not found, not signing packages"
-	return;
+	exit 1;
 }
 
 # Setup Variables we need to pass into the sign client tool
