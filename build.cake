@@ -273,7 +273,8 @@ Task("UploadTestCoverage")
 });
 
 Task("SignPackages")
-    .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
+    .WithCriteria(() => !local)
+    .WithCriteria(() => !isPullRequest)
     .Does(() =>
 {
     StartPowershellFile("./SignPackages.ps1", args =>
