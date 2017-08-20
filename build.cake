@@ -212,7 +212,7 @@ Task("BuildReactiveUI")
                 ToolPath = msBuildPath,
                 ArgumentCustomization = args => args.Append("/bl:reactiveui.binlog")
             }
-            .WithTarget("restore;pack")
+            .WithTarget("restore;build;pack")
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
