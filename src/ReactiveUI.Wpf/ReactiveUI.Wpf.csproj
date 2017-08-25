@@ -64,7 +64,6 @@
     <Compile Include="..\ReactiveUI\Platforms\windows-common\RoutedViewHost.cs" Link="RoutedViewHost.cs" />
     <Compile Include="..\ReactiveUI\Platforms\windows-common\ViewModelViewHost.cs" Link="ViewModelViewHost.cs" />
     <Compile Include="Attributes.cs" />
-    <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="TransitioningContentControl.cs" />
     <Compile Include="WpfAutoSuspendHelper.cs" />
