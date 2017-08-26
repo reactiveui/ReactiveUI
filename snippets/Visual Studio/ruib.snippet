@@ -2,14 +2,12 @@
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
   <CodeSnippet Format="1.0.0">
     <Header>
+      <Title>ReactiveUI Bind</Title>
+      <Description>Inserts a RactiveUI Bind</Description>
+      <Shortcut>ruib</Shortcut>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
       </SnippetTypes>
-      <Title>ReactiveUI Bind</Title>
-      <Author>Jon Stødle</Author>
-      <Description>Inserts a RactiveUI Bind</Description>
-      <HelpUrl></HelpUrl>
-      <Shortcut>ruib</Shortcut>
     </Header>
     <Snippet>
       <Declarations>
@@ -17,15 +15,11 @@
           <ID>vmProperty</ID>
           <ToolTip>Property on view model</ToolTip>
           <Default>Property</Default>
-          <Function>
-          </Function>
         </Literal>
         <Literal Editable="true">
           <ID>viewProperty</ID>
           <ToolTip>Property on control in view</ToolTip>
           <Default>Control.Property</Default>
-          <Function>
-          </Function>
         </Literal>
       </Declarations>
       <Code Language="csharp" Delimiter="$"><![CDATA[this.Bind(ViewModel, vm => vm.$vmProperty$, v => v.$viewProperty$).DisposeWith(d);$end$]]>
