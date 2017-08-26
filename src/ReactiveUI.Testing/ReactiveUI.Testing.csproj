@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Testing</AssemblyName>
+    <RootNamespace>ReactiveUI.Testing</RootNamespace>
+    <Description>A library to aid in writing unit tests for ReactiveUI projects</Description>
+    <PackageId>reactiveui-testing</PackageId>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="3.1.0" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+</Project>
