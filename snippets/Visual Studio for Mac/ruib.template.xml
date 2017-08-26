@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeTemplates version="3.0">
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>C#</_Group>
+      <Version />
+      <MimeType>text/x-csharp</MimeType>
+      <Shortcut>ruib</Shortcut>
+      <_Description>Inserts a RactiveUI Bind</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="vmProperty">
+        <Default>Property</Default>
+        <_ToolTip>Property on view model</_ToolTip>
+      </Variable>
+      <Variable name="viewProperty">
+        <Default>Control.Property</Default>
+        <_ToolTip>Property on control in view</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[this.Bind(ViewModel, vm => vm.$vmProperty$, v => v.$viewProperty$).DisposeWith(d);]]></Code>
+  </CodeTemplate>
+</CodeTemplates>
