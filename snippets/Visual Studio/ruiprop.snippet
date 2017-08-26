@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Title>ReactiveUI property</Title>
+      <Author>Jon Stødle</Author>
+      <Description>Inserts a ReactiveUI property</Description>
+      <HelpUrl></HelpUrl>
+      <Shortcut>ruiprop</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>type</ID>
+          <ToolTip>Type of field and property</ToolTip>
+          <Default>string</Default>
+          <Function>
+          </Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>fieldName</ID>
+          <ToolTip>Name of backing field</ToolTip>
+          <Default>myField</Default>
+          <Function>
+          </Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>propertyName</ID>
+          <ToolTip>Name of property</ToolTip>
+          <Default>myProperty</Default>
+          <Function>
+          </Function>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp" Delimiter="$"><![CDATA[public $type$ $propertyName$ { get => $fieldName$; set => this.RaiseAndSetIfChanged(ref $fieldName$, value); }$end$]]>
+			</Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

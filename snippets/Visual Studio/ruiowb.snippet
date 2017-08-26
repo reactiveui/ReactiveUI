@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Title>ReactiveUI OneWayBind</Title>
+      <Author>Jon Stødle</Author>
+      <Description>Inserts a RactiveUI OneWayBind</Description>
+      <HelpUrl></HelpUrl>
+      <Shortcut>ruiowb</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>vmProperty</ID>
+          <ToolTip>Property on viewmodel</ToolTip>
+          <Default>Property</Default>
+          <Function>
+          </Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>viewProperty</ID>
+          <ToolTip>Property on control in view</ToolTip>
+          <Default>Control.Property</Default>
+          <Function>
+          </Function>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp" Delimiter="$"><![CDATA[this.OneWayBind(ViewModel, vm => vm.$vmProperty$, v => v.$viewProperty$).DisposeWith(d);$end$]]>
+			</Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
