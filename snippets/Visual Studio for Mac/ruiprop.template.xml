@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeTemplates version="3.0">
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>C#</_Group>
+      <Version />
+      <MimeType>text/x-csharp</MimeType>
+      <Shortcut>ruiprop</Shortcut>
+      <_Description>Inserts a ReactiveUI property</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="type">
+        <Default>string</Default>
+        <_ToolTip>Type of field and property</_ToolTip>
+      </Variable>
+      <Variable name="propertyName">
+        <Default>myProperty</Default>
+        <_ToolTip>Name of property</_ToolTip>
+      </Variable>
+      <Variable name="fieldName">
+        <Default>myField</Default>
+        <_ToolTip>Name of backing field</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[public $type$ $propertyName$ { get => $fieldName$; set => this.RaiseAndSetIfChanged(ref $fieldName$, value); }]]></Code>
+  </CodeTemplate>
+</CodeTemplates>
