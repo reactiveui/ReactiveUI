@@ -11,6 +11,8 @@ exemptLabels:
   - bug
   - cla-signed
   - cla-already-signed
+  - proposal
+  - ¯\_(ツ)_/¯
 
 # Label to use when marking an issue as stale
 staleLabel: waiting-for-response-or-contribution
