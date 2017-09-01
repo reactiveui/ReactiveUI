@@ -2,12 +2,13 @@ $currentDirectory = split-path $MyInvocation.MyCommand.Definition
 
 # See if we have the ClientSecret available
 if([string]::IsNullOrEmpty($env:SIGNCLIENT_SECRET)){
-    Throw "Client Secret not found, not signing packages";
+    Write-Error "Client Secret not found, not signing packages";
+    [System.Environment]::Exit(1);  
 }
 
 # Setup Variables we need to pass into the sign client tool
 
-$appSettings = "SignPackages.json"
+$appSettings = "$currentDirectory\SignPackages.json"
 
 $appPath = "$currentDirectory\packages\SignClient\tools\SignClient.dll"
 
