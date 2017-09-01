@@ -18,6 +18,8 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
+  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>ReactiveUI - Command</Title>
+			<Shortcut>ruicommand</Shortcut>
+			<Description>Code snippet for a ReactiveUI Command</Description>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>type</ID>
+					<ToolTip>Command type</ToolTip>
+					<Default>object</Default>
+				</Literal>
+				<Literal>
+					<ID>command</ID>
+					<ToolTip>Command name</ToolTip>
+					<Default>DoSomething</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp">
+				<![CDATA[public ReactiveCommand<$type$> $command$ { get; private set; }$end$]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

@@ -1,4 +1,6 @@
-***Note*: for support questions, please ask on StackOverflow: https://stackoverflow.com/questions/tagged/reactiveui . This repository's issues are reserved for feature requests and bug reports.**
+_We will close your issue without comment if you delete or do not fill out the issue checklist and provide ALL the requested information. This repository's issues are reserved for feature requests and bug reports. For support questions, please ask on StackOverflow: https://stackoverflow.com/questions/tagged/reactiveui_
+
+_Please delete this note before pressing the submit button_
 
 **Do you want to request a *feature* or report a *bug*?**
 
@@ -20,7 +22,7 @@
 
 
 
-**Which versions of ReactiveUI, and which platform / OS are affected by this issue? Did this work in previous versions of ReativeUI? Please also test with the latest stable and snapshot (http://docs.reactiveui.net/en/contributing/snapshot/index.html) versions.**
+**Which versions of ReactiveUI, and which platform / OS are affected by this issue? Did this work in previous versions of ReativeUI? Please also test with the [latest stable](https://www.nuget.org/profiles/reactiveui) and [development snapshot](https://reactiveui.net/docs/getting-started/installation/nuget-packages/development-package-feed)**
 
 
 
