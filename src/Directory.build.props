@@ -18,6 +18,10 @@
   </PropertyGroup>
   
   <ItemGroup>
+      <None Include="..\init.ps1" Pack="true" PackagePath="tools\init.ps1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.1.0-beta.69" PrivateAssets="All" />
   </ItemGroup>
 
