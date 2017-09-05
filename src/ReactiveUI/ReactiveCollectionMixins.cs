@@ -1,7 +1,8 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -14,7 +15,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Splat;
 
 namespace ReactiveUI
 {
@@ -116,7 +116,6 @@ namespace ReactiveUI
             base.RemoveAt(index);
         }
 
-#if !SILVERLIGHT
         public override void Move(int oldIndex, int newIndex)
         {
             throw new InvalidOperationException(readonlyExceptionMessage);
@@ -126,7 +125,6 @@ namespace ReactiveUI
         {
             base.Move(oldIndex, newIndex);
         }
-#endif
 
         public override void RemoveRange(int index, int count)
         {
@@ -316,7 +314,6 @@ namespace ReactiveUI
                                 internalReplace(currentDestinationIndex, newItem);
                             }
                         } else {
-#if !SILVERLIGHT
                             // The change is forcing us to reorder. We'll use a move operation if the item hasn't 
                             // changed (ie it's the same object) and we'll implement it as a remove and add if the
                             // object has changed (ie the selector is not an identity function).
@@ -337,10 +334,6 @@ namespace ReactiveUI
                                 internalRemoveAt(currentDestinationIndex);
                                 internalInsertAndMap(sourceIndex, newItem);
                             }
-#else
-                            internalRemoveAt(currentDestinationIndex);
-                            internalInsertAndMap(sourceIndex, newItem);
-#endif
                         }
                     }
                 }
@@ -418,7 +411,6 @@ namespace ReactiveUI
                 return;
             }
 
-#if !SILVERLIGHT
             if (args.Action == NotifyCollectionChangedAction.Move) {
 
                 Debug.Assert(args.OldItems.Count == args.NewItems.Count);
@@ -473,7 +465,6 @@ namespace ReactiveUI
 
                 return;
             }
-#endif
 
             if (args.OldItems != null) {
 
