@@ -18,10 +18,10 @@ namespace ReactiveUI.Winforms
     /// collection; this method is useful for creating ViewModel collections
     /// that are automatically updated when the respective Model collection is updated.
     /// </summary>
-    public interface IReactiveDerivedBindingList<T> : IReactiveDerivedList<T>, IBindingList {}
+    public interface IReactiveDerivedBindingList<T> : IReactiveDerivedList<T>, IBindingList { }
 
-    class ReactiveDerivedBindingList<TSource, TValue> : 
-	    ReactiveDerivedCollection<TSource, TValue>, IReactiveDerivedBindingList<TValue>
+    class ReactiveDerivedBindingList<TSource, TValue> :
+        ReactiveDerivedCollection<TSource, TValue>, IReactiveDerivedBindingList<TValue>
     {
         public ReactiveDerivedBindingList(
             IEnumerable<TSource> source,
@@ -30,7 +30,7 @@ namespace ReactiveUI.Winforms
             Func<TValue, TValue, int> orderer,
             Action<TValue> removed,
             IObservable<Unit> signalReset)
-            : base(source, selector, filter, orderer, removed, signalReset, Scheduler.Immediate) {}
+            : base(source, selector, filter, orderer, removed, signalReset, Scheduler.Immediate) { }
 
         protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
@@ -109,7 +109,7 @@ namespace ReactiveUI.Winforms
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
-        /// <param name="onRemoved">An action that is called on each item when
+        /// <param name="removed">An action that is called on each item when
         /// it is removed.</param>
         /// <param name="filter">A filter to determine whether to exclude items 
         /// in the derived collection.</param>
@@ -118,6 +118,7 @@ namespace ReactiveUI.Winforms
         /// <param name="signalReset">When this Observable is signalled, 
         /// the derived collection will be manually 
         /// reordered/refiltered.</param>
+        /// <param name="This">The source collection to follow</param>
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
@@ -161,6 +162,7 @@ namespace ReactiveUI.Winforms
         /// <param name="signalReset">When this Observable is signalled, 
         /// the derived collection will be manually 
         /// reordered/refiltered.</param>
+        /// <param name="This">The source collection to follow</param>
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
@@ -187,12 +189,13 @@ namespace ReactiveUI.Winforms
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
-        /// /// <param name="onRemoved">An action that is called on each item when
+        /// <param name="removed">An action that is called on each item when
         /// it is removed.</param>
         /// <param name="filter">A filter to determine whether to exclude items 
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
+        /// <param name="This">The source collection to follow</param>
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
@@ -223,6 +226,7 @@ namespace ReactiveUI.Winforms
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
+        /// <param name="This">The source collection to follow</param>
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
