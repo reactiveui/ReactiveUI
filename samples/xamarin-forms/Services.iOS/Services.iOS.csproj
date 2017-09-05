@@ -60,5 +60,8 @@
       <Version>1.0.2</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Services.iOS.licenseheader" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

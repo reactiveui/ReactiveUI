@@ -1,4 +1,10 @@
 <!--
+Licensed to the .NET Foundation under one or more agreements.
+The .NET Foundation licenses this file to you under the MS-PL license.
+See the LICENSE file in the project root for more information.
+-->
+
+<!--
     This file contains Runtime Directives used by .NET Native. The defaults here are suitable for most
     developers. However, you can modify these parameters to modify the behavior of the .NET Native
     optimizer.
