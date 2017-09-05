@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Serilog;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -29,6 +30,11 @@ namespace App.UWP
         public App()
         {
             this.InitializeComponent();
+
+            var log = new LoggerConfiguration()
+                .Enrich.WithThreadId()
+                .CreateLogger();
+
             this.Suspending += OnSuspending;
         }
 

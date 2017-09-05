@@ -1,4 +1,5 @@
 ﻿using Foundation;
+using Serilog;
 using UIKit;
 
 namespace App.iOS
@@ -26,6 +27,11 @@ namespace App.iOS
 
             // make the window visible
             Window.MakeKeyAndVisible();
+
+            var log = new LoggerConfiguration()
+                .Enrich.WithThreadId()
+                .WriteTo.NSLog()
+                .CreateLogger();
 
             return true;
         }

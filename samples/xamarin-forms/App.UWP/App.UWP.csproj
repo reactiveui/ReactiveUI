@@ -127,8 +127,26 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="akavache">
+      <Version>6.0.0-alpha0038</Version>
+    </PackageReference>
+    <PackageReference Include="ClrHeapAllocationAnalyzer">
+      <Version>1.0.0.8</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>5.2.3</Version>
+      <Version>5.4.0</Version>
+    </PackageReference>
+    <PackageReference Include="reactiveui">
+      <Version>8.0.0-alpha0069</Version>
+    </PackageReference>
+    <PackageReference Include="reactiveui-events">
+      <Version>8.0.0-alpha0062</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Enrichers.Thread">
+      <Version>3.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers">
+      <Version>1.0.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
