@@ -2,23 +2,13 @@
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
+using Splat;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Reflection;
-using Splat;
-
-#if NETFX_CORE
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Data;
-#else
-using System.Windows;
-using System.Windows.Data;
-#endif
 
 namespace ReactiveUI
 {
@@ -65,7 +55,6 @@ namespace ReactiveUI
                 return ret.GetNotificationForProperty(sender, expression, beforeChanged);
             }
 
-#if WINDOWS_UWP
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var handler = new DependencyPropertyChangedCallback((o, e) => {
                     subj.OnNext(new ObservedChange<object, object>(sender, expression));
@@ -74,34 +63,17 @@ namespace ReactiveUI
                 var token = depSender.RegisterPropertyChangedCallback(dependencyProperty, handler);
                 return Disposable.Create(() => depSender.UnregisterPropertyChangedCallback(dependencyProperty, token));
             });
-#else
-            var dpAndSubj = createAttachedProperty(type, propertyName);
-
-            return Observable.Create<IObservedChange<object, object>>(obs => {
-                BindingOperations.SetBinding(depSender, dpAndSubj.Item1,
-                    new Binding() { Source = depSender, Path = new PropertyPath(propertyName) });
-
-                var disp = dpAndSubj.Item2
-                    .Where(x => x == sender)
-                    .Select(x => new ObservedChange<object, object>(x, expression))
-                    .Subscribe(obs);
-
-                // ClearBinding calls ClearValue http://stackoverflow.com/questions/1639219/clear-binding-in-silverlight-remove-data-binding-from-setbinding
-                return new CompositeDisposable(Disposable.Create(() => depSender.ClearValue(dpAndSubj.Item1)), disp);
-            });
-#endif
         }
 
         Func<DependencyProperty> getDependencyPropertyFetcher(Type type, string propertyName)
         {
             var typeInfo = type.GetTypeInfo();
-#if NETFX_CORE
+
             // Look for the DependencyProperty attached to this property name
             var pi = actuallyGetProperty(typeInfo, propertyName + "Property");
             if (pi != null) {
                 return () => (DependencyProperty)pi.GetValue(null);
             }
-#endif
 
             var fi = actuallyGetField(typeInfo, propertyName + "Property");
             if (fi != null) {
@@ -136,30 +108,5 @@ namespace ReactiveUI
 
             return null;
         }
-
-#if !WINDOWS_UWP
-        static readonly Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>> attachedListener =
-            new Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>>();
-
-        Tuple<DependencyProperty, Subject<object>> createAttachedProperty(Type type, string propertyName)
-        {
-            var pair = Tuple.Create(type, propertyName);
-            if (attachedListener.ContainsKey(pair)) return attachedListener[pair];
-
-            var subj = new Subject<object>();
-
-            // NB: There is no way to unregister an attached property, 
-            // we just have to leak it. Luckily it's per-type, so it's
-            // not *that* bad.
-            var dp = DependencyProperty.RegisterAttached(
-                "ListenAttached" + propertyName + this.GetHashCode().ToString("{0:x}"),
-                typeof(object), type,
-                new PropertyMetadata(null, (o, e) => subj.OnNext(o)));
-
-            var ret = Tuple.Create(dp, subj);
-            attachedListener[pair] = ret;
-            return ret;
-        }
-#endif
     }
 }
