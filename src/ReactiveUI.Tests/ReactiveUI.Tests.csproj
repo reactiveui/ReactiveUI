@@ -13,6 +13,8 @@
     <PackageReference Include="xunit.runner.console" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
     <PackageReference Include="Xunit.StaFact" Version="0.2.3-beta" />
+    <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="[3.1.1,4)" />
   </ItemGroup>
 
   <ItemGroup>
