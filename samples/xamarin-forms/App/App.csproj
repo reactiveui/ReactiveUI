@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="akavache" Version="6.0.0-alpha0038" />
+    <PackageReference Include="reactiveui" Version="8.0.0-alpha0069" />
+    <PackageReference Include="Splat" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Services.Connected\Services.Connected.csproj" />
+    <ProjectReference Include="..\Services.Disconnected\Services.Disconnected.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
+  </ItemGroup>
+
+
+</Project>
