@@ -242,3 +242,5 @@ src/ReactiveUI.Events*/Events_*.cs
 
 # macOS
 .DS_Store
+
+src/*.Tests/API/*.received.txt
