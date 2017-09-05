@@ -1,3 +1,7 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 //////////////////////////////////////////////////////////////////////
 // ADDINS
 //////////////////////////////////////////////////////////////////////
@@ -5,6 +9,7 @@
 #addin "Cake.FileHelpers"
 #addin "Cake.Coveralls"
 #addin "Cake.PinNuGetDependency"
+#addin "Cake.Powershell"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -15,7 +20,7 @@
 #tool "coveralls.io"
 #tool "OpenCover"
 #tool "ReportGenerator"
-#tool nuget:?package=vswhere
+#tool "nuget:?package=vswhere"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -47,6 +52,8 @@ var githubOwner = "reactiveui";
 var githubRepository = "reactiveui";
 var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubRepository);
 
+var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+
 // Version
 var gitVersion = GitVersion();
 var majorMinorPatch = gitVersion.MajorMinorPatch;
@@ -57,7 +64,16 @@ var buildVersion = gitVersion.FullBuildMetaData;
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
-var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" };
+var packageWhitelist = new[] { "ReactiveUI-Testing",
+                               "ReactiveUI-Events",
+                               "ReactiveUI-Events-WPF",
+                               "ReactiveUI-Events-XamForms",
+                               "ReactiveUI",
+                               "ReactiveUI-AndroidSupport",
+                               "ReactiveUI-Blend",
+                               "ReactiveUI-WPF",
+                               "ReactiveUI-Winforms",
+                               "ReactiveUI-XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -109,10 +125,14 @@ Task("BuildEventBuilder")
     .Does (() =>
 {
     var solution = "./src/EventBuilder.sln";
+    Information("Building {0} using {1}", solution, msBuildPath);
 
     NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
 
-    MSBuild(solution, new MSBuildSettings()
+    MSBuild(solution, new MSBuildSettings() {
+            ToolPath = msBuildPath,
+            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog")
+        }
         .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
@@ -123,8 +143,8 @@ Task("GenerateEvents")
     .IsDependentOn("BuildEventBuilder")
     .Does (() =>
 {
-    var eventBuilder = "./src/EventBuilder/bin/Release/EventBuilder.exe";
-    var workingDirectory = "./src/EventBuilder/bin/Release";
+    var eventBuilder = "./src/EventBuilder/bin/Release/net452/EventBuilder.exe";
+    var workingDirectory = "./src/EventBuilder/bin/Release/Net452";
     var referenceAssembliesPath = VSWhereLatest().CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
     Information(referenceAssembliesPath.ToString());
@@ -146,7 +166,7 @@ Task("GenerateEvents")
             platform = platform.ToUpper();
 
             Information("Generating events for '{0}'", platform);
-
+            
             int timeout = 10 * 60 * 1000;   // x Minute, y Second, z Millisecond
             process.WaitForExit(timeout);
 
@@ -156,6 +176,12 @@ Task("GenerateEvents")
             if (process.GetExitCode() != success)
             {
                 Error("Failed to generate events for '{0}'", platform);
+
+                foreach (var line in stdout)
+                {
+                    Error(line);
+                }
+
                 Abort();
             }
 
@@ -170,8 +196,8 @@ Task("GenerateEvents")
     generate("android", "src/ReactiveUI.Events/");
     generate("ios", "src/ReactiveUI.Events/");
     generate("mac", "src/ReactiveUI.Events/");
-    generate("net45", "src/ReactiveUI.Events/");    
     generate("uwp", "src/ReactiveUI.Events/");
+    generate("wpf", "src/ReactiveUI.Events.WPF/");
     generate("xamforms", "src/ReactiveUI.Events.XamForms/");
 });
 
@@ -181,14 +207,13 @@ Task("BuildReactiveUI")
 {
     Action<string> build = (solution) =>
     {
-        Information("Building {0}", solution);
-
-        FilePath msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+        Information("Building {0} using {1}", solution, msBuildPath);
 
         MSBuild(solution, new MSBuildSettings() {
-                ToolPath= msBuildPath
+                ToolPath = msBuildPath,
+                ArgumentCustomization = args => args.Append("/bl:reactiveui.binlog")
             }
-            .WithTarget("restore;pack")
+            .WithTarget("restore;build;pack")
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
@@ -247,11 +272,22 @@ Task("UploadTestCoverage")
     });
 });
 
+Task("SignPackages")
+    .WithCriteria(() => !local)
+    .WithCriteria(() => !isPullRequest)
+    .Does(() =>
+{
+    StartPowershellFile("./SignPackages.ps1", args =>
+    {
+    });
+});
+
 Task("Package")
     .IsDependentOn("BuildReactiveUI")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("UploadTestCoverage")
     .IsDependentOn("PinNuGetDependencies")
+    .IsDependentOn("SignPackages")
     .Does (() =>
 {
 });
@@ -274,6 +310,7 @@ Task("PinNuGetDependencies")
 Task("PublishPackages")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("Package")
+    .IsDependentOn("SignPackages")
     .WithCriteria(() => !local)
     .WithCriteria(() => !isPullRequest)
     .WithCriteria(() => isRepository)

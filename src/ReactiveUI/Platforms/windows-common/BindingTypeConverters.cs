@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using System;
 #if NETFX_CORE
 using Windows.UI.Xaml;
 #else
@@ -12,7 +16,7 @@ namespace ReactiveUI
     {
         None = 0,
         Inverse = 1 << 1,
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
         UseHidden = 1 << 2,
 #endif
     }
@@ -38,7 +42,7 @@ namespace ReactiveUI
 
             if (toType == typeof (Visibility)) {
                 var fromAsBool = hint.HasFlag(BooleanToVisibilityHint.Inverse) ? !((bool) from) : (bool) from;
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
                 var notVisible = hint.HasFlag(BooleanToVisibilityHint.UseHidden) ? Visibility.Hidden : Visibility.Collapsed;
 #else
                 var notVisible = Visibility.Collapsed;

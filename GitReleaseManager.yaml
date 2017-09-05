@@ -25,6 +25,10 @@ issue-labels-include:
 - documentation
 issue-labels-exclude:
 - Build
+- cla-already-signed
+- cla-not-required
+- cla-required
+- cla-signed
 issue-labels-alias:
     - name:    reactiveui-core
       header:  All Platforms

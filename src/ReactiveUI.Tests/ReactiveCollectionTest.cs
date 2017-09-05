@@ -1,3 +1,10 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
+using Splat;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,14 +13,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
-using Microsoft.Reactive.Testing;
-using ReactiveUI.Testing;
-using Splat;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -228,7 +233,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(before_removed.Count, removed.Count);
             removed.AssertAreEqual(before_removed);
         }
-#if !SILVERLIGHT
+
         [Fact]
         public void MoveShouldBehaveAsObservableCollectionMove()
         {
@@ -272,7 +277,7 @@ namespace ReactiveUI.Tests
                 }
             }
         }
-#endif
+
         [Fact]
         public void ReactiveCollectionIsRoundTrippable()
         {
@@ -692,7 +697,6 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, derived.Count);
         }
 
-#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionMoveNotificationSmokeTest()
         {
@@ -714,9 +718,7 @@ namespace ReactiveUI.Tests
                 }
             }
         }
-#endif
 
-#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldUnderstandMoveSignals()
         {
@@ -774,9 +776,7 @@ namespace ReactiveUI.Tests
             Assert.True(source.SequenceEqual(new[] { "a", "b", "c", "d", "e", "f", }));
             Assert.True(derived.SequenceEqual(source));
         }
-#endif
 
-#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldUnderstandNestedMoveSignals()
         {
@@ -803,9 +803,7 @@ namespace ReactiveUI.Tests
             Assert.True(source.OrderByDescending(x => x).SequenceEqual(reverseNested));
             Assert.True(source.OrderBy(x => x).SequenceEqual(sortedNested));
         }
-#endif
 
-#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldUnderstandMoveEvenWhenSorted()
         {
@@ -858,9 +856,7 @@ namespace ReactiveUI.Tests
                 sourceNotifications.Clear();
             }
         }
-#endif
 
-#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldUnderstandDummyMoveSignal()
         {
@@ -888,9 +884,7 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, derivedNotification.Count);
         }
-#endif
 
-#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldNotSignalRedundantMoveSignals()
         {
@@ -909,9 +903,7 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, derivedNotification.Count);
         }
-#endif
 
-#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldHandleMovesWhenOnlyContainingOneItem()
         {
@@ -933,7 +925,6 @@ namespace ReactiveUI.Tests
             Assert.Equal("d", source[0]);
             Assert.Equal("d", derived.Single());
         }
-#endif
 
         /// <summary>
         /// This test is a bit contrived and only exists to verify that a particularly gnarly bug doesn't get 
@@ -1013,7 +1004,7 @@ namespace ReactiveUI.Tests
                 using (resolver.WithResolver()) {
                     resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
 
-                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
+                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>(scheduler: CurrentThreadScheduler.Instance);
                     Assert.True(incc is INotifyCollectionChanged);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 
@@ -1047,7 +1038,7 @@ namespace ReactiveUI.Tests
                 using (resolver.WithResolver()) {
                     resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
 
-                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>();
+                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>(scheduler: CurrentThreadScheduler.Instance);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 
                     Assert.False(logger.Messages.Any(x => x.Item1.Contains("SuppressChangeNotifications")));
@@ -1837,30 +1828,6 @@ namespace ReactiveUI.Tests
         }
     }
 
-#if SILVERLIGHT
-    public class JSONHelper
-    {
-        public static string Serialize<T>(T obj)
-        {
-            using (var mstream = new MemoryStream()) { 
-                var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());  
-                serializer.WriteObject(mstream, obj);  
-                mstream.Position = 0;  
-  
-                using (var sr = new StreamReader(mstream)) {  
-                    return sr.ReadToEnd();  
-                }  
-            }
-        }
-
-        public static T Deserialize<T>(string json)
-        {
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(T));
-            return (T)serializer.ReadObject(
-                new MemoryStream(System.Text.Encoding.Unicode.GetBytes(json)));
-        }
-    }
-#else
     public class JSONHelper
     {
         public static string Serialize<T>(T obj)
@@ -1882,5 +1849,4 @@ namespace ReactiveUI.Tests
             return obj;
         }
     }
-#endif
 }

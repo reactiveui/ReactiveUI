@@ -1,30 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
+    <TargetFrameworks>uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>reactiveui-events</PackageId>
-  </PropertyGroup>  
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Compile Include="Events_NET45.cs" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="WindowsBase" />
+    <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <Compile Include="Events_UWP.cs" />
+    <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
     <SDKReference Include="WindowsDesktop, Version=10.0.14393.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>
@@ -34,15 +25,15 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
-    <Compile Include="Events_IOS.cs" />
+    <Compile Include="Events_IOS.cs" Condition="Exists('Events_IOS.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
-    <Compile Include="Events_MAC.cs" />
+    <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
-    <Compile Include="Events_ANDROID.cs" />
+    <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
   </ItemGroup>
 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
