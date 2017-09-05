@@ -146,42 +146,6 @@ namespace ReactiveUI.Tests
             screen.Router.NavigateBack.Execute();
 
             Assert.Equal(1, count);
-        }
-
-        [Fact]
-        public void WhenNavigatingFromObservableFiresWhenViewModelLosesFocus()
-        {
-            var count = 0;
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
-            var vm2 = new RoutableViewModel(screen);
-
-            vm.WhenNavigatingFromObservable().Subscribe(_ => {
-                count++;
-            });
-
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.Navigate.Execute(vm2);
-
-            Assert.Equal(1, count);
-        }
-
-        [Fact]
-        public void WhenNavigatingFromObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
-        {
-            var count = 0;
-
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
-
-            vm.WhenNavigatingFromObservable().Subscribe(
-                _ => {},
-                () => { count++; });
-
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.NavigateBack.Execute();
-
-            Assert.Equal(1, count);
-        }
+        }       
     }
 }
