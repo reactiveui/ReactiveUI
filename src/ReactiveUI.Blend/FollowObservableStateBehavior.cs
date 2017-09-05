@@ -5,32 +5,34 @@
 using System;
 using System.Reactive.Linq;
 
-#if !NETFX_CORE
+#if NETFX_CORE
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+#else
 using System.Windows;
 using System.Windows.Interactivity;
 using System.Windows.Controls;
-#else
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 #endif
 
 namespace ReactiveUI.Blend
 {
-#if SILVERLIGHT || NETFX_CORE
+#if NETFX_CORE
     public class FollowObservableStateBehavior : Behavior<Control>
 #else
     public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 #endif
     {
-        public IObservable<string> StateObservable {
+        public IObservable<string> StateObservable
+        {
             get { return (IObservable<string>)GetValue(StateObservableProperty); }
             set { SetValue(StateObservableProperty, value); }
         }
         public static readonly DependencyProperty StateObservableProperty =
             DependencyProperty.Register("StateObservable", typeof(IObservable<string>), typeof(FollowObservableStateBehavior), new PropertyMetadata(null, onStateObservableChanged));
 
-#if SILVERLIGHT || NETFX_CORE
-        public Control TargetObject {
+#if NETFX_CORE
+        public Control TargetObject
+        {
             get { return (Control)GetValue(TargetObjectProperty); }
             set { SetValue(TargetObjectProperty, value); }
         }
@@ -69,7 +71,7 @@ namespace ReactiveUI.Blend
             This.watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
                 x => {
                     var target = This.TargetObject ?? This.AssociatedObject;
-#if SILVERLIGHT || NETFX_CORE
+#if NETFX_CORE
                     VisualStateManager.GoToState(target, x, true);
 #else
                     if (target is Control) {

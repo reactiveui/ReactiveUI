@@ -16,7 +16,7 @@ namespace ReactiveUI
     {
         None = 0,
         Inverse = 1 << 1,
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
         UseHidden = 1 << 2,
 #endif
     }
@@ -42,7 +42,7 @@ namespace ReactiveUI
 
             if (toType == typeof (Visibility)) {
                 var fromAsBool = hint.HasFlag(BooleanToVisibilityHint.Inverse) ? !((bool) from) : (bool) from;
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
                 var notVisible = hint.HasFlag(BooleanToVisibilityHint.UseHidden) ? Visibility.Hidden : Visibility.Collapsed;
 #else
                 var notVisible = Visibility.Collapsed;
