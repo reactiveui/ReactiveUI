@@ -22,4 +22,4 @@ namespace ReactiveUI.Testing
         public static System.IDisposable WithMessageBus(this ReactiveUI.IMessageBus messageBus) { }
         public static System.IDisposable WithScheduler(System.Reactive.Concurrency.IScheduler sched) { }
     }
-} 
+}
