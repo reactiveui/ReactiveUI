@@ -227,9 +227,19 @@ Task("RunUnitTests")
             ReturnTargetCodeOffset = 0,
             ArgumentCustomization = args => args.Append("-mergeoutput")
         }
-        .WithFilter("+[*]* -[*.Testing]* -[*.Tests*]* -[Playground*]* -[ReactiveUI.Events]* -[Splat*]*")
+        .WithFilter("+[*]*")
+        .WithFilter("-[*.Testing]*")
+        .WithFilter("-[*.Tests*]*")
+        .WithFilter("-[Playground*]*")
+        .WithFilter("-[ReactiveUI.Events]*")
+        .WithFilter("-[Splat*]*")
+        .WithFilter("-[ApprovalTests*]*")
         .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
-        .ExcludeByFile("*/*Designer.cs;*/*.g.cs;*/*.g.i.cs;*splat/splat*"));
+        .ExcludeByFile("*/*Designer.cs")
+        .ExcludeByFile("*/*.g.cs")
+        .ExcludeByFile("*/*.g.i.cs")
+        .ExcludeByFile("*splat/splat*")
+        .ExcludeByFile("*ApprovalTests*"));
 
     ReportGenerator(testCoverageOutputFile, artifactDirectory);
 });
