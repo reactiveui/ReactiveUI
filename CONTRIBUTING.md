@@ -67,7 +67,7 @@ Before you submit your pull request consider the following guidelines:
 * Make your changes in a new git branch:
 
     ```shell
-    git checkout -b my-fix-branch master
+    git checkout -b my-fix-branch develop
     ```
 
 * Create your patch, **including appropriate test cases**.
@@ -93,7 +93,7 @@ Before you submit your pull request consider the following guidelines:
     git push origin my-fix-branch
     ```
 
-In GitHub, send a pull request to `reactiveui:master`.
+In GitHub, send a pull request to `reactiveui:develop`.
 
 If we suggest changes, then:
 
