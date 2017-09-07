@@ -242,6 +242,10 @@ Task("RunUnitTests")
         .ExcludeByFile("*ApprovalTests*"));
 
     ReportGenerator(testCoverageOutputFile, artifactDirectory);
+}).ReportError(exception =>
+{
+    var apiApprovals = GetFiles("./**/ApiApprovalTests.*");
+    CopyFiles(apiApprovals, artifactDirectory);
 });
 
 Task("UploadTestCoverage")
