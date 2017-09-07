@@ -3,17 +3,13 @@
 We'd love for you to contribute to our source code and to make reactiveui even better than it is
 today! Here are the guidelines we'd like you to follow:
 
- - [Code of Conduct](#coc)
+ - [Code of Conduct](https://reactiveui.net/code-of-conduct)
  - [Question or Problem?](#question)
  - [Issues and Bugs](#issue)
  - [Feature Requests](#feature)
  - [Submission Guidelines](#submit)
  - [Coding Rules](#rules)
  - [Commit Message Guidelines](https://reactiveui.net/contribute/software-style-guide/commit-message-convention)
-
-## <a name="coc"></a> Code of Conduct
-
-Help us keep the project open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## <a name="question"></a> Got a Question or Problem?
 
