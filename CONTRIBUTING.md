@@ -9,7 +9,7 @@ today! Here are the guidelines we'd like you to follow:
  - [Feature Requests](#feature)
  - [Submission Guidelines](#submit)
  - [Coding Rules](#rules)
- - [Commit Message Guidelines](#commit)
+ - [Commit Message Guidelines](https://reactiveui.net/contribute/software-style-guide/commit-message-convention)
 
 ## <a name="coc"></a> Code of Conduct
 
@@ -150,51 +150,3 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 * All features or bug fixes **must be tested** by one or more unit tests.
 * All public API methods **must be documented** with XML documentation.
-
-## <a name="commit"></a> Git Commit Guidelines
-
-Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
-format that includes a **type**  and a **subject**:
-
-```
-<type>: <subject>
-<body>
-<BLANK LINE>
-<footer>
-```
-
-### Revert
-
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
-
-### Type
-
-Must be one of the following:
-
-* **feat**: A new feature
-* **fix**: A bug fix
-* **docs**: Documentation only changes
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
-  semi-colons, etc)
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **perf**: A code change that improves performance
-* **test**: Adding missing tests
-* **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
-  generation
-
-### Subject
-The subject contains succinct description of the change:
-
-* use the imperative, present tense: "change" not "changed" nor "changes"
-* don't capitalize first letter
-* no dot (.) at the end
-
-### Body
-Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
-The body should include the motivation for the change and contrast this with previous behavior.
-
-### Footer
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
-
-**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
