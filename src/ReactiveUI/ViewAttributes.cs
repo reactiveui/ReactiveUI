@@ -24,7 +24,7 @@ namespace ReactiveUI
             Contract = contract;
         }
 
-        internal string Contract { get; }
+        public string Contract { get; }
     }
 
     /// <summary>

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="akavache" Version="6.0.0-alpha0038" />
+    <PackageReference Include="ClrHeapAllocationAnalyzer" Version="1.0.0.8" />
+    <PackageReference Include="Genesis.Ensure" Version="2.0.0" />
+    <PackageReference Include="reactiveui" Version="8.0.0-alpha0069" />
+    <PackageReference Include="refit" Version="4.0.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Utility\Utility.csproj" />
+  </ItemGroup>
+
+
+</Project>
