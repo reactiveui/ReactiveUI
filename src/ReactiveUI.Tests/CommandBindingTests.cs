@@ -390,6 +390,29 @@ namespace ReactiveUI.Tests
         }
 
         [WpfFact]
+        public void CommandBindWithDelaySetVMParameterNoINPCExpression()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView();
+
+            var received = 0;
+            var cmd = ReactiveCommand.Create<int>(i => { received = i; });
+            vm.Command1 = cmd;
+
+            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+
+            view.ViewModel = vm;
+
+            vm.Value = 42;
+            view.Command1.RaiseCustomClick();
+            Assert.Equal(0, received);
+
+            vm.Value = 13;
+            view.Command1.RaiseCustomClick();
+            Assert.Equal(0, received);
+        }
+
+        [WpfFact]
         public void CommandBindWithParameterObservable()
         {
             var vm = new CommandBindViewModel();
