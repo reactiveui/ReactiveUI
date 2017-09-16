@@ -286,7 +286,10 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, view.ViewModel.WhenAnyValue(withParameter), toEvent);
+            var paramExpression = Reflection.Rewrite(withParameter.Body);
+            var param = Reflection.ViewModelWhenAnyValue(viewModel, view, paramExpression);
+
+            return This.BindCommand(viewModel, view, propertyName, controlName, param, toEvent);
         }
     }
 
