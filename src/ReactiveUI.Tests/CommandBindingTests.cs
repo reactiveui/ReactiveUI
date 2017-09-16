@@ -170,7 +170,28 @@ namespace ReactiveUI.Tests
             this.CustomClick?.Invoke(this, EventArgs.Empty);
     }
 
-    public class CommandBindView : ReactiveObject, IViewFor<CommandBindViewModel>
+    public class CommandBindView : IViewFor<CommandBindViewModel>
+    {
+        object IViewFor.ViewModel
+        {
+            get { return ViewModel; }
+            set { ViewModel = (CommandBindViewModel)value; }
+        }
+
+        public CommandBindViewModel ViewModel { get; set; }
+
+        public CustomClickButton Command1 { get; protected set; }
+
+        public Image Command2 { get; protected set; }
+
+        public CommandBindView()
+        {
+            Command1 = new CustomClickButton();
+            Command2 = new Image();
+        }
+    }
+
+    public class ReactiveObjectCommandBindView : ReactiveObject, IViewFor<CommandBindViewModel>
     {
         object IViewFor.ViewModel
         {
@@ -189,12 +210,13 @@ namespace ReactiveUI.Tests
 
         public Image Command2 { get; protected set; }
 
-        public CommandBindView()
+        public ReactiveObjectCommandBindView()
         {
             Command1 = new CustomClickButton();
             Command2 = new Image();
         }
     }
+
 
     public class CommandBindingImplementationTests
     {
@@ -348,7 +370,7 @@ namespace ReactiveUI.Tests
         public void CommandBindWithDelaySetVMParameterExpression()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView();
+            var view = new ReactiveObjectCommandBindView();
 
             var received = 0;
             var cmd = ReactiveCommand.Create<int>(i => { received = i; });
