@@ -6,21 +6,21 @@
 // ADDINS
 //////////////////////////////////////////////////////////////////////
 
-#addin "Cake.FileHelpers"
-#addin "Cake.Coveralls"
-#addin "Cake.PinNuGetDependency"
-#addin "Cake.Powershell"
+#addin "nuget:?package=Cake.FileHelpers&version=1.0.4"
+#addin "nuget:?package=Cake.Coveralls&version=0.4.0"
+#addin "nuget:?package=Cake.PinNuGetDependency&version=0.1.0.1495792899"
+#addin "nuget:?package=Cake.Powershell&version=0.3.5"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "GitReleaseManager"
-#tool "GitVersion.CommandLine"
-#tool "coveralls.io"
-#tool "OpenCover"
-#tool "ReportGenerator"
-#tool "nuget:?package=vswhere"
+#tool "nuget:?package=GitReleaseManager&version=0.6.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=coveralls.io&version=1.3.4"
+#tool "nuget:?package=OpenCover&version=4.6.519"
+#tool "nuget:?package=ReportGenerator&version=2.5.11"
+#tool "nuget:?package=vswhere&version=2.1.4"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
