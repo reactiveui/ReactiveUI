@@ -6,21 +6,21 @@
 // ADDINS
 //////////////////////////////////////////////////////////////////////
 
-#addin "Cake.FileHelpers"
-#addin "Cake.Coveralls"
-#addin "Cake.PinNuGetDependency"
-#addin "Cake.Powershell"
+#addin "nuget:?package=Cake.FileHelpers&version=1.0.4"
+#addin "nuget:?package=Cake.Coveralls&version=0.4.0"
+#addin "nuget:?package=Cake.PinNuGetDependency&version=0.1.0.1495792899"
+#addin "nuget:?package=Cake.Powershell&version=0.3.5"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "GitReleaseManager"
-#tool "GitVersion.CommandLine"
-#tool "coveralls.io"
-#tool "OpenCover"
-#tool "ReportGenerator"
-#tool "nuget:?package=vswhere"
+#tool "nuget:?package=GitReleaseManager&version=0.6.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=coveralls.io&version=1.3.4"
+#tool "nuget:?package=OpenCover&version=4.6.519"
+#tool "nuget:?package=ReportGenerator&version=2.5.11"
+#tool "nuget:?package=vswhere&version=2.1.4"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -101,25 +101,6 @@ Teardown(context =>
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
-
-Task("UpdateAppVeyorBuildNumber")
-    .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
-    .Does(() =>
-{
-    AppVeyor.UpdateBuildVersion(buildVersion);
-
-}).ReportError(exception =>
-{  
-    // When a build starts, the initial identifier is an auto-incremented value supplied by AppVeyor. 
-    // As part of the build script, this version in AppVeyor is changed to be the version obtained from
-    // GitVersion. This identifier is purely cosmetic and is used by the core team to correlate a build
-    // with the pull-request. In some circumstances, such as restarting a failed/cancelled build the
-    // identifier in AppVeyor will be already updated and default behaviour is to throw an
-    // exception/cancel the build when in fact it is safe to swallow.
-    // See https://github.com/reactiveui/ReactiveUI/issues/1262
-
-    Warning("Build with version {0} already exists.", buildVersion);
-});
 
 Task("BuildEventBuilder")
     .Does (() =>
@@ -246,11 +227,25 @@ Task("RunUnitTests")
             ReturnTargetCodeOffset = 0,
             ArgumentCustomization = args => args.Append("-mergeoutput")
         }
-        .WithFilter("+[*]* -[*.Testing]* -[*.Tests*]* -[Playground*]* -[ReactiveUI.Events]* -[Splat*]*")
+        .WithFilter("+[*]*")
+        .WithFilter("-[*.Testing]*")
+        .WithFilter("-[*.Tests*]*")
+        .WithFilter("-[Playground*]*")
+        .WithFilter("-[ReactiveUI.Events]*")
+        .WithFilter("-[Splat*]*")
+        .WithFilter("-[ApprovalTests*]*")
         .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
-        .ExcludeByFile("*/*Designer.cs;*/*.g.cs;*/*.g.i.cs;*splat/splat*"));
+        .ExcludeByFile("*/*Designer.cs")
+        .ExcludeByFile("*/*.g.cs")
+        .ExcludeByFile("*/*.g.i.cs")
+        .ExcludeByFile("*splat/splat*")
+        .ExcludeByFile("*ApprovalTests*"));
 
     ReportGenerator(testCoverageOutputFile, artifactDirectory);
+}).ReportError(exception =>
+{
+    var apiApprovals = GetFiles("./**/ApiApprovalTests.*");
+    CopyFiles(apiApprovals, artifactDirectory);
 });
 
 Task("UploadTestCoverage")
@@ -419,7 +414,6 @@ Task("PublishRelease")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("UpdateAppVeyorBuildNumber")
     .IsDependentOn("CreateRelease")
     .IsDependentOn("PublishPackages")
     .IsDependentOn("PublishRelease")

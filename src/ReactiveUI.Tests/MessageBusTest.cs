@@ -1,15 +1,12 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Reactive.Testing;
-using ReactiveUI.Testing;
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
@@ -116,21 +113,24 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public async Task MessageBusThreadingTest()
+        public void MessageBusThreadingTest()
         {
             var mb = new MessageBus();
-            int? listenedThread = null;
-            int? otherThread = null;
-            int thisThread = Thread.CurrentThread.ManagedThreadId;
+            int? listenedThreadId = null;
+            int? otherThreadId = null;
+            var thisThreadId = Thread.CurrentThread.ManagedThreadId;
 
-            await Task.Run(() => {
-                otherThread = Thread.CurrentThread.ManagedThreadId;
-                mb.Listen<int>().Subscribe(_ => listenedThread = Thread.CurrentThread.ManagedThreadId);
-                mb.SendMessage<int>(42);
-            });
+            var otherThread = new Thread(new ThreadStart(() => {
+                otherThreadId = Thread.CurrentThread.ManagedThreadId;
+                mb.Listen<int>().Subscribe(_ => listenedThreadId = Thread.CurrentThread.ManagedThreadId);
+                mb.SendMessage(42);
+            }));
 
-            Assert.NotEqual(listenedThread.Value, thisThread);
-            Assert.Equal(listenedThread.Value, otherThread.Value);
+            otherThread.Start();
+            otherThread.Join();
+
+            Assert.NotEqual(listenedThreadId.Value, thisThreadId);
+            Assert.Equal(listenedThreadId.Value, otherThreadId.Value);
         }
     }
 }
