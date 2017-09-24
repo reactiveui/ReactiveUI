@@ -9,23 +9,29 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;wpf;net;net45;uwp;tizen</PackageTags>
     <PackageReleaseNotes>https://reactiveui.net/blog/</PackageReleaseNotes>
 
-    <NoWarn>$(NoWarn);1591</NoWarn>
+    <NoWarn>$(NoWarn);1591;1701;1702;1705</NoWarn>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
 
     <Platform>AnyCPU</Platform>
     <DebugType>full</DebugType>
     <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
+    <IsLegacyProject>$(MSBuildProjectName.Equals('ReactiveUI.Wpf'))</IsLegacyProject>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath="LICENSE" />
   </ItemGroup>
   
-  <ItemGroup>
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.1.0-beta.69" PrivateAssets="All" />
-  </ItemGroup>
+  <!-- Use a Choose / When so the legacy project system doesn't get this -->
+  <Choose>
+    <When Condition="'$(IsLegacyProject)' != 'true'">
+      <ItemGroup>
+        <PackageReference Include="MSBuild.Sdk.Extras" Version="1.1.0-preview.2.build.8" PrivateAssets="All" />
+      </ItemGroup>
+    </When>
+  </Choose>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.1.1" PrivateAssets="All" /> 
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.3.1" PrivateAssets="All" /> 
   </ItemGroup>
 </Project>
