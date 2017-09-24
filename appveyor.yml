@@ -22,6 +22,7 @@
   - cmd: nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
+  - ps: Get-ChildItem .\*.binlog | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }  
   cache:
   - tools -> build.*
   - src\packages -> **\packages.config
@@ -54,6 +55,7 @@
   - cmd: nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
+  - ps: Get-ChildItem .\*.binlog | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }  
   cache:
   - tools -> build.*
   - src\packages -> **\packages.config
