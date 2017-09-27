@@ -30,6 +30,8 @@
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
   - path: '**/*.binlog'
+    name: binlog
+    type: zip
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
   on_failure:
@@ -64,7 +66,9 @@
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
   - path: '**/*.binlog'
+    name: binlog
+    type: zip
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
   on_failure:
-  - appveyor PushArtifact **/*.binlog
+  - appveyor PushArtifact binlog.zip
