@@ -30,12 +30,10 @@
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
   - path: '**/*.binlog'
-    name: binlog
-    type: zip
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
   on_failure:
-  - appveyor PushArtifact **/*.binlog
+  - ps: Get-ChildItem **/*.binlog | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
   
 # configuration for "develop" branch
 -
@@ -66,9 +64,7 @@
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
   - path: '**/*.binlog'
-    name: binlog
-    type: zip
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
   on_failure:
-  - appveyor PushArtifact binlog.zip
+  - ps: Get-ChildItem **/*.binlog | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
