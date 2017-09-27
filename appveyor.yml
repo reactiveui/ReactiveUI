@@ -30,11 +30,10 @@
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
   - path: '**/*.binlog'
-    name: binlog
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
   on_failure:
-  - appveyor PushArtifact binlog
+  - appveyor PushArtifact '**/*.binlog'
   
 # configuration for "develop" branch
 -
@@ -65,8 +64,7 @@
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
   - path: '**/*.binlog'
-    name: binlog
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
   on_failure:
-  - appveyor PushArtifact binlog
+  - appveyor PushArtifact '**/*.binlog'
