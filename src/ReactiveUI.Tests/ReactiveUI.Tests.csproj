@@ -2,6 +2,7 @@
 
   <PropertyGroup>    
     <TargetFrameworks>net452</TargetFrameworks>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
