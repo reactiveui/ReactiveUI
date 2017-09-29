@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="2.3.3.193" />
+    <PackageReference Include="Xamarin.Forms" Version="2.4.0.280" />
     <Compile Include="Events_XAMFORMS.cs" />
   </ItemGroup>  
 
