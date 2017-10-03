@@ -32,6 +32,8 @@
   - path: '**/*.binlog'
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
+  on_failure:
+  - ps: Get-ChildItem *.binlog -recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
   
 # configuration for "develop" branch
 -
@@ -64,3 +66,5 @@
   - path: '**/*.binlog'
   - path: src/ReactiveUI.**/Events_*.cs
   test: off
+  on_failure:
+  - ps: Get-ChildItem *.binlog -recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
