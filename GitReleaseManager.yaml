@@ -15,7 +15,7 @@ issue-labels-include:
 - reactiveui-events
 - windows-forms
 - universal-windows-platform
-- windows-presentation-framework
+- windows-presentation-foundation
 - tizen
 - xamarin-android
 - xamarin-forms
@@ -42,9 +42,9 @@ issue-labels-alias:
     - name:    universal-windows-platform
       header:  Universal Windows Platform
       plural:  Universal Windows Platform
-    - name:    windows-presentation-framework
-      header:  Windows Presentation Framework
-      plural:  Windows Presentation Framework
+    - name:    windows-presentation-foundation
+      header:  Windows Presentation Foundation
+      plural:  Windows Presentation Foundation
     - tizen:   tizen
       header:  Tizen
       plural:  Tizen
