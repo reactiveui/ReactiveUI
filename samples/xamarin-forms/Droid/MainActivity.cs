@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-
+using System.Reactive.Linq;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -36,7 +36,7 @@ namespace Cinephile.Droid
 
         protected override void OnDestroy()
         {
-            BlobCache.Shutdown();
+            BlobCache.LocalMachine.Flush().Wait();
             base.OnDestroy();
         }
     }
