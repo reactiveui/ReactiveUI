@@ -142,7 +142,7 @@ ReactiveUI is developed under an OSI-approved open source license, making it fre
 
 So here's to you, lovely person who wants to join us — this is how you can support us:
 
-* [Responding to questions on StackExchange](https://reactiveui.net/stackoverflow)
+* [Responding to questions on StackOverflow](https://stackoverflow.com/questions/tagged/reactiveui)
 * [Passing on knowledge and teaching the next generation of developers](http://ericsink.com/entries/dont_use_rxui.html)
 * [Donations](https://reactiveui.net/donate) and [Corporate Sponsorships](https://reactiveui.net/sponsorship)
 * [Submitting documentation updates where you see fit or lacking](https://reactiveui.net/docs)
