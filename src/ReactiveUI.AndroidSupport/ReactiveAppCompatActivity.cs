@@ -98,6 +98,12 @@ namespace ReactiveUI.AndroidSupport
             get { return this.getChangedObservable(); }
         }
 
+        protected ReactiveAppCompatActivity() { }
+
+        protected ReactiveAppCompatActivity(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        {
+        }
+
         /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
