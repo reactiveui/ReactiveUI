@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
@@ -37,7 +41,9 @@ namespace ReactiveUI
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
         /// <param name="toEvent">If specified, bind to the specific event
-        /// instead of the default.</param>
+        /// instead of the default.
+        /// NOTE: If this parameter is used inside WhenActivated, it's 
+        /// important to dispose the binding when the view is deactivated.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view,
                 TViewModel viewModel,
@@ -63,7 +69,9 @@ namespace ReactiveUI
         /// <param name="propertyName">The ViewModel command to bind</param>
         /// <param name="controlName">The name of the control on the view</param>
         /// <param name="toEvent">If specified, bind to the specific event
-        /// instead of the default.</param>
+        /// instead of the default.
+        /// NOTE: If this parameter is used inside WhenActivated, it's 
+        /// important to dispose the binding when the view is deactivated.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this TView view,
                 TViewModel viewModel,
@@ -90,7 +98,9 @@ namespace ReactiveUI
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
         /// <param name="toEvent">If specified, bind to the specific event
-        /// instead of the default.</param>
+        /// instead of the default.
+        /// NOTE: If this parameter is used inside WhenActivated, it's 
+        /// important to dispose the binding when the view is deactivated.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view,
                 TViewModel viewModel,
@@ -149,7 +159,9 @@ namespace ReactiveUI
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
         /// <param name="toEvent">If specified, bind to the specific event
-        /// instead of the default.</param>
+        /// instead of the default.
+        /// NOTE: If this parameter is used inside WhenActivated, it's 
+        /// important to dispose the binding when the view is deactivated.</param>
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
@@ -192,7 +204,9 @@ namespace ReactiveUI
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
         /// <param name="toEvent">If specified, bind to the specific event
-        /// instead of the default.</param>
+        /// instead of the default.
+        /// NOTE: If this parameter is used inside WhenActivated, it's 
+        /// important to dispose the binding when the view is deactivated.</param>
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
@@ -282,7 +296,10 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, view.ViewModel.WhenAnyValue(withParameter), toEvent);
+            var paramExpression = Reflection.Rewrite(withParameter.Body);
+            var param = Reflection.ViewModelWhenAnyValue(viewModel, view, paramExpression);
+
+            return This.BindCommand(viewModel, view, propertyName, controlName, param, toEvent);
         }
     }
 

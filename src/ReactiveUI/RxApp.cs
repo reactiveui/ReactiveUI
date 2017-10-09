@@ -1,16 +1,20 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using Splat;
 using System;
 using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
-using Splat;
 
 namespace ReactiveUI
 {
     /*
      * N.B. Why we have this evil global class
      *
-     * In a WPF or Silverlight application, most commands must have the Dispatcher
+     * In a WPF or UWP application, most commands must have the Dispatcher
      * scheduler set, because notifications will end up being run on another thread;
      * this happens most often in a CanExecute observable. Unfortunately, in a Unit
      * Test framework, while the MS Test Unit runner will *set* the Dispatcher (so
@@ -91,11 +95,14 @@ namespace ReactiveUI
         /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
         /// to simplify writing common unit tests.
         /// </summary>
-        public static IScheduler MainThreadScheduler {
-            get {
+        public static IScheduler MainThreadScheduler
+        {
+            get
+            {
                 return _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
             }
-            set {
+            set
+            {
                 // N.B. The ThreadStatic dance here is for the unit test case -
                 // often, each test will override MainThreadScheduler with their
                 // own TestScheduler, and if this wasn't ThreadStatic, they would
@@ -116,13 +123,16 @@ namespace ReactiveUI
         /// <summary>
         /// TaskpoolScheduler is the scheduler used to schedule work items to
         /// run in a background thread. In both modes, this will run on the TPL
-        /// Task Pool (or the normal Threadpool on Silverlight).
+        /// Task Pool.
         /// </summary>
-        public static IScheduler TaskpoolScheduler {
-            get {
+        public static IScheduler TaskpoolScheduler
+        {
+            get
+            {
                 return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
             }
-            set {
+            set
+            {
                 if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestTaskpoolScheduler = value;
                     _TaskpoolScheduler = _TaskpoolScheduler ?? value;
@@ -140,7 +150,8 @@ namespace ReactiveUI
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.
         /// </summary>
-        public static IObserver<Exception> DefaultExceptionHandler {
+        public static IObserver<Exception> DefaultExceptionHandler
+        {
             get { return _DefaultExceptionHandler; }
             set { _DefaultExceptionHandler = value; }
         }
@@ -153,12 +164,15 @@ namespace ReactiveUI
         /// class which provides events for process lifetime events, especially
         /// on mobile devices.
         /// </summary>
-        public static ISuspensionHost SuspensionHost {
-            get {
+        public static ISuspensionHost SuspensionHost
+        {
+            get
+            {
                 var host = _UnitTestSuspensionHost ?? _SuspensionHost;
                 return host;
             }
-            set {
+            set
+            {
                 if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestSuspensionHost = value;
                     _SuspensionHost = _SuspensionHost ?? value;
@@ -175,11 +189,14 @@ namespace ReactiveUI
         /// Returns whether your UI framework is brain-dead or not and will blow
         /// up if a INotifyCollectionChanged object returns a ranged Add
         /// </summary>
-        public static bool SupportsRangeNotifications  {
-            get {
+        public static bool SupportsRangeNotifications
+        {
+            get
+            {
                 return _UnitTestSupportsRangeNotifications ?? _SupportsRangeNotifications;
             }
-            set {
+            set
+            {
                 // N.B. The ThreadStatic dance here is for the unit test case -
                 // often, each test will override MainThreadScheduler with their
                 // own TestScheduler, and if this wasn't ThreadStatic, they would
@@ -200,7 +217,7 @@ namespace ReactiveUI
             // NB: This method only exists to invoke the static constructor
         }
 
-#if ANDROID || SILVERLIGHT || IOS
+#if ANDROID || IOS
         public const int SmallCacheLimit = 32;
         public const int BigCacheLimit = 64;
 #else

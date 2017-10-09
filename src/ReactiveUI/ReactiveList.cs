@@ -1,21 +1,22 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using Splat;
 using System;
 using System.Collections;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
-using System.Diagnostics.Contracts;
 using System.Threading;
-using System.Reactive.Disposables;
-using System.Globalization;
-using System.Diagnostics;
-using Splat;
 
 namespace ReactiveUI
 {
@@ -64,16 +65,18 @@ namespace ReactiveUI
             }
         }
 #else
-        public event NotifyCollectionChangedEventHandler CollectionChanging {
+        public event NotifyCollectionChangedEventHandler CollectionChanging
+        {
             add { CollectionChangingEventManager.AddHandler(this, value); }
             remove { CollectionChangingEventManager.RemoveHandler(this, value); }
         }
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged {
+        public event NotifyCollectionChangedEventHandler CollectionChanged
+        {
             add { CollectionChangedEventManager.AddHandler(this, value); }
             remove { CollectionChangedEventManager.RemoveHandler(this, value); }
         }
-        
+
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
         {
             CollectionChangingEventManager.DeliverEvent(this, e);
@@ -95,7 +98,8 @@ namespace ReactiveUI
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
+        public event PropertyChangedEventHandler PropertyChanged
+        {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
@@ -108,9 +112,9 @@ namespace ReactiveUI
 
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
-        
+
         [DataMember] List<T> _inner;
-        
+
         [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsAdded;
         [IgnoreDataMember] Lazy<Subject<T>> _itemsAdded;
         [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsRemoved;
@@ -200,7 +204,7 @@ namespace ReactiveUI
         {
             if (!this.areChangeNotificationsEnabled()) {
                 _inner.Insert(index, item);
-            
+
                 if (ChangeTrackingEnabled) addItemToPropertyTracking(item);
                 return;
             }
@@ -224,7 +228,7 @@ namespace ReactiveUI
 
             if (!this.areChangeNotificationsEnabled()) {
                 _inner.RemoveAt(index);
-            
+
                 if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
                 return;
             }
@@ -268,7 +272,7 @@ namespace ReactiveUI
         protected void SetItem(int index, T item)
         {
             if (!this.areChangeNotificationsEnabled()) {
-                
+
                 if (ChangeTrackingEnabled) {
                     removeItemFromPropertyTracking(_inner[index]);
                     addItemToPropertyTracking(item);
@@ -295,7 +299,7 @@ namespace ReactiveUI
         {
             if (!this.areChangeNotificationsEnabled()) {
                 _inner.Clear();
-            
+
                 if (ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
                 return;
             }
@@ -318,8 +322,7 @@ namespace ReactiveUI
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
-            if (collection == null)
-            {
+            if (collection == null) {
                 throw new ArgumentNullException("collection");
             }
 
@@ -333,7 +336,7 @@ namespace ReactiveUI
                 // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
                     _inner.AddRange(list);
-                 
+
                     if (ChangeTrackingEnabled) {
                         foreach (var item in list) {
                             addItemToPropertyTracking(item);
@@ -377,8 +380,7 @@ namespace ReactiveUI
 
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
-            if (collection == null)
-            {
+            if (collection == null) {
                 throw new ArgumentNullException("collection");
             }
 
@@ -447,7 +449,7 @@ namespace ReactiveUI
 
                 // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
-                    _inner.RemoveRange(index,count);
+                    _inner.RemoveRange(index, count);
 
                     if (ChangeTrackingEnabled) {
                         foreach (var item in items) {
@@ -491,8 +493,7 @@ namespace ReactiveUI
 
         public virtual void RemoveAll(IEnumerable<T> items)
         {
-            if (items == null)
-            {
+            if (items == null) {
                 throw new ArgumentNullException("items");
             }
 
@@ -530,7 +531,7 @@ namespace ReactiveUI
         {
             publishResetNotification();
         }
-        
+
         protected virtual void publishResetNotification()
         {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
@@ -540,16 +541,18 @@ namespace ReactiveUI
 
         bool isLengthAboveResetThreshold(int toChangeLength)
         {
-            return (double) toChangeLength/_inner.Count > ResetChangeThreshold &&
+            return (double)toChangeLength / _inner.Count > ResetChangeThreshold &&
                 toChangeLength > 10;
         }
-        
+
         /*
          * IReactiveCollection<T>
          */
-        public bool ChangeTrackingEnabled {
+        public bool ChangeTrackingEnabled
+        {
             get { return _propertyChangeWatchers != null; }
-            set {
+            set
+            {
                 if (_propertyChangeWatchers != null && value) return;
                 if (_propertyChangeWatchers == null && !value) return;
 
@@ -575,7 +578,7 @@ namespace ReactiveUI
             }
 
             return new CompositeDisposable(this.suppressChangeNotifications(), Disposable.Create(() => {
-                if (Interlocked.Decrement(ref _resetNotificationCount) == 0){
+                if (Interlocked.Decrement(ref _resetNotificationCount) == 0) {
                     publishResetNotification();
                 }
             }));
@@ -592,36 +595,43 @@ namespace ReactiveUI
 
         public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanging { get { return _itemChanging.Value; } }
         public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanged { get { return _itemChanged.Value; } }
-        
-        public IObservable<int> CountChanging {
+
+        public IObservable<int> CountChanging
+        {
             get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }
 
-        public IObservable<int> CountChanged {
+        public IObservable<int> CountChanged
+        {
             get { return _changed.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }
 
-        public IObservable<bool> IsEmptyChanged {
+        public IObservable<bool> IsEmptyChanged
+        {
             get { return _changed.Select(_ => _inner.Count == 0).DistinctUntilChanged(); }
         }
 
-        public IObservable<NotifyCollectionChangedEventArgs> Changing {
+        public IObservable<NotifyCollectionChangedEventArgs> Changing
+        {
             get { return _changing; }
         }
 
-        public IObservable<NotifyCollectionChangedEventArgs> Changed {
+        public IObservable<NotifyCollectionChangedEventArgs> Changed
+        {
             get { return _changed; }
         }
 
-        public IObservable<Unit> ShouldReset {
-            get {
+        public IObservable<Unit> ShouldReset
+        {
+            get
+            {
                 return refcountSubscribers(_changed.SelectMany(x =>
                     x.Action != NotifyCollectionChangedAction.Reset ?
                         Observable<Unit>.Empty :
                         Observables.Unit), x => _resetSubCount += x);
             }
         }
-        
+
         /*
          * Property Change Tracking
          */
@@ -650,17 +660,17 @@ namespace ReactiveUI
 
             this.Log().Warn("Property change notifications are enabled and type {0} isn't INotifyPropertyChanged or IReactiveObject", typeof(T));
 
-        isSetup:
+            isSetup:
             var toDispose = new[] {
                 changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_itemChanging.Value.OnNext),
                 changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_itemChanged.Value.OnNext),
             };
 
-            _propertyChangeWatchers.Add(toTrack, 
+            _propertyChangeWatchers.Add(toTrack,
                 new RefcountDisposeWrapper(Disposable.Create(() => {
                     toDispose[0].Dispose(); toDispose[1].Dispose();
                     _propertyChangeWatchers.Remove(toTrack);
-            })));
+                })));
         }
 
         void removeItemFromPropertyTracking(T toUntrack)
@@ -762,14 +772,13 @@ namespace ReactiveUI
             RemoveItem(index);
         }
 
-#if !SILVERLIGHT
         public virtual void Move(int oldIndex, int newIndex)
         {
             MoveItem(oldIndex, newIndex);
         }
-#endif
 
-        public virtual T this[int index] {
+        public virtual T this[int index]
+        {
             get { return _inner[index]; }
             set { SetItem(index, value); }
         }

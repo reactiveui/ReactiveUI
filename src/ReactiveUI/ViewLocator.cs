@@ -1,3 +1,7 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 using System;
 using System.Reflection;
 using ReactiveUI;
@@ -77,7 +81,7 @@ namespace ReactiveUI
         /// </item>
         /// <item>
         /// <description>
-        /// Repeat steps 1 and 2 with the type resolved from the modified name.
+        /// Repeat steps 1-4 with the type resolved from the modified name.
         /// </description>
         /// </item>
         /// </list>
@@ -107,8 +111,13 @@ namespace ReactiveUI
                 return view;
             }
 
-            var toggledType = ToggleViewModelType(viewModel);
-            view = this.AttemptViewResolutionFor(toggledType, contract);
+            view = this.AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract);
+
+            if (view != null) {
+                return view;
+            }
+
+            view = this.AttemptViewResolutionFor(ToggleViewModelType(typeof(T)), contract);
 
             if (view != null) {
                 return view;
@@ -120,6 +129,7 @@ namespace ReactiveUI
 
         private IViewFor AttemptViewResolutionFor(Type viewModelType, string contract)
         {
+            if (viewModelType == null) return null;
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
             var proposedViewTypeName = this.ViewModelToViewFunc(viewModelTypeName);
             var view = this.AttemptViewResolution(proposedViewTypeName, contract);
@@ -169,9 +179,8 @@ namespace ReactiveUI
             }
         }
 
-        private static Type ToggleViewModelType<T>(T viewModel)
+        private static Type ToggleViewModelType(Type viewModelType)
         {
-            var viewModelType = typeof(T);
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
 
             if (viewModelType.GetTypeInfo().IsInterface) {

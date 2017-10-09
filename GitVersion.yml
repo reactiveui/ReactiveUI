@@ -1,3 +1,4 @@
+next-version: 8.0.0
 assembly-versioning-scheme: None
 branches:
   master:
@@ -6,7 +7,7 @@ branches:
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-  dev(elop)?(ment)?$:
+  develop:
     mode: ContinuousDeployment
     tag: alpha
     increment: Minor
