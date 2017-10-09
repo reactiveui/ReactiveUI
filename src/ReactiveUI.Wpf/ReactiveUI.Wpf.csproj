@@ -15,6 +15,7 @@
     <TargetFrameworkProfile />
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <PackageId>reactiveui-wpf</PackageId>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
