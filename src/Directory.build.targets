@@ -22,7 +22,13 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />
-  </ItemGroup>
+  <!-- Use a Choose / When so the legacy project system doesn't get this -->
+  <Choose>
+    <When Condition="'$(IsLegacyProject)' != 'true'">
+    <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+      <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />
+    </ItemGroup>
+    </When>
+  </Choose>
+
 </Project>

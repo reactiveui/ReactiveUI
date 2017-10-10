@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  We are doing this because of https://github.com/reactiveui/ReactiveUI/issues/1504
+  When the new csproj format and visual studio settle down the path to resolve
+  this is to delete ReactiveUI.WPF.csproj and convert it over to using the
+  new CSPROJ format. We originally did this when doing the netstandard migration
+  but had to back this out because we couldn't identify a way to ship
+  XAML themes: https://github.com/reactiveui/ReactiveUI/pull/1427
+ -->
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+      <TargetFramework>net45</TargetFramework>
+  </PropertyGroup>
+</Project>
