@@ -13,7 +13,7 @@
               CachingStrategy="RecycleElement">
         <ListView.ItemTemplate>
             <DataTemplate>
-                <ui:UpcomingMoviesCellView ViewModel="{Binding .}" />
+                <ui:UpcomingMoviesCellView />
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>
