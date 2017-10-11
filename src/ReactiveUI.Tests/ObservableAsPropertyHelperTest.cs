@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
@@ -149,6 +149,23 @@ namespace ReactiveUI.Tests
             Assert.False(isSubscribed);
             Assert.Equal(42, fixture.Value);
             Assert.True(isSubscribed);
+        }
+
+        [Fact]
+        public void OAPHDeferSubscriptionParameterIsSubscribedIsNotTrueInitially()
+        {
+            var observable = Observable.Create<int>(o => {
+                o.OnNext(42);
+                o.OnCompleted();
+
+                return Disposable.Empty;
+            });
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
+
+            Assert.False(fixture.IsSubscribed);
+            Assert.Equal(42, fixture.Value);
+            Assert.True(fixture.IsSubscribed);
         }
 
         [Fact]
