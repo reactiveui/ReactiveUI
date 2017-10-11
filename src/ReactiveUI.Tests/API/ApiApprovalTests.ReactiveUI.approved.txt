@@ -406,6 +406,7 @@ namespace ReactiveUI
     {
         public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, T initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null) { }
         public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T> onChanging = null, T initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+        public bool IsSubscribed { get; }
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public T Value { get; }
         public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T initialValue = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
