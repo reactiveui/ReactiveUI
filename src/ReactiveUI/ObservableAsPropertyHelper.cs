@@ -26,7 +26,7 @@ namespace ReactiveUI
         T _lastValue;
         readonly IConnectableObservable<T> _source;
         IDisposable _inner;
-        private  int _activated;
+        private int _activated;
 
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
