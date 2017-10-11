@@ -134,6 +134,14 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Gets a boolean value indicating whether the ObservableAsPropertyHelper
+        /// has subscribed to the source Observable.
+        /// Useful for scenarios where you use deferred subscription and want to know if 
+        /// the ObservableAsPropertyHelper Value has been accessed yet.
+        /// </summary>
+        public bool IsSubscribed => _activated > 0;
+
+        /// <summary>
         /// Fires whenever an exception would normally terminate ReactiveUI 
         /// internal state.
         /// </summary>
