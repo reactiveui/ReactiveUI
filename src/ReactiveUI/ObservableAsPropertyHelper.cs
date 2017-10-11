@@ -26,7 +26,7 @@ namespace ReactiveUI
         T _lastValue;
         readonly IConnectableObservable<T> _source;
         IDisposable _inner;
-        private long _activated;
+        private  int _activated;
 
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
@@ -139,13 +139,7 @@ namespace ReactiveUI
         /// Useful for scenarios where you use deferred subscription and want to know if 
         /// the ObservableAsPropertyHelper Value has been accessed yet.
         /// </summary>
-        public bool IsSubscribed
-        {
-            get
-            {
-                return Interlocked.Read(ref _activated) > 0;
-            }
-        }
+        public bool IsSubscribed => _activated > 0;
 
         /// <summary>
         /// Fires whenever an exception would normally terminate ReactiveUI 

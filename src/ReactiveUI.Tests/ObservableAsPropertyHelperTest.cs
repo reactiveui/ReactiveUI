@@ -152,7 +152,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void OAPHDeferSubscriptionParameterIsSubscribeIsNotTrueInitially()
+        public void OAPHDeferSubscriptionParameterIsSubscribedIsNotTrueInitially()
         {
             var observable = Observable.Create<int>(o => {
                 o.OnNext(42);
