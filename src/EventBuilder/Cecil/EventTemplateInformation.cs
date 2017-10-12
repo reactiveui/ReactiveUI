@@ -88,8 +88,8 @@ namespace EventBuilder.Cecil
 
             return new ObsoleteEventInfo
             {
-                Message = obsoleteAttribute?.ConstructorArguments?.ElementAtOrDefault(0).Value?.ToString() ?? string.Empty,
-                IsError = bool.Parse(obsoleteAttribute?.ConstructorArguments?.ElementAtOrDefault(1).Value?.ToString() ?? bool.FalseString)
+                Message = obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(0).Value?.ToString() ?? string.Empty,
+                IsError = bool.Parse(obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(1).Value?.ToString() ?? bool.FalseString)
             };
         }
 
