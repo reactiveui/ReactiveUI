@@ -40,12 +40,10 @@ namespace EventBuilder.Cecil
             var ret = RenameBogusWinRTTypes(param.ParameterType.FullName);
 
             var generic = ei.EventType as GenericInstanceType;
-            if (generic != null)
-            {
+            if (generic != null) {
                 foreach (
                     var kvp in
-                        type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new {name, actual}))
-                {
+                        type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new { name, actual })) {
                     var realType = GetRealTypeName(kvp.actual);
 
                     ret = ret.Replace(kvp.name.FullName, realType);
@@ -81,6 +79,20 @@ namespace EventBuilder.Cecil
             return ret.Replace('/', '.');
         }
 
+        private static ObsoleteEventInfo GetObsoleteInfo(EventDefinition ei)
+        {
+            var obsoleteAttribute = ei.CustomAttributes.FirstOrDefault(attr => attr.AttributeType.FullName.Equals("System.ObsoleteAttribute"));
+
+            if (obsoleteAttribute == null) 
+                return null;
+
+            return new ObsoleteEventInfo
+            {
+                Message = obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(0).Value?.ToString() ?? string.Empty,
+                IsError = bool.Parse(obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(1).Value?.ToString() ?? bool.FalseString)
+            };
+        }
+
         private static EventDefinition[] GetPublicEvents(TypeDefinition t)
         {
             return
@@ -93,7 +105,7 @@ namespace EventBuilder.Cecil
             var publicTypesWithEvents = targetAssemblies
                 .SelectMany(x => SafeTypes.GetSafeTypes(x))
                 .Where(x => x.IsPublic && !x.HasGenericParameters)
-                .Select(x => new {Type = x, Events = GetPublicEvents(x)})
+                .Select(x => new { Type = x, Events = GetPublicEvents(x) })
                 .Where(x => x.Events.Length > 0)
                 .ToArray();
 
@@ -121,17 +133,17 @@ namespace EventBuilder.Cecil
                         {
                             Name = z.Name,
                             EventHandlerType = GetRealTypeName(z.EventType),
-                            EventArgsType = GetEventArgsTypeForEvent(z)
+                            EventArgsType = GetEventArgsTypeForEvent(z),
+                            ObsoleteEventInfo = GetObsoleteInfo(z)
                         }).ToArray()
                     }).ToArray()
                 }).ToArray();
 
-            foreach (var type in namespaceData.SelectMany(x => x.Types))
-            {
+            foreach (var type in namespaceData.SelectMany(x => x.Types)) {
                 var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => GetPublicEvents(x).Any());
                 if (parentWithEvents == null) continue;
 
-                type.Parent = new ParentInfo {Name = parentWithEvents.FullName};
+                type.Parent = new ParentInfo { Name = parentWithEvents.FullName };
             }
 
             return namespaceData;
@@ -143,8 +155,7 @@ namespace EventBuilder.Cecil
                 ? type.BaseType.Resolve()
                 : null;
 
-            while (current != null)
-            {
+            while (current != null) {
                 yield return current.Resolve();
 
                 current = current.BaseType != null
