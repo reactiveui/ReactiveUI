@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
+    <TargetFrameworks>uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
@@ -32,7 +32,7 @@
     <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid80' ">
     <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
   </ItemGroup>
 

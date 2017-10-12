@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.1;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
+    <TargetFrameworks>netstandard1.1;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <Description>A library to aid in writing unit tests for ReactiveUI projects</Description>
