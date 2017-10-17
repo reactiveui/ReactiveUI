@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
@@ -410,9 +410,13 @@ namespace ReactiveUI
                         .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
                         .Select(x => Update.CreateAdd(x));
                 case NotifyCollectionChangedAction.Remove:
+                    // Use OldStartingIndex for each "Update.Index" because the batch update processes and removes items sequentially
+                    // opposed to as one Range operation. 
+                    // For example if we are removing the items from indexes 1 to 5. 
+                    // When item at index 1 is removed item at index 2 is now at index 1 and so on down the line.
                     return Enumerable
                         .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
-                        .Select(x => Update.CreateDelete(x));
+                        .Select(x => Update.CreateDelete(pendingChange.OldStartingIndex));
                 case NotifyCollectionChangedAction.Move:
                     return Enumerable
                         .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
