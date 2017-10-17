@@ -47,6 +47,10 @@ namespace {{Name}}
         }
 
 {{#Events}}
+
+        {{#ObsoleteEventInfo}}
+        [Obsolete{{#ObsoleteEventInfo.Message}}("{{ObsoleteEventInfo.Message}}"{{#ObsoleteEventInfo.IsError}}, true{{/ObsoleteEventInfo.IsError}}){{/ObsoleteEventInfo.Message}}]
+        {{/ObsoleteEventInfo}}
         public IObservable<{{EventArgsType}}> {{Name}} {
             get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => This.{{Name}} += x, x => This.{{Name}} -= x).Select(x => x.EventArgs); }
         }
