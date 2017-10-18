@@ -230,12 +230,6 @@ namespace ReactiveUI.Tests
         {
             var fixture = new OaphNameOfTestFixture();
 
-            // NB: This is a hack to connect up the OAPH
-            var dontcare = (fixture.FirstThreeLettersOfOneWord ?? "").Substring(0, 0);
-
-            // NB: This is a hack to connect up the OAPH
-            var dontcare2 = (fixture.LastThreeLettersOfOneWord ?? "").Substring(0, 0);
-
             var firstThreeChanging = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true).CreateCollection(scheduler: ImmediateScheduler.Instance);
             var lastThreeChanging = fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: true).CreateCollection(scheduler: ImmediateScheduler.Instance);
 

@@ -211,24 +211,23 @@ namespace ReactiveUI
         }
 
         static ObservableAsPropertyHelper<TRet> observableToProperty<TObj, TRet>(
-        this TObj This,
-        IObservable<TRet> observable,
-        string property,
-        TRet initialValue = default(TRet),
-        bool deferSubscription = false,
-        IScheduler scheduler = null)
-    where TObj : IReactiveObject
+                this TObj This,
+                IObservable<TRet> observable,
+                string property,
+                TRet initialValue = default(TRet),
+                bool deferSubscription = false,
+                IScheduler scheduler = null)
+            where TObj : IReactiveObject
         {
             Contract.Requires(This != null);
             Contract.Requires(observable != null);
             Contract.Requires(property != null);
 
-            var ret = new ObservableAsPropertyHelper<TRet>(observable,
+            return new ObservableAsPropertyHelper<TRet>(
+                observable,
                 _ => This.raisePropertyChanged(property),
                 _ => This.raisePropertyChanging(property),
                 initialValue, deferSubscription, scheduler);
-
-            return ret;
         }
 
         /// <summary>
@@ -412,10 +411,14 @@ namespace ReactiveUI
             IScheduler scheduler = null)
             where TObj : IReactiveObject
         {
-            var ret = source.observableToProperty(This, property, initialValue, deferSubscription, scheduler);
+            result = source.observableToProperty(
+                This,
+                property,
+                initialValue,
+                deferSubscription,
+                scheduler);
 
-            result = ret;
-            return ret;
+            return result;
         }
     }
 }
