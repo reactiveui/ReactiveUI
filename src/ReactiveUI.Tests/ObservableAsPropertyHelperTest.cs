@@ -230,6 +230,27 @@ namespace ReactiveUI.Tests
         {
             var fixture = new OaphNameOfTestFixture();
 
+            var changing = false;
+            var changed = false;
+
+            fixture.PropertyChanging += (sender, e) => changing = true;
+            fixture.PropertyChanged += (sender, e) => changed = true;
+
+            Assert.False(changing);
+            Assert.False(changed);
+
+            fixture.IsOnlyOneWord = "baz";
+
+            Assert.True(changing);
+            Assert.True(changed);
+        }
+
+        [Theory]
+        [InlineData(new string[] { "FooBar", "Bazz" }, new string[] { "Foo", "Baz" }, new string[] { "Bar", "azz" })]
+        public void ToProperty_NameOf_ValidValuesProduced(string[] testWords, string[] first3Letters, string[] last3Letters)
+        {
+            var fixture = new OaphNameOfTestFixture();
+
             var firstThreeChanging = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true).CreateCollection(scheduler: ImmediateScheduler.Instance);
             var lastThreeChanging = fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: true).CreateCollection(scheduler: ImmediateScheduler.Instance);
 
@@ -239,15 +260,10 @@ namespace ReactiveUI.Tests
             var lastThreeChanged = fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: false).CreateCollection(scheduler: ImmediateScheduler.Instance);
             var changed = new[] { firstThreeChanged, lastThreeChanged };
 
-            var testWords = new string[] { "FooBar", "Bazz" };
-            var first3Letters = new string[] { "Foo", "Baz" };
-            var last3Letters = new string[] { "Bar", "azz" };
-
             Assert.True(changed.All(x => x.Count == 0));
             Assert.True(changing.All(x => x.Count == 0));
 
-            for (int i = 0; i < testWords.Length; ++i) 
-            {
+            for (int i = 0; i < testWords.Length; ++i) {
                 fixture.IsOnlyOneWord = testWords[i];
                 Assert.True(changed.All(x => x.Count == i + 1));
                 Assert.True(changing.All(x => x.Count == i + 1));
