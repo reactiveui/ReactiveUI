@@ -64,16 +64,16 @@ var buildVersion = gitVersion.FullBuildMetaData;
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
-var packageWhitelist = new[] { "ReactiveUI-Testing",
-                               "ReactiveUI-Events",
-                               "ReactiveUI-Events-WPF",
-                               "ReactiveUI-Events-XamForms",
+var packageWhitelist = new[] { "ReactiveUI.Testing",
+                               "ReactiveUI.Events",
+                               "ReactiveUI.Events.WPF",
+                               "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
-                               "ReactiveUI-AndroidSupport",
-                               "ReactiveUI-Blend",
-                               "ReactiveUI-WPF",
-                               "ReactiveUI-Winforms",
-                               "ReactiveUI-XamForms" };
+                               "ReactiveUI.AndroidSupport",
+                               "ReactiveUI.Blend",
+                               "ReactiveUI.WPF",
+                               "ReactiveUI.Winforms",
+                               "ReactiveUI.XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
