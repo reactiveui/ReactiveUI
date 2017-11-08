@@ -14,7 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile />
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
-    <PackageId>reactiveui-wpf</PackageId>    
+    <PackageId>ReactiveUI.WPF</PackageId>    
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
