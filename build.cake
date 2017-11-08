@@ -69,6 +69,7 @@ var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events.WPF",
                                "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
+                               "ReactiveUI.Fody",
                                "ReactiveUI.AndroidSupport",
                                "ReactiveUI.Blend",
                                "ReactiveUI.WPF",
@@ -223,7 +224,7 @@ Task("RunUnitTests")
 {
     Action<ICakeContext> testAction = tool => {
 
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
+        tool.XUnit2("./src/ReactiveUI*Tests/bin/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReportV1 = true,
             NoAppDomain = true

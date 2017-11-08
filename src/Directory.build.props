@@ -31,6 +31,13 @@
     </When>
   </Choose>
 
+  <ItemGroup Condition="$(IsTestProject)">
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.console" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="Xunit.StaFact" Version="0.2.9" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.3.1" PrivateAssets="All" /> 
   </ItemGroup>
