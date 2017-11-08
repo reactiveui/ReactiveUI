@@ -5,7 +5,7 @@
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <Description>A library to aid in writing unit tests for ReactiveUI projects</Description>
-    <PackageId>reactiveui-testing</PackageId>
+    <PackageId>ReactiveUI.Testing</PackageId>
   </PropertyGroup>
   
   <ItemGroup>
