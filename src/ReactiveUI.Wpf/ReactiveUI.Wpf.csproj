@@ -7,18 +7,14 @@
     <PackageId>ReactiveUI.WPF</PackageId>    
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
-      <Name>ReactiveUI</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
     <Compile Include="..\ReactiveUI\Platforms\windows-common\*.cs" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="4.3.0" PrivateAssets="All" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="4.3.0" PrivateAssets="All" />
     <Folder Include="Properties\" />
     <None Include="ReactiveUI.Wpf.licenseheader" />
-  
   </ItemGroup>
   <Import Project="CpsWorkaround.targets" />
-
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
 
