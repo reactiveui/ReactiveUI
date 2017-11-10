@@ -69,3 +69,4 @@
   test: off
   on_failure:
   - ps: Get-ChildItem *.binlog -recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+
