@@ -54,6 +54,7 @@
   init:
   - cd "C:\projects\reactiveui"
   install: 
+  - cmd: git submodule update --init --recursive
   - cmd: nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
