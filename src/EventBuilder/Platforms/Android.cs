@@ -30,7 +30,7 @@ namespace EventBuilder.Platforms
                        "Mono.Android.dll", SearchOption.AllDirectories);
 
                 // Pin to a particular framework version https://github.com/reactiveui/ReactiveUI/issues/1517
-                var latestVersion = assemblies.Last(x => x.Contains("v7"));
+                var latestVersion = assemblies.Last(x => x.Contains("v8"));
                 Assemblies.Add(latestVersion);
 
                 CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
