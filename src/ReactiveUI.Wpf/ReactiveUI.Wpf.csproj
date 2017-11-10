@@ -9,8 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
     <Compile Include="..\ReactiveUI\Platforms\windows-common\*.cs" />
-    <PackageReference Include="NuGet.Build.Tasks.Pack" Version="4.3.0" PrivateAssets="All" />
-    <PackageReference Include="NuGet.Build.Tasks.Pack" Version="4.3.0" PrivateAssets="All" />
     <Folder Include="Properties\" />
     <None Include="ReactiveUI.Wpf.licenseheader" />
   </ItemGroup>
