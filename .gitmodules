@@ -1,0 +1,3 @@
+[submodule "WpfNetStandardSample"]
+	path = src/WpfNetStandardSample
+	url = https://github.com/aienabled/WpfNetStandardSample.git
