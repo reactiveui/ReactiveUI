@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
@@ -404,6 +404,41 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ExecuteFacilitatesAnyNumberOfInFlightExecutions()
+        {
+            (new TestScheduler()).With(sched => {
+                var execute = Observables.Unit.Delay(TimeSpan.FromMilliseconds(500), sched);
+                var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
+                var executed = fixture
+                    .CreateCollection(scheduler: ImmediateScheduler.Instance);
+
+                var sub1 = fixture.Execute().Subscribe();
+                var sub2 = fixture.Execute().Subscribe();
+                sched.AdvanceByMs(100);
+
+                var sub3 = fixture.Execute().Subscribe();
+                sched.AdvanceByMs(200);
+                var sub4 = fixture.Execute().Subscribe();
+                sched.AdvanceByMs(100);
+
+                Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+                Assert.Empty(executed);
+
+                sched.AdvanceByMs(101);
+                Assert.Equal(2, executed.Count);
+                Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+
+                sched.AdvanceByMs(200);
+                Assert.Equal(3, executed.Count);
+                Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+
+                sched.AdvanceByMs(100);
+                Assert.Equal(4, executed.Count);
+                Assert.False(fixture.IsExecuting.FirstAsync().Wait());
+            });
+        }
+
+        [Fact]
         public void ExecuteCanBeCancelled()
         {
             (new TestScheduler()).With(sched => {
@@ -537,6 +572,7 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, thrownExceptions.Count);
             Assert.Equal("oops", thrownExceptions[0].Message);
+            Assert.True(fixture.CanExecute.FirstAsync().Wait());
         }
 
         [Fact]
@@ -606,6 +642,17 @@ namespace ReactiveUI.Tests
 
             source.OnNext(Unit.Default);
             Assert.Equal(2, executionCount);
+        }
+
+        [Fact]
+        public void InvokeCommandWorksEvenIfTheSourceIsCold()
+        {
+            var executionCount = 0;
+            var fixture = ReactiveCommand.Create(() => ++executionCount);
+            var source = Observable.Return(Unit.Default);
+            source.InvokeCommand(fixture);
+
+            Assert.Equal(1, executionCount);
         }
 
         [Fact]
