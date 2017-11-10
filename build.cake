@@ -53,6 +53,7 @@ var githubRepository = "reactiveui";
 var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubRepository);
 
 var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+var androidHome = EnvironmentVariable("ANDROID_HOME");
 
 // Version
 var gitVersion = GitVersion();
@@ -115,6 +116,7 @@ Task("BuildEventBuilder")
             ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
         }
         .SetConfiguration("Release")
+		.WithProperty("AndroidSdkDirectory", androidHome)
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false));
@@ -195,6 +197,7 @@ Task("BuildReactiveUI")
                 ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog /m")
             }
             .WithTarget("build;pack") 
+			.WithProperty("AndroidSdkDirectory", androidHome)
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
@@ -207,12 +210,13 @@ Task("BuildReactiveUI")
 
     // Restore must be a separate step
     MSBuild("./src/ReactiveUI.sln", new MSBuildSettings() {
-                ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-restore.binlog /m")
-            }
-            .WithTarget("restore")
-            .WithProperty("Version", nugetVersion.ToString())
-            .SetVerbosity(Verbosity.Minimal));
+            ToolPath = msBuildPath,
+            ArgumentCustomization = args => args.Append("/bl:reactiveui-restore.binlog /m")
+        }
+        .WithTarget("restore")
+		.WithProperty("AndroidSdkDirectory", androidHome)
+        .WithProperty("Version", nugetVersion.ToString())
+        .SetVerbosity(Verbosity.Minimal));
     
     build("./src/ReactiveUI.sln");
 });
