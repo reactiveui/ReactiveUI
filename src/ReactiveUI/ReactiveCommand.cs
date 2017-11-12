@@ -30,11 +30,11 @@ namespace ReactiveUI
     /// thread. Importantly, no scheduling is performed against input observables (the <c>canExecute</c> and execution pipelines).
     /// </para>
     /// <para>
-    /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.    
+    /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
     /// <see cref="Create"/> can be used when your execution logic is synchronous.
     /// <see cref="CreateFromObservable{TResult}(Func{IObservable{TResult}}, IObservable{bool}, IScheduler)"/> and
-    /// <see cref="CreateFromTask(Func{Task}, IObservable{bool}, IScheduler)"/> (and overloads) can be used for asynchronous 
-    /// execution logic. Optionally, you can provide an observable that governs the availability of the command for execution, 
+    /// <see cref="CreateFromTask(Func{Task}, IObservable{bool}, IScheduler)"/> (and overloads) can be used for asynchronous
+    /// execution logic. Optionally, you can provide an observable that governs the availability of the command for execution,
     /// as well as a scheduler to which events will be delivered.
     /// </para>
     /// <para>
@@ -776,7 +776,20 @@ namespace ReactiveUI
             this.synchronizedExecutionInfo = Subject.Synchronize(this.executionInfo, outputScheduler);
             this.isExecuting = this
                 .synchronizedExecutionInfo
-                .Select(x => x.Demarcation != ExecutionDemarcation.Ended && x.Demarcation != ExecutionDemarcation.EndWithException)
+                .Scan(
+                    0,
+                    (acc, next) => {
+                        if (next.Demarcation == ExecutionDemarcation.Begin) {
+                            return acc + 1;
+                        }
+
+                        if (next.Demarcation == ExecutionDemarcation.End) {
+                            return acc - 1;
+                        }
+
+                        return acc;
+                    })
+                .Select(inFlightCount => inFlightCount > 0)
                 .StartWith(false)
                 .DistinctUntilChanged()
                 .Replay(1)
@@ -838,15 +851,13 @@ namespace ReactiveUI
                             return Observable<TResult>.Empty;
                         })
                     .Concat(this.execute(parameter))
-                    .Do(
-                        result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)),
-                        () => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnded()))
+                    .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
                     .Catch<TResult, Exception>(
                         ex => {
-                            this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
                             exceptions.OnNext(ex);
                             return Observable.Throw<TResult>(ex);
                         })
+                    .Finally(() => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
                     .PublishLast()
                     .RefCount()
                     .ObserveOn(this.outputScheduler);
@@ -869,8 +880,7 @@ namespace ReactiveUI
         {
             Begin,
             Result,
-            EndWithException,
-            Ended
+            End
         }
 
         private struct ExecutionInfo
@@ -884,35 +894,18 @@ namespace ReactiveUI
                 this.result = result;
             }
 
-            public ExecutionDemarcation Demarcation
-            {
-                get { return this.demarcation; }
-            }
+            public ExecutionDemarcation Demarcation => this.demarcation;
 
-            public TResult Result
-            {
-                get { return this.result; }
-            }
+            public TResult Result => this.result;
 
-            public static ExecutionInfo CreateBegin()
-            {
-                return new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
-            }
+            public static ExecutionInfo CreateBegin() =>
+                new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
 
-            public static ExecutionInfo CreateResult(TResult result)
-            {
-                return new ExecutionInfo(ExecutionDemarcation.Result, result);
-            }
+            public static ExecutionInfo CreateResult(TResult result) =>
+                new ExecutionInfo(ExecutionDemarcation.Result, result);
 
-            public static ExecutionInfo CreateFail()
-            {
-                return new ExecutionInfo(ExecutionDemarcation.EndWithException, default(TResult));
-            }
-
-            public static ExecutionInfo CreateEnded()
-            {
-                return new ExecutionInfo(ExecutionDemarcation.Ended, default(TResult));
-            }
+            public static ExecutionInfo CreateEnd() =>
+                new ExecutionInfo(ExecutionDemarcation.End, default(TResult));
         }
     }
 
@@ -1068,8 +1061,7 @@ namespace ReactiveUI
                 .Select(_ => Unit.Default)
                 .StartWith(Unit.Default);
 
-            return @this
-                .WithLatestFrom(canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
+            return WithLatestFromFixed(@this, canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => command.Execute(ii.Value))
                 .Subscribe();
@@ -1086,8 +1078,7 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> @this, ReactiveCommandBase<T, TResult> command)
         {
-            return @this
-                .WithLatestFrom(command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
+            return WithLatestFromFixed(@this, command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
                 .Where(ii => ii.CanExecute)
                 .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
@@ -1113,8 +1104,7 @@ namespace ReactiveUI
                     .StartWith(c))
                 .Switch();
 
-            return @this
-                .WithLatestFrom(commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
+            return WithLatestFromFixed(@this, commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => ii.Command.Execute(ii.Value))
                 .Subscribe();
@@ -1139,12 +1129,26 @@ namespace ReactiveUI
                     .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T))))
                 .Switch();
 
-            return @this
-                .WithLatestFrom(invocationInfo, (value, ii) => ii.WithValue(value))
+            return WithLatestFromFixed(@this, invocationInfo, (value, ii) => ii.WithValue(value))
                 .Where(ii => ii.CanExecute)
                 .SelectMany(ii => ii.Command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
         }
+
+        // See https://github.com/Reactive-Extensions/Rx.NET/issues/444
+        private static IObservable<TResult> WithLatestFromFixed<TLeft, TRight, TResult>(
+            IObservable<TLeft> @this,
+            IObservable<TRight> other,
+            Func<TLeft, TRight, TResult> resultSelector) =>
+            @this
+                .Publish(
+                    os =>
+                            other
+                                .Select(
+                                    a =>
+                                        os
+                                            .Select(b => resultSelector(b, a)))
+                                .Switch());
 
         private static class InvokeCommandInfo
         {
