@@ -195,7 +195,7 @@ Task("BuildReactiveUI")
                 ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog")
             }
             .WithTarget("build;pack") 
-            .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
+            .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
             // Due to https://github.com/NuGet/Home/issues/4790 and https://github.com/NuGet/Home/issues/4337 we
