@@ -53,6 +53,7 @@ var githubRepository = "reactiveui";
 var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubRepository);
 
 var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+var androidHome = EnvironmentVariable("ANDROID_HOME");
 
 // Version
 var gitVersion = GitVersion();
@@ -64,16 +65,16 @@ var buildVersion = gitVersion.FullBuildMetaData;
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
-var packageWhitelist = new[] { "ReactiveUI-Testing",
-                               "ReactiveUI-Events",
-                               "ReactiveUI-Events-WPF",
-                               "ReactiveUI-Events-XamForms",
+var packageWhitelist = new[] { "ReactiveUI.Testing",
+                               "ReactiveUI.Events",
+                               "ReactiveUI.Events.WPF",
+                               "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
-                               "ReactiveUI-AndroidSupport",
-                               "ReactiveUI-Blend",
-                               "ReactiveUI-WPF",
-                               "ReactiveUI-Winforms",
-                               "ReactiveUI-XamForms" };
+                               "ReactiveUI.AndroidSupport",
+                               "ReactiveUI.Blend",
+                               "ReactiveUI.WPF",
+                               "ReactiveUI.Winforms",
+                               "ReactiveUI.XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -112,9 +113,10 @@ Task("BuildEventBuilder")
 
     MSBuild(solution, new MSBuildSettings() {
             ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog")
+            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
         }
         .SetConfiguration("Release")
+		.WithProperty("AndroidSdkDirectory", androidHome)
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false));
@@ -192,9 +194,10 @@ Task("BuildReactiveUI")
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog")
+                ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog /m")
             }
             .WithTarget("build;pack") 
+            .WithProperty("AndroidSdkDirectory", androidHome)
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
@@ -207,12 +210,13 @@ Task("BuildReactiveUI")
 
     // Restore must be a separate step
     MSBuild("./src/ReactiveUI.sln", new MSBuildSettings() {
-                ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-restore.binlog")
-            }
-            .WithTarget("restore")
-            .WithProperty("Version", nugetVersion.ToString())
-            .SetVerbosity(Verbosity.Minimal));
+            ToolPath = msBuildPath,
+            ArgumentCustomization = args => args.Append("/bl:reactiveui-restore.binlog /m")
+        }
+        .WithTarget("restore")
+		.WithProperty("AndroidSdkDirectory", androidHome)
+        .WithProperty("Version", nugetVersion.ToString())
+        .SetVerbosity(Verbosity.Minimal));
     
     build("./src/ReactiveUI.sln");
 });
