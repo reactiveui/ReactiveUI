@@ -39,10 +39,10 @@ namespace EventBuilder.Platforms
 
                 var package = repo.FindPackagesById(_packageName).Single(x => x.IsLatestVersion);
 
-                packageManager.InstallPackage(package.Id);
-
                 Log.Debug("Using Xamarin Forms {Version} released on {Published}", package.Version, package.Published);
                 Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
+
+                packageManager.InstallPackage(package.Id);
             });
 
             var xamarinForms =
