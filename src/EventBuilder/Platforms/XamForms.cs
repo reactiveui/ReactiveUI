@@ -19,6 +19,8 @@ namespace EventBuilder.Platforms
         {
             var packageUnzipPath = Environment.CurrentDirectory;
 
+            Log.Debug("Package unzip path is {PackageUnzipPath}", packageUnzipPath);
+
             var retryPolicy = Policy
                 .Handle<Exception>()
                 .WaitAndRetry(
@@ -39,10 +41,10 @@ namespace EventBuilder.Platforms
 
                 var package = repo.FindPackagesById(_packageName).Single(x => x.IsLatestVersion);
 
-                packageManager.InstallPackage(package.Id);
-
                 Log.Debug("Using Xamarin Forms {Version} released on {Published}", package.Version, package.Published);
                 Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
+
+                packageManager.InstallPackage(package, ignoreDependencies: true, allowPrereleaseVersions: false);
             });
 
             var xamarinForms =

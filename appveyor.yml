@@ -16,7 +16,9 @@
     NUGET_APIKEY:
       secure: cANUegIQhgeZ7Yg4sosXNGmFF33i77nTriEjaeniQ4S26btcwYsopOO3qXKlbrvf
     SIGNCLIENT_SECRET:
-      secure: MMu26EDCyAEM/Vfj2kyTMVdvVXd3jhpqYAogqQ9/+HYytbwOHvna7G0jSmrluhez
+      secure: TGMBTw6fMix/D/hPuoS6J6XQdY5L1hlL6JPpzgKBbDg=
+    SIGNCLIENT_USER:
+      secure: wwm115V/GOIkqGLbOom1aGBqkMQy6REFKPaG8P0b4//f0r01dc9pTWruOxLyi4X8
   init:
   - mkdir %ANDROID_HOME%"
   - cd "%ANDROID_HOME%"
@@ -62,7 +64,9 @@
     NUGET_APIKEY:
       secure: KTszzEEs33kbeqkpGGMvM58elvNLeTJhytpv7s9fPHoY4ZZmk5fMwofKDtK2lhno
     SIGNCLIENT_SECRET:
-      secure: MMu26EDCyAEM/Vfj2kyTMVdvVXd3jhpqYAogqQ9/+HYytbwOHvna7G0jSmrluhez
+      secure: TGMBTw6fMix/D/hPuoS6J6XQdY5L1hlL6JPpzgKBbDg=
+    SIGNCLIENT_USER:
+      secure: wwm115V/GOIkqGLbOom1aGBqkMQy6REFKPaG8P0b4//f0r01dc9pTWruOxLyi4X8
   init:
   - mkdir %ANDROID_HOME%"
   - cd "%ANDROID_HOME%"
