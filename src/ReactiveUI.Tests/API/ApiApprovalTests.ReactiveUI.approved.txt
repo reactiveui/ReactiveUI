@@ -672,9 +672,9 @@ namespace ReactiveUI
     }
     public class static RoutableViewModelMixin
     {
-        public static System.IDisposable WhenNavigatedTo(this ReactiveUI.IRoutableViewModel This, System.Func<System.IDisposable> onNavigatedTo) { }
-        public static System.IObservable<System.Reactive.Unit> WhenNavigatedToObservable(this ReactiveUI.IRoutableViewModel This) { }
-        public static System.IObservable<System.Reactive.Unit> WhenNavigatingFromObservable(this ReactiveUI.IRoutableViewModel This) { }
+        public static System.IDisposable WhenNavigatedTo(this ReactiveUI.IRoutableViewModel @this, System.Func<System.IDisposable> onNavigatedTo) { }
+        public static System.IObservable<System.Reactive.Unit> WhenNavigatedToObservable(this ReactiveUI.IRoutableViewModel @this) { }
+        public static System.IObservable<System.Reactive.Unit> WhenNavigatingFromObservable(this ReactiveUI.IRoutableViewModel @this) { }
     }
     [System.Runtime.Serialization.DataContractAttribute()]
     public class RoutingState : ReactiveUI.ReactiveObject
