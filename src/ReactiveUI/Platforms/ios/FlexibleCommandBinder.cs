@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
@@ -9,10 +9,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Input;
-
-#if UIKIT
 using UIKit;
-#endif
 
 namespace ReactiveUI
 {
@@ -52,9 +49,7 @@ namespace ReactiveUI
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-#if MONO
             where TEventArgs : EventArgs
-#endif
         {
             throw new NotImplementedException();
         }
@@ -119,7 +114,6 @@ namespace ReactiveUI
             return compDisp;
         }
 
-#if UIKIT
         /// <summary>
         /// Creates a commands binding from event and a property
         /// </summary>
@@ -156,6 +150,5 @@ namespace ReactiveUI
 
             return compDisp;
         }
-#endif
     }
 }
