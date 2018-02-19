@@ -62,14 +62,14 @@ namespace ReactiveUI.Tests.Subjects
             /// </summary>
             /// <param name="u"></param>
             /// <returns></returns>
-            private static TwoWayConstraint<double, double> UnitsToScaleConstraintFactory( UnitsEnum u )
+            private static TwoWayConverter<double, double> UnitsToScaleConstraintFactory( UnitsEnum u )
             {
                 switch (u)
                 {
                 case UnitsEnum.Meters:
-                    return Constraint.Multiply( 1.0 );
+                    return Converter.Multiply( 1.0 );
                 case UnitsEnum.Milliters:
-                    return Constraint.Multiply( 1000 );
+                    return Converter.Multiply( 1000 );
                 default:
                     throw new ArgumentOutOfRangeException( nameof(u), u, null );
                 }

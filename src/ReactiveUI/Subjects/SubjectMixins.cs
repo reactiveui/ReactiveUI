@@ -125,7 +125,7 @@ namespace ReactiveUI.Subjects
         public static ISubject<TTarget> CombineLatest<TSource,TTarget,TU>
             ( this ISubject<TSource> This
             , IObservable<TU> u
-            , Func<TU, TwoWayConstraint<TSource, TTarget>> constraintGenerator
+            , Func<TU, TwoWayConverter<TSource, TTarget>> constraintGenerator
             , IObserver<Option<Exception>> catchWith 
             )
         {
@@ -137,7 +137,7 @@ namespace ReactiveUI.Subjects
         /// </summary>
         public static ISubject<TTarget> Select<TSource, TTarget>
             ( this ISubject<TSource> This
-            , TwoWayConstraint<TSource, TTarget> converter
+            , TwoWayConverter<TSource, TTarget> converter
             , IObserver<Option<Exception>> catchWith 
             )
         {

@@ -203,7 +203,7 @@ namespace ReactiveUI.Tests.Subjects
 
             // This is our view model. It should map to the model via
             // the user preference ``scale``.
-            var view = model.CombineLatest(scale, Constraint.Multiply, errors);
+            var view = model.CombineLatest(scale, Converter.Multiply, errors);
 
             // Check that the view is correct initially
             Assert.Equal(mtoinches, (await view.FirstAsync().ToTask()));
