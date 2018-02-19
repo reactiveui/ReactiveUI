@@ -311,7 +311,7 @@ Task("PinNuGetDependencies")
         var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
 
         // see https://github.com/cake-contrib/Cake.PinNuGetDependency
-        PinNuGetDependency(packagePath, "reactiveui");
+        PinNuGetDependency(packagePath, "ReactiveUI");
     }
 });
 
