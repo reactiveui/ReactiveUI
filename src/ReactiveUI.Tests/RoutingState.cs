@@ -1,10 +1,11 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
 using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using Xunit;
 
 namespace ReactiveUI.Routing.Tests
@@ -50,18 +51,18 @@ namespace ReactiveUI.Routing.Tests
             var input = new TestViewModel() { SomeProp = "Foo" };
             var fixture = new RoutingState();
 
-            Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync());
-            await fixture.Navigate.Execute(new TestViewModel());
+            Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync().ToTask());
+            await fixture.Navigate.Execute(new TestViewModel()).ToTask();
 
             Assert.Equal(1, fixture.NavigationStack.Count);
-            Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync());
+            Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync().ToTask());
 
-            await fixture.Navigate.Execute(new TestViewModel());
+            await fixture.Navigate.Execute(new TestViewModel()).ToTask();
 
             Assert.Equal(2, fixture.NavigationStack.Count);
-            Assert.True(await fixture.NavigateBack.CanExecute.FirstAsync());
+            Assert.True(await fixture.NavigateBack.CanExecute.FirstAsync().ToTask());
 
-            await fixture.NavigateBack.Execute();
+            await fixture.NavigateBack.Execute().ToTask();
 
             Assert.Equal(1, fixture.NavigationStack.Count);
         }
