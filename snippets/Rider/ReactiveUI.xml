@@ -1,8 +1,8 @@
 <templateSet group="ReactiveUI">
   <template name="ruiprop" value="public $type$ $propertyName$ { get =&gt; $fieldName$; set =&gt; this.RaiseAndSetIfChanged(ref $fieldName$, value); }" description="Inserts a ReactiveUI property" toReformat="false" toShortenFQNames="true">
-    <variable name="type" expression="" defaultValue="string" alwaysStopAt="true" />
-    <variable name="propertyName" expression="" defaultValue="MyProperty" alwaysStopAt="true" />
-    <variable name="fieldName" expression="" defaultValue="myField" alwaysStopAt="true" />
+    <variable name="type" expression="" defaultValue="&quot;string&quot;" alwaysStopAt="true" />
+    <variable name="propertyName" expression="" defaultValue="&quot;MyProperty&quot;" alwaysStopAt="true" />
+    <variable name="fieldName" expression="" defaultValue="&quot;myField&quot;" alwaysStopAt="true" />
     <context>
       <option name="CSS" value="false" />
       <option name="HTML" value="false" />
@@ -14,8 +14,8 @@
     </context>
   </template>
   <template name="ruib" value="this.Bind(ViewModel, vm =&gt; vm.$vmProperty$, v =&gt; v.$viewProperty$).DisposeWith(d);" description="Inserts a RactiveUI Bind" toReformat="false" toShortenFQNames="true">
-    <variable name="vmProperty" expression="" defaultValue="Property" alwaysStopAt="true" />
-    <variable name="viewProperty" expression="" defaultValue="Control.Property" alwaysStopAt="true" />
+    <variable name="vmProperty" expression="" defaultValue="&quot;Property&quot;" alwaysStopAt="true" />
+    <variable name="viewProperty" expression="" defaultValue="&quot;Control.Property&quot;" alwaysStopAt="true" />
     <context>
       <option name="CSS" value="false" />
       <option name="HTML" value="false" />
@@ -27,8 +27,8 @@
     </context>
   </template>
   <template name="ruibc" value="this.BindCommand(ViewModel, vm =&gt; vm.$command$, v =&gt; v.$control$).DisposeWith(d);" description="Inserts a RactiveUI BindCommand" toReformat="false" toShortenFQNames="true">
-    <variable name="command" expression="" defaultValue="Command" alwaysStopAt="true" />
-    <variable name="control" expression="" defaultValue="Control" alwaysStopAt="true" />
+    <variable name="command" expression="" defaultValue="&quot;Command&quot;" alwaysStopAt="true" />
+    <variable name="control" expression="" defaultValue="&quot;Control&quot;" alwaysStopAt="true" />
     <context>
       <option name="CSS" value="false" />
       <option name="HTML" value="false" />
@@ -40,8 +40,8 @@
     </context>
   </template>
   <template name="ruiowb" value="this.OneWayBind(ViewModel, vm =&gt; vm.$vmProperty$, v =&gt; v.$viewProperty$).DisposeWith(d);" description="Inserts a RactiveUI OneWayBind" toReformat="false" toShortenFQNames="true">
-    <variable name="vmProperty" expression="" defaultValue="Property" alwaysStopAt="true" />
-    <variable name="viewProperty" expression="" defaultValue="Control.Property" alwaysStopAt="true" />
+    <variable name="vmProperty" expression="" defaultValue="&quot;Property&quot;" alwaysStopAt="true" />
+    <variable name="viewProperty" expression="" defaultValue="&quot;Control.Property&quot;" alwaysStopAt="true" />
     <context>
       <option name="CSS" value="false" />
       <option name="HTML" value="false" />
