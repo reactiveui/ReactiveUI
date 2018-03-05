@@ -497,7 +497,7 @@ namespace ReactiveUI
         public static ReactiveUI.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Reactive.Concurrency.IScheduler scheduler) { }
         public static ReactiveUI.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Nullable<System.TimeSpan> withDelay = null, System.Action<System.Exception> onError = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
     }
-    public abstract class ReactiveCommand : System.IDisposable, System.Windows.Input.ICommand
+    public abstract class ReactiveCommand : ReactiveUI.IHandleObservableErrors, System.IDisposable, System.Windows.Input.ICommand
     {
         protected ReactiveCommand() { }
         public abstract System.IObservable<bool> CanExecute { get; }
