@@ -16,6 +16,7 @@ issue-labels-include:
 - windows-forms
 - universal-windows-platform
 - windows-presentation-foundation
+- caboodle
 - tizen
 - xamarin-android
 - xamarin-forms
@@ -45,6 +46,9 @@ issue-labels-alias:
     - name:    windows-presentation-foundation
       header:  Windows Presentation Foundation
       plural:  Windows Presentation Foundation
+    - tizen:   caboodle
+      header:  Caboodle
+      plural:  Caboodle
     - tizen:   tizen
       header:  Tizen
       plural:  Tizen
