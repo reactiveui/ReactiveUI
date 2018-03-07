@@ -85,6 +85,10 @@ namespace EventBuilder
                         platform = new Android(_referenceAssembliesLocation);
                         break;
 
+                    case AutoPlatform.Caboodle:
+                        platform = new Caboodle();
+                        break;
+
                     case AutoPlatform.iOS:
                         platform = new iOS(_referenceAssembliesLocation);
                         break;
