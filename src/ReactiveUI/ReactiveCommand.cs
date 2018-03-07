@@ -854,7 +854,7 @@ namespace ReactiveUI
                     .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
                     .Catch<TResult, Exception>(
                         ex => {
-                            exceptions.OnNext(ex);
+                            exceptions.OnNext(GetExecuteException(ex, parameter));
                             return Observable.Throw<TResult>(ex);
                         })
                     .Finally(() => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
@@ -862,9 +862,20 @@ namespace ReactiveUI
                     .RefCount()
                     .ObserveOn(this.outputScheduler);
             } catch (Exception ex) {
-                this.exceptions.OnNext(ex);
+                this.exceptions.OnNext(GetExecuteException(ex, parameter));
                 return Observable.Throw<TResult>(ex);
             }
+        }
+
+        /// <summary>
+        /// Allows to preprocess exceptions pushed to <see cref="ThrownExceptions"/> from <see cref="Execute(TParam)"/>
+        /// </summary>
+        /// <param name="ex">original exception</param>
+        /// <param name="parameter">parameter passed to <see cref="Execute(TParam)"</param>
+        /// <returns>Converted exception</returns>
+        protected virtual Exception GetExecuteException(Exception ex, object parameter)
+        {
+            return ex;
         }
 
         protected override void Dispose(bool disposing)
