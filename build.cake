@@ -116,7 +116,7 @@ Task("BuildEventBuilder")
             ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
         }
         .SetConfiguration("Release")
-		.WithProperty("AndroidSdkDirectory", androidHome)
+		.WithProperty("AndroidSdkDirectory", androidHome.Quote())
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false));
@@ -197,13 +197,14 @@ Task("BuildReactiveUI")
                 ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog /m")
             }
             .WithTarget("build;pack") 
-            .WithProperty("AndroidSdkDirectory", androidHome)
+            .WithProperty("AndroidSdkDirectory", androidHome.Quote())
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
             // Due to https://github.com/NuGet/Home/issues/4790 and https://github.com/NuGet/Home/issues/4337 we
             // have to pass a version explicitly
             .WithProperty("Version", nugetVersion.ToString())
+            .WithProperty("InformationalVersion", informationalVersion)
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));
     };
@@ -214,7 +215,7 @@ Task("BuildReactiveUI")
             ArgumentCustomization = args => args.Append("/bl:reactiveui-restore.binlog /m")
         }
         .WithTarget("restore")
-		.WithProperty("AndroidSdkDirectory", androidHome)
+		.WithProperty("AndroidSdkDirectory", androidHome.Quote())
         .WithProperty("Version", nugetVersion.ToString())
         .SetVerbosity(Verbosity.Minimal));
     
@@ -310,7 +311,7 @@ Task("PinNuGetDependencies")
         var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
 
         // see https://github.com/cake-contrib/Cake.PinNuGetDependency
-        PinNuGetDependency(packagePath, "reactiveui");
+        PinNuGetDependency(packagePath, "ReactiveUI");
     }
 });
 

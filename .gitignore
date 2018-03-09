@@ -244,3 +244,4 @@ src/ReactiveUI.Events*/Events_*.cs
 .DS_Store
 
 src/*.Tests/API/*.received.txt
+.idea/
