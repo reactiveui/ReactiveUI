@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
@@ -9,9 +9,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Input;
-#if UIKIT
-using UIKit;
-#endif
 
 namespace ReactiveUI
 {
@@ -117,45 +114,6 @@ namespace ReactiveUI
 
             return compDisp;
         }
-
-#if UIKIT
-        /// <summary>
-        /// Creates a commands binding from event and a property
-        /// </summary>
-        protected static IDisposable ForTargetAction(ICommand command, object target, IObservable<object> commandParameter, PropertyInfo enabledProperty)
-        {
-            commandParameter = commandParameter ?? Observable.Return(target);
-
-            object latestParam = null;
-
-            IDisposable actionDisp = null;
-
-            var ctl = target as UIControl;
-            if (ctl != null) {
-                var eh = new EventHandler((o, e) => {
-                    if (command.CanExecute(latestParam)) command.Execute(latestParam);
-                });
-
-                ctl.AddTarget(eh, UIControlEvent.TouchUpInside);
-                actionDisp = Disposable.Create(() => ctl.RemoveTarget(eh, UIControlEvent.TouchUpInside));
-            }
-
-            var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
-            if (enabledSetter == null) return actionDisp;
-
-            // Initial enabled state
-            enabledSetter(target, command.CanExecute(latestParam), null);
-
-            var compDisp = new CompositeDisposable(
-                actionDisp,
-                commandParameter.Subscribe(x => latestParam = x),
-                Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
-                    .Select(_ => command.CanExecute(latestParam))
-                    .Subscribe(x => enabledSetter(target, x, null)));
-
-            return compDisp;
-        }
-#endif
     }
 }
 
