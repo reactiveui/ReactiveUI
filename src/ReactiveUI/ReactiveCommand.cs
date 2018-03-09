@@ -554,7 +554,7 @@ namespace ReactiveUI
     }
 
     // non-generic reactive command functionality
-    public abstract partial class ReactiveCommand : IDisposable, ICommand
+    public abstract partial class ReactiveCommand : IDisposable, ICommand, IHandleObservableErrors
     {
         private EventHandler canExecuteChanged;
 
