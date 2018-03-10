@@ -41,12 +41,12 @@ namespace EventBuilder
             // allow app to be debugged in visual studio.
             if (Debugger.IsAttached) {
                 //args = "--help ".Split(' ');
-                args = "--platform=ios".Split(' ');
-                //args = new[]
-                //{
-                //    "--platform=none",
-                //    @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\Xamarin.iOS\v1.0\Xamarin.iOS.dll"
-                //};
+                //args = "--platform=caboodle".Split(' ');
+                args = new[]
+                {
+                    "--platform=caboodle",
+                    @"--reference=C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework"
+                };
             }
 
             // Parse in 'strict mode'; i.e. success or quit
@@ -86,7 +86,7 @@ namespace EventBuilder
                         break;
 
                     case AutoPlatform.Caboodle:
-                        platform = new Caboodle();
+                        platform = new Caboodle(_referenceAssembliesLocation);
                         break;
 
                     case AutoPlatform.iOS:
