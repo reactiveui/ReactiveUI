@@ -67,6 +67,7 @@ var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
 var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events",
+                               "ReactiveUI.Events.Caboodle",
                                "ReactiveUI.Events.WPF",
                                "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
