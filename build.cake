@@ -177,6 +177,7 @@ Task("GenerateEvents")
     };
 
     generate("android", "src/ReactiveUI.Events/");
+    generate("caboodle", "src/ReactiveUI.Events.Caboodle/");
     generate("ios", "src/ReactiveUI.Events/");
     generate("mac", "src/ReactiveUI.Events/");
     generate("uwp", "src/ReactiveUI.Events/");
