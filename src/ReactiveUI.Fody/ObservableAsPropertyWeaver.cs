@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -42,9 +41,13 @@ namespace ReactiveUI.Fody
 
             var observableAsPropertyHelper = ModuleDefinition.FindType("ReactiveUI", "ObservableAsPropertyHelper`1", reactiveUI, "T");
             var observableAsPropertyAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ObservableAsPropertyAttribute", helpers);
-            var observableAsPropertyHelperGetValue = ModuleDefinition.Import(observableAsPropertyHelper.Resolve().Properties.Single(x => x.Name == "Value").GetMethod);
-            var exceptionType = ModuleDefinition.Import(typeof(Exception));
-            var exceptionConstructor = ModuleDefinition.Import(exceptionType.Resolve().GetConstructors().Single(x => x.Parameters.Count == 1));
+            var observableAsPropertyHelperGetValue = ModuleDefinition.ImportReference(observableAsPropertyHelper.Resolve().Properties.Single(x => x.Name == "Value").GetMethod);
+            var systemRuntimeName = ModuleDefinition.AssemblyReferences.FirstOrDefault(x => x.Name == "System.Runtime");
+            var exceptionDefinition = systemRuntimeName == null
+                ? ModuleDefinition.ImportReference(typeof(Exception)).Resolve() // Referenced from .NET Framework
+                : ModuleDefinition.AssemblyResolver.Resolve(systemRuntimeName).MainModule.Types.First(x => x.Name == "Exception"); // Referenced from .NET Standard
+            var constructorDefinition = exceptionDefinition.GetConstructors().Single(x => x.Parameters.Count == 1);
+            var exceptionConstructor = ModuleDefinition.ImportReference(constructorDefinition);
 
             foreach (var targetType in targetTypes)
             {
@@ -52,7 +55,7 @@ namespace ReactiveUI.Fody
                 {
                     var genericObservableAsPropertyHelper = observableAsPropertyHelper.MakeGenericInstanceType(property.PropertyType);
                     var genericObservableAsPropertyHelperGetValue = observableAsPropertyHelperGetValue.Bind(genericObservableAsPropertyHelper);
-                    ModuleDefinition.Import(genericObservableAsPropertyHelperGetValue);
+                    ModuleDefinition.ImportReference(genericObservableAsPropertyHelperGetValue);
 
                     // Declare a field to store the property value
                     var field = new FieldDefinition("$" + property.Name, FieldAttributes.Private, genericObservableAsPropertyHelper);
