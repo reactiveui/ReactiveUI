@@ -36,10 +36,6 @@
   - ps: for($i=0;$i -lt 30;$i++) { $response += "y`n"}; $response | cmd /c 'C:\android-sdk-windows\tools\bin\sdkmanager.bat 2>&1' --update
   build_script:
   - ./build.cmd
-  cache:
-  - tools -> build.*
-  - src\packages -> **\packages.config
-  - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
@@ -84,10 +80,6 @@
   - ps: for($i=0;$i -lt 30;$i++) { $response += "y`n"}; $response | cmd /c 'C:\android-sdk-windows\tools\bin\sdkmanager.bat 2>&1' --update
   build_script:
   - ./build.cmd
-  cache:
-  - tools -> build.*
-  - src\packages -> **\packages.config
-  - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
