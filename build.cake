@@ -17,7 +17,7 @@
 
 #tool "nuget:?package=GitReleaseManager&version=0.7.0"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
-#tool "nuget:?package=coveralls.io&version=1.3.4"
+#tool "nuget:?package=coveralls.io&version=1.4.2"
 #tool "nuget:?package=OpenCover&version=4.6.519"
 #tool "nuget:?package=ReportGenerator&version=2.5.11"
 #tool "nuget:?package=vswhere&version=2.4.1"
