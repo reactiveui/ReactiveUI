@@ -54,12 +54,18 @@ var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubR
 
 var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 var androidHome = EnvironmentVariable("ANDROID_HOME");
+if (string.IsNullOrEmpty(androidHome))
+{
+    throw new Exception("The ANDROID_HOME environment variable is not defined.");
+}
+
 
 // Version
 var gitVersion = GitVersion();
+
 var majorMinorPatch = gitVersion.MajorMinorPatch;
 var informationalVersion = gitVersion.InformationalVersion;
-var nugetVersion = gitVersion.NuGetVersion;
+var nugetVersion = gitVersion.NuGetVersionV2;
 var buildVersion = gitVersion.FullBuildMetaData;
 
 // Artifacts
