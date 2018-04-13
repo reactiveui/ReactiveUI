@@ -53,11 +53,6 @@ var githubRepository = "reactiveui";
 var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubRepository);
 
 var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
-var androidHome = EnvironmentVariable("ANDROID_HOME");
-if (string.IsNullOrEmpty(androidHome))
-{
-    throw new Exception("The ANDROID_HOME environment variable is not defined.");
-}
 
 
 // Version
@@ -122,7 +117,6 @@ Task("BuildEventBuilder")
             ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
         }
         .SetConfiguration("Release")
-		.WithProperty("AndroidSdkDirectory", androidHome.Quote())
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false));
@@ -203,7 +197,6 @@ Task("BuildReactiveUI")
                 ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog /m")
             }
             .WithTarget("build;pack") 
-            .WithProperty("AndroidSdkDirectory", androidHome.Quote())
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
@@ -221,7 +214,6 @@ Task("BuildReactiveUI")
             ArgumentCustomization = args => args.Append("/bl:reactiveui-restore.binlog /m")
         }
         .WithTarget("restore")
-		.WithProperty("AndroidSdkDirectory", androidHome.Quote())
         .WithProperty("Version", nugetVersion.ToString())
         .SetVerbosity(Verbosity.Minimal));
     
