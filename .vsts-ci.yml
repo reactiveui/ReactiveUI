@@ -26,6 +26,7 @@ steps:
   inputs:
     Contents: 'artifacts/*.nupkg'
     TargetFolder: '$(build.artifactstagingdirectory)\packages'
+    flattenFolders: true
   condition: always()
 
 - task: PublishBuildArtifacts@1
@@ -39,13 +40,14 @@ steps:
 - task: CopyFiles@2
   inputs:
     Contents: '**/*.binlog'
-    TargetFolder: '$(build.artifactstagingdirectory)\logs'
+    TargetFolder: '$(build.artifactstagingdirectory)\binlogs'
+    flattenFolders: true
   condition: always()
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Logs
   inputs:
-    pathToPublish: '$(build.artifactstagingdirectory)\logs'
+    pathToPublish: '$(build.artifactstagingdirectory)\binlogs'
     artifactType: container
     artifactName: Logs
   condition: always()
