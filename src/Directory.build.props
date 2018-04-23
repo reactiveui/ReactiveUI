@@ -15,7 +15,6 @@
     <Platform>AnyCPU</Platform>
     <DebugType>full</DebugType>
     <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
-    <IsLegacyProject>$(MSBuildProjectName.Equals('ReactiveUI.Wpf'))</IsLegacyProject>
   </PropertyGroup>
 
   <ItemGroup>

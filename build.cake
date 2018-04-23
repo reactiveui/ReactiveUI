@@ -207,8 +207,12 @@ Task("BuildReactiveUI")
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));
     };
-        
-    build("./src/ReactiveUI.sln");
+
+    foreach(var package in packageWhitelist)
+    {
+        build("./src/" + package + "/" + package + ".csproj");
+    }        
+    build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj");
 });
 
 Task("RunUnitTests")
