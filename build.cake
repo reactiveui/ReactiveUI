@@ -188,13 +188,13 @@ Task("BuildReactiveUI")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
-    Action<string> build = (solution) =>
+    Action<string,string> build = (solution, name) =>
     {
         Information("Building {0} using {1}", solution, msBuildPath);
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog /m /restore")
+                ArgumentCustomization = args => args.Append("/bl:reactiveui-build-" + name + ".binlog /m /restore")
             }
             .WithTarget("build;pack") 
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
@@ -210,9 +210,9 @@ Task("BuildReactiveUI")
 
     foreach(var package in packageWhitelist)
     {
-        build("./src/" + package + "/" + package + ".csproj");
+        build("./src/" + package + "/" + package + ".csproj", package);
     }        
-    build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj");
+    build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
 });
 
 Task("RunUnitTests")
