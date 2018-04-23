@@ -21,6 +21,11 @@ steps:
     SIGNCLIENT_SECRET: $(SignClientSecret)
     SIGNCLIENT_USER: $(SignClientUser)
     VSTS_ACCESS_TOKEN: $(System.AccessToken)
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: XUnit
+    testResultsFiles: 'artifacts\*tests*.xml'
     
 - task: CopyFiles@2
   inputs:
