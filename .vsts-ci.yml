@@ -20,12 +20,18 @@ steps:
   env:
     SIGNCLIENT_SECRET: $(SignClientSecret)
     SIGNCLIENT_USER: $(SignClientUser)
+    VSTS_ACCESS_TOKEN: $(System.AccessToken)
     
+- task: CopyFiles@2
+  inputs:
+    Contents: 'artifacts/*.nupkg'
+    TargetFolder: '$(build.artifactstagingdirectory)\packages'
+  condition: always()
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Package Artifacts
   inputs:
-    pathToPublish: artifacts
+    pathToPublish: '$(build.artifactstagingdirectory)\packages'
     artifactType: container
     artifactName: Packages
   condition: always()
