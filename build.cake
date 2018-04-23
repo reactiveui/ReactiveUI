@@ -194,7 +194,7 @@ Task("BuildReactiveUI")
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog /m")
+                ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog /m /restore")
             }
             .WithTarget("build;pack") 
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
@@ -207,16 +207,7 @@ Task("BuildReactiveUI")
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));
     };
-
-    // Restore must be a separate step
-    MSBuild("./src/ReactiveUI.sln", new MSBuildSettings() {
-            ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/bl:reactiveui-restore.binlog /m")
-        }
-        .WithTarget("restore")
-        .WithProperty("Version", nugetVersion.ToString())
-        .SetVerbosity(Verbosity.Minimal));
-    
+        
     build("./src/ReactiveUI.sln");
 });
 
