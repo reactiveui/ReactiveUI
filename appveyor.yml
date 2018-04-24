@@ -20,20 +20,9 @@
     SIGNCLIENT_USER:
       secure: wwm115V/GOIkqGLbOom1aGBqkMQy6REFKPaG8P0b4//f0r01dc9pTWruOxLyi4X8
   init:
-  - mkdir %ANDROID_HOME%"
-  - cd "%ANDROID_HOME%"
-  - appveyor DownloadFile "https://dl.google.com/android/repository/tools_r25.2.5-windows.zip"
-  - 7z x "tools_r25.2.5-windows.zip" > nul
   - cd "C:\projects\reactiveui"
   install:
   - nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
-  - echo y | "%ANDROID_HOME%\tools\android.bat" --silent update sdk --no-ui --all --filter platform-tools,tools,build-tools-26.0.2,android-26,android-25,extra-google-m2repository,extra-android-m2repository
-  # on windows we need to accept sublicenses for the new tooling, wee. 30 is an arbitrary number,
-  # but should be the maximum number of licenses we explicitly need to type "Y ENTER" for.
-  # also, the sdkmanager in all its glory leaks a bit of output to stderr, and powershell
-  # and appveyor interpret that as errors, and blows up. so, when piping in our "Y ENTER"
-  # responses, we invoke cmd so we can redirect stderr to stdout, and tell it to --update itself.
-  - ps: for($i=0;$i -lt 30;$i++) { $response += "y`n"}; $response | cmd /c 'C:\android-sdk-windows\tools\bin\sdkmanager.bat 2>&1' --update
   build_script:
   - ./build.cmd
   cache:
@@ -68,20 +57,9 @@
     SIGNCLIENT_USER:
       secure: wwm115V/GOIkqGLbOom1aGBqkMQy6REFKPaG8P0b4//f0r01dc9pTWruOxLyi4X8
   init:
-  - mkdir %ANDROID_HOME%"
-  - cd "%ANDROID_HOME%"
-  - appveyor DownloadFile "https://dl.google.com/android/repository/tools_r25.2.5-windows.zip"
-  - 7z x "tools_r25.2.5-windows.zip" > nul
   - cd "C:\projects\reactiveui"
   install:
   - nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
-  - echo y | "%ANDROID_HOME%\tools\android.bat" --silent update sdk --no-ui --all --filter platform-tools,tools,build-tools-26.0.2,android-26,android-25,extra-google-m2repository,extra-android-m2repository
-  # on windows we need to accept sublicenses for the new tooling, wee. 30 is an arbitrary number,
-  # but should be the maximum number of licenses we explicitly need to type "Y ENTER" for.
-  # also, the sdkmanager in all its glory leaks a bit of output to stderr, and powershell
-  # and appveyor interpret that as errors, and blows up. so, when piping in our "Y ENTER"
-  # responses, we invoke cmd so we can redirect stderr to stdout, and tell it to --update itself.
-  - ps: for($i=0;$i -lt 30;$i++) { $response += "y`n"}; $response | cmd /c 'C:\android-sdk-windows\tools\bin\sdkmanager.bat 2>&1' --update
   build_script:
   - ./build.cmd
   cache:

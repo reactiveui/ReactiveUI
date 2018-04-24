@@ -15,7 +15,6 @@
     <Platform>AnyCPU</Platform>
     <DebugType>full</DebugType>
     <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
-    <IsLegacyProject>$(MSBuildProjectName.Equals('ReactiveUI.Wpf'))</IsLegacyProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,12 +25,12 @@
   <Choose>
     <When Condition="'$(IsLegacyProject)' != 'true'">
       <ItemGroup>
-        <PackageReference Include="MSBuild.Sdk.Extras" Version="1.1.0-preview.2.build.8" PrivateAssets="All" />
+        <PackageReference Include="MSBuild.Sdk.Extras" Version="1.3.1" PrivateAssets="All" />
       </ItemGroup>
     </When>
   </Choose>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.3.1" PrivateAssets="All" /> 
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.0" PrivateAssets="All" /> 
   </ItemGroup>
 </Project>
