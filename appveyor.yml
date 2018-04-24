@@ -25,10 +25,6 @@
   - nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
-  cache:
-  - tools -> build.*
-  - src\packages -> **\packages.config
-  - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
@@ -62,10 +58,6 @@
   - nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
-  cache:
-  - tools -> build.*
-  - src\packages -> **\packages.config
-  - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
   - path: artifacts/*.nupkg
   - path: '**/bin/*'
