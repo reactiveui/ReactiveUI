@@ -163,7 +163,11 @@ We're also looking for people to assist with code reviews of ReactiveUI contribu
 <img src="https://opencollective.com/reactiveui/contributors.png?avatarHeight=64&button=true&width=1400&margin=3"/>
 
 
-## Core Team
+<h2 align="center">.NET Foundation</h2>
+
+ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). Other projects that are associated with the foundation include the Microsoft .NET Compiler Platform ("Roslyn") as well as the Microsoft ASP.NET family of projects, Microsoft .NET Core & Xamarin Forms.
+
+<h2 align="center">Core Team</h2>
 
 <table>
   <tbody>
