@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFrameworks>net452</TargetFrameworks>
+    <TargetFramework>net452</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit" Version="2.3.1" />
-    <PackageReference Include="xunit.runner.console" Version="2.3.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="xunit" Version="2.4.0-beta.2.build3984" />
+    <PackageReference Include="xunit.runner.console" Version="2.4.0-beta.2.build3984" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.2.build3984" />
     <PackageReference Include="Xunit.StaFact" Version="0.2.9" />
     <PackageReference Include="ApprovalTests" Version=" 3.0.13" />
     <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
