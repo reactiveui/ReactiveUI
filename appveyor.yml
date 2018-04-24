@@ -37,9 +37,7 @@
   test: off
   on_failure:
   - ps: Get-ChildItem *.binlog -recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-  on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-
+  
 # configuration for "develop" branch
 -
   image: Visual Studio 2017
@@ -76,5 +74,3 @@
   test: off
   on_failure:
   - ps: Get-ChildItem *.binlog -recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-  on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
