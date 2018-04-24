@@ -6,21 +6,21 @@
 // ADDINS
 //////////////////////////////////////////////////////////////////////
 
-#addin "nuget:?package=Cake.FileHelpers&version=1.0.4"
-#addin "nuget:?package=Cake.Coveralls&version=0.4.0"
-#addin "nuget:?package=Cake.PinNuGetDependency&version=0.1.0.1495792899"
-#addin "nuget:?package=Cake.Powershell&version=0.3.5"
+#addin "nuget:?package=Cake.FileHelpers&version=2.0.0"
+#addin "nuget:?package=Cake.Coveralls&version=0.8.0"
+#addin "nuget:?package=Cake.PinNuGetDependency&version=3.0.1"
+#addin "nuget:?package=Cake.Powershell&version=0.4.3"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "nuget:?package=GitReleaseManager&version=0.6.0"
+#tool "nuget:?package=GitReleaseManager&version=0.7.0"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
-#tool "nuget:?package=coveralls.io&version=1.3.4"
+#tool "nuget:?package=coveralls.io&version=1.4.2"
 #tool "nuget:?package=OpenCover&version=4.6.519"
-#tool "nuget:?package=ReportGenerator&version=2.5.11"
-#tool "nuget:?package=vswhere&version=2.1.4"
+#tool "nuget:?package=ReportGenerator&version=3.1.2"
+#tool "nuget:?package=vswhere&version=2.4.1"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -53,13 +53,14 @@ var githubRepository = "reactiveui";
 var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubRepository);
 
 var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
-var androidHome = EnvironmentVariable("ANDROID_HOME");
+
 
 // Version
 var gitVersion = GitVersion();
+
 var majorMinorPatch = gitVersion.MajorMinorPatch;
 var informationalVersion = gitVersion.InformationalVersion;
-var nugetVersion = gitVersion.NuGetVersion;
+var nugetVersion = gitVersion.NuGetVersionV2;
 var buildVersion = gitVersion.FullBuildMetaData;
 
 // Artifacts
@@ -116,7 +117,6 @@ Task("BuildEventBuilder")
             ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
         }
         .SetConfiguration("Release")
-		.WithProperty("AndroidSdkDirectory", androidHome.Quote())
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false));
@@ -188,16 +188,15 @@ Task("BuildReactiveUI")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
-    Action<string> build = (solution) =>
+    Action<string,string> build = (solution, name) =>
     {
         Information("Building {0} using {1}", solution, msBuildPath);
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-build.binlog /m")
+                ArgumentCustomization = args => args.Append("/bl:reactiveui-build-" + name + ".binlog /m /restore")
             }
             .WithTarget("build;pack") 
-            .WithProperty("AndroidSdkDirectory", androidHome.Quote())
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
@@ -209,17 +208,11 @@ Task("BuildReactiveUI")
             .SetNodeReuse(false));
     };
 
-    // Restore must be a separate step
-    MSBuild("./src/ReactiveUI.sln", new MSBuildSettings() {
-            ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/bl:reactiveui-restore.binlog /m")
-        }
-        .WithTarget("restore")
-		.WithProperty("AndroidSdkDirectory", androidHome.Quote())
-        .WithProperty("Version", nugetVersion.ToString())
-        .SetVerbosity(Verbosity.Minimal));
-    
-    build("./src/ReactiveUI.sln");
+    foreach(var package in packageWhitelist)
+    {
+        build("./src/" + package + "/" + package + ".csproj", package);
+    }        
+    build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
 });
 
 Task("RunUnitTests")
@@ -230,7 +223,7 @@ Task("RunUnitTests")
 
         tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
-            XmlReportV1 = true,
+            XmlReport = true,
             NoAppDomain = true
         });
     };
