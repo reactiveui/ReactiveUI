@@ -151,7 +151,7 @@ from the main (upstream) repository:
 - PowerShell
 - Android SDK Platform 26 (install through Visual Studio)
 
-Once all the above are set up, running `.\build.ps1` in the repository root should get everything up and running.
+Once all the above are set up, running `.\build.cmd` in the repository root should get everything up and running.
 
 ### <a name="rules"></a> Coding Rules
 
