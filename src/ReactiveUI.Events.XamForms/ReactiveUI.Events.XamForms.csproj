@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3</TargetFrameworks>
-    <PackageTargetFallback Condition="'$(TargetFramework)' == 'netstandard1.3'">
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <PackageTargetFallback Condition="'$(TargetFramework)' == 'netstandard2.0'">
       $(PackageTargetFallback);portable-win+net45+wp8+win81+wpa8
     </PackageTargetFallback>
     <AssemblyName>ReactiveUI.Events.XamForms</AssemblyName>

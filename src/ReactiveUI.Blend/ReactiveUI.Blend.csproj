@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;uap10.0</TargetFrameworks>
+    <TargetFrameworks>net461;uap10.0.16299</TargetFrameworks>
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <Description>Blend behaviors for ReactiveUI</Description>
@@ -25,8 +25,8 @@
     <PackageReference Include="Expression.Blend.Sdk" Version="1.0.2" /> 
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <Compile Include="Platforms\uap10.0\**\*.cs" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
+    <Compile Include="Platforms\uap10.0.16299\**\*.cs" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed" Version="1.1.0" />    
   </ItemGroup>
 
