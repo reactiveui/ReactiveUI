@@ -139,8 +139,21 @@ from the main (upstream) repository:
     ```shell
     git pull --ff upstream master
     ```
+## Coding
 
-## <a name="rules"></a> Coding Rules
+### Developer Environment
+- Visual Studio 2017 (with latest patches/updates), with the following workloads/components
+    - Windows Universal Platform Development workload
+    - .NET desktop development workload
+    - Mobile development with .NET workload
+    - .NET Core cross-platform development
+    - Windows 10 SDK 10.0.14393 (individual component)
+- PowerShell
+- Android SDK Platform 26 (install through Visual Studio)
+
+Once all the above are set up, running `.\build.cmd` in the repository root should get everything up and running.
+
+### <a name="rules"></a> Coding Rules
 
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
