@@ -1,9 +1,9 @@
 # configuration for "master" branch
 -
-  image: Visual Studio 2017 Preview
+  image: Visual Studio 2017
   branches:
-      only:
-        - master
+    only:
+    - master
   version: 1.0.{build}
   environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
@@ -42,8 +42,8 @@
 -
   image: Visual Studio 2017
   branches:
-      except:
-          - master
+    except:
+    - master
   skip_branch_with_pr: true
   version: 1.0.{build}
   environment:

@@ -21,6 +21,7 @@
 #tool "nuget:?package=OpenCover&version=4.6.519"
 #tool "nuget:?package=ReportGenerator&version=3.1.2"
 #tool "nuget:?package=vswhere&version=2.4.1"
+#tool "nuget:?package=xunit.runner.console&version=2.4.0-beta.2.build3984"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
