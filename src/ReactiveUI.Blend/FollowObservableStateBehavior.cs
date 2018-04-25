@@ -5,10 +5,10 @@
 using System;
 using System.Reactive.Linq;
 
+
 #if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Microsoft.Xaml.Interactivity;
 #else
 using System.Windows;
 using System.Windows.Interactivity;
