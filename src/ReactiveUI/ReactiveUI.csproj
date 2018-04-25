@@ -55,9 +55,9 @@
     <Reference Include="System.Runtime.Serialization" />    
   </ItemGroup>
   
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
-    <Compile Include="Platforms\netcoreapp1.0\**\*.cs" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.1.1" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
+    <Compile Include="Platforms\netcoreapp2.0\**\*.cs" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
   
   <ItemGroup>
