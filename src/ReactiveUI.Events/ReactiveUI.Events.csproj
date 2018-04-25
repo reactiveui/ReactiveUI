@@ -16,10 +16,10 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
     <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
-    <SDKReference Include="WindowsDesktop, Version=10.0.14393.0">
+    <SDKReference Include="WindowsDesktop, Version=10.0.16299.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>
-    <SDKReference Include="WindowsMobile, Version=10.0.14393.0">
+    <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
