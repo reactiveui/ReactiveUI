@@ -142,7 +142,7 @@ ReactiveUI is developed under an OSI-approved open source license, making it fre
 
 So here's to you, lovely person who wants to join us — this is how you can support us:
 
-* [Responding to questions on StackExchange](https://reactiveui.net/stackoverflow)
+* [Responding to questions on StackOverflow](https://stackoverflow.com/questions/tagged/reactiveui)
 * [Passing on knowledge and teaching the next generation of developers](http://ericsink.com/entries/dont_use_rxui.html)
 * [Donations](https://reactiveui.net/donate) and [Corporate Sponsorships](https://reactiveui.net/sponsorship)
 * [Submitting documentation updates where you see fit or lacking](https://reactiveui.net/docs)
@@ -163,7 +163,11 @@ We're also looking for people to assist with code reviews of ReactiveUI contribu
 <img src="https://opencollective.com/reactiveui/contributors.png?avatarHeight=64&button=true&width=1400&margin=3"/>
 
 
-## Core Team
+<h2 align="center">.NET Foundation</h2>
+
+ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). Other projects that are associated with the foundation include the Microsoft .NET Compiler Platform ("Roslyn") as well as the Microsoft ASP.NET family of projects, Microsoft .NET Core & Xamarin Forms.
+
+<h2 align="center">Core Team</h2>
 
 <table>
   <tbody>

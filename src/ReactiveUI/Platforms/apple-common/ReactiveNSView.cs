@@ -100,7 +100,7 @@ namespace ReactiveUI
                 base.ViewWillMoveToSuperview(newsuper);
             }
 #endif
-            RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+            (newsuper != null ? activated : deactivated).OnNext(Unit.Default);
         }
 
         void ICanForceManualActivation.Activate(bool activate)

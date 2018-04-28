@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.1;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70;netcoreapp1.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.1;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80;netcoreapp1.0</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <Description>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8.1, Windows Store and Universal Windows Platform (UWP).</Description>
-    <PackageId>reactiveui</PackageId>
+    <PackageId>ReactiveUI</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.1'">
-    <Compile Include="Platforms\shared\**\*.cs" />    
+    <Compile Include="Platforms\shared\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
@@ -39,6 +39,7 @@
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
+    <Reference Include="System.Runtime.Serialization" />    
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
@@ -48,13 +49,15 @@
     <Reference Include="System.Runtime.Serialization" />    
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid80' ">
     <Compile Include="Platforms\android\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
+    <Reference Include="System.Runtime.Serialization" />    
   </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
     <Compile Include="Platforms\netcoreapp1.0\**\*.cs" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.1.1" />
   </ItemGroup>
   
   <ItemGroup>

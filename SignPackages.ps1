@@ -10,14 +10,14 @@ if([string]::IsNullOrEmpty($env:SIGNCLIENT_SECRET)){
 
 $appSettings = "$currentDirectory\SignPackages.json"
 
-$appPath = "$currentDirectory\packages\SignClient\tools\SignClient.dll"
+$appPath = "$currentDirectory\packages\SignClient\tools\netcoreapp2.0\SignClient.dll"
 
 $nupgks = ls $currentDirectory\artifacts\*.nupkg | Select -ExpandProperty FullName
 
 foreach ($nupkg in $nupgks){
     Write-Host "Submitting $nupkg for signing"
 
-    dotnet $appPath 'sign' -c $appSettings -i $nupkg -s $env:SIGNCLIENT_SECRET -n 'ReactiveUI' -d 'ReactiveUI' -u 'https://reactiveui.net' 
+    dotnet $appPath 'sign' -c $appSettings -i $nupkg -r $env:SIGNCLIENT_USER -s $env:SIGNCLIENT_SECRET -n 'ReactiveUI' -d 'ReactiveUI' -u 'https://reactiveui.net' 
 
     Write-Host "Finished signing $nupkg"
 }

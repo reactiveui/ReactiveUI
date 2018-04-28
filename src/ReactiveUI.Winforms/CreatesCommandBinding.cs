@@ -25,7 +25,7 @@ namespace ReactiveUI.Winforms
         static readonly List<Tuple<string, Type>> defaultEventsToBind = new List<Tuple<string, Type>>() {
 
             Tuple.Create("Click", typeof (EventArgs)),
-            Tuple.Create("MouseUp", typeof (MouseEventArgs)),
+            Tuple.Create("MouseUp", typeof (System.Windows.Forms.MouseEventArgs)),
         };
 
         public int GetAffinityForObject(Type type, bool hasEventTarget)

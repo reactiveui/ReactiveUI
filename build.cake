@@ -6,21 +6,22 @@
 // ADDINS
 //////////////////////////////////////////////////////////////////////
 
-#addin "nuget:?package=Cake.FileHelpers&version=1.0.4"
-#addin "nuget:?package=Cake.Coveralls&version=0.4.0"
-#addin "nuget:?package=Cake.PinNuGetDependency&version=0.1.0.1495792899"
-#addin "nuget:?package=Cake.Powershell&version=0.3.5"
+#addin "nuget:?package=Cake.FileHelpers&version=2.0.0"
+#addin "nuget:?package=Cake.Coveralls&version=0.8.0"
+#addin "nuget:?package=Cake.PinNuGetDependency&version=3.0.1"
+#addin "nuget:?package=Cake.Powershell&version=0.4.3"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "nuget:?package=GitReleaseManager&version=0.6.0"
+#tool "nuget:?package=GitReleaseManager&version=0.7.0"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
-#tool "nuget:?package=coveralls.io&version=1.3.4"
+#tool "nuget:?package=coveralls.io&version=1.4.2"
 #tool "nuget:?package=OpenCover&version=4.6.519"
-#tool "nuget:?package=ReportGenerator&version=2.5.11"
-#tool "nuget:?package=vswhere&version=2.1.4"
+#tool "nuget:?package=ReportGenerator&version=3.1.2"
+#tool "nuget:?package=vswhere&version=2.4.1"
+#tool "nuget:?package=xunit.runner.console&version=2.4.0-beta.2.build3984"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -54,26 +55,28 @@ var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubR
 
 var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
+
 // Version
 var gitVersion = GitVersion();
+
 var majorMinorPatch = gitVersion.MajorMinorPatch;
 var informationalVersion = gitVersion.InformationalVersion;
-var nugetVersion = gitVersion.NuGetVersion;
+var nugetVersion = gitVersion.NuGetVersionV2;
 var buildVersion = gitVersion.FullBuildMetaData;
 
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
-var packageWhitelist = new[] { "ReactiveUI-Testing",
-                               "ReactiveUI-Events",
-                               "ReactiveUI-Events-WPF",
-                               "ReactiveUI-Events-XamForms",
+var packageWhitelist = new[] { "ReactiveUI.Testing",
+                               "ReactiveUI.Events",
+                               "ReactiveUI.Events.WPF",
+                               "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
-                               "ReactiveUI-AndroidSupport",
-                               "ReactiveUI-Blend",
-                               "ReactiveUI-WPF",
-                               "ReactiveUI-Winforms",
-                               "ReactiveUI-XamForms" };
+                               "ReactiveUI.AndroidSupport",
+                               "ReactiveUI.Blend",
+                               "ReactiveUI.WPF",
+                               "ReactiveUI.Winforms",
+                               "ReactiveUI.XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -112,7 +115,7 @@ Task("BuildEventBuilder")
 
     MSBuild(solution, new MSBuildSettings() {
             ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog")
+            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
         }
         .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
@@ -186,26 +189,31 @@ Task("BuildReactiveUI")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
-    Action<string> build = (solution) =>
+    Action<string,string> build = (solution, name) =>
     {
         Information("Building {0} using {1}", solution, msBuildPath);
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui.binlog")
+                ArgumentCustomization = args => args.Append("/bl:reactiveui-build-" + name + ".binlog /m /restore")
             }
-            .WithTarget("restore;build;pack")
-            .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
+            .WithTarget("build;pack") 
+            .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
             // Due to https://github.com/NuGet/Home/issues/4790 and https://github.com/NuGet/Home/issues/4337 we
             // have to pass a version explicitly
             .WithProperty("Version", nugetVersion.ToString())
+            .WithProperty("InformationalVersion", informationalVersion)
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));
     };
 
-    build("./src/ReactiveUI.sln");
+    foreach(var package in packageWhitelist)
+    {
+        build("./src/" + package + "/" + package + ".csproj", package);
+    }        
+    build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
 });
 
 Task("RunUnitTests")
@@ -216,7 +224,7 @@ Task("RunUnitTests")
 
         tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
-            XmlReportV1 = true,
+            XmlReport = true,
             NoAppDomain = true
         });
     };
@@ -297,7 +305,7 @@ Task("PinNuGetDependencies")
         var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
 
         // see https://github.com/cake-contrib/Cake.PinNuGetDependency
-        PinNuGetDependency(packagePath, "reactiveui");
+        PinNuGetDependency(packagePath, "ReactiveUI");
     }
 });
 
