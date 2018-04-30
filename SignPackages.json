@@ -2,12 +2,12 @@
   "SignClient": {
     "AzureAd": {
       "AADInstance": "https://login.microsoftonline.com/",
-      "ClientId": "33c2e042-364a-4afa-aee4-49f7fb0a2cd1",
-      "TenantId": "dotnetfoundation.onmicrosoft.com"
+      "ClientId": "c248d68a-ba6f-4aa9-8a68-71fe872063f8",
+      "TenantId": "16076fdc-fcc1-4a15-b1ca-32c9a255900e"
     },
     "Service": {
-      "Url": "https://dnfsignservice.azurewebsites.net/",
-      "ResourceId": "http://sign.dotnetfoundation.org/server"
+      "Url": "https://codesign.dotnetfoundation.org/",
+      "ResourceId": "https://SignService/3c30251f-36f3-490b-a955-520addb85001"
     }
   }
 }
