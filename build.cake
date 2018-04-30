@@ -69,6 +69,7 @@ var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
 var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events",
+                               "ReactiveUI.Events.Caboodle",
                                "ReactiveUI.Events.WPF",
                                "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
@@ -178,6 +179,7 @@ Task("GenerateEvents")
     };
 
     generate("android", "src/ReactiveUI.Events/");
+    generate("caboodle", "src/ReactiveUI.Events.Caboodle/");
     generate("ios", "src/ReactiveUI.Events/");
     generate("mac", "src/ReactiveUI.Events/");
     generate("uwp", "src/ReactiveUI.Events/");
