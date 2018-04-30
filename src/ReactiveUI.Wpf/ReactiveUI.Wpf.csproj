@@ -6,7 +6,7 @@
   <Import Project="obj\*.props" Condition=" '$(MSBuildProjectExtension)' == '.tmp_proj'" />
   
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>        
+    <TargetFramework>net461</TargetFramework>        
     <Description>WPF specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WPF</PackageId>
   </PropertyGroup>
