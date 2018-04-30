@@ -147,7 +147,7 @@ from the main (upstream) repository:
     - .NET desktop development workload
     - Mobile development with .NET workload
     - .NET Core cross-platform development
-    - Windows 10 SDK 10.0.14393 (individual component)
+    - Windows 10 SDK 10.0.16299 (individual component)
 - PowerShell
 - Android SDK Platform 26 (install through Visual Studio)
 
