@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="2.5.*" />
+    <PackageReference Include="Acr.UserDialogs" Version="7.0.1" />
+    <PackageReference Include="ReactiveUI" Version="8.0.0-alpha0136" />
+    <PackageReference Include="ReactiveUI.XamForms" Version="8.0.0-alpha0136" />
+    <PackageReference Include="Xamarin.Forms" Version="2.5.1.444934" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />
   </ItemGroup>
 </Project>

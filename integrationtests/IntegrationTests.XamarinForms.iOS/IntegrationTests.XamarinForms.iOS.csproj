@@ -144,13 +144,16 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="2.5.*" />
+    <PackageReference Include="Acr.UserDialogs">
+      <Version>7.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Forms" Version="2.5.1.444934" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.XamarinForms\IntegrationTests.XamarinForms.csproj">
-      <Project>{D0C5E54E-B5F6-4A9F-93D1-71350C384EC0}</Project>
+      <Project>{3bf35d8c-f119-4113-8f75-4ddbb2ba0caf}</Project>
       <Name>IntegrationTests.XamarinForms</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
