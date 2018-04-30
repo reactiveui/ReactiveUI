@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -54,6 +55,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LoginControl.xaml.cs">
+      <DependentUpon>LoginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControlExtensions.cs" />
+    <Page Include="LoginControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -92,6 +101,29 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
+      <Project>{322be1b9-3519-4fb7-b2af-fd1f8df12616}</Project>
+      <Name>IntegrationTests.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MahApps.Metro">
+      <Version>1.6.1</Version>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI">
+      <Version>8.0.0-alpha0136</Version>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI.Events.WPF">
+      <Version>8.0.0-alpha0136</Version>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI.WPF">
+      <Version>8.0.0-alpha0136</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reactive">
+      <Version>3.1.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
