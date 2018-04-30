@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;uap10.0</TargetFrameworks>
+    <TargetFrameworks>net461;uap10.0.16299</TargetFrameworks>
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <Description>Blend behaviors for ReactiveUI</Description>
@@ -12,11 +12,11 @@
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
-    <PackageReference Include="Splat" Version="2.0.0" />
+    <PackageReference Include="Splat" Version="4.0.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Compile Include="Platforms\net45\**\*.cs" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <Compile Include="Platforms\net461\**\*.cs" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -25,8 +25,8 @@
     <PackageReference Include="Expression.Blend.Sdk" Version="1.0.2" /> 
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <Compile Include="Platforms\uap10.0\**\*.cs" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
+    <Compile Include="Platforms\uap10.0.16299\**\*.cs" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed" Version="1.1.0" />    
   </ItemGroup>
 
