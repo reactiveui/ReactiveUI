@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80</TargetFrameworks>
+    <TargetFrameworks>uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
@@ -14,14 +14,14 @@
     <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
     <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
-    <SDKReference Include="WindowsDesktop, Version=10.0.14393.0">
+    <SDKReference Include="WindowsDesktop, Version=10.0.16299.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>
-    <SDKReference Include="WindowsMobile, Version=10.0.14393.0">
-      <Name>Windows Mobile Extensions for the UWP</Name>
-    </SDKReference>
+    <SDKReference Include="WindowsMobile, Version=10.0.16299.0"> 
+      <Name>Windows Mobile Extensions for the UWP</Name> 
+    </SDKReference> 
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
