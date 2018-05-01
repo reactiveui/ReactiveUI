@@ -1,4 +1,8 @@
-﻿namespace ReactiveUI.Tests
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+namespace ReactiveUI.Tests
 {
     using Splat;
     using TestViewModels;
@@ -76,7 +80,7 @@
             resolver.RegisterViewsForViewModels(GetType().Assembly);
         }
 
-        [Fact]
+        [WpfFact]
         public void RegisterViewsForViewModelShouldRegisterAllViews()
         {
             using (resolver.WithResolver()) {
@@ -86,7 +90,7 @@
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void RegisterViewsForViewModelShouldIncludeContracts()
         {
             using (resolver.WithResolver()) {
@@ -94,7 +98,7 @@
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void NonContractRegistrationsShouldResolveCorrectly()
         {
             using (resolver.WithResolver()) {
@@ -102,7 +106,7 @@
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void ContractRegistrationsShouldResolveCorrectly()
         {
             using (resolver.WithResolver()) {
@@ -118,7 +122,7 @@
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
         {
             using (resolver.WithResolver()) {
@@ -134,7 +138,7 @@
             }
         }
 
-        [Fact]
+        [WpfFact]
         public void SingleInstanceViewsWithContractShouldResolveCorrectly()
         {
             using (resolver.WithResolver()) {

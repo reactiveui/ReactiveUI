@@ -1,32 +1,28 @@
 # configuration for "master" branch
 -
-  image: Visual Studio 2015  
+  image: Visual Studio 2017
   branches:
-      only:
-        - master
+    only:
+    - master
   version: 1.0.{build}
   environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
     COVERALLS_TOKEN: jLYKFVgST432LzbZeyLnLpoteXwQLveBw
     GITHUB_USERNAME:
-      secure: 0Q9MvUId56SizmZwCf0cgg==
+      secure: 4l81stjUdh712ndqnwBryw==
     GITHUB_TOKEN:
-      secure: 8MW7NQw/+0kKQAINvV7mxac+f7xqrLPkskONTyldqcYP6M1h9iej2p7rSva0/rXH
+      secure: TukU0LPvpoN1xkqjNNI8Ij7OxMnCmJxRnj6CsCDcAu+euK3eRTPRFJZl94na2+68
     NUGET_SOURCE: https://www.nuget.org/api/v2/package
     NUGET_APIKEY:
-      secure: 0g2AqQxgiAIFhqoJbbmEPrJa15Z8U5xYT6vQe43Gocuxbjw74hBAIKbU+Cj65UNd
+      secure: cANUegIQhgeZ7Yg4sosXNGmFF33i77nTriEjaeniQ4S26btcwYsopOO3qXKlbrvf
+    SIGNCLIENT_SECRET:
+      secure: TGMBTw6fMix/D/hPuoS6J6XQdY5L1hlL6JPpzgKBbDg=
+    SIGNCLIENT_USER:
+      secure: wwm115V/GOIkqGLbOom1aGBqkMQy6REFKPaG8P0b4//f0r01dc9pTWruOxLyi4X8
   init:
-  - cd \
-  - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
-  - 7z x android-sdk_r24.4.1-windows.zip > nul
   - cd "C:\projects\reactiveui"
-  install: 
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-24.0.2
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
+  install:
+  - nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
   cache:
@@ -34,36 +30,36 @@
   - src\packages -> **\packages.config
   - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
-  - path: artifacts/*
+  - path: artifacts/*.nupkg
   - path: '**/bin/*'
-  - path: src/ReactiveUI.Events/Events_*.cs
+  - path: '**/*.binlog'
+  - path: src/ReactiveUI.**/Events_*.cs
   test: off
+  on_failure:
+  - ps: Get-ChildItem *.binlog -recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
   
 # configuration for "develop" branch
 -
-  image: Visual Studio 2015  
+  image: Visual Studio 2017
   branches:
-      except:
-          - master
+    except:
+    - master
+  skip_branch_with_pr: true
   version: 1.0.{build}
   environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
     COVERALLS_TOKEN: jLYKFVgST432LzbZeyLnLpoteXwQLveBw
     NUGET_SOURCE: https://www.myget.org/F/reactiveui/api/v2/package
     NUGET_APIKEY:
-      secure: YP/3KxC2ffsuHNaolPXj66JVGzSjON9FcR2S2OEzn9c6SV14oPzUh1ySyeT+G+aA
+      secure: KTszzEEs33kbeqkpGGMvM58elvNLeTJhytpv7s9fPHoY4ZZmk5fMwofKDtK2lhno
+    SIGNCLIENT_SECRET:
+      secure: TGMBTw6fMix/D/hPuoS6J6XQdY5L1hlL6JPpzgKBbDg=
+    SIGNCLIENT_USER:
+      secure: wwm115V/GOIkqGLbOom1aGBqkMQy6REFKPaG8P0b4//f0r01dc9pTWruOxLyi4X8
   init:
-  - cd \
-  - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
-  - 7z x android-sdk_r24.4.1-windows.zip > nul
   - cd "C:\projects\reactiveui"
-  install: 
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-24.0.2
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
+  install:
+  - nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
   build_script:
   - ./build.cmd
   cache:
@@ -71,7 +67,10 @@
   - src\packages -> **\packages.config
   - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
-  - path: artifacts/*
+  - path: artifacts/*.nupkg
   - path: '**/bin/*'
-  - path: src/ReactiveUI.Events/Events_*.cs
+  - path: '**/*.binlog'
+  - path: src/ReactiveUI.**/Events_*.cs
   test: off
+  on_failure:
+  - ps: Get-ChildItem *.binlog -recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
