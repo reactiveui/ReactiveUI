@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>ReactiveUI BindCommand</Title>
+      <Description>Inserts a RactiveUI BindCommand</Description>
+      <Shortcut>ruibc</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>command</ID>
+          <ToolTip>Command on view model</ToolTip>
+          <Default>Command</Default>
+        </Literal>
+        <Literal Editable="true">
+          <ID>control</ID>
+          <ToolTip>Control in view</ToolTip>
+          <Default>Control</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp" Delimiter="$"><![CDATA[this.BindCommand(ViewModel, vm => vm.$command$, v => v.$control$).DisposeWith(d);$end$]]>
+			</Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

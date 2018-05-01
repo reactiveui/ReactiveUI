@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeTemplates version="3.0">
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>C#</_Group>
+      <Version />
+      <MimeType>text/x-csharp</MimeType>
+      <Shortcut>ruibc</Shortcut>
+      <_Description>Inserts a RactiveUI BindCommand</_Description>
+      <TemplateType>Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="command">
+        <Default>Command</Default>
+        <_ToolTip>Command on view model</_ToolTip>
+      </Variable>
+      <Variable name="control">
+        <Default>Control</Default>
+        <_ToolTip>Control in view</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[this.BindCommand(ViewModel, vm => vm.$command$, v => v.$control$).DisposeWith(d);]]></Code>
+  </CodeTemplate>
+</CodeTemplates>

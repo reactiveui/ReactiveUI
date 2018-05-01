@@ -1,10 +1,13 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Windows;
 using System.Windows.Input;
 
 #if NETFX_CORE
@@ -21,13 +24,10 @@ namespace ReactiveUI
     {
         // NB: These are in priority order
         static readonly List<Tuple<string, Type>> defaultEventsToBind = new List<Tuple<string, Type>>() {
-#if !MONO && !PORTABLE
-            Tuple.Create("Click", typeof (RoutedEventArgs)),
-#endif
+            Tuple.Create("Click", typeof (EventArgs)),
             Tuple.Create("TouchUpInside", typeof (EventArgs)),
-#if !MONO && !NETFX_CORE && !PORTABLE
-            Tuple.Create("MouseUp", typeof (MouseButtonEventArgs)),
-#elif NETFX_CORE
+            Tuple.Create("MouseUp", typeof (EventArgs)),
+#if NETFX_CORE
             Tuple.Create("PointerReleased", typeof(PointerRoutedEventArgs)),
             Tuple.Create("Tapped", typeof(TappedRoutedEventArgs)),
 #endif

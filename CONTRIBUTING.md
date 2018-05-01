@@ -3,17 +3,13 @@
 We'd love for you to contribute to our source code and to make reactiveui even better than it is
 today! Here are the guidelines we'd like you to follow:
 
- - [Code of Conduct](#coc)
+ - [Code of Conduct](https://reactiveui.net/code-of-conduct)
  - [Question or Problem?](#question)
  - [Issues and Bugs](#issue)
  - [Feature Requests](#feature)
  - [Submission Guidelines](#submit)
  - [Coding Rules](#rules)
- - [Commit Message Guidelines](#commit)
-
-## <a name="coc"></a> Code of Conduct
-
-Help us keep the project open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+ - [Commit Message Guidelines](https://reactiveui.net/contribute/software-style-guide/commit-message-convention)
 
 ## <a name="question"></a> Got a Question or Problem?
 
@@ -67,7 +63,7 @@ Before you submit your pull request consider the following guidelines:
 * Make your changes in a new git branch:
 
     ```shell
-    git checkout -b my-fix-branch master
+    git checkout -b my-fix-branch develop
     ```
 
 * Create your patch, **including appropriate test cases**.
@@ -93,7 +89,7 @@ Before you submit your pull request consider the following guidelines:
     git push origin my-fix-branch
     ```
 
-In GitHub, send a pull request to `reactiveui:master`.
+In GitHub, send a pull request to `reactiveui:develop`.
 
 If we suggest changes, then:
 
@@ -143,58 +139,23 @@ from the main (upstream) repository:
     ```shell
     git pull --ff upstream master
     ```
+## Coding
 
-## <a name="rules"></a> Coding Rules
+### Developer Environment
+- Visual Studio 2017 (with latest patches/updates), with the following workloads/components
+    - Windows Universal Platform Development workload
+    - .NET desktop development workload
+    - Mobile development with .NET workload
+    - .NET Core cross-platform development
+    - Windows 10 SDK 10.0.16299 (individual component)
+- PowerShell
+- Android SDK Platform 26 (install through Visual Studio)
+
+Once all the above are set up, running `.\build.cmd` in the repository root should get everything up and running.
+
+### <a name="rules"></a> Coding Rules
 
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
 * All features or bug fixes **must be tested** by one or more unit tests.
 * All public API methods **must be documented** with XML documentation.
-
-## <a name="commit"></a> Git Commit Guidelines
-
-Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
-format that includes a **type**  and a **subject**:
-
-```
-<type>: <subject>
-<body>
-<BLANK LINE>
-<footer>
-```
-
-### Revert
-
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
-
-### Type
-
-Must be one of the following:
-
-* **feat**: A new feature
-* **fix**: A bug fix
-* **docs**: Documentation only changes
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
-  semi-colons, etc)
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **perf**: A code change that improves performance
-* **test**: Adding missing tests
-* **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
-  generation
-
-### Subject
-The subject contains succinct description of the change:
-
-* use the imperative, present tense: "change" not "changed" nor "changes"
-* don't capitalize first letter
-* no dot (.) at the end
-
-### Body
-Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
-The body should include the motivation for the change and contrast this with previous behavior.
-
-### Footer
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
-
-**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
