@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>ReactiveUI - View Registration</Title>
+			<Shortcut>ruiviewreg</Shortcut>
+			<Description>Code snippet for a ReactiveUI View Registration</Description>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>viewType</ID>
+					<ToolTip>View Name</ToolTip>
+					<Default>My</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp">
+				<![CDATA[Locator.CurrentMutable.Register(() => new $viewType$View(), typeof(IViewFor<$viewType$ViewModel>));$end$]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

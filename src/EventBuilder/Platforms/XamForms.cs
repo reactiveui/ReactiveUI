@@ -1,4 +1,8 @@
-﻿using NuGet;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using NuGet;
 using Polly;
 using Serilog;
 using System;
@@ -14,6 +18,8 @@ namespace EventBuilder.Platforms
         public XamForms()
         {
             var packageUnzipPath = Environment.CurrentDirectory;
+
+            Log.Debug("Package unzip path is {PackageUnzipPath}", packageUnzipPath);
 
             var retryPolicy = Policy
                 .Handle<Exception>()
@@ -35,10 +41,10 @@ namespace EventBuilder.Platforms
 
                 var package = repo.FindPackagesById(_packageName).Single(x => x.IsLatestVersion);
 
-                packageManager.InstallPackage(package.Id);
-
                 Log.Debug("Using Xamarin Forms {Version} released on {Published}", package.Version, package.Published);
                 Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
+
+                packageManager.InstallPackage(package, ignoreDependencies: true, allowPrereleaseVersions: false);
             });
 
             var xamarinForms =

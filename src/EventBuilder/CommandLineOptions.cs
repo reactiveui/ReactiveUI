@@ -1,6 +1,10 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using System.Collections.Generic;
 using CommandLine;
 using CommandLine.Text;
-using System.Collections.Generic;
 
 namespace EventBuilder
 {
@@ -10,11 +14,9 @@ namespace EventBuilder
         Android,
         iOS,
         Mac,
-        NET45,
+        WPF,
         XamForms,
-        UWP,
-        WP81,
-        WPA81
+        UWP
     }
 
     public class CommandLineOptions
@@ -24,7 +26,7 @@ namespace EventBuilder
 
         [Option('p', "platform", Required = true,
             HelpText =
-                "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, NET45, MAC, UWP, WP81, WPA81, XAMFORMS"
+                "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, WPF, MAC, UWP, XAMFORMS"
             )]
         public AutoPlatform Platform { get; set; }
 
@@ -32,8 +34,11 @@ namespace EventBuilder
             HelpText = "Specify another mustache template other than the default.")]
         public string Template { get; set; }
 
+        [Option('r', "reference", Required = false, HelpText = "Specify a Reference Assemblies location to override the default")]
+        public string ReferenceAssemblies { get; set; }
+
         // Manual generation using the specified assemblies. Use with --platform=NONE.
-        [ValueList(typeof (List<string>))]
+        [ValueList(typeof(List<string>))]
         public List<string> Assemblies { get; set; }
 
         [HelpOption]
