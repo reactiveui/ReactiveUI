@@ -45,7 +45,7 @@ issue-labels-alias:
     - name:    windows-presentation-foundation
       header:  Windows Presentation Foundation
       plural:  Windows Presentation Foundation
-    - tizen:   tizen
+    - name:   tizen
       header:  Tizen
       plural:  Tizen
     - name:    xamarin-android
