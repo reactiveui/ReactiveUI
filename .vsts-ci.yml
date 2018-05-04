@@ -21,7 +21,7 @@ steps:
   inputs:
     command: build
     projects: src/setversion/setversion.csproj
-    arguments: -c $(BuildConfiguration)   
+    arguments: -c Release 
   displayName: Set Version
   condition: eq(variables['system.pullrequest.isfork'], false)
 
