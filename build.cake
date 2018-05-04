@@ -82,7 +82,7 @@ Setup(context =>
         throw new NotImplementedException("ReactiveUI will only build on Windows (w/Xamarin installed) because it's not possible to target UWP, WPF and Windows Forms from UNIX.");
     }
 
-    Information("Building version {0} of ReactiveUI. (isTagged: {1})", informationalVersion, isTagged);
+    Information("Building version {0} of ReactiveUI.", informationalVersion);
 
     CreateDirectory(artifactDirectory);
 });
