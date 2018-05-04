@@ -276,14 +276,14 @@ Task("Package")
 Task("PinNuGetDependencies")
     .Does (() =>
 {
-    var packages = GetFiles(artifactDirectory + "/*.nupkg");
+    var packages = GetFiles(artifactDirectory + "*.nupkg");
     foreach(var package in packages)
     {
         // only pin whitelisted packages.
-        if(packageWhitelist.Any(p => package.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
+        if(packageWhitelist.Any(p => package.GetFilename().ToString().StartsWith(p, StringComparison.OrdinalIgnoreCase)))
         {
             // see https://github.com/cake-contrib/Cake.PinNuGetDependency
-            PinNuGetDependency(packagePath, "ReactiveUI");
+            PinNuGetDependency(package, "ReactiveUI");
         }
     }
 });
