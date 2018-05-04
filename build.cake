@@ -255,15 +255,13 @@ Task("UploadTestCoverage")
 {
     // Resolve the API key.
     var token = EnvironmentVariable("COVERALLS_TOKEN");
-    if (string.IsNullOrEmpty(token))
+    if (!string.IsNullOrEmpty(token))
     {
-        throw new Exception("The COVERALLS_TOKEN environment variable is not defined.");
+        CoverallsIo(testCoverageOutputFile, new CoverallsIoSettings()
+        {
+            RepoToken = token
+        });
     }
-
-    CoverallsIo(testCoverageOutputFile, new CoverallsIoSettings()
-    {
-        RepoToken = token
-    });
 });
 
 Task("SignPackages")
