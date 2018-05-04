@@ -31,7 +31,7 @@ var target = Argument("target", "Default");
 if (string.IsNullOrWhiteSpace(target))
 {
     target = "Default";
-}
+} 
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
