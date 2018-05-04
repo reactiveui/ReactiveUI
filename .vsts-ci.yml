@@ -17,6 +17,14 @@ steps:
   inputs:
     versionSpec: 4.6.2
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: build
+    projects: src/setversion/setversion.csproj
+    arguments: -c $(BuildConfiguration)   
+  displayName: Set Version
+  condition: eq(variables['system.pullrequest.isfork'], false)
+
 - powershell: |
     nuget install SignClient -Version 0.9.1 -SolutionDir $(Build.SourcesDirectory) -Verbosity quiet -ExcludeVersion
     .\build.cmd

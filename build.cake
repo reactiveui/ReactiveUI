@@ -16,7 +16,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #tool "nuget:?package=GitReleaseManager&version=0.7.0"
-#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 #tool "nuget:?package=coveralls.io&version=1.4.2"
 #tool "nuget:?package=OpenCover&version=4.6.519"
 #tool "nuget:?package=ReportGenerator&version=3.1.2"
@@ -47,13 +46,7 @@ var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveu
 
 var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
-// Version
-var gitVersion = GitVersion();
-
-var majorMinorPatch = gitVersion.MajorMinorPatch;
-var informationalVersion = gitVersion.InformationalVersion;
-var nugetVersion = gitVersion.NuGetVersionV2;
-var buildVersion = gitVersion.FullBuildMetaData;
+var informationalVersion = EnvironmentVariable("GitAssemblyInformationalVersion");
 
 // Artifacts
 var artifactDirectory = "./artifacts/";
@@ -191,11 +184,7 @@ Task("BuildReactiveUI")
             .WithTarget("build;pack") 
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-            .SetConfiguration("Release")
-            // Due to https://github.com/NuGet/Home/issues/4790 and https://github.com/NuGet/Home/issues/4337 we
-            // have to pass a version explicitly
-            .WithProperty("Version", nugetVersion.ToString())
-            .WithProperty("InformationalVersion", informationalVersion)
+            .SetConfiguration("Release")                        
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));
     };
@@ -287,14 +276,15 @@ Task("Package")
 Task("PinNuGetDependencies")
     .Does (() =>
 {
-    // only pin whitelisted packages.
-    foreach(var package in packageWhitelist)
+    var packages = GetFiles(artifactDirectory + "/*.nupkg");
+    foreach(var package in packages)
     {
-        // only pin the package which was created during this build run.
-        var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
-
-        // see https://github.com/cake-contrib/Cake.PinNuGetDependency
-        PinNuGetDependency(packagePath, "ReactiveUI");
+        // only pin whitelisted packages.
+        if(packageWhitelist.Any(p => package.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
+        {
+            // see https://github.com/cake-contrib/Cake.PinNuGetDependency
+            PinNuGetDependency(packagePath, "ReactiveUI");
+        }
     }
 });
 
