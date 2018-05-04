@@ -20,7 +20,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: build
-    projects: src/setversion/setversion.csproj
+    projects: script/setversion.csproj
     arguments: -c Release 
   displayName: Set Version
   condition: eq(variables['system.pullrequest.isfork'], false)
