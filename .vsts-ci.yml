@@ -92,3 +92,11 @@ steps:
     artifactType: container
     artifactName: Events
   condition: eq(variables['system.pullrequest.isfork'], false)
+  
+- task: PublishBuildArtifacts@1
+  displayName: Publish Generated Events
+  inputs:
+    pathToPublish: '$(build.SourcesDirectory)\GitReleaseManager.yaml'
+    artifactType: container
+    artifactName: ReleaseConfig
+  condition: eq(variables['system.pullrequest.isfork'], false)  
