@@ -87,6 +87,8 @@ namespace ReactiveUI
             if (platform == null) {
                 // NB: This used to be an error but WPF design mode can't read
                 // good or do other stuff good.
+
+                // This is trash let's fix
                 this.Log().Error("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             } else {
                 platformGetter = () => platform.GetOrientation();

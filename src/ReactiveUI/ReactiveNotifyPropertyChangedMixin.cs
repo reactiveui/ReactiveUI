@@ -172,6 +172,7 @@ namespace ReactiveUI
             }
 
             if (result == null) {
+                // This is trash let's fix
                 throw new Exception(
                     String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.",
                     sender.GetType()));

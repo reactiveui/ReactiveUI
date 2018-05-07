@@ -10,6 +10,7 @@ namespace ReactiveUI
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+            // This is trash let's fix
             throw new Exception("You are referencing the Portable version of ReactiveUI in an App. Reference the platform-specific version.");
         }
     }
