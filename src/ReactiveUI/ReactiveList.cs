@@ -77,14 +77,14 @@ namespace ReactiveUI
             remove { CollectionChangedEventManager.RemoveHandler(this, value); }
         }
 
-        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
+        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
         {
-            CollectionChangingEventManager.DeliverEvent(this, e);
+            CollectionChangingEventManager.DeliverEvent(this, args);
         }
 
-        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
-            CollectionChangedEventManager.DeliverEvent(this, e);
+            CollectionChangedEventManager.DeliverEvent(this, args);
         }
 
         public event PropertyChangingEventHandler PropertyChanging
