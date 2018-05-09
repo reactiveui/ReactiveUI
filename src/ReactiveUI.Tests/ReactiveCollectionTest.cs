@@ -984,7 +984,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(disposed.Count, 2 + count);
         }
 
-        [Fact]
+        [WpfFact]
         public void DataboundReactiveListDoesNotThrowForAddRange()
         {
             var vm = new PropertyBindViewModel();
@@ -994,17 +994,20 @@ namespace ReactiveUI.Tests
             // eliminate the ResetChangeThreshold from the equation
             vm.SomeCollectionOfStrings.ResetChangeThreshold = int.MinValue;
 
-            // Within the reset threshold
-            Assert.DoesNotThrow(() => vm.SomeCollectionOfStrings.AddRange(Create(5)));
+            var exception = Record.Exception(() => {
 
-            // Above the reset threshold
-            Assert.DoesNotThrow(() => vm.SomeCollectionOfStrings.AddRange(Create(20)));
+                // Within the reset threshold
+                vm.SomeCollectionOfStrings.AddRange(Create(5));
+                vm.SomeCollectionOfStrings.AddRange(Create(20));
+            });
+
+            Assert.Null(exception);
 
             IEnumerable<string> Create(int numElements)
                 => Enumerable.Range(1, numElements).Select(i => $"item_{i}");
         }
 
-        [Fact]
+        [WpfFact]
         public void DataboundReactiveListDoesNotThrowForInsertRange()
         {
             var vm = new PropertyBindViewModel();
@@ -1018,17 +1021,21 @@ namespace ReactiveUI.Tests
                 vm.SomeCollectionOfStrings.Add(item);
             }
 
-            // within reset threshold
-            Assert.DoesNotThrow(() => vm.SomeCollectionOfStrings.InsertRange(2, Create(5)));
+            var exception = Record.Exception(() => {
 
-            // outside reset threshold
-            Assert.DoesNotThrow(() => vm.SomeCollectionOfStrings.InsertRange(2, Create(20)));
+                // within reset threshold
+                vm.SomeCollectionOfStrings.InsertRange(2, Create(5));
+                // outside reset threshold
+                vm.SomeCollectionOfStrings.InsertRange(2, Create(20));
+            });
+            
+            Assert.Null(exception);
 
             IEnumerable<string> Create(int numElements)
                 => Enumerable.Range(1, numElements).Select(i => $"item_{i}");
         }
 
-        [Fact]
+        [WpfFact]
         public void DataboundReactiveListDoesNotThrowForRemoveRange()
         {
             var vm = new PropertyBindViewModel();
@@ -1042,11 +1049,15 @@ namespace ReactiveUI.Tests
                 vm.SomeCollectionOfStrings.Add(item);
             }
 
-            // within reset threshold
-            Assert.DoesNotThrow(() => vm.SomeCollectionOfStrings.RemoveRange(2, 5));
+            var exception = Record.Exception(() => {
 
-            // outside reset threshold
-            Assert.DoesNotThrow(() => vm.SomeCollectionOfStrings.RemoveRange(2, 20));
+                // within reset threshold
+                vm.SomeCollectionOfStrings.RemoveRange(2, 5);
+                // outside reset threshold
+                vm.SomeCollectionOfStrings.RemoveRange(2, 20);
+            });
+
+            Assert.Null(exception);
         }
 
         public class DerivedCollectionLogging
