@@ -71,6 +71,7 @@ var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events",
                                "ReactiveUI.Events.WPF",
                                "ReactiveUI.Events.XamForms",
+                               "ReactiveUI.Events.Winforms",
                                "ReactiveUI",
                                "ReactiveUI.AndroidSupport",
                                "ReactiveUI.Blend",
@@ -183,6 +184,7 @@ Task("GenerateEvents")
     generate("uwp", "src/ReactiveUI.Events/");
     generate("wpf", "src/ReactiveUI.Events.WPF/");
     generate("xamforms", "src/ReactiveUI.Events.XamForms/");
+    generate("winforms", "src/ReactiveUI.Events.Winforms/");
 });
 
 Task("BuildReactiveUI")
