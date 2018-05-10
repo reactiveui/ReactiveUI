@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <AssemblyName>ReactiveUI.Events.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for WinForms UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <Compile Include="Events_WINFORMS.cs" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
