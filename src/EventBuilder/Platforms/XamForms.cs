@@ -39,7 +39,7 @@ namespace EventBuilder.Platforms
 
                 var packageManager = new PackageManager(repo, packageUnzipPath);
 
-                var package = repo.FindPackagesById(_packageName).Single(x => x.IsLatestVersion);
+                var package = repo.FindPackagesById(_packageName).Single(x => x.Version.ToString() == "2.5.1.444934");
 
                 Log.Debug("Using Xamarin Forms {Version} released on {Published}", package.Version, package.Published);
                 Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
