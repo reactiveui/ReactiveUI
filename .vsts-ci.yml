@@ -1,6 +1,7 @@
 trigger:
 - master
 - develop
+- rel/*
 
 queue: Hosted VS2017
 
@@ -92,11 +93,3 @@ steps:
     artifactType: container
     artifactName: Events
   condition: eq(variables['system.pullrequest.isfork'], false)
-  
-- task: PublishBuildArtifacts@1
-  displayName: Publish Generated Events
-  inputs:
-    pathToPublish: '$(build.SourcesDirectory)\GitReleaseManager.yaml'
-    artifactType: container
-    artifactName: ReleaseConfig
-  condition: eq(variables['system.pullrequest.isfork'], false)  
