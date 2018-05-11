@@ -158,7 +158,7 @@ We're also looking for people to assist with code reviews of ReactiveUI contribu
  - [UWP reviewers](https://github.com/orgs/reactiveui/teams/reviewers-uwp)
  - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-winforms)
  - [WPF reviewers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
- - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xf)
+ - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xamforms)
 
 <img src="https://opencollective.com/reactiveui/contributors.png?avatarHeight=64&button=true&width=1400&margin=3"/>
 
