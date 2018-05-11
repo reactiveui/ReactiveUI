@@ -1,4 +1,9 @@
-queue: "Hosted VS2017"
+trigger:
+- master
+- develop
+- rel/*
+
+queue: Hosted VS2017
 
 steps:
 - task: BatchScript@1
