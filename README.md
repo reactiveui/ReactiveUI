@@ -1,4 +1,4 @@
-[![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![NuGet Stats](https://img.shields.io/nuget/vpre/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build status](https://ci.appveyor.com/api/projects/status/jqfgxoaock7n23xm?svg=true)](https://ci.appveyor.com/project/dotnetfoundation/reactiveui)
+[![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![NuGet Stats](https://img.shields.io/nuget/vpre/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build status](https://dotnetfoundation.visualstudio.com/_apis/public/build/definitions/a5852744-a77d-4d76-a9d2-81ac1fdd5744/11/badge)](https://dotnetfoundation.visualstudio.com/ReactiveUI/ReactiveUI%20Team/_build/index?definitionId=11)
  [![Coverage Status](https://coveralls.io/repos/github/reactiveui/ReactiveUI/badge.svg?branch=develop)](https://coveralls.io/github/reactiveui/ReactiveUI?branch=develop) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI?ref=badge_shield)
 
 
@@ -158,7 +158,7 @@ We're also looking for people to assist with code reviews of ReactiveUI contribu
  - [UWP reviewers](https://github.com/orgs/reactiveui/teams/reviewers-uwp)
  - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-winforms)
  - [WPF reviewers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
- - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xf)
+ - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xamforms)
 
 <img src="https://opencollective.com/reactiveui/contributors.png?avatarHeight=64&button=true&width=1400&margin=3"/>
 
