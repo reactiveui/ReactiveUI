@@ -1,4 +1,9 @@
-queue: "Hosted VS2017"
+trigger:
+- master
+- develop
+- rel/*
+
+queue: Hosted VS2017
 
 steps:
 - task: BatchScript@1
@@ -13,6 +18,14 @@ steps:
   inputs:
     versionSpec: 4.6.2
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: build
+    projects: script/setversion.csproj
+    arguments: -c Release 
+  displayName: Set Version
+  condition: eq(variables['system.pullrequest.isfork'], false)
+
 - powershell: |
     nuget install SignClient -Version 0.9.1 -SolutionDir $(Build.SourcesDirectory) -Verbosity quiet -ExcludeVersion
     .\build.cmd
@@ -21,13 +34,14 @@ steps:
     SIGNCLIENT_SECRET: $(SignClientSecret)
     SIGNCLIENT_USER: $(SignClientUser)
     VSTS_ACCESS_TOKEN: $(System.AccessToken)
+    COVERALLS_TOKEN: $(COVERALLS_TOKEN)
 
 - task: CopyFiles@2
   inputs:
     Contents: 'artifacts/*.nupkg'
     TargetFolder: '$(build.artifactstagingdirectory)\packages'
     flattenFolders: true
-  condition: always()
+  condition: eq(variables['system.pullrequest.isfork'], false)
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Package Artifacts
@@ -35,14 +49,14 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\packages'
     artifactType: container
     artifactName: Packages
-  condition: always()
+  condition: eq(variables['system.pullrequest.isfork'], false)
 
 - task: CopyFiles@2
   inputs:
     Contents: '**/*.binlog'
     TargetFolder: '$(build.artifactstagingdirectory)\binlogs'
     flattenFolders: true
-  condition: always()
+  condition: eq(variables['system.pullrequest.isfork'], false)
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Logs
@@ -50,13 +64,13 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\binlogs'
     artifactType: container
     artifactName: Logs
-  condition: always()
+  condition: eq(variables['system.pullrequest.isfork'], false)
 
 - task: CopyFiles@2
   inputs:
     Contents: '**/bin/*'
     TargetFolder: '$(build.artifactstagingdirectory)\binaries'
-  condition: always()
+  condition: eq(variables['system.pullrequest.isfork'], false)
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Binaries
@@ -64,13 +78,13 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\binaries'
     artifactType: container
     artifactName: Binaries
-  condition: always()
+  condition: eq(variables['system.pullrequest.isfork'], false)
 
 - task: CopyFiles@2
   inputs:
     Contents: 'src/ReactiveUI.**/Events_*.cs'
     TargetFolder: '$(build.artifactstagingdirectory)\Events'
-  condition: always()
+  condition: eq(variables['system.pullrequest.isfork'], false)
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Generated Events
@@ -78,4 +92,4 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\Events'
     artifactType: container
     artifactName: Events
-  condition: always()
+  condition: eq(variables['system.pullrequest.isfork'], false)
