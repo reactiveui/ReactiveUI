@@ -1,7 +1,7 @@
 $currentDirectory = split-path $MyInvocation.MyCommand.Definition
 
 # See if we have the ClientSecret available
-if([string]::IsNullOrEmpty($env:SIGNCLIENT_SECRET)){
+if([string]::IsNullOrWhitespace($env:SIGNCLIENT_SECRET)){
     Write-Error "Client Secret not found, not signing packages";
     [System.Environment]::Exit(1);  
 }
