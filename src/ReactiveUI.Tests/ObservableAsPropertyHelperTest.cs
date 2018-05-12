@@ -225,6 +225,26 @@ namespace ReactiveUI.Tests
             Assert.Equal("Baz", resultChanged[1].Value);
         }
 
+        private class LazyPropertyFixture : ReactiveObject
+        {
+            public LazyPropertyFixture()
+            {
+                value = Observable
+                    .Return(new Lazy<int>(() => 20 ))
+                    .ToProperty(this, p=>p.Value, new Lazy<int>(()=>25));
+            }
+
+            private readonly ObservableAsPropertyHelper<Lazy<int>> value;
+
+            public int Value => value.Value.Value;
+        }
+
+        [Fact]
+        public void ToPropertyShouldWorkWithLazyProperties()
+        {
+            Assert.Equal( new LazyPropertyFixture().Value, 20 );
+        }
+
         [Fact]
         public void ToProperty_NameOf_ShouldFireBothChangingAndChanged()
         {
