@@ -212,6 +212,26 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
   </tbody>
 </table>
 
+<h2 align="center">Translation Team</h2>
+
+<h2 align="center">iOS Team</h2>
+
+<h2 align="center">Mac Team</h2>
+
+<h2 align="center">NETCore Team</h2>
+
+<h2 align="center">Tizen Team</h2>
+
+<h2 align="center">WebAssembly Team</h2>
+
+<h2 align="center">Winforms Team</h2>
+
+<h2 align="center">WPF Team</h2>
+
+<h2 align="center">Xamarin Forms Team</h2>
+
+<h2 align="center">Alumni</h2>
+
 <h2 align="center">Sponsorship</h2>
 
 The core team members, ReactiveUI contributors and contributors in the ecosystem do this open source work in their free time. If you use ReactiveUI a serious task, and you'd like us to invest more time on it, please donate. This project increases your income/productivity too. It makes development and applications faster and it reduces the required bandwidth.
