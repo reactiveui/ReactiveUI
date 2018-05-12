@@ -167,6 +167,7 @@ Task("GenerateEvents")
     generate("uwp", "src/ReactiveUI.Events/");
     generate("wpf", "src/ReactiveUI.Events.WPF/");
     generate("xamforms", "src/ReactiveUI.Events.XamForms/");
+    generate("winforms", "src/ReactiveUI.Events.Winforms/");
 });
 
 Task("BuildReactiveUI")
