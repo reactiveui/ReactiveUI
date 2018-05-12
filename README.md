@@ -8,7 +8,7 @@
   </a>
   <br>
   <br>
-	<a href="https://https://www.nuget.org/packages/reactiveui">
+	<a href="https://www.nuget.org/packages/reactiveui">
 		<img src="https://img.shields.io/nuget/dt/reactiveui-core.svg">
 	</a>
 	<a href="#backers">
