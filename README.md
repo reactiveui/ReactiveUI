@@ -212,6 +212,8 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
   </tbody>
 </table>
 
+<h2 align="center">Learning Team</h2>
+
 <h2 align="center">Translation Team</h2>
 
 <h2 align="center">iOS Team</h2>
