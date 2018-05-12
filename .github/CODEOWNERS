@@ -11,6 +11,7 @@ SignPackages.*                             @reactiveui/devops-team
 script/*                                   @reactiveui/devops-team
 
 samples/*                                  @reactiveui/learning-team
+snippets/*                                 @reactiveui/learning-team
 *.md                                       @reactiveui/learning-team
 
 src/ReactiveUI.AndroidSupport/*            @reactiveui/android-team
