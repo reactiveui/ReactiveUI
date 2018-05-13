@@ -105,6 +105,10 @@ namespace EventBuilder
                         platform = new UWP();
                         break;
 
+                    case AutoPlatform.WinForms:
+                        platform = new WinForms();
+                        break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                     }

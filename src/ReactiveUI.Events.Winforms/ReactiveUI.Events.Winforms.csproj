@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <AssemblyName>ReactiveUI.Events.Winforms</AssemblyName>
+    <RootNamespace>ReactiveUI.Events</RootNamespace>
+    <Description>Provides Observable-based events API for WinForms UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
+    <PackageId>ReactiveUI.Events.WinForms</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="*.cs" />
+    <None Include="*.cs" />
+    <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
+    <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Events_WINFORMS.cs" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+</Project>
