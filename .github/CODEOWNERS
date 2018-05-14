@@ -1,0 +1,39 @@
+# A CODEOWNERS file uses a pattern that follows the same rules used in gitignore files.
+# The pattern is followed by one or more GitHub usernames or team names using the
+# standard @username or @org/team-name format. You can also refer to a user by an
+# email address that has been added to their GitHub account, for example user@example.com.
+
+*                                          @reactiveui/core-team
+
+build.*                                    @reactiveui/devops-team
+SignPackages.*                             @reactiveui/devops-team
+NuGet.*                                    @reactiveui/devops-team
+.vsts-ci.yml                               @reactiveui/devops-team
+script/*                                   @reactiveui/devops-team
+
+samples/*                                  @reactiveui/learning-team
+snippets/*                                 @reactiveui/learning-team
+*.md                                       @reactiveui/learning-team
+
+src/ReactiveUI.AndroidSupport/*            @reactiveui/android-team
+src/ReactiveUI/Platforms/android/*         @reactiveui/android-team
+src/ReactiveUI/Platforms/apple-common/*    @reactiveui/ios-team @reactiveui/mac-team
+src/ReactiveUI/Platforms/ios/*             @reactiveui/ios-team
+src/ReactiveUI/Platforms/mac/*             @reactiveui/mac-team
+src/ReactiveUI/Platforms/net461/*          @reactiveui/wpf-team @reactiveui/winforms-team
+src/ReactiveUI/Platforms/netcoreapp2.0/*   @reactiveui/dotnetcore-team @reactiveui/webassembly-team
+src/ReactiveUI/Platforms/uap10.0.16299/*   @reactiveui/uwp-team
+src/ReactiveUI/Platforms/tizen/*           @reactiveui/tizen-team
+src/ReactiveUI/Platforms/windows-common/*  @reactiveui/wpf-team @reactiveui/winforms-team @reactiveui/uwp-team
+src/ReactiveUI/Platforms/xamarin-common/*  @reactiveui/xamarin-forms-team
+
+src/ReactiveUI.Blend/*                     @reactiveui/wpf-team @reactiveui/winforms-team @reactiveui/uwp-team
+
+src/ReactiveUI.Events.WPF/*                @reactiveui/wpf-team
+src/ReactiveUI.Events.XamForms/*           @reactiveui/xamarin-forms-team
+
+src/ReactiveUI.Winforms/*                  @reactiveui/winforms-team
+
+src/ReactiveUI.Wpf/*                       @reactiveui/wpf-team
+
+src/ReactiveUI.XamForms/*                  @reactiveui/xamarin-forms-team
