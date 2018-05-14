@@ -29,18 +29,21 @@ namespace ReactiveUI.Winforms
             // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate
             // https://docs.microsoft.com/en-us/dotnet/framework/winforms/order-of-events-in-windows-forms
 
-            if (view is Form form) {
-                var formActivated = Observable.FromEventPattern(form, "Activated").Select(_ => true);
-                var formDeactivate = Observable.FromEventPattern(form, "Deactivate").Select(_ => false);
-                return Observable.Merge(formDeactivate, formActivated)
-                    .DistinctUntilChanged();
-            }
-            else if (view is Control control) {
-                var controlVisible = Observable.FromEventPattern(control, "VisibleChanged").Select(_ => control.Visible);
+            if (view is Control control) {
                 var handleDestroyed = Observable.FromEventPattern(control, "HandleDestroyed").Select(_ => false);
                 var handleCreated = Observable.FromEventPattern(control, "HandleCreated").Select(_ => true);
-                return Observable.Merge(controlVisible, handleDestroyed, handleCreated)
+                var visibleChanged = Observable.FromEventPattern(control, "VisibleChanged").Select(_ => control.Visible);
+
+                var controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged)
                     .DistinctUntilChanged();
+
+                if (view is Form form) {
+                    var formClosed = Observable.FromEventPattern(form, "FormClosed").Select(_ => false);
+                    controlActivation = controlActivation.Merge(formClosed)
+                        .DistinctUntilChanged();
+                }
+
+                return controlActivation;
             }
             else {
                 // Show a friendly warning in the log that this view will never be activated
