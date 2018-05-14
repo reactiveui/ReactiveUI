@@ -169,8 +169,7 @@ namespace ReactiveUI
             }
 
             return RegisterHandler(interaction => {
-                handler(interaction);
-                return Observables.Unit;
+                return Observable.Start(() => handler(interaction), RxApp.MainThreadScheduler);
             });
         }
 
