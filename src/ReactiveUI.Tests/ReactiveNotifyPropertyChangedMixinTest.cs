@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
@@ -16,7 +16,7 @@ using ReactiveUI.Testing;
 using Xunit;
 using Microsoft.Reactive.Testing;
 using System.Reactive;
-
+using System.Reactive.Threading.Tasks;
 #if !MONO
 using System.Windows.Controls;
 #endif
@@ -620,13 +620,13 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, list.Count);
 
-            await fixture.Command1.Execute(1);
+            await fixture.Command1.Execute(1).ToTask();
             Assert.Equal(1, list.Count);
 
-            await fixture.Command2.Execute(2);
+            await fixture.Command2.Execute(2).ToTask();
             Assert.Equal(2, list.Count);
 
-            await fixture.Command1.Execute(1);
+            await fixture.Command1.Execute(1).ToTask();
             Assert.Equal(3, list.Count);
 
             Assert.True(
@@ -645,14 +645,14 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, list.Count);
 
-            await fixture.Command1.Execute(1);
-            await fixture.Command3.Execute("foo");
+            await fixture.Command1.Execute(1).ToTask();
+            await fixture.Command3.Execute("foo").ToTask();
             Assert.Equal(1, list.Count);
 
-            await fixture.Command1.Execute(2);
+            await fixture.Command1.Execute(2).ToTask();
             Assert.Equal(2, list.Count);
 
-            await fixture.Command3.Execute("bar");
+            await fixture.Command3.Execute("bar").ToTask();
             Assert.Equal(3, list.Count);
 
             Assert.True(
