@@ -8,7 +8,7 @@ using UIKit;
 namespace ReactiveUI
 {
     [Preserve]
-    public class UIKitObservableForProperty : UIKitObservableForPropertyBase
+    public class UIKitObservableForProperty : ObservableForPropertyBase
     {
         public static Lazy<UIKitObservableForProperty> Instance = new Lazy<UIKitObservableForProperty>();
 
