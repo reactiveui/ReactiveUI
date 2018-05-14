@@ -9,12 +9,17 @@ using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Foundation;
+
+#if UIKIT
 using UIKit;
+#else
+using AppKit;
+#endif
 
 namespace ReactiveUI
 {
     [Preserve]
-    public abstract class UIKitObservableForPropertyBase : ICreatesObservableForProperty
+    public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
@@ -83,6 +88,7 @@ namespace ReactiveUI
             typeProperties[property] = info;
         }
 
+#if UIKIT
         /// <summary>
         /// Creates an Observable for a UIControl Event
         /// </summary>
@@ -106,6 +112,7 @@ namespace ReactiveUI
                 });
             });
         }
+#endif
 
         /// <summary>
         /// Creates an Observable for a NSNotificationCenter notification
