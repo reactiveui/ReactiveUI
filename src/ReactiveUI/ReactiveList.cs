@@ -24,7 +24,7 @@ namespace ReactiveUI
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
-#if NET_45
+#if NET_461
         public event NotifyCollectionChangedEventHandler CollectionChanging;
 
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
@@ -77,14 +77,14 @@ namespace ReactiveUI
             remove { CollectionChangedEventManager.RemoveHandler(this, value); }
         }
 
-        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
+        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
         {
-            CollectionChangingEventManager.DeliverEvent(this, e);
+            CollectionChangingEventManager.DeliverEvent(this, args);
         }
 
-        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
-            CollectionChangedEventManager.DeliverEvent(this, e);
+            CollectionChangedEventManager.DeliverEvent(this, args);
         }
 
         public event PropertyChangingEventHandler PropertyChanging
