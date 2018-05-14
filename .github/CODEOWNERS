@@ -4,6 +4,7 @@
 # email address that has been added to their GitHub account, for example user@example.com.
 
 *                                          @reactiveui/core-team
+version.json                               @reactiveui/core-team @reactiveui/devops-team
 
 build.*                                    @reactiveui/devops-team
 SignPackages.*                             @reactiveui/devops-team
