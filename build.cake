@@ -54,6 +54,7 @@ var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
 var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events",
                                "ReactiveUI.Events.WPF",
+                               "ReactiveUI.Events.Winforms",
                                "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
                                "ReactiveUI.AndroidSupport",
@@ -167,6 +168,7 @@ Task("GenerateEvents")
     generate("uwp", "src/ReactiveUI.Events/");
     generate("wpf", "src/ReactiveUI.Events.WPF/");
     generate("xamforms", "src/ReactiveUI.Events.XamForms/");
+    generate("winforms", "src/ReactiveUI.Events.Winforms/");
 });
 
 Task("BuildReactiveUI")

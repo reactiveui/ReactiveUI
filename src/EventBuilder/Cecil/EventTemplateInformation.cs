@@ -14,10 +14,7 @@ namespace EventBuilder.Cecil
         private static readonly Dictionary<string, string> SubstitutionList = new Dictionary<string, string>
         {
             {"Windows.UI.Xaml.Data.PropertyChangedEventArgs", "global::System.ComponentModel.PropertyChangedEventArgs"},
-            {
-                "Windows.UI.Xaml.Data.PropertyChangedEventHandler",
-                "global::System.ComponentModel.PropertyChangedEventHandler"
-            },
+            {"Windows.UI.Xaml.Data.PropertyChangedEventHandler", "global::System.ComponentModel.PropertyChangedEventHandler"},
             {"Windows.Foundation.EventHandler", "EventHandler"},
             {"Windows.Foundation.EventHandler`1", "EventHandler"},
             {"Windows.Foundation.EventHandler`2", "EventHandler"}
@@ -116,7 +113,28 @@ namespace EventBuilder.Cecil
                 "Windows.UI.Xaml.Input",
                 "MonoTouch.AudioToolbox",
                 "MonoMac.AudioToolbox",
-                "ReactiveUI.Events"
+                "ReactiveUI.Events",
+                // Winforms
+                "System.Collections.Specialized",
+                "System.Configuration",
+                "System.ComponentModel.Design",
+                "System.ComponentModel.Design.Serialization",
+                "System.CodeDom",
+                "System.Data.SqlClient",
+                "System.Data.OleDb",
+                "System.Data.Odbc",
+                "System.Data.Common",
+                "System.Drawing.Design",
+                "System.Media",
+                "System.Net",
+                "System.Net.Mail",
+                "System.Net.NetworkInformation",
+                "System.Net.Sockets",
+                "System.ServiceProcess.Design",
+                "System.Windows.Input",
+                "System.Windows.Forms.ComponentModel.Com2Interop",
+                "System.Windows.Forms.Design",
+                "System.Timers"
             };
 
             var namespaceData = publicTypesWithEvents
