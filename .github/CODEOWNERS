@@ -6,7 +6,7 @@
 .github/*                                  @reactiveui/maintainers
 
 *                                          @reactiveui/core-team
-version.json                               @reactiveui/core-team @reactiveui/devops-team
+version.json                               @reactiveui/maintainers
 
 build.*                                    @reactiveui/devops-team
 SignPackages.*                             @reactiveui/devops-team
