@@ -3,6 +3,8 @@
 # standard @username or @org/team-name format. You can also refer to a user by an
 # email address that has been added to their GitHub account, for example user@example.com.
 
+.github/*                                  @reactiveui/maintainers
+
 *                                          @reactiveui/core-team
 
 build.*                                    @reactiveui/devops-team
