@@ -4,9 +4,11 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.DotMemoryUnit" Version="2.4.20170830.172630" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="xunit" Version="2.3.0" />
+    <PackageReference Include="JetBrains.DotMemoryUnit" Version="3.0.20171219.105559" />
+    <PackageReference Include="xunit" Version="2.4.0-beta.2.build3984" />
+    <PackageReference Include="xunit.runner.console" Version="2.4.0-beta.2.build3984" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.2.build3984" />
+    <PackageReference Include="Xunit.StaFact" Version="0.2.9" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
