@@ -194,8 +194,10 @@ Task("BuildReactiveUI")
     foreach(var package in packageWhitelist)
     {
         build("./src/" + package + "/" + package + ".csproj", package);
-    }        
+    }
+
     build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
+    build("./src/ReactiveUI.LeakTests/ReactiveUI.LeakTests.csproj", "ReactiveUI.LeakTests");
 });
 
 Task("RunUnitTests")
@@ -204,7 +206,7 @@ Task("RunUnitTests")
 {
     Action<ICakeContext> testAction = tool => {
 
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
+        tool.XUnit2("./src/ReactiveUI.*Tests/bin/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReport = true,
             NoAppDomain = true
@@ -220,7 +222,6 @@ Task("RunUnitTests")
         .WithFilter("+[*]*")
         .WithFilter("-[*.Testing]*")
         .WithFilter("-[*.Tests*]*")
-        .WithFilter("-[Playground*]*")
         .WithFilter("-[ReactiveUI.Events]*")
         .WithFilter("-[Splat*]*")
         .WithFilter("-[ApprovalTests*]*")
