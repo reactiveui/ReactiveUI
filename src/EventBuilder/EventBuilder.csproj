@@ -2,7 +2,7 @@
 
 <PropertyGroup>
   <OutputType>Exe</OutputType>
-  <TargetFramework>net452</TargetFramework>
+  <TargetFramework>net461</TargetFramework>
   <AssemblyName>EventBuilder</AssemblyName>
   <RootNamespace>EventBuilder</RootNamespace>
 </PropertyGroup>
