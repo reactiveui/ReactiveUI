@@ -123,6 +123,8 @@ namespace ReactiveUI
         /// which returns the highest value. When in doubt, return '2' or '0'
         /// </summary>
         /// <param name="type">The type to query for.</param>
+        /// <param name="propertyName">The property of the type to query for.</param>
+        /// <param name="beforeChanged">If true, returns whether GNFP is supported before a change occurs.</param>
         /// <returns>A positive integer if GNFP is supported, zero or a negative
         /// value otherwise</returns>
         int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false);
@@ -172,7 +174,8 @@ namespace ReactiveUI
         /// <param name="toType">The type to coerce the object to.</param>
         /// <param name="conversionHint">An implementation-defined value,
         /// usually to specify things like locale awareness.</param>
-        /// <returns>An object that is of the type 'to'</returns>
+        /// <param name="result">An object that is of the type <paramref name="toType"/></param>
+        /// <returns>True if conversion was successful.</returns>
         bool TryConvert(object from, Type toType, object conversionHint, out object result);
     }
 

@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
@@ -7,7 +7,6 @@ using UIKit;
 
 namespace ReactiveUI.Cocoa
 {
-#if UIKIT
     /// <summary>
     /// This class exists to force the MT linker to include properties called by RxUI via reflection
     /// </summary>
@@ -65,5 +64,4 @@ namespace ReactiveUI.Cocoa
             eh.Invoke(null, null);
         }
     }
-#endif
 }

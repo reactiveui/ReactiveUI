@@ -1,12 +1,12 @@
 <Project>
   <PropertyGroup>
     <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
-    <PackageLicenseUrl>http://opensource.org/licenses/ms-pl</PackageLicenseUrl>
+    <PackageLicenseUrl>https://opensource.org/licenses/mit</PackageLicenseUrl>
     <PackageProjectUrl>https://reactiveui.net</PackageProjectUrl>
     <PackageIconUrl>https://i.imgur.com/7WDbqSy.png</PackageIconUrl>
     <Authors>.NET Foundation and Contributors</Authors>
     <Owners>xpaulbettsx;ghuntley</Owners>
-    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;wpf;net;net45;uwp;tizen</PackageTags>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;wpf;net;netstandard;net461;uwp;tizen</PackageTags>
     <PackageReleaseNotes>https://reactiveui.net/blog/</PackageReleaseNotes>
 
     <NoWarn>$(NoWarn);1591;1701;1702;1705</NoWarn>
@@ -15,7 +15,6 @@
     <Platform>AnyCPU</Platform>
     <DebugType>full</DebugType>
     <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
-    <IsLegacyProject>$(MSBuildProjectName.Equals('ReactiveUI.Wpf'))</IsLegacyProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,12 +25,16 @@
   <Choose>
     <When Condition="'$(IsLegacyProject)' != 'true'">
       <ItemGroup>
-        <PackageReference Include="MSBuild.Sdk.Extras" Version="1.1.0-preview.2.build.8" PrivateAssets="All" />
+        <PackageReference Include="MSBuild.Sdk.Extras" Version="1.3.1" PrivateAssets="All" />
       </ItemGroup>
     </When>
   </Choose>
 
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="all" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.3.1" PrivateAssets="All" /> 
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.0" PrivateAssets="All" /> 
   </ItemGroup>
 </Project>

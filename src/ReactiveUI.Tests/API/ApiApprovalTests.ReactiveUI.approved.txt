@@ -3,7 +3,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.XamForms")]
-[assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.5", FrameworkDisplayName=".NET Framework 4.5")]
+[assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
 namespace ReactiveUI
 {
     public class static AutoPersistHelper
@@ -497,7 +497,7 @@ namespace ReactiveUI
         public static ReactiveUI.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Reactive.Concurrency.IScheduler scheduler) { }
         public static ReactiveUI.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Nullable<System.TimeSpan> withDelay = null, System.Action<System.Exception> onError = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
     }
-    public abstract class ReactiveCommand : System.IDisposable, System.Windows.Input.ICommand
+    public abstract class ReactiveCommand : ReactiveUI.IHandleObservableErrors, System.IDisposable, System.Windows.Input.ICommand
     {
         protected ReactiveCommand() { }
         public abstract System.IObservable<bool> CanExecute { get; }
@@ -672,9 +672,9 @@ namespace ReactiveUI
     }
     public class static RoutableViewModelMixin
     {
-        public static System.IDisposable WhenNavigatedTo(this ReactiveUI.IRoutableViewModel This, System.Func<System.IDisposable> onNavigatedTo) { }
-        public static System.IObservable<System.Reactive.Unit> WhenNavigatedToObservable(this ReactiveUI.IRoutableViewModel This) { }
-        public static System.IObservable<System.Reactive.Unit> WhenNavigatingFromObservable(this ReactiveUI.IRoutableViewModel This) { }
+        public static System.IDisposable WhenNavigatedTo(this ReactiveUI.IRoutableViewModel @this, System.Func<System.IDisposable> onNavigatedTo) { }
+        public static System.IObservable<System.Reactive.Unit> WhenNavigatedToObservable(this ReactiveUI.IRoutableViewModel @this) { }
+        public static System.IObservable<System.Reactive.Unit> WhenNavigatingFromObservable(this ReactiveUI.IRoutableViewModel @this) { }
     }
     [System.Runtime.Serialization.DataContractAttribute()]
     public class RoutingState : ReactiveUI.ReactiveObject

@@ -1,0 +1,80 @@
+trigger:
+- master
+- develop
+- rel/*
+
+queue: Hosted VS2017
+
+steps:
+- task: BatchScript@1
+  inputs:
+    filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\Common7\\Tools\\VsDevCmd.bat"
+    arguments: -no_logo
+    modifyEnvironment: true
+  displayName: Setup Environment Variables
+
+- task: NuGetToolInstaller@0
+  displayName: Use NuGet 4.6.2
+  inputs:
+    versionSpec: 4.6.2
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: build
+    projects: script/setversion.csproj
+    arguments: -c Release 
+  displayName: Set Version
+  condition: eq(variables['system.pullrequest.isfork'], false)
+
+- powershell: |
+    nuget install SignClient -Version 0.9.1 -SolutionDir $(Build.SourcesDirectory) -Verbosity quiet -ExcludeVersion
+    .\build.cmd
+  displayName: Build 
+  env:
+    SIGNCLIENT_SECRET: $(SignClientSecret)
+    SIGNCLIENT_USER: $(SignClientUser)
+    VSTS_ACCESS_TOKEN: $(System.AccessToken)
+    COVERALLS_TOKEN: $(COVERALLS_TOKEN)
+
+- task: CopyFiles@2
+  inputs:
+    Contents: 'artifacts/*.nupkg'
+    TargetFolder: '$(build.artifactstagingdirectory)\packages'
+    flattenFolders: true
+  condition: eq(variables['system.pullrequest.isfork'], false)
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Package Artifacts
+  inputs:
+    pathToPublish: '$(build.artifactstagingdirectory)\packages'
+    artifactType: container
+    artifactName: Packages
+  condition: eq(variables['system.pullrequest.isfork'], false)
+
+- task: CopyFiles@2
+  inputs:
+    Contents: '**/bin/*'
+    TargetFolder: '$(build.artifactstagingdirectory)\binaries'
+  condition: eq(variables['system.pullrequest.isfork'], false)
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Binaries
+  inputs:
+    pathToPublish: '$(build.artifactstagingdirectory)\binaries'
+    artifactType: container
+    artifactName: Binaries
+  condition: eq(variables['system.pullrequest.isfork'], false)
+
+- task: CopyFiles@2
+  inputs:
+    Contents: 'src/ReactiveUI.**/Events_*.cs'
+    TargetFolder: '$(build.artifactstagingdirectory)\Events'
+  condition: eq(variables['system.pullrequest.isfork'], false)
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Generated Events
+  inputs:
+    pathToPublish: '$(build.artifactstagingdirectory)\Events'
+    artifactType: container
+    artifactName: Events
+  condition: eq(variables['system.pullrequest.isfork'], false)
