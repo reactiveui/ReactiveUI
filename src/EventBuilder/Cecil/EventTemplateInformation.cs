@@ -17,12 +17,34 @@ namespace EventBuilder.Cecil
             {"Windows.UI.Xaml.Data.PropertyChangedEventHandler", "global::System.ComponentModel.PropertyChangedEventHandler"},
             {"Windows.Foundation.EventHandler", "EventHandler"},
             {"Windows.Foundation.EventHandler`1", "EventHandler"},
-            {"Windows.Foundation.EventHandler`2", "EventHandler"}
+            {"Windows.Foundation.EventHandler`2", "EventHandler"},
+
+            // tizen40
+            {"System.Boolean", "Boolean"},
+            {"System.Boolean`1", "Boolean"},
+ 
+
+            {"System.EventHandler", "EventHandler"},
+            {"System.EventHandler`1", "EventHandler"},
+            {"System.EventHandler`2", "EventHandler"},
+
+            {"System.EventArgs", "EventArgs"},
+            {"System.EventArgs`1", "EventArgs"},
+            {"System.EventArgs`2", "EventArgs"},
+
+            {"Tizen.NUI.EventHandlerWithReturnType", "Tizen.NUI.EventHandlerWithReturnType"},
+            {"Tizen.NUI.EventHandlerWithReturnType`1", "Tizen.NUI.EventHandlerWithReturnType"},
+            {"Tizen.NUI.EventHandlerWithReturnType`2", "Tizen.NUI.EventHandlerWithReturnType"},
+            {"Tizen.NUI.EventHandlerWithReturnType`3", "Tizen.NUI.EventHandlerWithReturnType"},
+
+
         };
 
-        private static string RenameBogusWinRTTypes(string typeName)
+        private static string RenameBogusTypes(string typeName)
         {
-            if (SubstitutionList.ContainsKey(typeName)) return SubstitutionList[typeName];
+            if (SubstitutionList.ContainsKey(typeName)) {
+                return SubstitutionList[typeName];
+            }
             return typeName;
         }
 
@@ -34,7 +56,7 @@ namespace EventBuilder.Cecil
             if (invoke.Parameters.Count < 2) return null;
 
             var param = invoke.Parameters[1];
-            var ret = RenameBogusWinRTTypes(param.ParameterType.FullName);
+            var ret = RenameBogusTypes(param.ParameterType.FullName);
 
             var generic = ei.EventType as GenericInstanceType;
             if (generic != null) {
@@ -53,10 +75,10 @@ namespace EventBuilder.Cecil
 
         private static string GetRealTypeName(TypeDefinition t)
         {
-            if (t.GenericParameters.Count == 0) return RenameBogusWinRTTypes(t.FullName);
+            if (t.GenericParameters.Count == 0) return RenameBogusTypes(t.FullName);
 
             var ret = string.Format("{0}<{1}>",
-                RenameBogusWinRTTypes(t.Namespace + "." + t.Name),
+                RenameBogusTypes(t.Namespace + "." + t.Name),
                 string.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
 
             // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
@@ -66,11 +88,19 @@ namespace EventBuilder.Cecil
         private static string GetRealTypeName(TypeReference t)
         {
             var generic = t as GenericInstanceType;
-            if (generic == null) return RenameBogusWinRTTypes(t.FullName);
+            if (generic == null) return RenameBogusTypes(t.FullName);
 
             var ret = string.Format("{0}<{1}>",
-                RenameBogusWinRTTypes(generic.Namespace + "." + generic.Name),
+                RenameBogusTypes(generic.Namespace + "." + generic.Name),
                 string.Join(",", generic.GenericArguments.Select(x => GetRealTypeName(x))));
+
+            // NB: Handy place to hook to troubleshoot if something needs to be added to SubstitutionList
+            //if (generic.FullName.Contains("MarkReachedEventArgs")) {
+            //    // Tizen.NUI.EventHandlerWithReturnType`3
+            //    //<System.Object,Tizen.NUI.UIComponents.Slider/
+            //    //MarkReachedEventArgs,
+            //    //System.Boolean>
+            //}
 
             // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
             return ret.Replace('/', '.');

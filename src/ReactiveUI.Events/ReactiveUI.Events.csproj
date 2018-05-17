@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80</TargetFrameworks>
+    <TargetFrameworks>uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80;tizen40</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
@@ -35,6 +35,12 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid80' ">
     <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
   </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'tizen40' ">
+    <Compile Include="Events_TIZEN.cs" Condition="Exists('Events_TIZEN.cs')" />
+    <PackageReference Include="Tizen.NET" Version="4.0.0" />
+  </ItemGroup>
+  
 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
