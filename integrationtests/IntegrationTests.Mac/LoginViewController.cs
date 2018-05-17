@@ -19,30 +19,14 @@ namespace IntegrationTests.Mac
         {
             base.ViewDidLoad();
 
-            ViewModel = new LoginViewModel();
+            ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);
 
-            this.WhenActivated(disposables =>
-            {
-                /*
-                 * Using Bind is unfortunately not possible on NSTextFields, due to KVO not working out of the box:
-                 * https://stackoverflow.com/a/13190202/2782141
-                 */
-
-                this.OneWayBind(ViewModel, vm => vm.UserName, v => v.UsernameField.StringValue, username => username ?? string.Empty)
+            this.WhenActivated(disposables => {
+                this.Bind(ViewModel, vm => vm.UserName, v => v.UsernameField.StringValue, username => username ?? string.Empty, username => username)
                     .DisposeWith(disposables);
 
-                UsernameField.Events().Changed
-                             .Select(_ => UsernameField.StringValue)
-                             .BindTo(this, v => v.ViewModel.UserName)
-                             .DisposeWith(disposables);
-
-                this.OneWayBind(ViewModel, vm => vm.Password, v => v.PasswordField.StringValue, password => password ?? string.Empty)
+                this.Bind(ViewModel, vm => vm.Password, v => v.PasswordField.StringValue, password => password ?? string.Empty, password => password)
                     .DisposeWith(disposables);
-
-                PasswordField.Events().Changed
-                             .Select(_ => PasswordField.StringValue)
-                             .BindTo(this, v => v.ViewModel.Password)
-                             .DisposeWith(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.Login, v => v.LoginButton)
                     .DisposeWith(disposables);
@@ -51,23 +35,18 @@ namespace IntegrationTests.Mac
                     .DisposeWith(disposables);
 
                 ViewModel.Login
-                         .SelectMany(result =>
-                         {
-                             if (!result.HasValue)
-                             {
+                         .SelectMany(result => {
+                             if (!result.HasValue) {
                                  return Observable.Empty<Unit>();
                              }
 
                              var alert = new NSAlert();
 
-                             if (result.Value)
-                             {
+                             if (result.Value) {
                                  alert.AlertStyle = NSAlertStyle.Informational;
                                  alert.MessageText = "Login Successful";
                                  alert.InformativeText = "Welcome!";
-                             }
-                             else
-                             {
+                             } else {
                                  alert.AlertStyle = NSAlertStyle.Critical;
                                  alert.MessageText = "Login Failed";
                                  alert.InformativeText = "Ah, ah, ah, you didn't say the magic word!";

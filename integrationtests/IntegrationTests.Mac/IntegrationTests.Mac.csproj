@@ -52,10 +52,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="ReactiveUI">
-            <Version>8.0.0-alpha0136</Version>
-        </PackageReference>
-        <PackageReference Include="ReactiveUI.Events">
-          <Version>8.0.0-alpha0136</Version>
+          <Version>8.2.5</Version>
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
