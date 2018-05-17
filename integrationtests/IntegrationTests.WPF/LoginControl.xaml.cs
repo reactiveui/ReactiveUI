@@ -29,7 +29,7 @@ namespace IntegrationTests.WPF
         {
             InitializeComponent();
 
-            ViewModel = new LoginViewModel();
+            ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);
 
             this
                .WhenActivated(

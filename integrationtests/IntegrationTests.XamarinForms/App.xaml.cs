@@ -1,4 +1,5 @@
-﻿using Splat;
+﻿using ReactiveUI;
+using Splat;
 using System;
 using Xamarin.Forms;
 
@@ -13,7 +14,7 @@ namespace IntegrationTests.XamarinForms
                 new NavigationPage(
                     new MainPage()
                     {
-                        ViewModel = new Shared.LoginViewModel()
+                        ViewModel = new Shared.LoginViewModel(RxApp.MainThreadScheduler)
                     });
         }
 

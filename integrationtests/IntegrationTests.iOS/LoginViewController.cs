@@ -18,7 +18,7 @@ namespace IntegrationTests.iOS
         {
             base.ViewDidLoad();
 
-            ViewModel = new LoginViewModel();
+            ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);
 
             this.WhenActivated(disposables =>
             {

@@ -36,7 +36,7 @@ namespace IntegrationTests.Android
             Login = FindViewById<Button>(Resource.Id.Login);
             Cancel = FindViewById<Button>(Resource.Id.Cancel);
 
-            ViewModel = new LoginViewModel();
+            ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);
 
             this
                .WhenActivated(

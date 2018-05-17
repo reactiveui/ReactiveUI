@@ -16,7 +16,7 @@ namespace IntegrationTests.UWP
         {
             this.InitializeComponent();
 
-            ViewModel = new LoginViewModel
+            ViewModel = new LoginViewModel(RxApp.MainThreadScheduler)
             {
                 UserName = "",
                 Password = ""
