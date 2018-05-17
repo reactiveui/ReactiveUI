@@ -4,7 +4,7 @@ using System.Text;
 
 namespace IntegrationTests.Shared.Tests
 {
-    public class LoginViewModelTests
+    public interface IBuilder
     {
     }
 }

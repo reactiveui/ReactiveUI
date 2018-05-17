@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -6,5 +6,20 @@
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
+
+
+
+  <ItemGroup>
+    <PackageReference Include="fluentassertions" Version="5.3.0" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="3.1.1" />
+    <PackageReference Include="reactiveui.testing" Version="8.2.1" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.console" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />
+  </ItemGroup>
 
 </Project>

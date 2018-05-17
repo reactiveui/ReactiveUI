@@ -1,6 +1,8 @@
-﻿using ReactiveUI;
+﻿using Genesis.Ensure;
+using ReactiveUI;
 using System;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,9 +13,14 @@ namespace IntegrationTests.Shared
     {
         private string _userName;
         private string _password;
+        private IScheduler _mainScheduler;
 
-        public LoginViewModel()
+        public LoginViewModel(IScheduler mainScheduler)
         {
+            Ensure.ArgumentNotNull(mainScheduler, nameof(mainScheduler));
+
+            _mainScheduler = mainScheduler;
+
             var canLogin = this
                 .WhenAnyValue(
                     vm => vm.UserName,
@@ -26,9 +33,9 @@ namespace IntegrationTests.Shared
                     Observable
                         .StartAsync(LoginAsync)
                         .TakeUntil(Cancel),
-                canLogin);
+                canLogin, _mainScheduler);
 
-            Cancel = ReactiveCommand.Create(() => { }, Login.IsExecuting);
+            Cancel = ReactiveCommand.Create(() => { }, Login.IsExecuting, _mainScheduler);
         }
 
         public ReactiveCommand<Unit, bool?> Login { get; }
@@ -50,7 +57,7 @@ namespace IntegrationTests.Shared
         private async Task<bool?> LoginAsync(CancellationToken ct)
         {
             var result = Password == "Mr. Goodbytes";
-            await Task.Delay(TimeSpan.FromSeconds(1.5), ct);
+            await Task.Delay(TimeSpan.FromSeconds(2), ct);
 
             return result;
         }
