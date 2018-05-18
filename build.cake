@@ -100,7 +100,7 @@ Task("BuildEventBuilder")
 
     MSBuild(solution, new MSBuildSettings() {
             ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
+            ArgumentCustomization = args => args.Append("/m")
         }
         .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
@@ -181,7 +181,7 @@ Task("BuildReactiveUI")
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-build-" + name + ".binlog /m /restore")
+                ArgumentCustomization = args => args.Append("/m /restore")
             }
             .WithTarget("build;pack") 
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
