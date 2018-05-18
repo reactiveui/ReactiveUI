@@ -16,6 +16,10 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private IContainer components = null;
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
         RoutingState _Router;
@@ -24,7 +28,8 @@ namespace ReactiveUI.Winforms
 
         public RoutedControlHost()
         {
-            this.InitializeComponent();
+            components = new Container();
+            AutoScaleMode = AutoScaleMode.Font;
 
             this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
                 if (x != null && this.Controls.Count == 0) {

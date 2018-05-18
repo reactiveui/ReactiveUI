@@ -17,6 +17,10 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
     {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private IContainer components = null;
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
         Control defaultContent;
@@ -28,7 +32,8 @@ namespace ReactiveUI.Winforms
 
         public ViewModelControlHost()
         {
-            this.InitializeComponent();
+            components = new System.ComponentModel.Container();
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.cacheViews = DefaultCacheViewsEnabled;
 
             foreach (var subscription in this.setupBindings()) {
@@ -95,8 +100,8 @@ namespace ReactiveUI.Winforms
 
                 IViewLocator viewLocator = this.ViewLocator ?? ReactiveUI.ViewLocator.Current;
                 IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                this.Content = view;
                 view.ViewModel = x.ViewModel;
+                this.Content = view;
 
             }, RxApp.DefaultExceptionHandler.OnNext);
         }
