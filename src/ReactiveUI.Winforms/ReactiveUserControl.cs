@@ -15,7 +15,6 @@ namespace ReactiveUI.Winforms
         {
             components = new Container();
             AutoScaleMode = AutoScaleMode.Font;
-
         }
 
         [Category("ReactiveUI")]

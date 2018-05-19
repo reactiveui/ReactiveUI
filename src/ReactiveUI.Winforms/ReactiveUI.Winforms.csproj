@@ -18,34 +18,14 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <Compile Update="Form1.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Form1.resx</DependentUpon>
-    </Compile>
-
     <Compile Update="RoutedViewHost.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="ViewModelViewHost.cs">
       <SubType>UserControl</SubType>
     </Compile>
-
-    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 
-  <ItemGroup>
-    <_ResxFiles Remove="Form1.resx" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Form1.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Form1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  
 </Project>
