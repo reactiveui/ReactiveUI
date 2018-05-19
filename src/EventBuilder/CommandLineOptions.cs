@@ -16,6 +16,7 @@ namespace EventBuilder
         Mac,
         WPF,
         XamForms,
+        XamEssentials,
         UWP,
         Winforms
     }
@@ -27,7 +28,7 @@ namespace EventBuilder
 
         [Option('p', "platform", Required = true,
             HelpText =
-                "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, WPF, MAC, UWP, XAMFORMS, WINFORMS"
+                "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, WPF, MAC, UWP, XAMFORMS, XAMESSENTIALS, WINFORMS"
             )]
         public AutoPlatform Platform { get; set; }
 

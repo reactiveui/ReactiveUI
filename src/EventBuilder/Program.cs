@@ -41,7 +41,8 @@ namespace EventBuilder
             // allow app to be debugged in visual studio.
             if (Debugger.IsAttached) {
                 //args = "--help ".Split(' ');
-                args = "--platform=ios".Split(' ');
+                //args = "--platform=ios".Split(' ');
+                args = "--platform=XamEssentials".Split(' ');
                 //args = new[]
                 //{
                 //    "--platform=none",
@@ -99,6 +100,10 @@ namespace EventBuilder
 
                     case AutoPlatform.XamForms:
                         platform = new XamForms();
+                        break;
+
+                    case AutoPlatform.XamEssentials:
+                        platform = new XamEssentials();
                         break;
 
                     case AutoPlatform.UWP:
