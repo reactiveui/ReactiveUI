@@ -12,11 +12,16 @@
     <None Include="*.cs" />
     <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
     <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
+    <PackageReference Include="Xamarin.Essentials" Version="0.6.0-preview" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="2.5.1.444934" />
     <Compile Include="Events_XAMESSENTIALS.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="MSBuild.Sdk.Extras" Version="1.5.4" />
+    <PackageReference Update="SourceLink.Create.CommandLine" Version="2.8.1" />
   </ItemGroup>
 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />

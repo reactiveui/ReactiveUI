@@ -43,11 +43,11 @@ namespace EventBuilder.Platforms
                 packageManager.InstallPackage(package, ignoreDependencies: true, allowPrereleaseVersions: true);
             });
 
-            var assemblyFileName = Directory
+            var latestVersion = Directory
                 .GetFiles(packagePath, PackageAssembly, SearchOption.AllDirectories)
-                .Last();
+                .Last(s => s.Contains("netstandard2.0"));
 
-            Assemblies.Add(assemblyFileName);
+            Assemblies.Add(latestVersion);
 
             if (PlatformHelper.IsRunningOnMono()) {
                 CecilSearchDirectories.Add(
