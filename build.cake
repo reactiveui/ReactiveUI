@@ -101,7 +101,7 @@ Task("BuildEventBuilder")
 
     MSBuild(solution, new MSBuildSettings() {
             ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
+            ArgumentCustomization = args => args.Append("/m")
         }
         .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
@@ -182,7 +182,7 @@ Task("BuildReactiveUI")
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-build-" + name + ".binlog /m /restore")
+                ArgumentCustomization = args => args.Append("/m /restore")
             }
             .WithTarget("build;pack") 
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
@@ -195,8 +195,10 @@ Task("BuildReactiveUI")
     foreach(var package in packageWhitelist)
     {
         build("./src/" + package + "/" + package + ".csproj", package);
-    }        
+    }
+
     build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
+    build("./src/ReactiveUI.LeakTests/ReactiveUI.LeakTests.csproj", "ReactiveUI.LeakTests");
 });
 
 Task("RunUnitTests")
@@ -204,8 +206,7 @@ Task("RunUnitTests")
     .Does(() =>
 {
     Action<ICakeContext> testAction = tool => {
-
-        tool.XUnit2("./src/ReactiveUI*Tests/bin/**/*.Tests.dll", new XUnit2Settings {
+        tool.XUnit2("./src/ReactiveUI.*Tests/bin/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReport = true,
             NoAppDomain = true
@@ -221,7 +222,6 @@ Task("RunUnitTests")
         .WithFilter("+[*]*")
         .WithFilter("-[*.Testing]*")
         .WithFilter("-[*.Tests*]*")
-        .WithFilter("-[Playground*]*")
         .WithFilter("-[ReactiveUI.Events]*")
         .WithFilter("-[Splat*]*")
         .WithFilter("-[ApprovalTests*]*")
