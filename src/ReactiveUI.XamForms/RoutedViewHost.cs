@@ -94,7 +94,16 @@ namespace ReactiveUI.XamForms
                         }
                         else
                         {
-                            await this.PushAsync(x);
+                            bool animated = true;
+                            var type = x.GetType();
+                            Attribute[] attrs = Attribute.GetCustomAttributes(type);
+
+                            foreach (var a in attrs) {
+                                    if (a is DisableAnimationAttribute)
+                                        animated = false;
+                            }
+
+                            await this.PushAsync(x, animated);
                         }
 
                         popToRootPending = false;
