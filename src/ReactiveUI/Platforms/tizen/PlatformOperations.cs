@@ -5,7 +5,7 @@
 namespace ReactiveUI
 {
     /// <summary>
-    /// Returns the current orientation of the device on iOS.
+    /// Returns the current orientation of the device on tizen.
     /// </summary>
     public class PlatformOperations : IPlatformOperations
     {

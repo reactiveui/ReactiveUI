@@ -65,7 +65,12 @@ namespace EventBuilder.Cecil
                         type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new { name, actual })) {
                     var realType = GetRealTypeName(kvp.actual);
 
-                    ret = ret.Replace(kvp.name.FullName, realType);
+                    var temp = ret.Replace(kvp.name.FullName, realType);
+                    if (temp != ret)
+                    {
+                        ret = temp;
+                        break;
+                    }
                 }
             }
 
