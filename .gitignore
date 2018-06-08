@@ -245,3 +245,6 @@ src/ReactiveUI.Events*/Events_*.cs
 
 src/*.Tests/API/*.received.txt
 .idea/
+
+# Fody Weavers (for tests)
+src/Tools/

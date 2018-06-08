@@ -6,7 +6,5 @@ See the LICENSE file in the project root for more information.
 -->
 
 <Weavers>
-    <ObservableAsPropertyWeaver />
-    <ReactiveUIPropertyWeaver />
-    <ReactiveDependencyPropertyWeaver />
+    <ReactiveUI />
 </Weavers>

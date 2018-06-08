@@ -4,39 +4,39 @@
     <AssemblyName>ReactiveUI.Fody.Helpers</AssemblyName>
     <RootNamespace>ReactiveUI.Fody.Helpers</RootNamespace>
     <Description>Fody extension to generate RaisePropertyChange notifications for properties and ObservableAsPropertyHelper properties.</Description>
-    <PackageId>ReactiveUI.Fody.Helpers</PackageId>
+
+    <!-- Override FodyPackaging since project is named differently than expected -->
+    <PackageId>ReactiveUI.Fody</PackageId>
+    <WeaverDirPath>..\$(PackageId)\bin\$(Configuration)\</WeaverDirPath>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fody" Version="3.0.3" PrivateAssets="None" />
+    <PackageReference Include="FodyPackaging" Version="3.0.3" PrivateAssets="All" />
     <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS'))">
     <Reference Include="System.Runtime.Serialization" />    
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac'))">
     <Reference Include="System.Runtime.Serialization" />    
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid80' ">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('MonoAndroid'))">
     <Reference Include="System.Runtime.Serialization" />    
   </ItemGroup>
   
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netcoreapp'))">
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />

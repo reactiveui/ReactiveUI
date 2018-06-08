@@ -2,22 +2,14 @@
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using Mono.Cecil;
+using System.Collections.Generic;
+using Fody;
 
 namespace ReactiveUI.Fody
 {
-    public class ModuleWeaver
+    public class ModuleWeaver : BaseModuleWeaver
     {
-        public ModuleDefinition ModuleDefinition { get; set; }
-
-        // Will log an MessageImportance.High message to MSBuild. 
-        public Action<string> LogInfo  { get; set; }
-
-        // Will log an error message to MSBuild. OPTIONAL
-        public Action<string> LogError { get; set; }
-
-        public void Execute()
+        public override void Execute()
         {
             var propertyWeaver = new ReactiveUIPropertyWeaver
             {
@@ -41,6 +33,16 @@ namespace ReactiveUI.Fody
                 LogError = LogError
             };
             reactiveDependencyWeaver.Execute();
+        }
+
+        public override IEnumerable<string> GetAssembliesForScanning()
+        {
+            yield return "mscorlib";
+            yield return "netstandard";
+            yield return "System";
+            yield return "System.Runtime";
+            yield return "ReactiveUI";
+            yield return "ReactiveUI.Fody.Helpers";
         }
     }
 }
