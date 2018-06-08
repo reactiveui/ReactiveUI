@@ -197,6 +197,8 @@ Task("BuildReactiveUI")
         build("./src/" + package + "/" + package + ".csproj", package);
     }
 
+    build("./src/ReactiveUI.Fody.Helpers/ReactiveUI.Fody.Helpers.csproj", "ReactiveUI.Fody.Helpers");
+    build("./src/ReactiveUI.Fody.Tests/ReactiveUI.Fody.Tests.csproj", "ReactiveUI.Fody.Tests");
     build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
     build("./src/ReactiveUI.LeakTests/ReactiveUI.LeakTests.csproj", "ReactiveUI.LeakTests");
 });
