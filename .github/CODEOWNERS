@@ -35,6 +35,8 @@ src/ReactiveUI.Blend/*                     @reactiveui/wpf-team @reactiveui/winf
 src/ReactiveUI.Events.WPF/*                @reactiveui/wpf-team
 src/ReactiveUI.Events.XamForms/*           @reactiveui/xamarin-forms-team
 
+src/ReactiveUI.Fody*/*                     @reactiveui/fody-team
+
 src/ReactiveUI.Winforms/*                  @reactiveui/winforms-team
 
 src/ReactiveUI.Wpf/*                       @reactiveui/wpf-team
