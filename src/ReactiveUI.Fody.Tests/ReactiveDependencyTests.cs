@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.ComponentModel;
 using ReactiveUI.Fody.Helpers;
 using Xunit;
@@ -113,6 +112,22 @@ namespace ReactiveUI.Fody.Tests
 
             Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
         }
+
+
+        [Fact]
+        public void DecoratorReactiveStringPropertyRaisesPropertyChanged()
+        {
+            var expectedPropertyChanged = "SomeCoolNewProperty";
+            var resultPropertyChanged = string.Empty;
+
+            var decorator = new DecoratorModel(new BaseModel());
+
+            var obj = (INotifyPropertyChanged)decorator;
+            obj.PropertyChanged += (sender, args) => resultPropertyChanged = args.PropertyName;
+
+            decorator.UpdateCoolProperty("Some Cool Property");
+            Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
+        }
     }
 
     public class BaseModel : ReactiveObject
@@ -181,6 +196,11 @@ namespace ReactiveUI.Fody.Tests
                 _model.IntProperty = value;
                 this.RaisePropertyChanged();
             }
+        }
+
+        public void UpdateCoolProperty(string coolNewProperty)
+        {
+            SomeCoolNewProperty = coolNewProperty;
         }
     }
 }
