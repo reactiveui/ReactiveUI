@@ -57,6 +57,8 @@ var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events.Winforms",
                                "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
+                               "ReactiveUI.Fody",
+                               "ReactiveUI.Fody.Helpers",
                                "ReactiveUI.AndroidSupport",
                                "ReactiveUI.Blend",
                                "ReactiveUI.WPF",
@@ -198,6 +200,7 @@ Task("BuildReactiveUI")
 
     build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
     build("./src/ReactiveUI.LeakTests/ReactiveUI.LeakTests.csproj", "ReactiveUI.LeakTests");
+    build("./src/ReactiveUI.Fody.Tests/ReactiveUI.Fody.Tests.csproj", "ReactiveUI.Fody.Tests");
 });
 
 Task("RunUnitTests")
@@ -205,8 +208,15 @@ Task("RunUnitTests")
     .Does(() =>
 {
     Action<ICakeContext> testAction = tool => {
+        tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
+            OutputDirectory = artifactDirectory,
+            XmlReport = true,
+            NoAppDomain = true
+        });
+    };
 
-        tool.XUnit2("./src/ReactiveUI.*Tests/bin/**/*.Tests.dll", new XUnit2Settings {
+    Action<ICakeContext> testFodyAction = tool => {
+        tool.XUnit2("./src/ReactiveUI.Fody.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReport = true,
             NoAppDomain = true
@@ -214,6 +224,25 @@ Task("RunUnitTests")
     };
 
     OpenCover(testAction,
+        testCoverageOutputFile,
+        new OpenCoverSettings {
+            ReturnTargetCodeOffset = 0,
+            ArgumentCustomization = args => args.Append("-mergeoutput")
+        }
+        .WithFilter("+[*]*")
+        .WithFilter("-[*.Testing]*")
+        .WithFilter("-[*.Tests*]*")
+        .WithFilter("-[ReactiveUI.Events]*")
+        .WithFilter("-[Splat*]*")
+        .WithFilter("-[ApprovalTests*]*")
+        .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
+        .ExcludeByFile("*/*Designer.cs")
+        .ExcludeByFile("*/*.g.cs")
+        .ExcludeByFile("*/*.g.i.cs")
+        .ExcludeByFile("*splat/splat*")
+        .ExcludeByFile("*ApprovalTests*"));
+
+    OpenCover(testFodyAction,
         testCoverageOutputFile,
         new OpenCoverSettings {
             ReturnTargetCodeOffset = 0,
