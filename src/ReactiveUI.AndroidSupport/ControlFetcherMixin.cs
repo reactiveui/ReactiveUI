@@ -93,29 +93,6 @@ namespace ReactiveUI.AndroidSupport
 			});
 		}
 
-		/// <summary>
-		/// A helper method to automatically resolve properties in an <see cref="AppCompatActivity"/> to their respective elements in the layout.
-		/// </summary>
-		/// <param name="This"></param>
-		/// <param name="resolveMembers">The strategy used to resolve properties that either subclass <see cref="View"/>, have a <see cref="WireUpResourceAttribute"/> or have a <see cref="IgnoreResourceAttribute"/></param>
-		public static void WireUpControls(this AppCompatActivity This, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
-		{
-			var members = This.getWireUpMembers(resolveMembers);
-
-			members.ToList().ForEach(m => {
-				try {
-					// Find the android control with the same name
-					var view = This.getControlInternal(m.PropertyType, m.getResourceName());
-
-					// Set the activity field's value to the view with that identifier
-					m.SetValue(This, view);
-				} catch (Exception ex) {
-					throw new MissingFieldException("Failed to wire up the Property "
-						+ m.Name + " to a View in your layout with a corresponding identifier", ex);
-				}
-			});
-		}
-
 		// Copied from ReactiveUI/Platforms/android/ControlFetcherMixins.cs
 		static IEnumerable<PropertyInfo> getWireUpMembers(this object This, ResolveStrategy resolveStrategy)
 		{
