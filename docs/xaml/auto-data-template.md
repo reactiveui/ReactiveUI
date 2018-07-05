@@ -1,1 +1,0 @@
-# Auto DataTemplate binding hooks

@@ -1,3 +1,7 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,7 +172,7 @@ namespace ReactiveUI.Tests
         {
             foreach (var i in Enumerable.Range(1, 7)) {
                 viewmodel.NewPlayerName = "Player" + i;
-                viewmodel.AddPlayer.Execute();
+                viewmodel.AddPlayer.Execute().Subscribe();
                 Assert.Equal(i, viewmodel.Players.Count);
             }
         }

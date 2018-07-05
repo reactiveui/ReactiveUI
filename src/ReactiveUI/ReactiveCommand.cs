@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -27,9 +31,11 @@ namespace ReactiveUI
     /// </para>
     /// <para>
     /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
-    /// <see cref="Create"/> can be used when your execution logic is synchronous. <see cref="CreateFromObservable"/> and
-    /// <see cref="CreateFromTask"/> can be used for asynchronous execution logic. Optionally, you can provide an observable that
-    /// governs the availability of the command for execution, as well as a scheduler to which events will be delivered.
+    /// <see cref="Create"/> can be used when your execution logic is synchronous.
+    /// <see cref="CreateFromObservable{TResult}(Func{IObservable{TResult}}, IObservable{bool}, IScheduler)"/> and
+    /// <see cref="CreateFromTask(Func{Task}, IObservable{bool}, IScheduler)"/> (and overloads) can be used for asynchronous
+    /// execution logic. Optionally, you can provide an observable that governs the availability of the command for execution,
+    /// as well as a scheduler to which events will be delivered.
     /// </para>
     /// <para>
     /// The <see cref="CanExecute"/> property provides an observable that can be used to determine whether the command is
@@ -88,11 +94,14 @@ namespace ReactiveUI
             }
 
             return new ReactiveCommand<Unit, Unit>(
-                _ => {
-                    execute();
-                    return Observable.Return(Unit.Default);
-                },
-                canExecute ?? Observable.Return(true),
+                _ => Observable.Create<Unit>(
+                    observer => {
+                        execute();
+                        observer.OnNext(Unit.Default);
+                        observer.OnCompleted();
+                        return Disposable.Empty;
+                    }),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -125,8 +134,13 @@ namespace ReactiveUI
             }
 
             return new ReactiveCommand<Unit, TResult>(
-                _ => Observable.Return(execute()),
-                canExecute ?? Observable.Return(true),
+                _ => Observable.Create<TResult>(
+                    observer => {
+                        observer.OnNext(execute());
+                        observer.OnCompleted();
+                        return Disposable.Empty;
+                    }),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -158,11 +172,14 @@ namespace ReactiveUI
             }
 
             return new ReactiveCommand<TParam, Unit>(
-                param => {
-                    execute(param);
-                    return Observable.Return(Unit.Default);
-                },
-                canExecute ?? Observable.Return(true),
+                param => Observable.Create<Unit>(
+                    observer => {
+                        execute(param);
+                        observer.OnNext(Unit.Default);
+                        observer.OnCompleted();
+                        return Disposable.Empty;
+                    }),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -198,8 +215,13 @@ namespace ReactiveUI
             }
 
             return new ReactiveCommand<TParam, TResult>(
-                param => Observable.Return(execute(param)),
-                canExecute ?? Observable.Return(true),
+                param => Observable.Create<TResult>(
+                    observer => {
+                        observer.OnNext(execute(param));
+                        observer.OnCompleted();
+                        return Disposable.Empty;
+                    }),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -232,7 +254,7 @@ namespace ReactiveUI
 
             return new ReactiveCommand<Unit, TResult>(
                 _ => execute(),
-                canExecute ?? Observable.Return(true),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -374,7 +396,7 @@ namespace ReactiveUI
         {
             return new ReactiveCommand<TParam, TResult>(
                 execute,
-                canExecute ?? Observable.Return(true),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -527,12 +549,12 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), outputScheduler ?? RxApp.MainThreadScheduler);
+            return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observables.True, outputScheduler ?? RxApp.MainThreadScheduler);
         }
     }
 
     // non-generic reactive command functionality
-    public abstract partial class ReactiveCommand : IDisposable, ICommand
+    public abstract partial class ReactiveCommand : IDisposable, ICommand, IHandleObservableErrors
     {
         private EventHandler canExecuteChanged;
 
@@ -665,7 +687,7 @@ namespace ReactiveUI
         /// </para>
         /// <para>
         /// In those cases where execution fails, there will be no result value. Instead, the failure will tick through the
-        /// <see cref="ThrownExceptions"/> observable.
+        /// <see cref="ReactiveCommand.ThrownExceptions"/> observable.
         /// </para>
         /// </remarks>
         /// <param name="parameter">
@@ -698,7 +720,7 @@ namespace ReactiveUI
 
             this
                 .Execute((TParam)parameter)
-                .Catch(Observable.Empty<TResult>())
+                .Catch(Observable<TResult>.Empty)
                 .Subscribe();
         }
     }
@@ -754,7 +776,20 @@ namespace ReactiveUI
             this.synchronizedExecutionInfo = Subject.Synchronize(this.executionInfo, outputScheduler);
             this.isExecuting = this
                 .synchronizedExecutionInfo
-                .Select(x => x.Demarcation == ExecutionDemarcation.Begin)
+                .Scan(
+                    0,
+                    (acc, next) => {
+                        if (next.Demarcation == ExecutionDemarcation.Begin) {
+                            return acc + 1;
+                        }
+
+                        if (next.Demarcation == ExecutionDemarcation.End) {
+                            return acc - 1;
+                        }
+
+                        return acc;
+                    })
+                .Select(inFlightCount => inFlightCount > 0)
                 .StartWith(false)
                 .DistinctUntilChanged()
                 .Replay(1)
@@ -762,7 +797,7 @@ namespace ReactiveUI
             this.canExecute = canExecute
                 .Catch<bool, Exception>(ex => {
                     this.exceptions.OnNext(ex);
-                    return Observable.Return(false);
+                    return Observables.False;
                 })
                 .StartWith(false)
                 .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
@@ -771,28 +806,26 @@ namespace ReactiveUI
                 .RefCount();
             this.results = this
                 .synchronizedExecutionInfo
-                .Where(x => x.Demarcation == ExecutionDemarcation.EndWithResult)
+                .Where(x => x.Demarcation == ExecutionDemarcation.Result)
                 .Select(x => x.Result);
 
             this.exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
 
-            this
+            this.canExecuteSubscription = this
                 .canExecute
                 .Subscribe(_ => this.OnCanExecuteChanged());
-
-            this.canExecuteSubscription = this.canExecute.Subscribe();
         }
 
         /// <inheritdoc/>
         public override IObservable<bool> CanExecute
         {
-            get { return this.canExecute.AsObservable(); }
+            get { return this.canExecute; }
         }
 
         /// <inheritdoc/>
         public override IObservable<bool> IsExecuting
         {
-            get { return this.isExecuting.AsObservable(); }
+            get { return this.isExecuting; }
         }
 
         /// <inheritdoc/>
@@ -815,20 +848,19 @@ namespace ReactiveUI
                     .Defer(
                         () => {
                             this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
-                            return Observable.Empty<TResult>();
+                            return Observable<TResult>.Empty;
                         })
                     .Concat(this.execute(parameter))
-                    .Do(
-                        result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)),
-                        () => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnded()))
+                    .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
                     .Catch<TResult, Exception>(
                         ex => {
-                            this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
                             exceptions.OnNext(ex);
                             return Observable.Throw<TResult>(ex);
                         })
+                    .Finally(() => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
                     .PublishLast()
-                    .RefCount();
+                    .RefCount()
+                    .ObserveOn(this.outputScheduler);
             } catch (Exception ex) {
                 this.exceptions.OnNext(ex);
                 return Observable.Throw<TResult>(ex);
@@ -847,9 +879,8 @@ namespace ReactiveUI
         private enum ExecutionDemarcation
         {
             Begin,
-            EndWithResult,
-            EndWithException,
-            Ended
+            Result,
+            End
         }
 
         private struct ExecutionInfo
@@ -863,35 +894,18 @@ namespace ReactiveUI
                 this.result = result;
             }
 
-            public ExecutionDemarcation Demarcation
-            {
-                get { return this.demarcation; }
-            }
+            public ExecutionDemarcation Demarcation => this.demarcation;
 
-            public TResult Result
-            {
-                get { return this.result; }
-            }
+            public TResult Result => this.result;
 
-            public static ExecutionInfo CreateBegin()
-            {
-                return new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
-            }
+            public static ExecutionInfo CreateBegin() =>
+                new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
 
-            public static ExecutionInfo CreateResult(TResult result)
-            {
-                return new ExecutionInfo(ExecutionDemarcation.EndWithResult, result);
-            }
+            public static ExecutionInfo CreateResult(TResult result) =>
+                new ExecutionInfo(ExecutionDemarcation.Result, result);
 
-            public static ExecutionInfo CreateFail()
-            {
-                return new ExecutionInfo(ExecutionDemarcation.EndWithException, default(TResult));
-            }
-
-            public static ExecutionInfo CreateEnded()
-            {
-                return new ExecutionInfo(ExecutionDemarcation.Ended, default(TResult));
-            }
+            public static ExecutionInfo CreateEnd() =>
+                new ExecutionInfo(ExecutionDemarcation.End, default(TResult));
         }
     }
 
@@ -955,7 +969,7 @@ namespace ReactiveUI
             var combinedCanExecute = canExecute
                 .Catch<bool, Exception>(ex => {
                     this.exceptions.OnNext(ex);
-                    return Observable.Return(false);
+                    return Observables.False;
                 })
                 .StartWith(false)
                 .CombineLatest(canChildrenExecute, (ce, cce) => ce && cce)
@@ -1036,18 +1050,18 @@ namespace ReactiveUI
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
+        public static IDisposable InvokeCommand<T>(this IObservable<T> @this, ICommand command)
         {
             var canExecuteChanged = Observable
                 .FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
                 .Select(_ => Unit.Default)
                 .StartWith(Unit.Default);
 
-            return This
-                .WithLatestFrom(canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
+            return WithLatestFromFixed(@this, canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => command.Execute(ii.Value))
                 .Subscribe();
@@ -1058,15 +1072,15 @@ namespace ReactiveUI
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, ReactiveCommand<T, TResult> command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> @this, ReactiveCommandBase<T, TResult> command)
         {
-            return This
-                .WithLatestFrom(command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
+            return WithLatestFromFixed(@this, command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
                 .Where(ii => ii.CanExecute)
-                .SelectMany(ii => command.Execute(ii.Value))
+                .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
         }
 
@@ -1075,22 +1089,22 @@ namespace ReactiveUI
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="target">The root object which has the Command.</param>
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
+        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
         {
             var command = target.WhenAnyValue(commandProperty);
             var commandCanExecuteChanged = command
-                .Select(c => c == null ? Observable.Empty<ICommand>() : Observable
+                .Select(c => c == null ? Observable<ICommand>.Empty : Observable
                     .FromEventPattern(h => c.CanExecuteChanged += h, h => c.CanExecuteChanged -= h)
                     .Select(_ => c)
                     .StartWith(c))
                 .Switch();
 
-            return This
-                .WithLatestFrom(commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
+            return WithLatestFromFixed(@this, commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => ii.Command.Execute(ii.Value))
                 .Subscribe();
@@ -1101,25 +1115,40 @@ namespace ReactiveUI
         /// it will first call its CanExecute with the provided value, then if
         /// the command can be executed, Execute() will be called)
         /// </summary>
+        /// <param name="this">The source observable to pipe into the command</param>
         /// <param name="target">The root object which has the Command.</param>
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ReactiveCommand<T, TResult>>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>>> commandProperty)
         {
             var command = target.WhenAnyValue(commandProperty);
             var invocationInfo = command
-                .Select(cmd => cmd == null ? Observable.Empty<InvokeCommandInfo<ReactiveCommand<T, TResult>, T>>() : cmd
+                .Select(cmd => cmd == null ? Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty : cmd
                     .CanExecute
                     .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T))))
                 .Switch();
 
-            return This
-                .WithLatestFrom(invocationInfo, (value, ii) => ii.WithValue(value))
+            return WithLatestFromFixed(@this, invocationInfo, (value, ii) => ii.WithValue(value))
                 .Where(ii => ii.CanExecute)
-                .SelectMany(ii => ii.Command.Execute(ii.Value))
+                .SelectMany(ii => ii.Command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
         }
+
+        // See https://github.com/Reactive-Extensions/Rx.NET/issues/444
+        private static IObservable<TResult> WithLatestFromFixed<TLeft, TRight, TResult>(
+            IObservable<TLeft> @this,
+            IObservable<TRight> other,
+            Func<TLeft, TRight, TResult> resultSelector) =>
+            @this
+                .Publish(
+                    os =>
+                            other
+                                .Select(
+                                    a =>
+                                        os
+                                            .Select(b => resultSelector(b, a)))
+                                .Switch());
 
         private static class InvokeCommandInfo
         {
@@ -1153,24 +1182,6 @@ namespace ReactiveUI
 
             public InvokeCommandInfo<TCommand, TValue> WithValue(TValue value) =>
                 new InvokeCommandInfo<TCommand, TValue>(this.command, this.canExecute, value);
-        }
-    }
-}
-
-// TODO: dump this once we migrate to Rx 3
-namespace System.Reactive.Linq
-{
-    internal static class WithLatestFromExtensions
-    {
-        public static IObservable<TResult> WithLatestFrom<TLeft, TRight, TResult>(
-            this IObservable<TLeft> @this,
-            IObservable<TRight> other,
-            Func<TLeft, TRight, TResult> resultSelector)
-        {
-            return @this.Publish(os =>
-                other
-                    .Select(a => os.Select(b => resultSelector(b, a)))
-                    .Switch());
         }
     }
 }

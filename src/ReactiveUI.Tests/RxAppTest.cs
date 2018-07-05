@@ -1,11 +1,12 @@
-using System;
-using System.Collections.Generic;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
-using System.Text;
-using Xunit;
 using Splat;
-using ReactiveUI;
+using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -15,15 +16,17 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DepPropNotifierShouldBeFound()
         {
+            RxApp.EnsureInitialized();
+
             Assert.True(Locator.Current.GetServices<ICreatesObservableForProperty>()
                 .Any(x => x is DependencyObjectObservableForProperty));
         }
 #endif
 
-        [Fact]
+        [Fact(Skip = "Requires initialize to run on seperate thread")]
         public void SchedulerShouldBeCurrentThreadInTestRunner()
         {
-            Console.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
+            Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
             Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
         }
     }

@@ -1,4 +1,8 @@
-﻿using EventBuilder.Entities;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
+using EventBuilder.Entities;
 using Mono.Cecil;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +14,7 @@ namespace EventBuilder.Cecil
         private static readonly Dictionary<string, string> SubstitutionList = new Dictionary<string, string>
         {
             {"Windows.UI.Xaml.Data.PropertyChangedEventArgs", "global::System.ComponentModel.PropertyChangedEventArgs"},
-            {
-                "Windows.UI.Xaml.Data.PropertyChangedEventHandler",
-                "global::System.ComponentModel.PropertyChangedEventHandler"
-            },
+            {"Windows.UI.Xaml.Data.PropertyChangedEventHandler", "global::System.ComponentModel.PropertyChangedEventHandler"},
             {"Windows.Foundation.EventHandler", "EventHandler"},
             {"Windows.Foundation.EventHandler`1", "EventHandler"},
             {"Windows.Foundation.EventHandler`2", "EventHandler"}
@@ -36,12 +37,10 @@ namespace EventBuilder.Cecil
             var ret = RenameBogusWinRTTypes(param.ParameterType.FullName);
 
             var generic = ei.EventType as GenericInstanceType;
-            if (generic != null)
-            {
+            if (generic != null) {
                 foreach (
                     var kvp in
-                        type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new {name, actual}))
-                {
+                        type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new { name, actual })) {
                     var realType = GetRealTypeName(kvp.actual);
 
                     ret = ret.Replace(kvp.name.FullName, realType);
@@ -77,6 +76,20 @@ namespace EventBuilder.Cecil
             return ret.Replace('/', '.');
         }
 
+        private static ObsoleteEventInfo GetObsoleteInfo(EventDefinition ei)
+        {
+            var obsoleteAttribute = ei.CustomAttributes.FirstOrDefault(attr => attr.AttributeType.FullName.Equals("System.ObsoleteAttribute"));
+
+            if (obsoleteAttribute == null) 
+                return null;
+
+            return new ObsoleteEventInfo
+            {
+                Message = obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(0).Value?.ToString() ?? string.Empty,
+                IsError = bool.Parse(obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(1).Value?.ToString() ?? bool.FalseString)
+            };
+        }
+
         private static EventDefinition[] GetPublicEvents(TypeDefinition t)
         {
             return
@@ -89,7 +102,7 @@ namespace EventBuilder.Cecil
             var publicTypesWithEvents = targetAssemblies
                 .SelectMany(x => SafeTypes.GetSafeTypes(x))
                 .Where(x => x.IsPublic && !x.HasGenericParameters)
-                .Select(x => new {Type = x, Events = GetPublicEvents(x)})
+                .Select(x => new { Type = x, Events = GetPublicEvents(x) })
                 .Where(x => x.Events.Length > 0)
                 .ToArray();
 
@@ -100,7 +113,28 @@ namespace EventBuilder.Cecil
                 "Windows.UI.Xaml.Input",
                 "MonoTouch.AudioToolbox",
                 "MonoMac.AudioToolbox",
-                "ReactiveUI.Events"
+                "ReactiveUI.Events",
+                // Winforms
+                "System.Collections.Specialized",
+                "System.Configuration",
+                "System.ComponentModel.Design",
+                "System.ComponentModel.Design.Serialization",
+                "System.CodeDom",
+                "System.Data.SqlClient",
+                "System.Data.OleDb",
+                "System.Data.Odbc",
+                "System.Data.Common",
+                "System.Drawing.Design",
+                "System.Media",
+                "System.Net",
+                "System.Net.Mail",
+                "System.Net.NetworkInformation",
+                "System.Net.Sockets",
+                "System.ServiceProcess.Design",
+                "System.Windows.Input",
+                "System.Windows.Forms.ComponentModel.Com2Interop",
+                "System.Windows.Forms.Design",
+                "System.Timers"
             };
 
             var namespaceData = publicTypesWithEvents
@@ -117,17 +151,17 @@ namespace EventBuilder.Cecil
                         {
                             Name = z.Name,
                             EventHandlerType = GetRealTypeName(z.EventType),
-                            EventArgsType = GetEventArgsTypeForEvent(z)
+                            EventArgsType = GetEventArgsTypeForEvent(z),
+                            ObsoleteEventInfo = GetObsoleteInfo(z)
                         }).ToArray()
                     }).ToArray()
                 }).ToArray();
 
-            foreach (var type in namespaceData.SelectMany(x => x.Types))
-            {
+            foreach (var type in namespaceData.SelectMany(x => x.Types)) {
                 var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => GetPublicEvents(x).Any());
                 if (parentWithEvents == null) continue;
 
-                type.Parent = new ParentInfo {Name = parentWithEvents.FullName};
+                type.Parent = new ParentInfo { Name = parentWithEvents.FullName };
             }
 
             return namespaceData;
@@ -139,8 +173,7 @@ namespace EventBuilder.Cecil
                 ? type.BaseType.Resolve()
                 : null;
 
-            while (current != null)
-            {
+            while (current != null) {
                 yield return current.Resolve();
 
                 current = current.BaseType != null
