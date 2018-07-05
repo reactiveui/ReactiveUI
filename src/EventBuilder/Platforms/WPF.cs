@@ -8,6 +8,8 @@ namespace EventBuilder.Platforms
 {
     public class WPF : BasePlatform
     {
+        public override AutoPlatform Platform => AutoPlatform.WPF;
+            
         public WPF()
         {
             if (PlatformHelper.IsRunningOnMono()) {

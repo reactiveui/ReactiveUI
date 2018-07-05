@@ -1,8 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MS-PL license.
-// See the LICENSE file in the project root for more information.
-
-using NuGet;
+﻿using NuGet;
 using Polly;
 using Serilog;
 using System;
@@ -11,17 +7,15 @@ using System.Linq;
 
 namespace EventBuilder.Platforms
 {
-    public class XamForms : BasePlatform
+    public class Essentials : BasePlatform
     {
-        private const string _packageName = "Xamarin.Forms";
+        private const string _packageName = "Xamarin.Essentials";
 
-        public override AutoPlatform Platform => AutoPlatform.XamForms;
+        public override AutoPlatform Platform => AutoPlatform.Essentials;
 
-        public XamForms()
+        public Essentials()
         {
             var packageUnzipPath = Environment.CurrentDirectory;
-
-            Log.Debug("Package unzip path is {PackageUnzipPath}", packageUnzipPath);
 
             var retryPolicy = Policy
                 .Handle<Exception>()
@@ -38,22 +32,21 @@ namespace EventBuilder.Platforms
             retryPolicy.Execute(() =>
             {
                 var repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
+                var packageManager = new PackageManager(repo, packageUnzipPath);                
+                var fpid = packageManager.SourceRepository.FindPackagesById(_packageName);
+                var package = fpid.Single(x => x.Version.ToString() == "0.8.0-preview");
 
-                var packageManager = new PackageManager(repo, packageUnzipPath);
+                packageManager.InstallPackage(package, true, true);
 
-                var package = repo.FindPackagesById(_packageName).Single(x => x.Version.ToString() == "2.5.1.444934");
-
-                Log.Debug("Using Xamarin Forms {Version} released on {Published}", package.Version, package.Published);
+                Log.Debug("Using Xamarin Essentials {Version} released on {Published}", package.Version, package.Published);
                 Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
-
-                packageManager.InstallPackage(package, ignoreDependencies: true, allowPrereleaseVersions: false);
             });
 
             var xamarinForms =
                 Directory.GetFiles(packageUnzipPath,
-                    "Xamarin.Forms.Core.dll", SearchOption.AllDirectories);
+                    "Xamarin.Essentials.dll", SearchOption.AllDirectories);
 
-            var latestVersion = xamarinForms.Last();
+            var latestVersion = xamarinForms.Last();//x => x.Contains("netstandard2.0"));
             Assemblies.Add(latestVersion);
 
             if (PlatformHelper.IsRunningOnMono())
