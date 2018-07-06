@@ -7,24 +7,6 @@ namespace EventBuilder.Cecil
 {
     public static class StaticEventTemplateInformation
     {
-        private static readonly Dictionary<string, string> SubstitutionList = new Dictionary<string, string>
-        {
-            {"Windows.UI.Xaml.Data.PropertyChangedEventArgs", "global::System.ComponentModel.PropertyChangedEventArgs"},
-            {
-                "Windows.UI.Xaml.Data.PropertyChangedEventHandler",
-                "global::System.ComponentModel.PropertyChangedEventHandler"
-            },
-            {"Windows.Foundation.EventHandler", "EventHandler"},
-            {"Windows.Foundation.EventHandler`1", "EventHandler"},
-            {"Windows.Foundation.EventHandler`2", "EventHandler"}
-        };
-
-        private static string RenameBogusWinRTTypes(string typeName)
-        {
-            if (SubstitutionList.ContainsKey(typeName)) return SubstitutionList[typeName];
-            return typeName;
-        }
-
         private static string GetEventArgsTypeForEvent(EventDefinition ei)
         {
             // Find the EventArgs type parameter of the event via digging around via reflection
@@ -33,7 +15,7 @@ namespace EventBuilder.Cecil
             if (invoke.Parameters.Count < 1) return null;
 
             var param = invoke.Parameters.Count == 1 ? invoke.Parameters[0] : invoke.Parameters[1];
-            var ret = RenameBogusWinRTTypes(param.ParameterType.FullName);
+            var ret = param.ParameterType.FullName;
 
             var generic = ei.EventType as GenericInstanceType;
             if (generic != null)
@@ -54,10 +36,10 @@ namespace EventBuilder.Cecil
 
         private static string GetRealTypeName(TypeDefinition t)
         {
-            if (t.GenericParameters.Count == 0) return RenameBogusWinRTTypes(t.FullName);
+            if (t.GenericParameters.Count == 0) return t.FullName;
 
             var ret = string.Format("{0}<{1}>",
-                RenameBogusWinRTTypes(t.Namespace + "." + t.Name),
+                t.Namespace + "." + t.Name,
                 string.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
 
             // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
@@ -67,10 +49,10 @@ namespace EventBuilder.Cecil
         private static string GetRealTypeName(TypeReference t)
         {
             var generic = t as GenericInstanceType;
-            if (generic == null) return RenameBogusWinRTTypes(t.FullName);
+            if (generic == null) return t.FullName;
 
             var ret = string.Format("{0}<{1}>",
-                RenameBogusWinRTTypes(generic.Namespace + "." + generic.Name),
+                generic.Namespace + "." + generic.Name,
                 string.Join(",", generic.GenericArguments.Select(x => GetRealTypeName(x))));
 
             // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
@@ -100,11 +82,6 @@ namespace EventBuilder.Cecil
 
             var garbageNamespaceList = new[]
             {
-                "Windows.UI.Xaml.Data",
-                "Windows.UI.Xaml.Interop",
-                "Windows.UI.Xaml.Input",
-                "MonoTouch.AudioToolbox",
-                "MonoMac.AudioToolbox",
                 "ReactiveUI.Events"
             };
 
