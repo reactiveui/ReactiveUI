@@ -46,7 +46,7 @@ namespace EventBuilder.Platforms
                 Directory.GetFiles(packageUnzipPath,
                     "Xamarin.Essentials.dll", SearchOption.AllDirectories);
 
-            var latestVersion = xamarinForms.Last();//x => x.Contains("netstandard2.0"));
+            var latestVersion = xamarinForms.First(x => x.Contains("netstandard2.0"));
             Assemblies.Add(latestVersion);
 
             if (PlatformHelper.IsRunningOnMono())
