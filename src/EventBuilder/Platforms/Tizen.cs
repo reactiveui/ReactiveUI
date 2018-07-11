@@ -19,7 +19,7 @@ namespace EventBuilder.Platforms
         {
             var packageUnzipPath = Environment.CurrentDirectory;
 
-            Log.Debug("Package unzip path is {PackageUnzipPath}", packageUnzipPath);
+            Log.Debug($"Package unzip path is {packageUnzipPath}");
 
             var retryPolicy = Policy
                 .Handle<Exception>()
@@ -28,39 +28,29 @@ namespace EventBuilder.Platforms
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (exception, timeSpan, context) => {
                         Log.Warning(
-                            "An exception was thrown whilst retrieving or installing {packageName}: {exception}",
+                            "An exception was thrown whilst retrieving or installing {0}: {1}",
                             _packageName, exception);
                     });
 
             retryPolicy.Execute(() => {
                 var repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
-
                 var packageManager = new PackageManager(repo, packageUnzipPath);
-
                 var package = repo.FindPackagesById(_packageName).Single(x => x.Version.ToString() == "4.0.0");
 
-                Log.Debug("Using Tizen.NET {Version} released on {Published}", package.Version, package.Published);
-                Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
+                Log.Debug("Using Tizen.NET {0} released on {1}", package.Version, package.Published);
+                Log.Debug("{0}", package.ReleaseNotes);
 
                 packageManager.InstallPackage(package, ignoreDependencies: true, allowPrereleaseVersions: false);
             });
 
             var elmSharp = Directory.GetFiles(packageUnzipPath, "ElmSharp*.dll", SearchOption.AllDirectories);
-
-            foreach (var assembly in elmSharp) {
-                Assemblies.Add(assembly);
-            }
+            Assemblies.AddRange(elmSharp);
 
             var tizenNet = Directory.GetFiles(packageUnzipPath, "Tizen*.dll", SearchOption.AllDirectories);
-
-            foreach (var assembly in tizenNet) {
-                Assemblies.Add(assembly);
-            }
+            Assemblies.AddRange(tizenNet);
 
             CecilSearchDirectories.Add($"{packageUnzipPath}\\Tizen.NET.4.0.0\\build\\tizen40\\ref");
             CecilSearchDirectories.Add($"{packageUnzipPath}\\Tizen.NET.4.0.0\\lib\\netstandard2.0");
-
-
         }
     }
 }

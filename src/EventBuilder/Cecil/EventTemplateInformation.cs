@@ -18,26 +18,18 @@ namespace EventBuilder.Cecil
             {"Windows.Foundation.EventHandler", "EventHandler"},
             {"Windows.Foundation.EventHandler`1", "EventHandler"},
             {"Windows.Foundation.EventHandler`2", "EventHandler"},
-
-            // tizen40
             {"System.Boolean", "Boolean"},
             {"System.Boolean`1", "Boolean"},
- 
-
             {"System.EventHandler", "EventHandler"},
             {"System.EventHandler`1", "EventHandler"},
             {"System.EventHandler`2", "EventHandler"},
-
             {"System.EventArgs", "EventArgs"},
             {"System.EventArgs`1", "EventArgs"},
             {"System.EventArgs`2", "EventArgs"},
-
             {"Tizen.NUI.EventHandlerWithReturnType", "Tizen.NUI.EventHandlerWithReturnType"},
             {"Tizen.NUI.EventHandlerWithReturnType`1", "Tizen.NUI.EventHandlerWithReturnType"},
             {"Tizen.NUI.EventHandlerWithReturnType`2", "Tizen.NUI.EventHandlerWithReturnType"},
             {"Tizen.NUI.EventHandlerWithReturnType`3", "Tizen.NUI.EventHandlerWithReturnType"},
-
-
         };
 
         private static string RenameBogusTypes(string typeName)
