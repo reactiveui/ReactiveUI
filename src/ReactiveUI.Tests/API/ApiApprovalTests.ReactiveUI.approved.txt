@@ -598,7 +598,6 @@ namespace ReactiveUI
         public virtual void InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection) { }
         public virtual void Move(int oldIndex, int newIndex) { }
         protected void MoveItem(int oldIndex, int newIndex) { }
-        protected virtual void publishResetNotification() { }
         protected virtual void raiseCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs args) { }
         protected virtual void raiseCollectionChanging(System.Collections.Specialized.NotifyCollectionChangedEventArgs args) { }
         public virtual bool Remove(T item) { }
