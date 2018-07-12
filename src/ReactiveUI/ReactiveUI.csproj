@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461;uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80;netcoreapp2.0;tizen40</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <Description>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8.1, Windows Store and Universal Windows Platform (UWP).</Description>
@@ -58,6 +58,12 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <Compile Include="Platforms\netcoreapp2.0\**\*.cs" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'tizen40' ">
+    <Compile Include="Platforms\tizen\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+    <PackageReference Include="Tizen.NET" Version="4.0.0" />
   </ItemGroup>
   
   <ItemGroup>
