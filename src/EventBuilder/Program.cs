@@ -41,7 +41,7 @@ namespace EventBuilder
             // allow app to be debugged in visual studio.
             if (Debugger.IsAttached) {
                 //args = "--help ".Split(' ');
-                args = "--platform=ios".Split(' ');
+                args = "--platform=tizen".Split(' ');
                 //args = new[]
                 //{
                 //    "--platform=none",
@@ -101,6 +101,10 @@ namespace EventBuilder
                         platform = new XamForms();
                         break;
 
+                    case AutoPlatform.Tizen:
+                        platform = new Tizen();
+                        break;
+
                     case AutoPlatform.UWP:
                         platform = new UWP();
                         break;
@@ -118,6 +122,10 @@ namespace EventBuilder
                     Environment.Exit((int)ExitCode.Success);
                 } catch (Exception ex) {
                     Log.Fatal(ex.ToString());
+
+                    if (Debugger.IsAttached) {
+                        Debugger.Break();
+                    }
                 }
             }
 
