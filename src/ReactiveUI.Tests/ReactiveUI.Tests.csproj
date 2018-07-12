@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFramework>net452</TargetFramework>
+    <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -15,8 +15,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.2.build3984" />
     <PackageReference Include="Xunit.StaFact" Version="0.2.9" />
     <PackageReference Include="ApprovalTests" Version=" 3.0.13" />
-    <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="[3.1.1,4)" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="3.1.1" />
     <PackageReference Include="PublicApiGenerator" Version="6.0.0" />
   </ItemGroup>
 
@@ -42,7 +41,7 @@
     <None Include="Platforms\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Compile Include="Platforms\Winforms\**\*.cs" />
     <Compile Include="Platforms\Xaml\**\*.cs" />
   </ItemGroup>

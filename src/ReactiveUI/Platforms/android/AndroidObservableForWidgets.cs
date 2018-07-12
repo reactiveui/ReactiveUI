@@ -9,9 +9,8 @@ using System.Reactive.Linq;
 using System.Collections.Generic;
 using Android.Views;
 using Android.Widget;
-using System.Reactive;
+using Android.OS;
 using Android.Text;
-using Java.Util;
 using Observable = System.Reactive.Linq.Observable;
 
 namespace ReactiveUI
@@ -32,8 +31,8 @@ namespace ReactiveUI
                 createFromWidget<CompoundButton, CompoundButton.CheckedChangeEventArgs>(v => v.Checked, (v, h) => v.CheckedChange += h, (v, h) => v.CheckedChange -= h),
                 createFromWidget<CalendarView, CalendarView.DateChangeEventArgs>(v => v.Date, (v, h) => v.DateChange += h, (v, h) => v.DateChange -= h),
                 createFromWidget<TabHost, TabHost.TabChangeEventArgs>(v => v.CurrentTab, (v, h) => v.TabChanged += h, (v, h) => v.TabChanged -= h),
-                createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.Hour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h),
-                createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.Minute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h),
+                createTimePickerHourFromWidget(),
+                createTimePickerMinuteFromWidget(),
                 createFromAdapterView(),
             }.ToDictionary(k => Tuple.Create(k.Type, k.Property), v => v.Func);
         }
@@ -81,6 +80,26 @@ namespace ReactiveUI
                     );
                 }
             };
+        }
+
+        static DispatchTuple createTimePickerHourFromWidget()
+        {
+            if ((int)Build.VERSION.SdkInt >= 23)
+                return createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.Hour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
+
+#pragma warning disable 618
+            return createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentHour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
+#pragma warning restore 618
+        }
+
+        static DispatchTuple createTimePickerMinuteFromWidget()
+        {
+            if ((int)Build.VERSION.SdkInt >= 23)
+                return createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.Minute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
+
+#pragma warning disable 618
+            return createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentMinute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
+#pragma warning restore 618
         }
 
         static DispatchTuple createFromWidget<TView, TEventArgs>(Expression<Func<TView, object>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)

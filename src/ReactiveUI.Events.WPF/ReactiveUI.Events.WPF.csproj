@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events.WPF</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for WPF UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
@@ -11,7 +11,7 @@
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
+    <PackageReference Include="System.Reactive" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>

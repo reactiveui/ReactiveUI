@@ -3,7 +3,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.XamForms")]
-[assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.5", FrameworkDisplayName=".NET Framework 4.5")]
+[assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
 namespace ReactiveUI
 {
     public class static AutoPersistHelper
