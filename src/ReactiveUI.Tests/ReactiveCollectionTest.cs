@@ -994,14 +994,9 @@ namespace ReactiveUI.Tests
             // eliminate the ResetChangeThreshold from the equation
             vm.SomeCollectionOfStrings.ResetChangeThreshold = int.MinValue;
 
-            var exception = Record.Exception(() => {
-
-                // Within the reset threshold
-                vm.SomeCollectionOfStrings.AddRange(Create(5));
-                vm.SomeCollectionOfStrings.AddRange(Create(20));
-            });
-
-            Assert.Null(exception);
+			// Within the reset threshold
+			vm.SomeCollectionOfStrings.AddRange(Create(5));
+			vm.SomeCollectionOfStrings.AddRange(Create(20));
 
             IEnumerable<string> Create(int numElements)
                 => Enumerable.Range(1, numElements).Select(i => $"item_{i}");
@@ -1021,16 +1016,11 @@ namespace ReactiveUI.Tests
                 vm.SomeCollectionOfStrings.Add(item);
             }
 
-            var exception = Record.Exception(() => {
-
-                // within reset threshold
-                vm.SomeCollectionOfStrings.InsertRange(2, Create(5));
-                // outside reset threshold
-                vm.SomeCollectionOfStrings.InsertRange(2, Create(20));
-            });
+			// within reset threshold
+			vm.SomeCollectionOfStrings.InsertRange(2, Create(5));
+			// outside reset threshold
+			vm.SomeCollectionOfStrings.InsertRange(2, Create(20));
             
-            Assert.Null(exception);
-
             IEnumerable<string> Create(int numElements)
                 => Enumerable.Range(1, numElements).Select(i => $"item_{i}");
         }
@@ -1049,15 +1039,10 @@ namespace ReactiveUI.Tests
                 vm.SomeCollectionOfStrings.Add(item);
             }
 
-            var exception = Record.Exception(() => {
-
-                // within reset threshold
-                vm.SomeCollectionOfStrings.RemoveRange(2, 5);
-                // outside reset threshold
-                vm.SomeCollectionOfStrings.RemoveRange(2, 20);
-            });
-
-            Assert.Null(exception);
+			// within reset threshold
+			vm.SomeCollectionOfStrings.RemoveRange(2, 5);
+			// outside reset threshold
+			vm.SomeCollectionOfStrings.RemoveRange(2, 20);
         }
 
         public class DerivedCollectionLogging
