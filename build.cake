@@ -168,6 +168,7 @@ Task("GenerateEvents")
     generate("ios", "src/ReactiveUI.Events/");
     generate("mac", "src/ReactiveUI.Events/");
     generate("uwp", "src/ReactiveUI.Events/");
+    generate("tizen", "src/ReactiveUI.Events/");
     generate("wpf", "src/ReactiveUI.Events.WPF/");
     generate("xamforms", "src/ReactiveUI.Events.XamForms/");
     generate("winforms", "src/ReactiveUI.Events.Winforms/");
