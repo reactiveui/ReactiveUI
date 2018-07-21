@@ -481,6 +481,149 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, reset.Count);
         }
 
+        // ActOnEveryObject
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandlePreexistingItems()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            Assert.Equal(1, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleAddingItems()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture>();
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            fixture.Add(testObj);
+
+            Assert.Equal(1, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleRemovingItems()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            fixture.Remove(testObj);
+
+            Assert.Equal(0, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleClear()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            fixture.Clear();
+
+            Assert.Equal(0, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleAddUnderSuppressedNotifications()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture>();
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            using (fixture.SuppressChangeNotifications()) {
+                fixture.Add(testObj);
+            }
+            Assert.Equal(1, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleRemoveUnderSuppressedNotifications()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            using (fixture.SuppressChangeNotifications()) {
+                fixture.Remove(testObj);
+            }
+            Assert.Equal(0, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleClearUnderSuppressedNotifications()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            using (fixture.SuppressChangeNotifications()) {
+                fixture.Clear();
+            }
+            Assert.Equal(0, testObj.NullableInt);
+        }
+
         [Fact]
         public void GetARangeWhenWeAddAListOfItems()
         {

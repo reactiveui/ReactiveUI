@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Concurrency;
-using System.Text;
 
 namespace ReactiveUI
 {
@@ -18,46 +15,50 @@ namespace ReactiveUI
     /// </summary>
     public class WaitForDispatcherScheduler : IScheduler
     {
-        IScheduler _innerScheduler;
-        readonly Func<IScheduler> _schedulerFactory;
+        private IScheduler scheduler;
+        private readonly Func<IScheduler> schedulerFactory;
 
         public WaitForDispatcherScheduler(Func<IScheduler> schedulerFactory)
         {
-            _schedulerFactory = schedulerFactory;
+            this.schedulerFactory = schedulerFactory;
 
             // NB: Creating a scheduler will fail on WinRT if we attempt to do
             // so on a non-UI thread, even if the underlying Dispatcher exists.
             // We assume (hope?) that WaitForDispatcherScheduler will be created
             // early enough that this won't be the case.
-            attemptToCreateScheduler();
+            AttemptToCreateScheduler();
         }
 
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            return attemptToCreateScheduler().Schedule(state, action);
+            return AttemptToCreateScheduler().Schedule(state, action);
         }
 
         public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            return attemptToCreateScheduler().Schedule(state, dueTime, action);
+            return AttemptToCreateScheduler().Schedule(state, dueTime, action);
         }
 
         public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            return attemptToCreateScheduler().Schedule(state, dueTime, action);
+            return AttemptToCreateScheduler().Schedule(state, dueTime, action);
         }
 
-        public DateTimeOffset Now {
-            get { return attemptToCreateScheduler().Now; }
-        }
-
-        IScheduler attemptToCreateScheduler()
+        public DateTimeOffset Now
         {
-            if (_innerScheduler != null) return _innerScheduler;
+            get { return AttemptToCreateScheduler().Now; }
+        }
+
+        private IScheduler AttemptToCreateScheduler()
+        {
+            if (scheduler != null) return scheduler;
             try {
-                _innerScheduler = _schedulerFactory();
-                return _innerScheduler;
+                scheduler = schedulerFactory();
+                return scheduler;
             } catch (InvalidOperationException) {
+                // NB: Dispatcher's not ready yet. Keep using CurrentThread
+                return CurrentThreadScheduler.Instance;
+            } catch (ArgumentNullException) {
                 // NB: Dispatcher's not ready yet. Keep using CurrentThread
                 return CurrentThreadScheduler.Instance;
             }
