@@ -24,7 +24,7 @@ namespace ReactiveUI
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
-#if NET_45
+#if NET_461
         public event NotifyCollectionChangedEventHandler CollectionChanging;
 
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
@@ -77,14 +77,14 @@ namespace ReactiveUI
             remove { CollectionChangedEventManager.RemoveHandler(this, value); }
         }
 
-        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
+        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
         {
-            CollectionChangingEventManager.DeliverEvent(this, e);
+            CollectionChangingEventManager.DeliverEvent(this, args);
         }
 
-        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
-            CollectionChangedEventManager.DeliverEvent(this, e);
+            CollectionChangedEventManager.DeliverEvent(this, args);
         }
 
         public event PropertyChangingEventHandler PropertyChanging
@@ -529,11 +529,6 @@ namespace ReactiveUI
 
         public virtual void Reset()
         {
-            publishResetNotification();
-        }
-
-        protected virtual void publishResetNotification()
-        {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
             _changing.OnNext(ea);
             _changed.OnNext(ea);
@@ -568,7 +563,13 @@ namespace ReactiveUI
 
         public IDisposable SuppressChangeNotifications()
         {
-            Interlocked.Increment(ref _resetNotificationCount);
+            NotifyCollectionChangedEventArgs resetEventArgs = null;
+
+            if (Interlocked.Increment(ref _resetNotificationCount) == 1) {
+                // Changes were not suppressed before, publish a Changing reset notification.
+                resetEventArgs = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                _changing.OnNext(resetEventArgs);
+            }
 
             if (!_hasWhinedAboutNoResetSub && _resetSubCount == 0) {
                 LogHost.Default.Warn("SuppressChangeNotifications was called (perhaps via AddRange), yet you do not");
@@ -579,7 +580,10 @@ namespace ReactiveUI
 
             return new CompositeDisposable(this.suppressChangeNotifications(), Disposable.Create(() => {
                 if (Interlocked.Decrement(ref _resetNotificationCount) == 0) {
-                    publishResetNotification();
+                    if (resetEventArgs == null) {
+                        resetEventArgs = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                    }
+                    _changed.OnNext(resetEventArgs);
                 }
             }));
         }
