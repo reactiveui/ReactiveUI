@@ -151,14 +151,19 @@ So here's to you, lovely person who wants to join us — this is how you can sup
 
 We're also looking for people to assist with code reviews of ReactiveUI contributions. If you're experienced with any of the below technologies, you can join the team and receive notifications:
 
- - [Android reviewers](https://github.com/orgs/reactiveui/teams/reviewers-android)
- - [Core reviewers](https://github.com/orgs/reactiveui/teams/reviewers-core)
- - [iOS reviewers](https://github.com/orgs/reactiveui/teams/reviewers-ios)
- - [Mac reviewers](https://github.com/orgs/reactiveui/teams/reviewers-mac)
- - [UWP reviewers](https://github.com/orgs/reactiveui/teams/reviewers-uwp)
- - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-winforms)
- - [WPF reviewers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
- - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xamforms)
+ - [Android reviewers](https://github.com/orgs/reactiveui/teams/android-team)
+ - [Core reviewers](https://github.com/orgs/reactiveui/teams/core-team)
+ - [iOS reviewers](https://github.com/orgs/reactiveui/teams/ios-team)
+ - [Mac reviewers](https://github.com/orgs/reactiveui/teams/mac-team)
+ - [UWP reviewers](https://github.com/orgs/reactiveui/teams/uwp-team)
+ - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/winforms-team)
+ - [WPF reviewers](https://github.com/orgs/reactiveui/teams/wpf-team) 
+ - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/xamarin-forms-team)
+ - [Dot Net Core](https://github.com/orgs/reactiveui/teams/dotnetcore-team)
+ - [ReactiveUI Fody](https://github.com/orgs/reactiveui/teams/fody-team)
+ - [Learning](https://github.com/orgs/reactiveui/teams/learning-team)
+ - [Tizen](https://github.com/orgs/reactiveui/teams/tizen-team)
+ - [Web Assembly](https://github.com/orgs/reactiveui/teams/webassembly-team)
 
 <img src="https://opencollective.com/reactiveui/contributors.png?avatarHeight=64&button=true&width=1400&margin=3"/>
 
