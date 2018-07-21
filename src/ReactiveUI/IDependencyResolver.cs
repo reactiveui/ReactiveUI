@@ -30,7 +30,7 @@ namespace ReactiveUI
             (new Registrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
             (new PlatformRegistrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
 
-            var fdr = typeof(ModernDependencyResolver);
+            var fdr = typeof(DependencyResolverMixins);
 
             var assmName = new AssemblyName(
                 fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", ""));
