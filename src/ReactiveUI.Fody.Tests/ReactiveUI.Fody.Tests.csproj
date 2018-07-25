@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>    
     <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
@@ -43,7 +43,4 @@
          until the projects are setup as suggested here: https://github.com/Fody/BasicFodyAddin -->
     <Copy SourceFiles="@(WeaverFiles)" DestinationFolder="..\Tools" />
   </Target>
-
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
-
 </Project>

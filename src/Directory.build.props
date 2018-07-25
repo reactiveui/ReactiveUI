@@ -22,15 +22,6 @@
     <None Include="..\..\LICENSE" Pack="true" PackagePath="LICENSE" />
   </ItemGroup>
   
-  <!-- Use a Choose / When so the legacy project system doesn't get this -->
-  <Choose>
-    <When Condition="'$(IsLegacyProject)' != 'true'">
-      <ItemGroup>
-        <PackageReference Include="MSBuild.Sdk.Extras" Version="1.6.41" PrivateAssets="All" />
-      </ItemGroup>
-    </When>
-  </Choose>
-
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="all" />
   </ItemGroup>
