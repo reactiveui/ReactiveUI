@@ -12,6 +12,7 @@ using Android.App;
 using Android.Views;
 using Java.Interop;
 using Android.Support.V7.App;
+using static ReactiveUI.ControlFetcherMixin;
 
 namespace ReactiveUI.AndroidSupport
 {
@@ -67,20 +68,21 @@ namespace ReactiveUI.AndroidSupport
                 () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
         }
 
-        /// <summary>
-        /// This should be called in the Fragement's OnCreateView, with the newly inflated layout
-        /// </summary>
-        /// <param name="This"></param>
-        /// <param name="inflatedView"></param>
-        public static void WireUpControls(this global::Android.Support.V4.App.Fragment This, View inflatedView)
+		/// <summary>
+		/// A helper method to automatically resolve properties in an <see cref="Android.Support.V4.App.Fragment"/> to their respective elements in the layout.
+		/// This should be called in the Fragement's OnCreateView, with the newly inflated layout
+		/// </summary>
+		/// <param name="This"></param>
+		/// <param name="inflatedView">The newly inflated <see cref="View"/> returned from <see cref="LayoutInflater.Inflate"/>.</param>
+		/// <param name="resolveMembers">The strategy used to resolve properties that either subclass <see cref="View"/>, have a <see cref="WireUpResourceAttribute"/> or have a <see cref="IgnoreResourceAttribute"/></param>
+		public static void WireUpControls(this global::Android.Support.V4.App.Fragment This, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
 		{
-			var members = This.GetType().GetRuntimeProperties()
-				.Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
+			var members = This.getWireUpMembers(ResolveStrategy.Implicit);
 
 			members.ToList().ForEach(m => {
 				try {
 					// Find the android control with the same name from the view
-					var view = inflatedView.getControlInternal(m.PropertyType, m.Name);
+					var view = inflatedView.getControlInternal(m.PropertyType, m.getResourceName());
 
 					// Set the activity field's value to the view with that identifier
 					m.SetValue(This, view);
@@ -91,26 +93,31 @@ namespace ReactiveUI.AndroidSupport
 			});
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public static void WireUpControls(this AppCompatActivity This)
+		// Copied from ReactiveUI/Platforms/android/ControlFetcherMixins.cs
+		static IEnumerable<PropertyInfo> getWireUpMembers(this object This, ResolveStrategy resolveStrategy)
 		{
-			var members = This.GetType().GetRuntimeProperties()
-				.Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
+			var members = This.GetType().GetRuntimeProperties();
 
-			members.ToList().ForEach(m => {
-				try {
-					// Find the android control with the same name
-					var view = This.getControlInternal(m.PropertyType, m.Name);
+			switch (resolveStrategy) {
+				default:
+				case ResolveStrategy.Implicit:
+					return members.Where(m => m.PropertyType.IsSubclassOf(typeof(View))
+										 || m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 
-					// Set the activity field's value to the view with that identifier
-					m.SetValue(This, view);
-				} catch (Exception ex) {
-					throw new MissingFieldException("Failed to wire up the Property "
-						+ m.Name + " to a View in your layout with a corresponding identifier", ex);
-				}
-			});
+				case ResolveStrategy.ExplicitOptIn:
+					return members.Where(m => m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
+
+				case ResolveStrategy.ExplicitOptOut:
+					return members.Where(m => typeof(View).IsAssignableFrom(m.PropertyType)
+										 && m.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
+			}
+		}
+
+		// Also copied from ReactiveUI/Platforms/android/ControlFetcherMixins.cs
+		static string getResourceName(this PropertyInfo member)
+		{
+			var resourceNameOverride = member.GetCustomAttribute<WireUpResourceAttribute>()?.ResourceNameOverride;
+			return resourceNameOverride ?? member.Name;
 		}
 
 		static View getControlInternal(this View parent, Type viewType, string name)
