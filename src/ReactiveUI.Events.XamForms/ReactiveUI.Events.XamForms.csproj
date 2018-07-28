@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events.XamForms</AssemblyName>
@@ -18,6 +18,4 @@
     <PackageReference Include="Xamarin.Forms" Version="2.5.1.444934" />
     <Compile Include="Events_XAMFORMS.cs" />
   </ItemGroup>
-
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
