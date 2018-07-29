@@ -163,6 +163,7 @@ Task("GenerateEvents")
 
     generate("android", "src/ReactiveUI.Events/");
     generate("ios", "src/ReactiveUI.Events/");
+	generate("tvos", "src/ReactiveUI.Events/");
     generate("mac", "src/ReactiveUI.Events/");
     generate("uwp", "src/ReactiveUI.Events/");
     generate("wpf", "src/ReactiveUI.Events.WPF/");
@@ -184,6 +185,9 @@ Task("BuildReactiveUI")
             .WithTarget("build;pack") 
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+			.WithProperty("ServerAddress", "192.168.1.4")
+			.WithProperty("ServerUser", "emmanuele.villa")
+			.WithProperty("ServerPassword", "Fincons1!")
             .SetConfiguration("Release")                        
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));

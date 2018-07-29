@@ -88,6 +88,10 @@ namespace EventBuilder
                     case AutoPlatform.iOS:
                         platform = new iOS(_referenceAssembliesLocation);
                         break;
+						
+					case AutoPlatform.tvOS:
+                        platform = new tvOS(_referenceAssembliesLocation);
+                        break;
 
                     case AutoPlatform.Mac:
                         platform = new Mac(_referenceAssembliesLocation);
