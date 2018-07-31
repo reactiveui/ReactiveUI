@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80;tizen40</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
@@ -38,9 +38,5 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'tizen40' ">
     <Compile Include="Events_TIZEN.cs" Condition="Exists('Events_TIZEN.cs')" />
-    <PackageReference Include="Tizen.NET" Version="4.0.0" />
   </ItemGroup>
-  
-
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
