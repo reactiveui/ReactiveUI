@@ -22,11 +22,10 @@ namespace ReactiveUI
             return 4;
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false)
         {
             Contract.Requires(sender != null && sender is DependencyObject);
             var type = sender.GetType();
-            var propertyName = expression.GetMemberInfo().Name;
             var depSender = sender as DependencyObject;
 
             if (depSender == null)
@@ -35,7 +34,7 @@ namespace ReactiveUI
                     type.FullName, propertyName);
 
                 var ret = new POCOObservableForProperty();
-                return ret.GetNotificationForProperty(sender, expression, beforeChanged);
+                return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
             }
 
             if (beforeChanged == true) {
@@ -43,7 +42,7 @@ namespace ReactiveUI
                     type.FullName, propertyName);
 
                 var ret = new POCOObservableForProperty();
-                return ret.GetNotificationForProperty(sender, expression, beforeChanged);
+                return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
             }
 
             var dpFetcher = getDependencyPropertyFetcher(type, propertyName);
@@ -52,7 +51,7 @@ namespace ReactiveUI
                     type.FullName, propertyName);
 
                 var ret = new POCOObservableForProperty();
-                return ret.GetNotificationForProperty(sender, expression, beforeChanged);
+                return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
             }
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
