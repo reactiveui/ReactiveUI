@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461;uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>ReactiveUI.Fody.Helpers</AssemblyName>
     <RootNamespace>ReactiveUI.Fody.Helpers</RootNamespace>
     <Description>Fody extension to generate RaisePropertyChange notifications for properties and ObservableAsPropertyHelper properties.</Description>
@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Fody" Version="3.0.3" PrivateAssets="None" />
     <PackageReference Include="FodyPackaging" Version="3.0.3" PrivateAssets="All" />
-    <PackageReference Include="System.Reactive" Version="3.1.1" />
+    <PackageReference Include="System.Reactive" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
