@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="PublicApiGenerator" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApprovalTests" Version=" 3.0.13" />
+    <PackageReference Include="ApprovalTests" Version=" 3.0.15" />
     <PackageReference Include="System.Reactive" Version="4.0.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
   </ItemGroup>
