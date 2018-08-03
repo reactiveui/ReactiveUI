@@ -39,7 +39,7 @@ namespace EventBuilder.Platforms
 
                 var packageManager = new PackageManager(repo, packageUnzipPath);
 
-                var package = repo.FindPackagesById(_packageName).Single(x => x.Version.ToString() == "2.5.1.444934");
+                var package = repo.FindPackagesById(_packageName).Single(x => x.Version.ToString() == "3.0.0.561731");
 
                 Log.Debug("Using Xamarin Forms {Version} released on {Published}", package.Version, package.Published);
                 Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
@@ -58,10 +58,11 @@ namespace EventBuilder.Platforms
             {
                 CecilSearchDirectories.Add(
                     @"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/xbuild-frameworks/.NETPortable/v4.5/Profile/Profile111");
+                CecilSearchDirectories.Add(@"/Library/Frameworks/Mono.framework/External/xbuild-frameworks/MonoAndroid/v1.0/Facades");
             }
             else
             {
-                CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile\Profile111");
+                CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\Facades");
             }
         }
     }
