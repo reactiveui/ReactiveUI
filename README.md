@@ -1,4 +1,4 @@
-[![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![NuGet Stats](https://img.shields.io/nuget/vpre/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build status](https://dotnetfoundation.visualstudio.com/_apis/public/build/definitions/a5852744-a77d-4d76-a9d2-81ac1fdd5744/11/badge)](https://dotnetfoundation.visualstudio.com/ReactiveUI/ReactiveUI%20Team/_build/index?definitionId=11)
+[![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build status](https://dotnetfoundation.visualstudio.com/_apis/public/build/definitions/a5852744-a77d-4d76-a9d2-81ac1fdd5744/11/badge)](https://dotnetfoundation.visualstudio.com/ReactiveUI/ReactiveUI%20Team/_build/index?definitionId=11)
  [![Coverage Status](https://coveralls.io/repos/github/reactiveui/ReactiveUI/badge.svg?branch=develop)](https://coveralls.io/github/reactiveui/ReactiveUI?branch=develop) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI?ref=badge_shield)
 
 
@@ -8,7 +8,7 @@
   </a>
   <br>
   <br>
-	<a href="https://https://www.nuget.org/packages/reactiveui">
+	<a href="https://www.nuget.org/packages/reactiveui">
 		<img src="https://img.shields.io/nuget/dt/reactiveui-core.svg">
 	</a>
 	<a href="#backers">
@@ -22,7 +22,7 @@
 	</a>
   <h1>ReactiveUI</h1>
   <p>
-    ReactiveUI is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming which is a paradigm that allows you to abstract mutable state away from your user interfaces and express the idea around a feature in one readable place and improve the testability of your application.
+    ReactiveUI is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming which is a paradigm that allows you to <a href="https://www.youtube.com/watch?v=3HwEytvngXk">abstract mutable state away from your user interfaces and express the idea around a feature in one readable place</a> and improve the testability of your application.
   <p>
 </div>
 
@@ -151,14 +151,19 @@ So here's to you, lovely person who wants to join us — this is how you can sup
 
 We're also looking for people to assist with code reviews of ReactiveUI contributions. If you're experienced with any of the below technologies, you can join the team and receive notifications:
 
- - [Android reviewers](https://github.com/orgs/reactiveui/teams/reviewers-android)
- - [Core reviewers](https://github.com/orgs/reactiveui/teams/reviewers-core)
- - [iOS reviewers](https://github.com/orgs/reactiveui/teams/reviewers-ios)
- - [Mac reviewers](https://github.com/orgs/reactiveui/teams/reviewers-mac)
- - [UWP reviewers](https://github.com/orgs/reactiveui/teams/reviewers-uwp)
- - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-winforms)
- - [WPF reviewers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
- - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xamforms)
+ - [Android reviewers](https://github.com/orgs/reactiveui/teams/android-team)
+ - [Core reviewers](https://github.com/orgs/reactiveui/teams/core-team)
+ - [iOS reviewers](https://github.com/orgs/reactiveui/teams/ios-team)
+ - [Mac reviewers](https://github.com/orgs/reactiveui/teams/mac-team)
+ - [UWP reviewers](https://github.com/orgs/reactiveui/teams/uwp-team)
+ - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/winforms-team)
+ - [WPF reviewers](https://github.com/orgs/reactiveui/teams/wpf-team) 
+ - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/xamarin-forms-team)
+ - [Dot Net Core](https://github.com/orgs/reactiveui/teams/dotnetcore-team)
+ - [ReactiveUI Fody](https://github.com/orgs/reactiveui/teams/fody-team)
+ - [Learning](https://github.com/orgs/reactiveui/teams/learning-team)
+ - [Tizen](https://github.com/orgs/reactiveui/teams/tizen-team)
+ - [Web Assembly](https://github.com/orgs/reactiveui/teams/webassembly-team)
 
 <img src="https://opencollective.com/reactiveui/contributors.png?avatarHeight=64&button=true&width=1400&margin=3"/>
 

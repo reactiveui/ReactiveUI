@@ -1,5 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MS-PL license.
+// The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 //////////////////////////////////////////////////////////////////////
@@ -54,8 +54,11 @@ var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
 var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events",
                                "ReactiveUI.Events.WPF",
+                               "ReactiveUI.Events.Winforms",
                                "ReactiveUI.Events.XamForms",
                                "ReactiveUI",
+                               "ReactiveUI.Fody",
+                               "ReactiveUI.Fody.Helpers",
                                "ReactiveUI.AndroidSupport",
                                "ReactiveUI.Blend",
                                "ReactiveUI.WPF",
@@ -99,7 +102,7 @@ Task("BuildEventBuilder")
 
     MSBuild(solution, new MSBuildSettings() {
             ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/bl:eventbuilder.binlog /m")
+            ArgumentCustomization = args => args.Append("/m")
         }
         .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
@@ -163,11 +166,13 @@ Task("GenerateEvents")
 
     generate("android", "src/ReactiveUI.Events/");
     generate("ios", "src/ReactiveUI.Events/");
-	generate("tvos", "src/ReactiveUI.Events/");
     generate("mac", "src/ReactiveUI.Events/");
     generate("uwp", "src/ReactiveUI.Events/");
+    generate("tizen", "src/ReactiveUI.Events/");
     generate("wpf", "src/ReactiveUI.Events.WPF/");
     generate("xamforms", "src/ReactiveUI.Events.XamForms/");
+    generate("winforms", "src/ReactiveUI.Events.Winforms/");
+    generate("tvos", "src/ReactiveUI.Events/");
 });
 
 Task("BuildReactiveUI")
@@ -180,7 +185,7 @@ Task("BuildReactiveUI")
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/bl:reactiveui-build-" + name + ".binlog /m /restore")
+                ArgumentCustomization = args => args.Append("/m /restore")
             }
             .WithTarget("build;pack") 
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
@@ -193,8 +198,11 @@ Task("BuildReactiveUI")
     foreach(var package in packageWhitelist)
     {
         build("./src/" + package + "/" + package + ".csproj", package);
-    }        
+    }
+
     build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
+    build("./src/ReactiveUI.LeakTests/ReactiveUI.LeakTests.csproj", "ReactiveUI.LeakTests");
+    build("./src/ReactiveUI.Fody.Tests/ReactiveUI.Fody.Tests.csproj", "ReactiveUI.Fody.Tests");
 });
 
 Task("RunUnitTests")
@@ -202,8 +210,15 @@ Task("RunUnitTests")
     .Does(() =>
 {
     Action<ICakeContext> testAction = tool => {
-
         tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
+            OutputDirectory = artifactDirectory,
+            XmlReport = true,
+            NoAppDomain = true
+        });
+    };
+
+    Action<ICakeContext> testFodyAction = tool => {
+        tool.XUnit2("./src/ReactiveUI.Fody.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReport = true,
             NoAppDomain = true
@@ -219,7 +234,25 @@ Task("RunUnitTests")
         .WithFilter("+[*]*")
         .WithFilter("-[*.Testing]*")
         .WithFilter("-[*.Tests*]*")
-        .WithFilter("-[Playground*]*")
+        .WithFilter("-[ReactiveUI.Events]*")
+        .WithFilter("-[Splat*]*")
+        .WithFilter("-[ApprovalTests*]*")
+        .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
+        .ExcludeByFile("*/*Designer.cs")
+        .ExcludeByFile("*/*.g.cs")
+        .ExcludeByFile("*/*.g.i.cs")
+        .ExcludeByFile("*splat/splat*")
+        .ExcludeByFile("*ApprovalTests*"));
+
+    OpenCover(testFodyAction,
+        testCoverageOutputFile,
+        new OpenCoverSettings {
+            ReturnTargetCodeOffset = 0,
+            ArgumentCustomization = args => args.Append("-mergeoutput")
+        }
+        .WithFilter("+[*]*")
+        .WithFilter("-[*.Testing]*")
+        .WithFilter("-[*.Tests*]*")
         .WithFilter("-[ReactiveUI.Events]*")
         .WithFilter("-[Splat*]*")
         .WithFilter("-[ApprovalTests*]*")

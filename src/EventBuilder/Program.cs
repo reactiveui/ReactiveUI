@@ -1,5 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MS-PL license.
+// The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
@@ -41,7 +41,7 @@ namespace EventBuilder
             // allow app to be debugged in visual studio.
             if (Debugger.IsAttached) {
                 //args = "--help ".Split(' ');
-                args = "--platform=ios".Split(' ');
+                args = "--platform=tizen".Split(' ');
                 //args = new[]
                 //{
                 //    "--platform=none",
@@ -88,10 +88,6 @@ namespace EventBuilder
                     case AutoPlatform.iOS:
                         platform = new iOS(_referenceAssembliesLocation);
                         break;
-						
-					case AutoPlatform.tvOS:
-                        platform = new tvOS(_referenceAssembliesLocation);
-                        break;
 
                     case AutoPlatform.Mac:
                         platform = new Mac(_referenceAssembliesLocation);
@@ -105,8 +101,20 @@ namespace EventBuilder
                         platform = new XamForms();
                         break;
 
+                    case AutoPlatform.Tizen:
+                        platform = new Tizen();
+                        break;
+
                     case AutoPlatform.UWP:
                         platform = new UWP();
+                        break;
+
+                    case AutoPlatform.TVOS:
+                        platform = new UWP();
+                        break;
+
+                    case AutoPlatform.Winforms:
+                        platform = new Winforms();
                         break;
 
                     default:
@@ -118,6 +126,10 @@ namespace EventBuilder
                     Environment.Exit((int)ExitCode.Success);
                 } catch (Exception ex) {
                     Log.Fatal(ex.ToString());
+
+                    if (Debugger.IsAttached) {
+                        Debugger.Break();
+                    }
                 }
             }
 

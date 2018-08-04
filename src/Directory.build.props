@@ -6,7 +6,8 @@
     <PackageIconUrl>https://i.imgur.com/7WDbqSy.png</PackageIconUrl>
     <Authors>.NET Foundation and Contributors</Authors>
     <Owners>xpaulbettsx;ghuntley</Owners>
-    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;wpf;net;netstandard;net461;uwp;tizen</PackageTags>
+    <Product>ReactiveUI ($(TargetFramework))</Product>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net461;uwp;tizen</PackageTags>
     <PackageReleaseNotes>https://reactiveui.net/blog/</PackageReleaseNotes>
 
     <NoWarn>$(NoWarn);1591;1701;1702;1705</NoWarn>
@@ -21,19 +22,17 @@
     <None Include="..\..\LICENSE" Pack="true" PackagePath="LICENSE" />
   </ItemGroup>
   
-  <!-- Use a Choose / When so the legacy project system doesn't get this -->
-  <Choose>
-    <When Condition="'$(IsLegacyProject)' != 'true'">
-      <ItemGroup>
-        <PackageReference Include="MSBuild.Sdk.Extras" Version="1.3.1" PrivateAssets="All" />
-      </ItemGroup>
-    </When>
-  </Choose>
-
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="all" />
   </ItemGroup>
-  
+
+  <ItemGroup Condition="$(IsTestProject)">
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.console" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="Xunit.StaFact" Version="0.2.9" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.0" PrivateAssets="All" /> 
   </ItemGroup>

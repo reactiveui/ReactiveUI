@@ -1,5 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MS-PL license.
+// The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using Splat;
@@ -29,19 +29,31 @@ namespace ReactiveUI
 
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
         {
-            var handler = this.CollectionChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
+            // WPF doesn't seem to care much about Range notifications in this case, 
+            // so we'll just pass those right through
+            this.CollectionChanging?.Invoke(this, args);
         }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
-            var handler = this.CollectionChanged;
-            if (handler != null) {
-                handler(this, args);
+            // WPF throws "Range actions are not supported" under
+            // certain circumstances, so we catch those here first
+            this.CollectionChanged?.Invoke(this, replaceIfUnsupported(args));
+        }
+        
+        NotifyCollectionChangedEventArgs replaceIfUnsupported(NotifyCollectionChangedEventArgs args)
+        {
+            // see System.Windows.Data.ListCollectionView.ValidateCollectionChangedEventArgs
+            switch (args.Action) {
+                case NotifyCollectionChangedAction.Add when args.NewItems.Count != 1:
+                case NotifyCollectionChangedAction.Remove when args.OldItems.Count != 1:
+                case NotifyCollectionChangedAction.Replace when args.NewItems.Count != 1 || args.OldItems.Count != 1:
+                case NotifyCollectionChangedAction.Move when args.NewItems.Count != 1:
+                    return new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                default:
+                    return args;
             }
         }
 
@@ -529,11 +541,6 @@ namespace ReactiveUI
 
         public virtual void Reset()
         {
-            publishResetNotification();
-        }
-
-        protected virtual void publishResetNotification()
-        {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
             _changing.OnNext(ea);
             _changed.OnNext(ea);
@@ -568,7 +575,13 @@ namespace ReactiveUI
 
         public IDisposable SuppressChangeNotifications()
         {
-            Interlocked.Increment(ref _resetNotificationCount);
+            NotifyCollectionChangedEventArgs resetEventArgs = null;
+
+            if (Interlocked.Increment(ref _resetNotificationCount) == 1) {
+                // Changes were not suppressed before, publish a Changing reset notification.
+                resetEventArgs = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                _changing.OnNext(resetEventArgs);
+            }
 
             if (!_hasWhinedAboutNoResetSub && _resetSubCount == 0) {
                 LogHost.Default.Warn("SuppressChangeNotifications was called (perhaps via AddRange), yet you do not");
@@ -579,7 +592,10 @@ namespace ReactiveUI
 
             return new CompositeDisposable(this.suppressChangeNotifications(), Disposable.Create(() => {
                 if (Interlocked.Decrement(ref _resetNotificationCount) == 0) {
-                    publishResetNotification();
+                    if (resetEventArgs == null) {
+                        resetEventArgs = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                    }
+                    _changed.OnNext(resetEventArgs);
                 }
             }));
         }

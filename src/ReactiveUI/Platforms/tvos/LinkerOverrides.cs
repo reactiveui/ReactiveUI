@@ -1,5 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MS-PL license.
+// The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
@@ -20,11 +20,6 @@ namespace ReactiveUI.Cocoa
             var title = btn.Title(UIControlState.Disabled);
             btn.SetTitle("foo", UIControlState.Disabled);
             btn.TitleLabel.Text = btn.TitleLabel.Text;
-
-            // UISlider
-            var slider = new UISlider();
-            slider.Value = slider.Value; // Get and set
-
 
             // UITextView
             var tv = new UITextView();
@@ -50,11 +45,6 @@ namespace ReactiveUI.Cocoa
             EventHandler eh = (s, e) => { };
             ctl.TouchUpInside += eh;
             ctl.TouchUpInside -= eh;
-
-            // UIRefreshControl
-            var rc = new UIRefreshControl();
-            rc.ValueChanged += eh;
-            rc.ValueChanged -= eh;
 
             // UIBarButtonItem
             var bbi = new UIBarButtonItem();

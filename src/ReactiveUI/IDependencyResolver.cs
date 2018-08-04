@@ -1,5 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MS-PL license.
+// The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
@@ -30,7 +30,7 @@ namespace ReactiveUI
             (new Registrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
             (new PlatformRegistrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
 
-            var fdr = typeof(ModernDependencyResolver);
+            var fdr = typeof(DependencyResolverMixins);
 
             var assmName = new AssemblyName(
                 fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", ""));

@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid80;Xamarin.tvOS10</TargetFrameworks>
+    <TargetFrameworks>uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid80;tizen40</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
@@ -11,7 +11,7 @@
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="[3.1.1,4)" />
+    <PackageReference Include="System.Reactive" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
@@ -27,10 +27,6 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
     <Compile Include="Events_IOS.cs" Condition="Exists('Events_IOS.cs')" />
   </ItemGroup>
-  
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.tvOS10' ">
-    <Compile Include="Events_TVOS.cs" Condition="Exists('Events_TVOS.cs')" />
-  </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
     <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
@@ -40,5 +36,15 @@
     <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
   </ItemGroup>
 
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'tizen40' ">
+    <Compile Include="Events_TIZEN.cs" Condition="Exists('Events_TIZEN.cs')" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
+    <Reference Include="netstandard" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.TVOS10' ">
+    <Reference Include="netstandard" />
+  </ItemGroup>
 </Project>
