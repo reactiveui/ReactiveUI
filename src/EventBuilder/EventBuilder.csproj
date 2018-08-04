@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
 
 <PropertyGroup>
   <OutputType>Exe</OutputType>
-  <TargetFramework>net461</TargetFramework>
+  <TargetFrameworks>net461</TargetFrameworks>
   <AssemblyName>EventBuilder</AssemblyName>
   <RootNamespace>EventBuilder</RootNamespace>
 </PropertyGroup>
