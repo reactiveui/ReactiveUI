@@ -29,7 +29,7 @@ namespace ReactiveUI.Winforms
             if (view is Control control) {
 
                 if (GetCachedIsDesignMode(control)) {
-                    return Observable<bool>.Default;
+                    return Observable<bool>.Empty;
                 }
 
                 var handleDestroyed = Observable.FromEventPattern(control, "HandleDestroyed").Select(_ => false);
