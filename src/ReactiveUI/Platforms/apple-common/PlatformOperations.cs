@@ -11,7 +11,11 @@ namespace ReactiveUI
     {
         public string GetOrientation()
         {
+#if UIKIT
+            return UIKit.UIDevice.CurrentDevice.Orientation.ToString();
+#else
             return null;
+#endif
         }
     }
 }
