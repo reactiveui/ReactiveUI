@@ -5,7 +5,7 @@
     <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>        
+    <TargetFrameworks>net461</TargetFrameworks>        
     <Description>WPF specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WPF</PackageId>
   </PropertyGroup>
