@@ -6,21 +6,21 @@
 // ADDINS
 //////////////////////////////////////////////////////////////////////
 
-#addin "nuget:?package=Cake.FileHelpers&version=2.0.0"
-#addin "nuget:?package=Cake.Coveralls&version=0.8.0"
+#addin "nuget:?package=Cake.FileHelpers&version=3.0.0"
+#addin "nuget:?package=Cake.Coveralls&version=0.9.0"
 #addin "nuget:?package=Cake.PinNuGetDependency&version=3.0.1"
-#addin "nuget:?package=Cake.Powershell&version=0.4.3"
+#addin "nuget:?package=Cake.Powershell&version=0.4.5"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "nuget:?package=GitReleaseManager&version=0.7.0"
+#tool "nuget:?package=GitReleaseManager&version=0.7.1"
 #tool "nuget:?package=coveralls.io&version=1.4.2"
 #tool "nuget:?package=OpenCover&version=4.6.519"
 #tool "nuget:?package=ReportGenerator&version=3.1.2"
-#tool "nuget:?package=vswhere&version=2.4.1"
-#tool "nuget:?package=xunit.runner.console&version=2.4.0-beta.2.build3984"
+#tool "nuget:?package=vswhere&version=2.5.2"
+#tool "nuget:?package=xunit.runner.console&version=2.4.0"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
