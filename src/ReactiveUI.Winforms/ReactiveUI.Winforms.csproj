@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>   
+    <TargetFrameworks>net461</TargetFrameworks>   
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
     <Description>Windows Forms specific extensions to ReactiveUI</Description>
