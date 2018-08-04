@@ -13,8 +13,8 @@ namespace ReactiveUI.Winforms
 {
     public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
     {
-        private bool? _isDesignModeCache = null;
-        
+        private Lazy<bool> _isDesignModeCache = null;
+
         public int GetAffinityForView(Type view)
         {
             return (typeof(Control).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ? 10 : 0;
@@ -55,8 +55,10 @@ namespace ReactiveUI.Winforms
 
         private bool GetCachedIsDesignMode(Control control)
         {
-            if (_isDesignModeCache.HasValue == false) {
-                _isDesignModeCache = GetIsDesignMode(control);
+            if (_isDesignModeCache == null) {
+                _isDesignModeCache = new Lazy<bool>(() => {
+                    return GetIsDesignMode(control);
+                });
             }
             return _isDesignModeCache.Value;
         }
