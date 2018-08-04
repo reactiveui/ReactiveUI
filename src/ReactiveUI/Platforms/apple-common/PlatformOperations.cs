@@ -11,7 +11,7 @@ namespace ReactiveUI
     {
         public string GetOrientation()
         {
-#if UIKIT
+#if UIKIT && !TVOS10
             return UIKit.UIDevice.CurrentDevice.Orientation.ToString();
 #else
             return null;
