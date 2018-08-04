@@ -1,20 +1,18 @@
-﻿using System.ComponentModel;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
 {
-    public partial class ReactiveUserControl<TViewModel>: UserControl, IViewFor<TViewModel>
+    public partial class ReactiveUserControl<TViewModel> : UserControl, IViewFor<TViewModel>
         where TViewModel : class
     {
-        /// <summary> 
-        /// Required designer variable.
-        /// </summary>
-        private IContainer components = null;
-
         public ReactiveUserControl()
         {
-            components = new Container();
-            AutoScaleMode = AutoScaleMode.Font;
+            InitializeComponent();
         }
 
         [Category("ReactiveUI")]
