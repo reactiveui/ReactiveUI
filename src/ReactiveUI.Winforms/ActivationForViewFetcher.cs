@@ -68,12 +68,12 @@ namespace ReactiveUI.Winforms
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) {
                 isDesignMode = true;
             }
-
-            if (control.Site != null && control.Site.DesignMode) {
+                        
+            if (control.Site?.DesignMode == true) {
                 isDesignMode = true;
             }
 
-            if (control.Parent != null && control.Parent.Site != null && control.Parent.Site.DesignMode) {
+            if (control.Parent?.Site?.DesignMode == true) {
                 isDesignMode = true;
             }
 
