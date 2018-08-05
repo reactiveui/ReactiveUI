@@ -14,6 +14,7 @@
         <img src="https://img.shields.io/badge/chat-slack-blue.svg">
 </a>
 <br>
+<br>
 <a href="https://github.com/reactiveui/reactiveui">
   <img width="160" heigth="160" src="https://i.imgur.com/23kfbS9.png">
 </a>
@@ -22,7 +23,7 @@
 
 <a href="https://reactiveui.net/">ReactiveUI</a> is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming which is a paradigm that allows you to <a href="https://www.youtube.com/watch?v=3HwEytvngXk">abstract mutable state away from your user interfaces and express the idea around a feature in one readable place</a> and improve the testability of your application. 
 
-<a href="https://reactiveui.net/docs/getting-started/">Get Started</a> | <a href="https://reactiveui.net/docs/getting-started/installation/nuget-packages/">Install Packages</a> | <a href="https://reactiveui.net/docs/resources/videos">Watch Videos</a> | <a href="https://reactiveui.net/docs/samples/">View Samples</a> | <a href="https://reactiveui.net/slack">Discuss</a>
+<a href="https://reactiveui.net/docs/getting-started/">🔨 Get Started</a>, <a href="https://reactiveui.net/docs/getting-started/installation/nuget-packages/">🛍 Install Packages</a>, <a href="https://reactiveui.net/docs/resources/videos">🎞 Watch Videos</a>, <a href="https://reactiveui.net/docs/samples/">🎓 View Samples</a>, <a href="https://reactiveui.net/slack">🎤 Discuss ReactiveUI</a>
 
 <h2>Introduction to Reactive Programming</h2>
 
