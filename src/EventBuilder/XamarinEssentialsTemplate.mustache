@@ -15,16 +15,17 @@ using {{Name}};
 {{#Namespaces}}
 namespace {{Name}}
 {
-    public static class EventsMixin
+    public static class Events
     {
 
 {{#Types}}
 {{#Events}}
-        public static IObservable<{{EventArgsType}}> {{#Type}}{{Name}}{{/Type}}{{Name}}(this object obj)
+        public static IObservable<{{EventArgsType}}> {{#Type}}{{Name}}{{/Type}}{{Name}}()
             => Observable
-                .FromEvent<{{EventHandlerType}}, {{EventArgsType}}>(
+                .FromEventPattern<{{EventArgsType}}>(
                     x => {{#Type}}{{Name}}{{/Type}}.{{Name}} += x, 
-                    x => {{#Type}}{{Name}}{{/Type}}.{{Name}} -= x); 
+                    x => {{#Type}}{{Name}}{{/Type}}.{{Name}} -= x)
+                .Select(x => x.EventArgs); 
 
 {{/Events}}
 {{/Types}}
