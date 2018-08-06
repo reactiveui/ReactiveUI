@@ -110,7 +110,7 @@ namespace EventBuilder
                         break;
 
                     case AutoPlatform.TVOS:
-                        platform = new TVOS();
+                        platform = new TVOS(_referenceAssembliesLocation);
                         break;
 
                     case AutoPlatform.Winforms:
