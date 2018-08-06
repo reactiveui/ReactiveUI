@@ -34,7 +34,7 @@ namespace EventBuilder.Platforms
                 var repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
                 var packageManager = new PackageManager(repo, packageUnzipPath);                
                 var fpid = packageManager.SourceRepository.FindPackagesById(_packageName);
-                var package = fpid.Single(x => x.Version.ToString() == "0.8.0-preview");
+                var package = fpid.Single(x => x.Version.ToString() == "0.9.1-preview");
 
                 packageManager.InstallPackage(package, true, true);
 
@@ -46,7 +46,7 @@ namespace EventBuilder.Platforms
                 Directory.GetFiles(packageUnzipPath,
                     "Xamarin.Essentials.dll", SearchOption.AllDirectories);
 
-            var latestVersion = xamarinForms.First(x => x.Contains("netstandard2.0"));
+            var latestVersion = xamarinForms.First(x => x.Contains("netstandard1.0"));
             Assemblies.Add(latestVersion);
 
             if (PlatformHelper.IsRunningOnMono())
