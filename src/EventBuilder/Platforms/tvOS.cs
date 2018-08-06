@@ -20,8 +20,8 @@ namespace EventBuilder.Platforms
                 CecilSearchDirectories.Add(Path.GetDirectoryName(assembly));
             } else {
                 var assemblies =
-                    Directory.GetFiles(Path.Combine(referenceAssembliesLocation, "Xamarin.TVOS10"),
-                        "Xamarin.TVOS10.dll", SearchOption.AllDirectories);
+                    Directory.GetFiles(Path.Combine(referenceAssembliesLocation, "Xamarin.TVOS"),
+                        "Xamarin.TVOS.dll", SearchOption.AllDirectories);
 
                 var latestVersion = assemblies.Last();
                 Assemblies.Add(latestVersion);
