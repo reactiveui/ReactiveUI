@@ -6,7 +6,7 @@
       "documentationCulture": "en-US",
       "documentInterfaces": true,
       "documentInternalElements": false,
-      "copyrightText": "Licensed to the .NET Foundation under one or more agreements.\nThe .NET Foundation licenses this file to you under the MS-PL license.\nSee the LICENSE file in the project root for more information.",
+      "copyrightText": "Licensed to the .NET Foundation under one or more agreements.\nThe .NET Foundation licenses this file to you under the MIT license.\nSee the LICENSE file in the project root for more information.",
       "xmlHeader": true
     },
     "orderingRules": {

@@ -1,18 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>    
     <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="PublicApiGenerator" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApprovalTests" Version=" 3.0.13" />
-    <PackageReference Include="System.Reactive" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="3.1.1" />
+    <PackageReference Include="ApprovalTests" Version=" 3.0.15" />
+    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +43,4 @@
          until the projects are setup as suggested here: https://github.com/Fody/BasicFodyAddin -->
     <Copy SourceFiles="@(WeaverFiles)" DestinationFolder="..\Tools" />
   </Target>
-
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
-
 </Project>
