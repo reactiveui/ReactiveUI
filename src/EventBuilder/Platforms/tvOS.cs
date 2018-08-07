@@ -10,6 +10,8 @@ namespace EventBuilder.Platforms
     // ReSharper disable once InconsistentNaming
     public class TVOS : BasePlatform
     {
+        public override AutoPlatform Platform => AutoPlatform.TVOS;
+		
         public TVOS(string referenceAssembliesLocation)
         {
             if (PlatformHelper.IsRunningOnMono()) {
