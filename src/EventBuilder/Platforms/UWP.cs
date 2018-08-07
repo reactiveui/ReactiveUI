@@ -8,6 +8,8 @@ namespace EventBuilder.Platforms
 {
     public class UWP : BasePlatform
     {
+        public override AutoPlatform Platform => AutoPlatform.UWP;
+
         public UWP()
         {
             if (PlatformHelper.IsRunningOnMono())
