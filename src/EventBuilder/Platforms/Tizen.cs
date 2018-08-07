@@ -15,6 +15,8 @@ namespace EventBuilder.Platforms
     {
         private const string _packageName = "Tizen.NET";
 
+        public override AutoPlatform Platform => AutoPlatform.Tizen;
+
         public Tizen()
         {
             var packageUnzipPath = Environment.CurrentDirectory;
