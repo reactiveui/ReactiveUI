@@ -19,7 +19,8 @@ namespace EventBuilder
         XamForms,
         UWP,
         Winforms,
-        TVOS
+        TVOS,
+        Essentials
     }
 
     public class CommandLineOptions
