@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid80</TargetFrameworks>
@@ -15,15 +15,12 @@
     <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" Version="26.1.0.1" />
     <PackageReference Include="Xamarin.Android.Support.Vector.Drawable" Version="26.1.0.1" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Reactive" Version="3.1.1" />
-    <PackageReference Include="Splat" Version="4.0.0" />
+    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="Splat" Version="4.0.2" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
-
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
-
 </Project>

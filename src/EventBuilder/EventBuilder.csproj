@@ -11,6 +11,9 @@
     <Content Include="DefaultTemplate.mustache">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="XamarinEssentialsTemplate.mustache">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   
   <ItemGroup>
@@ -21,10 +24,5 @@
     <PackageReference Include="Polly" Version="3.0.0" />
     <PackageReference Include="Serilog" Version="1.5.14" />
     <PackageReference Include="NuGet.Core" Version="2.14.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="XamarinEssentialsTemplate.mustache">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MS-PL license.
+// The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
@@ -101,6 +101,10 @@ namespace EventBuilder
                         platform = new XamForms();
                         break;
 
+                    case AutoPlatform.Tizen:
+                        platform = new Tizen();
+                        break;
+
                     case AutoPlatform.UWP:
                         platform = new UWP();
                         break;
@@ -123,6 +127,10 @@ namespace EventBuilder
                     Environment.Exit((int)ExitCode.Success);
                 } catch (Exception ex) {
                     Log.Fatal(ex.ToString());
+
+                    if (Debugger.IsAttached) {
+                        Debugger.Break();
+                    }
                 }
             }
 

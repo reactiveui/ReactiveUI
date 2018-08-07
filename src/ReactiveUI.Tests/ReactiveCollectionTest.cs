@@ -1,5 +1,5 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MS-PL license.
+// The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Reactive.Testing;
@@ -479,6 +479,149 @@ namespace ReactiveUI.Tests
 
             fixture.AddRange(new[] { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, });
             Assert.Equal(1, reset.Count);
+        }
+
+        // ActOnEveryObject
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandlePreexistingItems()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            Assert.Equal(1, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleAddingItems()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture>();
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            fixture.Add(testObj);
+
+            Assert.Equal(1, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleRemovingItems()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            fixture.Remove(testObj);
+
+            Assert.Equal(0, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleClear()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            fixture.Clear();
+
+            Assert.Equal(0, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleAddUnderSuppressedNotifications()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture>();
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            using (fixture.SuppressChangeNotifications()) {
+                fixture.Add(testObj);
+            }
+            Assert.Equal(1, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleRemoveUnderSuppressedNotifications()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            using (fixture.SuppressChangeNotifications()) {
+                fixture.Remove(testObj);
+            }
+            Assert.Equal(0, testObj.NullableInt);
+        }
+
+        [Fact]
+        public void ActOnEveryObjectShouldHandleClearUnderSuppressedNotifications()
+        {
+            var testObj = new TestFixture
+            {
+                NullableInt = null
+            };
+            var fixture = new ReactiveList<TestFixture> { testObj };
+
+            fixture.ActOnEveryObject(addedObj => {
+                addedObj.NullableInt = 1;
+            }, removedObj => {
+                removedObj.NullableInt = 0;
+            });
+
+            using (fixture.SuppressChangeNotifications()) {
+                fixture.Clear();
+            }
+            Assert.Equal(0, testObj.NullableInt);
         }
 
         [Fact]
@@ -982,6 +1125,67 @@ namespace ReactiveUI.Tests
             var count = output.Count;
             output.Dispose();
             Assert.Equal(disposed.Count, 2 + count);
+        }
+
+        [WpfFact]
+        public void DataboundReactiveListDoesNotThrowForAddRange()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var fixture = new PropertyBinderImplementation();
+            fixture.OneWayBind(vm, view, m => m.SomeCollectionOfStrings, v => v.FakeItemsControl.ItemsSource);
+            // eliminate the ResetChangeThreshold from the equation
+            vm.SomeCollectionOfStrings.ResetChangeThreshold = int.MinValue;
+
+			// Within the reset threshold
+			vm.SomeCollectionOfStrings.AddRange(Create(5));
+			vm.SomeCollectionOfStrings.AddRange(Create(20));
+
+            IEnumerable<string> Create(int numElements)
+                => Enumerable.Range(1, numElements).Select(i => $"item_{i}");
+        }
+
+        [WpfFact]
+        public void DataboundReactiveListDoesNotThrowForInsertRange()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var fixture = new PropertyBinderImplementation();
+            fixture.OneWayBind(vm, view, m => m.SomeCollectionOfStrings, v => v.FakeItemsControl.ItemsSource);
+            vm.SomeCollectionOfStrings.ResetChangeThreshold = int.MinValue;
+
+            foreach (var item in Create(5))
+            {
+                vm.SomeCollectionOfStrings.Add(item);
+            }
+
+			// within reset threshold
+			vm.SomeCollectionOfStrings.InsertRange(2, Create(5));
+			// outside reset threshold
+			vm.SomeCollectionOfStrings.InsertRange(2, Create(20));
+            
+            IEnumerable<string> Create(int numElements)
+                => Enumerable.Range(1, numElements).Select(i => $"item_{i}");
+        }
+
+        [WpfFact]
+        public void DataboundReactiveListDoesNotThrowForRemoveRange()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var fixture = new PropertyBinderImplementation();
+            fixture.OneWayBind(vm, view, m => m.SomeCollectionOfStrings, v => v.FakeItemsControl.ItemsSource);
+            vm.SomeCollectionOfStrings.ResetChangeThreshold = int.MinValue;
+
+            foreach (var item in Enumerable.Range(1, 40).Select(i => $"item_{i}"))
+            {
+                vm.SomeCollectionOfStrings.Add(item);
+            }
+
+			// within reset threshold
+			vm.SomeCollectionOfStrings.RemoveRange(2, 5);
+			// outside reset threshold
+			vm.SomeCollectionOfStrings.RemoveRange(2, 20);
         }
 
         public class DerivedCollectionLogging
