@@ -18,7 +18,8 @@ namespace EventBuilder
         WPF,
         XamForms,
         UWP,
-        Winforms
+        Winforms,
+        Essentials
     }
 
     public class CommandLineOptions

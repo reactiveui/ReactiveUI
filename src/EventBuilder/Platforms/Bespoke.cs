@@ -6,5 +6,6 @@ namespace EventBuilder.Platforms
 {
     public class Bespoke : BasePlatform
     {
+        public override AutoPlatform Platform => AutoPlatform.None;
     }
 }
