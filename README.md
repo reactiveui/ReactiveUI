@@ -137,18 +137,19 @@ So here's to you, lovely person who wants to join us — this is how you can sup
 We're also looking for people to assist with code reviews of ReactiveUI contributions. If you're experienced with any of the below technologies, you can join the team and receive notifications:
 
  - [Android reviewers](https://github.com/orgs/reactiveui/teams/android-team)
- - [Core reviewers](https://github.com/orgs/reactiveui/teams/core-team)
+ - [Apple TV reviewers](https://github.com/orgs/reactiveui/teams/tvos-team)
+ - [Dot Net Core](https://github.com/orgs/reactiveui/teams/dotnetcore-team)
+ - [Fody reviewers](https://github.com/orgs/reactiveui/teams/fody-team)
  - [iOS reviewers](https://github.com/orgs/reactiveui/teams/ios-team)
+ - [Learning Team reviewers](https://github.com/orgs/reactiveui/teams/learning-team)
  - [Mac reviewers](https://github.com/orgs/reactiveui/teams/mac-team)
+ - [ReactiveUI Core reviewers](https://github.com/orgs/reactiveui/teams/core-team)
+ - [Tizen](https://github.com/orgs/reactiveui/teams/tizen-team)
  - [UWP reviewers](https://github.com/orgs/reactiveui/teams/uwp-team)
+ - [Web Assembly](https://github.com/orgs/reactiveui/teams/webassembly-team)
  - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/winforms-team)
  - [WPF reviewers](https://github.com/orgs/reactiveui/teams/wpf-team) 
  - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/xamarin-forms-team)
- - [Dot Net Core](https://github.com/orgs/reactiveui/teams/dotnetcore-team)
- - [ReactiveUI Fody](https://github.com/orgs/reactiveui/teams/fody-team)
- - [Learning](https://github.com/orgs/reactiveui/teams/learning-team)
- - [Tizen](https://github.com/orgs/reactiveui/teams/tizen-team)
- - [Web Assembly](https://github.com/orgs/reactiveui/teams/webassembly-team)
 
 <h2>.NET Foundation</h2>
 
@@ -199,21 +200,29 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
   </tbody>
 </table>
 
+<h2 align="center">Core Team</h2>
+
 <h2 align="center">Learning Team</h2>
 
-<h2 align="center">Translation Team</h2>
+<h2 align="center">Android Team</h2>
+
+<h2 align="center">Apple TV Team</h2>
+
+<h2 align="center">Dot Net Core Team</h2>
+
+<h2 align="center">Fody Team</h2>
 
 <h2 align="center">iOS Team</h2>
 
 <h2 align="center">Mac Team</h2>
 
-<h2 align="center">NETCore Team</h2>
-
 <h2 align="center">Tizen Team</h2>
 
-<h2 align="center">WebAssembly Team</h2>
+<h2 align="center">UWP Team</h2>
 
-<h2 align="center">Winforms Team</h2>
+<h2 align="center">Web Assembly Team</h2>
+
+<h2 align="center">WinForms Team</h2>
 
 <h2 align="center">WPF Team</h2>
 
