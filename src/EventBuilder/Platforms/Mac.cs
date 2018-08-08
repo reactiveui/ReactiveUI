@@ -10,6 +10,8 @@ namespace EventBuilder.Platforms
     // ReSharper disable once InconsistentNaming
     public class Mac : BasePlatform
     {
+        public override AutoPlatform Platform => AutoPlatform.Mac;
+
         public Mac(string referenceAssembliesLocation)
         {
             if (PlatformHelper.IsRunningOnMono()) {

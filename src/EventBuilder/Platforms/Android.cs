@@ -9,6 +9,8 @@ namespace EventBuilder.Platforms
 {
     public class Android : BasePlatform
     {
+        public override AutoPlatform Platform => AutoPlatform.Android;
+
         public Android(string referenceAssembliesLocation)
         {
             if (PlatformHelper.IsRunningOnMono()) {
