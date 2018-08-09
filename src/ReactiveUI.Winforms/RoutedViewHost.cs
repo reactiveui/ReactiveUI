@@ -3,13 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using ReactiveUI;
 
 namespace ReactiveUI.Winforms
 {
@@ -24,7 +21,7 @@ namespace ReactiveUI.Winforms
 
         public RoutedControlHost()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
                 if (x != null && this.Controls.Count == 0) {
@@ -66,7 +63,8 @@ namespace ReactiveUI.Winforms
             }, RxApp.DefaultExceptionHandler.OnNext));
         }
 
-        public event PropertyChangingEventHandler PropertyChanging {
+        public event PropertyChangingEventHandler PropertyChanging
+        {
             add { PropertyChangingEventManager.AddHandler(this, value); }
             remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
@@ -76,7 +74,8 @@ namespace ReactiveUI.Winforms
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
+        public event PropertyChangedEventHandler PropertyChanged
+        {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
@@ -88,20 +87,23 @@ namespace ReactiveUI.Winforms
 
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
-        public Control DefaultContent {
+        public Control DefaultContent
+        {
             get { return this.defaultContent; }
             set { this.RaiseAndSetIfChanged(ref this.defaultContent, value); }
         }
 
         [Category("ReactiveUI")]
         [Description("The router.")]
-        public RoutingState Router {
+        public RoutingState Router
+        {
             get { return this._Router; }
             set { this.RaiseAndSetIfChanged(ref this._Router, value); }
         }
 
         [Browsable(false)]
-        public IObservable<string> ViewContractObservable {
+        public IObservable<string> ViewContractObservable
+        {
             get { return this.viewContractObservable; }
             set { this.RaiseAndSetIfChanged(ref this.viewContractObservable, value); }
         }
@@ -109,17 +111,16 @@ namespace ReactiveUI.Winforms
         [Browsable(false)]
         public IViewLocator ViewLocator { get; set; }
 
-        /// <summary>
-        ///     Clean up any resources being used.
+        /// <summary> 
+        /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (this.components != null)) {
-                this.components.Dispose();
+            if (disposing && (components != null)) {
+                components.Dispose();
                 this.disposables.Dispose();
             }
-
             base.Dispose(disposing);
         }
 
