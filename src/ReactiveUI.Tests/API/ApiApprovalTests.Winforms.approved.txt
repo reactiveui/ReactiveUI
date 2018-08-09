@@ -52,6 +52,17 @@ namespace ReactiveUI.Winforms
         public void RemoveIndex(System.ComponentModel.PropertyDescriptor property) { }
         public void RemoveSort() { }
     }
+    public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatable, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+        where TViewModel :  class
+    {
+        public ReactiveUserControl() { }
+        [System.ComponentModel.BindableAttribute(true)]
+        [System.ComponentModel.CategoryAttribute("ReactiveUI")]
+        [System.ComponentModel.DescriptionAttribute("The ViewModel.")]
+        [System.ComponentModel.DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public TViewModel ViewModel { get; set; }
+        protected override void Dispose(bool disposing) { }
+    }
     public class Registrations
     {
         public Registrations() { }
