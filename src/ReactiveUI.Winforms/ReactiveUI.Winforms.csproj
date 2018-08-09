@@ -1,12 +1,12 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>   
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
     <Description>Windows Forms specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WinForms</PackageId>
-    <ExtrasEnableWinFormsProjectSetup>true</ExtrasEnableWinFormsProjectSetup >
+    <ExtrasEnableWinFormsProjectSetup>true</ExtrasEnableWinFormsProjectSetup>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,17 +18,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="RoutedViewHost.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="RoutedViewHost.Designer.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="ViewModelViewHost.cs">
-      <SubType>UserControl</SubType>
+      <DependentUpon>RoutedViewHost.cs</DependentUpon>
     </Compile>
     <Compile Update="ViewModelViewHost.Designer.cs">
       <SubType>UserControl</SubType>
+      <DependentUpon>ViewModelViewHost.cs</DependentUpon>
+    </Compile>
+    <Compile Update="ReactiveUserControl.Designer.cs">
+      <SubType>UserControl</SubType>
+      <DependentUpon>ReactiveUserControl.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>
