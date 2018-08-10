@@ -38,13 +38,12 @@ namespace ReactiveUI
             return match.Affinity;
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
         {
             if (beforeChanged)
                 return Observable<IObservedChange<object, object>>.Never;
 
             var type = sender.GetType();
-            var propertyName = expression.GetMemberInfo().Name;
 
             var match = config.Keys
                 .Where(x => x.IsAssignableFrom(type) && config[x].Keys.Contains(propertyName))
