@@ -48,8 +48,9 @@ namespace ReactiveUI.Tests
 
             var results = new List<IObservedChange<object, object>>();
             Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
-            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
-            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
+            var propertyName = expression.Body.GetMemberInfo().Name;
+            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).Subscribe(results.Add);
 
             fixture.TestString = "Foo";
             fixture.TestString = "Bar";
@@ -70,8 +71,9 @@ namespace ReactiveUI.Tests
 
             var results = new List<IObservedChange<object, object>>();
             Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
-            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
-            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
+            var propertyName = expression.Body.GetMemberInfo().Name;
+            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).Subscribe(results.Add);
 
             fixture.TestString = "Foo";
             fixture.TestString = "Bar";
