@@ -32,12 +32,12 @@ namespace ReactiveUI.Winforms
             }
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
         {
             var ei = default(EventInfo);
 
             lock (eventInfoCache) {
-                ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), expression.GetMemberInfo().Name));
+                ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), propertyName));
             }
 
             return Observable.Create<IObservedChange<object, object>>(subj => {

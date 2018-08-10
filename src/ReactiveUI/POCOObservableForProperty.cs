@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -22,15 +22,13 @@ namespace ReactiveUI
             return 1;
         }
 
-        static readonly Dictionary<Type, bool> hasWarned = new Dictionary<Type, bool>();
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
+        private static readonly Dictionary<(Type, string), bool> hasWarned = new Dictionary<(Type, string), bool>();
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
         {
             var type = sender.GetType();
-            if (!hasWarned.ContainsKey(type)) {
-                this.Log().Warn(
-                    "{0} is a POCO type and won't send change notifications, WhenAny will only return a single value!",
-                    type.FullName);
-                hasWarned[type] = true;
+            if (!hasWarned.ContainsKey((type, propertyName))) {
+                this.Log().Warn($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
+                hasWarned[(type, propertyName)] = true;
             }
 
             return Observable.Return(new ObservedChange<object, object>(sender, expression), RxApp.MainThreadScheduler)
