@@ -10,6 +10,8 @@ namespace EventBuilder.Platforms
     // ReSharper disable once InconsistentNaming
     public class iOS : BasePlatform
     {
+        public override AutoPlatform Platform => AutoPlatform.iOS;
+
         public iOS(string referenceAssembliesLocation)
         {
             if (PlatformHelper.IsRunningOnMono()) {

@@ -1,6 +1,7 @@
 ﻿namespace ReactiveUI.Winforms
 {
-    partial class ViewModelControlHost
+    partial class ReactiveUserControl<TViewModel>
+        where TViewModel : class
     {
         /// <summary> 
         /// Required designer variable.

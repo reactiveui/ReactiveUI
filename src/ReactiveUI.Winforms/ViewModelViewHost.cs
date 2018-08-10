@@ -7,10 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using ReactiveUI;
-using Splat;
 
 namespace ReactiveUI.Winforms
 {
@@ -28,7 +25,7 @@ namespace ReactiveUI.Winforms
 
         public ViewModelControlHost()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             this.cacheViews = DefaultCacheViewsEnabled;
 
             foreach (var subscription in this.setupBindings()) {
@@ -95,13 +92,14 @@ namespace ReactiveUI.Winforms
 
                 IViewLocator viewLocator = this.ViewLocator ?? ReactiveUI.ViewLocator.Current;
                 IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                this.Content = view;
                 view.ViewModel = x.ViewModel;
+                this.Content = view;
 
             }, RxApp.DefaultExceptionHandler.OnNext);
         }
 
-        public event PropertyChangingEventHandler PropertyChanging {
+        public event PropertyChangingEventHandler PropertyChanging
+        {
             add { PropertyChangingEventManager.AddHandler(this, value); }
             remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
@@ -111,7 +109,8 @@ namespace ReactiveUI.Winforms
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
+        public event PropertyChangedEventHandler PropertyChanged
+        {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
@@ -121,19 +120,22 @@ namespace ReactiveUI.Winforms
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
-        public Control CurrentView {
+        public Control CurrentView
+        {
             get { return this.content as Control; }
         }
 
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
-        public Control DefaultContent {
+        public Control DefaultContent
+        {
             get { return this.defaultContent; }
             set { this.RaiseAndSetIfChanged(ref this.defaultContent, value); }
         }
 
         [Browsable(false)]
-        public IObservable<string> ViewContractObservable {
+        public IObservable<string> ViewContractObservable
+        {
             get { return this.viewContractObservable; }
             set { this.RaiseAndSetIfChanged(ref this.viewContractObservable, value); }
         }
@@ -144,7 +146,8 @@ namespace ReactiveUI.Winforms
         [Category("ReactiveUI")]
         [Description("The viewmodel to host.")]
         [Bindable(true)]
-        public object ViewModel {
+        public object ViewModel
+        {
             get { return this.viewModel; }
             set { this.RaiseAndSetIfChanged(ref this.viewModel, value); }
         }
@@ -154,7 +157,8 @@ namespace ReactiveUI.Winforms
         [Category("ReactiveUI")]
         [Description("The Current View")]
         [Bindable(true)]
-        public object Content {
+        public object Content
+        {
             get { return this.content; }
             protected set { this.RaiseAndSetIfChanged(ref this.content, value); }
         }
@@ -165,23 +169,22 @@ namespace ReactiveUI.Winforms
         [Description("Cache Views")]
         [Bindable(true)]
         [DefaultValue(true)]
-        public bool CacheViews {
+        public bool CacheViews
+        {
             get { return this.cacheViews; }
             set { this.RaiseAndSetIfChanged(ref this.cacheViews, value); }
         }
 
-        /// <summary>
-        ///     Clean up any resources being used.
+        /// <summary> 
+        /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (this.components != null))
-            {
-                this.components.Dispose();
+            if (disposing && (components != null)) {
+                components.Dispose();
                 this.disposables.Dispose();
             }
-
             base.Dispose(disposing);
         }
     }

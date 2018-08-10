@@ -1,13 +1,9 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
-  <!-- workaround for https://github.com/NuGet/Home/issues/5894 -->
-  <PropertyGroup>
-    <_SdkLanguageName>CSharp</_SdkLanguageName>
-    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
-  </PropertyGroup>
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>        
     <Description>WPF specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WPF</PackageId>
+    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
   </PropertyGroup>
 
   <ItemGroup>
