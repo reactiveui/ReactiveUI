@@ -22,7 +22,7 @@ namespace ReactiveUI
             return typeof (IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
         {
             var iro = sender as IReactiveObject;
             if (iro == null) {
@@ -31,21 +31,20 @@ namespace ReactiveUI
 
             var obs = beforeChanged ? iro.getChangingObservable() : iro.getChangedObservable();
 
-            var memberInfo = expression.GetMemberInfo();
             if (beforeChanged) {
                 if (expression.NodeType == ExpressionType.Index) {
-                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
+                    return obs.Where(x => x.PropertyName.Equals(propertyName + "[]"))
                         .Select(x => new ObservedChange<object, object>(sender, expression));
                 } else {
-                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
+                    return obs.Where(x => x.PropertyName.Equals(propertyName))
                         .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
             } else {
                 if (expression.NodeType == ExpressionType.Index) {
-                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
+                    return obs.Where(x => x.PropertyName.Equals(propertyName + "[]"))
                         .Select(x => new ObservedChange<object, object>(sender, expression));
                 } else {
-                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
+                    return obs.Where(x => x.PropertyName.Equals(propertyName))
                         .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
             }

@@ -166,18 +166,18 @@ namespace ReactiveUI
 
         static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, Expression expression, bool beforeChange)
         {
+            var propertyName = expression.GetMemberInfo().Name;
             var result = default(ICreatesObservableForProperty);
             lock (notifyFactoryCache) {
-                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), expression.GetMemberInfo().Name, beforeChange));
+                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), propertyName, beforeChange));
             }
 
             if (result == null) {
                 throw new Exception(
-                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.",
-                    sender.GetType()));
+                    String.Format($"Couldn't find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken."));
             }
 
-            return result.GetNotificationForProperty(sender, expression, beforeChange);
+            return result.GetNotificationForProperty(sender, expression, propertyName, beforeChange);
         }
     }
 }
