@@ -250,35 +250,53 @@ namespace ReactiveUI
             get { return elementSelected; }
         }
 
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.InsertSections is invoked.
+        /// </summary>
         public UITableViewRowAnimation InsertSectionsAnimation {
             get { return adapter.InsertSectionsAnimation; }
             set { adapter.InsertSectionsAnimation = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.DeleteSections is invoked.
+        /// </summary>
         public UITableViewRowAnimation DeleteSectionsAnimation
         {
             get { return adapter.DeleteSectionsAnimation; }
             set { adapter.DeleteSectionsAnimation = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.ReloadSections is invoked.
+        /// </summary>
         public UITableViewRowAnimation ReloadSectionsAnimation
         {
             get { return adapter.ReloadSectionsAnimation; }
             set { adapter.ReloadSectionsAnimation = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.InsertRows is invoked.
+        /// </summary>
         public UITableViewRowAnimation InsertRowsAnimation
         {
             get { return adapter.InsertRowsAnimation; }
             set { adapter.InsertRowsAnimation = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.DeleteRows is invoked.
+        /// </summary>
         public UITableViewRowAnimation DeleteRowsAnimation
         {
             get { return adapter.DeleteRowsAnimation; }
             set { adapter.DeleteRowsAnimation = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.ReloadRows is invoked.
+        /// </summary>
         public UITableViewRowAnimation ReloadRowsAnimation
         {
             get { return adapter.ReloadRowsAnimation; }
