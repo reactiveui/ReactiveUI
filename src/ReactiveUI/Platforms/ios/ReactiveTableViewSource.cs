@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -71,6 +71,18 @@ namespace ReactiveUI
             get { return this.isReloadingData.AsObservable(); }
         }
 
+        public UITableViewRowAnimation InsertSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+
+        public UITableViewRowAnimation DeleteSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+
+        public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+
+        public UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+
+        public UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+
+        public UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+
         public void ReloadData()
         {
             ++inFlightReloads;
@@ -107,13 +119,13 @@ namespace ReactiveUI
             view.EndUpdates();
         }
 
-        public void InsertSections(NSIndexSet indexes) { view.InsertSections(indexes, UITableViewRowAnimation.Automatic); }
-        public void DeleteSections(NSIndexSet indexes) { view.DeleteSections(indexes, UITableViewRowAnimation.Automatic); }
-        public void ReloadSections(NSIndexSet indexes) { view.ReloadSections(indexes, UITableViewRowAnimation.Automatic); }
+        public void InsertSections(NSIndexSet indexes) { view.InsertSections(indexes, InsertSectionsAnimation); }
+        public void DeleteSections(NSIndexSet indexes) { view.DeleteSections(indexes, DeleteSectionsAnimation); }
+        public void ReloadSections(NSIndexSet indexes) { view.ReloadSections(indexes, ReloadSectionsAnimation); }
         public void MoveSection(int fromIndex, int toIndex) { view.MoveSection(fromIndex, toIndex); }
-        public void InsertItems(NSIndexPath[] paths) { view.InsertRows(paths, UITableViewRowAnimation.Automatic); }
-        public void DeleteItems(NSIndexPath[] paths) { view.DeleteRows(paths, UITableViewRowAnimation.Automatic); }
-        public void ReloadItems(NSIndexPath[] paths) { view.ReloadRows(paths, UITableViewRowAnimation.Automatic); }
+        public void InsertItems(NSIndexPath[] paths) { view.InsertRows(paths, InsertRowsAnimation); }
+        public void DeleteItems(NSIndexPath[] paths) { view.DeleteRows(paths, DeleteRowsAnimation); }
+        public void ReloadItems(NSIndexPath[] paths) { view.ReloadRows(paths, ReloadRowsAnimation); }
         public void MoveItem(NSIndexPath path, NSIndexPath newPath) { view.MoveRow(path, newPath); }
 
         public UITableViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path)
@@ -190,6 +202,7 @@ namespace ReactiveUI
     {
         readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> commonSource;
         readonly Subject<object> elementSelected = new Subject<object>();
+        readonly UITableViewAdapter adapter;
 
         public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
             : this(tableView)
@@ -207,7 +220,7 @@ namespace ReactiveUI
         public ReactiveTableViewSource(UITableView tableView)
         {
             setupRxObj();
-            var adapter = new UITableViewAdapter(tableView);
+            this.adapter = new UITableViewAdapter(tableView);
             this.commonSource = new CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>>(adapter);
         }
 
@@ -235,6 +248,59 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<object> ElementSelected {
             get { return elementSelected; }
+        }
+
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.InsertSections is invoked.
+        /// </summary>
+        public UITableViewRowAnimation InsertSectionsAnimation {
+            get { return adapter.InsertSectionsAnimation; }
+            set { adapter.InsertSectionsAnimation = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.DeleteSections is invoked.
+        /// </summary>
+        public UITableViewRowAnimation DeleteSectionsAnimation
+        {
+            get { return adapter.DeleteSectionsAnimation; }
+            set { adapter.DeleteSectionsAnimation = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.ReloadSections is invoked.
+        /// </summary>
+        public UITableViewRowAnimation ReloadSectionsAnimation
+        {
+            get { return adapter.ReloadSectionsAnimation; }
+            set { adapter.ReloadSectionsAnimation = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.InsertRows is invoked.
+        /// </summary>
+        public UITableViewRowAnimation InsertRowsAnimation
+        {
+            get { return adapter.InsertRowsAnimation; }
+            set { adapter.InsertRowsAnimation = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.DeleteRows is invoked.
+        /// </summary>
+        public UITableViewRowAnimation DeleteRowsAnimation
+        {
+            get { return adapter.DeleteRowsAnimation; }
+            set { adapter.DeleteRowsAnimation = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the row animation to use when UITableView.ReloadRows is invoked.
+        /// </summary>
+        public UITableViewRowAnimation ReloadRowsAnimation
+        {
+            get { return adapter.ReloadRowsAnimation; }
+            set { adapter.ReloadRowsAnimation = value; }
         }
 
         public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)

@@ -23,7 +23,8 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(TextBox), "Text"));
 
             Expression<Func<TextBox, string>> expression = x => x.Text;
-            var output = fixture.GetNotificationForProperty(input, expression.Body).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            var propertyName = expression.Body.GetMemberInfo().Name;
+            var output = fixture.GetNotificationForProperty(input, expression.Body, propertyName).CreateCollection(scheduler: ImmediateScheduler.Instance);
             Assert.Equal(0, output.Count);
 
             input.Text = "Foo";
@@ -46,7 +47,8 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"));
 
             Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
-            var output = fixture.GetNotificationForProperty(input, expression.Body).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            var propertyName = expression.Body.GetMemberInfo().Name;
+            var output = fixture.GetNotificationForProperty(input, expression.Body, propertyName).CreateCollection(scheduler: ImmediateScheduler.Instance);
             Assert.Equal(0, output.Count);
 
             input.Checked = true;
@@ -70,7 +72,8 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"));
 
             Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string>> expression = x => x.Value;
-            var output = fixture.GetNotificationForProperty(input, expression.Body).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            var propertyName = expression.Body.GetMemberInfo().Name;
+            var output = fixture.GetNotificationForProperty(input, expression.Body, propertyName).CreateCollection(scheduler: ImmediateScheduler.Instance);
             Assert.Equal(0, output.Count);
 
             input.Value = "Foo";

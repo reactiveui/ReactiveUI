@@ -62,13 +62,12 @@ namespace ReactiveUI
             }
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
         {
             var obj = sender as NSObject;
             if (obj == null) {
                 throw new ArgumentException("Sender isn't an NSObject");
             }
-            var propertyName = expression.GetMemberInfo().Name;
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var bobs = new BlockObserveValueDelegate((key, s, _) => {

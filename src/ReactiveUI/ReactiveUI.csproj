@@ -24,6 +24,7 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <Compile Include="Platforms\net461\**\*.cs" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">

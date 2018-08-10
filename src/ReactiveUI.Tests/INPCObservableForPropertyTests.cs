@@ -40,7 +40,7 @@ namespace ReactiveUI.Tests
             var exp = Reflection.Rewrite(expr.Body);
 
             var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, false).Subscribe(c => changes.Add(c));
+            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false).Subscribe(c => changes.Add(c));
 
             testClass.Property1 = "test1";
             testClass.Property1 = "test2";
@@ -62,7 +62,7 @@ namespace ReactiveUI.Tests
             var exp = Reflection.Rewrite(expr.Body);
 
             var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, true).Subscribe(c => changes.Add(c));
+            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, true).Subscribe(c => changes.Add(c));
 
             testClass.Property1 = "test1";
             testClass.Property1 = "test2";
@@ -84,7 +84,7 @@ namespace ReactiveUI.Tests
             var exp = Reflection.Rewrite(expr.Body);
 
             var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, false).Subscribe(c => changes.Add(c));
+            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false).Subscribe(c => changes.Add(c));
 
             testClass.OnPropertyChanged(null);
             testClass.OnPropertyChanged(string.Empty);
@@ -106,7 +106,7 @@ namespace ReactiveUI.Tests
             var exp = Reflection.Rewrite(expr.Body);
 
             var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, true).Subscribe(c => changes.Add(c));
+            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, true).Subscribe(c => changes.Add(c));
 
             testClass.OnPropertyChanging(null);
             testClass.OnPropertyChanging(string.Empty);
