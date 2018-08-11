@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -87,7 +87,7 @@ namespace ReactiveUI
             if (platform == null) {
                 // NB: This used to be an error but WPF design mode can't read
                 // good or do other stuff good.
-                this.Log().Error("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
+                this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation/nuget-packages for guidance.");
             } else {
                 platformGetter = () => platform.GetOrientation();
             }
