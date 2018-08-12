@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -166,18 +166,17 @@ namespace ReactiveUI
 
         static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, Expression expression, bool beforeChange)
         {
+            var propertyName = expression.GetMemberInfo().Name;
             var result = default(ICreatesObservableForProperty);
             lock (notifyFactoryCache) {
-                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), expression.GetMemberInfo().Name, beforeChange));
+                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), propertyName, beforeChange));
             }
 
             if (result == null) {
-                throw new Exception(
-                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.",
-                    sender.GetType()));
+                throw new Exception($"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation/nuget-packages for guidance.");
             }
 
-            return result.GetNotificationForProperty(sender, expression, beforeChange);
+            return result.GetNotificationForProperty(sender, expression, propertyName, beforeChange);
         }
     }
 }

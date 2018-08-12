@@ -1,0 +1,36 @@
+﻿#pragma warning disable 1591,0618,0105,0672
+
+using System;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+
+{{#Namespaces}}
+using {{Name}};
+{{/Namespaces}}
+{{#DelegateNamespaces}}
+using {{Name}};
+{{/DelegateNamespaces}}
+
+{{#Namespaces}}
+namespace {{Name}}
+{
+    public static class Events
+    {
+
+{{#Types}}
+{{#Events}}
+        public static IObservable<{{EventArgsType}}> {{#Type}}{{Name}}{{/Type}}{{Name}}()
+            => Observable
+                .FromEventPattern<{{EventArgsType}}>(
+                    x => {{#Type}}{{Name}}{{/Type}}.{{Name}} += x, 
+                    x => {{#Type}}{{Name}}{{/Type}}.{{Name}} -= x)
+                .Select(x => x.EventArgs); 
+
+{{/Events}}
+{{/Types}}
+    }
+}
+{{/Namespaces}}
+
+#pragma warning restore 1591,0618,0105,0672

@@ -8,6 +8,8 @@ namespace EventBuilder.Platforms
 {
     public class Winforms : BasePlatform
     {
+        public override AutoPlatform Platform => AutoPlatform.Winforms;
+            
         public Winforms()
         {
             if (PlatformHelper.IsRunningOnMono()) {

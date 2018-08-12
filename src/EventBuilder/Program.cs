@@ -41,7 +41,7 @@ namespace EventBuilder
             // allow app to be debugged in visual studio.
             if (Debugger.IsAttached) {
                 //args = "--help ".Split(' ');
-                args = "--platform=tizen".Split(' ');
+                args = "--platform=essentials".Split(' ');
                 //args = new[]
                 //{
                 //    "--platform=none",
@@ -113,6 +113,11 @@ namespace EventBuilder
                         platform = new Winforms();
                         break;
 
+                    case AutoPlatform.Essentials:
+                        platform = new Essentials();
+                        _mustacheTemplate = "XamarinEssentialsTemplate.mustache";
+                        break;
+                        
                     default:
                         throw new ArgumentOutOfRangeException();
                     }
@@ -149,8 +154,18 @@ namespace EventBuilder
             Log.Debug("Using {template} as the mustache template", _mustacheTemplate);
             var template = File.ReadAllText(_mustacheTemplate, Encoding.UTF8);
 
-            var namespaceData = EventTemplateInformation.Create(targetAssemblies);
+            var namespaceData = new Entities.NamespaceInfo[]{};
 
+            switch (platform.Platform)
+            {
+                case AutoPlatform.Essentials:
+                    namespaceData = StaticEventTemplateInformation.Create(targetAssemblies);
+                    break;
+                default:
+                    namespaceData = EventTemplateInformation.Create(targetAssemblies);
+                    break;
+            }
+            
             var delegateData = DelegateTemplateInformation.Create(targetAssemblies);
 
             var result = Render.StringToString(template,
