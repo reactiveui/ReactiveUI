@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -28,13 +28,21 @@ namespace ReactiveUI.Android.Support
     {
         readonly IReadOnlyReactiveList<TViewModel> list;
 
-        IDisposable _inner;
+        IDisposable inner1;
+        IDisposable inner2;
+        IDisposable inner3;
+        IDisposable inner4;
+        IDisposable inner5;
 
         protected ReactiveRecyclerViewAdapter(IReadOnlyReactiveList<TViewModel> backingList)
         {
             this.list = backingList;
 
-            _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged()); 
+            this.inner1 = this.list.ItemsAdded.Subscribe(item => NotifyItemInserted((this.list as ReactiveList<TViewModel>).IndexOf(item)));
+            this.inner2 = this.list.BeforeItemsRemoved.Subscribe(item => NotifyItemRemoved((this.list as ReactiveList<TViewModel>).IndexOf(item)));
+            this.inner3 = this.list.ItemsMoved.Subscribe(x => NotifyItemMoved(x.From, x.To));
+            this.inner4 = this.list.ItemChanged.Subscribe(x => NotifyItemChanged((this.list as ReactiveList<TViewModel>).IndexOf(x.Sender)));
+            this.inner5 = this.list.ShouldReset.Subscribe(_ => NotifyDataSetChanged());
         }
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
@@ -47,7 +55,11 @@ namespace ReactiveUI.Android.Support
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref this.inner1, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref this.inner2, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref this.inner3, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref this.inner4, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref this.inner5, Disposable.Empty).Dispose();
         }
     }
 
