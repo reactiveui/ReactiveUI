@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27604.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.WPF", "IntegrationTests.WPF\IntegrationTests.WPF.csproj", "{1F07CDC4-B1B7-4D91-8F07-9AE1C648E316}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.Shared", "IntegrationTests.Shared\IntegrationTests.Shared.csproj", "{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F07CDC4-B1B7-4D91-8F07-9AE1C648E316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F07CDC4-B1B7-4D91-8F07-9AE1C648E316}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F07CDC4-B1B7-4D91-8F07-9AE1C648E316}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F07CDC4-B1B7-4D91-8F07-9AE1C648E316}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B27D67EE-6BB9-43A5-978C-BD11BE63466C}
+	EndGlobalSection
+EndGlobal
