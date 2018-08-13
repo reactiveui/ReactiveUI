@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_main">
+    <EditText
+        android:id="@+id/Username"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:text="Username" />
+    <EditText
+        android:id="@+id/Password"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Username"
+        android:text="Password" />
+    <Button
+        android:id="@+id/Login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Password"
+        android:text="Login" />
+    <Button
+        android:id="@+id/Cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Password"
+        android:layout_toRightOf="@id/Login"
+        android:text="Cancel" />
+</RelativeLayout>
