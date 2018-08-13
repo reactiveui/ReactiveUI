@@ -32,6 +32,8 @@ if (string.IsNullOrWhiteSpace(target))
     target = "Default";
 }
 
+var includePrerelease = Argument("includePrerelease", false);
+
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
@@ -44,7 +46,8 @@ var local = BuildSystem.IsLocalBuild;
 var isPullRequest = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"));
 var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", TFBuild.Environment.Repository.RepoName);
 
-var msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+var vsWhereSettings = new VSWhereLatestSettings() { IncludePrerelease = includePrerelease };
+var msBuildPath = VSWhereLatest(vsWhereSettings).CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
 var informationalVersion = EnvironmentVariable("GitAssemblyInformationalVersion");
 
@@ -116,7 +119,7 @@ Task("GenerateEvents")
 {
     var eventBuilder = "./src/EventBuilder/bin/Release/net461/EventBuilder.exe";
     var workingDirectory = "./src/EventBuilder/bin/Release/Net461";
-    var referenceAssembliesPath = VSWhereLatest().CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
+    var referenceAssembliesPath = VSWhereLatest(vsWhereSettings).CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
     Information(referenceAssembliesPath.ToString());
 
