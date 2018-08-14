@@ -39,6 +39,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
+    <Compile Include="Platforms\uikit-common\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
@@ -54,6 +55,7 @@
     <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.TVOS10' ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\tvos\**\*.cs" />
+    <Compile Include="Platforms\uikit-common\**\*.cs" />	
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
