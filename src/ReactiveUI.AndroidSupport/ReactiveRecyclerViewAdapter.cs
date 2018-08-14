@@ -63,7 +63,7 @@ namespace ReactiveUI.Android.Support
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            Interlocked.Exchange(ref this.inner, Disposable.Empty);
+            Interlocked.Exchange(ref this.inner, Disposable.Empty).Dispose();
         }
 
         private void UpdateBindings(Change<TViewModel> change)
