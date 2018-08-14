@@ -93,7 +93,11 @@ namespace EventBuilder
                         platform = new Mac(_referenceAssembliesLocation);
                         break;
 
-                    case AutoPlatform.WPF:
+                    case AutoPlatform.TVOS:
+                        platform = new TVOS(_referenceAssembliesLocation);
+                        break;
+
+					case AutoPlatform.WPF:
                         platform = new WPF();
                         break;
 
