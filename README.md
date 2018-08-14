@@ -196,6 +196,12 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
         <a href="https://github.com/onovotny">Oren Novotny</a>
         <p>New York, USA</p>
       </td>
+      <td align="center" valign="top">
+        <img width="150" height="150" src="https://github.com/glennawatson.png?s=150">
+        <br>
+        <a href="https://github.com/glennawatson">Glenn Watson</a>
+        <p>Washington, USA</p>
+      </td>
      </tr>
   </tbody>
 </table>
