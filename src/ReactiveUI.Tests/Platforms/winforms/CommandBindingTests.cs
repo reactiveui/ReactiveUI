@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
-            bool commandExecuted = false;
+            var commandExecuted = false;
             object ea = null;
             cmd.Subscribe(o => {
                 ea = o;
@@ -48,7 +48,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
-            bool commandExecuted = false;
+            var commandExecuted = false;
             object ea = null;
             cmd.Subscribe(o => {
                 ea = o;
@@ -72,7 +72,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
-            bool commandExecuted = false;
+            var commandExecuted = false;
             object ea = null;
             cmd.Subscribe(o => {
                 ea = o;
@@ -164,7 +164,7 @@ namespace ReactiveUI.Tests.Winforms
             var view = new WinformCommandBindView() { ViewModel = vm };
             var fixture = new CommandBinderImplementation();
 
-            int invokeCount = 0;
+            var invokeCount = 0;
             vm.Command1.Subscribe(_ => invokeCount += 1);
 
             var disp = fixture.BindCommand(vm, view, x => x.Command1,x=>x.Command1);
@@ -189,7 +189,7 @@ namespace ReactiveUI.Tests.Winforms
             var view = new WinformCommandBindView() { ViewModel = vm };
             var fixture = new CommandBinderImplementation();
 
-            int invokeCount = 0;
+            var invokeCount = 0;
             vm.Command2.Subscribe(_ => invokeCount += 1);
 
             var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");

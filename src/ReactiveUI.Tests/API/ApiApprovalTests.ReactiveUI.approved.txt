@@ -8,16 +8,28 @@ namespace ReactiveUI
 {
     public class static AutoPersistHelper
     {
-        public static System.IDisposable ActOnEveryObject<T>(this ReactiveUI.IReactiveCollection<T> This, System.Action<T> onAdd, System.Action<T> onRemove)
-            where T : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable ActOnEveryObject<TItem>(this System.Collections.ObjectModel.ObservableCollection<TItem> This, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable ActOnEveryObject<TItem>(this System.Collections.ObjectModel.ReadOnlyObservableCollection<TItem> This, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable ActOnEveryObject<TItem, TCollection>(this TCollection This, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject
+            where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<> { }
+        public static System.IDisposable ActOnEveryObject<TItem>(this System.IObservable<DynamicData.IChangeSet<TItem>> This, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject { }
         public static System.IDisposable AutoPersist<T>(this T This, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.Nullable<System.TimeSpan> interval = null)
             where T : ReactiveUI.IReactiveObject { }
         public static System.IDisposable AutoPersist<T, TDontCare>(this T This, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.Nullable<System.TimeSpan> interval = null)
             where T : ReactiveUI.IReactiveObject { }
-        public static System.IDisposable AutoPersistCollection<T>(this ReactiveUI.IReactiveCollection<T> This, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.Nullable<System.TimeSpan> interval = null)
-            where T : ReactiveUI.IReactiveObject { }
-        public static System.IDisposable AutoPersistCollection<T, TDontCare>(this ReactiveUI.IReactiveCollection<T> This, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.Nullable<System.TimeSpan> interval = null)
-            where T : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersistCollection<TItem>(this System.Collections.ObjectModel.ObservableCollection<TItem> This, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.Nullable<System.TimeSpan> interval = null)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersistCollection<TItem, TDontCare>(this System.Collections.ObjectModel.ObservableCollection<TItem> This, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.Nullable<System.TimeSpan> interval = null)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersistCollection<TItem, TDontCare>(this System.Collections.ObjectModel.ReadOnlyObservableCollection<TItem> This, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.Nullable<System.TimeSpan> interval = null)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersistCollection<TItem, TCollection, TDontCare>(this TCollection This, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.Nullable<System.TimeSpan> interval = null)
+            where TItem : ReactiveUI.IReactiveObject
+            where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<> { }
     }
     public enum BindingDirection
     {
@@ -52,6 +64,12 @@ namespace ReactiveUI
         public CanActivateViewFetcher() { }
         public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatable view) { }
         public int GetAffinityForView(System.Type view) { }
+    }
+    public class static ChangeSetMixin
+    {
+        public static System.IObservable<DynamicData.IChangeSet> CountChanged(this System.IObservable<DynamicData.IChangeSet> changeSet) { }
+        public static System.IObservable<DynamicData.IChangeSet<T>> CountChanged<T>(this System.IObservable<DynamicData.IChangeSet<T>> changeSet) { }
+        public static bool HasCountChanged(this DynamicData.IChangeSet changeSet) { }
     }
     public class CombinedReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, System.Collections.Generic.IList<TResult>>
     {
@@ -190,12 +208,6 @@ namespace ReactiveUI
         void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string contract = null);
         void SendMessage<T>(T message, string contract = null);
     }
-    public interface IMoveInfo<out T>
-    {
-        int From { get; }
-        System.Collections.Generic.IEnumerable<T> MovedItems { get; }
-        int To { get; }
-    }
     public interface INotifyCollectionChanging
     {
         public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanging;
@@ -267,44 +279,6 @@ namespace ReactiveUI
         TViewModel ViewModel { get; }
         System.Linq.Expressions.Expression ViewModelExpression { get; }
     }
-    public interface IReactiveCollection<out T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveNotifyCollectionChanged<T>, ReactiveUI.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
-    {
-        void Reset();
-    }
-    public interface IReactiveDerivedList<out T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveCollection<T>, ReactiveUI.IReactiveNotifyCollectionChanged<T>, ReactiveUI.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.IReactiveObject, ReactiveUI.IReadOnlyReactiveCollection<T>, ReactiveUI.IReadOnlyReactiveList<T>, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged, System.IDisposable { }
-    public interface IReactiveList<T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveCollection<T>, ReactiveUI.IReactiveNotifyCollectionChanged<T>, ReactiveUI.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
-    {
-        bool IsEmpty { get; }
-        void AddRange(System.Collections.Generic.IEnumerable<T> collection);
-        void InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection);
-        void RemoveAll(System.Collections.Generic.IEnumerable<T> items);
-        void RemoveRange(int index, int count);
-        void Sort(System.Collections.Generic.IComparer<T> comparer = null);
-        void Sort(System.Comparison<T> comparison);
-        void Sort(int index, int count, System.Collections.Generic.IComparer<T> comparer);
-    }
-    public interface IReactiveNotifyCollectionChanged<out T>
-    {
-        System.IObservable<T> BeforeItemsAdded { get; }
-        System.IObservable<ReactiveUI.IMoveInfo<T>> BeforeItemsMoved { get; }
-        System.IObservable<T> BeforeItemsRemoved { get; }
-        System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changed { get; }
-        System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changing { get; }
-        System.IObservable<int> CountChanged { get; }
-        System.IObservable<int> CountChanging { get; }
-        System.IObservable<bool> IsEmptyChanged { get; }
-        System.IObservable<T> ItemsAdded { get; }
-        System.IObservable<ReactiveUI.IMoveInfo<T>> ItemsMoved { get; }
-        System.IObservable<T> ItemsRemoved { get; }
-        System.IObservable<System.Reactive.Unit> ShouldReset { get; }
-        System.IDisposable SuppressChangeNotifications();
-    }
-    public interface IReactiveNotifyCollectionItemChanged<out TSender>
-    {
-        bool ChangeTrackingEnabled { get; set; }
-        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> ItemChanged { get; }
-        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> ItemChanging { get; }
-    }
     public interface IReactiveNotifyPropertyChanged<out TSender>
     {
         System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
@@ -329,11 +303,6 @@ namespace ReactiveUI
     {
         string PropertyName { get; }
         TSender Sender { get; }
-    }
-    public interface IReadOnlyReactiveCollection<out T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveCollection<T>, ReactiveUI.IReactiveNotifyCollectionChanged<T>, ReactiveUI.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged { }
-    public interface IReadOnlyReactiveList<out T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveCollection<T>, ReactiveUI.IReactiveNotifyCollectionChanged<T>, ReactiveUI.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.IReactiveObject, ReactiveUI.IReadOnlyReactiveCollection<T>, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
-    {
-        bool IsEmpty { get; }
     }
     public class IROObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
@@ -416,13 +385,6 @@ namespace ReactiveUI
         public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T initialValue = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
         public void Dispose() { }
     }
-    public class static ObservableCollectionMixin
-    {
-        public static ReactiveUI.IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> onRemoved, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
-        public static ReactiveUI.IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
-        public static ReactiveUI.IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> onRemoved, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
-        public static ReactiveUI.IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
-    }
     public class static ObservableLoggingMixin
     {
         public static System.IObservable<T> Log<T, TObj>(this System.IObservable<T> @this, TObj klass, string message = null, System.Func<T, string> stringifier = null)
@@ -492,11 +454,6 @@ namespace ReactiveUI
         public string PropertyName { get; set; }
     }
     public delegate void PropertyChangingEventHandler(object sender, ReactiveUI.PropertyChangingEventArgs e);
-    public class static ReactiveCollectionMixins
-    {
-        public static ReactiveUI.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Reactive.Concurrency.IScheduler scheduler) { }
-        public static ReactiveUI.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Nullable<System.TimeSpan> withDelay = null, System.Action<System.Exception> onError = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
-    }
     public abstract class ReactiveCommand : ReactiveUI.IHandleObservableErrors, System.IDisposable, System.Windows.Input.ICommand
     {
         protected ReactiveCommand() { }
@@ -549,68 +506,6 @@ namespace ReactiveUI
         public static System.IDisposable InvokeCommand<T, TResult>(this System.IObservable<T> @this, ReactiveUI.ReactiveCommandBase<T, TResult> command) { }
         public static System.IDisposable InvokeCommand<T, TTarget>(this System.IObservable<T> @this, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, System.Windows.Input.ICommand>> commandProperty) { }
         public static System.IDisposable InvokeCommand<T, TResult, TTarget>(this System.IObservable<T> @this, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, ReactiveUI.ReactiveCommandBase<T, TResult>>> commandProperty) { }
-    }
-    [System.Diagnostics.DebuggerDisplayAttribute("Count = {Count}")]
-    [System.Diagnostics.DebuggerTypeProxyAttribute(typeof(ReactiveUI.CollectionDebugView<>))]
-    public class ReactiveList<T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveCollection<T>, ReactiveUI.IReactiveList<T>, ReactiveUI.IReactiveNotifyCollectionChanged<T>, ReactiveUI.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.IReactiveObject, ReactiveUI.IReadOnlyReactiveCollection<T>, ReactiveUI.IReadOnlyReactiveList<T>, Splat.IEnableLogger, System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
-    {
-        public ReactiveList() { }
-        public ReactiveList(System.Collections.Generic.IEnumerable<T> initialContents) { }
-        public ReactiveList(System.Collections.Generic.IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, System.Reactive.Concurrency.IScheduler scheduler = null) { }
-        public System.IObservable<T> BeforeItemsAdded { get; }
-        public System.IObservable<ReactiveUI.IMoveInfo<T>> BeforeItemsMoved { get; }
-        public System.IObservable<T> BeforeItemsRemoved { get; }
-        public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changed { get; }
-        public bool ChangeTrackingEnabled { get; set; }
-        public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changing { get; }
-        public int Count { get; }
-        public System.IObservable<int> CountChanged { get; }
-        public System.IObservable<int> CountChanging { get; }
-        public bool IsEmpty { get; }
-        public System.IObservable<bool> IsEmptyChanged { get; }
-        public virtual bool IsReadOnly { get; }
-        public virtual T this[int index] { get; set; }
-        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<T>> ItemChanged { get; }
-        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<T>> ItemChanging { get; }
-        public System.IObservable<T> ItemsAdded { get; }
-        public System.IObservable<ReactiveUI.IMoveInfo<T>> ItemsMoved { get; }
-        public System.IObservable<T> ItemsRemoved { get; }
-        [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
-        public double ResetChangeThreshold { get; set; }
-        public System.IObservable<System.Reactive.Unit> ShouldReset { get; }
-        public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanged;
-        public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanging;
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        public event ReactiveUI.PropertyChangingEventHandler PropertyChanging;
-        public virtual void Add(T item) { }
-        public virtual void AddRange(System.Collections.Generic.IEnumerable<T> collection) { }
-        public int BinarySearch(T item) { }
-        public int BinarySearch(T item, System.Collections.Generic.IComparer<T> comparer) { }
-        public int BinarySearch(int index, int count, T item, System.Collections.Generic.IComparer<T> comparer) { }
-        public virtual void Clear() { }
-        protected void ClearItems() { }
-        public bool Contains(T item) { }
-        public void CopyTo(T[] array, int arrayIndex) { }
-        public System.Collections.Generic.IEnumerator<T> GetEnumerator() { }
-        public int IndexOf(T item) { }
-        public virtual void Insert(int index, T item) { }
-        protected void InsertItem(int index, T item) { }
-        public virtual void InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection) { }
-        public virtual void Move(int oldIndex, int newIndex) { }
-        protected void MoveItem(int oldIndex, int newIndex) { }
-        protected virtual void raiseCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs args) { }
-        protected virtual void raiseCollectionChanging(System.Collections.Specialized.NotifyCollectionChangedEventArgs args) { }
-        public virtual bool Remove(T item) { }
-        public virtual void RemoveAll(System.Collections.Generic.IEnumerable<T> items) { }
-        public virtual void RemoveAt(int index) { }
-        protected void RemoveItem(int index) { }
-        public virtual void RemoveRange(int index, int count) { }
-        public virtual void Reset() { }
-        protected void SetItem(int index, T item) { }
-        public virtual void Sort(int index, int count, System.Collections.Generic.IComparer<T> comparer) { }
-        public virtual void Sort(System.Comparison<T> comparison) { }
-        public virtual void Sort(System.Collections.Generic.IComparer<T> comparer = null) { }
-        public System.IDisposable SuppressChangeNotifications() { }
     }
     public class static ReactiveNotifyPropertyChangedMixin
     {
@@ -688,7 +583,9 @@ namespace ReactiveUI
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
         public ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> NavigateBack { get; set; }
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
-        public ReactiveUI.ReactiveList<ReactiveUI.IRoutableViewModel> NavigationStack { get; set; }
+        public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
+        [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
+        public DynamicData.Binding.ObservableCollectionExtended<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
         public System.Reactive.Concurrency.IScheduler Scheduler { get; set; }
     }
@@ -861,6 +758,152 @@ namespace ReactiveUI
         public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this TSender This, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T10>>> obs10, System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet> selector) { }
         public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this TSender This, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T10>>> obs10, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T11>>> obs11, System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet> selector) { }
         public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this TSender This, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T10>>> obs10, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T11>>> obs11, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T12>>> obs12, System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet> selector) { }
+    }
+}
+namespace ReactiveUI.Legacy
+{
+    public interface IMoveInfo<out T>
+    {
+        int From { get; }
+        System.Collections.Generic.IEnumerable<T> MovedItems { get; }
+        int To { get; }
+    }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public interface IReactiveCollection<out T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
+    {
+        void Reset();
+    }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public interface IReactiveDerivedList<out T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveCollection<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.Legacy.IReadOnlyReactiveCollection<T>, ReactiveUI.Legacy.IReadOnlyReactiveList<T>, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged, System.IDisposable { }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public interface IReactiveList<T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveCollection<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, Splat.IEnableLogger, System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
+    {
+        bool IsEmpty { get; }
+        void AddRange(System.Collections.Generic.IEnumerable<T> collection);
+        void InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection);
+        void RemoveAll(System.Collections.Generic.IEnumerable<T> items);
+        void RemoveRange(int index, int count);
+        void Sort(System.Collections.Generic.IComparer<T> comparer = null);
+        void Sort(System.Comparison<T> comparison);
+        void Sort(int index, int count, System.Collections.Generic.IComparer<T> comparer);
+    }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public interface IReactiveNotifyCollectionChanged<out T>
+    {
+        System.IObservable<T> BeforeItemsAdded { get; }
+        System.IObservable<ReactiveUI.Legacy.IMoveInfo<T>> BeforeItemsMoved { get; }
+        System.IObservable<T> BeforeItemsRemoved { get; }
+        System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changed { get; }
+        System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changing { get; }
+        System.IObservable<int> CountChanged { get; }
+        System.IObservable<int> CountChanging { get; }
+        System.IObservable<bool> IsEmptyChanged { get; }
+        System.IObservable<T> ItemsAdded { get; }
+        System.IObservable<ReactiveUI.Legacy.IMoveInfo<T>> ItemsMoved { get; }
+        System.IObservable<T> ItemsRemoved { get; }
+        System.IObservable<System.Reactive.Unit> ShouldReset { get; }
+        System.IDisposable SuppressChangeNotifications();
+    }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public interface IReactiveNotifyCollectionItemChanged<out TSender>
+    {
+        bool ChangeTrackingEnabled { get; set; }
+        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> ItemChanged { get; }
+        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> ItemChanging { get; }
+    }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public interface IReadOnlyReactiveCollection<out T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveCollection<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged { }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public interface IReadOnlyReactiveList<out T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveCollection<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.Legacy.IReadOnlyReactiveCollection<T>, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.IEnumerable, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
+    {
+        bool IsEmpty { get; }
+    }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public class static ObservableCollectionMixin
+    {
+        public static ReactiveUI.Legacy.IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> onRemoved, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+        public static ReactiveUI.Legacy.IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+        public static ReactiveUI.Legacy.IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> onRemoved, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+        public static ReactiveUI.Legacy.IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+    }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public class static ReactiveCollectionMixins
+    {
+        public static ReactiveUI.Legacy.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Reactive.Concurrency.IScheduler scheduler) { }
+        public static ReactiveUI.Legacy.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Nullable<System.TimeSpan> withDelay = null, System.Action<System.Exception> onError = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+    }
+    [System.Diagnostics.DebuggerDisplayAttribute("Count = {Count}")]
+    [System.Diagnostics.DebuggerTypeProxyAttribute(typeof(ReactiveUI.CollectionDebugView<>))]
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public class ReactiveList<T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveCollection<T>, ReactiveUI.Legacy.IReactiveList<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.Legacy.IReadOnlyReactiveCollection<T>, ReactiveUI.Legacy.IReadOnlyReactiveList<T>, Splat.IEnableLogger, System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
+    {
+        public ReactiveList() { }
+        public ReactiveList(System.Collections.Generic.IEnumerable<T> initialContents) { }
+        public ReactiveList(System.Collections.Generic.IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+        public System.IObservable<T> BeforeItemsAdded { get; }
+        public System.IObservable<ReactiveUI.Legacy.IMoveInfo<T>> BeforeItemsMoved { get; }
+        public System.IObservable<T> BeforeItemsRemoved { get; }
+        public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changed { get; }
+        public bool ChangeTrackingEnabled { get; set; }
+        public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changing { get; }
+        public int Count { get; }
+        public System.IObservable<int> CountChanged { get; }
+        public System.IObservable<int> CountChanging { get; }
+        public bool IsEmpty { get; }
+        public System.IObservable<bool> IsEmptyChanged { get; }
+        public virtual bool IsReadOnly { get; }
+        public virtual T this[int index] { get; set; }
+        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<T>> ItemChanged { get; }
+        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<T>> ItemChanging { get; }
+        public System.IObservable<T> ItemsAdded { get; }
+        public System.IObservable<ReactiveUI.Legacy.IMoveInfo<T>> ItemsMoved { get; }
+        public System.IObservable<T> ItemsRemoved { get; }
+        [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
+        public double ResetChangeThreshold { get; set; }
+        public System.IObservable<System.Reactive.Unit> ShouldReset { get; }
+        public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanged;
+        public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanging;
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        public event ReactiveUI.PropertyChangingEventHandler PropertyChanging;
+        public virtual void Add(T item) { }
+        public virtual void AddRange(System.Collections.Generic.IEnumerable<T> collection) { }
+        public int BinarySearch(T item) { }
+        public int BinarySearch(T item, System.Collections.Generic.IComparer<T> comparer) { }
+        public int BinarySearch(int index, int count, T item, System.Collections.Generic.IComparer<T> comparer) { }
+        public virtual void Clear() { }
+        protected void ClearItems() { }
+        public bool Contains(T item) { }
+        public void CopyTo(T[] array, int arrayIndex) { }
+        public System.Collections.Generic.IEnumerator<T> GetEnumerator() { }
+        public int IndexOf(T item) { }
+        public virtual void Insert(int index, T item) { }
+        protected void InsertItem(int index, T item) { }
+        public virtual void InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection) { }
+        public virtual void Move(int oldIndex, int newIndex) { }
+        protected void MoveItem(int oldIndex, int newIndex) { }
+        protected virtual void raiseCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs args) { }
+        protected virtual void raiseCollectionChanging(System.Collections.Specialized.NotifyCollectionChangedEventArgs args) { }
+        public virtual bool Remove(T item) { }
+        public virtual void RemoveAll(System.Collections.Generic.IEnumerable<T> items) { }
+        public virtual void RemoveAt(int index) { }
+        protected void RemoveItem(int index) { }
+        public virtual void RemoveRange(int index, int count) { }
+        public virtual void Reset() { }
+        protected void SetItem(int index, T item) { }
+        public virtual void Sort(int index, int count, System.Collections.Generic.IComparer<T> comparer) { }
+        public virtual void Sort(System.Comparison<T> comparison) { }
+        public virtual void Sort(System.Collections.Generic.IComparer<T> comparer = null) { }
+        public System.IDisposable SuppressChangeNotifications() { }
     }
 }
 namespace System.Reactive.Disposables

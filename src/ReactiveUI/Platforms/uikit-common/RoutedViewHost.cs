@@ -3,9 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Collections.Specialized;
 using System.Reactive.Disposables;
+using DynamicData;
+using DynamicData.Binding;
 using UIKit;
 using NSView = UIKit.UIView;
 using NSViewController = UIKit.UIViewController;
@@ -21,7 +24,6 @@ namespace ReactiveUI
         private readonly SerialDisposable titleUpdater;
         private RoutingState router;
         private IObservable<string> viewContractObservable;
-        private IViewLocator viewLocator;
         private bool routerInstigated;
 
         public RoutingState Router {
@@ -34,10 +36,7 @@ namespace ReactiveUI
             set { this.RaiseAndSetIfChanged(ref viewContractObservable, value); }
         }
 
-        public IViewLocator ViewLocator {
-            get { return this.viewLocator; }
-            set { this.viewLocator = value; }
-        }
+        public IViewLocator ViewLocator { get; set; }
 
         public RoutedViewHost()
         {
@@ -65,12 +64,13 @@ namespace ReactiveUI
                             this.routerInstigated = false;
                         }));
 
-                    d(this
-                        .WhenAnyValue(x => x.Router)
+                    var navigationStackChanged = this.WhenAnyValue(x => x.Router)
                         .Where(x => x != null)
-                        .Select(x => x.NavigationStack.ItemsAdded)
-                        .Switch()
-                        .Where(x => x != null)
+                        .Select(x => x.NavigationStack.ObserveCollectionChanges())
+                        .Switch();
+
+                    d(navigationStackChanged
+                        .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add)
                         .Select(contract => new { View = this.ResolveView(this.Router.GetCurrentViewModel(), /*contract*/null), Animate = this.Router.NavigationStack.Count > 1 })
                         .Subscribe(x => {
                             if (this.routerInstigated) {
@@ -90,9 +90,8 @@ namespace ReactiveUI
                             this.routerInstigated = false;
                         }));
 
-                    d(this
-                        .WhenAnyObservable(x => x.Router.NavigationStack.Changed)
-                        .Where(x => x.Action == NotifyCollectionChangedAction.Reset)
+                    d(navigationStackChanged
+                        .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
                         .Subscribe(_ => {
                             this.routerInstigated = true;
                             this.PopToRootViewController(true);

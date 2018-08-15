@@ -1,8 +1,9 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -13,6 +14,8 @@ using System.Runtime.Serialization;
 using System.Threading;
 using Android.Support.V7.Widget;
 using Android.Views;
+using DynamicData;
+using DynamicData.Binding;
 
 namespace ReactiveUI.Android.Support
 {
@@ -23,31 +26,63 @@ namespace ReactiveUI.Android.Support
     /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder
     /// </summary>
     /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
-    public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter 
+    public abstract class ReactiveRecyclerViewAdapter<TViewModel, TCollection> : RecyclerView.Adapter 
         where TViewModel : class, IReactiveObject
+        where TCollection : ICollection<TViewModel>, INotifyCollectionChanged
     {
-        readonly IReadOnlyReactiveList<TViewModel> list;
+        readonly TCollection list;
 
-        IDisposable _inner;
+        IDisposable inner;
 
-        protected ReactiveRecyclerViewAdapter(IReadOnlyReactiveList<TViewModel> backingList)
+        protected ReactiveRecyclerViewAdapter(TCollection backingList)
         {
             this.list = backingList;
 
-            _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged()); 
+            this.inner = this
+                .list
+                .ToObservableChangeSet<TCollection, TViewModel>()
+                .ForEachChange(UpdateBindings)
+                .Subscribe();
         }
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            ((IViewFor)holder).ViewModel = list[position];
+            ((IViewFor)holder).ViewModel = this.list.ElementAt(position);
         }
 
-        public override int ItemCount { get { return list.Count; } }
+        public override int ItemCount => this.list.Count;
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref this.inner, Disposable.Empty).Dispose();
+        }
+
+        private void UpdateBindings(Change<TViewModel> change)
+        {
+            switch(change.Reason)
+            {
+                case ListChangeReason.Add:
+                    NotifyItemInserted(change.Item.CurrentIndex);
+                    break;
+                case ListChangeReason.Remove:
+                    NotifyItemRemoved(change.Item.CurrentIndex);
+                    break;
+                case ListChangeReason.Moved:
+                    NotifyItemMoved(change.Item.PreviousIndex, change.Item.CurrentIndex);
+                    break;
+                case ListChangeReason.Replace:
+                case ListChangeReason.Refresh:
+                    NotifyItemChanged(change.Item.CurrentIndex);
+                    break;
+                case ListChangeReason.AddRange:
+                    NotifyItemRangeInserted(change.Range.Index, change.Range.Count);
+                    break;
+                case ListChangeReason.RemoveRange:
+                case ListChangeReason.Clear:
+                    NotifyItemRangeRemoved(change.Range.Index, change.Range.Count);
+                    break;
+            }
         }
     }
 
@@ -70,28 +105,25 @@ namespace ReactiveUI.Android.Support
         /// </summary>
         public IObservable<int> Selected { get; private set; }
 
-        public View View
-        {
-            get { return this.ItemView; }
-        }
+        public View View => this.ItemView;
 
         TViewModel _ViewModel;
         public TViewModel ViewModel
         {
-            get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+            get => _ViewModel;
+            set => this.RaiseAndSetIfChanged(ref _ViewModel, value);
         }
 
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (TViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
         }
 
         public event PropertyChangingEventHandler PropertyChanging
         {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
@@ -101,8 +133,8 @@ namespace ReactiveUI.Android.Support
 
         public event PropertyChangedEventHandler PropertyChanged
         {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
@@ -115,25 +147,19 @@ namespace ReactiveUI.Android.Support
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing
-        {
-            get { return this.getChangingObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.getChangingObservable();
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed
-        {
-            get { return this.getChangedObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.getChangedObservable();
 
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
         [IgnoreDataMember]
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+        public IObservable<Exception> ThrownExceptions => this.getThrownExceptionsObservable();
 
         [OnDeserialized]
         void setupRxObj(StreamingContext sc) { setupRxObj(); }

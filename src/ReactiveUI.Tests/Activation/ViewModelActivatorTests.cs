@@ -2,8 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Reactive.Concurrency;
+using DynamicData;
+using DynamicData.Binding;
 using Xunit;
+
 
 namespace ReactiveUI.Tests
 {
@@ -13,7 +17,7 @@ namespace ReactiveUI.Tests
         public void ActivatingTicksActivatedObservable()
         {
             var viewModelActivator = new ViewModelActivator();
-            var activated = viewModelActivator.Activated.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
             viewModelActivator.Activate();
 
@@ -24,7 +28,7 @@ namespace ReactiveUI.Tests
         public void DeactivatingIgnoringRefCountTicksDeactivatedObservable()
         {
             var viewModelActivator = new ViewModelActivator();
-            var deactivated = viewModelActivator.Deactivated.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
             viewModelActivator.Deactivate(true);
 
@@ -35,7 +39,7 @@ namespace ReactiveUI.Tests
         public void DeactivatingCountDoesntTickDeactivatedObservable()
         {
             var viewModelActivator = new ViewModelActivator();
-            var deactivated = viewModelActivator.Deactivated.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
             viewModelActivator.Deactivate(false);
 
@@ -46,7 +50,7 @@ namespace ReactiveUI.Tests
         public void DeactivatingFollowingActivatingTicksDeactivatedObservable()
         {
             var viewModelActivator = new ViewModelActivator();
-            var deactivated = viewModelActivator.Deactivated.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
             viewModelActivator.Activate();
             viewModelActivator.Deactivate(false);
@@ -58,8 +62,8 @@ namespace ReactiveUI.Tests
         public void DisposingAfterActivationDeactivatesViewModel()
         {
             var viewModelActivator = new ViewModelActivator();
-            var activated = viewModelActivator.Activated.CreateCollection();
-            var deactivated = viewModelActivator.Deactivated.CreateCollection();
+            viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
+            viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
             using (viewModelActivator.Activate()) {
                 Assert.Equal(1, activated.Count);

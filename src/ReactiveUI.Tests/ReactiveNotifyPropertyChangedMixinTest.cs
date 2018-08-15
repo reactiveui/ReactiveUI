@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -16,6 +16,10 @@ using ReactiveUI.Testing;
 using Xunit;
 using Microsoft.Reactive.Testing;
 using System.Reactive;
+using System.Collections.ObjectModel;
+using ReactiveUI.Legacy;
+using DynamicData.Binding;
+using DynamicData;
 
 #if !MONO
 using System.Windows.Controls;
@@ -29,10 +33,22 @@ namespace ReactiveUI.Tests
         public ReactiveCommand<int, int> Command2 { get; set; }
         public ReactiveCommand<string, string> Command3 { get; set; }
 
-        ReactiveList<int> myListOfInts;
-        public ReactiveList<int> MyListOfInts {
-            get { return myListOfInts; }
-            set { this.RaiseAndSetIfChanged(ref myListOfInts, value); }
+        ObservableCollectionExtended<int> myListOfInts;
+        public ObservableCollectionExtended<int> MyListOfInts {
+            get => myListOfInts;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref myListOfInts, value);
+                this.Changes = MyListOfInts?.ToObservableChangeSet();
+            }
+        }
+
+        private IObservable<IChangeSet<int>> changes;
+
+        public IObservable<IChangeSet<int>> Changes
+        {
+            get => this.changes;
+            set => this.RaiseAndSetIfChanged(ref changes, value);
         }
 
         public TestWhenAnyObsViewModel()
@@ -320,7 +336,7 @@ namespace ReactiveUI.Tests
         public void SubscriptionToWhenAnyShouldReturnCurrentValue()
         {
             var obj = new HostTestFixture();
-            int observedValue = 1;
+            var observedValue = 1;
             obj.WhenAnyValue(x => x.SomeOtherParam)
                .Subscribe(x => observedValue = x);
 
@@ -489,14 +505,14 @@ namespace ReactiveUI.Tests
             var tid = Thread.CurrentThread.ManagedThreadId;
 
             (TaskPoolScheduler.Default).With(sched => {
-                int whenAnyTid = 0;
+                var whenAnyTid = 0;
                 var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
                 fixture.WhenAnyValue(x => x.IsNotNullString).Subscribe(x => {
                     whenAnyTid = Thread.CurrentThread.ManagedThreadId;
                 });
 
-                int timeout = 10;
+                var timeout = 10;
                 fixture.IsNotNullString = "Bar";
                 while (--timeout > 0 && whenAnyTid == 0) Thread.Sleep(250);
 
@@ -664,11 +680,11 @@ namespace ReactiveUI.Tests
         public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
         {
             var fixture = new TestWhenAnyObsViewModel();
-            var output = fixture.WhenAnyObservable(x => x.MyListOfInts.CountChanged).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.WhenAnyObservable(x => x.Changes).Bind(out var output).Subscribe();
 
             Assert.Equal(0, output.Count);
 
-            fixture.MyListOfInts = new ReactiveList<int>();
+            fixture.MyListOfInts = new ObservableCollectionExtended<int>();
             Assert.Equal(0, output.Count);
 
             fixture.MyListOfInts.Add(1);

@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Windows.Forms;
+using DynamicData;
 using ReactiveUI.Winforms;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Expression<Func<TextBox, string>> expression = x => x.Text;
             var propertyName = expression.Body.GetMemberInfo().Name;
-            var output = fixture.GetNotificationForProperty(input, expression.Body, propertyName).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
             input.Text = "Foo";
@@ -32,7 +33,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(input, output[0].Sender);
             Assert.Equal("Text", output[0].GetPropertyName());
 
-            output.Dispose();
+            dispose.Dispose();
 
             input.Text = "Bar";
             Assert.Equal(1, output.Count);
@@ -48,7 +49,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
             var propertyName = expression.Body.GetMemberInfo().Name;
-            var output = fixture.GetNotificationForProperty(input, expression.Body, propertyName).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
             input.Checked = true;
@@ -56,7 +57,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(input, output[0].Sender);
             Assert.Equal("Checked", output[0].GetPropertyName());
 
-            output.Dispose();
+            dispose.Dispose();
 
             // Since we disposed the derived list, we should no longer receive updates
             input.Checked = false;
@@ -73,7 +74,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string>> expression = x => x.Value;
             var propertyName = expression.Body.GetMemberInfo().Name;
-            var output = fixture.GetNotificationForProperty(input, expression.Body, propertyName).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
             input.Value = "Foo";
@@ -81,7 +82,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(input, output[0].Sender);
             Assert.Equal("Value", output[0].GetPropertyName());
 
-            output.Dispose();
+            dispose.Dispose();
 
             input.Value = "Bar";
             Assert.Equal(1, output.Count);

@@ -47,7 +47,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void EqualityTypeConverterDoReferenceCastShouldConvertValueTypes()
         {
-            double doubleValue = 1.0;
+            var doubleValue = 1.0;
             var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double));
             Assert.Equal(doubleValue, result);
         }

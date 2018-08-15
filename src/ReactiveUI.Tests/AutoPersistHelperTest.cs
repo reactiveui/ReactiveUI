@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -6,6 +6,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using DynamicData.Binding;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
@@ -19,7 +20,7 @@ namespace ReactiveUI.Tests
         {
             var fixture = new HostTestFixture();
 
-            bool shouldDie = true;
+            var shouldDie = true;
             try {
                 fixture.AutoPersist(x => Observables.Unit);
             } catch (Exception) {
@@ -36,7 +37,7 @@ namespace ReactiveUI.Tests
                 var fixture = new TestFixture();
                 var manualSave = new Subject<Unit>();
 
-                int timesSaved = 0;
+                var timesSaved = 0;
                 fixture.AutoPersist(x => { timesSaved++; return Observables.Unit; }, manualSave, TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
@@ -57,7 +58,7 @@ namespace ReactiveUI.Tests
                 var fixture = new TestFixture();
                 var manualSave = new Subject<Unit>();
 
-                int timesSaved = 0;
+                var timesSaved = 0;
                 fixture.AutoPersist(x => { timesSaved++; return Observables.Unit; }, manualSave, TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
@@ -90,7 +91,7 @@ namespace ReactiveUI.Tests
                 var fixture = new TestFixture();
                 var manualSave = new Subject<Unit>();
 
-                int timesSaved = 0;
+                var timesSaved = 0;
                 var disp = fixture.AutoPersist(x => { timesSaved++; return Observables.Unit; }, manualSave, TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
@@ -126,9 +127,9 @@ namespace ReactiveUI.Tests
                 var manualSave = new Subject<Unit>();
 
                 var item = new TestFixture();
-                var fixture = new ReactiveList<TestFixture> { item };
+                var fixture = new ObservableCollectionExtended<TestFixture> { item };
 
-                int timesSaved = 0;
+                var timesSaved = 0;
                 fixture.AutoPersistCollection(x => { timesSaved++; return Observables.Unit; }, manualSave, TimeSpan.FromMilliseconds(100));
 
                 sched.AdvanceByMs(2 * 100);
@@ -157,7 +158,8 @@ namespace ReactiveUI.Tests
                 Assert.Equal(2, timesSaved);
 
                 // Even if we issue a reset
-                fixture.Reset();
+                fixture.SuspendNotifications().Dispose(); // Will cause a reset.
+
                 sched.AdvanceByMs(100);  // Compensate for scheduling
                 item.IsNotNullString = "Bamf";
                 sched.AdvanceByMs(2 * 100);
@@ -178,9 +180,9 @@ namespace ReactiveUI.Tests
                 var manualSave = new Subject<Unit>();
 
                 var item = new TestFixture();
-                var fixture = new ReactiveList<TestFixture> { item };
+                var fixture = new ObservableCollectionExtended<TestFixture> { item };
 
-                int timesSaved = 0;
+                var timesSaved = 0;
                 var disp = fixture.AutoPersistCollection(x => { timesSaved++; return Observables.Unit; }, manualSave, TimeSpan.FromMilliseconds(100));
 
                 sched.AdvanceByMs(2 * 100);
@@ -212,7 +214,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(1, timesSaved);
 
                 // Even if we issue a reset, no save
-                fixture.Reset();
+                fixture.SuspendNotifications().Dispose(); // Will trigger a reset.
                 sched.AdvanceByMs(100);  // Compensate for scheduling
                 item.IsNotNullString = "Bamf";
                 sched.AdvanceByMs(2 * 100);

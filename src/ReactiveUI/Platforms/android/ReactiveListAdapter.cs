@@ -10,8 +10,9 @@ using Android.Views;
 using Android.Widget;
 using Splat;
 
-namespace ReactiveUI
+namespace ReactiveUI.Legacy
 {
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]    
     public class ReactiveListAdapter<TViewModel> : BaseAdapter<TViewModel>, IEnableLogger
         where TViewModel : class
     {

@@ -72,7 +72,7 @@ namespace ReactiveUI.Tests
         {
             var input = new TestFixture();
             var fixture = new CreatesCommandBindingViaEvent();
-            bool wasCalled = false;
+            var wasCalled = false;
             var cmd = ReactiveCommand.Create<int>(x => wasCalled = true);
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
@@ -104,7 +104,7 @@ namespace ReactiveUI.Tests
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
 
-            int invokeCount = 0;
+            var invokeCount = 0;
             cmd.Subscribe(_ => invokeCount += 1);
 
             var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
@@ -332,7 +332,7 @@ namespace ReactiveUI.Tests
             var vm = new CommandBindViewModel();
             var view = new CommandBindView() { ViewModel = vm };
 
-            int invokeCount = 0;
+            var invokeCount = 0;
             vm.Command2.Subscribe(_ => invokeCount += 1);
 
             var disp = view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
