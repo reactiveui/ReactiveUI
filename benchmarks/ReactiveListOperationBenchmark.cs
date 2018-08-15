@@ -2,6 +2,8 @@
 using BenchmarkDotNet.Order;
 using DynamicData;
 
+using ReactiveUI.Legacy;
+
 #pragma warning disable CS0618 // Item is obsolete warning
 
 namespace ReactiveUI.Benchmarks.Legacy

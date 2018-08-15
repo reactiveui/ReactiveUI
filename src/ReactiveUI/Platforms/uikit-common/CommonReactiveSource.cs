@@ -13,6 +13,8 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
+using DynamicData;
+using DynamicData.Binding;
 using Foundation;
 using Splat;
 
@@ -42,7 +44,7 @@ namespace ReactiveUI
 
     interface ISectionInformation<TSource, TUIView, TUIViewCell>
     {
-        IReactiveNotifyCollectionChanged<TSource> Collection { get; }
+        INotifyCollectionChanged Collection { get; }
         Func<object, NSString> CellKeySelector { get; }
         Action<TUIViewCell> InitializeCellAction { get; }
     }
@@ -183,46 +185,29 @@ namespace ReactiveUI
                 return;
             }
 
-            var reactiveSectionInfo = sectionInfo as IReactiveNotifyCollectionChanged<TSectionInfo>;
+            var notifyCollectionChanged = sectionInfo as INotifyCollectionChanged;
 
-            if (reactiveSectionInfo == null) {
-                this.Log().Warn("[#{0}] SectionInfo {1} does not implement IReactiveNotifyCollectionChanged - any added or removed sections will not be reflected in the UI.", sectionInfoId, sectionInfo);
+            if (notifyCollectionChanged == null) {
+                this.Log().Warn("[#{0}] SectionInfo {1} does not implement INotifyCollectionChanged - any added or removed sections will not be reflected in the UI.", sectionInfoId, sectionInfo);
             }
 
-            var sectionChanging = reactiveSectionInfo == null
-                ? Observable<Unit>.Never
-                : reactiveSectionInfo
-                .Changing
-                .Select(_ => Unit.Default);
 
-            var sectionChanged =
-                (reactiveSectionInfo == null
-                    ? Observable<Unit>.Never
-                    : reactiveSectionInfo
-                    .Changed
-                    .Select(_ => Unit.Default))
-                    .StartWith(Unit.Default);
+            var sectionChanged = notifyCollectionChanged == null ?
+                Observable<Unit>.Never : 
+                notifyCollectionChanged.ObserveCollectionChanges().Select(_ => Unit.Default);
 
             var disposables = new CompositeDisposable();
             disposables.Add(Disposable.Create(() => this.Log().Debug("[#{0}] Disposed of section info", sectionInfoId)));
             this.sectionInfoDisposable.Disposable = disposables;
-            this.SubscribeToSectionInfoChanges(sectionInfoId, sectionInfo, sectionChanging, sectionChanged, disposables);
+            this.SubscribeToSectionInfoChanges(sectionInfoId, sectionInfo, sectionChanged, disposables);
         }
 
-        private void SubscribeToSectionInfoChanges(int sectionInfoId, IReadOnlyList<TSectionInfo> sectionInfo, IObservable<Unit> sectionChanging, IObservable<Unit> sectionChanged, CompositeDisposable disposables)
+        private void SubscribeToSectionInfoChanges(int sectionInfoId, IReadOnlyList<TSectionInfo> sectionInfo, IObservable<Unit> sectionChanged, CompositeDisposable disposables)
         {
             // holds a single disposable representing the monitoring of sectionInfo.
             // once disposed, any changes to sectionInfo will no longer trigger any of the logic below
             var sectionInfoDisposable = new SerialDisposable();
             disposables.Add(sectionInfoDisposable);
-
-            disposables.Add(
-                sectionChanging.Subscribe(_ => {
-                    this.VerifyOnMainThread();
-
-                    this.Log().Debug("[#{0}] SectionInfo is changing.", sectionInfoId);
-                    sectionInfoDisposable.Disposable = Disposable.Empty;
-                }));
 
             disposables.Add(
                 sectionChanged.Subscribe(x => {
@@ -248,7 +233,7 @@ namespace ReactiveUI
                     var anySectionChanged = Observable
                         .Merge(
                             sectionInfo
-                            .Select((y, index) => y.Collection.Changed.Select(z => new { Section = index, Change = z })))
+                            .Select((y, index) => y.Collection.ObserveCollectionChanges().Select(z => new { Section = index, Change = z })))
                         .Publish();
 
                     // since reloads are applied asynchronously, it is possible for data to change whilst the reload is occuring
@@ -286,11 +271,11 @@ namespace ReactiveUI
                                         "[#{0}] Change detected in section {1} : Action = {2}, OldStartingIndex = {3}, NewStartingIndex = {4}, OldItems.Count = {5}, NewItems.Count = {6}",
                                         sectionInfoId,
                                         y.Section,
-                                        y.Change.Action,
-                                        y.Change.OldStartingIndex,
-                                        y.Change.NewStartingIndex,
-                                        y.Change.OldItems == null ? "null" : y.Change.OldItems.Count.ToString(),
-                                        y.Change.NewItems == null ? "null" : y.Change.NewItems.Count.ToString());
+                                        y.Change.EventArgs.Action,
+                                        y.Change.EventArgs.OldStartingIndex,
+                                        y.Change.EventArgs.NewStartingIndex,
+                                        y.Change.EventArgs.OldItems == null ? "null" : y.Change.EventArgs.OldItems.Count.ToString(),
+                                        y.Change.EventArgs.NewItems == null ? "null" : y.Change.EventArgs.NewItems.Count.ToString());
                             }
 
                             if (!this.isCollectingChanges) {
@@ -314,7 +299,7 @@ namespace ReactiveUI
                                         });
                             }
 
-                            this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change)));
+                            this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change.EventArgs)));
                         },
                             ex => this.Log().Error("[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
 

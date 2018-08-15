@@ -35,8 +35,8 @@ namespace ReactiveUI.XamForms
                 bool popToRootPending = false;
                 bool userInstigated = false;
 
-                d (this.WhenAnyObservable (x => x.Router.NavigationStack.Changed)
-                    .Where(_ => Router.NavigationStack.IsEmpty)
+                d (this.WhenAnyObservable (x => x.Router.NavigationChanged)
+                    .Where(_ => Router.NavigationStack.Count == 0)
                     .Select(x => {
                         // Xamarin Forms does not let us completely clear down the navigation stack
                         // instead, we have to delay this request momentarily until we receive the new root view
@@ -46,7 +46,7 @@ namespace ReactiveUI.XamForms
                     })
                     .Subscribe ());
 
-                var previousCount = this.WhenAnyObservable(x => x.Router.NavigationStack.CountChanged).StartWith(this.Router.NavigationStack.Count);
+                var previousCount = this.WhenAnyObservable(x => x.Router.NavigationChanged.CountChanged().Select(_ => x.Router.NavigationStack.Count)).StartWith(this.Router.NavigationStack.Count);
                 var currentCount = previousCount.Skip(1);
 
                 d (Observable.Zip(previousCount, currentCount, (previous, current) => new { Delta = previous - current, Current = current })

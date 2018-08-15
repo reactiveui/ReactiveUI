@@ -1,9 +1,10 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace ReactiveUI
 {
     public class CollectionViewSectionInformation<TSource> : ISectionInformation<TSource, UICollectionView, UICollectionViewCell>
     {
-        public IReactiveNotifyCollectionChanged<TSource> Collection { get; protected set; }
+        public INotifyCollectionChanged Collection { get; protected set; }
         public Action<UICollectionViewCell> InitializeCellAction { get; protected set; }
         public Func<object, NSString> CellKeySelector { get; protected set; }
     }
@@ -28,7 +29,7 @@ namespace ReactiveUI
     public class CollectionViewSectionInformation<TSource, TCell> : CollectionViewSectionInformation<TSource>
         where TCell : UICollectionViewCell
     {
-        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged<TSource> collection, Func<object, NSString> cellKeySelector, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(INotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
             CellKeySelector = cellKeySelector;
@@ -38,7 +39,7 @@ namespace ReactiveUI
             }
         }
 
-        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(INotifyCollectionChanged collection, NSString cellKey, Action<TCell> initializeCellAction = null)
             : this(collection, _ => cellKey, initializeCellAction)
         {
         }
@@ -112,7 +113,7 @@ namespace ReactiveUI
 
     /// <summary>
     /// ReactiveCollectionViewSource is a Collection View Source that is
-    /// connected to a ReactiveList that automatically updates the View based
+    /// connected to a Read Only List that automatically updates the View based
     /// on the contents of the list. The collection changes are buffered and
     /// View items are animated in and out as items are added.
     /// </summary>
@@ -121,7 +122,7 @@ namespace ReactiveUI
         readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> commonSource;
         readonly Subject<object> elementSelected = new Subject<object>();
 
-        public ReactiveCollectionViewSource(UICollectionView collectionView, IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, Action<UICollectionViewCell> initializeCellAction = null)
+        public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell> initializeCellAction = null)
             : this(collectionView)
         {
             this.Data = new[] { new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction) };
@@ -297,7 +298,7 @@ namespace ReactiveUI
         /// the <see cref="ReactiveCollectionViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
         public static IDisposable BindTo<TSource, TCell>(
-            this IObservable<IReactiveNotifyCollectionChanged<TSource>> sourceObservable,
+            this IObservable<INotifyCollectionChanged> sourceObservable,
             UICollectionView collectionView,
             NSString cellKey,
             Action<TCell> initializeCellAction = null,
@@ -330,7 +331,7 @@ namespace ReactiveUI
         /// the <see cref="ReactiveCollectionViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
         public static IDisposable BindTo<TSource, TCell>(
-            this IObservable<IReactiveNotifyCollectionChanged<TSource>> sourceObservable,
+            this IObservable<INotifyCollectionChanged> sourceObservable,
             UICollectionView collectionView,
             Action<TCell> initializeCellAction = null,
             Func<ReactiveCollectionViewSource<TSource>, IDisposable> initSource = null)

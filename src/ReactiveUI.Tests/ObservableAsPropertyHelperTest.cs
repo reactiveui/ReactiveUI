@@ -10,6 +10,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using DynamicData;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Splat;
@@ -93,7 +94,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void OAPHShouldSubscribeImmediatelyToSource()
         {
-            bool isSubscribed = false;
+            var isSubscribed = false;
 
             var observable = Observable.Create<int>(o => {
                 isSubscribed = true;
@@ -112,7 +113,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void OAPHDeferSubscriptionParameterDefersSubscriptionToSource()
         {
-            bool isSubscribed = false;
+            var isSubscribed = false;
 
             var observable = Observable.Create<int>(o => {
                 isSubscribed = true;
@@ -184,7 +185,7 @@ namespace ReactiveUI.Tests
 
                 input.OnError(new Exception("Die!"));
 
-                bool failed = true;
+                var failed = true;
                 try {
                     sched.Start();
                 } catch (Exception ex) {
@@ -204,10 +205,10 @@ namespace ReactiveUI.Tests
             // NB: This is a hack to connect up the OAPH
             var dontcare = (fixture.FirstThreeLettersOfOneWord ?? "").Substring(0, 0);
 
-            var resultChanging = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true)
-                .CreateCollection(scheduler: ImmediateScheduler.Instance);
-            var resultChanged = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false)
-                .CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true)
+                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanging).Subscribe();
+            fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false)
+                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanged).Subscribe();
 
             Assert.Empty(resultChanging);
             Assert.Empty(resultChanged);
@@ -251,26 +252,26 @@ namespace ReactiveUI.Tests
         {
             var fixture = new OaphNameOfTestFixture();
 
-            var firstThreeChanging = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true).CreateCollection(scheduler: ImmediateScheduler.Instance);
-            var lastThreeChanging = fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: true).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanging).Subscribe();;
+            fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanging).Subscribe();;
 
             var changing = new[] { firstThreeChanging, lastThreeChanging };
 
-            var firstThreeChanged = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false).CreateCollection(scheduler: ImmediateScheduler.Instance);
-            var lastThreeChanged = fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: false).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanged).Subscribe();;
+            fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanged).Subscribe();;
             var changed = new[] { firstThreeChanged, lastThreeChanged };
 
             Assert.True(changed.All(x => x.Count == 0));
             Assert.True(changing.All(x => x.Count == 0));
 
-            for (int i = 0; i < testWords.Length; ++i) {
+            for (var i = 0; i < testWords.Length; ++i) {
                 fixture.IsOnlyOneWord = testWords[i];
                 Assert.True(changed.All(x => x.Count == i + 1));
                 Assert.True(changing.All(x => x.Count == i + 1));
                 Assert.Equal(first3Letters[i], firstThreeChanged[i].Value);
                 Assert.Equal(last3Letters[i], lastThreeChanged[i].Value);
-                string firstChanging = i - 1 < 0 ? "" : first3Letters[i - 1];
-                string lastChanging = i - 1 < 0 ? "" : last3Letters[i - i];
+                var firstChanging = i - 1 < 0 ? "" : first3Letters[i - 1];
+                var lastChanging = i - 1 < 0 ? "" : last3Letters[i - i];
                 Assert.Equal(firstChanging, firstThreeChanging[i].Value);
                 Assert.Equal(lastChanging, lastThreeChanging[i].Value);
             }

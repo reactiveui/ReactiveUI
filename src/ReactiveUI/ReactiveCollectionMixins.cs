@@ -16,7 +16,7 @@ using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace ReactiveUI
+namespace ReactiveUI.Legacy
 {
     /// <summary>
     /// This class represents a change-notifying Collection which is derived from
@@ -24,6 +24,7 @@ namespace ReactiveUI
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     internal abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IReactiveDerivedList<TValue>, IDisposable
     {
         const string readonlyExceptionMessage = "Derived collections cannot be modified.";
@@ -180,6 +181,7 @@ namespace ReactiveUI
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     internal class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
     {
         readonly IEnumerable<TSource> source;
@@ -748,6 +750,7 @@ namespace ReactiveUI
         }
     }
 
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     internal class ReactiveDerivedCollectionFromObservable<T> : ReactiveDerivedCollection<T>
     {
         SingleAssignmentDisposable inner;
@@ -803,6 +806,7 @@ namespace ReactiveUI
     /// <summary>
     /// Extension methods to create collections from observables
     /// </summary>
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public static class ReactiveCollectionMixins
     {
         /// <summary>
@@ -864,6 +868,7 @@ namespace ReactiveUI
     /// <summary>
     /// Extension methods to create collections that "follow" other collections.
     /// </summary>
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public static class ObservableCollectionMixin
     {
         /// <summary>
@@ -1061,6 +1066,5 @@ namespace ReactiveUI
         {
             return This.CreateDerivedCollection(selector, default(Action<TNew>), filter, orderer, (IObservable<Unit>)null, scheduler);
         }
-
     }
 }

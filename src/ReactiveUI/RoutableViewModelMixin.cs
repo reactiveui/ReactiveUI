@@ -3,8 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+
+using DynamicData;
+using DynamicData.Binding;
 
 namespace ReactiveUI
 {
@@ -26,15 +31,14 @@ namespace ReactiveUI
             IDisposable inner = null;
 
             var router = @this.HostScreen.Router;
-            return router.NavigationStack.CountChanged.Subscribe(_ => {
+            var navigationStackChanged = router.NavigationChanged.CountChanged();
+            return navigationStackChanged.Subscribe(_ => {
                 if (router.GetCurrentViewModel() == @this) {
-                    if (inner != null)  inner.Dispose();
+                    inner?.Dispose();
+
                     inner = onNavigatedTo();
                 } else {
-                    if (inner != null) {
-                        inner.Dispose();
-                        inner = null;
-                    }
+                    inner?.Dispose();
                 }
             });
         }
@@ -58,11 +62,15 @@ namespace ReactiveUI
         public static IObservable<Unit> WhenNavigatedToObservable(this IRoutableViewModel @this)
         {
             var router = @this.HostScreen.Router;
-            return router.NavigationStack.CountChanged
+            var navigationStackChanged = router.NavigationChanged.CountChanged();
+
+            var itemRemoved = navigationStackChanged
+                .Where(x => x.Any(change => change.Reason == ListChangeReason.Remove && change.Item.Current == @this));
+
+            return navigationStackChanged
                 .Where(_ => router.GetCurrentViewModel() == @this)
                 .Select(_ => Unit.Default)
-                .TakeUntil(router.NavigationStack.BeforeItemsRemoved
-                    .Where(itemRemoved => itemRemoved == @this));
+                .TakeUntil(itemRemoved);
         }
 
         /// <summary>
@@ -83,11 +91,16 @@ namespace ReactiveUI
         public static IObservable<Unit> WhenNavigatingFromObservable(this IRoutableViewModel @this)
         {
             var router = @this.HostScreen.Router;
-            return router.NavigationStack.CountChanging
-                .Where(_ => router.GetCurrentViewModel() == @this)
+            var navigationStackChanged = router.NavigationChanged.CountChanged();
+
+            var itemRemoved = navigationStackChanged
+                .Where(x => x.Any(change => change.Reason == ListChangeReason.Remove && change.Item.Current == @this));
+
+            var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel[2], (previous, current) => new[] {previous[1], router.GetCurrentViewModel()});
+            return viewModelsChanged
+                .Where(x => x[0] == @this)
                 .Select(_ => Unit.Default)
-                .TakeUntil(router.NavigationStack.ItemsRemoved
-                    .Where(itemRemoved => itemRemoved == @this));
+                .TakeUntil(itemRemoved);
         }
     }
 }

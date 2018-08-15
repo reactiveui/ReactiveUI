@@ -25,7 +25,7 @@ namespace ReactiveUI.Tests
             try
             {
                 Assert.Equal(left.Length, right.Length);
-                for (int i = 0; i < left.Length; i++)
+                for (var i = 0; i < left.Length; i++)
                 {
                     Assert.Equal(left[i], right[i]);
                 }
@@ -40,8 +40,8 @@ namespace ReactiveUI.Tests
 
         public static IEnumerable<T> DistinctUntilChanged<T>(this IEnumerable<T> This)
         {
-            bool isFirst = true;
-            T lastValue = default(T);
+            var isFirst = true;
+            var lastValue = default(T);
 
             foreach (var v in This)
             {
