@@ -17,7 +17,6 @@
    <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.TVOS'))">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;TVOS</DefineConstants>
   </PropertyGroup>
-  </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.WatchOS'))">
     <DefineConstants>$(DefineConstants);MONO;COCOA;WATCHOS</DefineConstants>
   </PropertyGroup>
