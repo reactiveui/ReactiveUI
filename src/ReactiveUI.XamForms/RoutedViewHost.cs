@@ -86,28 +86,26 @@ namespace ReactiveUI.XamForms
 
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
-                    .SelectMany(async x => {
+                    .SelectMany(async page => {
                         if (popToRootPending && this.Navigation.NavigationStack.Count > 0)
                         {
-                            this.Navigation.InsertPageBefore(x, this.Navigation.NavigationStack[0]);
+                            this.Navigation.InsertPageBefore(page, this.Navigation.NavigationStack[0]);
                             await this.PopToRootAsync();
                         }
                         else
                         {
                             bool animated = true;
-                            var type = x.GetType();
-                            Attribute[] attrs = Attribute.GetCustomAttributes(type);
-
-                            foreach (var a in attrs) {
-                                    if (a is DisableAnimationAttribute)
-                                        animated = false;
+                            var attribute = page.GetType().GetCustomAttribute<DisableAnimationAttribute>();
+                            if (attribute != null)
+                            {
+                                animated = false;
                             }
 
-                            await this.PushAsync(x, animated);
+                            await this.PushAsync(page, animated);
                         }
 
                         popToRootPending = false;
-                        return x;
+                        return page;
                     })
                     .Subscribe());
 
