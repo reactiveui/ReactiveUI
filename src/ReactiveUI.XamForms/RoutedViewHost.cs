@@ -3,13 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using Xamarin.Forms;
-using Splat;
-using ReactiveUI;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
-using System.Diagnostics;
-using System.Reactive;
+using System.Reflection;
+
+using Xamarin.Forms;
+
+using Splat;
 
 namespace ReactiveUI.XamForms
 {
@@ -86,19 +87,26 @@ namespace ReactiveUI.XamForms
 
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
-                    .SelectMany(async x => {
+                    .SelectMany(async page => {
                         if (popToRootPending && this.Navigation.NavigationStack.Count > 0)
                         {
-                            this.Navigation.InsertPageBefore(x, this.Navigation.NavigationStack[0]);
+                            this.Navigation.InsertPageBefore(page, this.Navigation.NavigationStack[0]);
                             await this.PopToRootAsync();
                         }
                         else
                         {
-                            await this.PushAsync(x);
+                            bool animated = true;
+                            var attribute = page.GetType().GetCustomAttribute<DisableAnimationAttribute>();
+                            if (attribute != null)
+                            {
+                                animated = false;
+                            }
+
+                            await this.PushAsync(page, animated);
                         }
 
                         popToRootPending = false;
-                        return x;
+                        return page;
                     })
                     .Subscribe());
 
