@@ -3,13 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using Xamarin.Forms;
-using Splat;
-using ReactiveUI;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
-using System.Diagnostics;
-using System.Reactive;
+using System.Reflection;
+
+using Xamarin.Forms;
+
+using Splat;
 
 namespace ReactiveUI.XamForms
 {
