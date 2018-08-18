@@ -123,6 +123,15 @@ If you have discovered a 🐜 or have a feature suggestion, feel free to create 
 
 <h2>Contribute</h2>
 
+[![0](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/images/0)](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/links/0)
+[![1](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/images/1)](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/links/1)
+[![2](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/images/2)](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/links/2)
+[![3](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/images/3)](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/links/3)
+[![4](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/images/4)](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/links/4)
+[![5](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/images/5)](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/links/5)
+[![6](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/images/6)](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/links/6)
+[![7](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/images/7)](https://sourcerer.io/fame/sergey48k/reactiveui/ReactiveUI/links/7)
+
 ReactiveUI is developed under an OSI-approved open source license, making it freely usable and distributable, even for commercial use. Because of our Open Collective model for funding and transparency, we are able to funnel support and funds through to our contributors and community. We ❤ the people who are involved in this project, and we’d love to have you on board, especially if you are just getting started or have never contributed to open-source before.
 
 So here's to you, lovely person who wants to join us — this is how you can support us:
