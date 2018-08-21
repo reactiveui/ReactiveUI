@@ -34,4 +34,31 @@
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />  
   </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
+      <Project>{322be1b9-3519-4fb7-b2af-fd1f8df12616}</Project>
+      <Name>IntegrationTests.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MahApps.Metro">
+      <Version>1.6.1</Version>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI">
+      <Version>8.7.1</Version>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI.Events.WPF">
+      <Version>8.7.1</Version>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI.WPF">
+      <Version>8.7.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reactive">
+      <Version>3.1.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

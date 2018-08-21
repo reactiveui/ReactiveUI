@@ -57,6 +57,7 @@ namespace IntegrationTests.Shared.Tests.Features.Initialize
 
                     implementationTypes.Add(factory().GetType());
                 });
+
                 register.Invoke(platformRegistrations, new object[] { registerParameter });
             }
 

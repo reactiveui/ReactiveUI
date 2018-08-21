@@ -50,13 +50,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Acr.UserDialogs" Version="7.0.1" />
-    <PackageReference Include="ReactiveUI.AndroidSupport" Version="*" />
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="27.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="27.0.*" />	
+    <PackageReference Include="Acr.UserDialogs">
+      <Version>7.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="25.*" />
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="25.*" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="25.*" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="25.*" />
+    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="25.*" />
+    <PackageReference Include="Xamarin.Forms">
+      <Version>3.1.0.697729</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

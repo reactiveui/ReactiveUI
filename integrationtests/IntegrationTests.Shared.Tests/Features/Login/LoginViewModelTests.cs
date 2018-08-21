@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Microsoft.Reactive.Testing;
+using ReactiveUI;
 using ReactiveUI.Testing;
+using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Shared.Tests.Features.Login
@@ -24,8 +26,9 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         {
             LoginViewModel sut = new LoginViewModelBuilder();
 
-            var result = await sut.Login.CanExecute.FirstAsync();
-            result.Should().BeFalse();
+            sut.Login.CanExecute
+                .FirstAsync().Wait()
+                .ShouldBe(false);
         }
 
         /// <summary>
@@ -47,8 +50,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName(userName)
                 .WithPassword(password);
 
-            var result = await sut.Login.CanExecute.FirstAsync();
-            result.Should().BeFalse();
+            (await sut.Login.CanExecute.FirstAsync()).ShouldBe(false);
         }
 
         /// <summary>
@@ -65,8 +67,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName(userName)
                 .WithPassword(password);
 
-            var result = await sut.Login.CanExecute.FirstAsync();
-            result.Should().BeTrue();
+            (await sut.Login.CanExecute.FirstAsync()).ShouldBe(true);
         }
 
         /// <summary>
@@ -78,8 +79,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         {
             LoginViewModel sut = new LoginViewModelBuilder();
 
-            var result = await sut.Cancel.CanExecute.FirstAsync();
-            result.Should().BeFalse();
+            (await sut.Cancel.CanExecute.FirstAsync()).ShouldBe(false);
         }
 
         /// <summary>
@@ -89,20 +89,28 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         [Fact]
         public async Task CancelButton_Cancels_Login()
         {
-            await new TestScheduler().With(async sched =>
-            {
-                LoginViewModel sut = new LoginViewModelBuilder()
-                    .WithScheduler(sched)
+            var scheduler = new TestScheduler();
+
+            var sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
                     .WithUserName("coolusername")
                     .WithPassword("excellentpassword");
 
-                sut.Login.Subscribe(x => x.Should().BeTrue());
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
 
-                sched.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
+            sut.Login.Subscribe(x => x.ShouldBe(true));
 
-                var result = await sut.Cancel.CanExecute.FirstAsync();
-                result.Should().BeTrue();
-            }).ConfigureAwait(false);
+            Observable
+                .Return(Unit.Default)
+                .InvokeCommand(sut.Login);
+
+            sut.Cancel.CanExecute.Subscribe(x => x.ShouldBe(true));
+
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
+
+            Observable
+                .Return(Unit.Default)
+                .InvokeCommand(sut.Cancel);
         }
 
         /// <summary>
@@ -112,40 +120,44 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         [Fact]
         public async Task CancelButton_IsAvailableUntil_TwoSeconds()
         {
-            new TestScheduler().With(sched =>
+            bool actual = false;
+            var scheduler = new TestScheduler();
+
+            var sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
+                .WithUserName("coolusername")
+                .WithPassword("excellentpassword")
+                .Build();
+
+
+            sut.Cancel.CanExecute.Subscribe(x => 
             {
-                LoginViewModel sut = new LoginViewModelBuilder()
-                    .WithScheduler(sched)
-                    .WithUserName("coolusername")
-                    .WithPassword("excellentpassword");
-
-                sut.Login.Execute().Subscribe();
-
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeFalse();
-
-                // 50ms
-                sched.AdvanceByMs(50);
-
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeTrue();
-
-                // 1sec 50ms
-                sched.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
-
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeTrue();
-
-                // 2sec 50sms
-                sched.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
-
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeFalse();
+                actual = x;   
             });
+
+            sut.Login.IsExecuting.Subscribe(x => {
+                var a = x;
+            });
+
+            sut.Login.Subscribe();
+            Observable.Return(Unit.Default).InvokeCommand(sut.Login);
+
+            actual.ShouldBe(false);
+
+            // 50ms
+            scheduler.AdvanceByMs(50);
+
+            actual.ShouldBe(true);
+
+            // 1sec 50ms
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
+
+            actual.ShouldBe(true);
+
+            // 2sec 50sms
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
+
+            actual.ShouldBe(false);
         }
 
         /// <summary>
@@ -159,7 +171,9 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName("coolusername")
                 .WithPassword("incorrectpassword");
 
-            Assert.False(true);
+            sut.Login.Subscribe(x => x.ShouldBe(true));
+
+            Observable.Return(Unit.Default).InvokeCommand(sut.Login);
         }
 
         /// <summary>
@@ -173,7 +187,9 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName("coolusername")
                 .WithPassword("Mr. Goodbytes");
 
-            Assert.False(true);
+            sut.Login.Subscribe(x => x.ShouldBe(true));
+
+            Observable.Return(Unit.Default).InvokeCommand(sut.Login);
         }
     }
 }
