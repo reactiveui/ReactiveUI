@@ -1,7 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net471</TargetFrameworks>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
     <IsPackable>false</IsPackable>
     <CodeAnalysisRuleSet>..\..\src\reactiveui.tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -15,42 +16,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="ReactiveUI" Version="8.7.1" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.0" />
+    <PackageReference Include="ReactiveUI.Testing" Version="8.7.1" />
+    <PackageReference Include="Shouldly" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.console" Version="2.4.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Xunit.StaFact" Version="0.3.5" />
-    <PackageReference Include="FluentAssertions" Version="5.4.2" />
-    <PackageReference Include="ReactiveUI.Testing" Version="*" />
+    <Compile Remove="UnitTest1.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="UIAutomationTypes" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
-
 </Project>

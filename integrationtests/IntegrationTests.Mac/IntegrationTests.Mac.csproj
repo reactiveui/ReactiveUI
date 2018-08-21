@@ -1,95 +1,97 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{84D75BEA-CDE7-4DF9-B51C-468F650BE924}</ProjectGuid>
-    <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>IntegrationTests.Mac</RootNamespace>
-    <AssemblyName>IntegrationTests.Mac</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
-    <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <EnableCodeSigning>false</EnableCodeSigning>
-    <CodeSigningKey>Mac Developer</CodeSigningKey>
-    <CreatePackage>false</CreatePackage>
-    <EnablePackageSigning>false</EnablePackageSigning>
-    <IncludeMonoRuntime>false</IncludeMonoRuntime>
-    <UseSGen>true</UseSGen>
-    <UseRefCounting>true</UseRefCounting>
-    <Profiling>true</Profiling>
-    <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\IntegrationTests.Mac.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <EnableCodeSigning>false</EnableCodeSigning>
-    <CreatePackage>true</CreatePackage>
-    <EnablePackageSigning>false</EnablePackageSigning>
-    <IncludeMonoRuntime>true</IncludeMonoRuntime>
-    <UseSGen>true</UseSGen>
-    <UseRefCounting>true</UseRefCounting>
-    <LinkMode>SdkOnly</LinkMode>
-    <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\IntegrationTests.Mac.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Xamarin.Mac" />
-  </ItemGroup>
-  <ItemGroup>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128%402x.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-16.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-16%402x.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-256.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-256%402x.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-32.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-32%402x.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-512.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-512%402x.png" />
-    <ImageAsset Include="Assets.xcassets\Contents.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Info.plist" />
-    <None Include="Entitlements.plist" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AppDelegate.cs" />
-    <Compile Include="LoginViewController.cs" />
-    <Compile Include="LoginViewController.designer.cs">
-      <DependentUpon>LoginViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainClass.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <InterfaceDefinition Include="Main.storyboard" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
-      <Project>{3A9F323C-EB97-4251-89AB-F705B1718FB7}</Project>
-      <Name>IntegrationTests.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+        <ProjectGuid>{84D75BEA-CDE7-4DF9-B51C-468F650BE924}</ProjectGuid>
+        <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>IntegrationTests.Mac</RootNamespace>
+        <AssemblyName>IntegrationTests.Mac</AssemblyName>
+        <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+        <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
+        <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug</OutputPath>
+        <DefineConstants>DEBUG;</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <EnableCodeSigning>false</EnableCodeSigning>
+        <CodeSigningKey>Mac Developer</CodeSigningKey>
+        <CreatePackage>false</CreatePackage>
+        <EnablePackageSigning>false</EnablePackageSigning>
+        <IncludeMonoRuntime>false</IncludeMonoRuntime>
+        <UseSGen>true</UseSGen>
+        <UseRefCounting>true</UseRefCounting>
+        <Profiling>true</Profiling>
+        <PlatformTarget>x86</PlatformTarget>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <EnableCodeSigning>false</EnableCodeSigning>
+        <CreatePackage>true</CreatePackage>
+        <EnablePackageSigning>false</EnablePackageSigning>
+        <IncludeMonoRuntime>true</IncludeMonoRuntime>
+        <UseSGen>true</UseSGen>
+        <UseRefCounting>true</UseRefCounting>
+        <LinkMode>SdkOnly</LinkMode>
+        <PlatformTarget>x86</PlatformTarget>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="Xamarin.Mac" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="ReactiveUI">
+          <Version>8.7.1</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128%402x.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-16.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-16%402x.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-256.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-256%402x.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-32.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-32%402x.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-512.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-512%402x.png" />
+        <ImageAsset Include="Assets.xcassets\Contents.json" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Resources\" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="Info.plist" />
+        <None Include="Entitlements.plist" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Main.cs" />
+        <Compile Include="AppDelegate.cs" />
+        <Compile Include="LoginViewController.cs" />
+        <Compile Include="LoginViewController.designer.cs">
+            <DependentUpon>LoginViewController.cs</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <InterfaceDefinition Include="Main.storyboard" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
+            <Project>{3A9F323C-EB97-4251-89AB-F705B1718FB7}</Project>
+            <Name>IntegrationTests.Shared</Name>
+        </ProjectReference>
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
