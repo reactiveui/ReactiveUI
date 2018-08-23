@@ -585,7 +585,7 @@ namespace ReactiveUI
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
         public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
-        public DynamicData.Binding.ObservableCollectionExtended<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
+        public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
         public System.Reactive.Concurrency.IScheduler Scheduler { get; set; }
     }
