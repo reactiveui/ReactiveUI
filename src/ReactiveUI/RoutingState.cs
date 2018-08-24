@@ -107,20 +107,19 @@ namespace ReactiveUI
                 countAsBehavior.Select(x => x > 1),
                 navigateScheduler);
 
-            Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(x => {
-                var vm = x;
+            Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(vm => {
                 if (vm == null) {
                     throw new Exception("Navigate must be called on an IRoutableViewModel");
                 }
 
                 _navigationStack.Add(vm);
-                return Observable.Return(x);
+                return Observable.Return(vm);
             },
             outputScheduler: navigateScheduler);
 
-            NavigateAndReset = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(x => {
+            NavigateAndReset = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(vm => {
                 _navigationStack.Clear();
-                return Navigate.Execute(x);
+                return Navigate.Execute(vm);
             },
             outputScheduler: navigateScheduler);
             

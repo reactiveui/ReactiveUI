@@ -21,33 +21,30 @@ namespace ReactiveUI.Android.Support
 {
     /// <summary>
     /// An adapter for the Android <see cref="RecyclerView"/>.
-    /// 
     /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method 
     /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder
     /// </summary>
     /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
-    public abstract class ReactiveRecyclerViewAdapter<TViewModel, TCollection> : RecyclerView.Adapter 
+    public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
         where TViewModel : class, IReactiveObject
-        where TCollection : ICollection<TViewModel>, INotifyCollectionChanged
     {
-        readonly TCollection list;
+        private readonly ISourceList<TViewModel> list;
 
-        IDisposable inner;
+        private IDisposable inner;
 
-        protected ReactiveRecyclerViewAdapter(TCollection backingList)
+        protected ReactiveRecyclerViewAdapter(IObservable<IChangeSet<TViewModel>> backingList)
         {
-            this.list = backingList;
+            this.list = new SourceList<TViewModel>(backingList);
 
-            this.inner = this
-                .list
-                .ToObservableChangeSet<TCollection, TViewModel>()
-                .ForEachChange(UpdateBindings)
-                .Subscribe();
+            this.inner = this.list
+                            .Connect()
+                            .ForEachChange(UpdateBindings)
+                            .Subscribe();
         }
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            ((IViewFor)holder).ViewModel = this.list.ElementAt(position);
+            ((IViewFor)holder).ViewModel = this.list.Items.ElementAt(position);
         }
 
         public override int ItemCount => this.list.Count;
@@ -62,27 +59,44 @@ namespace ReactiveUI.Android.Support
         {
             switch(change.Reason)
             {
-                case ListChangeReason.Add:
-                    NotifyItemInserted(change.Item.CurrentIndex);
-                    break;
-                case ListChangeReason.Remove:
-                    NotifyItemRemoved(change.Item.CurrentIndex);
-                    break;
-                case ListChangeReason.Moved:
-                    NotifyItemMoved(change.Item.PreviousIndex, change.Item.CurrentIndex);
-                    break;
-                case ListChangeReason.Replace:
-                case ListChangeReason.Refresh:
-                    NotifyItemChanged(change.Item.CurrentIndex);
-                    break;
-                case ListChangeReason.AddRange:
-                    NotifyItemRangeInserted(change.Range.Index, change.Range.Count);
-                    break;
-                case ListChangeReason.RemoveRange:
-                case ListChangeReason.Clear:
-                    NotifyItemRangeRemoved(change.Range.Index, change.Range.Count);
-                    break;
+            case ListChangeReason.Add:
+                NotifyItemInserted(change.Item.CurrentIndex);
+                break;
+            case ListChangeReason.Remove:
+                NotifyItemRemoved(change.Item.CurrentIndex);
+                break;
+            case ListChangeReason.Moved:
+                NotifyItemMoved(change.Item.PreviousIndex, change.Item.CurrentIndex);
+                break;
+            case ListChangeReason.Replace:
+            case ListChangeReason.Refresh:
+                NotifyItemChanged(change.Item.CurrentIndex);
+                break;
+            case ListChangeReason.AddRange:
+                NotifyItemRangeInserted(change.Range.Index, change.Range.Count);
+                break;
+            case ListChangeReason.RemoveRange:
+            case ListChangeReason.Clear:
+                NotifyItemRangeRemoved(change.Range.Index, change.Range.Count);
+                break;
             }
+        }
+    }
+
+    /// <summary>
+    /// An adapter for the Android <see cref="RecyclerView"/>.
+    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method 
+    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
+    /// <typeparam name="TCollection">The type of collection.</typeparam>
+    public abstract class ReactiveRecyclerViewAdapter<TViewModel, TCollection> : ReactiveRecyclerViewAdapter<TViewModel>
+        where TViewModel : class, IReactiveObject
+        where TCollection : ICollection<TViewModel>, INotifyCollectionChanged
+    {
+        protected ReactiveRecyclerViewAdapter(TCollection backingList)
+            : base(backingList.ToObservableChangeSet<TCollection, TViewModel>())
+        {
         }
     }
 
@@ -103,7 +117,7 @@ namespace ReactiveUI.Android.Support
         /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/> 
         /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
         /// </summary>
-        public IObservable<int> Selected { get; private set; }
+        public IObservable<int> Selected { get; }
 
         public View View => this.ItemView;
 
@@ -175,7 +189,7 @@ namespace ReactiveUI.Android.Support
         /// notifications (neither traditional nor Observable notifications)
         /// until the return value is disposed.
         /// </summary>
-        /// <returns>An object that, when disposed, reenables change
+        /// <returns>An object that, when disposed, re-enables change
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
