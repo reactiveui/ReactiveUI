@@ -1,11 +1,16 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Exporters;
-using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Order;
 using DynamicData;
 
-namespace ReactiveUI.Benchmarks
+using ReactiveUI.Legacy;
+
+#pragma warning disable CS0618 // Item is obsolete warning
+
+namespace ReactiveUI.Benchmarks.Legacy
 {
-    [CoreJob]
+    [Config(typeof(Config))]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class ReactiveListOperationBenchmark
     {

@@ -157,7 +157,7 @@ namespace ReactiveUI
         public static IDisposable AutoPersistCollection<TItem, TDontCare>(this ObservableCollection<TItem> This, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
             where TItem : IReactiveObject
         {
-            return AutoPersistCollection(new ReadOnlyObservableCollection<TItem>(This), doPersist, manualSaveSignal, interval);
+            return AutoPersistCollection<TItem, ObservableCollection<TItem>, TDontCare>(This, doPersist, manualSaveSignal, interval);
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace ReactiveUI
         public static IDisposable ActOnEveryObject<TItem>(this ObservableCollection<TItem> This, Action<TItem> onAdd, Action<TItem> onRemove)
             where TItem : IReactiveObject
         {
-            return ActOnEveryObject(new ReadOnlyObservableCollection<TItem>(This), onAdd, onRemove);
+            return ActOnEveryObject<TItem, ObservableCollection<TItem>>(This, onAdd, onRemove);
         }
 
         /// <summary>

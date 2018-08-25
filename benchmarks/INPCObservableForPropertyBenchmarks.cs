@@ -1,20 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Columns;
-using BenchmarkDotNet.Attributes.Exporters;
-using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Order;
 
 namespace ReactiveUI.Benchmarks
 {
-    [ClrJob]
-    [CoreJob]
-    [MonoJob]
-    [RPlotExporter]
-    [RankColumn]
+    [Config(typeof(Config))]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class INPCObservableForPropertyBenchmarks
     {

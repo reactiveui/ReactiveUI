@@ -2,13 +2,14 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Exporters;
-using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Order;
 using ReactiveUI;
 
 namespace ReactiveUI.Benchmarks
 {
-    [CoreJob]
+    [Config(typeof(Config))]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class RoutableViewModelMixinsBenchmarks
     {
