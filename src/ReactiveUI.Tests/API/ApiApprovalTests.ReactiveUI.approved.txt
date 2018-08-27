@@ -679,6 +679,7 @@ namespace ReactiveUI
     public class RoutingState : ReactiveUI.ReactiveObject
     {
         public RoutingState() { }
+        public RoutingState(System.Reactive.Concurrency.IScheduler scheduler) { }
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
         public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; set; }
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
