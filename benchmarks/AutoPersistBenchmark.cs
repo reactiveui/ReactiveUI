@@ -38,7 +38,8 @@ namespace ReactiveUI.Benchmarks
                     return Disposable.Empty;
                 }).Select(_ => Unit.Default), TimeSpan.FromMilliseconds(200));
 
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < 5; ++i)
+            {
                 _collection.Add(new MockViewModel());
             }
 

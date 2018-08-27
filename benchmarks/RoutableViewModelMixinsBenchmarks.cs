@@ -39,23 +39,20 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void WhenNavigatedToObservable()
         {
-            _mockViewModel()
-                .WhenNavigatedToObservable()
-                .Subscribe(x =>
-                {
-                    Console.WriteLine("Observed");
-                });
-
-            _router.Navigate
-                .Execute(_mockViewModel()).Subscribe();
+            using (_mockViewModel().WhenNavigatedToObservable().Subscribe(x => Console.WriteLine("Observed")))
+            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+            {
+            }
         }
 
         [Benchmark]
         public void WhenNavigatingFromObservable()
         {
-            _router.Navigate.Execute(_mockViewModel()).Subscribe();
-            _mockViewModel().WhenNavigatingFromObservable().Subscribe();
-            _router.NavigateBack.Execute().Subscribe();
+           using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+           using (_mockViewModel().WhenNavigatingFromObservable().Subscribe())
+           using (_router.NavigateBack.Execute().Subscribe()) 
+           {
+           }
         }
     }
 }
