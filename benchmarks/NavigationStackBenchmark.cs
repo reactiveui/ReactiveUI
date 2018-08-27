@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Concurrency;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 
@@ -7,49 +8,63 @@ namespace ReactiveUI.Benchmarks
 {
     [Config(typeof(Config))]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    //[MemoryDiagnoser]
+    [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class NavigationStackBenchmark
     {
-        private Func<MockViewModel> _mockViewModel;
+        private static readonly Func<MockViewModel> _mockViewModel;
         private RoutingState _router;
+
+        static NavigationStackBenchmark()
+        {
+            _mockViewModel = () => new MockViewModel();
+        }
 
         [GlobalCleanup]
         public void Cleanup()
         {
             _router.NavigationStack.Clear();
             _router = null;
-            _mockViewModel = null;
+        }
+
+        [IterationSetup]
+        public void IterationSetup()
+        {
+            _router.NavigationStack.Clear();
         }
 
         [Benchmark]
         public void Navigate()
         {
-            var disposable = _router.Navigate.Execute(_mockViewModel()).Subscribe();
-            disposable.Dispose();
+            using (_router.Navigate.Execute(_mockViewModel()).Subscribe()) {
+                _router.NavigationStack.ToList();
+            }
         }
 
         [Benchmark]
         public void NavigateAndReset()
         {
-            var disposable = _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
-            disposable?.Dispose();
+            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe()) {
+                _router.NavigationStack.ToList();
+            }
         }
 
         [Benchmark]
         public void NavigateBack()
         {
-            var disposable = _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
-            _router.NavigateBack.Execute().Subscribe();
-            disposable?.Dispose();
+            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
+            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+            using (_router.NavigateBack.Execute().Subscribe()) {
+
+            }
         }
 
         [Benchmark]
         public void NavigationStack()
         {
-            var disposable = _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
-            _router.NavigationStack.ToList();
-            disposable.Dispose();
+            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe()) {
+                _router.NavigationStack.ToList();
+            }
         }
 
         [Benchmark]
@@ -58,8 +73,7 @@ namespace ReactiveUI.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            _router = new RoutingState();
-            _mockViewModel = () => new MockViewModel();
+            _router = new RoutingState(ImmediateScheduler.Instance);
         }
     }
 }

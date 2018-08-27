@@ -82,8 +82,14 @@ namespace ReactiveUI
         public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; }
 
         public RoutingState()
+            : this(RxApp.MainThreadScheduler)
+        {
+        }
+
+        public RoutingState(IScheduler scheduler)
         {
             _navigationStack = new ObservableCollection<IRoutableViewModel>();
+            this.scheduler = scheduler;
             setupRx();
         }
 
