@@ -1,20 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Columns;
-using BenchmarkDotNet.Attributes.Exporters;
-using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Order;
 
 namespace ReactiveUI.Benchmarks
 {
     [ClrJob]
     [CoreJob]
-    [MonoJob]
-    [RPlotExporter]
-    [RankColumn]
+    [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class INPCObservableForPropertyBenchmarks
     {
@@ -37,7 +33,8 @@ namespace ReactiveUI.Benchmarks
             var testClass = new TestClassChanged();
 
             var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(c => changes.Add(c));
+            var dispose = instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(c => changes.Add(c));
+            dispose.Dispose();
         }
 
         private class TestClassChanged : INotifyPropertyChanged
@@ -70,8 +67,7 @@ namespace ReactiveUI.Benchmarks
 
             public void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
-                var handler = PropertyChanged;
-                if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }
