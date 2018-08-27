@@ -43,9 +43,11 @@ namespace ReactiveUI
         /// The scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </summary>
         [IgnoreDataMember]
-        public IScheduler Scheduler {
+        public IScheduler Scheduler
+        {
             get => scheduler;
-            set {
+            set
+            {
                 if (scheduler != value) {
                     scheduler = value;
                     setupRx();
@@ -94,18 +96,18 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
-        void setupRx(StreamingContext sc) { setupRx();  }
+        private void setupRx(StreamingContext sc) { setupRx(); }
 
-        void setupRx()
+        private void setupRx()
         {
-            var navigateScheduler = this.scheduler ?? RxApp.MainThreadScheduler;
+            var navigateScheduler = scheduler ?? RxApp.MainThreadScheduler;
 
             NavigationChanged = _navigationStack.ToObservableChangeSet();
 
             var countAsBehavior = Observable.Concat(
                                                     Observable.Defer(() => Observable.Return(NavigationStack.Count)),
                                                     NavigationChanged.CountChanged().Select(_ => NavigationStack.Count));
-            NavigateBack = 
+            NavigateBack =
                 ReactiveCommand.CreateFromObservable(() => {
                     _navigationStack.RemoveAt(NavigationStack.Count - 1);
                     return Observables.Unit;
@@ -128,7 +130,7 @@ namespace ReactiveUI
                 return Navigate.Execute(vm);
             },
             outputScheduler: navigateScheduler);
-            
+
             CurrentViewModel = Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())).Concat(NavigationChanged.Select(_ => NavigationStack.LastOrDefault()));
         }
     }

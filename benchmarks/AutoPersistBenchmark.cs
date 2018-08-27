@@ -8,7 +8,8 @@ using BenchmarkDotNet.Order;
 
 namespace ReactiveUI.Benchmarks
 {
-    [Config(typeof(Config))]
+    [ClrJob]
+    [CoreJob]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]

@@ -8,7 +8,8 @@ using BenchmarkDotNet.Order;
 
 namespace ReactiveUI.Benchmarks
 {
-    [Config(typeof(Config))]
+    [ClrJob]
+    [CoreJob]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
@@ -67,8 +68,7 @@ namespace ReactiveUI.Benchmarks
 
             public void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
-                var handler = PropertyChanged;
-                if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }

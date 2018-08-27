@@ -8,7 +8,8 @@ using ReactiveUI.Legacy;
 
 namespace ReactiveUI.Benchmarks.Legacy
 {
-    [Config(typeof(Config))]
+    [ClrJob]
+    [CoreJob]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
@@ -20,6 +21,12 @@ namespace ReactiveUI.Benchmarks.Legacy
         public void Setup()
         {
             _reactiveList = new ReactiveList<string>();
+        }
+
+        [IterationSetup]
+        public void SetupIteration()
+        {
+            _reactiveList.Clear();
         }
 
         [GlobalCleanup]
@@ -58,7 +65,7 @@ namespace ReactiveUI.Benchmarks.Legacy
             }, -1);
 
         [Benchmark]
-        public void Insert() => _reactiveList.Insert(1, "ReactiveUI.Benchmarks");
+        public void Insert() => _reactiveList.Insert(0, "ReactiveUI.Benchmarks");
 
         [Benchmark]
         public void RemoveItem() => _reactiveList.Remove("ReactiveUI");

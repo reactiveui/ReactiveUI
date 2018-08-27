@@ -7,7 +7,8 @@ using ReactiveUI;
 
 namespace ReactiveUI.Benchmarks
 {
-    [Config(typeof(Config))]
+    [ClrJob]
+    [CoreJob]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
@@ -19,7 +20,7 @@ namespace ReactiveUI.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            _router = new RoutingState();
+            _router = new RoutingState(ImmediateScheduler.Instance);
             _mockViewModel = () => new MockViewModel();
         }
 
@@ -28,6 +29,12 @@ namespace ReactiveUI.Benchmarks
         {
             _router = null;
             _mockViewModel = null;
+        }
+
+        [IterationSetup]
+        public void IterationSetup()
+        {
+            _router.NavigationStack.Clear();
         }
 
         [Benchmark]

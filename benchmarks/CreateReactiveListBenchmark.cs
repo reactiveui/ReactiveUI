@@ -14,7 +14,8 @@ using ReactiveUI.Legacy;
 
 namespace ReactiveUI.Benchmarks.Legacy
 {
-    [Config(typeof(Config))]
+    [ClrJob]
+    [CoreJob]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
