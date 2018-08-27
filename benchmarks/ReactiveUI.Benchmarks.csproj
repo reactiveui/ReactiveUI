@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <PackageId>BenchmarkDotNet.Samples</PackageId>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" Version="6.4.0.2419" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.1" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
+    <Reference Include="System.Reflection" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

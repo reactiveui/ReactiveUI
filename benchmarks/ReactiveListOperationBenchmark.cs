@@ -1,11 +1,14 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Exporters;
-using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Order;
 using DynamicData;
 
-namespace ReactiveUI.Benchmarks
+#pragma warning disable CS0618 // Item is obsolete warning
+
+namespace ReactiveUI.Benchmarks.Legacy
 {
+    [ClrJob]
     [CoreJob]
+    [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class ReactiveListOperationBenchmark
     {
@@ -15,6 +18,12 @@ namespace ReactiveUI.Benchmarks
         public void Setup()
         {
             _reactiveList = new ReactiveList<string>();
+        }
+
+        [IterationSetup]
+        public void SetupIteration()
+        {
+            _reactiveList.Clear();
         }
 
         [GlobalCleanup]
@@ -53,7 +62,7 @@ namespace ReactiveUI.Benchmarks
             }, -1);
 
         [Benchmark]
-        public void Insert() => _reactiveList.Insert(1, "ReactiveUI.Benchmarks");
+        public void Insert() => _reactiveList.Insert(0, "ReactiveUI.Benchmarks");
 
         [Benchmark]
         public void RemoveItem() => _reactiveList.Remove("ReactiveUI");

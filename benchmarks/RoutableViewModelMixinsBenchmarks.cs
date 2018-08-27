@@ -2,13 +2,14 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Exporters;
-using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Order;
 using ReactiveUI;
 
 namespace ReactiveUI.Benchmarks
 {
+    [ClrJob]
     [CoreJob]
+    [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class RoutableViewModelMixinsBenchmarks
     {
@@ -18,7 +19,7 @@ namespace ReactiveUI.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            _router = new RoutingState();
+            _router = new RoutingState(ImmediateScheduler.Instance);
             _mockViewModel = () => new MockViewModel();
         }
 
@@ -29,26 +30,29 @@ namespace ReactiveUI.Benchmarks
             _mockViewModel = null;
         }
 
+        [IterationSetup]
+        public void IterationSetup()
+        {
+            _router.NavigationStack.Clear();
+        }
+
         [Benchmark]
         public void WhenNavigatedToObservable()
         {
-            _mockViewModel()
-                .WhenNavigatedToObservable()
-                .Subscribe(x =>
-                {
-                    Console.WriteLine("Observed");
-                });
-
-            _router.Navigate
-                .Execute(_mockViewModel()).Subscribe();
+            using (_mockViewModel().WhenNavigatedToObservable().Subscribe(x => Console.WriteLine("Observed")))
+            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+            {
+            }
         }
 
         [Benchmark]
         public void WhenNavigatingFromObservable()
         {
-            _router.Navigate.Execute(_mockViewModel()).Subscribe();
-            _mockViewModel().WhenNavigatingFromObservable().Subscribe();
-            _router.NavigateBack.Execute().Subscribe();
+           using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+           using (_mockViewModel().WhenNavigatingFromObservable().Subscribe())
+           using (_router.NavigateBack.Execute().Subscribe()) 
+           {
+           }
         }
     }
 }
