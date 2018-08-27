@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -23,31 +23,34 @@ namespace ReactiveUI
             RxApp.EnsureInitialized();
         }
 
-        [DataMember] ReactiveList<IRoutableViewModel> _NavigationStack;
+        [DataMember] private ReactiveList<IRoutableViewModel> _NavigationStack;
 
         /// <summary>
         /// Represents the current navigation stack, the last element in the
         /// collection being the currently visible ViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveList<IRoutableViewModel> NavigationStack {
+        public ReactiveList<IRoutableViewModel> NavigationStack
+        {
             get { return _NavigationStack; }
             protected set { _NavigationStack = value; }
         }
 
         [IgnoreDataMember]
-        IScheduler scheduler;
+        private IScheduler scheduler;
 
         /// <summary>
         /// The scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </summary>
         [IgnoreDataMember]
-        public IScheduler Scheduler {
-            get { return this.scheduler; }
-            set {
-                if (this.scheduler != value) {
-                    this.scheduler = value;
-                    this.setupRx();
+        public IScheduler Scheduler
+        {
+            get { return scheduler; }
+            set
+            {
+                if (scheduler != value) {
+                    scheduler = value;
+                    setupRx();
                 }
             }
         }
@@ -78,15 +81,21 @@ namespace ReactiveUI
         public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
         public RoutingState()
+            : this(RxApp.MainThreadScheduler)
+        {
+        }
+
+        public RoutingState(IScheduler scheduler)
         {
             _NavigationStack = new ReactiveList<IRoutableViewModel>();
+            this.scheduler = scheduler;
             setupRx();
         }
 
         [OnDeserialized]
-        void setupRx(StreamingContext sc) { setupRx();  }
+        private void setupRx(StreamingContext sc) { setupRx(); }
 
-        void setupRx()
+        private void setupRx()
         {
             var scheduler = this.scheduler ?? RxApp.MainThreadScheduler;
 
@@ -94,7 +103,7 @@ namespace ReactiveUI
                 Observable.Defer(() => Observable.Return(_NavigationStack.Count)),
                 NavigationStack.CountChanged);
 
-            NavigateBack = 
+            NavigateBack =
                 ReactiveCommand.CreateFromObservable(() => {
                     NavigationStack.RemoveAt(NavigationStack.Count - 1);
                     return Observables.Unit;
@@ -118,7 +127,7 @@ namespace ReactiveUI
                 return Navigate.Execute(x);
             },
             outputScheduler: scheduler);
-            
+
             CurrentViewModel = Observable.Concat(
                 Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
                 NavigationStack.Changed.Select(_ => NavigationStack.LastOrDefault()));
