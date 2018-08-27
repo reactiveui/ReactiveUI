@@ -10,7 +10,6 @@ namespace ReactiveUI.Benchmarks
 {
     [ClrJob]
     [CoreJob]
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class INPCObservableForPropertyBenchmarks

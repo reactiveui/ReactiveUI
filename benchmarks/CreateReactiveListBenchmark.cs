@@ -16,7 +16,6 @@ namespace ReactiveUI.Benchmarks.Legacy
 {
     [ClrJob]
     [CoreJob]
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class CreateReactiveListBenchmark

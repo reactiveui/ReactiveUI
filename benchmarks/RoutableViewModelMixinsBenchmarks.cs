@@ -9,7 +9,6 @@ namespace ReactiveUI.Benchmarks
 {
     [ClrJob]
     [CoreJob]
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class RoutableViewModelMixinsBenchmarks
@@ -47,16 +46,19 @@ namespace ReactiveUI.Benchmarks
                     Console.WriteLine("Observed");
                 });
 
-            _router.Navigate
-                .Execute(_mockViewModel()).Subscribe();
+            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+            {
+            }
         }
 
         [Benchmark]
         public void WhenNavigatingFromObservable()
         {
-            _router.Navigate.Execute(_mockViewModel()).Subscribe();
-            _mockViewModel().WhenNavigatingFromObservable().Subscribe();
-            _router.NavigateBack.Execute().Subscribe();
+            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+            using (_mockViewModel().WhenNavigatingFromObservable().Subscribe())
+            using (_router.NavigateBack.Execute().Subscribe()) 
+            {
+            }
         }
     }
 }

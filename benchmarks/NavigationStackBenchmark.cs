@@ -8,7 +8,6 @@ namespace ReactiveUI.Benchmarks
 {
     [ClrJob]
     [CoreJob]
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class NavigationStackBenchmark
@@ -37,7 +36,8 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void Navigate()
         {
-            using (_router.Navigate.Execute(_mockViewModel()).Subscribe()) {
+            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+            {
                 _router.NavigationStack.ToList();
             }
         }
@@ -45,7 +45,8 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void NavigateAndReset()
         {
-            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe()) {
+            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
+            {
                 _router.NavigationStack.ToList();
             }
         }
@@ -55,15 +56,16 @@ namespace ReactiveUI.Benchmarks
         {
             using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
             using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
-            using (_router.NavigateBack.Execute().Subscribe()) {
-
+            using (_router.NavigateBack.Execute().Subscribe())
+            {
             }
         }
 
         [Benchmark]
         public void NavigationStack()
         {
-            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe()) {
+            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
+            {
                 _router.NavigationStack.ToList();
             }
         }
