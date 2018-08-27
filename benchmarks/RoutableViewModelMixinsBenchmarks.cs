@@ -2,13 +2,14 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Exporters;
-using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Order;
 using ReactiveUI;
 
 namespace ReactiveUI.Benchmarks
 {
+    [ClrJob]
     [CoreJob]
+    [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class RoutableViewModelMixinsBenchmarks
     {
@@ -18,7 +19,7 @@ namespace ReactiveUI.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            _router = new RoutingState();
+            _router = new RoutingState(ImmediateScheduler.Instance);
             _mockViewModel = () => new MockViewModel();
         }
 
@@ -27,6 +28,12 @@ namespace ReactiveUI.Benchmarks
         {
             _router = null;
             _mockViewModel = null;
+        }
+
+        [IterationSetup]
+        public void IterationSetup()
+        {
+            _router.NavigationStack.Clear();
         }
 
         [Benchmark]

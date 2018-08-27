@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Benchmarks", "ReactiveUI.Benchmarks\ReactiveUI.Benchmarks.csproj", "{EC6DD0F1-4D99-4BE8-B3F1-1DD71D86C24A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Benchmarks", "ReactiveUI.Benchmarks.csproj", "{EC6DD0F1-4D99-4BE8-B3F1-1DD71D86C24A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{0DB2C65F-BE8F-4021-8860-D2D6EB9DD80A}"
 EndProject
