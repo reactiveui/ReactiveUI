@@ -7,7 +7,7 @@ namespace ReactiveUI.Benchmarks
 {
     [Config(typeof(Config))]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    [MemoryDiagnoser]
+    //[MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class NavigationStackBenchmark
     {
@@ -17,32 +17,43 @@ namespace ReactiveUI.Benchmarks
         [GlobalCleanup]
         public void Cleanup()
         {
+            _router.NavigationStack.Clear();
             _router = null;
             _mockViewModel = null;
         }
 
         [Benchmark]
-        public object Navigate() => _router.Navigate.Execute(_mockViewModel()).Subscribe();
-
-        [Benchmark]
-        public object NavigateAndReset() => _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
-
-        [Benchmark]
-        public object NavigateBack()
+        public void Navigate()
         {
-            _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
-            return _router.NavigateBack.Execute().Subscribe();
+            var disposable = _router.Navigate.Execute(_mockViewModel()).Subscribe();
+            disposable.Dispose();
         }
 
         [Benchmark]
-        public object NavigationStack()
+        public void NavigateAndReset()
         {
-            _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
-            return _router.NavigationStack.ToList();
+            var disposable = _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
+            disposable?.Dispose();
         }
 
         [Benchmark]
-        public object RoutingState() => new RoutingState();
+        public void NavigateBack()
+        {
+            var disposable = _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
+            _router.NavigateBack.Execute().Subscribe();
+            disposable?.Dispose();
+        }
+
+        [Benchmark]
+        public void NavigationStack()
+        {
+            var disposable = _router.NavigateAndReset.Execute(_mockViewModel()).Subscribe();
+            _router.NavigationStack.ToList();
+            disposable.Dispose();
+        }
+
+        [Benchmark]
+        public void RoutingState() => new RoutingState();
 
         [GlobalSetup]
         public void Setup()

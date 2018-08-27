@@ -43,6 +43,8 @@ namespace ReactiveUI.Benchmarks
             }
 
             _collection.Clear();
+
+            disposable.Dispose();
         }
     }
 }

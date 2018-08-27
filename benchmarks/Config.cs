@@ -11,17 +11,17 @@ namespace ReactiveUI.Benchmarks
         public Config()
         {
             Add(Job.MediumRun
-                .WithLaunchCount(1)
+                //.WithLaunchCount(1)
                 .With(runtime: Runtime.Clr)
                 .WithId("Clr"));
 
             Add(Job.MediumRun
                 .With(Runtime.Core)
-                .WithLaunchCount(1)
+                //.WithLaunchCount(1)
                 .WithId("Core"));
 
             Add(Job.MediumRun
-                .WithLaunchCount(1)
+                //.WithLaunchCount(1)
                 .With(InProcessToolchain.Instance)
                 .WithId("InProcess"));
         }

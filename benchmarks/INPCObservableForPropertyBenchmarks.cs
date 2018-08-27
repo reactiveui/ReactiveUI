@@ -33,7 +33,8 @@ namespace ReactiveUI.Benchmarks
             var testClass = new TestClassChanged();
 
             var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(c => changes.Add(c));
+            var dispose = instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(c => changes.Add(c));
+            dispose.Dispose();
         }
 
         private class TestClassChanged : INotifyPropertyChanged
