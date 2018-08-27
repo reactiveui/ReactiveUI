@@ -1,5 +1,8 @@
-﻿namespace ReactiveUI.Benchmarks
+﻿using System.Runtime.Serialization;
+
+namespace ReactiveUI.Benchmarks
 {
+    [DataContract]
     public class MockViewModel : ReactiveObject, IRoutableViewModel
     {
         public IScreen HostScreen { get; }
