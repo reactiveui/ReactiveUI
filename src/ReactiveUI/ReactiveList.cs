@@ -18,10 +18,11 @@ using System.Reactive.Subjects;
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace ReactiveUI
+namespace ReactiveUI.Legacy
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
 #if NET_461

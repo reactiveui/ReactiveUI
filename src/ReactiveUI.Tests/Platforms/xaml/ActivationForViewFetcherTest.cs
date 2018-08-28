@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using DynamicData;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using System;
@@ -33,16 +34,16 @@ namespace ReactiveUI.Tests
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
-            var activated = obs.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-            RoutedEventArgs loaded = new RoutedEventArgs();
+            var loaded = new RoutedEventArgs();
             loaded.RoutedEvent = FrameworkElement.LoadedEvent;
 
             uc.RaiseEvent(loaded);
 
             new[] { true }.AssertAreEqual(activated);
 
-            RoutedEventArgs unloaded = new RoutedEventArgs();
+            var unloaded = new RoutedEventArgs();
             unloaded.RoutedEvent = FrameworkElement.UnloadedEvent;
 
             uc.RaiseEvent(unloaded);
@@ -58,9 +59,9 @@ namespace ReactiveUI.Tests
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
-            var activated = obs.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-            RoutedEventArgs loaded = new RoutedEventArgs();
+            var loaded = new RoutedEventArgs();
             loaded.RoutedEvent = FrameworkElement.LoadedEvent;
 
             uc.RaiseEvent(loaded);
@@ -73,7 +74,7 @@ namespace ReactiveUI.Tests
             // IsHitTestVisible true
             new[] { true }.AssertAreEqual(activated);
 
-            RoutedEventArgs unloaded = new RoutedEventArgs();
+            var unloaded = new RoutedEventArgs();
             unloaded.RoutedEvent = FrameworkElement.UnloadedEvent;
 
             uc.RaiseEvent(unloaded);
@@ -88,9 +89,9 @@ namespace ReactiveUI.Tests
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
-            var activated = obs.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-            RoutedEventArgs loaded = new RoutedEventArgs();
+            var loaded = new RoutedEventArgs();
             loaded.RoutedEvent = FrameworkElement.LoadedEvent;
 
             uc.RaiseEvent(loaded);
@@ -109,9 +110,9 @@ namespace ReactiveUI.Tests
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
-            var activated = obs.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-            RoutedEventArgs loaded = new RoutedEventArgs();
+            var loaded = new RoutedEventArgs();
             loaded.RoutedEvent = FrameworkElement.LoadedEvent;
 
             uc.RaiseEvent(loaded);
@@ -128,7 +129,7 @@ namespace ReactiveUI.Tests
 
             new[] { true, false, true }.AssertAreEqual(activated);
 
-            RoutedEventArgs unloaded = new RoutedEventArgs();
+            var unloaded = new RoutedEventArgs();
             unloaded.RoutedEvent = FrameworkElement.UnloadedEvent;
 
             uc.RaiseEvent(unloaded);

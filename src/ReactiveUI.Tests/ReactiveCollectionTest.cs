@@ -2,37 +2,40 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Reactive.Testing;
-using ReactiveUI.Testing;
-using Splat;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using Microsoft.Reactive.Testing;
+using ReactiveUI.Legacy;
+using ReactiveUI.Testing;
+using Splat;
 using Xunit;
 
-namespace ReactiveUI.Tests
+#pragma warning disable CS0618 // Item has been marked as Obsolete
+
+namespace ReactiveUI.Tests.Legacy
 {
     public class FakeCollectionModel : ReactiveObject
     {
-        bool isHidden;
+        private bool isHidden;
         public bool IsHidden
         {
             get { return isHidden; }
             set { this.RaiseAndSetIfChanged(ref isHidden, value); }
         }
 
-        int someNumber;
+        private int someNumber;
         public int SomeNumber
         {
             get { return someNumber; }
@@ -44,7 +47,7 @@ namespace ReactiveUI.Tests
     {
         public FakeCollectionModel Model { get; protected set; }
 
-        ObservableAsPropertyHelper<string> numberAsString;
+        private ObservableAsPropertyHelper<string> numberAsString;
         public string NumberAsString
         {
             get { return numberAsString.Value; }
@@ -59,16 +62,16 @@ namespace ReactiveUI.Tests
         }
     }
 
-    class NestedTextModel : ReactiveObject
+    internal class NestedTextModel : ReactiveObject
     {
-        string text;
+        private string text;
         public string Text
         {
             get { return text; }
             set { this.RaiseAndSetIfChanged(ref text, value); }
         }
 
-        bool hasData;
+        private bool hasData;
         public bool HasData
         {
             get { return hasData; }
@@ -76,14 +79,17 @@ namespace ReactiveUI.Tests
         }
     }
 
-    class TextModel : ReactiveObject
+    internal class TextModel : ReactiveObject
     {
-        NestedTextModel value;
+        private NestedTextModel value;
         public NestedTextModel Value
         {
             get
             {
-                if (value != null) return value;
+                if (value != null) {
+                    return value;
+                }
+
                 var newValue =
                     value = new NestedTextModel()
                     {
@@ -159,7 +165,7 @@ namespace ReactiveUI.Tests
         public void CollectionCountChangedFiresWhenClearing()
         {
             var items = new ReactiveList<object>(new[] { new object() });
-            bool countChanged = false;
+            var countChanged = false;
             items.CountChanged.Subscribe(_ => { countChanged = true; });
 
             items.Clear();
@@ -255,8 +261,8 @@ namespace ReactiveUI.Tests
             .Select(x => x.EventArgs)
             .Subscribe(referenceNotifications.Add);
 
-            for (int i = 0; i < items.Length; i++) {
-                for (int j = 0; j < items.Length; j++) {
+            for (var i = 0; i < items.Length; i++) {
+                for (var j = 0; j < items.Length; j++) {
                     reference.Move(i, j);
                     fixture.Move(i, j);
 
@@ -284,12 +290,12 @@ namespace ReactiveUI.Tests
             var output = new[] { "Foo", "Bar", "Baz", "Bamf" };
             var fixture = new ReactiveList<string>(output);
 
-            string json = JSONHelper.Serialize(fixture);
+            var json = JSONHelper.Serialize(fixture);
             var results = JSONHelper.Deserialize<ReactiveList<string>>(json);
 
             output.AssertAreEqual(results);
 
-            bool should_die = true;
+            var should_die = true;
             results.ItemsAdded.Subscribe(_ => should_die = false);
             results.Add("Foobar");
             Assert.False(should_die);
@@ -305,11 +311,11 @@ namespace ReactiveUI.Tests
             var item2 = new TestFixture() { IsOnlyOneWord = "Bar" };
 
             fixture.ItemChanging.Subscribe(x => {
-                before_output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+                before_output.Add(new Tuple<TestFixture, string>(x.Sender, x.PropertyName));
             });
 
             fixture.ItemChanged.Subscribe(x => {
-                output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+                output.Add(new Tuple<TestFixture, string>(x.Sender, x.PropertyName));
             });
 
             fixture.Add(item1);
@@ -341,7 +347,7 @@ namespace ReactiveUI.Tests
             var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
 
             fixture.ItemChanged.Subscribe(x => {
-                output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+                output.Add(new Tuple<TestFixture, string>(x.Sender, x.PropertyName));
             });
 
             fixture.Add(item1);
@@ -441,11 +447,11 @@ namespace ReactiveUI.Tests
             var item2 = new TestFixture() { IsOnlyOneWord = "Bar" };
 
             fixture.ItemChanging.Subscribe(x => {
-                before_output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+                before_output.Add(new Tuple<TestFixture, string>(x.Sender, x.PropertyName));
             });
 
             fixture.ItemChanged.Subscribe(x => {
-                output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+                output.Add(new Tuple<TestFixture, string>(x.Sender, x.PropertyName));
             });
 
             fixture.Add(item1);
@@ -492,7 +498,7 @@ namespace ReactiveUI.Tests
             };
             var fixture = new ReactiveList<TestFixture> { testObj };
 
-            fixture.ActOnEveryObject(addedObj => {
+            fixture.ActOnEveryObject<TestFixture, ReactiveList<TestFixture>>(addedObj => {
                 addedObj.NullableInt = 1;
             }, removedObj => {
                 removedObj.NullableInt = 0;
@@ -510,7 +516,7 @@ namespace ReactiveUI.Tests
             };
             var fixture = new ReactiveList<TestFixture>();
 
-            fixture.ActOnEveryObject(addedObj => {
+            fixture.ActOnEveryObject<TestFixture, ReactiveList<TestFixture>>(addedObj => {
                 addedObj.NullableInt = 1;
             }, removedObj => {
                 removedObj.NullableInt = 0;
@@ -530,7 +536,7 @@ namespace ReactiveUI.Tests
             };
             var fixture = new ReactiveList<TestFixture> { testObj };
 
-            fixture.ActOnEveryObject(addedObj => {
+            fixture.ActOnEveryObject<TestFixture, ReactiveList<TestFixture>>(addedObj => {
                 addedObj.NullableInt = 1;
             }, removedObj => {
                 removedObj.NullableInt = 0;
@@ -550,7 +556,7 @@ namespace ReactiveUI.Tests
             };
             var fixture = new ReactiveList<TestFixture> { testObj };
 
-            fixture.ActOnEveryObject(addedObj => {
+            fixture.ActOnEveryObject<TestFixture, ReactiveList<TestFixture>>(addedObj => {
                 addedObj.NullableInt = 1;
             }, removedObj => {
                 removedObj.NullableInt = 0;
@@ -570,7 +576,7 @@ namespace ReactiveUI.Tests
             };
             var fixture = new ReactiveList<TestFixture>();
 
-            fixture.ActOnEveryObject(addedObj => {
+            fixture.ActOnEveryObject<TestFixture, ReactiveList<TestFixture>>(addedObj => {
                 addedObj.NullableInt = 1;
             }, removedObj => {
                 removedObj.NullableInt = 0;
@@ -591,7 +597,7 @@ namespace ReactiveUI.Tests
             };
             var fixture = new ReactiveList<TestFixture> { testObj };
 
-            fixture.ActOnEveryObject(addedObj => {
+            fixture.ActOnEveryObject<TestFixture, ReactiveList<TestFixture>>(addedObj => {
                 addedObj.NullableInt = 1;
             }, removedObj => {
                 removedObj.NullableInt = 0;
@@ -612,7 +618,7 @@ namespace ReactiveUI.Tests
             };
             var fixture = new ReactiveList<TestFixture> { testObj };
 
-            fixture.ActOnEveryObject(addedObj => {
+            fixture.ActOnEveryObject<TestFixture, ReactiveList<TestFixture>>(addedObj => {
                 addedObj.NullableInt = 1;
             }, removedObj => {
                 removedObj.NullableInt = 0;
@@ -665,11 +671,11 @@ namespace ReactiveUI.Tests
             var output2 = new List<Tuple<TestFixture, string>>();
 
             fixture1.ItemChanged.Subscribe(x => {
-                output1.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+                output1.Add(new Tuple<TestFixture, string>(x.Sender, x.PropertyName));
             });
 
             fixture2.ItemChanged.Subscribe(x => {
-                output2.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+                output2.Add(new Tuple<TestFixture, string>(x.Sender, x.PropertyName));
             });
 
             fixture1.Add(item1);
@@ -793,7 +799,7 @@ namespace ReactiveUI.Tests
             var input = new[] { "Foo", "Bar", "Baz" };
             var fixture = new ReactiveList<string>(input);
 
-            var output = fixture.CreateDerivedCollection(x => x, orderer: String.CompareOrdinal);
+            var output = fixture.CreateDerivedCollection(x => x, orderer: string.CompareOrdinal);
 
             Assert.Equal(3, output.Count);
             Assert.True(new[] { "Bar", "Baz", "Foo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
@@ -851,8 +857,8 @@ namespace ReactiveUI.Tests
             var nestedDerived = derived.CreateDerivedCollection(x => x);
             var derivedSorted = source.CreateDerivedCollection(x => x, orderer: (x, y) => x.CompareTo(y));
 
-            for (int i = 0; i < initial.Length; i++) {
-                for (int j = 0; j < initial.Length; j++) {
+            for (var i = 0; i < initial.Length; i++) {
+                for (var j = 0; j < initial.Length; j++) {
                     source.Move(i, j);
 
                     Assert.True(derived.SequenceEqual(source));
@@ -976,15 +982,15 @@ namespace ReactiveUI.Tests
 
             var rnd = new Random();
 
-            for (int i = 0; i < 50; i++) {
-                int from = rnd.Next(0, source.Count);
+            for (var i = 0; i < 50; i++) {
+                var from = rnd.Next(0, source.Count);
                 int to;
 
                 do { to = rnd.Next(0, source.Count); } while (to == from);
 
                 source.Move(from, to);
 
-                string tmp = sanity[from];
+                var tmp = sanity[from];
                 sanity.RemoveAt(from);
                 sanity.Insert(to, tmp);
 
@@ -1137,9 +1143,9 @@ namespace ReactiveUI.Tests
             // eliminate the ResetChangeThreshold from the equation
             vm.SomeCollectionOfStrings.ResetChangeThreshold = int.MinValue;
 
-			// Within the reset threshold
-			vm.SomeCollectionOfStrings.AddRange(Create(5));
-			vm.SomeCollectionOfStrings.AddRange(Create(20));
+            // Within the reset threshold
+            vm.SomeCollectionOfStrings.AddRange(Create(5));
+            vm.SomeCollectionOfStrings.AddRange(Create(20));
 
             IEnumerable<string> Create(int numElements)
                 => Enumerable.Range(1, numElements).Select(i => $"item_{i}");
@@ -1154,16 +1160,15 @@ namespace ReactiveUI.Tests
             fixture.OneWayBind(vm, view, m => m.SomeCollectionOfStrings, v => v.FakeItemsControl.ItemsSource);
             vm.SomeCollectionOfStrings.ResetChangeThreshold = int.MinValue;
 
-            foreach (var item in Create(5))
-            {
+            foreach (var item in Create(5)) {
                 vm.SomeCollectionOfStrings.Add(item);
             }
 
-			// within reset threshold
-			vm.SomeCollectionOfStrings.InsertRange(2, Create(5));
-			// outside reset threshold
-			vm.SomeCollectionOfStrings.InsertRange(2, Create(20));
-            
+            // within reset threshold
+            vm.SomeCollectionOfStrings.InsertRange(2, Create(5));
+            // outside reset threshold
+            vm.SomeCollectionOfStrings.InsertRange(2, Create(20));
+
             IEnumerable<string> Create(int numElements)
                 => Enumerable.Range(1, numElements).Select(i => $"item_{i}");
         }
@@ -1177,25 +1182,24 @@ namespace ReactiveUI.Tests
             fixture.OneWayBind(vm, view, m => m.SomeCollectionOfStrings, v => v.FakeItemsControl.ItemsSource);
             vm.SomeCollectionOfStrings.ResetChangeThreshold = int.MinValue;
 
-            foreach (var item in Enumerable.Range(1, 40).Select(i => $"item_{i}"))
-            {
+            foreach (var item in Enumerable.Range(1, 40).Select(i => $"item_{i}")) {
                 vm.SomeCollectionOfStrings.Add(item);
             }
 
-			// within reset threshold
-			vm.SomeCollectionOfStrings.RemoveRange(2, 5);
-			// outside reset threshold
-			vm.SomeCollectionOfStrings.RemoveRange(2, 20);
+            // within reset threshold
+            vm.SomeCollectionOfStrings.RemoveRange(2, 5);
+            // outside reset threshold
+            vm.SomeCollectionOfStrings.RemoveRange(2, 20);
         }
 
         public class DerivedCollectionLogging
         {
             // We need a sentinel class to make sure no test has triggered the warnings before
-            class NoOneHasEverSeenThisClassBefore
+            private class NoOneHasEverSeenThisClassBefore
             {
             }
 
-            class NoOneHasEverSeenThisClassBeforeEither
+            private class NoOneHasEverSeenThisClassBeforeEither
             {
             }
 
@@ -1276,8 +1280,8 @@ namespace ReactiveUI.Tests
 
                 public ReactiveVisibilityItem(T item1, bool isVisible)
                 {
-                    this._Value = item1;
-                    this._IsVisible = isVisible;
+                    _Value = item1;
+                    _IsVisible = isVisible;
                 }
 
             }
@@ -1285,21 +1289,21 @@ namespace ReactiveUI.Tests
             [DebuggerDisplay("{Name} is {Age} years old and makes ${Salary}")]
             private class ReactiveEmployee : ReactiveObject
             {
-                string _Name;
+                private string _Name;
                 public string Name
                 {
                     get { return _Name; }
                     set { this.RaiseAndSetIfChanged(ref _Name, value); }
                 }
 
-                int _Age;
+                private int _Age;
                 public int Age
                 {
                     get { return _Age; }
                     set { this.RaiseAndSetIfChanged(ref _Age, value); }
                 }
 
-                int _Salary;
+                private int _Salary;
                 public int Salary
                 {
                     get { return _Salary; }
@@ -1343,15 +1347,17 @@ namespace ReactiveUI.Tests
                 {
                     var filtered = Source;
 
-                    if (Filter != null)
+                    if (Filter != null) {
                         filtered = filtered.Where(Filter);
+                    }
 
                     var projected = filtered.Select(Selector);
 
                     var ordered = projected;
 
-                    if (Orderer != null)
+                    if (Orderer != null) {
                         ordered = ordered.OrderBy(x => x, Orderer);
+                    }
 
                     var shouldBe = ordered;
                     var isEqual = Derived.SequenceEqual(shouldBe);
@@ -1876,8 +1882,10 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionFilterTest()
         {
             var models = new ReactiveList<FakeCollectionModel>(
-                new[] { 0, 1, 2, 3, 4, }.Select(x => new FakeCollectionModel() { SomeNumber = x }));
-            models.ChangeTrackingEnabled = true;
+                new[] { 0, 1, 2, 3, 4, }.Select(x => new FakeCollectionModel() { SomeNumber = x }))
+            {
+                ChangeTrackingEnabled = true
+            };
 
             var viewModels = models.CreateDerivedCollection(x => new FakeCollectionViewModel(x), x => !x.IsHidden);
             Assert.Equal(5, viewModels.Count);
@@ -1892,8 +1900,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, viewModels.Count);
         }
 
-
-        ReactiveList<TextModel> makeAsyncCollection(int maxSize)
+        private ReactiveList<TextModel> makeAsyncCollection(int maxSize)
         {
             return new ReactiveList<TextModel>(Enumerable.Repeat(Unit.Default, maxSize)
                 .Select(_ => new TextModel()));
@@ -1953,9 +1960,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("bar", fixture[0]);
             Assert.Equal("foo", fixture[1]);
 
-            var genericEnum = ((IEnumerable<string>)fixture).GetEnumerator();
+            var genericEnum = fixture.GetEnumerator();
             Assert.NotNull(genericEnum);
-            bool result = genericEnum.MoveNext();
+            var result = genericEnum.MoveNext();
             Assert.True(result);
             Assert.Equal("bar", genericEnum.Current);
             result = genericEnum.MoveNext();
@@ -2030,27 +2037,95 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, fixture.Count);
             Assert.False(fixture.Contains("bar"));
         }
-    }
 
-    public class JSONHelper
-    {
-        public static string Serialize<T>(T obj)
+        public class PropertyBindViewModel : ReactiveObject
         {
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
-            var ms = new MemoryStream();
-            serializer.WriteObject(ms, obj);
-            string retVal = Encoding.Default.GetString(ms.ToArray());
-            return retVal;
+            public string _Property1;
+            public string Property1
+            {
+                get { return _Property1; }
+                set { this.RaiseAndSetIfChanged(ref _Property1, value); }
+            }
+
+            public int _Property2;
+            public int Property2
+            {
+                get { return _Property2; }
+                set { this.RaiseAndSetIfChanged(ref _Property2, value); }
+            }
+
+            public double _JustADouble;
+            public double JustADouble
+            {
+                get { return _JustADouble; }
+                set { this.RaiseAndSetIfChanged(ref _JustADouble, value); }
+            }
+
+            public decimal _JustADecimal;
+            public decimal JustADecimal
+            {
+                get { return _JustADecimal; }
+                set { this.RaiseAndSetIfChanged(ref _JustADecimal, value); }
+            }
+
+            public int _JustAInt32;
+            public int JustAInt32
+            {
+                get { return _JustAInt32; }
+                set { this.RaiseAndSetIfChanged(ref _JustAInt32, value); }
+            }
+
+            public double? _NullableDouble;
+            public double? NullableDouble
+            {
+                get { return _NullableDouble; }
+                set { this.RaiseAndSetIfChanged(ref _NullableDouble, value); }
+            }
+
+            public ReactiveList<string> SomeCollectionOfStrings { get; protected set; }
+
+            public PropertyBindModel _Model;
+            public PropertyBindModel Model
+            {
+                get { return _Model; }
+                set { this.RaiseAndSetIfChanged(ref _Model, value); }
+            }
+
+            public PropertyBindViewModel(PropertyBindModel model = null)
+            {
+                Model = model ?? new PropertyBindModel() { AThing = 42, AnotherThing = "Baz" };
+                SomeCollectionOfStrings = new ReactiveList<string>(new[] { "Foo", "Bar" });
+            }
         }
 
-        public static T Deserialize<T>(string json)
+        public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
         {
-            var obj = Activator.CreateInstance<T>();
-            var ms = new MemoryStream(Encoding.Unicode.GetBytes(json));
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
-            obj = (T)serializer.ReadObject(ms);
-            ms.Close();
-            return obj;
+            public PropertyBindViewModel ViewModel
+            {
+                get { return (PropertyBindViewModel)GetValue(ViewModelProperty); }
+                set { SetValue(ViewModelProperty, value); }
+            }
+            public static readonly DependencyProperty ViewModelProperty =
+                DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
+
+            object IViewFor.ViewModel
+            {
+                get { return ViewModel; }
+                set { ViewModel = (PropertyBindViewModel)value; }
+            }
+
+            public TextBox SomeTextBox;
+            public TextBox Property2;
+            public PropertyBindFakeControl FakeControl;
+            public ListBox FakeItemsControl;
+
+            public PropertyBindView()
+            {
+                SomeTextBox = new TextBox();
+                Property2 = new TextBox();
+                FakeControl = new PropertyBindFakeControl();
+                FakeItemsControl = new ListBox();
+            }
         }
     }
 }

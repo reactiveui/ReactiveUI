@@ -19,6 +19,7 @@ namespace ReactiveUI
     /// HandlerScheduler is a scheduler that schedules items on a running 
     /// Activity's main thread. This is the moral equivalent of 
     /// DispatcherScheduler.
+    /// </summary>
     public class HandlerScheduler : IScheduler, IEnableLogger
     {
         public static IScheduler MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper), Looper.MainLooper.Thread.Id);

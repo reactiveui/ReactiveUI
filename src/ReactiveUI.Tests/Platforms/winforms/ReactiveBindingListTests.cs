@@ -6,10 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ReactiveUI.Winforms;
+using ReactiveUI.Legacy;
+using ReactiveUI.Winforms.Legacy;
 using Xunit;
 
-namespace ReactiveUI.Tests.Winforms
+#pragma warning disable CS0618 // Item has been marked as Obsolete
+
+
+namespace ReactiveUI.Tests.Winforms.Legacy
 {
     public class ReactiveBindingListTests
     {
@@ -181,7 +185,7 @@ namespace ReactiveUI.Tests.Winforms
         public void DerivedCollectionsShouldRaiseListChangedEvents()
         {
             var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
-            var fixture = new ReactiveList<TestFixture>(
+            var fixture = new ReactiveBindingList<TestFixture>(
                 input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
             
             IBindingList output = fixture.CreateDerivedBindingList(new Func<TestFixture, string>(x => x.IsOnlyOneWord));

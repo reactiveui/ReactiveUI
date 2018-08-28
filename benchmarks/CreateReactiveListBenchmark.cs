@@ -7,6 +7,7 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Toolchains.CsProj;
 using DynamicData;
+using ReactiveUI.Legacy;
 
 #pragma warning disable CS0618 // Item is obsolete warning
 

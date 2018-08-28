@@ -11,7 +11,9 @@
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="System.Reactive.Compatibility" Version="4.0.0" />
     <PackageReference Include="Splat" Version="4.0.2" />
+    <PackageReference Include="DynamicData" Version="6.4.0.2419" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">

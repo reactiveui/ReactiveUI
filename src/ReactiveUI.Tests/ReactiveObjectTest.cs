@@ -8,6 +8,9 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
+using DynamicData;
+using DynamicData.Binding;
+using ReactiveUI.Tests.Legacy;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -61,7 +64,7 @@ namespace ReactiveUI.Tests
         }
 
         [DataMember]
-        public ReactiveList<int> TestCollection { get; protected set; }
+        public ObservableCollectionExtended<int> TestCollection { get; protected set; }
 
         string _NotSerialized;
         public string NotSerialized
@@ -82,7 +85,7 @@ namespace ReactiveUI.Tests
 
         public TestFixture()
         {
-            TestCollection = new ReactiveList<int>() { ChangeTrackingEnabled = true };
+            TestCollection = new ObservableCollectionExtended<int>();
         }
     }
 
@@ -214,12 +217,12 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ChangingShouldAlwaysArriveBeforeChanged()
         {
-            string before_set = "Foo";
-            string after_set = "Bar";
+            var before_set = "Foo";
+            var after_set = "Bar";
 
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
 
-            bool before_fired = false;
+            var before_fired = false;
             fixture.Changing.Subscribe(x => {
                 // XXX: The content of these asserts don't actually get 
                 // propagated back, it only prevents before_fired from
@@ -230,7 +233,7 @@ namespace ReactiveUI.Tests
                 before_fired = true;
             });
 
-            bool after_fired = false;
+            var after_fired = false;
             fixture.Changed.Subscribe(x => {
                 Assert.Equal("IsOnlyOneWord", x.PropertyName);
                 Assert.Equal(fixture.IsOnlyOneWord, after_set);
@@ -249,7 +252,7 @@ namespace ReactiveUI.Tests
             var fixture = new TestFixture() { IsOnlyOneWord = "Foo" };
 
             fixture.Changed.Subscribe(x => { throw new Exception("Die!"); });
-            var exceptionList = fixture.ThrownExceptions.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList).Subscribe();
 
             fixture.IsOnlyOneWord = "Bar";
             Assert.Equal(1, exceptionList.Count);
@@ -259,7 +262,7 @@ namespace ReactiveUI.Tests
         public void DeferringNotificationsDontShowUpUntilUndeferred()
         {
             var fixture = new TestFixture();
-            var output = fixture.Changed.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
             Assert.Equal(0, output.Count);
             fixture.NullableInt = 4;
