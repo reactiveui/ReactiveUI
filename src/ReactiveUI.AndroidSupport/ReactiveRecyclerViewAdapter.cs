@@ -108,7 +108,15 @@ namespace ReactiveUI.Android.Support
         {
             setupRxObj();
 
-            this.Selected = Observable.FromEventPattern(h => view.Click += h, h => view.Click -= h).Select(_ => this.AdapterPosition);
+            this.Selected = Observable.FromEventPattern(
+                h => view.Click += h,
+                h => view.Click -= h)
+                    .Select(_ => this.AdapterPosition);
+
+            this.LongClicked = Observable.FromEventPattern<View.LongClickEventArgs>(
+                h => view.LongClick += h,
+                h => view.LongClick -= h)
+                    .Select(_ => this.AdapterPosition);
         }
 
         /// <summary>
@@ -118,6 +126,14 @@ namespace ReactiveUI.Android.Support
         /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
         /// </summary>
         public IObservable<int> Selected { get; }
+
+        /// <summary>
+        /// Signals that this ViewHolder has been long-clicked. 
+        /// 
+        /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/> 
+        /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
+        /// </summary>
+        public IObservable<int> LongClicked { get; }
 
         public View View => this.ItemView;
 
