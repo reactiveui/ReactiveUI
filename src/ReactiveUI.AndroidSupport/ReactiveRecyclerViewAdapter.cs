@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -21,14 +22,15 @@ namespace ReactiveUI.Android.Support
 {
     /// <summary>
     /// An adapter for the Android <see cref="RecyclerView"/>.
-    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method 
-    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder
+    /// Override the <see cref="ReactiveRecyclerViewAdapter{TViewModel}.OnCreateReactiveViewHolder(ViewGroup, int)"/> 
+    /// method to create your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder
     /// </summary>
     /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
     public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
         where TViewModel : class, IReactiveObject
     {
         private readonly ISourceList<TViewModel> list;
+        private readonly Subject<ReactiveRecyclerViewViewHolder<TViewModel>> viewHolderCreated;
 
         private IDisposable inner;
 
@@ -36,10 +38,30 @@ namespace ReactiveUI.Android.Support
         {
             this.list = new SourceList<TViewModel>(backingList);
 
+            this.viewHolderCreated = new Subject<ReactiveRecyclerViewViewHolder<TViewModel>>();
+
+            this.ItemClicked = viewHolderCreated
+                .SelectMany(x => x.Selected);
+
+            this.ItemLongClicked = viewHolderCreated
+                .SelectMany(x => x.LongClicked);
+
             this.inner = this.list
                             .Connect()
                             .ForEachChange(UpdateBindings)
                             .Subscribe();
+        }
+
+        public abstract ReactiveRecyclerViewViewHolder<TViewModel> OnCreateReactiveViewHolder(ViewGroup parent, int viewType);
+
+        // Seal this method because otherwise, the client may forget to call base.OnCreateViewHolder,
+        // in which case the click observables will never fire.
+        public sealed override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
+        {
+            var viewHolder = OnCreateReactiveViewHolder(parent, viewType);
+            this.viewHolderCreated.OnNext(viewHolder);
+
+            return viewHolder;
         }
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
@@ -48,6 +70,10 @@ namespace ReactiveUI.Android.Support
         }
 
         public override int ItemCount => this.list.Count;
+
+        public IObservable<int> ItemClicked { get; }
+
+        public IObservable<int> ItemLongClicked { get; }
 
         protected override void Dispose(bool disposing)
         {
