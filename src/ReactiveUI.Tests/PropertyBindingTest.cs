@@ -1,10 +1,11 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
 using System.Linq;
 using System.Reactive;
+using DynamicData.Binding;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -53,7 +54,7 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(ref _NullableDouble, value); }
         }
 
-        public ReactiveList<string> SomeCollectionOfStrings { get; protected set; }
+        public ObservableCollectionExtended<string> SomeCollectionOfStrings { get; protected set; }
 
         public PropertyBindModel _Model;
         public PropertyBindModel Model {
@@ -64,7 +65,7 @@ namespace ReactiveUI.Tests
         public PropertyBindViewModel(PropertyBindModel model = null)
         {
             Model = model ?? new PropertyBindModel() {AThing = 42, AnotherThing = "Baz"};
-            SomeCollectionOfStrings = new ReactiveList<string>(new[] { "Foo", "Bar" });
+            SomeCollectionOfStrings = new ObservableCollectionExtended<string>(new[] { "Foo", "Bar" });
         }
     }
 
@@ -328,7 +329,7 @@ namespace ReactiveUI.Tests
         {
         	var vm = new PropertyBindViewModel();
         	var view = new PropertyBindView() { ViewModel = vm };
-        	view.FakeItemsControl.ItemsSource = new ReactiveList<string>(new[] { "aaa", "bbb", "ccc" });
+        	view.FakeItemsControl.ItemsSource = new ObservableCollectionExtended<string>(new[] { "aaa", "bbb", "ccc" });
         
         	view.Bind(view.ViewModel, x => x.Property1, x => x.FakeItemsControl.SelectedItem);
         

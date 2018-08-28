@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Controls;
+using DynamicData;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -90,7 +91,7 @@ namespace ReactiveUI.Tests
             var inputs = new[] { "Foo", "Bar", "Baz" };
             var fixture = new DepObjFixture();
 
-            var outputs = fixture.WhenAnyValue(x => x.TestString).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.WhenAnyValue(x => x.TestString).ToObservableChangeSet().Bind(out var outputs).Subscribe();
             inputs.ForEach(x => fixture.TestString = x);
 
             Assert.Null(outputs.First());
@@ -106,7 +107,7 @@ namespace ReactiveUI.Tests
             input.Items.Add("Bar");
             input.Items.Add("Baz");
 
-            var output = input.WhenAnyValue(x => x.SelectedItem).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            input.WhenAnyValue(x => x.SelectedItem).ToObservableChangeSet().Bind(out var output).Subscribe();
             Assert.Equal(1, output.Count);
 
             input.SelectedIndex = 1;

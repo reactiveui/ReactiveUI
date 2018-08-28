@@ -50,7 +50,7 @@ public interface ISearchViewModel
 {
     string SearchQuery { get; set; }	 
     ReactiveCommand<string, List<SearchResult>> Search { get; }
-    ReactiveList<SearchResult> SearchResults { get; }
+    ObservableCollection<SearchResult> SearchResults { get; }
 }
 ```
 

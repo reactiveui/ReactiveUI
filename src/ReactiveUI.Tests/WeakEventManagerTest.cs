@@ -5,6 +5,7 @@
 using System;
 using System.Reactive;
 using System.Windows.Controls;
+using DynamicData.Binding;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -14,11 +15,11 @@ namespace ReactiveUI.Tests
         [Fact(Skip = "you can blame @shiftkey")]
         public void ButtonDoesNotLeakTest()
         {
-            Button button = new Button();
+            var button = new Button();
             ReactiveCommand command = ReactiveCommand.Create(() => { });
             button.Command = command;
 
-            WeakReference buttonRef = new WeakReference(button);
+            var buttonRef = new WeakReference(button);
             GC.Collect();
 
             Assert.True(buttonRef.IsAlive);
@@ -33,11 +34,11 @@ namespace ReactiveUI.Tests
         [Fact(Skip="you can blame @shiftkey")]
         public void ListBoxDoesNotLeakTest()
         {
-            ListBox listBox = new ListBox();
-            ReactiveList<object> list = new ReactiveList<object>();
+            var listBox = new ListBox();
+            var list = new ObservableCollectionExtended<object>();
             listBox.ItemsSource = list;
 
-            WeakReference listBoxRef = new WeakReference(listBox);
+            var listBoxRef = new WeakReference(listBox);
             GC.Collect();
 
             Assert.True(listBoxRef.IsAlive);
@@ -52,11 +53,11 @@ namespace ReactiveUI.Tests
         [Fact(Skip = "you can blame @shiftkey")]
         public void DataContextDoesNotLeakTest()
         {
-            ListBox listBox = new ListBox();
-            TestFixture vm = new TestFixture();
+            var listBox = new ListBox();
+            var vm = new TestFixture();
             listBox.DataContext = vm;
 
-            WeakReference listBoxRef = new WeakReference(listBox);
+            var listBoxRef = new WeakReference(listBox);
             GC.Collect();
 
             Assert.True(listBoxRef.IsAlive);

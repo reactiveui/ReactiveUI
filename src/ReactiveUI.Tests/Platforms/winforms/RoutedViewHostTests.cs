@@ -22,8 +22,8 @@ namespace ReactiveUI.Tests.Winforms
             var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
             router.Navigate.Execute(new FakeWinformViewModel());
 
-            FakeWinformsView currentView = target.Controls.OfType<FakeWinformsView>().Single();
-            bool isDisposed = false;
+            var currentView = target.Controls.OfType<FakeWinformsView>().Single();
+            var isDisposed = false;
             currentView.Disposed += (o, e) => isDisposed = true;
 
             // switch the viewmodel

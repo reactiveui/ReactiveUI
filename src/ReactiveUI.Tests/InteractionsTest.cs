@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using DynamicData;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
@@ -171,9 +172,9 @@ namespace ReactiveUI.Tests
 
             using (handler1A)
             using (handler1B) {
-                var result = interaction
+                interaction
                     .Handle(Unit.Default)
-                    .CreateCollection(ImmediateScheduler.Instance);
+                    .ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var result).Subscribe();
 
                 Assert.Equal(0, result.Count);
                 scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5).Ticks);

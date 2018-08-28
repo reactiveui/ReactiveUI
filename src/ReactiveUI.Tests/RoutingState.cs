@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -11,6 +11,7 @@ namespace ReactiveUI.Routing.Tests
 {
     using System.Reactive.Concurrency;
     using System.Threading.Tasks;
+    using DynamicData;
     using Microsoft.Reactive.Testing;
     public class TestViewModel : ReactiveObject, IRoutableViewModel
     {
@@ -70,7 +71,7 @@ namespace ReactiveUI.Routing.Tests
         public void CurrentViewModelObservableIsAccurate()
         {
             var fixture = new RoutingState();
-            var output = fixture.CurrentViewModel.CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.CurrentViewModel.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
             Assert.Equal(1, output.Count);
 
@@ -90,7 +91,7 @@ namespace ReactiveUI.Routing.Tests
         public void CurrentViewModelObservableIsAccurateViaWhenAnyObservable()
         {
             var fixture = new TestScreen();
-            var output = fixture.WhenAnyObservable(x => x.Router.CurrentViewModel).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            fixture.WhenAnyObservable(x => x.Router.CurrentViewModel).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             fixture.Router = new RoutingState();
 
             Assert.Equal(1, output.Count);
@@ -130,15 +131,16 @@ namespace ReactiveUI.Routing.Tests
             {
                 Scheduler = scheduler
             };
-            var navigate = fixture
+            
+            fixture
                 .Navigate
-                .CreateCollection(scheduler: ImmediateScheduler.Instance);
-            var navigateBack = fixture
+                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigate).Subscribe();
+            fixture
                 .NavigateBack
-                .CreateCollection(scheduler: ImmediateScheduler.Instance);
-            var navigateAndReset = fixture
+                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateBack).Subscribe();
+            fixture
                 .NavigateAndReset
-                .CreateCollection(scheduler: ImmediateScheduler.Instance);
+                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
 
             fixture.Navigate.Execute(new TestViewModel()).Subscribe();
             Assert.Empty(navigate);
