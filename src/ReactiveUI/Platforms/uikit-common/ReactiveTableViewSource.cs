@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace ReactiveUI
 {
     public class TableSectionInformation<TSource> : ISectionInformation<TSource, UITableView, UITableViewCell>
     {
-        public IReactiveNotifyCollectionChanged<TSource> Collection { get; protected set; }
+        public INotifyCollectionChanged Collection { get; protected set; }
         public Action<UITableViewCell> InitializeCellAction { get; protected set; }
         public Func<object, NSString> CellKeySelector { get; protected set; }
         public float SizeHint { get; protected set; }
@@ -40,7 +41,7 @@ namespace ReactiveUI
     public class TableSectionInformation<TSource, TCell> : TableSectionInformation<TSource>
         where TCell : UITableViewCell
     {
-        public TableSectionInformation(IReactiveNotifyCollectionChanged<TSource> collection, Func<object, NSString> cellKeySelector, float sizeHint, Action<TCell> initializeCellAction = null)
+        public TableSectionInformation(INotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, float sizeHint, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
             SizeHint = sizeHint;
@@ -49,7 +50,7 @@ namespace ReactiveUI
                 InitializeCellAction = cell => initializeCellAction((TCell)cell);
         }
 
-        public TableSectionInformation(IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
+        public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
             : this(collection, _ => cellKey, sizeHint, initializeCellAction)
         {
         }
@@ -194,7 +195,7 @@ namespace ReactiveUI
 
     /// <summary>
     /// ReactiveTableViewSource is a Table View Source that is connected to 
-    /// a ReactiveList that automatically updates the View based on the 
+    /// a List that automatically updates the View based on the 
     /// contents of the list. The collection changes are buffered and View 
     /// items are animated in and out as items are added.
     /// </summary>
@@ -204,7 +205,7 @@ namespace ReactiveUI
         readonly Subject<object> elementSelected = new Subject<object>();
         readonly UITableViewAdapter adapter;
 
-        public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
+        public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
             : this(tableView)
         {
             this.Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction) };
@@ -507,7 +508,7 @@ namespace ReactiveUI
         /// the <see cref="ReactiveTableViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
         public static IDisposable BindTo<TSource, TCell>(
-            this IObservable<IReactiveNotifyCollectionChanged<TSource>> sourceObservable,
+            this IObservable<INotifyCollectionChanged> sourceObservable,
             UITableView tableView,
             NSString cellKey,
             float sizeHint,
@@ -541,7 +542,7 @@ namespace ReactiveUI
         /// the <see cref="ReactiveTableViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
         public static IDisposable BindTo<TSource, TCell>(
-            this IObservable<IReactiveNotifyCollectionChanged<TSource>> sourceObservable,
+            this IObservable<INotifyCollectionChanged> sourceObservable,
             UITableView tableView,
             float sizeHint,
             Action<TCell> initializeCellAction = null,

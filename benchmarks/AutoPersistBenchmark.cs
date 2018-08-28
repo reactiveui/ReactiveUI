@@ -14,12 +14,12 @@ namespace ReactiveUI.Benchmarks
     [MarkdownExporterAttribute.GitHub]
     public class AutoPersistBenchmark
     {
-        private ReactiveList<MockViewModel> _collection;
+        private ObservableCollection<MockViewModel> _collection;
 
         [GlobalSetup]
         public void Setup()
         {
-            _collection = new ReactiveList<MockViewModel>(new[]
+            _collection = new ObservableCollection<MockViewModel>(new[]
             {
                 new MockViewModel(),
                 new MockViewModel(),

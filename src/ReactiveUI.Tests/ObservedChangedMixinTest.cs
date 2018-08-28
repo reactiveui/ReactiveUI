@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using DynamicData.Binding;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
@@ -180,7 +181,7 @@ namespace ReactiveUI.Tests
 
     public class NewGameViewModel : ReactiveObject
     {
-        public ReactiveList<string> Players { get; private set; }
+        public ObservableCollectionExtended<string> Players { get; private set; }
         public ReactiveCommand<Unit, Unit> AddPlayer { get; private set; }
         public ReactiveCommand<string, Unit> RemovePlayer { get; private set; }
         public ReactiveCommand<Unit, Unit> StartGame { get; private set; }
@@ -196,12 +197,12 @@ namespace ReactiveUI.Tests
 
         public NewGameViewModel()
         {
-            Players = new ReactiveList<string>();
+            Players = new ObservableCollectionExtended<string>();
 
-            var canStart = this.Players.CountChanged.Select(count => count >= 3);
+            var canStart = this.Players.ToObservableChangeSet().CountChanged().Select(_ => this.Players.Count >= 3);
             StartGame = ReactiveCommand.Create(() => { }, canStart);
             RandomizeOrder = ReactiveCommand.Create(() => {
-                    using (Players.SuppressChangeNotifications()) {
+                    using (Players.SuspendNotifications()) {
                         var r = new Random();
                         var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
                         Players.Clear();

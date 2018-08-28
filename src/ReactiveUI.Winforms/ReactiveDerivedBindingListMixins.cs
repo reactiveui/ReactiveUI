@@ -11,15 +11,19 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
-namespace ReactiveUI.Winforms
+using ReactiveUI.Legacy;
+
+namespace ReactiveUI.Winforms.Legacy
 {
     /// <summary>
     /// IReactiveDerivedList represents a bindinglist whose contents will "follow" another
     /// collection; this method is useful for creating ViewModel collections
     /// that are automatically updated when the respective Model collection is updated.
     /// </summary>
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public interface IReactiveDerivedBindingList<T> : IReactiveDerivedList<T>, IBindingList { }
 
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     class ReactiveDerivedBindingList<TSource, TValue> :
         ReactiveDerivedCollection<TSource, TValue>, IReactiveDerivedBindingList<TValue>
     {
@@ -93,6 +97,7 @@ namespace ReactiveUI.Winforms
         public event ListChangedEventHandler ListChanged;
     }
 
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public static class ObservableCollectionMixin
     {
         /// <summary>

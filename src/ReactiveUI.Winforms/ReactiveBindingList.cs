@@ -8,10 +8,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ReactiveUI;
+using ReactiveUI.Legacy;
 
-namespace ReactiveUI.Winforms
+namespace ReactiveUI.Winforms.Legacy
 {
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public class ReactiveBindingList<T> : ReactiveList<T>,
         IList<T>, ICollection<T>, IEnumerable<T>,
         ICollection, IEnumerable, IList, IBindingList,

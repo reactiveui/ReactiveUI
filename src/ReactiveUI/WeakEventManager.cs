@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -114,7 +114,7 @@ namespace ReactiveUI
         /// Delivers the event to the handlers registered for the source. 
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="TEventArgs"/> instance containing the event data.</param>
+        /// <param name="args">The arguments instance containing the event data.</param>
         public static void DeliverEvent(TEventSource sender, TEventArgs args)
         {
             WeakEventManager<TEventSource, TEventHandler, TEventArgs>.Current.PrivateDeliverEvent(sender, args);

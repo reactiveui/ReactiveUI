@@ -111,7 +111,7 @@ namespace ReactiveUI.Tests
 
             using (resolver.WithResolver()) {
                 var fixture = new DefaultViewLocator();
-                FooViewModel vm = new FooViewModel();
+                var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
                 Assert.IsType<FooView>(result);
@@ -148,7 +148,7 @@ namespace ReactiveUI.Tests
             using (resolver.WithResolver()) {
                 var fixture = new DefaultViewLocator();
                 fixture.ViewModelToViewFunc = viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention");
-                FooViewModel vm = new FooViewModel();
+                var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
                 Assert.IsType<FooWithWeirdConvention>(result);
@@ -166,7 +166,7 @@ namespace ReactiveUI.Tests
 
             using (resolver.WithResolver()) {
                 var fixture = new DefaultViewLocator();
-                FooViewModel vm = new FooViewModel();
+                var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
                 Assert.IsType<FooView>(result);
@@ -184,7 +184,7 @@ namespace ReactiveUI.Tests
 
             using (resolver.WithResolver()) {
                 var fixture = new DefaultViewLocator();
-                FooViewModel vm = new FooViewModel();
+                var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
                 Assert.IsType<FooView>(result);
@@ -202,7 +202,7 @@ namespace ReactiveUI.Tests
 
             using (resolver.WithResolver()) {
                 var fixture = new DefaultViewLocator();
-                FooViewModel vm = new FooViewModel();
+                var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
                 Assert.IsType<FooView>(result);

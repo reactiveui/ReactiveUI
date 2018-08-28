@@ -13,12 +13,13 @@ using Android.Views;
 using Splat;
 using Object = Java.Lang.Object;
 
-namespace ReactiveUI
+namespace ReactiveUI.Legacy
 {
     /// <summary>
     /// ReactivePagerAdapter is a PagerAdapter that will interface with a
     /// ReactiveList, in a similar fashion to ReactiveTableViewSource.
     /// </summary>
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
         where TViewModel : class
     {

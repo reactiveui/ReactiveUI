@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using DynamicData;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
@@ -28,7 +29,7 @@ namespace ReactiveUI.Tests
                 Assert.False(fixture.IsRegistered(typeof(int)));
                 Assert.False(fixture.IsRegistered(typeof(int), "Foo"));
 
-                var output = fixture.Listen<int>("Test").CreateCollection(scheduler: ImmediateScheduler.Instance);
+                fixture.Listen<int>("Test").ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
                 input.Run(source.OnNext);
 
@@ -45,7 +46,7 @@ namespace ReactiveUI.Tests
             var fixture = new MessageBus();
             fixture.RegisterMessageSource(Observable<int>.Never);
 
-            bool messageReceived = false;
+            var messageReceived = false;
             fixture.Listen<int>().Subscribe(_ => messageReceived = true);
 
             fixture.SendMessage(42);
@@ -56,7 +57,7 @@ namespace ReactiveUI.Tests
         public void ListeningBeforeRegisteringASourceShouldWork()
         {
             var fixture = new MessageBus();
-            int result = -1;
+            var result = -1;
 
             fixture.Listen<int>().Subscribe(x => result = x);
 
@@ -72,7 +73,7 @@ namespace ReactiveUI.Tests
         {
             var bus = new MessageBus();
 
-            bool recieved_message = false;
+            var recieved_message = false;
             var dispose = bus.Listen<int>().Subscribe(x => recieved_message = true);
             bus.SendMessage(1);
             Assert.True(recieved_message);

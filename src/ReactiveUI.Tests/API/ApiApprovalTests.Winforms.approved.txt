@@ -14,43 +14,10 @@ namespace ReactiveUI.Winforms
         public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
-    public interface IReactiveDerivedBindingList<T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveCollection<T>, ReactiveUI.IReactiveDerivedList<T>, ReactiveUI.IReactiveNotifyCollectionChanged<T>, ReactiveUI.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.IReactiveObject, ReactiveUI.IReadOnlyReactiveCollection<T>, ReactiveUI.IReadOnlyReactiveList<T>, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.IBindingList, System.ComponentModel.INotifyPropertyChanged, System.IDisposable { }
-    public class static ObservableCollectionMixin
-    {
-        public static ReactiveUI.Winforms.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> removed, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null) { }
-        public static ReactiveUI.Winforms.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null) { }
-        public static ReactiveUI.Winforms.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> removed, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null) { }
-        public static ReactiveUI.Winforms.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null) { }
-    }
     public class PlatformOperations
     {
         public PlatformOperations() { }
         public string GetOrientation() { }
-    }
-    public class ReactiveBindingList<T> : ReactiveUI.ReactiveList<T>, System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList, System.ComponentModel.IBindingList, System.ComponentModel.ICancelAddNew, System.ComponentModel.IRaiseItemChangedEvents
-    {
-        public ReactiveBindingList() { }
-        public ReactiveBindingList(System.Collections.Generic.IEnumerable<T> items) { }
-        public bool AllowEdit { get; }
-        public bool AllowNew { get; }
-        public bool AllowRemove { get; }
-        public bool IsSorted { get; }
-        public bool RaisesItemChangedEvents { get; }
-        public System.ComponentModel.ListSortDirection SortDirection { get; }
-        public System.ComponentModel.PropertyDescriptor SortProperty { get; }
-        public bool SupportsChangeNotification { get; }
-        public bool SupportsSearching { get; }
-        public bool SupportsSorting { get; }
-        public event System.ComponentModel.ListChangedEventHandler ListChanged;
-        public void AddIndex(System.ComponentModel.PropertyDescriptor property) { }
-        public object AddNew() { }
-        public void ApplySort(System.ComponentModel.PropertyDescriptor property, System.ComponentModel.ListSortDirection direction) { }
-        public void CancelNew(int itemIndex) { }
-        public void EndNew(int itemIndex) { }
-        public int Find(System.ComponentModel.PropertyDescriptor property, object key) { }
-        protected override void raiseCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e) { }
-        public void RemoveIndex(System.ComponentModel.PropertyDescriptor property) { }
-        public void RemoveSort() { }
     }
     public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatable, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
@@ -121,5 +88,47 @@ namespace ReactiveUI.Winforms
         public WinformsCreatesObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
         public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False) { }
+    }
+}
+namespace ReactiveUI.Winforms.Legacy
+{
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public interface IReactiveDerivedBindingList<T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveCollection<T>, ReactiveUI.Legacy.IReactiveDerivedList<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.Legacy.IReadOnlyReactiveCollection<T>, ReactiveUI.Legacy.IReadOnlyReactiveList<T>, Splat.IEnableLogger, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.IBindingList, System.ComponentModel.INotifyPropertyChanged, System.IDisposable { }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public class static ObservableCollectionMixin
+    {
+        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> removed, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null) { }
+        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null) { }
+        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> removed, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null) { }
+        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null) { }
+    }
+    [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
+        "ps://github.com/rolandpheasant/dynamicdata")]
+    public class ReactiveBindingList<T> : ReactiveUI.Legacy.ReactiveList<T>, System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList, System.ComponentModel.IBindingList, System.ComponentModel.ICancelAddNew, System.ComponentModel.IRaiseItemChangedEvents
+    {
+        public ReactiveBindingList() { }
+        public ReactiveBindingList(System.Collections.Generic.IEnumerable<T> items) { }
+        public bool AllowEdit { get; }
+        public bool AllowNew { get; }
+        public bool AllowRemove { get; }
+        public bool IsSorted { get; }
+        public bool RaisesItemChangedEvents { get; }
+        public System.ComponentModel.ListSortDirection SortDirection { get; }
+        public System.ComponentModel.PropertyDescriptor SortProperty { get; }
+        public bool SupportsChangeNotification { get; }
+        public bool SupportsSearching { get; }
+        public bool SupportsSorting { get; }
+        public event System.ComponentModel.ListChangedEventHandler ListChanged;
+        public void AddIndex(System.ComponentModel.PropertyDescriptor property) { }
+        public object AddNew() { }
+        public void ApplySort(System.ComponentModel.PropertyDescriptor property, System.ComponentModel.ListSortDirection direction) { }
+        public void CancelNew(int itemIndex) { }
+        public void EndNew(int itemIndex) { }
+        public int Find(System.ComponentModel.PropertyDescriptor property, object key) { }
+        protected override void raiseCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e) { }
+        public void RemoveIndex(System.ComponentModel.PropertyDescriptor property) { }
+        public void RemoveSort() { }
     }
 }
