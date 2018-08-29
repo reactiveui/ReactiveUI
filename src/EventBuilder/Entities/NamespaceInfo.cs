@@ -6,9 +6,19 @@ using System.Collections.Generic;
 
 namespace EventBuilder.Entities
 {
+    /// <summary>
+    /// Respresents namespace information.
+    /// </summary>
     public class NamespaceInfo
     {
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the types.
+        /// </summary>
         public IEnumerable<PublicTypeInfo> Types { get; set; }
     }
 }

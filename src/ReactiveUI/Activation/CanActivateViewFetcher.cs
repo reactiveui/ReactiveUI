@@ -18,22 +18,19 @@ namespace ReactiveUI
         /// <summary>
         /// Returns a positive integer for derivates of the <see cref="ICanActivate"/> interface.
         /// </summary>
-        /// <param name="view">The source type to check</param>
+        /// <param name="view">The source type to check.</param>
         /// <returns>
-        /// A positive integer if <see cref="GetActivationForView(IActivatable)"/> is supported, 
-        /// zero otherwise
+        /// A positive integer if <see cref="GetActivationForView(IActivatable)"/> is supported,
+        /// zero otherwise.
         /// </returns>
-        public int GetAffinityForView(Type view)
-        {
-            return (typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ?
+        public int GetAffinityForView(Type view) => typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ?
                 10 : 0;
-        }
 
         /// <summary>
-        /// Get an observable defining whether the view is active
+        /// Get an observable defining whether the view is active.
         /// </summary>
-        /// <param name="view">The view to observe</param>
-        /// <returns>An observable tracking whether the view is active</returns>
+        /// <param name="view">The view to observe.</param>
+        /// <returns>An observable tracking whether the view is active.</returns>
         public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var ca = view as ICanActivate;

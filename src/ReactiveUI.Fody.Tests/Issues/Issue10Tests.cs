@@ -19,7 +19,7 @@ namespace ReactiveUI.Fody.Tests.Issues
             Assert.Equal(default(DateTime), model.MyDateTimeProperty);
         }
 
-        class TestModel : ReactiveObject
+        private class TestModel : ReactiveObject
         {
             [ObservableAsProperty]
             public string MyProperty { get; private set; }

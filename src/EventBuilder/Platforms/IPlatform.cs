@@ -6,13 +6,25 @@ using System.Collections.Generic;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// Interface representing a platform assemblies and events.
+    /// </summary>
     public interface IPlatform
     {
+        /// <summary>
+        /// Gets the event builder platform.
+        /// </summary>
         AutoPlatform Platform { get; }
 
+        /// <summary>
+        /// Gets or sets the assemblies.
+        /// </summary>
         List<string> Assemblies { get; set; }
 
-        // Cecil when run on Mono needs some direction as to the location of the platform specific MSCORLIB.
+        /// <summary>
+        /// Gets or sets the cecil search directories.
+        /// Cecil when run on Mono needs some direction as to the location of the platform specific MSCORLIB.
+        /// </summary>
         List<string> CecilSearchDirectories { get; set; }
     }
 }

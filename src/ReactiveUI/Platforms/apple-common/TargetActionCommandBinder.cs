@@ -21,21 +21,27 @@ namespace ReactiveUI
 {
     /// <summary>
     /// TargetActionCommandBinder is an implementation of command binding that
-    /// understands Cocoa's Target / Action Framework. Many controls in Cocoa 
-    /// that are effectively command sources (i.e. Buttons, Menus, etc), 
+    /// understands Cocoa's Target / Action Framework. Many controls in Cocoa
+    /// that are effectively command sources (i.e. Buttons, Menus, etc),
     /// participate in this framework.
     /// </summary>
     public class TargetActionCommandBinder : ICreatesCommandBinding
     {
-        readonly Type[] validTypes;
+        private readonly Type[] _validTypes;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetActionCommandBinder"/> class.
+        /// </summary>
         public TargetActionCommandBinder()
         {
 #if UIKIT
-            validTypes = new[] {
+            _validTypes = new[]
+            {
                 typeof(UIControl),
              };
 #else
-            validTypes = new[] {
+            _validTypes = new[]
+            {
                 typeof(NSControl),
                 typeof(NSCell),
                 typeof(NSMenu),
@@ -45,23 +51,33 @@ namespace ReactiveUI
 #endif
         }
 
+        /// <inheritdoc/>
         public int GetAffinityForObject(Type type, bool hasEventTarget)
         {
-            if (!validTypes.Any(x => x.IsAssignableFrom(type))) return 0;
+            if (!_validTypes.Any(x => x.IsAssignableFrom(type)))
+            {
+                return 0;
+            }
+
             return !hasEventTarget ? 4 : 0;
         }
 
+        /// <inheritdoc/>
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
             commandParameter = commandParameter ?? Observable.Return(target);
 
             object latestParam = null;
-            var ctlDelegate = new ControlDelegate(x => {
+            var ctlDelegate = new ControlDelegate(x =>
+            {
                 if (command.CanExecute(latestParam))
+                {
                     command.Execute(latestParam);
+                }
             }) { IsEnabled = command.CanExecute(latestParam) };
 
             var sel = new Selector("theAction:");
+
             // TODO how does this work? Is there an Action property?
             Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Action"))(target, sel, null);
 
@@ -70,7 +86,10 @@ namespace ReactiveUI
             var actionDisp = Disposable.Create(() => targetSetter(target, null, null));
 
             var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
-            if (enabledSetter == null) return actionDisp;
+            if (enabledSetter == null)
+            {
+                return actionDisp;
+            }
 
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
@@ -80,26 +99,32 @@ namespace ReactiveUI
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                     .Select(_ => command.CanExecute(latestParam))
-                    .Subscribe(x => { enabledSetter(target, x, null); ctlDelegate.IsEnabled = x; }));
+                    .Subscribe(x =>
+                    {
+                        enabledSetter(target, x, null);
+                        ctlDelegate.IsEnabled = x;
+                    }));
 
             return compDisp;
         }
 
-        class ControlDelegate : NSObject
+        private class ControlDelegate : NSObject
         {
             public bool IsEnabled { get; set; }
 
-            readonly Action<NSObject> block;
+            private readonly Action<NSObject> _block;
+
             public ControlDelegate(Action<NSObject> block)
             {
-                this.block = block;
+                _block = block;
             }
 
             [Export("theAction:")]
             public void TheAction(NSObject sender)
             {
-                block(sender);
+                _block(sender);
             }
+
 #if !UIKIT
             [Export("validateMenuItem:")]
             public bool ValidateMenuItem(NSMenuItem menuItem)
@@ -109,6 +134,7 @@ namespace ReactiveUI
 #endif
         }
 
+        /// <inheritdoc/>
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
             where TEventArgs : EventArgs
         {

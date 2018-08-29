@@ -21,8 +21,8 @@ namespace ReactiveUI.Tests
 
         public string TestString
         {
-            get { return (string)GetValue(TestStringProperty); }
-            set { SetValue(TestStringProperty, value); }
+            get => (string)GetValue(TestStringProperty);
+            set => SetValue(TestStringProperty, value);
         }
     }
 
@@ -30,9 +30,10 @@ namespace ReactiveUI.Tests
     {
         public string AnotherTestString
         {
-            get { return (string)GetValue(AnotherTestStringProperty); }
-            set { SetValue(AnotherTestStringProperty, value); }
+            get => (string)GetValue(AnotherTestStringProperty);
+            set => SetValue(AnotherTestStringProperty, value);
         }
+
         public static readonly DependencyProperty AnotherTestStringProperty =
             DependencyProperty.Register("AnotherTestString", typeof(string), typeof(DerivedDepObjFixture), new PropertyMetadata(null));
     }

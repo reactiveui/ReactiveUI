@@ -2,21 +2,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using NuGet;
-using Polly;
-using Serilog;
 using System;
 using System.IO;
 using System.Linq;
+using NuGet;
+using Polly;
+using Serilog;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// Xamarin Forms assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class XamForms : BasePlatform
     {
         private const string _packageName = "Xamarin.Forms";
 
-        public override AutoPlatform Platform => AutoPlatform.XamForms;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XamForms"/> class.
+        /// </summary>
         public XamForms()
         {
             var packageUnzipPath = Environment.CurrentDirectory;
@@ -32,7 +37,8 @@ namespace EventBuilder.Platforms
                     {
                         Log.Warning(
                             "An exception was thrown whilst retrieving or installing {packageName}: {exception}",
-                            _packageName, exception);
+                            _packageName,
+                            exception);
                     });
 
             retryPolicy.Execute(() =>
@@ -50,8 +56,10 @@ namespace EventBuilder.Platforms
             });
 
             var xamarinForms =
-                Directory.GetFiles(packageUnzipPath,
-                    "Xamarin.Forms.Core.dll", SearchOption.AllDirectories);
+                Directory.GetFiles(
+                    packageUnzipPath,
+                    "Xamarin.Forms.Core.dll",
+                    SearchOption.AllDirectories);
 
             var latestVersion = xamarinForms.Last();
             Assemblies.Add(latestVersion);
@@ -67,5 +75,8 @@ namespace EventBuilder.Platforms
                 CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\Facades");
             }
         }
+
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.XamForms;
     }
 }

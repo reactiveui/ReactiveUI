@@ -1,17 +1,17 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
 using System.Collections.Generic;
-using System.Reactive.Concurrency;
-using System.Linq;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reflection;
 using System.Threading;
 using Xunit;
 using Xunit.Sdk;
-using System.Diagnostics;
 
 namespace ReactiveUI.Tests
 {
@@ -32,18 +32,18 @@ namespace ReactiveUI.Tests
             }
             catch
             {
-                Debug.WriteLine("lhs: [{0}]", String.Join(",", lhs.ToArray()));
-                Debug.WriteLine("rhs: [{0}]", String.Join(",", rhs.ToArray()));
+                Debug.WriteLine("lhs: [{0}]", string.Join(",", lhs.ToArray()));
+                Debug.WriteLine("rhs: [{0}]", string.Join(",", rhs.ToArray()));
                 throw;
             }
         }
 
-        public static IEnumerable<T> DistinctUntilChanged<T>(this IEnumerable<T> This)
+        public static IEnumerable<T> DistinctUntilChanged<T>(this IEnumerable<T> @this)
         {
             var isFirst = true;
             var lastValue = default(T);
 
-            foreach (var v in This)
+            foreach (var v in @this)
             {
                 if (isFirst)
                 {
@@ -57,6 +57,7 @@ namespace ReactiveUI.Tests
                 {
                     yield return v;
                 }
+
                 lastValue = v;
             }
         }
@@ -71,12 +72,10 @@ namespace ReactiveUI.Tests
         }
 
         public IScheduler InnerScheduler { get; private set; }
+
         public List<Tuple<Action, TimeSpan?>> ScheduledItems { get; private set; }
 
-        public DateTimeOffset Now
-        {
-            get { return InnerScheduler.Now; }
-        }
+        public DateTimeOffset Now => InnerScheduler.Now;
 
         public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
         {
@@ -99,34 +98,34 @@ namespace ReactiveUI.Tests
 
     internal static class CompatMixins
     {
-        public static void Run<T>(this IEnumerable<T> This, Action<T> block)
+        public static void Run<T>(this IEnumerable<T> @this, Action<T> block)
         {
-            foreach (var v in This)
+            foreach (var v in @this)
             {
                 block(v);
             }
         }
 
-        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> This, int count)
+        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count)
         {
-            return This.Take(This.Count() - count);
+            return @this.Take(@this.Count() - count);
         }
     }
 
     // run tests on invariant culture to avoid problems e.g with culture specific decimal separator
     public class UseInvariantCulture : BeforeAfterTestAttribute
     {
-        private CultureInfo storedCulture;
+        private CultureInfo _storedCulture;
 
         public override void Before(MethodInfo methodUnderTest)
         {
-            storedCulture = Thread.CurrentThread.CurrentCulture;
+            _storedCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         }
 
         public override void After(MethodInfo methodUnderTest)
         {
-            Thread.CurrentThread.CurrentCulture = storedCulture;
+            Thread.CurrentThread.CurrentCulture = _storedCulture;
         }
     }
 }

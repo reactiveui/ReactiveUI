@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -25,10 +25,14 @@ namespace ReactiveUI
         public static TObject ToNetObject<TObject>(this Object value)
         {
             if (value == null)
+            {
                 return default(TObject);
+            }
 
             if (!(value is JavaHolder))
+            {
                 throw new InvalidOperationException("Unable to convert to .NET object. Only Java.Lang.Object created with .ToJavaObject() can be converted.");
+            }
 
             return (TObject)((JavaHolder)value).Instance;
         }
@@ -36,10 +40,12 @@ namespace ReactiveUI
         public static Object ToJavaObject<TObject>(this TObject value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             var holder = new JavaHolder(value);
-            
+
             return (Object)holder;
         }
     }

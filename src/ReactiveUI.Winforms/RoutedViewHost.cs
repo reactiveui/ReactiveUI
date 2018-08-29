@@ -13,118 +13,150 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
-        readonly CompositeDisposable disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private RoutingState _router;
+        private Control _defaultContent;
+        private IObservable<string> _viewContractObservable;
 
-        RoutingState _Router;
-        Control defaultContent;
-        IObservable<string> viewContractObservable;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
+        /// </summary>
         public RoutedControlHost()
         {
             InitializeComponent();
 
-            this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
-                if (x != null && this.Controls.Count == 0) {
-                    this.Controls.Add(this.InitView(x));
-                    this.components.Add(this.DefaultContent);
+            _disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
+            {
+                if (x != null && Controls.Count == 0)
+                {
+                    Controls.Add(InitView(x));
+                    components.Add(DefaultContent);
                 }
             }));
 
-            this.ViewContractObservable = Observable<string>.Default;
+            ViewContractObservable = Observable<string>.Default;
 
             var vmAndContract =
                 this.WhenAnyObservable(x => x.Router.CurrentViewModel)
-                    .CombineLatest(this.WhenAnyObservable(x => x.ViewContractObservable),
+                    .CombineLatest(
+                        this.WhenAnyObservable(x => x.ViewContractObservable),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
             Control viewLastAdded = null;
-            this.disposables.Add(vmAndContract.Subscribe(x => {
+            _disposables.Add(vmAndContract.Subscribe(
+                x =>
+            {
                 // clear all hosted controls (view or default content)
-                this.Controls.Clear();
+                Controls.Clear();
 
-                if (viewLastAdded != null) {
+                if (viewLastAdded != null)
+                {
                     viewLastAdded.Dispose();
                 }
 
-                if (x.ViewModel == null) {
-                    if (this.DefaultContent != null) {
-                        this.InitView(this.DefaultContent);
-                        this.Controls.Add(this.DefaultContent);
+                if (x.ViewModel == null)
+                {
+                    if (DefaultContent != null)
+                    {
+                        InitView(DefaultContent);
+                        Controls.Add(DefaultContent);
                     }
+
                     return;
                 }
 
-                IViewLocator viewLocator = this.ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                 IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
                 view.ViewModel = x.ViewModel;
 
-                viewLastAdded = this.InitView((Control)view);
-                this.Controls.Add(viewLastAdded);
+                viewLastAdded = InitView((Control)view);
+                Controls.Add(viewLastAdded);
             }, RxApp.DefaultExceptionHandler.OnNext));
         }
 
+        /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the default content.
+        /// </summary>
+        /// <value>
+        /// The default content.
+        /// </value>
+        [Category("ReactiveUI")]
+        [Description("The default control when no viewmodel is specified")]
+        public Control DefaultContent
+        {
+            get => _defaultContent;
+            set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
+        /// </summary>
+        [Category("ReactiveUI")]
+        [Description("The router.")]
+        public RoutingState Router
+        {
+            get => _router;
+            set => this.RaiseAndSetIfChanged(ref _router, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the view contract observable.
+        /// </summary>
+        [Browsable(false)]
+        public IObservable<string> ViewContractObservable
+        {
+            get => _viewContractObservable;
+            set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the view locator.
+        /// </summary>
+        [Browsable(false)]
+        public IViewLocator ViewLocator { get; set; }
+
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
-        }
-
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
-        [Category("ReactiveUI")]
-        [Description("The default control when no viewmodel is specified")]
-        public Control DefaultContent
-        {
-            get { return this.defaultContent; }
-            set { this.RaiseAndSetIfChanged(ref this.defaultContent, value); }
-        }
-
-        [Category("ReactiveUI")]
-        [Description("The router.")]
-        public RoutingState Router
-        {
-            get { return this._Router; }
-            set { this.RaiseAndSetIfChanged(ref this._Router, value); }
-        }
-
-        [Browsable(false)]
-        public IObservable<string> ViewContractObservable
-        {
-            get { return this.viewContractObservable; }
-            set { this.RaiseAndSetIfChanged(ref this.viewContractObservable, value); }
-        }
-
-        [Browsable(false)]
-        public IViewLocator ViewLocator { get; set; }
-
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null)) {
+            if (disposing && components != null)
+            {
                 components.Dispose();
-                this.disposables.Dispose();
+                _disposables.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
-        Control InitView(Control view)
+        private Control InitView(Control view)
         {
             view.Dock = DockStyle.Fill;
             return view;

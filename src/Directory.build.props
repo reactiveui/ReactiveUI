@@ -43,4 +43,5 @@
    <PropertyGroup>
     <SolutionDir Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)</SolutionDir>
   </PropertyGroup>
+  <Import Project="..\directory.build.props" />
 </Project>

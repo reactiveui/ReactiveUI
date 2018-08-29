@@ -37,21 +37,18 @@ namespace ReactiveUI.Tests
 
             employees.Sort(OrderedComparer<Employee>
                 .OrderByDescending(x => x.Age)
-                .ThenBy(x => x.Name)
-            );
+                .ThenBy(x => x.Name));
             Assert.True(employees.SequenceEqual(new[] { adam, carol, xavier, bob, alice }));
 
             employees.Sort(OrderedComparer<Employee>
                 .OrderByDescending(x => x.Salary)
-                .ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
-            );
+                .ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase));
             Assert.True(employees.SequenceEqual(new[] { adam, alice, carol, xavier, bob }));
 
             employees.Sort(OrderedComparer<Employee>
                 .OrderByDescending(x => x.Age)
                 .ThenByDescending(x => x.Salary)
-                .ThenBy(x => x.Name)
-            );
+                .ThenBy(x => x.Name));
             Assert.True(employees.SequenceEqual(new[] { adam, carol, xavier, bob, alice }));
         }
 
@@ -94,7 +91,6 @@ namespace ReactiveUI.Tests
 
             items.Sort(OrderedComparer.For(items).OrderBy(x => x.FirstLetter));
             Assert.True(items.Select(x => x.FirstLetter).SequenceEqual("abc"));
-
         }
     }
 }

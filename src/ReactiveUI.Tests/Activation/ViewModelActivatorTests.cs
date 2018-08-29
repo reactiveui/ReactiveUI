@@ -8,7 +8,6 @@ using DynamicData;
 using DynamicData.Binding;
 using Xunit;
 
-
 namespace ReactiveUI.Tests
 {
     public class ViewModelActivatorTests
@@ -65,7 +64,8 @@ namespace ReactiveUI.Tests
             viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
             viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
-            using (viewModelActivator.Activate()) {
+            using (viewModelActivator.Activate())
+            {
                 Assert.Equal(1, activated.Count);
                 Assert.Equal(0, deactivated.Count);
             }

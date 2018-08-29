@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -6,8 +6,8 @@ using System;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using CoreGraphics;
 using Foundation;
 
@@ -20,73 +20,138 @@ using NSView = UIKit.UIView;
 using AppKit;
 #endif
 
-
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This is an  ImageView that is both and ImageView and has a ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-        protected ReactiveImageView() { }
-        protected ReactiveImageView(CGRect frame) : base(frame) { }
+        private Subject<Unit> _activated = new Subject<Unit>();
+        private Subject<Unit> _deactivated = new Subject<Unit>();
 
-#if UIKIT
-        protected ReactiveImageView(NSImage image) : base(image) { }
-        protected ReactiveImageView(NSObjectFlag t) : base(t) { }
-        protected ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { }
-        protected ReactiveImageView(NSCoder coder) : base(coder) { }
-#endif
-
-        protected ReactiveImageView(IntPtr handle) : base(handle) { }
-
-        public event PropertyChangingEventHandler PropertyChanging {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        protected ReactiveImageView()
+        {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        protected ReactiveImageView(CGRect frame)
+            : base(frame)
+        {
+        }
+
+#if UIKIT
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        protected ReactiveImageView(NSImage image)
+            : base(image)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="t">The flag.</param>
+        protected ReactiveImageView(NSObjectFlag t)
+            : base(t)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="highlightedImage">The higlighted image.</param>
+        protected ReactiveImageView(NSImage image, NSImage highlightedImage)
+            : base(image, highlightedImage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
+        protected ReactiveImageView(NSCoder coder)
+            : base(coder)
+        {
+        }
+#endif
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        protected ReactiveImageView(IntPtr handle)
+            : base(handle)
+        {
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <summary>
+        /// Represents an Observable that fires *before* a property is about to
+        /// be changed.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changing => this.GetChangingObservable();
+
+        /// <summary>
+        /// Represents an Observable that fires *after* a property has changed.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changed => this.GetChangedObservable();
+
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
-        }
-
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changing {
-            get { return this.getChangingObservable(); }
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changed {
-            get { return this.getChangedObservable(); }
-        }
-
+        /// <inheritdoc/>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.suppressChangeNotifications();
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
-        Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
-        Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
-
 #if UIKIT
+        /// <inheritdoc/>
         public override void WillMoveToSuperview(NSView newsuper)
-#else 
+#else
+        /// <inheritdoc/>
         public override void ViewWillMoveToSuperview(NSView newsuper)
 #endif
         {
@@ -95,40 +160,103 @@ namespace ReactiveUI
 #else
             base.ViewWillMoveToSuperview(newsuper);
 #endif
-            (newsuper != null ? activated : deactivated).OnNext(Unit.Default);
+            (newsuper != null ? _activated : _deactivated).OnNext(Unit.Default);
         }
 
+        /// <inheritdoc/>
         void ICanForceManualActivation.Activate(bool activate)
         {
             RxApp.MainThreadScheduler.Schedule(() =>
-                (activate ? activated : deactivated).OnNext(Unit.Default));
+                (activate ? _activated : _deactivated).OnNext(Unit.Default));
         }
     }
 
+    /// <summary>
+    /// This is an  ImageView that is both and ImageView and has a ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
         where TViewModel : class
     {
-        protected ReactiveImageView() { }
-        protected ReactiveImageView(CGRect frame) : base(frame) { }
+        private TViewModel _viewModel;
 
-#if UIKIT
-        protected ReactiveImageView(NSImage image) : base(image) { }
-        protected ReactiveImageView(NSObjectFlag t) : base(t) { }
-        protected ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { }
-        protected ReactiveImageView(NSCoder coder) : base(coder) { }
-#endif
-
-        protected ReactiveImageView(IntPtr handle) : base(handle) { }
-
-        TViewModel _viewModel;
-        public TViewModel ViewModel {
-            get { return _viewModel; }
-            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        protected ReactiveImageView()
+        {
         }
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (TViewModel)value; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        protected ReactiveImageView(CGRect frame)
+            : base(frame)
+        {
+        }
+
+#if UIKIT
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        protected ReactiveImageView(NSImage image)
+            : base(image)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="t">The object flag.</param>
+        protected ReactiveImageView(NSObjectFlag t)
+            : base(t)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="highlightedImage">The highlighted image.</param>
+        protected ReactiveImageView(NSImage image, NSImage highlightedImage)
+            : base(image, highlightedImage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
+        protected ReactiveImageView(NSCoder coder)
+            : base(coder)
+        {
+        }
+#endif
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        protected ReactiveImageView(IntPtr handle)
+            : base(handle)
+        {
+        }
+
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
         }
     }
 }

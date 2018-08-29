@@ -7,9 +7,18 @@ using Xamarin.Forms;
 
 namespace ReactiveUI.XamForms
 {
+    /// <summary>
+    /// This is a <see cref="SwitchCell"/> that is also an <see cref="IViewFor{T}"/>.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <seealso cref="Xamarin.Forms.SwitchCell" />
+    /// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
     public class ReactiveSwitchCell<TViewModel> : SwitchCell, IViewFor<TViewModel>
         where TViewModel : class
     {
+        /// <summary>
+        /// The view model bindable property.
+        /// </summary>
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
             nameof(ViewModel),
             typeof(TViewModel),
@@ -18,22 +27,25 @@ namespace ReactiveUI.XamForms
             BindingMode.OneWay,
             propertyChanged: OnViewModelChanged);
 
+        /// <inheritdoc/>
         public TViewModel ViewModel
         {
-            get { return (TViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+            get => (TViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
+        /// <inheritdoc/>
         object IViewFor.ViewModel
         {
-            get { return this.ViewModel; }
-            set { this.ViewModel = (TViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
         }
 
+        /// <inheritdoc/>
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
-            this.ViewModel = this.BindingContext as TViewModel;
+            ViewModel = BindingContext as TViewModel;
         }
 
         private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue)

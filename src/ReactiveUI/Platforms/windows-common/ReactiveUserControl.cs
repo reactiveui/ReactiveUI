@@ -44,8 +44,14 @@ namespace ReactiveUI
         UserControl, IViewFor<TViewModel>
         where TViewModel : class
     {
+        /// <summary>
+        /// Gets the binding root view model.
+        /// </summary>
         public TViewModel BindingRoot => ViewModel;
-        
+
+        /// <summary>
+        /// The view model dependency property.
+        /// </summary>
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register(
                 "ViewModel",
@@ -53,16 +59,18 @@ namespace ReactiveUI
                 typeof(ReactiveUserControl<TViewModel>),
                 new PropertyMetadata(null));
 
+        /// <inheritdoc/>
         public TViewModel ViewModel
         {
-            get { return (TViewModel)this.GetValue(ViewModelProperty); }
-            set { this.SetValue(ViewModelProperty, value); }
+            get => (TViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
+        /// <inheritdoc/>
         object IViewFor.ViewModel
         {
-            get { return this.ViewModel; }
-            set { this.ViewModel = (TViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
         }
     }
 }

@@ -4,8 +4,14 @@
 
 namespace EventBuilder.Platforms
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// The Bespoke platform.
+    /// </summary>
+    /// <seealso cref="T:EventBuilder.Platforms.BasePlatform" />
     public class Bespoke : BasePlatform
     {
+        /// <inheritdoc />
         public override AutoPlatform Platform => AutoPlatform.None;
     }
 }

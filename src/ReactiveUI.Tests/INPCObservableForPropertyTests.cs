@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -117,28 +117,27 @@ namespace ReactiveUI.Tests
             Assert.Equal(testClass, changes[1].Sender);
         }
 
-        class TestClassChanged : INotifyPropertyChanged
+        private class TestClassChanged : INotifyPropertyChanged
         {
-            string property;
-
-            string property2;
+            private string _property;
+            private string _property2;
 
             public string Property1
             {
-                get { return property; }
+                get => _property;
                 set
                 {
-                    property = value;
+                    _property = value;
                     OnPropertyChanged();
                 }
             }
 
             public string Property2
             {
-                get { return property2; }
+                get => _property2;
                 set
                 {
-                    property2 = value;
+                    _property2 = value;
                     OnPropertyChanged();
                 }
             }
@@ -148,34 +147,34 @@ namespace ReactiveUI.Tests
             public void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
                 var handler = PropertyChanged;
-                if (handler != null) {
+                if (handler != null)
+                {
                     handler(this, new PropertyChangedEventArgs(propertyName));
                 }
             }
         }
 
-        class TestClassChanging : INotifyPropertyChanging
+        private class TestClassChanging : INotifyPropertyChanging
         {
-            string property1;
-
-            string property2;
+            private string _property1;
+            private string _property2;
 
             public string Property1
             {
-                get { return property1; }
+                get => _property1;
                 set
                 {
-                    property1 = value;
+                    _property1 = value;
                     OnPropertyChanging();
                 }
             }
 
             public string Property2
             {
-                get { return property2; }
+                get => _property2;
                 set
                 {
-                    property2 = value;
+                    _property2 = value;
                     OnPropertyChanging();
                 }
             }
@@ -185,7 +184,8 @@ namespace ReactiveUI.Tests
             public void OnPropertyChanging([CallerMemberName] string propertyName = null)
             {
                 var handler = PropertyChanging;
-                if (handler != null) {
+                if (handler != null)
+                {
                     handler(this, new PropertyChangingEventArgs(propertyName));
                 }
             }

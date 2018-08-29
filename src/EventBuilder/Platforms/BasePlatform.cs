@@ -6,17 +6,28 @@ using System.Collections.Generic;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// Base platform.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.IPlatform" />
     public abstract class BasePlatform : IPlatform
     {
-        public BasePlatform()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BasePlatform"/> class.
+        /// </summary>
+        protected BasePlatform()
         {
             Assemblies = new List<string>();
             CecilSearchDirectories = new List<string>();
         }
 
+        /// <inheritdoc />
         public abstract AutoPlatform Platform { get; }
 
+        /// <inheritdoc />
         public List<string> Assemblies { get; set; }
+
+        /// <inheritdoc />
         public List<string> CecilSearchDirectories { get; set; }
     }
 }

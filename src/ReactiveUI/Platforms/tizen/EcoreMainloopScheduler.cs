@@ -9,7 +9,7 @@ using ElmSharp;
 
 namespace ReactiveUI
 {
-    class EcoreMainloopScheduler : IScheduler
+    internal class EcoreMainloopScheduler : IScheduler
     {
         public static IScheduler MainThreadScheduler = new EcoreMainloopScheduler();
 
@@ -18,8 +18,12 @@ namespace ReactiveUI
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
             var innerDisp = new SingleAssignmentDisposable();
-            EcoreMainloop.PostAndWakeUp(() => {
-                if (!innerDisp.IsDisposed) innerDisp.Disposable = action(this, state);
+            EcoreMainloop.PostAndWakeUp(() =>
+            {
+                if (!innerDisp.IsDisposed)
+                {
+                    innerDisp.Disposable = action(this, state);
+                }
             });
             return innerDisp;
         }
@@ -29,12 +33,18 @@ namespace ReactiveUI
             var innerDisp = Disposable.Empty;
             bool isCancelled = false;
 
-            IntPtr timer = EcoreMainloop.AddTimer(dueTime.TotalSeconds, () => {
-                if (!isCancelled) innerDisp = action(this, state);
+            IntPtr timer = EcoreMainloop.AddTimer(dueTime.TotalSeconds, () =>
+            {
+                if (!isCancelled)
+                {
+                    innerDisp = action(this, state);
+                }
+
                 return false;
             });
 
-            return Disposable.Create(() => {
+            return Disposable.Create(() =>
+            {
                 isCancelled = true;
                 EcoreMainloop.RemoveTimer(timer);
                 innerDisp.Dispose();
@@ -43,9 +53,11 @@ namespace ReactiveUI
 
         public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            if (dueTime <= Now) {
+            if (dueTime <= Now)
+            {
                 return Schedule(state, action);
             }
+
             return Schedule(state, dueTime - Now, action);
         }
     }

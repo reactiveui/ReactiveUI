@@ -4,11 +4,29 @@
 
 namespace EventBuilder.Entities
 {
+    /// <summary>
+    /// Represents a public event.
+    /// </summary>
     public class PublicEventInfo
     {
+        /// <summary>
+        /// Gets or sets the name of the public event.
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the event handler.
+        /// </summary>
         public string EventHandlerType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the event arguments.
+        /// </summary>
         public string EventArgsType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the obsolete event information.
+        /// </summary>
         public ObsoleteEventInfo ObsoleteEventInfo { get; set; }
     }
 }

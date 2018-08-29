@@ -11,19 +11,47 @@ using Mono.Cecil.Rocks;
 namespace ReactiveUI.Fody
 {
     /// <summary>
-    /// Weaver that replaces properties marked with `[DataMember]` on subclasses of `ReactiveObject` with an 
+    /// Weaver that replaces properties marked with `[DataMember]` on subclasses of `ReactiveObject` with an
     /// implementation that invokes `RaisePropertyChanged` as is required for reaciveui.
     /// </summary>
     public class ReactiveUIPropertyWeaver
     {
+        /// <summary>
+        /// Gets or sets the module definition.
+        /// </summary>
+        /// <value>
+        /// The module definition.
+        /// </value>
         public ModuleDefinition ModuleDefinition { get; set; }
 
-        // Will log an MessageImportance.High message to MSBuild. OPTIONAL
-        public Action<string> LogInfo  { get; set; }
+        /// <summary>
+        /// Will log an MessageImportance.High message to MSBuild. OPTIONAL.
+        /// </summary>
+        /// <value>
+        /// The log information.
+        /// </value>
+        public Action<string> LogInfo { get; set; }
 
-        // Will log an error message to MSBuild. OPTIONAL
+        /// <summary>
+        /// Will log an error message to MSBuild. OPTIONAL.
+        /// </summary>
+        /// <value>
+        /// The log error.
+        /// </value>
         public Action<string> LogError { get; set; }
 
+        /// <summary>
+        /// Executes this property weaver.
+        /// </summary>
+        /// <exception cref="Exception">
+        /// reactiveObjectExtensions is null
+        /// or
+        /// raiseAndSetIfChangedMethod is null
+        /// or
+        /// reactiveAttribute is null
+        /// or
+        /// [Reactive] is decorating " + property.DeclaringType.FullName + "." + property.Name + ", but the property has no setter so there would be nothing to react to.  Consider removing the attribute.
+        /// </exception>
         public void Execute()
         {
             var reactiveUI = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI").OrderByDescending(x => x.Version).FirstOrDefault();
@@ -32,6 +60,7 @@ namespace ReactiveUI.Fody
                 LogInfo("Could not find assembly: ReactiveUI (" + string.Join(", ", ModuleDefinition.AssemblyReferences.Select(x => x.Name)) + ")");
                 return;
             }
+
             LogInfo($"{reactiveUI.Name} {reactiveUI.Version}");
             var helpers = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI.Fody.Helpers").OrderByDescending(x => x.Version).FirstOrDefault();
             if (helpers == null)
@@ -39,20 +68,27 @@ namespace ReactiveUI.Fody
                 LogInfo("Could not find assembly: ReactiveUI.Fody.Helpers (" + string.Join(", ", ModuleDefinition.AssemblyReferences.Select(x => x.Name)) + ")");
                 return;
             }
+
             LogInfo($"{helpers.Name} {helpers.Version}");
             var reactiveObject = new TypeReference("ReactiveUI", "IReactiveObject", ModuleDefinition, reactiveUI);
             var targetTypes = ModuleDefinition.GetAllTypes().Where(x => x.BaseType != null && reactiveObject.IsAssignableFrom(x.BaseType)).ToArray();
             var reactiveObjectExtensions = new TypeReference("ReactiveUI", "IReactiveObjectExtensions", ModuleDefinition, reactiveUI).Resolve();
             if (reactiveObjectExtensions == null)
+            {
                 throw new Exception("reactiveObjectExtensions is null");
+            }
 
             var raiseAndSetIfChangedMethod = ModuleDefinition.Import(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaiseAndSetIfChanged"));
             if (raiseAndSetIfChangedMethod == null)
+            {
                 throw new Exception("raiseAndSetIfChangedMethod is null");
+            }
 
             var reactiveAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ReactiveAttribute", helpers);
             if (reactiveAttribute == null)
+            {
                 throw new Exception("reactiveAttribute is null");
+            }
 
             foreach (var targetType in targetTypes)
             {
@@ -80,7 +116,7 @@ namespace ReactiveUI.Fody
                         var fieldAssignment = constructor.Body.Instructions.SingleOrDefault(x => Equals(x.Operand, oldFieldDefinition) || Equals(x.Operand, oldField));
                         if (fieldAssignment != null)
                         {
-                            // Replace field assignment with a property set (the stack semantics are the same for both, 
+                            // Replace field assignment with a property set (the stack semantics are the same for both,
                             // so happily we don't have to manipulate the bytecode any further.)
                             var setterCall = constructor.Body.GetILProcessor().Create(property.SetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, property.SetMethod);
                             constructor.Body.GetILProcessor().Replace(fieldAssignment, setterCall);
@@ -104,9 +140,10 @@ namespace ReactiveUI.Fody
                         {
                             genericDeclaration.GenericArguments.Add(parameter);
                         }
+
                         genericTargetType = genericDeclaration;
                     }
-                    
+
                     var methodReference = raiseAndSetIfChangedMethod.MakeGenericMethod(genericTargetType, property.PropertyType);
 
                     // Build out the setter which fires the RaiseAndSetIfChanged method
@@ -114,6 +151,7 @@ namespace ReactiveUI.Fody
                     {
                         throw new Exception("[Reactive] is decorating " + property.DeclaringType.FullName + "." + property.Name + ", but the property has no setter so there would be nothing to react to.  Consider removing the attribute.");
                     }
+
                     property.SetMethod.Body = new MethodBody(property.SetMethod);
                     property.SetMethod.Body.Emit(il =>
                     {
@@ -128,6 +166,6 @@ namespace ReactiveUI.Fody
                     });
                 }
             }
-        }         
+        }
     }
 }

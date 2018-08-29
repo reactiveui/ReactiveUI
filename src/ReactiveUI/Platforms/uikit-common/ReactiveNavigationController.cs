@@ -5,63 +5,137 @@
 using System;
 using System.ComponentModel;
 using System.Reactive;
-using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Foundation;
 using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This is a UINavigationController that is both an UINavigationController and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
     public abstract class ReactiveNavigationController : UINavigationController,
     IReactiveNotifyPropertyChanged<ReactiveNavigationController>, IHandleObservableErrors, IReactiveObject, ICanActivate, IActivatable
     {
-        protected ReactiveNavigationController(UIViewController rootViewController) : base(rootViewController) { setupRxObj(); }
-        protected ReactiveNavigationController(Type navigationBarType, Type toolbarType) : base(navigationBarType, toolbarType) { setupRxObj(); }
-        protected ReactiveNavigationController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
-        protected ReactiveNavigationController(IntPtr handle) : base(handle) { setupRxObj(); }
-        protected ReactiveNavigationController(NSObjectFlag t) : base(t) { setupRxObj(); }
-        protected ReactiveNavigationController(NSCoder coder) : base(coder) { setupRxObj(); }
-        protected ReactiveNavigationController() { setupRxObj(); }
+        private Subject<Unit> _activated = new Subject<Unit>();
+        private Subject<Unit> _deactivated = new Subject<Unit>();
 
-        public event PropertyChangingEventHandler PropertyChanging {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.
+        /// </summary>
+        /// <param name="rootViewController">The ui view controller.</param>
+        protected ReactiveNavigationController(UIViewController rootViewController)
+            : base(rootViewController)
+        {
+            SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.
+        /// </summary>
+        /// <param name="navigationBarType">The navigation bar type.</param>
+        /// <param name="toolbarType">The toolbar type.</param>
+        protected ReactiveNavigationController(Type navigationBarType, Type toolbarType)
+            : base(navigationBarType, toolbarType)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.
+        /// </summary>
+        /// <param name="nibName">The name.</param>
+        /// <param name="bundle">The bundle.</param>
+        protected ReactiveNavigationController(string nibName, NSBundle bundle)
+            : base(nibName, bundle)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        protected ReactiveNavigationController(IntPtr handle)
+            : base(handle)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.
+        /// </summary>
+        /// <param name="t">The object flag.</param>
+        protected ReactiveNavigationController(NSObjectFlag t)
+            : base(t)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
+        protected ReactiveNavigationController(NSCoder coder)
+            : base(coder)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.
+        /// </summary>
+        protected ReactiveNavigationController()
+        {
+            SetupRxObj();
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <summary>
+        /// Represents an Observable that fires *before* a property is about to
+        /// be changed.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveNavigationController>> Changing => this.GetChangingObservable();
+
+        /// <summary>
+        /// Represents an Observable that fires *after* a property has changed.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveNavigationController>> Changed => this.GetChangedObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
-        }
-
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveNavigationController>> Changing {
-            get { return this.getChangingObservable(); }
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveNavigationController>> Changed {
-            get { return this.getChangedObservable(); }
-        }
-
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
-        void setupRxObj()
-        {
         }
 
         /// <summary>
@@ -73,50 +147,115 @@ namespace ReactiveUI
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.suppressChangeNotifications();
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
-        Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
-        Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
-
+        /// <inheritdoc/>
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
-            activated.OnNext(Unit.Default);
+            _activated.OnNext(Unit.Default);
             this.ActivateSubviews(true);
         }
 
+        /// <inheritdoc/>
         public override void ViewDidDisappear(bool animated)
         {
             base.ViewDidDisappear(animated);
-            deactivated.OnNext(Unit.Default);
+            _deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
+        }
+
+        private void SetupRxObj()
+        {
         }
     }
 
+    /// <summary>
+    /// This is a UINavigationController that is both an UINavigationController and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactiveNavigationController<TViewModel> : ReactiveNavigationController, IViewFor<TViewModel>
         where TViewModel : class
     {
-        protected ReactiveNavigationController(UIViewController rootViewController) : base(rootViewController) { }
-        protected ReactiveNavigationController(Type navigationBarType, Type toolbarType) : base(navigationBarType, toolbarType) { }
-        protected ReactiveNavigationController(string nibName, NSBundle bundle) : base(nibName, bundle) { }
-        protected ReactiveNavigationController(IntPtr handle) : base(handle) { }
-        protected ReactiveNavigationController(NSObjectFlag t) : base(t) { }
-        protected ReactiveNavigationController(NSCoder coder) : base(coder) { }
-        protected ReactiveNavigationController() { }
+        private TViewModel _viewModel;
 
-        TViewModel _viewModel;
-        public TViewModel ViewModel {
-            get { return _viewModel; }
-            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="rootViewController">The ui view controller.</param>
+        protected ReactiveNavigationController(UIViewController rootViewController)
+            : base(rootViewController)
+        {
         }
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (TViewModel)value; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="navigationBarType">The navigation bar type.</param>
+        /// <param name="toolbarType">The toolbar type.</param>
+        protected ReactiveNavigationController(Type navigationBarType, Type toolbarType)
+            : base(navigationBarType, toolbarType)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="nibName">The name.</param>
+        /// <param name="bundle">The bundle.</param>
+        protected ReactiveNavigationController(string nibName, NSBundle bundle)
+            : base(nibName, bundle)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        protected ReactiveNavigationController(IntPtr handle)
+            : base(handle)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="t">The object flag.</param>
+        protected ReactiveNavigationController(NSObjectFlag t)
+            : base(t)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
+        protected ReactiveNavigationController(NSCoder coder)
+            : base(coder)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.
+        /// </summary>
+        protected ReactiveNavigationController()
+        {
+        }
+
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
         }
     }
 }
-

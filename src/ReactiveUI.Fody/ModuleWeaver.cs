@@ -7,8 +7,13 @@ using Fody;
 
 namespace ReactiveUI.Fody
 {
+    /// <summary>
+    /// ReactiveUI module weaver.
+    /// </summary>
+    /// <seealso cref="BaseModuleWeaver" />
     public class ModuleWeaver : BaseModuleWeaver
     {
+        /// <inheritdoc/>
         public override void Execute()
         {
             var propertyWeaver = new ReactiveUIPropertyWeaver
@@ -35,6 +40,7 @@ namespace ReactiveUI.Fody
             reactiveDependencyWeaver.Execute();
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<string> GetAssembliesForScanning()
         {
             yield return "mscorlib";

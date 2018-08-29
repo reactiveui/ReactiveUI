@@ -1,0 +1,76 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.Reactive;
+
+namespace ReactiveUI
+{
+    /* Nicked from http://caliburnmicro.codeplex.com/wikipage?title=Working%20with%20Windows%20Phone%207%20v1.1
+     *
+     * Launching - Occurs when a fresh instance of the application is launching.
+     * Activated - Occurs when a previously paused/tombstoned app is resumed/resurrected.
+     * Deactivated - Occurs when the application is being paused or tombstoned.
+     * Closing - Occurs when the application is closing.
+     * Continuing - Occurs when the app is continuing from a temporarily paused state.
+     * Continued - Occurs after the app has continued from a temporarily paused state.
+     * Resurrecting - Occurs when the app is "resurrecting" from a tombstoned state.
+     * Resurrected - Occurs after the app has "resurrected" from a tombstoned state.
+    */
+
+    /// <summary>
+    /// ISuspensionHost represents a standardized version of the events that the
+    /// host operating system publishes. Subscribe to these events in order to
+    /// handle app suspend / resume.
+    /// </summary>
+    public interface ISuspensionHost : IReactiveObject
+    {
+        /// <summary>
+        /// Signals when the application is launching new. This can happen when
+        /// an app has recently crashed, as well as the first time the app has
+        /// been launched. Apps should create their state from scratch.
+        /// </summary>
+        IObservable<Unit> IsLaunchingNew { get; set; }
+
+        /// <summary>
+        /// Signals when the application is resuming from suspended state (i.e.
+        /// it was previously running but its process was destroyed).
+        /// </summary>
+        IObservable<Unit> IsResuming { get; set; }
+
+        /// <summary>
+        /// Signals when the application is activated. Note that this may mean
+        /// that your process was not actively running before this signal.
+        /// </summary>
+        IObservable<Unit> IsUnpausing { get; set; }
+
+        /// <summary>
+        /// Signals when the application should persist its state to disk.
+        /// </summary>
+        /// <value>Returns an IDisposable that should be disposed once the
+        /// application finishes persisting its state.</value>
+        IObservable<IDisposable> ShouldPersistState { get; set; }
+
+        /// <summary>
+        /// Signals that the saved application state should be deleted, this
+        /// usually is called after an app has crashed.
+        /// </summary>
+        IObservable<Unit> ShouldInvalidateState { get; set; }
+
+        /// <summary>
+        /// A method that can be used to create a new application state - usually
+        /// this method just calls 'new' on an object.
+        /// </summary>
+        Func<object> CreateNewAppState { get; set; }
+
+        /// <summary>
+        /// The current application state - get a typed version of this via
+        /// <see cref="SuspensionHostExtensions.GetAppState{T}(ISuspensionHost)"/>.
+        /// The "application state" is a notion entirely defined
+        /// via the client application - the framework places no restrictions on
+        /// the object other than it can be serialized.
+        /// </summary>
+        object AppState { get; set; }
+    }
+}

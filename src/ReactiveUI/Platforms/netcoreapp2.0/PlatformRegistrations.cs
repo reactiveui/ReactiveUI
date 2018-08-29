@@ -7,8 +7,12 @@ using System.Reactive.Concurrency;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Platform registrations for a .NET Core application.
+    /// </summary>
     public class PlatformRegistrations : IWantsToRegisterStuff
     {
+        /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;

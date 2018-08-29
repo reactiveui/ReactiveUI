@@ -8,10 +8,20 @@ using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// UI Kit command binder platform registrations.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.ICreatesCommandBinding" />
     public class UIKitCommandBinders : FlexibleCommandBinder
     {
+        /// <summary>
+        /// The UIKitCommandBinders instance.
+        /// </summary>
         public static Lazy<UIKitCommandBinders> Instance = new Lazy<UIKitCommandBinders>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.
+        /// </summary>
         public UIKitCommandBinders()
         {
             Register(typeof(UIControl), 9, (cmd, t, cp) => ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty("Enabled")));
@@ -19,4 +29,3 @@ namespace ReactiveUI
         }
     }
 }
-

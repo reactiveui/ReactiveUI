@@ -1,25 +1,28 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ReactiveUI
 {
     /// <summary>
-    ///
+    /// Loads and saves state to persistent storage.
     /// </summary>
     public class BundleSuspensionDriver : ISuspensionDriver
     {
+        /// <inheritdoc/>
         public IObservable<object> LoadState()
         {
-            try {
+            try
+            {
                 // NB: Sometimes OnCreate gives us a null bundle
-                if (AutoSuspendHelper.LatestBundle == null) {
+                if (AutoSuspendHelper.LatestBundle == null)
+                {
                     return Observable.Throw<object>(new Exception("New bundle, start from scratch"));
                 }
 
@@ -27,32 +30,40 @@ namespace ReactiveUI
                 var st = new MemoryStream(AutoSuspendHelper.LatestBundle.GetByteArray("__state"));
 
                 return Observable.Return(serializer.Deserialize(st));
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 return Observable.Throw<object>(ex);
             }
         }
 
+        /// <inheritdoc/>
         public IObservable<Unit> SaveState(object state)
         {
-            try {
+            try
+            {
                 var serializer = new BinaryFormatter();
                 var st = new MemoryStream();
 
                 AutoSuspendHelper.LatestBundle.PutByteArray("__state", st.ToArray());
                 return Observables.Unit;
-            
-            } catch(Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 return Observable.Throw<Unit>(ex);
             }
         }
 
+        /// <inheritdoc/>
         public IObservable<Unit> InvalidateState()
         {
-            try {
-                AutoSuspendHelper.LatestBundle.PutByteArray("__state", new byte[0]);
+            try
+            {
+                AutoSuspendHelper.LatestBundle.PutByteArray("__state", Array.Empty<byte>());
                 return Observables.Unit;
-            
-            } catch(Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 return Observable.Throw<Unit>(ex);
             }
         }

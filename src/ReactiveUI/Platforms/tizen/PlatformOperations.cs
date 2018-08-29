@@ -9,6 +9,7 @@ namespace ReactiveUI
     /// </summary>
     public class PlatformOperations : IPlatformOperations
     {
+        /// <inheritdoc/>
         public string GetOrientation()
         {
             return null;

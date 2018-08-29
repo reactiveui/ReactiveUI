@@ -3,85 +3,146 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using Android.Runtime;
 using System.ComponentModel;
-using System.Reactive.Subjects;
 using System.Reactive;
-using Android.Preferences;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Android.Preferences;
+using Android.Runtime;
 
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
-        protected ReactivePreferenceFragment() { }
-
-        protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceFragment{TViewModel}"/> class.
+        /// </summary>
+        protected ReactivePreferenceFragment()
         {
         }
 
-        TViewModel _ViewModel;
-        public TViewModel ViewModel {
-            get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceFragment{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
+        protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
+            : base(handle, ownership)
+        {
         }
 
-        object IViewFor.ViewModel {
-            get { return _ViewModel; }
-            set { _ViewModel = (TViewModel)value; }
+        private TViewModel _viewModel;
+
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get { return _viewModel; }
+            set { _viewModel = (TViewModel)value; }
         }
     }
 
     /// <summary>
-    /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     public class ReactivePreferenceFragment : PreferenceFragment, IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
     {
-        protected ReactivePreferenceFragment() { }
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
 
-        protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.
+        /// </summary>
+        protected ReactivePreferenceFragment()
         {
         }
 
-        public event PropertyChangingEventHandler PropertyChanging {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
-        }
-
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
+        protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
+            : base(handle, ownership)
         {
-            PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changing {
-            get { return this.getChangingObservable(); }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changing
+        {
+            get => this.GetChangingObservable();
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changed {
-            get { return this.getChangedObservable(); }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changed
+        {
+            get => this.GetChangedObservable();
+        }
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions
+        {
+            get => this.GetThrownExceptionsObservable();
+        }
+
+        /// <summary>
+        /// Gets a signal when the fragment is activated.
+        /// </summary>
+        public IObservable<Unit> Activated
+        {
+            get => _activated.AsObservable();
+        }
+
+        /// <summary>
+        /// Gets a signal when the fragment is deactivated.
+        /// </summary>
+        public IObservable<Unit> Deactivated
+        {
+            get => _deactivated.AsObservable();
         }
 
         /// <summary>
@@ -91,29 +152,20 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return this.suppressChangeNotifications();
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
-        readonly Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
-
-        readonly Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
-
+        /// <inheritdoc/>
         public override void OnPause()
         {
             base.OnPause();
-            deactivated.OnNext(Unit.Default);
+            _deactivated.OnNext(Unit.Default);
         }
 
+        /// <inheritdoc/>
         public override void OnResume()
         {
             base.OnResume();
-            activated.OnNext(Unit.Default);
+            _activated.OnNext(Unit.Default);
         }
     }
 }

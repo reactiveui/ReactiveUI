@@ -19,26 +19,33 @@ using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Loads and saves state to persistent storage.
+    /// </summary>
     public class WinRTAppDataDriver : ISuspensionDriver
     {
+        /// <inheritdoc/>
         public IObservable<object> LoadState()
         {
             return ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").ToObservable()
                 .SelectMany(x => FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8))
-                .SelectMany(x => {
+                .SelectMany(x =>
+                {
                     var line = x.IndexOf('\n');
-                    var typeName = x.Substring(0, line-1); // -1 for CR
+                    var typeName = x.Substring(0, line - 1); // -1 for CR
                     var serializer = new DataContractSerializer(Type.GetType(typeName));
 
                     // NB: WinRT is terrible
-                    var obj = serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(x.Substring(line+1))));
+                    var obj = serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(x.Substring(line + 1))));
                     return Observable.Return(obj);
                 });
         }
 
+        /// <inheritdoc/>
         public IObservable<Unit> SaveState(object state)
         {
-            try {
+            try
+            {
                 var ms = new MemoryStream();
                 var writer = new StreamWriter(ms, Encoding.UTF8);
                 var serializer = new DataContractSerializer(state.GetType());
@@ -49,11 +56,14 @@ namespace ReactiveUI
 
                 return ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.xmlish", CreationCollisionOption.ReplaceExisting).ToObservable()
                     .SelectMany(x => FileIO.WriteBytesAsync(x, ms.ToArray()).ToObservable());
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 return Observable.Throw<Unit>(ex);
             }
         }
 
+        /// <inheritdoc/>
         public IObservable<Unit> InvalidateState()
         {
             return ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").ToObservable()

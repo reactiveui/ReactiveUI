@@ -26,12 +26,14 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             var commandExecuted = false;
             object ea = null;
-            cmd.Subscribe(o => {
+            cmd.Subscribe(o =>
+            {
                 ea = o;
                 commandExecuted = true;
             });
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            {
                 input.PerformClick();
 
                 Assert.True(commandExecuted);
@@ -50,12 +52,14 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             var commandExecuted = false;
             object ea = null;
-            cmd.Subscribe(o => {
+            cmd.Subscribe(o =>
+            {
                 ea = o;
                 commandExecuted = true;
             });
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            {
                 input.PerformClick();
 
                 Assert.True(commandExecuted);
@@ -74,12 +78,14 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             var commandExecuted = false;
             object ea = null;
-            cmd.Subscribe(o => {
+            cmd.Subscribe(o =>
+            {
                 ea = o;
                 commandExecuted = true;
             });
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            {
                 input.PerformClick();
 
                 Assert.True(commandExecuted);
@@ -97,7 +103,8 @@ namespace ReactiveUI.Tests.Winforms
             var cmd = ReactiveCommand.Create(() => { }, canExecute);
             var input = new Button { };
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            {
                 canExecute.OnNext(true);
                 Assert.True(input.Enabled);
 
@@ -116,7 +123,8 @@ namespace ReactiveUI.Tests.Winforms
             var cmd = ReactiveCommand.Create(() => { }, canExecute);
             var input = new ToolStripButton { }; // ToolStripButton is a Component, not a Control
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            {
                 canExecute.OnNext(true);
                 Assert.True(input.Enabled);
 
@@ -133,7 +141,9 @@ namespace ReactiveUI.Tests.Winforms
         public void PerformClick()
         {
             if (Click != null)
+            {
                 Click(this, EventArgs.Empty);
+            }
         }
     }
 
@@ -141,17 +151,17 @@ namespace ReactiveUI.Tests.Winforms
     {
         public void PerformClick()
         {
-            this.InvokeOnClick(this, EventArgs.Empty);
+            InvokeOnClick(this, EventArgs.Empty);
         }
 
-        public void RaiseMouseClickEvent(System.Windows.Forms.MouseEventArgs args)
+        public void RaiseMouseClickEvent(MouseEventArgs args)
         {
-            this.OnMouseClick(args);
+            OnMouseClick(args);
         }
 
-        public void RaiseMouseUpEvent(System.Windows.Forms.MouseEventArgs args)
+        public void RaiseMouseUpEvent(MouseEventArgs args)
         {
-            this.OnMouseUp(args);
+            OnMouseUp(args);
         }
     }
 
@@ -161,15 +171,16 @@ namespace ReactiveUI.Tests.Winforms
         public void CommandBindByNameWireup()
         {
             var vm = new WinformCommandBindViewModel();
-            var view = new WinformCommandBindView() { ViewModel = vm };
+            var view = new WinformCommandBindView { ViewModel = vm };
             var fixture = new CommandBinderImplementation();
 
             var invokeCount = 0;
             vm.Command1.Subscribe(_ => invokeCount += 1);
 
-            var disp = fixture.BindCommand(vm, view, x => x.Command1,x=>x.Command1);
+            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
 
-            view.Command1.PerformClick(); ;
+            view.Command1.PerformClick();
+
             Assert.Equal(1, invokeCount);
 
             var newCmd = ReactiveCommand.Create(() => { });
@@ -181,12 +192,11 @@ namespace ReactiveUI.Tests.Winforms
             disp.Dispose();
         }
 
-
         [Fact]
         public void CommandBindToExplicitEventWireup()
         {
             var vm = new WinformCommandBindViewModel();
-            var view = new WinformCommandBindView() { ViewModel = vm };
+            var view = new WinformCommandBindView { ViewModel = vm };
             var fixture = new CommandBinderImplementation();
 
             var invokeCount = 0;
@@ -225,8 +235,8 @@ namespace ReactiveUI.Tests.Winforms
 
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (FakeViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (FakeViewModel)value;
         }
 
         public FakeViewModel ViewModel { get; set; }
@@ -234,18 +244,20 @@ namespace ReactiveUI.Tests.Winforms
 
     public class WinformCommandBindViewModel : ReactiveObject
     {
-        ReactiveCommand<Unit, Unit> _Command1;
+        private ReactiveCommand<Unit, Unit> _command1;
+
         public ReactiveCommand<Unit, Unit> Command1
         {
-            get { return _Command1; }
-            set { this.RaiseAndSetIfChanged(ref _Command1, value); }
+            get => _command1;
+            set => this.RaiseAndSetIfChanged(ref _command1, value);
         }
 
-        ReactiveCommand<Unit, Unit> _Command2;
+        private ReactiveCommand<Unit, Unit> _command2;
+
         public ReactiveCommand<Unit, Unit> Command2
         {
-            get { return _Command2; }
-            set { this.RaiseAndSetIfChanged(ref _Command2, value); }
+            get => _command2;
+            set => this.RaiseAndSetIfChanged(ref _command2, value);
         }
 
         public WinformCommandBindViewModel()
@@ -259,8 +271,8 @@ namespace ReactiveUI.Tests.Winforms
     {
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (WinformCommandBindViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (WinformCommandBindViewModel)value;
         }
 
         public WinformCommandBindViewModel ViewModel { get; set; }
