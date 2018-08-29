@@ -14,39 +14,62 @@ using Splat;
 
 namespace ReactiveUI.Winforms
 {
+    /// <summary>
+    /// WinForm view objects are not Generally Observable™, so hard-code some
+    /// particularly useful types.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
     public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
     {
-        static readonly MemoizingMRUCache<Tuple<Type, string>, EventInfo> eventInfoCache = new MemoizingMRUCache<Tuple<Type, string>, EventInfo>((pair, _) => {
-            return pair.Item1.GetEvents(System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+        private static readonly MemoizingMRUCache<Tuple<Type, string>, EventInfo> eventInfoCache = new MemoizingMRUCache<Tuple<Type, string>, EventInfo>(
+            (pair, _) =>
+        {
+            return pair.Item1.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
                 .FirstOrDefault(x => x.Name == pair.Item2 + "Changed");
         }, RxApp.SmallCacheLimit);
 
+        /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
             bool supportsTypeBinding = typeof(Component).IsAssignableFrom(type);
-            if (!supportsTypeBinding) return 0;
+            if (!supportsTypeBinding)
+            {
+                return 0;
+            }
 
-            lock (eventInfoCache) {
+            lock (eventInfoCache)
+            {
                 var ei = eventInfoCache.Get(Tuple.Create(type, propertyName));
-                return (beforeChanged == false && ei != null) ?  8 : 0;
+                return beforeChanged == false && ei != null ? 8 : 0;
             }
         }
 
+        /// <inheritdoc/>
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
         {
             var ei = default(EventInfo);
 
-            lock (eventInfoCache) {
+            lock (eventInfoCache)
+            {
                 ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), propertyName));
             }
 
-            return Observable.Create<IObservedChange<object, object>>(subj => {
+            return Observable.Create<IObservedChange<object, object>>(subj =>
+            {
                 bool completed = false;
-                var handler = new EventHandler((o, e) => {
-                    if (completed) return;
-                    try {
+                var handler = new EventHandler((o, e) =>
+                {
+                    if (completed)
+                    {
+                        return;
+                    }
+
+                    try
+                    {
                         subj.OnNext(new ObservedChange<object, object>(sender, expression));
-                    } catch (Exception ex) {
+                    }
+                    catch (Exception ex)
+                    {
                         subj.OnError(ex);
                         completed = true;
                     }

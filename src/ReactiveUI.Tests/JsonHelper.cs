@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Tests
 {
-    public class JSONHelper
+    public static class JSONHelper
     {
         public static string Serialize<T>(T obj)
         {

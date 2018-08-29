@@ -15,7 +15,6 @@ namespace ReactiveUI.Fody.Tests.API
     [ExcludeFromCodeCoverage]
     public class ApiApprovalTests
     {
-
         [Fact]
         public void ReactiveUI_Fody()
         {
@@ -32,8 +31,7 @@ namespace ReactiveUI.Fody.Tests.API
                 .Where(l => !l.StartsWith("[assembly: AssemblyVersion("))
                 .Where(l => !l.StartsWith("[assembly: AssemblyFileVersion("))
                 .Where(l => !l.StartsWith("[assembly: AssemblyInformationalVersion("))
-                .Where(l => !string.IsNullOrWhiteSpace(l))
-                );
+                .Where(l => !string.IsNullOrWhiteSpace(l)));
         }
     }
 }

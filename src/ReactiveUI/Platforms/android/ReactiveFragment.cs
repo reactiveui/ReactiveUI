@@ -1,11 +1,22 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -13,91 +24,132 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using System.Runtime.Serialization;
-using System.ComponentModel;
-using System.Reflection;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using Splat;
-using System.Reactive;
-using System.Reactive.Linq;
 
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is a Fragment that is both an Activity and has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// This is a Fragment that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
-        protected ReactiveFragment() { }
+        private TViewModel _viewModel;
 
-        protected ReactiveFragment(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveFragment{TViewModel}"/> class.
+        /// </summary>
+        protected ReactiveFragment()
         {
         }
 
-        TViewModel _ViewModel;
-        public TViewModel ViewModel {
-            get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveFragment{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
+        protected ReactiveFragment(IntPtr handle, JniHandleOwnership ownership)
+            : base(handle, ownership)
+        {
         }
 
-        object IViewFor.ViewModel {
-            get { return _ViewModel; }
-            set { _ViewModel = (TViewModel)value; }
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => _viewModel;
+            set => _viewModel = (TViewModel)value;
         }
     }
 
     /// <summary>
-    /// This is a Fragment that is both an Activity and has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// This is a Fragment that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
     {
-        protected ReactiveFragment() { }
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
 
-        protected ReactiveFragment(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveFragment"/> class.
+        /// </summary>
+        protected ReactiveFragment()
         {
         }
 
-        public event PropertyChangingEventHandler PropertyChanging {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveFragment"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
+        protected ReactiveFragment(IntPtr handle, JniHandleOwnership ownership)
+            : base(handle, ownership)
+        {
         }
 
+        /// <summary>
+        /// Represents an Observable that fires *before* a property is about to
+        /// be changed.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changing => this.GetChangingObservable();
+
+        /// <summary>
+        /// Represents an Observable that fires *after* a property has changed.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changed => this.GetChangedObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <summary>
+        /// Gets the activated.
+        /// </summary>
+        /// <value>
+        /// The activated.
+        /// </value>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <summary>
+        /// Gets a signal when the fragment is deactivated.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
-        }
-
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changing {
-            get { return this.getChangingObservable(); }
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changed {
-            get { return this.getChangedObservable(); }
         }
 
         /// <summary>
@@ -107,29 +159,20 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return this.suppressChangeNotifications();
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
-        readonly Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
-
-        readonly Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
-
+        /// <inheritdoc/>
         public override void OnPause()
         {
             base.OnPause();
-            deactivated.OnNext(Unit.Default);
+            _deactivated.OnNext(Unit.Default);
         }
 
+        /// <inheritdoc/>
         public override void OnResume()
         {
             base.OnResume();
-            activated.OnNext(Unit.Default);
+            _activated.OnNext(Unit.Default);
         }
     }
 }

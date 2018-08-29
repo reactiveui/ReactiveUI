@@ -4,20 +4,21 @@
 
 using System;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Threading;
-using ReactiveUI;
-using System.Reactive.Concurrency;
-using Microsoft.Reactive.Testing;
 using System.Threading.Tasks;
-
+using Microsoft.Reactive.Testing;
+using ReactiveUI;
 
 namespace ReactiveUI.Testing
 {
+#pragma warning disable SA1600 // Elements should be documented
     public static class TestUtils
+#pragma warning restore SA1600 // Elements should be documented
     {
-        static readonly AutoResetEvent schedGate = new AutoResetEvent(true);
-        static readonly object mbGate = 42;
+        private static readonly AutoResetEvent schedGate = new AutoResetEvent(true);
+        private static readonly object mbGate = 42;
 
         /// <summary>
         /// WithScheduler overrides the default Deferred and Taskpool schedulers
@@ -37,7 +38,8 @@ namespace ReactiveUI.Testing
             RxApp.MainThreadScheduler = sched;
             RxApp.TaskpoolScheduler = sched;
 
-            return Disposable.Create(() => {
+            return Disposable.Create(() =>
+            {
                 RxApp.MainThreadScheduler = prevDef;
                 RxApp.TaskpoolScheduler = prevTask;
                 schedGate.Set();
@@ -45,13 +47,13 @@ namespace ReactiveUI.Testing
         }
 
         /// <summary>
-        /// WithMessageBus allows you to override the default Message Bus 
-        /// implementation until the object returned is disposed. If a 
+        /// WithMessageBus allows you to override the default Message Bus
+        /// implementation until the object returned is disposed. If a
         /// message bus is not specified, a default empty one is created.
         /// </summary>
         /// <param name="messageBus">The message bus to use, or null to create
         /// a new one using the default implementation.</param>
-        /// <returns>An object that when disposed, restores the original 
+        /// <returns>An object that when disposed, restores the original
         /// message bus.</returns>
         public static IDisposable WithMessageBus(this IMessageBus messageBus)
         {
@@ -72,6 +74,8 @@ namespace ReactiveUI.Testing
         /// this to initialize objects that store the default scheduler (most
         /// RxXaml objects).
         /// </summary>
+        /// <typeparam name="T">The scheduler type.</typeparam>
+        /// <typeparam name="TRet">The return type.</typeparam>
         /// <param name="sched">The scheduler to use.</param>
         /// <param name="block">The function to execute.</param>
         /// <returns>The return value of the function.</returns>
@@ -79,9 +83,11 @@ namespace ReactiveUI.Testing
             where T : IScheduler
         {
             TRet ret;
-            using (WithScheduler(sched)) {
+            using (WithScheduler(sched))
+            {
                 ret = block(sched);
             }
+
             return ret;
         }
 
@@ -91,6 +97,8 @@ namespace ReactiveUI.Testing
         /// this to initialize objects that store the default scheduler (most
         /// RxXaml objects).
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <typeparam name="TRet">The return type.</typeparam>
         /// <param name="sched">The scheduler to use.</param>
         /// <param name="block">The function to execute.</param>
         /// <returns>The return value of the function.</returns>
@@ -98,45 +106,60 @@ namespace ReactiveUI.Testing
             where T : IScheduler
         {
             TRet ret;
-            using (WithScheduler(sched)) {
-                ret = await block(sched);
+            using (WithScheduler(sched))
+            {
+                ret = await block(sched).ConfigureAwait(false);
             }
+
             return ret;
         }
 
         /// <summary>
         /// With is an extension method that uses the given scheduler as the
-        /// default Deferred and Taskpool schedulers for the given Action. 
+        /// default Deferred and Taskpool schedulers for the given Action.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
         /// <param name="sched">The scheduler to use.</param>
         /// <param name="block">The action to execute.</param>
         public static void With<T>(this T sched, Action<T> block)
             where T : IScheduler
         {
-            sched.With(x => { block(x); return 0; });
+            sched.With(x =>
+            {
+                block(x);
+                return 0;
+            });
         }
 
         /// <summary>
         /// With is an extension method that uses the given scheduler as the
-        /// default Deferred and Taskpool schedulers for the given Action. 
+        /// default Deferred and Taskpool schedulers for the given Action.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
         /// <param name="sched">The scheduler to use.</param>
         /// <param name="block">The action to execute.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static Task WithAsync<T>(this T sched, Func<T, Task> block)
             where T : IScheduler
         {
-            return sched.WithAsync(async x => { await block(x); return 0; });
+            return sched.WithAsync(async x =>
+            {
+                await block(x).ConfigureAwait(false);
+                return 0;
+            });
         }
 
         /// <summary>
         /// Override the default Message Bus during the specified block.
         /// </summary>
+        /// <typeparam name="TRet">The return type.</typeparam>
         /// <param name="messageBus">The message bus to use for the block.</param>
         /// <param name="block">The function to execute.</param>
         /// <returns>The return value of the function.</returns>
         public static TRet With<TRet>(this IMessageBus messageBus, Func<TRet> block)
         {
-            using (messageBus.WithMessageBus()) {
+            using (messageBus.WithMessageBus())
+            {
                 return block();
             }
         }
@@ -148,7 +171,8 @@ namespace ReactiveUI.Testing
         /// <param name="block">The action to execute.</param>
         public static void With(this IMessageBus messageBus, Action block)
         {
-            using (messageBus.WithMessageBus()) {
+            using (messageBus.WithMessageBus())
+            {
                 block();
             }
         }
@@ -171,7 +195,7 @@ namespace ReactiveUI.Testing
         /// milliseconds.
         /// </summary>
         /// <param name="sched">The scheduler to advance.</param>
-        /// <param name="milliseconds">The relative time to advance the TestScheduler 
+        /// <param name="milliseconds">The relative time to advance the TestScheduler
         /// by, in milliseconds.</param>
         public static void AdvanceByMs(this TestScheduler sched, double milliseconds)
         {
@@ -182,6 +206,7 @@ namespace ReactiveUI.Testing
         /// OnNextAt is a method to help create simulated input Observables in
         /// conjunction with CreateHotObservable or CreateColdObservable.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
         /// <param name="sched">The scheduler to fire from.</param>
         /// <param name="milliseconds">The time offset to fire the notification
         /// on the recorded notification.</param>
@@ -199,6 +224,7 @@ namespace ReactiveUI.Testing
         /// OnErrorAt is a method to help create simulated input Observables in
         /// conjunction with CreateHotObservable or CreateColdObservable.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
         /// <param name="sched">The scheduler to fire from.</param>
         /// <param name="milliseconds">The time offset to fire the notification
         /// on the recorded notification.</param>
@@ -212,11 +238,12 @@ namespace ReactiveUI.Testing
                 sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
                 Notification.CreateOnError<T>(ex));
         }
-        
+
         /// <summary>
         /// OnCompletedAt is a method to help create simulated input Observables in
         /// conjunction with CreateHotObservable or CreateColdObservable.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
         /// <param name="sched">The scheduler to fire from.</param>
         /// <param name="milliseconds">The time offset to fire the notification
         /// on the recorded notification.</param>
@@ -232,7 +259,7 @@ namespace ReactiveUI.Testing
         /// <summary>
         /// Converts a timespan to a virtual time for testing.
         /// </summary>
-        /// <param name="sched">The scheduler</param>
+        /// <param name="sched">The scheduler.</param>
         /// <param name="span">Timespan to convert.</param>
         /// <returns>Timespan for virtual scheduler to use.</returns>
         public static long FromTimeSpan(this TestScheduler sched, TimeSpan span)

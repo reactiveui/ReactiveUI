@@ -92,7 +92,7 @@ namespace ReactiveUI.Tests.Winforms
         public void CanBindViewModelToWinformControls()
         {
             var vm = new FakeWinformViewModel();
-            var view = new FakeWinformsView() { ViewModel = vm };
+            var view = new FakeWinformsView { ViewModel = vm };
 
             vm.SomeText = "Foo";
             Assert.NotEqual(vm.SomeText, view.Property3.Text);
@@ -114,9 +114,10 @@ namespace ReactiveUI.Tests.Winforms
         public void SmokeTestWinformControls()
         {
             var vm = new FakeWinformViewModel();
-            var view = new FakeWinformsView() { ViewModel = vm };
+            var view = new FakeWinformsView { ViewModel = vm };
 
-            var disp = new CompositeDisposable(new[] {
+            var disp = new CompositeDisposable(new[]
+            {
                 view.Bind(vm, x => x.Property1, x => x.Property1.Text),
                 view.Bind(vm, x => x.Property2, x => x.Property2.Text),
                 view.Bind(vm, x => x.Property3, x => x.Property3.Text),
@@ -147,10 +148,7 @@ namespace ReactiveUI.Tests.Winforms
 
     public class FakeWinformViewModel : ReactiveObject, IRoutableViewModel
     {
-        public string UrlPathSegment
-        {
-            get { return "fake"; }
-        }
+        public string UrlPathSegment => "fake";
 
         public IScreen HostScreen { get; private set; }
 
@@ -159,60 +157,68 @@ namespace ReactiveUI.Tests.Winforms
             HostScreen = screen;
         }
 
-        int someInteger;
+        private int _someInteger;
+
         public int SomeInteger
         {
-            get { return this.someInteger; }
-            set { this.RaiseAndSetIfChanged(ref this.someInteger, value); }
+            get => _someInteger;
+            set => this.RaiseAndSetIfChanged(ref _someInteger, value);
         }
 
-        string someText;
+        private string _someText;
+
         public string SomeText
         {
-            get { return this.someText; }
-            set { this.RaiseAndSetIfChanged(ref this.someText, value); }
+            get => _someText;
+            set => this.RaiseAndSetIfChanged(ref _someText, value);
         }
 
-        double someDouble;
+        private double _someDouble;
+
         public double SomeDouble
         {
-            get { return this.someDouble; }
-            set { this.RaiseAndSetIfChanged(ref this.someDouble, value); }
+            get => _someDouble;
+            set => this.RaiseAndSetIfChanged(ref _someDouble, value);
         }
 
-        string _property1;
+        private string _property1;
+
         public string Property1
         {
-            get { return _property1; }
-            set { this.RaiseAndSetIfChanged(ref _property1, value); }
+            get => _property1;
+            set => this.RaiseAndSetIfChanged(ref _property1, value);
         }
 
-        string _property2;
+        private string _property2;
+
         public string Property2
         {
-            get { return _property2; }
-            set { this.RaiseAndSetIfChanged(ref _property2, value); }
+            get => _property2;
+            set => this.RaiseAndSetIfChanged(ref _property2, value);
         }
 
-        string _property3;
+        private string _property3;
+
         public string Property3
         {
-            get { return _property3; }
-            set { this.RaiseAndSetIfChanged(ref _property3, value); }
+            get => _property3;
+            set => this.RaiseAndSetIfChanged(ref _property3, value);
         }
 
-        string _property4;
+        private string _property4;
+
         public string Property4
         {
-            get { return _property4; }
-            set { this.RaiseAndSetIfChanged(ref _property4, value); }
+            get => _property4;
+            set => this.RaiseAndSetIfChanged(ref _property4, value);
         }
 
-        bool _someBooleanProperty;
+        private bool _someBooleanProperty;
+
         public bool BooleanProperty
         {
-            get { return _someBooleanProperty; }
-            set { this.RaiseAndSetIfChanged(ref _someBooleanProperty, value); }
+            get => _someBooleanProperty;
+            set => this.RaiseAndSetIfChanged(ref _someBooleanProperty, value);
         }
     }
 
@@ -220,27 +226,31 @@ namespace ReactiveUI.Tests.Winforms
     {
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (FakeWinformViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (FakeWinformViewModel)value;
         }
 
         public FakeWinformViewModel ViewModel { get; set; }
 
         public Button Property1 { get; private set; }
+
         public Label Property2 { get; private set; }
+
         public TextBox Property3 { get; private set; }
+
         public RichTextBox Property4 { get; private set; }
+
         public CheckBox BooleanProperty { get; private set; }
 
         public TextBox SomeDouble { get; private set; }
 
         public FakeWinformsView()
         {
-            this.Property1 = new System.Windows.Forms.Button();
-            this.Property2 = new Label();
-            this.Property3 = new TextBox();
-            this.Property4 = new RichTextBox();
-            this.BooleanProperty = new CheckBox();
+            Property1 = new Button();
+            Property2 = new Label();
+            Property3 = new TextBox();
+            Property4 = new RichTextBox();
+            BooleanProperty = new CheckBox();
             SomeDouble = new TextBox();
         }
     }
@@ -250,16 +260,17 @@ namespace AThirdPartyNamespace
 {
     public class ThirdPartyControl : Control
     {
-        string value;
+        private string _value;
 
         public string Value
         {
-            get { return this.value; }
+            get => _value;
             set
             {
-                if (this.value != value) {
-                    this.value = value;
-                    this.OnValueChanged();
+                if (_value != value)
+                {
+                    _value = value;
+                    OnValueChanged();
                 }
             }
         }
@@ -268,7 +279,8 @@ namespace AThirdPartyNamespace
 
         protected virtual void OnValueChanged()
         {
-            if (ValueChanged != null) {
+            if (ValueChanged != null)
+            {
                 ValueChanged(this, EventArgs.Empty);
             }
         }

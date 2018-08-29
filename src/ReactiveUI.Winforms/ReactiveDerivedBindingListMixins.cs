@@ -20,11 +20,14 @@ namespace ReactiveUI.Winforms.Legacy
     /// collection; this method is useful for creating ViewModel collections
     /// that are automatically updated when the respective Model collection is updated.
     /// </summary>
+    /// <typeparam name="T">The type.</typeparam>
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
-    public interface IReactiveDerivedBindingList<T> : IReactiveDerivedList<T>, IBindingList { }
+    public interface IReactiveDerivedBindingList<T> : IReactiveDerivedList<T>, IBindingList
+    {
+    }
 
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
-    class ReactiveDerivedBindingList<TSource, TValue> :
+    internal class ReactiveDerivedBindingList<TSource, TValue> :
         ReactiveDerivedCollection<TSource, TValue>, IReactiveDerivedBindingList<TValue>
     {
         public ReactiveDerivedBindingList(
@@ -34,21 +37,24 @@ namespace ReactiveUI.Winforms.Legacy
             Func<TValue, TValue, int> orderer,
             Action<TValue> removed,
             IObservable<Unit> signalReset)
-            : base(source, selector, filter, orderer, removed, signalReset, Scheduler.Immediate) { }
-
-        protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+            : base(source, selector, filter, orderer, removed, signalReset, Scheduler.Immediate)
         {
-            base.raiseCollectionChanged(e);
-            if (this.ListChanged != null) {
-                e.AsListChangedEventArgs().ForEach(x => this.ListChanged(this, x));
+        }
+
+        protected override void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            base.RaiseCollectionChanged(e);
+            if (ListChanged != null)
+            {
+                e.AsListChangedEventArgs().ForEach(x => ListChanged(this, x));
             }
         }
 
-        const string readonlyExceptionMessage = "Derived collections cannot be modified.";
+        private const string ReadonlyExceptionMessage = "Derived collections cannot be modified.";
 
         public object AddNew()
         {
-            throw new NotSupportedException(readonlyExceptionMessage);
+            throw new NotSupportedException(ReadonlyExceptionMessage);
         }
 
         public void AddIndex(PropertyDescriptor property)
@@ -76,28 +82,29 @@ namespace ReactiveUI.Winforms.Legacy
             throw new NotSupportedException();
         }
 
-        public bool AllowNew { get { return false; } }
+        public bool AllowNew => false;
 
-        public bool AllowEdit { get { return false; } }
+        public bool AllowEdit => false;
 
-        public bool AllowRemove { get { return false; } }
+        public bool AllowRemove => false;
 
-        public bool SupportsChangeNotification { get { return true; } }
+        public bool SupportsChangeNotification => true;
 
-        public bool SupportsSearching { get { return false; } }
+        public bool SupportsSearching => false;
 
-        public bool SupportsSorting { get { return false; } }
+        public bool SupportsSorting => false;
 
-        public bool IsSorted { get { return false; } }
+        public bool IsSorted => false;
 
-        public PropertyDescriptor SortProperty { get { return null; } }
+        public PropertyDescriptor SortProperty => null;
 
-        public ListSortDirection SortDirection { get { return ListSortDirection.Ascending; } }
+        public ListSortDirection SortDirection => ListSortDirection.Ascending;
 
         public event ListChangedEventHandler ListChanged;
     }
 
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
+#pragma warning disable SA1600 // Elements should be documented
     public static class ObservableCollectionMixin
     {
         /// <summary>
@@ -106,29 +113,32 @@ namespace ReactiveUI.Winforms.Legacy
         /// that are automatically updated when the respective Model collection
         /// is updated.
         ///
-        /// Note that even though this method attaches itself to any 
+        /// Note that even though this method attaches itself to any
         /// IEnumerable, it will only detect changes from objects implementing
         /// INotifyCollectionChanged (like ReactiveList). If your source
         /// collection doesn't implement this, signalReset is the way to signal
         /// the derived collection to reorder/refilter itself.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <typeparam name="TNew">The new type.</typeparam>
+        /// <typeparam name="TDontCare">The signal type.</typeparam>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
         /// <param name="removed">An action that is called on each item when
         /// it is removed.</param>
-        /// <param name="filter">A filter to determine whether to exclude items 
+        /// <param name="filter">A filter to determine whether to exclude items
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
-        /// <param name="signalReset">When this Observable is signalled, 
-        /// the derived collection will be manually 
+        /// <param name="signalReset">When this Observable is signalled,
+        /// the derived collection will be manually
         /// reordered/refiltered.</param>
-        /// <param name="This">The source collection to follow</param>
+        /// <param name="this">The source collection to follow.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// Collection.Select().Where().OrderBy() and will mirror changes
         /// in the initial collection.</returns>
         public static IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(
-            this IEnumerable<T> This,
+            this IEnumerable<T> @this,
             Func<T, TNew> selector,
             Action<TNew> removed,
             Func<T, bool> filter = null,
@@ -139,11 +149,12 @@ namespace ReactiveUI.Winforms.Legacy
 
             IObservable<Unit> reset = null;
 
-            if (signalReset != null) {
+            if (signalReset != null)
+            {
                 reset = signalReset.Select(_ => Unit.Default);
             }
 
-            return new ReactiveDerivedBindingList<T, TNew>(This, selector, filter, orderer, removed, reset);
+            return new ReactiveDerivedBindingList<T, TNew>(@this, selector, filter, orderer, removed, reset);
         }
 
         /// <summary>
@@ -152,33 +163,36 @@ namespace ReactiveUI.Winforms.Legacy
         /// that are automatically updated when the respective Model collection
         /// is updated.
         ///
-        /// Note that even though this method attaches itself to any 
+        /// Note that even though this method attaches itself to any
         /// IEnumerable, it will only detect changes from objects implementing
         /// INotifyCollectionChanged (like ReactiveList). If your source
         /// collection doesn't implement this, signalReset is the way to signal
         /// the derived collection to reorder/refilter itself.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <typeparam name="TNew">The new type.</typeparam>
+        /// <typeparam name="TDontCare">The signal type.</typeparam>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
-        /// <param name="filter">A filter to determine whether to exclude items 
+        /// <param name="filter">A filter to determine whether to exclude items
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
-        /// <param name="signalReset">When this Observable is signalled, 
-        /// the derived collection will be manually 
+        /// <param name="signalReset">When this Observable is signalled,
+        /// the derived collection will be manually
         /// reordered/refiltered.</param>
-        /// <param name="This">The source collection to follow</param>
+        /// <param name="this">The source collection to follow.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// Collection.Select().Where().OrderBy() and will mirror changes
         /// in the initial collection.</returns>
         public static IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(
-            this IEnumerable<T> This,
+            this IEnumerable<T> @this,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null,
             IObservable<TDontCare> signalReset = null)
         {
-            return This.CreateDerivedBindingList(selector, null, filter, orderer, signalReset);
+            return @this.CreateDerivedBindingList(selector, null, filter, orderer, signalReset);
         }
 
         /// <summary>
@@ -186,32 +200,34 @@ namespace ReactiveUI.Winforms.Legacy
         /// collection; this method is useful for creating ViewModel collections
         /// that are automatically updated when the respective Model collection
         /// is updated.
-        /// 
-        /// Be aware that this overload will result in a collection that *only* 
+        ///
+        /// Be aware that this overload will result in a collection that *only*
         /// updates if the source implements INotifyCollectionChanged. If your
         /// list changes but isn't a ReactiveList/ObservableCollection,
         /// you probably want to use the other overload.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <typeparam name="TNew">The new type.</typeparam>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
         /// <param name="removed">An action that is called on each item when
         /// it is removed.</param>
-        /// <param name="filter">A filter to determine whether to exclude items 
+        /// <param name="filter">A filter to determine whether to exclude items
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
-        /// <param name="This">The source collection to follow</param>
+        /// <param name="this">The source collection to follow.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// Collection.Select().Where().OrderBy() and will mirror changes
         /// in the initial collection.</returns>
         public static IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(
-            this IEnumerable<T> This,
+            this IEnumerable<T> @this,
             Func<T, TNew> selector,
             Action<TNew> removed,
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null)
         {
-            return This.CreateDerivedBindingList(selector, removed, filter, orderer, (IObservable<Unit>)null);
+            return @this.CreateDerivedBindingList(selector, removed, filter, orderer, (IObservable<Unit>)null);
         }
 
         /// <summary>
@@ -219,29 +235,33 @@ namespace ReactiveUI.Winforms.Legacy
         /// collection; this method is useful for creating ViewModel collections
         /// that are automatically updated when the respective Model collection
         /// is updated.
-        /// 
-        /// Be aware that this overload will result in a collection that *only* 
+        ///
+        /// Be aware that this overload will result in a collection that *only*
         /// updates if the source implements INotifyCollectionChanged. If your
         /// list changes but isn't a ReactiveList/ObservableCollection,
         /// you probably want to use the other overload.
         /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <typeparam name="TNew">The new type.</typeparam>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
-        /// <param name="filter">A filter to determine whether to exclude items 
+        /// <param name="filter">A filter to determine whether to exclude items
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
-        /// <param name="This">The source collection to follow</param>
+        /// <param name="this">The source collection to follow.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// Collection.Select().Where().OrderBy() and will mirror changes
         /// in the initial collection.</returns>
         public static IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(
-            this IEnumerable<T> This,
+            this IEnumerable<T> @this,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null)
         {
-            return This.CreateDerivedBindingList(selector, null, filter, orderer, (IObservable<Unit>)null);
+            return @this.CreateDerivedBindingList(selector, null, filter, orderer, (IObservable<Unit>)null);
         }
     }
+
+#pragma warning restore SA1600 // Elements should be documented
 }

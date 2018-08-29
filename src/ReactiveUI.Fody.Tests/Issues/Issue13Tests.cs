@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReactiveUI.Fody.Helpers;
 using Xunit;
 
 namespace ReactiveUI.Fody.Tests.Issues
@@ -22,9 +22,10 @@ namespace ReactiveUI.Fody.Tests.Issues
             Assert.Equal(0.0, vm.P2);
         }
 
-        class VM : ReactiveObject
+        private class VM : ReactiveObject
         {
             [ObservableAsProperty] public double P1 { get; }
+
             [ObservableAsProperty] public double P2 { get; }
 
             public VM()
@@ -33,7 +34,5 @@ namespace ReactiveUI.Fody.Tests.Issues
                 this.WhenAnyValue(vm => vm.P1).ToPropertyEx(this, vm => vm.P2);
             }
         }
-
     }
-
 }

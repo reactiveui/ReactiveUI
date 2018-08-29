@@ -14,21 +14,37 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
+    /// AppDelegate to inherit from this class, then call:
+    ///
+    /// Locator.Current.GetService.<ISuspensionHost>().SetupDefaultSuspendResume();
+    /// </summary>
     public class AutoSuspendHelper : IEnableLogger
     {
-        readonly Subject<IDisposable> shouldPersistState = new Subject<IDisposable>();
-        readonly Subject<Unit> isResuming = new Subject<Unit>();
-        readonly Subject<Unit> isUnpausing = new Subject<Unit>();
+        private readonly Subject<IDisposable> _shouldPersistState = new Subject<IDisposable>();
+        private readonly Subject<Unit> _isResuming = new Subject<Unit>();
+        private readonly Subject<Unit> _isUnpausing = new Subject<Unit>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
+        /// </summary>
+        /// <param name="appDelegate">The application delegate.</param>
         public AutoSuspendHelper(NSApplicationDelegate appDelegate)
         {
-            Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", appDelegate,
-                "ApplicationShouldTerminate", "DidFinishLaunching", "DidResignActive", "DidBecomeActive", "DidHide");
+            Reflection.ThrowIfMethodsNotOverloaded(
+                "AutoSuspendHelper",
+                appDelegate,
+                "ApplicationShouldTerminate",
+                "DidFinishLaunching",
+                "DidResignActive",
+                "DidBecomeActive",
+                "DidHide");
 
             RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
-            RxApp.SuspensionHost.IsResuming = isResuming;
-            RxApp.SuspensionHost.IsUnpausing = isUnpausing;
-            RxApp.SuspensionHost.ShouldPersistState = shouldPersistState;
+            RxApp.SuspensionHost.IsResuming = _isResuming;
+            RxApp.SuspensionHost.IsUnpausing = _isUnpausing;
+            RxApp.SuspensionHost.ShouldPersistState = _shouldPersistState;
 
             var untimelyDemise = new Subject<Unit>();
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
@@ -37,33 +53,54 @@ namespace ReactiveUI
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;
         }
 
+        /// <summary>
+        /// Applications the should terminate.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <returns>The termination reply from the application.</returns>
         public NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
         {
             RxApp.MainThreadScheduler.Schedule(() =>
-                shouldPersistState.OnNext(Disposable.Create(() =>
+                _shouldPersistState.OnNext(Disposable.Create(() =>
                     sender.ReplyToApplicationShouldTerminate(true))));
 
             return NSApplicationTerminateReply.Later;
         }
 
+        /// <summary>
+        /// Dids the finish launching.
+        /// </summary>
+        /// <param name="notification">The notification.</param>
         public void DidFinishLaunching(NSNotification notification)
         {
-            isResuming.OnNext(Unit.Default);
+            _isResuming.OnNext(Unit.Default);
         }
 
+        /// <summary>
+        /// Dids the resign active.
+        /// </summary>
+        /// <param name="notification">The notification.</param>
         public void DidResignActive(NSNotification notification)
         {
-            shouldPersistState.OnNext(Disposable.Empty);
+            _shouldPersistState.OnNext(Disposable.Empty);
         }
 
+        /// <summary>
+        /// Dids the become active.
+        /// </summary>
+        /// <param name="notification">The notification.</param>
         public void DidBecomeActive(NSNotification notification)
         {
-            isUnpausing.OnNext(Unit.Default);
+            _isUnpausing.OnNext(Unit.Default);
         }
 
+        /// <summary>
+        /// Dids the hide.
+        /// </summary>
+        /// <param name="notification">The notification.</param>
         public void DidHide(NSNotification notification)
         {
-            shouldPersistState.OnNext(Disposable.Empty);
+            _shouldPersistState.OnNext(Disposable.Empty);
         }
     }
 }

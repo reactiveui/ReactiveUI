@@ -1,4 +1,4 @@
-﻿#pragma warning disable 1591,0618,0105,0672
+﻿#pragma warning disable 1591,0618,0105,0672,SA1600
 
 using System;
 using System.Reactive;
@@ -20,17 +20,17 @@ namespace {{Name}}
 
 {{#Types}}
 {{#Events}}
-        public static IObservable<{{EventArgsType}}> {{#Type}}{{Name}}{{/Type}}{{Name}}()
-            => Observable
-                .FromEventPattern<{{EventArgsType}}>(
-                    x => {{#Type}}{{Name}}{{/Type}}.{{Name}} += x, 
-                    x => {{#Type}}{{Name}}{{/Type}}.{{Name}} -= x)
-                .Select(x => x.EventArgs); 
+        public static IObservable<{{EventArgsType}}>
+    {{#Type}}{{Name}}{{/Type}}{{Name}}() =>
+        Observable.FromEventPattern<{{EventArgsType}}>(
+            x => {{#Type}}{{Name}}{{/Type}}.{{Name}} += x,
+            x => {{#Type}}{{Name}}{{/Type}}.{{Name}} -= x)
+                    .Select(x => x.EventArgs);
 
-{{/Events}}
-{{/Types}}
-    }
-}
-{{/Namespaces}}
+        {{/Events}}
+        {{/Types}}
+        }
+        }
+        {{/Namespaces}}
 
 #pragma warning restore 1591,0618,0105,0672

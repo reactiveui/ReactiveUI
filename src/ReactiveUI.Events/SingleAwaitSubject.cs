@@ -8,23 +8,33 @@ using System.Reactive.Subjects;
 
 namespace ReactiveUI.Events
 {
-    class SingleAwaitSubject<T> : ISubject<T>
+    internal class SingleAwaitSubject<T> : ISubject<T>
     {
-        readonly Subject<T> inner = new Subject<T>();
+        private readonly Subject<T> _inner = new Subject<T>();
 
         public AsyncSubject<T> GetAwaiter()
         {
-            return inner.Take(1).GetAwaiter();
+            return _inner.Take(1).GetAwaiter();
         }
 
-        public void OnNext(T value) { inner.OnNext(value); }
-        public void OnError(Exception error) { inner.OnError(error); }
-        public void OnCompleted() { inner.OnCompleted(); }
+        public void OnNext(T value)
+        {
+            _inner.OnNext(value);
+        }
+
+        public void OnError(Exception error)
+        {
+            _inner.OnError(error);
+        }
+
+        public void OnCompleted()
+        {
+            _inner.OnCompleted();
+        }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            return inner.Subscribe(observer);
+            return _inner.Subscribe(observer);
         }
     }
 }
-

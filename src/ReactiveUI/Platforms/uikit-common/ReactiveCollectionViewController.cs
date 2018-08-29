@@ -1,66 +1,130 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
 using System.ComponentModel;
 using System.Reactive;
-using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Foundation;
 using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This is a UICollectionViewController that is both an UICollectionViewController and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
     public abstract class ReactiveCollectionViewController : UICollectionViewController,
         IReactiveNotifyPropertyChanged<ReactiveCollectionViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        protected ReactiveCollectionViewController(UICollectionViewLayout withLayout) : base(withLayout) { setupRxObj(); }
-        protected ReactiveCollectionViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
-        protected ReactiveCollectionViewController(IntPtr handle) : base(handle) { setupRxObj(); }
-        protected ReactiveCollectionViewController(NSObjectFlag t) : base(t) { setupRxObj(); }
-        protected ReactiveCollectionViewController(NSCoder coder) : base(coder) { setupRxObj(); }
-        protected ReactiveCollectionViewController() { setupRxObj(); }
+        private Subject<Unit> _activated = new Subject<Unit>();
+        private Subject<Unit> _deactivated = new Subject<Unit>();
 
-        public event PropertyChangingEventHandler PropertyChanging {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
-        }
-
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController"/> class.
+        /// </summary>
+        /// <param name="withLayout">The ui collection view layout.</param>
+        protected ReactiveCollectionViewController(UICollectionViewLayout withLayout)
+            : base(withLayout)
         {
-            PropertyChangingEventManager.DeliverEvent(this, args);
+            SetupRxObj();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
-        }
-
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController"/> class.
+        /// </summary>
+        /// <param name="nibName">The name.</param>
+        /// <param name="bundle">The bundle.</param>
+        protected ReactiveCollectionViewController(string nibName, NSBundle bundle)
+            : base(nibName, bundle)
         {
-            PropertyChangedEventManager.DeliverEvent(this, args);
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        protected ReactiveCollectionViewController(IntPtr handle)
+            : base(handle)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController"/> class.
+        /// </summary>
+        /// <param name="t">The object flag.</param>
+        protected ReactiveCollectionViewController(NSObjectFlag t)
+            : base(t)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
+        protected ReactiveCollectionViewController(NSCoder coder)
+            : base(coder)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController"/> class.
+        /// </summary>
+        protected ReactiveCollectionViewController()
+        {
+            SetupRxObj();
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewController>> Changing {
-            get { return this.getChangingObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewController>> Changing => this.GetChangingObservable();
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewController>> Changed {
-            get { return this.getChangedObservable(); }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewController>> Changed => this.GetChangedObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
-        void setupRxObj()
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
@@ -72,48 +136,105 @@ namespace ReactiveUI
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.suppressChangeNotifications();
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
-        Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
-        Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
-
+        /// <inheritdoc/>
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
-            activated.OnNext(Unit.Default);
+            _activated.OnNext(Unit.Default);
             this.ActivateSubviews(true);
         }
 
+        /// <inheritdoc/>
         public override void ViewDidDisappear(bool animated)
         {
             base.ViewDidDisappear(animated);
-            deactivated.OnNext(Unit.Default);
+            _deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
+        }
+
+        private void SetupRxObj()
+        {
         }
     }
 
+    /// <summary>
+    /// This is a UICollectionViewController that is both an UICollectionViewController and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactiveCollectionViewController<TViewModel> : ReactiveCollectionViewController, IViewFor<TViewModel>
         where TViewModel : class
     {
-        protected ReactiveCollectionViewController(UICollectionViewLayout withLayout) : base(withLayout) { }
-        protected ReactiveCollectionViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { }
-        protected ReactiveCollectionViewController(IntPtr handle) : base(handle) { }
-        protected ReactiveCollectionViewController(NSObjectFlag t) : base(t) { }
-        protected ReactiveCollectionViewController(NSCoder coder) : base(coder) { }
-        protected ReactiveCollectionViewController() { }
+        private TViewModel _viewModel;
 
-        TViewModel _viewModel;
-        public TViewModel ViewModel {
-            get { return _viewModel; }
-            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="withLayout">The ui collection view layout.</param>
+        protected ReactiveCollectionViewController(UICollectionViewLayout withLayout)
+            : base(withLayout)
+        {
         }
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (TViewModel)value; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="nibName">The name.</param>
+        /// <param name="bundle">The bundle.</param>
+        protected ReactiveCollectionViewController(string nibName, NSBundle bundle)
+            : base(nibName, bundle)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        protected ReactiveCollectionViewController(IntPtr handle)
+            : base(handle)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="t">The object flag.</param>
+        protected ReactiveCollectionViewController(NSObjectFlag t)
+            : base(t)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
+        protected ReactiveCollectionViewController(NSCoder coder)
+            : base(coder)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewController{TViewModel}"/> class.
+        /// </summary>
+        protected ReactiveCollectionViewController()
+        {
+        }
+
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
         }
     }
 }

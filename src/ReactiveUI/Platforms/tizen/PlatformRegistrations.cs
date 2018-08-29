@@ -7,8 +7,13 @@ using System.Reactive.Concurrency;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Tinzen platform registrations.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
     public class PlatformRegistrations : IWantsToRegisterStuff
     {
+        /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));

@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -13,89 +13,116 @@ using ReactiveUI.Legacy;
 namespace ReactiveUI.Winforms.Legacy
 {
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
+#pragma warning disable SA1600 // Elements should be documented
     public class ReactiveBindingList<T> : ReactiveList<T>,
         IList<T>, ICollection<T>, IEnumerable<T>,
         ICollection, IEnumerable, IList, IBindingList,
         ICancelAddNew, IRaiseItemChangedEvents
     {
-        public ReactiveBindingList() : this(null) {}
+        public ReactiveBindingList()
+            : this(null)
+        {
+        }
 
+        /// <inheritdoc/>
         public void CancelNew(int itemIndex)
         {
-            //throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public void EndNew(int itemIndex)
         {
-            //throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
-        public bool RaisesItemChangedEvents { get { return base.ChangeTrackingEnabled; } }
+        /// <inheritdoc/>
+        public bool RaisesItemChangedEvents => ChangeTrackingEnabled;
 
         /// <summary>
-        /// ReactiveBindingList constructor
+        /// ReactiveBindingList constructor.
         /// </summary>
-        /// <param name="items"></param>
+        /// <param name="items">The items.</param>
         public ReactiveBindingList(IEnumerable<T> items)
             : base(items)
-        {}
-
-        protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            base.raiseCollectionChanged(e);
-            if (this.ListChanged != null) {
-                e.AsListChangedEventArgs().ForEach(x => this.ListChanged(this, x));
+        }
+
+        /// <inheritdoc/>
+        protected override void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            base.RaiseCollectionChanged(e);
+            if (ListChanged != null)
+            {
+                e.AsListChangedEventArgs().ForEach(x => ListChanged(this, x));
             }
         }
 
+        /// <inheritdoc/>
         public object AddNew()
         {
             return Activator.CreateInstance<T>();
         }
 
+        /// <inheritdoc/>
         public void AddIndex(PropertyDescriptor property)
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc/>
         public void ApplySort(PropertyDescriptor property, ListSortDirection direction)
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc/>
         public int Find(PropertyDescriptor property, object key)
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc/>
         public void RemoveIndex(PropertyDescriptor property)
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc/>
         public void RemoveSort()
         {
             throw new NotSupportedException();
         }
 
-        public bool AllowNew { get { return true; } }
+        /// <inheritdoc/>
+        public bool AllowNew => true;
 
-        public bool AllowEdit { get { return true; } }
+        /// <inheritdoc/>
+        public bool AllowEdit => true;
 
-        public bool AllowRemove { get { return true; } }
+        /// <inheritdoc/>
+        public bool AllowRemove => true;
 
-        public bool SupportsChangeNotification { get { return true; } }
+        /// <inheritdoc/>
+        public bool SupportsChangeNotification => true;
 
-        public bool SupportsSearching { get { return false; } }
+        /// <inheritdoc/>
+        public bool SupportsSearching => false;
 
-        public bool SupportsSorting { get { return false; } }
+        /// <inheritdoc/>
+        public bool SupportsSorting => false;
 
-        public bool IsSorted { get { return false; } }
+        /// <inheritdoc/>
+        public bool IsSorted => false;
 
-        public PropertyDescriptor SortProperty { get { return null; } }
+        /// <inheritdoc/>
+        public PropertyDescriptor SortProperty => null;
 
-        public ListSortDirection SortDirection { get { return ListSortDirection.Ascending; } }
+        /// <inheritdoc/>
+        public ListSortDirection SortDirection => ListSortDirection.Ascending;
 
+        /// <inheritdoc/>
         public event ListChangedEventHandler ListChanged;
     }
+#pragma warning restore SA1600 // Elements should be documented
 }

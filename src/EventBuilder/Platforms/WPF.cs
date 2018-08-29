@@ -6,21 +6,31 @@ using System;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// WPF platform assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class WPF : BasePlatform
     {
-        public override AutoPlatform Platform => AutoPlatform.WPF;
-            
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WPF"/> class.
+        /// </summary>
+        /// <exception cref="NotSupportedException">Building events for WPF on Mac is not implemented.</exception>
         public WPF()
         {
-            if (PlatformHelper.IsRunningOnMono()) {
+            if (PlatformHelper.IsRunningOnMono())
+            {
                 throw new NotSupportedException("Building events for WPF on Mac is not implemented.");
-            } else {
-                Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\WindowsBase.dll");
-                Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\PresentationCore.dll");
-                Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\PresentationFramework.dll");
-
-                CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1");
             }
+
+            Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\WindowsBase.dll");
+            Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\PresentationCore.dll");
+            Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\PresentationFramework.dll");
+
+            CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1");
         }
+
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.WPF;
     }
 }

@@ -18,7 +18,8 @@ namespace ReactiveUI.Tests
             locator.InitializeReactiveUI();
             locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
-            using (locator.WithResolver()) {
+            using (locator.WithResolver())
+            {
                 var vm = new ActivatingViewModel();
                 var fixture = new ActivatingView();
 
@@ -44,7 +45,8 @@ namespace ReactiveUI.Tests
             locator.InitializeReactiveUI();
             locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
-            using (locator.WithResolver()) {
+            using (locator.WithResolver())
+            {
                 var vm = new ActivatingViewModel();
                 var fixture = new ActivatingView();
 
@@ -69,7 +71,8 @@ namespace ReactiveUI.Tests
             locator.InitializeReactiveUI();
             locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
-            using (locator.WithResolver()) {
+            using (locator.WithResolver())
+            {
                 var vm = new ActivatingViewModel();
                 var fixture = new ActivatingView();
 
@@ -98,7 +101,8 @@ namespace ReactiveUI.Tests
             locator.InitializeReactiveUI();
             locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
-            using (locator.WithResolver()) {
+            using (locator.WithResolver())
+            {
                 var vm = new ActivatingViewModel();
                 var fixture = new ActivatingView();
 
@@ -126,7 +130,8 @@ namespace ReactiveUI.Tests
             locator.InitializeReactiveUI();
             locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
-            using (locator.WithResolver()) {
+            using (locator.WithResolver())
+            {
                 var vm = new ActivatingViewModel();
                 var fixture = new ActivatingView();
 

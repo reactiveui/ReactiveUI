@@ -7,12 +7,16 @@ using System.Reactive.Concurrency;
 
 namespace ReactiveUI.Wpf
 {
+    /// <summary>
+    /// Registrations specific to the WPF platform.
+    /// </summary>
     public class Registrations : IWantsToRegisterStuff
     {
+        /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-            
+
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));

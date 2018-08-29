@@ -7,11 +7,23 @@ using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// UIKitObservableForProperty is an object that knows how to
+    /// create notifications for a given type of object. Implement this if you
+    /// are porting RxUI to a new UI toolkit, or generally want to enable WhenAny
+    /// for another type of object that can be observed in a unique way.
+    /// </summary>
     [Preserve]
     public class UIKitObservableForProperty : ObservableForPropertyBase
     {
+        /// <summary>
+        /// UI Kit ObservableForProperty instance.
+        /// </summary>
         public static Lazy<UIKitObservableForProperty> Instance = new Lazy<UIKitObservableForProperty>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIKitObservableForProperty"/> class.
+        /// </summary>
         public UIKitObservableForProperty()
         {
             Register(typeof(UIControl), "Value", 20, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
@@ -28,4 +40,3 @@ namespace ReactiveUI
         }
     }
 }
-

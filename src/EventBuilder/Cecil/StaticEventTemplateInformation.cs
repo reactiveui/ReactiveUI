@@ -1,82 +1,26 @@
-﻿using EventBuilder.Entities;
-using Mono.Cecil;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using EventBuilder.Entities;
+using Mono.Cecil;
 
 namespace EventBuilder.Cecil
 {
+    /// <summary>
+    /// Static event template methods.
+    /// </summary>
     public static class StaticEventTemplateInformation
     {
-        private static string GetEventArgsTypeForEvent(EventDefinition ei)
-        {
-            // Find the EventArgs type parameter of the event via digging around via reflection
-            var type = ei.EventType.Resolve();
-            var invoke = type.Methods.First(x => x.Name == "Invoke");
-            if (invoke.Parameters.Count < 1) return null;
-
-            var param = invoke.Parameters.Count == 1 ? invoke.Parameters[0] : invoke.Parameters[1];
-            var ret = param.ParameterType.FullName;
-
-            var generic = ei.EventType as GenericInstanceType;
-            if (generic != null)
-            {
-                foreach (
-                    var kvp in
-                        type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new {name, actual}))
-                {
-                    var realType = GetRealTypeName(kvp.actual);
-
-                    ret = ret.Replace(kvp.name.FullName, realType);
-                }
-            }
-
-            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
-            return ret.Replace('/', '.');
-        }
-
-        private static string GetRealTypeName(TypeDefinition t)
-        {
-            if (t.GenericParameters.Count == 0) return t.FullName;
-
-            var ret = string.Format("{0}<{1}>",
-                t.Namespace + "." + t.Name,
-                string.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
-
-            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
-            return ret.Replace('/', '.');
-        }
-
-        private static string GetRealTypeName(TypeReference t)
-        {
-            var generic = t as GenericInstanceType;
-            if (generic == null) return t.FullName;
-
-            var ret = string.Format("{0}<{1}>",
-                generic.Namespace + "." + generic.Name,
-                string.Join(",", generic.GenericArguments.Select(x => GetRealTypeName(x))));
-
-            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
-            return ret.Replace('/', '.');
-        }
-
-        private static EventDefinition[] GetPublicEvents(TypeDefinition t)
-        {
-            return
-                t.Events
-
-                    .Where(x =>
-                    {
-                        return x.AddMethod.IsPublic && GetEventArgsTypeForEvent(x) != null;
-                    })
-                    .ToArray();
-        }
-
+        /// <summary>
+        /// Creates the specified target assemblies.
+        /// </summary>
+        /// <param name="targetAssemblies">The target assemblies.</param>
+        /// <returns>The namespace information for the assemblies.</returns>
         public static NamespaceInfo[] Create(AssemblyDefinition[] targetAssemblies)
         {
             var publicTypesWithEvents = targetAssemblies
-                .SelectMany(x => SafeTypes.GetSafeTypes(x))
+                .SelectMany(SafeTypes.GetSafeTypes)
                 .Where(x => x.IsPublic && !x.HasGenericParameters)
-                .Select(x => new {Type = x, Events = GetPublicEvents(x)})
+                .Select(x => new { Type = x, Events = GetPublicEvents(x) })
                 .Where(x => x.Events.Length > 0)
                 .ToArray();
 
@@ -107,10 +51,12 @@ namespace EventBuilder.Cecil
             foreach (var type in namespaceData.SelectMany(x => x.Types))
             {
                 var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => GetPublicEvents(x).Any());
-                if (parentWithEvents == null) 
+                if (parentWithEvents == null)
+                {
                     continue;
+                }
 
-                type.Parent = new ParentInfo {Name = parentWithEvents.FullName};
+                type.Parent = new ParentInfo { Name = parentWithEvents.FullName };
             }
 
             return namespaceData;
@@ -130,6 +76,81 @@ namespace EventBuilder.Cecil
                     ? current.BaseType.Resolve()
                     : null;
             }
+        }
+
+        private static string GetEventArgsTypeForEvent(EventDefinition ei)
+        {
+            // Find the EventArgs type parameter of the event via digging around via reflection
+            var type = ei.EventType.Resolve();
+            var invoke = type.Methods.First(x => x.Name == "Invoke");
+            if (invoke.Parameters.Count < 1)
+            {
+                return null;
+            }
+
+            var param = invoke.Parameters.Count == 1 ? invoke.Parameters[0] : invoke.Parameters[1];
+            var ret = param.ParameterType.FullName;
+
+            var generic = ei.EventType as GenericInstanceType;
+            if (generic != null)
+            {
+                foreach (
+                    var kvp in
+                        type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new { name, actual }))
+                {
+                    var realType = GetRealTypeName(kvp.actual);
+
+                    ret = ret.Replace(kvp.name.FullName, realType);
+                }
+            }
+
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
+        }
+
+        private static string GetRealTypeName(TypeDefinition t)
+        {
+            if (t.GenericParameters.Count == 0)
+            {
+                return t.FullName;
+            }
+
+            var ret = string.Format(
+                "{0}<{1}>",
+                t.Namespace + "." + t.Name,
+                string.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
+
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
+        }
+
+        private static string GetRealTypeName(TypeReference t)
+        {
+            var generic = t as GenericInstanceType;
+            if (generic == null)
+            {
+                return t.FullName;
+            }
+
+            var ret = string.Format(
+                "{0}<{1}>",
+                generic.Namespace + "." + generic.Name,
+                string.Join(",", generic.GenericArguments.Select(GetRealTypeName)));
+
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
+        }
+
+        private static EventDefinition[] GetPublicEvents(TypeDefinition t)
+        {
+            return
+                t.Events
+
+                    .Where(x =>
+                    {
+                        return x.AddMethod.IsPublic && GetEventArgsTypeForEvent(x) != null;
+                    })
+                    .ToArray();
         }
     }
 }

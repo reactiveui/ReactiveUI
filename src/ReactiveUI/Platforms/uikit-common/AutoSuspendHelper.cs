@@ -19,21 +19,27 @@ namespace ReactiveUI
     /// <summary>
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
-    /// 
-    /// Locator.Current.GetService<ISuspensionHost>().SetupDefaultSuspendResume();
+    ///
+    /// Locator.Current.GetService.<ISuspensionHost>().SetupDefaultSuspendResume();
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger
     {
-        readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
-        readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
-        readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
+        private readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
+        private readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
+        private readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
 
-        public IDictionary<string, string> LaunchOptions { get; protected set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
+        /// </summary>
+        /// <param name="appDelegate">The uiappdelegate.</param>
         public AutoSuspendHelper(UIApplicationDelegate appDelegate)
         {
-            Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", appDelegate,
-                "FinishedLaunching", "OnActivated", "DidEnterBackground");
+            Reflection.ThrowIfMethodsNotOverloaded(
+                "AutoSuspendHelper",
+                appDelegate,
+                "FinishedLaunching",
+                "OnActivated",
+                "DidEnterBackground");
 
             RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
             RxApp.SuspensionHost.IsResuming = _finishedLaunching.Select(_ => Unit.Default);
@@ -44,11 +50,13 @@ namespace ReactiveUI
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
 
-            RxApp.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app => {
+            RxApp.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app =>
+            {
                 var taskId = app.BeginBackgroundTask(new NSAction(() => untimelyDeath.OnNext(Unit.Default)));
 
                 // NB: We're being force-killed, signal invalidate instead
-                if (taskId == UIApplication.BackgroundTaskInvalid) {
+                if (taskId == UIApplication.BackgroundTaskInvalid)
+                {
                     untimelyDeath.OnNext(Unit.Default);
                     return Observable<IDisposable>.Empty;
                 }
@@ -57,11 +65,28 @@ namespace ReactiveUI
             });
         }
 
+        /// <summary>
+        /// Gets or sets the launch options.
+        /// </summary>
+        /// <value>
+        /// The launch options.
+        /// </value>
+        public IDictionary<string, string> LaunchOptions { get; protected set; }
+
+        /// <summary>
+        /// Advances the finished launching observable.
+        /// Finisheds the launching.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="launchOptions">The launch options.</param>
         public void FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            if (launchOptions != null) {
+            if (launchOptions != null)
+            {
                 LaunchOptions = launchOptions.Keys.ToDictionary(k => k.ToString(), v => launchOptions[v].ToString());
-            } else {
+            }
+            else
+            {
                 LaunchOptions = new Dictionary<string, string>();
             }
 
@@ -70,15 +95,22 @@ namespace ReactiveUI
             _finishedLaunching.OnNext(application);
         }
 
+        /// <summary>
+        /// Advances the on activated observable.
+        /// </summary>
+        /// <param name="application">The application.</param>
         public void OnActivated(UIApplication application)
         {
             _activated.OnNext(application);
         }
 
+        /// <summary>
+        /// Advances the enter background observable.
+        /// </summary>
+        /// <param name="application">The application.</param>
         public void DidEnterBackground(UIApplication application)
         {
             _backgrounded.OnNext(application);
         }
     }
 }
-

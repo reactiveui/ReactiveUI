@@ -15,7 +15,11 @@ namespace ReactiveUI.Tests
         public void CallSchedulerFactoryOnCreation()
         {
             var schedulerFactoryCalls = 0;
-            var schedulerFactory = new Func<IScheduler>(() => { schedulerFactoryCalls++; return null; });
+            var schedulerFactory = new Func<IScheduler>(() =>
+            {
+                schedulerFactoryCalls++;
+                return null;
+            });
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
 
@@ -26,7 +30,8 @@ namespace ReactiveUI.Tests
         public void FactoryThrowsException_ReCallsOnSchedule()
         {
             var schedulerFactoryCalls = 0;
-            var schedulerFactory = new Func<IScheduler>(() => {
+            var schedulerFactory = new Func<IScheduler>(() =>
+            {
                 schedulerFactoryCalls++;
                 throw new InvalidOperationException();
             });
@@ -41,7 +46,8 @@ namespace ReactiveUI.Tests
         public void SuccessfulFactory_UsesCachedScheduler()
         {
             var schedulerFactoryCalls = 0;
-            var schedulerFactory = new Func<IScheduler>(() => {
+            var schedulerFactory = new Func<IScheduler>(() =>
+            {
                 schedulerFactoryCalls++;
                 return CurrentThreadScheduler.Instance;
             });
@@ -56,12 +62,14 @@ namespace ReactiveUI.Tests
         public void FactoryThrowsInvalidOperationException_FallsBackToCurrentThread()
         {
             IScheduler schedulerExecutedOn = null;
-            var schedulerFactory = new Func<IScheduler>(() => {
+            var schedulerFactory = new Func<IScheduler>(() =>
+            {
                 throw new InvalidOperationException();
             });
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
-            sut.Schedule<object>(null, (scheduler, state) => {
+            sut.Schedule<object>(null, (scheduler, state) =>
+            {
                 schedulerExecutedOn = scheduler;
                 return Disposable.Empty;
             });
@@ -73,12 +81,14 @@ namespace ReactiveUI.Tests
         public void FactoryThrowsArgumentNullException_FallsBackToCurrentThread()
         {
             IScheduler schedulerExecutedOn = null;
-            var schedulerFactory = new Func<IScheduler>(() => {
+            var schedulerFactory = new Func<IScheduler>(() =>
+            {
                 throw new ArgumentNullException();
             });
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
-            sut.Schedule<object>(null, (scheduler, state) => {
+            sut.Schedule<object>(null, (scheduler, state) =>
+            {
                 schedulerExecutedOn = scheduler;
                 return Disposable.Empty;
             });

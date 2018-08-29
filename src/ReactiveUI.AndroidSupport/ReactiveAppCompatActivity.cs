@@ -17,51 +17,68 @@ using Android.Support.V7.App;
 namespace ReactiveUI.AndroidSupport
 {
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public class ReactiveAppCompatActivity<TViewModel> : ReactiveAppCompatActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
-        protected ReactiveAppCompatActivity() { }
+        private TViewModel _viewModel;
 
-        TViewModel _ViewModel;
-        public TViewModel ViewModel
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity{TViewModel}"/> class.
+        /// </summary>
+        protected ReactiveAppCompatActivity()
         {
-            get => _ViewModel;
-            set => this.RaiseAndSetIfChanged(ref _ViewModel, value);
         }
 
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        /// <inheritdoc/>
         object IViewFor.ViewModel
         {
-            get => _ViewModel;
-            set => _ViewModel = (TViewModel)value;
+            get => _viewModel;
+            set => _viewModel = (TViewModel)value;
         }
     }
 
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+        private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
+
+        /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
             add => PropertyChangingEventManager.AddHandler(this, value);
             remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
@@ -69,18 +86,29 @@ namespace ReactiveUI.AndroidSupport
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changing => this.getChangingObservable();
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changing => this.GetChangingObservable();
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed => this.getChangedObservable();
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed => this.GetChangedObservable();
 
-        protected ReactiveAppCompatActivity() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
+        /// </summary>
+        protected ReactiveAppCompatActivity()
+        {
+        }
 
-        protected ReactiveAppCompatActivity(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
+        protected ReactiveAppCompatActivity(IntPtr handle, JniHandleOwnership ownership)
+                    : base(handle, ownership)
         {
         }
 
@@ -93,38 +121,42 @@ namespace ReactiveUI.AndroidSupport
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.suppressChangeNotifications();
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
-        public IObservable<Exception> ThrownExceptions => this.getThrownExceptionsObservable();
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-        readonly Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated => activated.AsObservable();
+        /// <summary>
+        /// Gets a signal when activated.
+        /// </summary>
+        /// <value>
+        /// The activated.
+        /// </value>
+        public IObservable<Unit> Activated => _activated.AsObservable();
 
-        readonly Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated => deactivated.AsObservable();
+        /// <summary>
+        /// Gets a signal when deactivated.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
-        protected override void OnPause()
-        {
-            base.OnPause();
-            deactivated.OnNext(Unit.Default);
-        }
+        /// <summary>
+        /// Gets the activity result.
+        /// </summary>
+        /// <value>
+        /// The activity result.
+        /// </value>
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult => _activityResult.AsObservable();
 
-        protected override void OnResume()
-        {
-            base.OnResume();
-            activated.OnNext(Unit.Default);
-        }
-
-        readonly Subject<Tuple<int, Result, Intent>> activityResult = new Subject<Tuple<int, Result, Intent>>();
-        public IObservable<Tuple<int, Result, Intent>> ActivityResult => activityResult.AsObservable();
-
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
-        {
-            base.OnActivityResult(requestCode, resultCode, data);
-            activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
-        }
-
+        /// <summary>
+        /// Starts the activity for result asynchronously.
+        /// </summary>
+        /// <param name="intent">The intent.</param>
+        /// <param name="requestCode">The request code.</param>
+        /// <returns>A task with the result and intent.</returns>
         public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Intent intent, int requestCode)
         {
             // NB: It's important that we set up the subscription *before* we
@@ -139,6 +171,12 @@ namespace ReactiveUI.AndroidSupport
             return ret;
         }
 
+        /// <summary>
+        /// Starts the activity for result asynchronously.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="requestCode">The request code.</param>
+        /// <returns>A task with the result and intent.</returns>
         public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Type type, int requestCode)
         {
             // NB: It's important that we set up the subscription *before* we
@@ -152,6 +190,26 @@ namespace ReactiveUI.AndroidSupport
             StartActivityForResult(type, requestCode);
             return ret;
         }
+
+        /// <inheritdoc/>
+        protected override void OnPause()
+        {
+            base.OnPause();
+            _deactivated.OnNext(Unit.Default);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnResume()
+        {
+            base.OnResume();
+            _activated.OnNext(Unit.Default);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
+        }
     }
 }
-

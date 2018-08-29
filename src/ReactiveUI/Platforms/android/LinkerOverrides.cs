@@ -17,9 +17,9 @@ using Android.Widget;
 namespace ReactiveUI
 {
     [Preserve(AllMembers = true)]
-    class LinkerOverrides
+    internal class LinkerOverrides
     {
-        void KeepMe()
+        private void KeepMe()
         {
             var txt = new TextView(null);
             txt.Text = txt.Text;
@@ -48,8 +48,6 @@ namespace ReactiveUI
             var tp = new TimePicker(null);
             tp.Hour = tp.Hour;
             tp.Minute = tp.Minute;
-
-            
         }
     }
 }

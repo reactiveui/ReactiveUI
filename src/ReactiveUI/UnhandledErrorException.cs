@@ -3,24 +3,26 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace ReactiveUI
 {
     /// <summary>
-    /// Indicates that an object implementing <see cref="IHandleObservableErrors"/> has errored and nothing is attached
+    /// Indicates that an object implementing <see cref="IHandleObservableErrors"/> has caused an error and nothing is attached
     /// to <see cref="IHandleObservableErrors.ThrownExceptions"/> to handle that error.
     /// </summary>
+    [Serializable]
     public class UnhandledErrorException : Exception
     {
         /// <summary>
-        /// Creates a new instance of <c>UnhandledErrorException</c>.
+        /// Initializes a new instance of the <see cref="UnhandledErrorException"/> class.
         /// </summary>
         public UnhandledErrorException()
         {
         }
 
         /// <summary>
-        /// Creates a new instance of <c>UnhandledErrorException</c>.
+        /// Initializes a new instance of the <see cref="UnhandledErrorException"/> class.
         /// </summary>
         /// <param name="message">
         /// The exception message.
@@ -31,7 +33,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Creates a new instance of <c>UnhandledErrorException</c>.
+        /// Initializes a new instance of the <see cref="UnhandledErrorException"/> class.
         /// </summary>
         /// <param name="message">
         /// The exception message.
@@ -41,6 +43,16 @@ namespace ReactiveUI
         /// </param>
         public UnhandledErrorException(string message, Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnhandledErrorException"/> class.
+        /// </summary>
+        /// <param name="info">The serialization information.</param>
+        /// <param name="context">The serialization context.</param>
+        protected UnhandledErrorException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }
