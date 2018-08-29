@@ -7,37 +7,62 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
-using System.Windows.Interactivity;
 using System.Windows;
+using System.Windows.Interactivity;
 
 namespace ReactiveUI.Blend
 {
+    /// <summary>
+    /// A blend based trigger which will be activated when a IObservable triggers.
+    /// </summary>
     public class ObservableTrigger : TriggerBase<FrameworkElement>
     {
-        public IObservable<object> Observable {
-            get { return (IObservable<object>)GetValue(ObservableProperty); }
-            set { SetValue(ObservableProperty, value); }
+        /// <summary>
+        /// Gets or sets the observable which will activate the trigger.
+        /// </summary>
+        public IObservable<object> Observable
+        {
+            get => (IObservable<object>)GetValue(ObservableProperty);
+            set => SetValue(ObservableProperty, value);
         }
-        public static readonly DependencyProperty ObservableProperty =
-            DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(onObservableChanged));
 
+        /// <summary>
+        /// The dependency property registration for the Observable property.
+        /// </summary>
+        public static readonly DependencyProperty ObservableProperty =
+            DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(OnObservableChanged));
+
+        /// <summary>
+        /// Gets or set if we should resubscribe the trigger if there is a error when running the IObservable.
+        /// </summary>
         public bool AutoResubscribeOnError { get; set; }
 
-        IDisposable watcher;
-        protected static void onObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private IDisposable _watcher;
+
+        /// <summary>
+        /// Called when [observable changed].
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
+        protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             ObservableTrigger This = (ObservableTrigger)sender;
-            if (This.watcher != null) {
-                This.watcher.Dispose();
-                This.watcher = null;
+            if (This._watcher != null)
+            {
+                This._watcher.Dispose();
+                This._watcher = null;
             }
 
-            This.watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
-                x => This.InvokeActions(x), 
-                ex => {
+            This._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+                x => This.InvokeActions(x),
+                ex =>
+                {
                     if (!This.AutoResubscribeOnError)
+                    {
                         return;
-                    onObservableChanged(This, e);
+                    }
+
+                    OnObservableChanged(This, e);
                 });
         }
     }

@@ -3,36 +3,52 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Windows.Input;
 using System.Reactive.Disposables;
+using System.Windows.Input;
 using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods for binding <see cref="ICommand"/> to a <see cref="UIControl"/>.
+    /// </summary>
     public static class UIControlCommandExtensions
     {
-        public static IDisposable BindToTarget(this ICommand This, UIControl control, UIControlEvent events)
+        /// <summary>
+        /// Binds the <see cref="ICommand"/> to target <see cref="UIControl"/>.
+        /// </summary>
+        /// <param name="this">The this.</param>
+        /// <param name="control">The control.</param>
+        /// <param name="events">The events.</param>
+        /// <returns>A disposable.</returns>
+        public static IDisposable BindToTarget(this ICommand @this, UIControl control, UIControlEvent events)
         {
-            var ev = new EventHandler((o, e) => {
-                if (!This.CanExecute(null)) return;
-                This.Execute(null);
+            var ev = new EventHandler((o, e) =>
+            {
+                if (!@this.CanExecute(null))
+                {
+                    return;
+                }
+
+                @this.Execute(null);
             });
 
-            var cech = new EventHandler((o, e) => {
-                var canExecute = This.CanExecute(null);
+            var cech = new EventHandler((o, e) =>
+            {
+                var canExecute = @this.CanExecute(null);
                 control.Enabled = canExecute;
             });
 
-            This.CanExecuteChanged += cech;
+            @this.CanExecuteChanged += cech;
             control.AddTarget(ev, events);
 
-            control.Enabled = This.CanExecute(null);
+            control.Enabled = @this.CanExecute(null);
 
-            return Disposable.Create(() => {
+            return Disposable.Create(() =>
+            {
                 control.RemoveTarget(ev, events);
-                This.CanExecuteChanged -= cech;
+                @this.CanExecuteChanged -= cech;
             });
         }
     }
 }
-

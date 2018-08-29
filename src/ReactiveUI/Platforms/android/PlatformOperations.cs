@@ -9,18 +9,27 @@ using Android.Views;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Returns the current orientation of the device on Android.
+    /// </summary>
     public class PlatformOperations : IPlatformOperations
     {
+        /// <inheritdoc/>
         public string GetOrientation()
         {
             var wm = Application.Context.GetSystemService(Context.WindowService) as IWindowManager;
-            if (wm == null) return null;
+            if (wm == null)
+            {
+                return null;
+            }
 
             var disp = wm.DefaultDisplay;
-            if (disp == null) return null;
+            if (disp == null)
+            {
+                return null;
+            }
 
             return disp.Rotation.ToString();
         }
     }
 }
-

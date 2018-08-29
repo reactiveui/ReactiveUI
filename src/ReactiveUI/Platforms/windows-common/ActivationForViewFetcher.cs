@@ -5,8 +5,8 @@
 using System;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Reflection;
+using System.Windows;
 
 #if NETFX_CORE
 using Windows.UI.Xaml;
@@ -14,28 +14,40 @@ using Windows.UI.Xaml;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// ActiveationForViewFetcher is how ReactiveUI determine when a
+    /// View is activated or deactivated. This is usually only used when porting
+    /// ReactiveUI to a new UI framework.
+    /// </summary>
     public class ActivationForViewFetcher : IActivationForViewFetcher
     {
+        /// <inheritdoc/>
         public int GetAffinityForView(Type view)
         {
-            return (typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ? 10 : 0;
+            return typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
         }
 
+        /// <inheritdoc/>
         public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var fe = view as FrameworkElement;
 
             if (fe == null)
+            {
                 return Observable<bool>.Empty;
+            }
 #if WINDOWS_UWP
-            var viewLoaded = WindowsObservable.FromEventPattern<FrameworkElement, object>(x => fe.Loading += x,
+            var viewLoaded = WindowsObservable.FromEventPattern<FrameworkElement, object>(
+                x => fe.Loading += x,
                 x => fe.Loading -= x).Select(_ => true);
 #else
-            var viewLoaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(x => fe.Loaded += x,
+            var viewLoaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+                x => fe.Loaded += x,
                 x => fe.Loaded -= x).Select(_ => true);
 #endif
 
-            var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(x => fe.Unloaded += x,
+            var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+                x => fe.Unloaded += x,
                 x => fe.Unloaded -= x).Select(_ => false);
 
             return viewLoaded

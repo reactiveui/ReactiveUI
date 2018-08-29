@@ -26,52 +26,38 @@ namespace ReactiveUI
     public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
     {
         /// <summary>
-        /// The ViewModel to display
+        /// The view model dependency property.
         /// </summary>
-        public object ViewModel {
-            get { return GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
-        }
-        public static readonly DependencyProperty ViewModelProperty = 
-            DependencyProperty.Register("ViewModel", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
-
-        readonly Subject<Unit> updateViewModel = new Subject<Unit>();
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
 
         /// <summary>
-        /// If no ViewModel is displayed, this content (i.e. a control) will be displayed.
+        /// The default content dependency property.
         /// </summary>
-        public object DefaultContent {
-            get { return GetValue(DefaultContentProperty); }
-            set { SetValue(DefaultContentProperty, value); }
-        }
         public static readonly DependencyProperty DefaultContentProperty =
-            DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
+            DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
 
-        public IObservable<string> ViewContractObservable {
-            get { return (IObservable<string>)GetValue(ViewContractObservableProperty); }
-            set { SetValue(ViewContractObservableProperty, value); }
-        }
+        /// <summary>
+        /// The view contract observable dependency property.
+        /// </summary>
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
 
-        private string viewContract;
+        private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
+        private string _viewContract;
 
-        public string ViewContract
-        {
-            get { return this.viewContract; }
-            set { ViewContractObservable = Observable.Return(value); }
-        }
-
-        public IViewLocator ViewLocator { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
+        /// </summary>
         public ViewModelViewHost()
         {
 #if NETFX_CORE
-            this.DefaultStyleKey = typeof(ViewModelViewHost);
+            DefaultStyleKey = typeof(ViewModelViewHost);
 #endif
 
             // NB: InUnitTestRunner also returns true in Design Mode
-            if (ModeDetector.InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner())
+            {
                 ViewContractObservable = Observable<string>.Never;
                 return;
             }
@@ -84,11 +70,14 @@ namespace ReactiveUI
             var platform = Locator.Current.GetService<IPlatformOperations>();
             Func<string> platformGetter = () => default(string);
 
-            if (platform == null) {
+            if (platform == null)
+            {
                 // NB: This used to be an error but WPF design mode can't read
                 // good or do other stuff good.
                 this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation/nuget-packages for guidance.");
-            } else {
+            }
+            else
+            {
                 platformGetter = () => platform.GetOrientation();
             }
 
@@ -97,9 +86,12 @@ namespace ReactiveUI
                 .StartWith(platformGetter())
                 .DistinctUntilChanged();
 
-            this.WhenActivated(d => {
-                d(vmAndContract.Subscribe(x => {
-                    if (x.ViewModel == null) {
+            this.WhenActivated(d =>
+            {
+                d(vmAndContract.Subscribe(x =>
+                {
+                    if (x.ViewModel == null)
+                    {
                         Content = DefaultContent;
                         return;
                     }
@@ -107,7 +99,8 @@ namespace ReactiveUI
                     var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                     var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
 
-                    if (view == null) {
+                    if (view == null)
+                    {
                         throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
                     }
 
@@ -117,13 +110,54 @@ namespace ReactiveUI
 
                 d(this.WhenAnyObservable(x => x.ViewContractObservable)
                     .ObserveOn(RxApp.MainThreadScheduler)
-                    .Subscribe(x => viewContract = x));
+                    .Subscribe(x => _viewContract = x));
             });
         }
 
-        static void somethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        /// <summary>
+        /// Gets or sets the view contract observable.
+        /// </summary>
+        public IObservable<string> ViewContractObservable
         {
-            ((ViewModelViewHost)dependencyObject).updateViewModel.OnNext(Unit.Default);
+            get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+            set => SetValue(ViewContractObservableProperty, value);
+        }
+
+        /// <summary>
+        /// If no ViewModel is displayed, this content (i.e. a control) will be displayed.
+        /// </summary>
+        public object DefaultContent
+        {
+            get => GetValue(DefaultContentProperty);
+            set => SetValue(DefaultContentProperty, value);
+        }
+
+        /// <summary>
+        /// The ViewModel to display.
+        /// </summary>
+        public object ViewModel
+        {
+            get => GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the view contract.
+        /// </summary>
+        public string ViewContract
+        {
+            get => _viewContract;
+            set => ViewContractObservable = Observable.Return(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the view locator.
+        /// </summary>
+        public IViewLocator ViewLocator { get; set; }
+
+        private static void SomethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            ((ViewModelViewHost)dependencyObject)._updateViewModel.OnNext(Unit.Default);
         }
     }
 }

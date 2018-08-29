@@ -8,17 +8,20 @@ using Xamarin.Forms;
 
 namespace ReactiveUI.XamForms
 {
+    /// <summary>
+    /// This is an <see cref="MultiPage{TPage}"/> that is also an <see cref="IViewFor{TViewModel}"/>.
+    /// </summary>
+    /// <typeparam name="TPage">The type of the page.</typeparam>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <seealso cref="Xamarin.Forms.MultiPage{TPage}" />
+    /// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
     public abstract class ReactiveMultiPage<TPage, TViewModel> : MultiPage<TPage>, IViewFor<TViewModel>
         where TPage : Page
         where TViewModel : class
     {
         /// <summary>
-        /// The ViewModel to display
+        /// The view model bindable property.
         /// </summary>
-        public TViewModel ViewModel {
-            get { return (TViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
-        }
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
             nameof(ViewModel),
             typeof(TViewModel),
@@ -27,15 +30,27 @@ namespace ReactiveUI.XamForms
             BindingMode.OneWay,
             propertyChanged: OnViewModelChanged);
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (TViewModel)value; }
+        /// <summary>
+        /// The ViewModel to display.
+        /// </summary>
+        public TViewModel ViewModel
+        {
+            get => (TViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
+        }
+
+        /// <inheritdoc/>
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
-            this.ViewModel = this.BindingContext as TViewModel;
+            ViewModel = BindingContext as TViewModel;
         }
 
         private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue)

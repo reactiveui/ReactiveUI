@@ -40,21 +40,24 @@ namespace ReactiveUI.Tests
             Assert.Equal(testLogger.LastMessages[0], $"{nameof(POCOObservableForProperty)}: The class {typeof(PocoType).FullName} property {nameof(PocoType.Property1)} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
         }
 
-        class PocoType
+        private class PocoType
         {
             public string Property1 { get; set; }
+
             public string Property2 { get; set; }
         }
 
-        class INPCClass : INotifyPropertyChanged
+        private class INPCClass : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler PropertyChanged;
         }
 
-        class TestLogger : ILogger
+        private class TestLogger : ILogger
         {
             public List<string> LastMessages { get; } = new List<string>();
+
             public LogLevel Level { get; set; }
+
             public void Write(string message, LogLevel logLevel)
             {
                 LastMessages.Add(message);

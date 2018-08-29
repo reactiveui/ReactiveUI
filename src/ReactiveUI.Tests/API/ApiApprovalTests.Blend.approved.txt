@@ -10,7 +10,7 @@ namespace ReactiveUI.Blend
         public System.IObservable<string> StateObservable { get; set; }
         public System.Windows.FrameworkElement TargetObject { get; set; }
         protected override void OnDetaching() { }
-        protected static void onStateObservableChanged(System.Windows.DependencyObject sender, System.Windows.DependencyPropertyChangedEventArgs e) { }
+        protected static void OnStateObservableChanged(System.Windows.DependencyObject sender, System.Windows.DependencyPropertyChangedEventArgs e) { }
     }
     public class ObservableTrigger : System.Windows.Interactivity.TriggerBase<System.Windows.FrameworkElement>
     {
@@ -18,6 +18,6 @@ namespace ReactiveUI.Blend
         public ObservableTrigger() { }
         public bool AutoResubscribeOnError { get; set; }
         public System.IObservable<object> Observable { get; set; }
-        protected static void onObservableChanged(System.Windows.DependencyObject sender, System.Windows.DependencyPropertyChangedEventArgs e) { }
+        protected static void OnObservableChanged(System.Windows.DependencyObject sender, System.Windows.DependencyPropertyChangedEventArgs e) { }
     }
 }

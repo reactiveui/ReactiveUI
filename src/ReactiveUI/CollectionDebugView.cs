@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -10,13 +10,16 @@ namespace ReactiveUI
 {
     internal sealed class CollectionDebugView<T>
     {
-        private readonly ICollection<T> collection;
+        private readonly ICollection<T> _collection;
 
         public CollectionDebugView(ICollection<T> collection)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "collection is null.");
-            this.collection = collection;
+            {
+                throw new ArgumentNullException(nameof(collection), "collection is null.");
+            }
+
+            _collection = collection;
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
@@ -24,8 +27,8 @@ namespace ReactiveUI
         {
             get
             {
-                T[] array = new T[this.collection.Count];
-                this.collection.CopyTo(array, 0);
+                T[] array = new T[_collection.Count];
+                _collection.CopyTo(array, 0);
                 return array;
             }
         }

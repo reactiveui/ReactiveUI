@@ -24,28 +24,118 @@ namespace ReactiveUI
     /// Interface used to extract a common API between <see cref="UIKit.UITableView"/>
     /// and <see cref="UIKit.UICollectionView"/>.
     /// </summary>
-    interface IUICollViewAdapter<TUIView, TUIViewCell>
+    /// <typeparam name="TUIView">The ui view type.</typeparam>
+    /// <typeparam name="TUIViewCell">The ui view call type.</typeparam>
+    internal interface IUICollViewAdapter<TUIView, TUIViewCell>
     {
+        /// <summary>
+        /// Gets the is reloading data.
+        /// </summary>
         IObservable<bool> IsReloadingData { get; }
+
+        /// <summary>
+        /// Reloads the data.
+        /// </summary>
         void ReloadData();
+
+        /// <summary>
+        /// Begins the updates.
+        /// </summary>
         void BeginUpdates();
+
+        /// <summary>
+        /// Performs the updates.
+        /// </summary>
+        /// <param name="updates">The updates.</param>
+        /// <param name="completion">The completion.</param>
         void PerformUpdates(Action updates, Action completion);
+
+        /// <summary>
+        /// Ends the updates.
+        /// </summary>
         void EndUpdates();
+
+        /// <summary>
+        /// Inserts the sections.
+        /// </summary>
+        /// <param name="indexes">The indexes.</param>
         void InsertSections(NSIndexSet indexes);
+
+        /// <summary>
+        /// Deletes the sections.
+        /// </summary>
+        /// <param name="indexes">The indexes.</param>
         void DeleteSections(NSIndexSet indexes);
+
+        /// <summary>
+        /// Reloads the sections.
+        /// </summary>
+        /// <param name="indexes">The indexes.</param>
         void ReloadSections(NSIndexSet indexes);
+
+        /// <summary>
+        /// Moves the section.
+        /// </summary>
+        /// <param name="fromIndex">From index.</param>
+        /// <param name="toIndex">To index.</param>
         void MoveSection(int fromIndex, int toIndex);
+
+        /// <summary>
+        /// Inserts the items.
+        /// </summary>
+        /// <param name="paths">The paths.</param>
         void InsertItems(NSIndexPath[] paths);
+
+        /// <summary>
+        /// Deletes the items.
+        /// </summary>
+        /// <param name="paths">The paths.</param>
         void DeleteItems(NSIndexPath[] paths);
+
+        /// <summary>
+        /// Reloads the items.
+        /// </summary>
+        /// <param name="paths">The paths.</param>
         void ReloadItems(NSIndexPath[] paths);
+
+        /// <summary>
+        /// Moves the item.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="newPath">The new path.</param>
         void MoveItem(NSIndexPath path, NSIndexPath newPath);
+
+        /// <summary>
+        /// Dequeues the reusable cell.
+        /// </summary>
+        /// <param name="cellKey">The cell key.</param>
+        /// <param name="path">The path.</param>
+        /// <returns>The ui view cell.</returns>
         TUIViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path);
     }
 
-    interface ISectionInformation<TSource, TUIView, TUIViewCell>
+    /// <summary>
+    /// Interface used to extract a common API between <see cref="UIKit.UIView"/>
+    /// and <see cref="UIKit.UITableViewCell"/>.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the source.</typeparam>
+    /// <typeparam name="TUIView">The type of the UI view.</typeparam>
+    /// <typeparam name="TUIViewCell">The type of the UI view cell.</typeparam>
+    internal interface ISectionInformation<TSource, TUIView, TUIViewCell>
     {
+        /// <summary>
+        /// Gets the collection.
+        /// </summary>
         INotifyCollectionChanged Collection { get; }
+
+        /// <summary>
+        /// Gets the cell key selector.
+        /// </summary>
         Func<object, NSString> CellKeySelector { get; }
+
+        /// <summary>
+        /// Gets the initialize cell action.
+        /// </summary>
         Action<TUIViewCell> InitializeCellAction { get; }
     }
 
@@ -59,57 +149,56 @@ namespace ReactiveUI
         }
     }
 
-    sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable, IEnableLogger
+    internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable, IEnableLogger
         where TSectionInfo : ISectionInformation<TSource, TUIView, TUIViewCell>
     {
-        private readonly IUICollViewAdapter<TUIView, TUIViewCell> adapter;
-        private readonly int mainThreadId;
-        private readonly CompositeDisposable mainDisposables;
-        private readonly SerialDisposable sectionInfoDisposable;
-        private readonly IList<Tuple<int, PendingChange>> pendingChanges;
-        private bool isCollectingChanges;
-        private IReadOnlyList<TSectionInfo> sectionInfo;
+        private readonly IUICollViewAdapter<TUIView, TUIViewCell> _adapter;
+        private readonly int _mainThreadId;
+        private readonly CompositeDisposable _mainDisposables;
+        private readonly SerialDisposable _sectionInfoDisposable;
+        private readonly IList<Tuple<int, PendingChange>> _pendingChanges;
+        private bool _isCollectingChanges;
+        private IReadOnlyList<TSectionInfo> _sectionInfo;
 
         public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter)
         {
-            this.adapter = adapter;
-            this.mainThreadId = Thread.CurrentThread.ManagedThreadId;
-            this.mainDisposables = new CompositeDisposable();
-            this.sectionInfoDisposable = new SerialDisposable();
-            this.mainDisposables.Add(this.sectionInfoDisposable);
-            this.pendingChanges = new List<Tuple<int, PendingChange>>();
-            this.sectionInfo = new TSectionInfo[0];
+            _adapter = adapter;
+            _mainThreadId = Thread.CurrentThread.ManagedThreadId;
+            _mainDisposables = new CompositeDisposable();
+            _sectionInfoDisposable = new SerialDisposable();
+            _mainDisposables.Add(_sectionInfoDisposable);
+            _pendingChanges = new List<Tuple<int, PendingChange>>();
+            _sectionInfo = Array.Empty<TSectionInfo>();
 
-            this.mainDisposables.Add(
+            _mainDisposables.Add(
                 this
                 .ObservableForProperty(
                     x => x.SectionInfo,
                     beforeChange: true,
                     skipInitial: true)
                 .Subscribe(
-                    _ => this.SectionInfoChanging(),
+                    _ => SectionInfoChanging(),
                     ex => this.Log().ErrorException("Error occurred whilst SectionInfo changing.", ex)));
 
-            this.mainDisposables.Add(
+            _mainDisposables.Add(
                 this
                 .WhenAnyValue(x => x.SectionInfo)
                 .Subscribe(
-                    this.SectionInfoChanged,
+                    SectionInfoChanged,
                     ex => this.Log().ErrorException("Error occurred when SectionInfo changed.", ex)));
         }
 
-        private bool IsDebugEnabled {
-            get { return this.Log().Level <= LogLevel.Debug; }
-        }
+        private bool IsDebugEnabled => this.Log().Level <= LogLevel.Debug;
 
-        public IReadOnlyList<TSectionInfo> SectionInfo {
-            get { return sectionInfo; }
-            set { this.RaiseAndSetIfChanged(ref sectionInfo, value); }
+        public IReadOnlyList<TSectionInfo> SectionInfo
+        {
+            get => _sectionInfo;
+            set => this.RaiseAndSetIfChanged(ref _sectionInfo, value);
         }
 
         public int NumberOfSections()
         {
-            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId);
 
             var count = SectionInfo.Count;
             this.Log().Debug("Reporting number of sections = {0}", count);
@@ -119,7 +208,7 @@ namespace ReactiveUI
 
         public int RowsInSection(int section)
         {
-            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId);
 
             var list = (IList)SectionInfo[section].Collection;
             var count = list.Count;
@@ -130,7 +219,7 @@ namespace ReactiveUI
 
         public object ItemAt(NSIndexPath path)
         {
-            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId);
 
             var list = (IList)SectionInfo[path.Section].Collection;
             this.Log().Debug("Returning item at {0}-{1}", path.Section, path.Row);
@@ -140,15 +229,16 @@ namespace ReactiveUI
 
         public TUIViewCell GetCell(NSIndexPath indexPath)
         {
-            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId);
 
             this.Log().Debug("Getting cell for index path {0}-{1}", indexPath.Section, indexPath.Row);
             var section = SectionInfo[indexPath.Section];
             var vm = ((IList)section.Collection)[indexPath.Row];
-            var cell = adapter.DequeueReusableCell(section.CellKeySelector(vm), indexPath);
+            var cell = _adapter.DequeueReusableCell(section.CellKeySelector(vm), indexPath);
             var view = cell as IViewFor;
 
-            if (view != null) {
+            if (view != null)
+            {
                 this.Log().Debug("Setting VM for index path {0}-{1}", indexPath.Section, indexPath.Row);
                 view.ViewModel = vm;
             }
@@ -161,45 +251,46 @@ namespace ReactiveUI
 
         public void Dispose()
         {
-            this.mainDisposables.Dispose();
+            _mainDisposables.Dispose();
         }
 
         private void SectionInfoChanging()
         {
-            this.VerifyOnMainThread();
+            VerifyOnMainThread();
 
             this.Log().Debug("SectionInfo about to change, disposing of any subscriptions for previous SectionInfo.");
-            this.sectionInfoDisposable.Disposable = null;
+            _sectionInfoDisposable.Disposable = null;
         }
 
         private void SectionInfoChanged(IReadOnlyList<TSectionInfo> sectionInfo)
         {
-            this.VerifyOnMainThread();
+            VerifyOnMainThread();
 
             // this ID just makes it possible to correlate log messages with a specific SectionInfo
             var sectionInfoId = SectionInfoIdGenerator.Generate();
             this.Log().Debug("[#{0}] SectionInfo changed to {1}.", sectionInfoId, sectionInfo);
 
-            if (sectionInfo == null) {
-                this.sectionInfoDisposable.Disposable = null;
+            if (sectionInfo == null)
+            {
+                _sectionInfoDisposable.Disposable = null;
                 return;
             }
 
             var notifyCollectionChanged = sectionInfo as INotifyCollectionChanged;
 
-            if (notifyCollectionChanged == null) {
+            if (notifyCollectionChanged == null)
+            {
                 this.Log().Warn("[#{0}] SectionInfo {1} does not implement INotifyCollectionChanged - any added or removed sections will not be reflected in the UI.", sectionInfoId, sectionInfo);
             }
 
-
             var sectionChanged = notifyCollectionChanged == null ?
-                Observable<Unit>.Never : 
+                Observable<Unit>.Never :
                 notifyCollectionChanged.ObserveCollectionChanges().Select(_ => Unit.Default);
 
             var disposables = new CompositeDisposable();
             disposables.Add(Disposable.Create(() => this.Log().Debug("[#{0}] Disposed of section info", sectionInfoId)));
-            this.sectionInfoDisposable.Disposable = disposables;
-            this.SubscribeToSectionInfoChanges(sectionInfoId, sectionInfo, sectionChanged, disposables);
+            _sectionInfoDisposable.Disposable = disposables;
+            SubscribeToSectionInfoChanges(sectionInfoId, sectionInfo, sectionChanged, disposables);
         }
 
         private void SubscribeToSectionInfoChanges(int sectionInfoId, IReadOnlyList<TSectionInfo> sectionInfo, IObservable<Unit> sectionChanged, CompositeDisposable disposables)
@@ -210,11 +301,12 @@ namespace ReactiveUI
             disposables.Add(sectionInfoDisposable);
 
             disposables.Add(
-                sectionChanged.Subscribe(x => {
-                    this.VerifyOnMainThread();
+                sectionChanged.Subscribe(x =>
+                {
+                    VerifyOnMainThread();
 
                     this.Log().Debug("[#{0}] Calling ReloadData()", sectionInfoId);
-                    this.adapter.ReloadData();
+                    _adapter.ReloadData();
 
                     // holds all the disposables created to monitor stuff inside the section
                     var sectionDisposables = new CompositeDisposable();
@@ -224,7 +316,7 @@ namespace ReactiveUI
                     var applyPendingChangesDisposable = new SerialDisposable();
                     sectionDisposables.Add(applyPendingChangesDisposable);
 
-                    var isReloading = adapter
+                    var isReloading = _adapter
                         .IsReloadingData
                         .DistinctUntilChanged()
                         .Do(y => this.Log().Debug("[#{0}] IsReloadingData = {1}", sectionInfoId, y))
@@ -246,13 +338,14 @@ namespace ReactiveUI
                             _ => isReloading,
                             _ => Observable<Unit>.Empty,
                             (_, __) => Unit.Default)
-                        .Subscribe(_ => {
-                            this.VerifyOnMainThread();
+                        .Subscribe(_ =>
+                        {
+                            VerifyOnMainThread();
                             this.Log().Debug("[#{0}] A section changed whilst a reload is in progress - forcing another reload.", sectionInfoId);
 
-                            adapter.ReloadData();
-                            this.pendingChanges.Clear();
-                            isCollectingChanges = false;
+                            _adapter.ReloadData();
+                            _pendingChanges.Clear();
+                            _isCollectingChanges = false;
                         }));
 
                     sectionDisposables.Add(
@@ -263,10 +356,13 @@ namespace ReactiveUI
                             _ => isReloading,
                             _ => Observable<Unit>.Empty,
                             (reloading, changeDetails) => new { Change = changeDetails.Change, Section = changeDetails.Section })
-                        .Subscribe(y => {
-                            this.VerifyOnMainThread();
+                        .Subscribe(
+                            y =>
+                        {
+                            VerifyOnMainThread();
 
-                            if (this.IsDebugEnabled) {
+                            if (IsDebugEnabled)
+                            {
                                 this.Log().Debug(
                                         "[#{0}] Change detected in section {1} : Action = {2}, OldStartingIndex = {3}, NewStartingIndex = {4}, OldItems.Count = {5}, NewItems.Count = {6}",
                                         sectionInfoId,
@@ -278,28 +374,30 @@ namespace ReactiveUI
                                         y.Change.EventArgs.NewItems == null ? "null" : y.Change.EventArgs.NewItems.Count.ToString());
                             }
 
-                            if (!this.isCollectingChanges) {
+                            if (!_isCollectingChanges)
+                            {
                                 this.Log().Debug("[#{0}] A section changed whilst no reload is in progress - instigating collection of updates for later application.", sectionInfoId);
-                                this.isCollectingChanges = true;
+                                _isCollectingChanges = true;
 
                                 // immediately indicate to the view that there are changes underway, even though we don't apply them immediately
                                 // this ensures that if application code itself calls BeginUpdates/EndUpdates on the view before the changes have been applied, those inconsistencies
                                 // between what's in the data source versus what the view believes is in the data source won't trigger any errors because of the outstanding
                                 // BeginUpdates call (calls to BeginUpdates/EndUpdates can be nested)
                                 this.Log().Debug("[#{0}] BeginUpdates", sectionInfoId);
-                                adapter.BeginUpdates();
+                                _adapter.BeginUpdates();
 
                                 applyPendingChangesDisposable.Disposable = RxApp.MainThreadScheduler.Schedule(
-                                        () => {
-                                            this.ApplyPendingChanges(sectionInfoId);
+                                        () =>
+                                        {
+                                            ApplyPendingChanges(sectionInfoId);
                                             this.Log().Debug("[#{0}] EndUpdates", sectionInfoId);
-                                            adapter.EndUpdates();
-                                            isCollectingChanges = false;
+                                            _adapter.EndUpdates();
+                                            _isCollectingChanges = false;
                                             applyPendingChangesDisposable.Disposable = null;
                                         });
                             }
 
-                            this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change.EventArgs)));
+                            _pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change.EventArgs)));
                         },
                             ex => this.Log().Error("[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
 
@@ -310,17 +408,21 @@ namespace ReactiveUI
 
         private void ApplyPendingChanges(int sectionInfoId)
         {
-            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
-            Debug.Assert(this.isCollectingChanges);
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId);
+            Debug.Assert(_isCollectingChanges);
             this.Log().Debug("[#{0}] Applying pending changes", sectionInfoId);
 
-            try {
-                adapter.PerformUpdates(
-                    () => {
-                        if (this.IsDebugEnabled) {
+            try
+            {
+                _adapter.PerformUpdates(
+                    () =>
+                    {
+                        if (IsDebugEnabled)
+                        {
                             this.Log().Debug("[#{0}] The pending changes (in order received) are:", sectionInfoId);
 
-                            foreach (var pendingChange in pendingChanges) {
+                            foreach (var pendingChange in _pendingChanges)
+                            {
                                 this.Log().Debug(
                                     "[#{0}] Section {1}: Action = {2}, OldStartingIndex = {3}, NewStartingIndex = {4}, OldItems.Count = {5}, NewItems.Count = {6}",
                                     sectionInfoId,
@@ -333,7 +435,8 @@ namespace ReactiveUI
                             }
                         }
 
-                        foreach (var sectionedUpdates in pendingChanges.GroupBy(x => x.Item1)) {
+                        foreach (var sectionedUpdates in _pendingChanges.GroupBy(x => x.Item1))
+                        {
                             var section = sectionedUpdates.First().Item1;
 
                             this.Log().Debug("[#{0}] Processing updates for section {1}", sectionInfoId, section);
@@ -342,9 +445,10 @@ namespace ReactiveUI
                                 .Select(x => x.Item2)
                                 .ToList();
 
-                            if (allSectionChanges.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
+                            if (allSectionChanges.Any(x => x.Action == NotifyCollectionChangedAction.Reset))
+                            {
                                 this.Log().Debug("[#{0}] Section {1} included a reset notification, so reloading that section.", sectionInfoId, section);
-                                adapter.ReloadSections(new NSIndexSet((nuint)section));
+                                _adapter.ReloadSections(new NSIndexSet((nuint)section));
                                 continue;
                             }
 
@@ -353,7 +457,8 @@ namespace ReactiveUI
                                 .ToList();
                             var normalizedUpdates = IndexNormalizer.Normalize(updates);
 
-                            if (this.IsDebugEnabled) {
+                            if (IsDebugEnabled)
+                            {
                                 this.Log().Debug(
                                     "[#{0}] Updates for section {1}: {2}",
                                     sectionInfoId,
@@ -367,13 +472,15 @@ namespace ReactiveUI
                                     string.Join(":", normalizedUpdates));
                             }
 
-                            foreach (var normalizedUpdate in normalizedUpdates) {
-                                switch (normalizedUpdate.Type) {
+                            foreach (var normalizedUpdate in normalizedUpdates)
+                            {
+                                switch (normalizedUpdate.Type)
+                                {
                                     case UpdateType.Add:
-                                        DoUpdate(adapter.InsertItems, new[] { normalizedUpdate.Index }, section);
+                                        DoUpdate(_adapter.InsertItems, new[] { normalizedUpdate.Index }, section);
                                         break;
                                     case UpdateType.Delete:
-                                        DoUpdate(adapter.DeleteItems, new[] { normalizedUpdate.Index }, section);
+                                        DoUpdate(_adapter.DeleteItems, new[] { normalizedUpdate.Index }, section);
                                         break;
                                     default:
                                         throw new NotSupportedException();
@@ -382,22 +489,25 @@ namespace ReactiveUI
                         }
                     },
                     () => this.Log().Debug("[#{0}] Pending changes applied", sectionInfoId));
-            } finally {
-                pendingChanges.Clear();
+            }
+            finally
+            {
+                _pendingChanges.Clear();
             }
         }
 
         private static IEnumerable<Update> GetUpdatesForEvent(PendingChange pendingChange)
         {
-            switch (pendingChange.Action) {
+            switch (pendingChange.Action)
+            {
                 case NotifyCollectionChangedAction.Add:
                     return Enumerable
                         .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
-                        .Select(x => Update.CreateAdd(x));
+                        .Select(Update.CreateAdd);
                 case NotifyCollectionChangedAction.Remove:
                     // Use OldStartingIndex for each "Update.Index" because the batch update processes and removes items sequentially
-                    // opposed to as one Range operation. 
-                    // For example if we are removing the items from indexes 1 to 5. 
+                    // opposed to as one Range operation.
+                    // For example if we are removing the items from indexes 1 to 5.
                     // When item at index 1 is removed item at index 2 is now at index 1 and so on down the line.
                     return Enumerable
                         .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
@@ -405,11 +515,11 @@ namespace ReactiveUI
                 case NotifyCollectionChangedAction.Move:
                     return Enumerable
                         .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
-                        .Select(x => Update.CreateDelete(x))
+                        .Select(Update.CreateDelete)
                         .Concat(
                             Enumerable
                             .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
-                            .Select(x => Update.CreateAdd(x)));
+                            .Select(Update.CreateAdd));
                 case NotifyCollectionChangedAction.Replace:
                     return Enumerable
                         .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
@@ -425,7 +535,8 @@ namespace ReactiveUI
                 .Select(x => NSIndexPath.FromRowSection(x, section))
                 .ToArray();
 
-            if (this.IsDebugEnabled) {
+            if (IsDebugEnabled)
+            {
                 this.Log().Debug(
                     "Calling {0}: [{1}]",
                     method.Method.Name,
@@ -437,7 +548,8 @@ namespace ReactiveUI
 
         private void VerifyOnMainThread()
         {
-            if (Thread.CurrentThread.ManagedThreadId != this.mainThreadId) {
+            if (Thread.CurrentThread.ManagedThreadId != _mainThreadId)
+            {
                 throw new InvalidOperationException("An operation has occurred off the main thread that must be performed on it. Be sure to schedule changes to the underlying data correctly.");
             }
         }
@@ -446,41 +558,30 @@ namespace ReactiveUI
         // storing NotifyCollectionChangeEventArgs doesn't always work because external code can mutate the instance before we get a chance to apply it
         private sealed class PendingChange
         {
-            private readonly NotifyCollectionChangedAction action;
-            private readonly IList oldItems;
-            private readonly IList newItems;
-            private readonly int oldStartingIndex;
-            private readonly int newStartingIndex;
+            private readonly NotifyCollectionChangedAction _action;
+            private readonly IList _oldItems;
+            private readonly IList _newItems;
+            private readonly int _oldStartingIndex;
+            private readonly int _newStartingIndex;
 
             public PendingChange(NotifyCollectionChangedEventArgs ea)
             {
-                this.action = ea.Action;
-                this.oldItems = ea.OldItems == null ? null : ea.OldItems.Cast<object>().ToList();
-                this.newItems = ea.NewItems == null ? null : ea.NewItems.Cast<object>().ToList();
-                this.oldStartingIndex = ea.OldStartingIndex;
-                this.newStartingIndex = ea.NewStartingIndex;
+                _action = ea.Action;
+                _oldItems = ea.OldItems == null ? null : ea.OldItems.Cast<object>().ToList();
+                _newItems = ea.NewItems == null ? null : ea.NewItems.Cast<object>().ToList();
+                _oldStartingIndex = ea.OldStartingIndex;
+                _newStartingIndex = ea.NewStartingIndex;
             }
 
-            public NotifyCollectionChangedAction Action {
-                get { return this.action; }
-            }
+            public NotifyCollectionChangedAction Action => _action;
 
-            public IList OldItems {
-                get { return this.oldItems; }
-            }
+            public IList OldItems => _oldItems;
 
-            public IList NewItems {
-                get { return this.newItems; }
-            }
+            public IList NewItems => _newItems;
 
-            public int OldStartingIndex {
-                get { return this.oldStartingIndex; }
-            }
+            public int OldStartingIndex => _oldStartingIndex;
 
-            public int NewStartingIndex {
-                get { return this.newStartingIndex; }
-            }
+            public int NewStartingIndex => _newStartingIndex;
         }
     }
 }
-

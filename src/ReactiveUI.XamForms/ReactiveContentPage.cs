@@ -8,16 +8,19 @@ using Xamarin.Forms;
 
 namespace ReactiveUI.XamForms
 {
+    /// <summary>
+    /// This is an <see cref="ContentPage"/> that is also an <see cref="IViewFor{T}"/>.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <seealso cref="Xamarin.Forms.ContentPage" />
+    /// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
     public class ReactiveContentPage<TViewModel> : ContentPage, IViewFor<TViewModel>
         where TViewModel : class
     {
+
         /// <summary>
-        /// The ViewModel to display
+        /// The view model bindable property.
         /// </summary>
-        public TViewModel ViewModel {
-            get { return (TViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
-        }
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
             nameof(ViewModel),
             typeof(TViewModel),
@@ -26,15 +29,27 @@ namespace ReactiveUI.XamForms
             BindingMode.OneWay,
             propertyChanged: OnViewModelChanged);
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (TViewModel)value; }
+        /// <summary>
+        /// The ViewModel to display.
+        /// </summary>
+        public TViewModel ViewModel
+        {
+            get => (TViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
+        }
+
+        /// <inheritdoc/>
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
-            this.ViewModel = this.BindingContext as TViewModel;
+            ViewModel = BindingContext as TViewModel;
         }
 
         private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue)

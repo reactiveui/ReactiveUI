@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -6,64 +6,126 @@ using System;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This is a UITableViewCell that is both an UITableViewCell and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
     public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged<ReactiveTableViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        protected ReactiveTableViewCell(CGRect frame) : base(frame) { setupRxObj(); }
-        protected ReactiveTableViewCell(NSObjectFlag t) : base(t) { setupRxObj(); }
-        protected ReactiveTableViewCell(NSCoder coder) : base(NSObjectFlag.Empty) { setupRxObj(); }
-        protected ReactiveTableViewCell() : base() { setupRxObj(); }
-        protected ReactiveTableViewCell(UITableViewCellStyle style, string reuseIdentifier) : base(style, reuseIdentifier) { setupRxObj(); }
-        protected ReactiveTableViewCell(UITableViewCellStyle style, NSString reuseIdentifier) : base(style, reuseIdentifier) { setupRxObj(); }
-        protected ReactiveTableViewCell(IntPtr handle) : base(handle) { setupRxObj(); }
+        private Subject<Unit> _activated = new Subject<Unit>();
+        private Subject<Unit> _deactivated = new Subject<Unit>();
 
-        public event PropertyChangingEventHandler PropertyChanging {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
-        }
-
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        protected ReactiveTableViewCell(CGRect frame)
+            : base(frame)
         {
-            PropertyChangingEventManager.DeliverEvent(this, args);
+            SetupRxObj();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
-        }
-
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
+        /// </summary>
+        /// <param name="t">The object flag.</param>
+        protected ReactiveTableViewCell(NSObjectFlag t)
+            : base(t)
         {
-            PropertyChangedEventManager.DeliverEvent(this, args);
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
+        protected ReactiveTableViewCell(NSCoder coder)
+            : base(NSObjectFlag.Empty)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
+        /// </summary>
+        protected ReactiveTableViewCell()
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
+        /// </summary>
+        /// <param name="style">The ui table view cell style.</param>
+        /// <param name="reuseIdentifier">The reuse identifier.</param>
+        protected ReactiveTableViewCell(UITableViewCellStyle style, string reuseIdentifier)
+            : base(style, reuseIdentifier)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
+        /// </summary>
+        /// <param name="style">The ui table view cell style.</param>
+        /// <param name="reuseIdentifier">The reuse identifier.</param>
+        protected ReactiveTableViewCell(UITableViewCellStyle style, NSString reuseIdentifier)
+            : base(style, reuseIdentifier)
+        {
+            SetupRxObj();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        protected ReactiveTableViewCell(IntPtr handle)
+            : base(handle)
+        {
+            SetupRxObj();
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewCell>> Changing {
-            get { return this.getChangingObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewCell>> Changing => this.GetChangingObservable();
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewCell>> Changed {
-            get { return this.getChangedObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewCell>> Changed => this.GetChangedObservable();
 
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-        void setupRxObj()
-        {
-        }
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -74,41 +136,118 @@ namespace ReactiveUI
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.suppressChangeNotifications();
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
-        Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
-        Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
-
+        /// <inheritdoc/>
         public override void WillMoveToSuperview(UIView newsuper)
         {
             base.WillMoveToSuperview(newsuper);
-            (newsuper != null ? activated : deactivated).OnNext(Unit.Default);
+            (newsuper != null ? _activated : _deactivated).OnNext(Unit.Default);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
+        private void SetupRxObj()
+        {
         }
     }
 
+    /// <summary>
+    /// This is a UITableViewCell that is both an UITableViewCell and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactiveTableViewCell<TViewModel> : ReactiveTableViewCell, IViewFor<TViewModel>
         where TViewModel : class
     {
-        protected ReactiveTableViewCell(CGRect frame) : base(frame) { }
-        protected ReactiveTableViewCell(NSObjectFlag t) : base(t) { }
-        protected ReactiveTableViewCell(NSCoder coder) : base(NSObjectFlag.Empty) { }
-        protected ReactiveTableViewCell() : base() { }
-        protected ReactiveTableViewCell(UITableViewCellStyle style, string reuseIdentifier) : base(style, reuseIdentifier) { }
-        protected ReactiveTableViewCell(UITableViewCellStyle style, NSString reuseIdentifier) : base(style, reuseIdentifier) { }
-        protected ReactiveTableViewCell(IntPtr handle) : base(handle) { }
+        private TViewModel _viewModel;
 
-        TViewModel _viewModel;
-        public TViewModel ViewModel {
-            get { return _viewModel; }
-            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        protected ReactiveTableViewCell(CGRect frame)
+            : base(frame)
+        {
         }
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (TViewModel)value; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="t">The object flag.</param>
+        protected ReactiveTableViewCell(NSObjectFlag t)
+            : base(t)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
+        protected ReactiveTableViewCell(NSCoder coder)
+            : base(NSObjectFlag.Empty)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
+        /// </summary>
+        protected ReactiveTableViewCell()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="style">The ui table view cell style.</param>
+        /// <param name="reuseIdentifier">The reuse identifier.</param>
+        protected ReactiveTableViewCell(UITableViewCellStyle style, string reuseIdentifier)
+            : base(style, reuseIdentifier)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="style">The ui table view cell style.</param>
+        /// <param name="reuseIdentifier">The reuse identifier.</param>
+        protected ReactiveTableViewCell(UITableViewCellStyle style, NSString reuseIdentifier)
+            : base(style, reuseIdentifier)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        protected ReactiveTableViewCell(IntPtr handle)
+            : base(handle)
+        {
+        }
+
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
         }
     }
 }

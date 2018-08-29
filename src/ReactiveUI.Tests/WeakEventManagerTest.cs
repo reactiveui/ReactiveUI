@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests
 
             Assert.True(buttonRef.IsAlive);
 
-            //remove ref
+            // remove ref
             button = null;
             GC.Collect();
 
@@ -43,7 +43,7 @@ namespace ReactiveUI.Tests
 
             Assert.True(listBoxRef.IsAlive);
 
-            //remove ref
+            // remove ref
             listBox = null;
             GC.Collect();
 
@@ -62,7 +62,7 @@ namespace ReactiveUI.Tests
 
             Assert.True(listBoxRef.IsAlive);
 
-            //remove ref
+            // remove ref
             listBox = null;
             GC.Collect();
 

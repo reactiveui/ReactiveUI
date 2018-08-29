@@ -7,11 +7,23 @@ using AppKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// AppKitObservableForProperty is an object that knows how to
+    /// create notifications for a given type of object. Implement this if you
+    /// are porting RxUI to a new UI toolkit, or generally want to enable WhenAny
+    /// for another type of object that can be observed in a unique way.
+    /// </summary>
     [Preserve]
     public class AppKitObservableForProperty : ObservableForPropertyBase
     {
+        /// <summary>
+        /// The App Kit ObservableForProperty instance.
+        /// </summary>
         public static Lazy<AppKitObservableForProperty> Instance = new Lazy<AppKitObservableForProperty>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppKitObservableForProperty"/> class.
+        /// </summary>
         public AppKitObservableForProperty()
         {
             Register(typeof(NSControl), "AlphaValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));

@@ -39,46 +39,58 @@ namespace EventBuilder
             var options = new CommandLineOptions();
 
             // allow app to be debugged in visual studio.
-            if (Debugger.IsAttached) {
-                //args = "--help ".Split(' ');
+            if (Debugger.IsAttached)
+            {
+                // args = "--help ".Split(' ');
                 args = "--platform=essentials".Split(' ');
-                //args = new[]
-                //{
+
+                // args = new[]
+                // {
                 //    "--platform=none",
                 //    @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\Xamarin.iOS\v1.0\Xamarin.iOS.dll"
-                //};
+                // };
             }
 
             // Parse in 'strict mode'; i.e. success or quit
-            if (Parser.Default.ParseArgumentsStrict(args, options)) {
-                try {
-                    if (!string.IsNullOrWhiteSpace(options.Template)) {
+            if (Parser.Default.ParseArgumentsStrict(args, options))
+            {
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(options.Template))
+                    {
                         _mustacheTemplate = options.Template;
 
                         Log.Debug("Using {template} instead of the default template.", _mustacheTemplate);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(options.ReferenceAssemblies)) {
+                    if (!string.IsNullOrWhiteSpace(options.ReferenceAssemblies))
+                    {
                         _referenceAssembliesLocation = options.ReferenceAssemblies;
                         Log.Debug($"Using {_referenceAssembliesLocation} instead of the default reference assemblies location.");
                     }
 
                     IPlatform platform = null;
-                    switch (options.Platform) {
+                    switch (options.Platform)
+                    {
                     case AutoPlatform.None:
-                        if (!options.Assemblies.Any()) {
+                        if (!options.Assemblies.Any())
+                        {
                             throw new Exception("Assemblies to be used for manual generation were not specified.");
                         }
 
                         platform = new Bespoke();
                         platform.Assemblies = options.Assemblies;
 
-                        if (PlatformHelper.IsRunningOnMono()) {
+                        if (PlatformHelper.IsRunningOnMono())
+                        {
                             platform.CecilSearchDirectories =
-                                platform.Assemblies.Select(x => Path.GetDirectoryName(x)).Distinct().ToList();
-                        } else {
+                                platform.Assemblies.Select(Path.GetDirectoryName).Distinct().ToList();
+                        }
+                        else
+                        {
                             platform.CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5");
                         }
+
                         break;
 
                     case AutoPlatform.Android:
@@ -97,7 +109,7 @@ namespace EventBuilder
                         platform = new TVOS(_referenceAssembliesLocation);
                         break;
 
-					case AutoPlatform.WPF:
+                    case AutoPlatform.WPF:
                         platform = new WPF();
                         break;
 
@@ -121,7 +133,7 @@ namespace EventBuilder
                         platform = new Essentials();
                         _mustacheTemplate = "XamarinEssentialsTemplate.mustache";
                         break;
-                        
+
                     default:
                         throw new ArgumentOutOfRangeException();
                     }
@@ -129,10 +141,13 @@ namespace EventBuilder
                     ExtractEventsFromAssemblies(platform);
 
                     Environment.Exit((int)ExitCode.Success);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Log.Fatal(ex.ToString());
 
-                    if (Debugger.IsAttached) {
+                    if (Debugger.IsAttached)
+                    {
                         Debugger.Break();
                     }
                 }
@@ -158,7 +173,7 @@ namespace EventBuilder
             Log.Debug("Using {template} as the mustache template", _mustacheTemplate);
             var template = File.ReadAllText(_mustacheTemplate, Encoding.UTF8);
 
-            var namespaceData = new Entities.NamespaceInfo[]{};
+            var namespaceData = Array.Empty<Entities.NamespaceInfo>();
 
             switch (platform.Platform)
             {
@@ -169,18 +184,19 @@ namespace EventBuilder
                     namespaceData = EventTemplateInformation.Create(targetAssemblies);
                     break;
             }
-            
+
             var delegateData = DelegateTemplateInformation.Create(targetAssemblies);
 
-            var result = Render.StringToString(template,
+            var result = Render.StringToString(
+                template,
                 new { Namespaces = namespaceData, DelegateNamespaces = delegateData })
                 .Replace("System.String", "string")
                 .Replace("System.Object", "object")
                 .Replace("&lt;", "<")
                 .Replace("&gt;", ">")
-                .Replace("`1", "")
-                .Replace("`2", "")
-                .Replace("`3", "");
+                .Replace("`1", string.Empty)
+                .Replace("`2", string.Empty)
+                .Replace("`3", string.Empty);
 
             Console.WriteLine(result);
         }

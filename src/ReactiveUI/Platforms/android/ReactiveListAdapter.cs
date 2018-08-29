@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -12,69 +12,83 @@ using Splat;
 
 namespace ReactiveUI.Legacy
 {
-    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]    
+    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
+#pragma warning disable SA1600 // Elements should be documented
     public class ReactiveListAdapter<TViewModel> : BaseAdapter<TViewModel>, IEnableLogger
         where TViewModel : class
     {
-        readonly IReadOnlyReactiveList<TViewModel> list;
-        readonly Func<TViewModel, ViewGroup, View> viewCreator;
-        readonly Action<TViewModel, View> viewInitializer;
-
-        IDisposable _inner;
+        private readonly IReadOnlyReactiveList<TViewModel> _list;
+        private readonly Func<TViewModel, ViewGroup, View> _viewCreator;
+        private readonly Action<TViewModel, View> _viewInitializer;
+        private IDisposable _inner;
 
         public ReactiveListAdapter(
             IReadOnlyReactiveList<TViewModel> backingList,
             Func<TViewModel, ViewGroup, View> viewCreator,
             Action<TViewModel, View> viewInitializer = null)
         {
-            this.list = backingList;
-            this.viewCreator = viewCreator;
-            this.viewInitializer = viewInitializer;
+            _list = backingList;
+            _viewCreator = viewCreator;
+            _viewInitializer = viewInitializer;
 
-            _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
+            _inner = _list.Changed.Subscribe(_ => NotifyDataSetChanged());
         }
 
-        public override TViewModel this[int index] {
-            get { return list[index]; }
+        /// <inheritdoc/>
+        public override TViewModel this[int index]
+        {
+            get { return _list[index]; }
         }
 
-        public override long GetItemId(int position) {
-            return list[position].GetHashCode();
+        /// <inheritdoc/>
+        public override long GetItemId(int position)
+        {
+            return _list[position].GetHashCode();
         }
 
-        public override bool HasStableIds {
+        /// <inheritdoc/>
+        public override bool HasStableIds
+        {
             get { return true; }
         }
 
-        public override int Count {
-            get { return list.Count; }
+        /// <inheritdoc/>
+        public override int Count
+        {
+            get { return _list.Count; }
         }
 
+        /// <inheritdoc/>
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             View theView = convertView;
-            var data = list[position];
+            var data = _list[position];
 
-            if (theView == null) {
-                theView = viewCreator(data, parent);
+            if (theView == null)
+            {
+                theView = _viewCreator(data, parent);
             }
 
             var ivf = theView.GetViewHost() as IViewFor<TViewModel>;
-            if (ivf != null) {
+            if (ivf != null)
+            {
                 ivf.ViewModel = data;
             }
 
-            if (viewInitializer != null) {
-                viewInitializer(data, theView);
+            if (_viewInitializer != null)
+            {
+                _viewInitializer(data, theView);
             }
 
             return theView;
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
             Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
         }
     }
+#pragma warning restore SA1600 // Elements should be documented
 }

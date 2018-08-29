@@ -6,6 +6,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// A control with a single transition.
+    /// </summary>
     public class TransitioningContentControl : ContentControl
     {
     }

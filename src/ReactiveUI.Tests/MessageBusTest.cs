@@ -21,7 +21,8 @@ namespace ReactiveUI.Tests
         {
             var input = new[] { 1, 2, 3, 4 };
 
-            var result = (new TestScheduler()).With(sched => {
+            var result = new TestScheduler().With(sched =>
+            {
                 var source = new Subject<int>();
                 var fixture = new MessageBus();
 
@@ -121,7 +122,8 @@ namespace ReactiveUI.Tests
             int? otherThreadId = null;
             var thisThreadId = Thread.CurrentThread.ManagedThreadId;
 
-            var otherThread = new Thread(new ThreadStart(() => {
+            var otherThread = new Thread(new ThreadStart(() =>
+            {
                 otherThreadId = Thread.CurrentThread.ManagedThreadId;
                 mb.Listen<int>().Subscribe(_ => listenedThreadId = Thread.CurrentThread.ManagedThreadId);
                 mb.SendMessage(42);

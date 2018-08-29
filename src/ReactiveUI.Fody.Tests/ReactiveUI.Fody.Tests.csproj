@@ -3,6 +3,7 @@
     <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <DebugType>full</DebugType>
+    <CodeAnalysisRuleSet>..\reactiveui.tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

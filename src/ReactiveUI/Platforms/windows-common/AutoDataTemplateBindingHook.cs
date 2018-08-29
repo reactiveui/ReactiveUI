@@ -24,12 +24,16 @@ namespace ReactiveUI
     /// </summary>
     public class AutoDataTemplateBindingHook : IPropertyBindingHook
     {
-        public static Lazy<DataTemplate> DefaultItemTemplate = new Lazy<DataTemplate>(() => {
+        /// <summary>
+        /// The default item template.
+        /// </summary>
+        public static Lazy<DataTemplate> DefaultItemTemplate = new Lazy<DataTemplate>(() =>
+        {
 #if NETFX_CORE
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>" +
                 "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
             "</DataTemplate>";
-            return (DataTemplate) XamlReader.Load(template);
+            return (DataTemplate)XamlReader.Load(template);
 #else
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
                     "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
@@ -42,22 +46,41 @@ namespace ReactiveUI
 #endif
         });
 
+        /// <inheritdoc/>
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
-            if (lastViewProperty == null) return true;
+            if (lastViewProperty == null)
+            {
+                return true;
+            }
 
             var itemsControl = lastViewProperty.Sender as ItemsControl;
-            if (itemsControl == null) return true;
+            if (itemsControl == null)
+            {
+                return true;
+            }
 
-            if (!String.IsNullOrEmpty(itemsControl.DisplayMemberPath)) return true;
+            if (!string.IsNullOrEmpty(itemsControl.DisplayMemberPath))
+            {
+                return true;
+            }
 
-            if (viewProperties.Last().GetPropertyName() != "ItemsSource") return true;
+            if (viewProperties.Last().GetPropertyName() != "ItemsSource")
+            {
+                return true;
+            }
 
-            if (itemsControl.ItemTemplate != null) return true;
+            if (itemsControl.ItemTemplate != null)
+            {
+                return true;
+            }
 
-            if (itemsControl.ItemTemplateSelector != null) return true;
+            if (itemsControl.ItemTemplateSelector != null)
+            {
+                return true;
+            }
 
             itemsControl.ItemTemplate = DefaultItemTemplate.Value;
             return true;

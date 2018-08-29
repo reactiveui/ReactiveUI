@@ -2,21 +2,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using NuGet;
-using Polly;
-using Serilog;
 using System;
 using System.IO;
 using System.Linq;
+using NuGet;
+using Polly;
+using Serilog;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// Tizen platform assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class Tizen : BasePlatform
     {
         private const string _packageName = "Tizen.NET";
 
-        public override AutoPlatform Platform => AutoPlatform.Tizen;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tizen"/> class.
+        /// </summary>
         public Tizen()
         {
             var packageUnzipPath = Environment.CurrentDirectory;
@@ -28,13 +33,16 @@ namespace EventBuilder.Platforms
                 .WaitAndRetry(
                     5,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, context) => {
+                    (exception, timeSpan, context) =>
+                    {
                         Log.Warning(
                             "An exception was thrown whilst retrieving or installing {0}: {1}",
-                            _packageName, exception);
+                            _packageName,
+                            exception);
                     });
 
-            retryPolicy.Execute(() => {
+            retryPolicy.Execute(() =>
+            {
                 var repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
                 var packageManager = new PackageManager(repo, packageUnzipPath);
                 var package = repo.FindPackagesById(_packageName).Single(x => x.Version.ToString() == "4.0.0");
@@ -54,5 +62,8 @@ namespace EventBuilder.Platforms
             CecilSearchDirectories.Add($"{packageUnzipPath}\\Tizen.NET.4.0.0\\build\\tizen40\\ref");
             CecilSearchDirectories.Add($"{packageUnzipPath}\\Tizen.NET.4.0.0\\lib\\netstandard2.0");
         }
+
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.Tizen;
     }
 }

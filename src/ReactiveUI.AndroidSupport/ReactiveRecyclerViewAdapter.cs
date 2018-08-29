@@ -21,43 +21,50 @@ namespace ReactiveUI.AndroidSupport
 {
     /// <summary>
     /// An adapter for the Android <see cref="RecyclerView"/>.
-    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method 
-    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder
+    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method
+    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
     /// </summary>
     /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
     public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
         where TViewModel : class, IReactiveObject
     {
-        private readonly ISourceList<TViewModel> list;
+        private readonly ISourceList<TViewModel> _list;
 
-        private IDisposable inner;
+        private IDisposable _inner;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="backingList">The backing list.</param>
         protected ReactiveRecyclerViewAdapter(IObservable<IChangeSet<TViewModel>> backingList)
         {
-            this.list = new SourceList<TViewModel>(backingList);
+            _list = new SourceList<TViewModel>(backingList);
 
-            this.inner = this.list
+            _inner = _list
                             .Connect()
                             .ForEachChange(UpdateBindings)
                             .Subscribe();
         }
 
+        /// <inheritdoc/>
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            ((IViewFor)holder).ViewModel = this.list.Items.ElementAt(position);
+            ((IViewFor)holder).ViewModel = _list.Items.ElementAt(position);
         }
 
-        public override int ItemCount => this.list.Count;
+        /// <inheritdoc/>
+        public override int ItemCount => _list.Count;
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            Interlocked.Exchange(ref this.inner, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
         }
 
         private void UpdateBindings(Change<TViewModel> change)
         {
-            switch(change.Reason)
+            switch (change.Reason)
             {
             case ListChangeReason.Add:
                 NotifyItemInserted(change.Item.CurrentIndex);
@@ -85,8 +92,8 @@ namespace ReactiveUI.AndroidSupport
 
     /// <summary>
     /// An adapter for the Android <see cref="RecyclerView"/>.
-    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method 
-    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder
+    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method
+    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
     /// </summary>
     /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
     /// <typeparam name="TCollection">The type of collection.</typeparam>
@@ -94,111 +101,116 @@ namespace ReactiveUI.AndroidSupport
         where TViewModel : class, IReactiveObject
         where TCollection : ICollection<TViewModel>, INotifyCollectionChanged
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel, TCollection}"/> class.
+        /// </summary>
+        /// <param name="backingList">The backing list.</param>
         protected ReactiveRecyclerViewAdapter(TCollection backingList)
             : base(backingList.ToObservableChangeSet<TCollection, TViewModel>())
         {
         }
     }
 
+    /// <summary>
+    /// A <see cref="RecyclerView.ViewHolder"/> implementation that binds to a reactive view model.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolder, ILayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveRecyclerViewViewHolder<TViewModel>>, IReactiveObject
-        where TViewModel : class, IReactiveObject
+            where TViewModel : class, IReactiveObject
     {
+        private TViewModel _viewModel;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="view">The view.</param>
         protected ReactiveRecyclerViewViewHolder(View view)
             : base(view)
         {
-            setupRxObj();
+            SetupRxObj();
 
-            this.Selected = Observable.FromEventPattern(
+            Selected = Observable.FromEventPattern(
                 h => view.Click += h,
                 h => view.Click -= h)
-                    .Select(_ => this.AdapterPosition);
+                    .Select(_ => AdapterPosition);
 
-            this.LongClicked = Observable.FromEventPattern<View.LongClickEventArgs>(
+            LongClicked = Observable.FromEventPattern<View.LongClickEventArgs>(
                 h => view.LongClick += h,
                 h => view.LongClick -= h)
-                    .Select(_ => this.AdapterPosition);
+                    .Select(_ => AdapterPosition);
         }
 
-        /// <summary>
-        /// Signals that this ViewHolder has been selected. 
-        /// 
-        /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/> 
-        /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
-        /// </summary>
-        public IObservable<int> Selected { get; }
-
-        /// <summary>
-        /// Signals that this ViewHolder has been long-clicked. 
-        /// 
-        /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/> 
-        /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
-        /// </summary>
-        public IObservable<int> LongClicked { get; }
-
-        public View View => this.ItemView;
-
-        TViewModel _ViewModel;
-        public TViewModel ViewModel
-        {
-            get => _ViewModel;
-            set => this.RaiseAndSetIfChanged(ref _ViewModel, value);
-        }
-
-        object IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (TViewModel)value;
-        }
-
+        /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
             add => PropertyChangingEventManager.AddHandler(this, value);
             remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        /// <summary>
+        /// Signals that this ViewHolder has been selected.
+        ///
+        /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
+        /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
+        /// </summary>
+        public IObservable<int> Selected { get; }
+
+        /// <summary>
+        /// Signals that this ViewHolder has been long-clicked.
+        ///
+        /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
+        /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
+        /// </summary>
+        public IObservable<int> LongClicked { get; }
+
+        /// <inheritdoc/>
+        public View View => ItemView;
+
+        /// <inheritdoc/>
+        public TViewModel ViewModel
         {
-            PropertyChangedEventManager.DeliverEvent(this, args);
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TViewModel)value;
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.getChangingObservable();
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.GetChangingObservable();
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.getChangedObservable();
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.GetChangedObservable();
 
+        /// <summary>
+        /// Gets all public accessible properties.
+        /// </summary>
         [IgnoreDataMember]
-        protected Lazy<PropertyInfo[]> allPublicProperties;
+        protected Lazy<PropertyInfo[]> AllPublicProperties;
 
+        /// <summary>
+        /// An observable sequence of thrown exceptions.
+        /// </summary>
         [IgnoreDataMember]
-        public IObservable<Exception> ThrownExceptions => this.getThrownExceptionsObservable();
-
-        [OnDeserialized]
-        void setupRxObj(StreamingContext sc) { setupRxObj(); }
-
-        void setupRxObj()
-        {
-            allPublicProperties = new Lazy<PropertyInfo[]>(() =>
-                GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
-        }
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -209,12 +221,40 @@ namespace ReactiveUI.AndroidSupport
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.suppressChangeNotifications();
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
+        /// <summary>
+        /// Gets a value indicating if the change notifications are enabled.
+        /// </summary>
+        /// <returns>A value indicating whether the change notifications are enabled.</returns>
         public bool AreChangeNotificationsEnabled()
         {
-            return this.areChangeNotificationsEnabled();
+            return IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
+        [OnDeserialized]
+        private void SetupRxObj(StreamingContext sc)
+        {
+            SetupRxObj();
+        }
+
+        private void SetupRxObj()
+        {
+            AllPublicProperties = new Lazy<PropertyInfo[]>(() =>
+                GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
         }
     }
 }
