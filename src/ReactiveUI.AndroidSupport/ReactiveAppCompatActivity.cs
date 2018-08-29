@@ -1,32 +1,18 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
-using Android.Views;
-using Android.Widget;
-using Splat;
 
 namespace ReactiveUI.AndroidSupport
 {
@@ -42,14 +28,14 @@ namespace ReactiveUI.AndroidSupport
         TViewModel _ViewModel;
         public TViewModel ViewModel
         {
-            get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+            get => _ViewModel;
+            set => this.RaiseAndSetIfChanged(ref _ViewModel, value);
         }
 
         object IViewFor.ViewModel
         {
-            get { return _ViewModel; }
-            set { _ViewModel = (TViewModel)value; }
+            get => _ViewModel;
+            set => _ViewModel = (TViewModel)value;
         }
     }
 
@@ -61,8 +47,8 @@ namespace ReactiveUI.AndroidSupport
     {
         public event PropertyChangingEventHandler PropertyChanging
         {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
@@ -72,8 +58,8 @@ namespace ReactiveUI.AndroidSupport
 
         public event PropertyChangedEventHandler PropertyChanged
         {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
@@ -85,18 +71,12 @@ namespace ReactiveUI.AndroidSupport
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changing
-        {
-            get { return this.getChangingObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changing => this.getChangingObservable();
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed
-        {
-            get { return this.getChangedObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed => this.getChangedObservable();
 
         protected ReactiveAppCompatActivity() { }
 
@@ -116,13 +96,13 @@ namespace ReactiveUI.AndroidSupport
             return this.suppressChangeNotifications();
         }
 
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+        public IObservable<Exception> ThrownExceptions => this.getThrownExceptionsObservable();
 
         readonly Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
+        public IObservable<Unit> Activated => activated.AsObservable();
 
         readonly Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
+        public IObservable<Unit> Deactivated => deactivated.AsObservable();
 
         protected override void OnPause()
         {
@@ -137,10 +117,7 @@ namespace ReactiveUI.AndroidSupport
         }
 
         readonly Subject<Tuple<int, Result, Intent>> activityResult = new Subject<Tuple<int, Result, Intent>>();
-        public IObservable<Tuple<int, Result, Intent>> ActivityResult
-        {
-            get { return activityResult.AsObservable(); }
-        }
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult => activityResult.AsObservable();
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {

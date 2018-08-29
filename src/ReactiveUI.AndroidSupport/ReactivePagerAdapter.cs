@@ -4,39 +4,40 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Text;
 using System.Threading;
 using Android.Support.V4.View;
 using Android.Views;
+using DynamicData;
+using DynamicData.Binding;
 using Splat;
 using Object = Java.Lang.Object;
 
-namespace ReactiveUI.Legacy
+namespace ReactiveUI.AndroidSupport
 {
     /// <summary>
     /// ReactivePagerAdapter is a PagerAdapter that will interface with a
-    /// ReactiveList, in a similar fashion to ReactiveTableViewSource.
+    /// Observable change set, in a similar fashion to ReactiveTableViewSource.
     /// </summary>
-    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
         where TViewModel : class
     {
-        readonly IReadOnlyReactiveList<TViewModel> list;
-        readonly Func<TViewModel, ViewGroup, View> viewCreator;
-        readonly Action<TViewModel, View> viewInitializer;
+        private readonly SourceList<TViewModel> list;
+        private readonly Func<TViewModel, ViewGroup, View> viewCreator;
+        private readonly Action<TViewModel, View> viewInitializer;
         IDisposable inner;
 
-        public ReactivePagerAdapter(IReadOnlyReactiveList<TViewModel> backingList,
+        public ReactivePagerAdapter(IObservable<IChangeSet<TViewModel>> changeSet,
                                     Func<TViewModel, ViewGroup, View> viewCreator,
                                     Action<TViewModel, View> viewInitializer = null)
         {
-            this.list = backingList;
+            this.list = new SourceList<TViewModel>(changeSet);
             this.viewCreator = viewCreator;
             this.viewInitializer = viewInitializer;
 
-            inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
+            inner = this.list.Connect().Subscribe(_ => NotifyDataSetChanged());
         }
 
         public override bool IsViewFromObject(View view, Object @object)
@@ -46,19 +47,16 @@ namespace ReactiveUI.Legacy
 
         public override Object InstantiateItem(ViewGroup container, int position)
         {
-            var data = list[position];
+            var data = list.Items.ElementAt(position);
 
             // NB: PagerAdapter does not recycle itself.
             var theView = viewCreator(data, container);
 
-            var ivf = theView.GetViewHost() as IViewFor<TViewModel>;
-            if (ivf != null) {
+            if (theView.GetViewHost() is IViewFor<TViewModel> ivf) {
                 ivf.ViewModel = data;
             }
 
-            if (viewInitializer != null) {
-                viewInitializer(data, theView);
-            }
+            viewInitializer?.Invoke(data, theView);
 
             container.AddView(theView, 0);
             return theView;
@@ -70,14 +68,24 @@ namespace ReactiveUI.Legacy
             container.RemoveView(view);
         }
 
-        public override int Count {
-            get { return list.Count; }
-        }
+        public override int Count => list.Count;
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
             Interlocked.Exchange(ref inner, Disposable.Empty).Dispose();
+        }
+    }
+
+    public class ReactivePagerAdapter<TViewModel, TCollection> : ReactivePagerAdapter<TViewModel>
+        where TViewModel : class
+        where TCollection : INotifyCollectionChanged, IEnumerable<TViewModel>
+    {
+        public ReactivePagerAdapter(TCollection collection,
+                                    Func<TViewModel, ViewGroup, View> viewCreator,
+                                    Action<TViewModel, View> viewInitializer = null)
+            : base(collection.ToObservableChangeSet<TCollection, TViewModel>(), viewCreator, viewInitializer)
+        {
         }
     }
 }

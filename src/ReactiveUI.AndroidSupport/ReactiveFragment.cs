@@ -1,28 +1,10 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Util;
-using Android.Views;
-using Android.Widget;
-using System.Runtime.Serialization;
 using System.ComponentModel;
-using System.Reflection;
 using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-using Splat;
 using System.Reactive;
 using System.Reactive.Linq;
 
@@ -39,13 +21,13 @@ namespace ReactiveUI.AndroidSupport
 
         TViewModel _ViewModel;
         public TViewModel ViewModel {
-            get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+            get => _ViewModel;
+            set => this.RaiseAndSetIfChanged(ref _ViewModel, value);
         }
 
         object IViewFor.ViewModel {
-            get { return _ViewModel; }
-            set { _ViewModel = (TViewModel)value; }
+            get => _ViewModel;
+            set => _ViewModel = (TViewModel)value;
         }
     }
 
@@ -58,8 +40,8 @@ namespace ReactiveUI.AndroidSupport
         protected ReactiveFragment() { }
 
         public event PropertyChangingEventHandler PropertyChanging {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
@@ -68,8 +50,8 @@ namespace ReactiveUI.AndroidSupport
         }
 
         public event PropertyChangedEventHandler PropertyChanged {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
@@ -81,36 +63,32 @@ namespace ReactiveUI.AndroidSupport
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changing {
-            get { return this.getChangingObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changing => this.getChangingObservable();
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changed {
-            get { return this.getChangedObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changed => this.getChangedObservable();
 
         /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
         /// until the return value is disposed.
         /// </summary>
-        /// <returns>An object that, when disposed, reenables change
+        /// <returns>An object that, when disposed, re-enables change
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
             return this.suppressChangeNotifications();
         }
 
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+        public IObservable<Exception> ThrownExceptions => this.getThrownExceptionsObservable();
 
         readonly Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
+        public IObservable<Unit> Activated => activated.AsObservable();
 
         readonly Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
+        public IObservable<Unit> Deactivated => deactivated.AsObservable();
 
         public override void OnPause()
         {
