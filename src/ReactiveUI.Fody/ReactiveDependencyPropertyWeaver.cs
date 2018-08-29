@@ -28,6 +28,7 @@ namespace ReactiveUI.Fody
                 LogInfo("Could not find assembly: ReactiveUI (" + string.Join(", ", ModuleDefinition.AssemblyReferences.Select(x => x.Name)) + ")");
                 return;
             }
+
             LogInfo($"{reactiveUI.Name} {reactiveUI.Version}");
             var helpers = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI.Fody.Helpers").OrderByDescending(x => x.Version).FirstOrDefault();
             if (helpers == null)
@@ -35,18 +36,28 @@ namespace ReactiveUI.Fody
                 LogInfo("Could not find assembly: ReactiveUI.Fody.Helpers (" + string.Join(", ", ModuleDefinition.AssemblyReferences.Select(x => x.Name)) + ")");
                 return;
             }
+
             LogInfo($"{helpers.Name} {helpers.Version}");
             var reactiveObject = new TypeReference("ReactiveUI", "IReactiveObject", ModuleDefinition, reactiveUI);
 
             var targetTypes = ModuleDefinition.GetAllTypes().Where(x => x.BaseType != null && reactiveObject.IsAssignableFrom(x.BaseType)).ToArray();
             var reactiveObjectExtensions = new TypeReference("ReactiveUI", "IReactiveObjectExtensions", ModuleDefinition, reactiveUI).Resolve();
-            if (reactiveObjectExtensions == null) throw new Exception("reactiveObjectExtensions is null");
+            if (reactiveObjectExtensions == null)
+            {
+                throw new Exception("reactiveObjectExtensions is null");
+            }
 
             var raisePropertyChangedMethod = ModuleDefinition.Import(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaisePropertyChanged"));
-            if (raisePropertyChangedMethod == null) throw new Exception("raisePropertyChangedMethod is null");
+            if (raisePropertyChangedMethod == null)
+            {
+                throw new Exception("raisePropertyChangedMethod is null");
+            }
 
             var reactiveDependencyAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ReactiveDependencyAttribute", helpers);
-            if (reactiveDependencyAttribute == null) throw new Exception("reactiveDecoratorAttribute is null");
+            if (reactiveDependencyAttribute == null)
+            {
+                throw new Exception("reactiveDecoratorAttribute is null");
+            }
 
             foreach (var targetType in targetTypes.Where(x => x.Properties.Any(y => y.IsDefined(reactiveDependencyAttribute))).ToArray())
             {
@@ -60,7 +71,7 @@ namespace ReactiveUI.Fody
                     }
 
                     var attribute = facadeProperty.CustomAttributes.First(x => x.AttributeType.FullName == reactiveDependencyAttribute.FullName);
-                    
+
                     var targetNamedArgument = attribute.ConstructorArguments.FirstOrDefault();
                     var targetValue = targetNamedArgument.Value?.ToString();
                     if (string.IsNullOrEmpty(targetValue))
@@ -82,7 +93,7 @@ namespace ReactiveUI.Fody
                         ? objPropertyTarget.PropertyType.Resolve()
                         : objFieldTarget?.FieldType.Resolve();
 
-                    if(objDependencyTargetType == null)
+                    if (objDependencyTargetType == null)
                     {
                         LogError("Couldn't result the dependency type");
                         continue;
@@ -93,8 +104,11 @@ namespace ReactiveUI.Fody
                     var destinationPropertyName = destinationPropertyNamedArgument.Argument.Value?.ToString();
 
                     // If no target property was specified use this property's name as the target on the decorated object (ala a decorated property)
-                    if (string.IsNullOrEmpty(destinationPropertyName)) destinationPropertyName = facadeProperty.Name;
-                    
+                    if (string.IsNullOrEmpty(destinationPropertyName))
+                    {
+                        destinationPropertyName = facadeProperty.Name;
+                    }
+
                     if (objDependencyTargetType.Properties.All(x => x.Name != destinationPropertyName))
                     {
                         LogError($"Target property {destinationPropertyName} on dependency of type {objDependencyTargetType.DeclaringType.Name} not found");
@@ -129,7 +143,7 @@ namespace ReactiveUI.Fody
                         var fieldAssignment = constructor.Body.Instructions.SingleOrDefault(x => Equals(x.Operand, oldFieldDefinition) || Equals(x.Operand, oldField));
                         if (fieldAssignment != null)
                         {
-                            // Replace field assignment with a property set (the stack semantics are the same for both, 
+                            // Replace field assignment with a property set (the stack semantics are the same for both,
                             // so happily we don't have to manipulate the bytecode any further.)
                             var setterCall = constructor.Body.GetILProcessor().Create(facadeProperty.SetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, facadeProperty.SetMethod);
                             constructor.Body.GetILProcessor().Replace(fieldAssignment, setterCall);
@@ -149,6 +163,7 @@ namespace ReactiveUI.Fody
                         {
                             il.Emit(OpCodes.Ldfld, objFieldTarget);
                         }
+
                         il.Emit(destinationProperty.GetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, destinationProperty.GetMethod);
                         il.Emit(OpCodes.Ret);
                     });
@@ -161,6 +176,7 @@ namespace ReactiveUI.Fody
                         {
                             genericDeclaration.GenericArguments.Add(parameter);
                         }
+
                         genericTargetType = genericDeclaration;
                     }
 
@@ -177,12 +193,13 @@ namespace ReactiveUI.Fody
                         {
                             il.Emit(OpCodes.Ldfld, objFieldTarget);
                         }
+
                         il.Emit(OpCodes.Ldarg_1);
                         il.Emit(destinationProperty.SetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, destinationProperty.SetMethod);       // Set the nested property
                         il.Emit(OpCodes.Ldarg_0);
                         il.Emit(OpCodes.Ldstr, facadeProperty.Name);                // "PropertyName"
                         il.Emit(OpCodes.Call, methodReference);                     // this.RaisePropertyChanged("PropertyName")
-                        il.Emit(OpCodes.Ret);                                       
+                        il.Emit(OpCodes.Ret);
                     });
                 }
             }

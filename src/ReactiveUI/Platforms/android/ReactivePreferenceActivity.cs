@@ -3,65 +3,80 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using Android.App;
-using Android.Content;
-using Android.Runtime;
 using System.ComponentModel;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
-using System.Reactive;
+using Android.App;
+using Android.Content;
 using Android.Preferences;
+using Android.Runtime;
 
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public class ReactivePreferenceActivity<TViewModel> : ReactivePreferenceActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
-        TViewModel _ViewModel;
-        public TViewModel ViewModel {
-            get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+        private TViewModel _viewModel;
+
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
         }
 
-        object IViewFor.ViewModel {
-            get { return _ViewModel; }
-            set { _ViewModel = (TViewModel)value; }
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get { return _viewModel; }
+            set { _viewModel = (TViewModel)value; }
         }
 
-        protected ReactivePreferenceActivity() { }
+        protected ReactivePreferenceActivity()
+        {
+        }
 
-        protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership)
+            : base(handle, ownership)
         {
         }
     }
 
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     public class ReactivePreferenceActivity : PreferenceActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactivePreferenceActivity>, IHandleObservableErrors
     {
-        public event PropertyChangingEventHandler PropertyChanging {
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
             add { PropertyChangingEventManager.AddHandler(this, value); }
             remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
 
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
@@ -69,24 +84,27 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changing {
-            get { return this.getChangingObservable(); }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changing
+        {
+            get { return this.GetChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changed {
-            get { return this.getChangedObservable(); }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changed
+        {
+            get { return this.GetChangedObservable(); }
         }
 
         protected ReactivePreferenceActivity()
         {
         }
 
-        protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership)
+            : base(handle, ownership)
         {
         }
 
@@ -99,38 +117,55 @@ namespace ReactiveUI
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.suppressChangeNotifications();
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions
+        {
+            get { return this.GetThrownExceptionsObservable(); }
+        }
 
-        readonly Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
 
-        readonly Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
+        public IObservable<Unit> Activated
+        {
+            get { return _activated.AsObservable(); }
+        }
 
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+
+        public IObservable<Unit> Deactivated
+        {
+            get { return _deactivated.AsObservable(); }
+        }
+
+        /// <inheritdoc/>
         protected override void OnPause()
         {
             base.OnPause();
-            deactivated.OnNext(Unit.Default);
+            _deactivated.OnNext(Unit.Default);
         }
 
+        /// <inheritdoc/>
         protected override void OnResume()
         {
             base.OnResume();
-            activated.OnNext(Unit.Default);
+            _activated.OnNext(Unit.Default);
         }
 
-        readonly Subject<Tuple<int, Result, Intent>> activityResult = new Subject<Tuple<int, Result, Intent>>();
-        public IObservable<Tuple<int, Result, Intent>> ActivityResult {
-            get { return activityResult.AsObservable(); }
+        private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
+
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult
+        {
+            get { return _activityResult.AsObservable(); }
         }
 
+        /// <inheritdoc/>
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
-            activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
+            _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
         }
 
         public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Intent intent, int requestCode)
@@ -162,4 +197,3 @@ namespace ReactiveUI
         }
     }
 }
-

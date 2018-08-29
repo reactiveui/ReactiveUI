@@ -21,7 +21,10 @@ namespace ReactiveUI.Fody
         {
             var result = new GenericInstanceMethod(method);
             foreach (var argument in genericArguments)
+            {
                 result.GenericArguments.Add(argument);
+            }
+
             return result;
         }
 
@@ -32,7 +35,7 @@ namespace ReactiveUI.Fody
 
         public static bool IsAssignableFrom(this TypeDefinition baseType, TypeDefinition type, Action<string> logger = null)
         {
-            logger = logger ?? (x => {});
+            logger = logger ?? (x => { });
 
             Queue<TypeDefinition> queue = new Queue<TypeDefinition>();
             queue.Enqueue(type);
@@ -43,10 +46,14 @@ namespace ReactiveUI.Fody
                 logger(current.FullName);
 
                 if (baseType.FullName == current.FullName)
+                {
                     return true;
+                }
 
                 if (current.BaseType != null)
+                {
                     queue.Enqueue(current.BaseType.Resolve());
+                }
 
                 foreach (var @interface in current.Interfaces)
                 {
@@ -70,7 +77,9 @@ namespace ReactiveUI.Fody
             reference.CallingConvention = method.CallingConvention;
 
             foreach (var parameter in method.Parameters)
+            {
                 reference.Parameters.Add(new ParameterDefinition(parameter.ParameterType));
+            }
 
             return reference;
         }
@@ -101,13 +110,16 @@ namespace ReactiveUI.Fody
         public static FieldReference BindDefinition(this FieldReference field, TypeReference genericTypeDefinition)
         {
             if (!genericTypeDefinition.HasGenericParameters)
+            {
                 return field;
+            }
 
             var genericDeclaration = new GenericInstanceType(genericTypeDefinition);
             foreach (var parameter in genericTypeDefinition.GenericParameters)
             {
                 genericDeclaration.GenericArguments.Add(parameter);
             }
+
             var reference = new FieldReference(field.Name, field.FieldType, genericDeclaration);
             return reference;
         }
@@ -124,6 +136,7 @@ namespace ReactiveUI.Fody
             {
                 result.GenericParameters.Add(new GenericParameter(typeParameter, result));
             }
+
             return result;
         }
 

@@ -86,7 +86,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CanExecuteIsFalseIfAlreadyExecuting()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), sched);
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 fixture
@@ -180,7 +181,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void IsExecutingTicksAsExecutionsProgress()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), sched);
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 fixture
@@ -229,8 +231,16 @@ namespace ReactiveUI.Tests
             var executionCount = 0;
             var fixture1 = ReactiveCommand.Create(() => { ++executionCount; });
             var fixture2 = ReactiveCommand.Create<int>(_ => { ++executionCount; });
-            var fixture3 = ReactiveCommand.Create(() => { ++executionCount; return 42; });
-            var fixture4 = ReactiveCommand.Create<int, int>(_ => { ++executionCount; return 42; });
+            var fixture3 = ReactiveCommand.Create(() =>
+            {
+                ++executionCount;
+                return 42;
+            });
+            var fixture4 = ReactiveCommand.Create<int, int>(_ =>
+            {
+                ++executionCount;
+                return 42;
+            });
             var execute1 = fixture1.Execute();
             var execute2 = fixture2.Execute();
             var execute3 = fixture3.Execute();
@@ -301,7 +311,8 @@ namespace ReactiveUI.Tests
         public void ExecutePassesThroughParameter()
         {
             var parameters = new List<int>();
-            var fixture = ReactiveCommand.CreateFromObservable<int, Unit>(param => {
+            var fixture = ReactiveCommand.CreateFromObservable<int, Unit>(param =>
+            {
                 parameters.Add(param);
                 return Observables.Unit;
             });
@@ -319,7 +330,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteResultIsDeliveredOnSpecifiedScheduler()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var execute = Observables.Unit;
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 var executed = false;
@@ -407,7 +419,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteFacilitatesAnyNumberOfInFlightExecutions()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var execute = Observables.Unit.Delay(TimeSpan.FromMilliseconds(500), sched);
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var executed).Subscribe();
@@ -441,7 +454,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteCanBeCancelled()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), sched);
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var executed).Subscribe();
@@ -463,7 +477,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExceptionsAreDeliveredOnOutputScheduler()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()), outputScheduler: sched);
                 Exception exception = null;
                 fixture
@@ -485,7 +500,8 @@ namespace ReactiveUI.Tests
         public void ExecuteIsAvailableViaICommand()
         {
             var executed = false;
-            ICommand fixture = ReactiveCommand.Create(() => {
+            ICommand fixture = ReactiveCommand.Create(() =>
+            {
                 executed = true;
                 return Observables.Unit;
             });
@@ -498,7 +514,8 @@ namespace ReactiveUI.Tests
         public void ExecuteViaICommandWorksWithNullableTypes()
         {
             int? value = null;
-            ICommand fixture = ReactiveCommand.Create<int?>(param => {
+            ICommand fixture = ReactiveCommand.Create<int?>(param =>
+            {
                 value = param;
             });
 
@@ -524,7 +541,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ResultIsTickedThroughSpecifiedScheduler()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: sched);
                 fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
@@ -703,7 +721,8 @@ namespace ReactiveUI.Tests
         {
             var count = 0;
             var fixture = ReactiveCommand.Create(
-                () => {
+                () =>
+                {
                     ++count;
                     throw new InvalidOperationException();
                 });
@@ -784,7 +803,8 @@ namespace ReactiveUI.Tests
         {
             var count = 0;
             var fixture = ReactiveCommand.Create(
-                () => {
+                () =>
+                {
                     ++count;
                     throw new InvalidOperationException();
                 });
@@ -871,7 +891,8 @@ namespace ReactiveUI.Tests
             var count = 0;
             var fixture = new ICommandHolder();
             var command = ReactiveCommand.Create(
-                () => {
+                () =>
+                {
                     ++count;
                     throw new InvalidOperationException();
                 });
@@ -958,7 +979,8 @@ namespace ReactiveUI.Tests
             var count = 0;
             var fixture = new ReactiveCommandHolder();
             fixture.TheCommand = ReactiveCommand.Create<int>(
-                _ => {
+                _ =>
+                {
                     ++count;
                     throw new InvalidOperationException();
                 });
@@ -990,35 +1012,35 @@ namespace ReactiveUI.Tests
 
             public bool CanExecute(object parameter)
             {
-                this.CanExecuteParameter = parameter;
+                CanExecuteParameter = parameter;
                 return true;
             }
 
             public void Execute(object parameter)
             {
-                this.ExecuteParameter = parameter;
+                ExecuteParameter = parameter;
             }
         }
 
         private class ICommandHolder : ReactiveObject
         {
-            private ICommand theCommand;
+            private ICommand _theCommand;
 
             public ICommand TheCommand
             {
-                get { return this.theCommand; }
-                set { this.RaiseAndSetIfChanged(ref this.theCommand, value); }
+                get => _theCommand;
+                set => this.RaiseAndSetIfChanged(ref _theCommand, value);
             }
         }
 
         private class ReactiveCommandHolder : ReactiveObject
         {
-            private ReactiveCommand<int, Unit> theCommand;
+            private ReactiveCommand<int, Unit> _theCommand;
 
             public ReactiveCommand<int, Unit> TheCommand
             {
-                get { return this.theCommand; }
-                set { this.RaiseAndSetIfChanged(ref this.theCommand, value); }
+                get => _theCommand;
+                set => this.RaiseAndSetIfChanged(ref _theCommand, value);
             }
         }
     }
@@ -1158,7 +1180,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ResultIsTickedThroughSpecifiedScheduler()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var child1 = ReactiveCommand.Create(() => Observable.Return(1));
                 var child2 = ReactiveCommand.Create(() => Observable.Return(2));
                 var childCommands = new[] { child1, child2 };
@@ -1198,7 +1221,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExceptionsAreDeliveredOnOutputScheduler()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var child = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
                 var childCommands = new[] { child };
                 var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);

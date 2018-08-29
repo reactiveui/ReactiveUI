@@ -12,15 +12,17 @@ namespace ReactiveUI.XamForms
 {
     public class ActivationForViewFetcher : IActivationForViewFetcher
     {
+        /// <inheritdoc/>
         public int GetAffinityForView(Type view)
         {
             return
-                (typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ||
-                (typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ||
-                (typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()))
+                typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+                typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+                typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
                 ? 10 : 0;
         }
 
+        /// <inheritdoc/>
         public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var activation =
@@ -35,7 +37,8 @@ namespace ReactiveUI.XamForms
 
         private static IObservable<bool> GetActivationFor(ICanActivate canActivate)
         {
-            if (canActivate == null) {
+            if (canActivate == null)
+            {
                 return null;
             }
 
@@ -46,7 +49,8 @@ namespace ReactiveUI.XamForms
 
         private static IObservable<bool> GetActivationFor(Page page)
         {
-            if (page == null) {
+            if (page == null)
+            {
                 return null;
             }
 
@@ -57,10 +61,11 @@ namespace ReactiveUI.XamForms
 
         private static IObservable<bool> GetActivationFor(View view)
         {
-            if (view == null) {
+            if (view == null)
+            {
                 return null;
             }
-            
+
             var propertyChanged = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                 x => view.PropertyChanged += x,
                 x => view.PropertyChanged -= x);
@@ -72,7 +77,8 @@ namespace ReactiveUI.XamForms
 
         private static IObservable<bool> GetActivationFor(Cell cell)
         {
-            if (cell == null) {
+            if (cell == null)
+            {
                 return null;
             }
 

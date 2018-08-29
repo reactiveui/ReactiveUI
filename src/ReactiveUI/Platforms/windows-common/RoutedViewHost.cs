@@ -4,8 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reactive.Linq;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Windows;
@@ -31,10 +31,12 @@ namespace ReactiveUI
         /// <summary>
         /// The Router associated with this View Host.
         /// </summary>
-        public RoutingState Router {
-            get { return (RoutingState)GetValue(RouterProperty); }
-            set { SetValue(RouterProperty, value); }
+        public RoutingState Router
+        {
+            get => (RoutingState)GetValue(RouterProperty);
+            set => SetValue(RouterProperty, value);
         }
+
         public static readonly DependencyProperty RouterProperty =
             DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
 
@@ -42,17 +44,21 @@ namespace ReactiveUI
         /// This content is displayed whenever there is no page currently
         /// routed.
         /// </summary>
-        public object DefaultContent {
-            get { return (object)GetValue(DefaultContentProperty); }
-            set { SetValue(DefaultContentProperty, value); }
+        public object DefaultContent
+        {
+            get => (object)GetValue(DefaultContentProperty);
+            set => SetValue(DefaultContentProperty, value);
         }
+
         public static readonly DependencyProperty DefaultContentProperty =
             DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
 
-        public IObservable<string> ViewContractObservable {
-            get { return (IObservable<string>)GetValue(ViewContractObservableProperty); }
-            set { SetValue(ViewContractObservableProperty, value); }
+        public IObservable<string> ViewContractObservable
+        {
+            get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+            set => SetValue(ViewContractObservableProperty, value);
         }
+
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable<string>.Default));
 
@@ -61,12 +67,13 @@ namespace ReactiveUI
         public RoutedViewHost()
         {
 #if NETFX_CORE
-            this.DefaultStyleKey = typeof(RoutedViewHost);
+            DefaultStyleKey = typeof(RoutedViewHost);
 #endif
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
-            if (ModeDetector.InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner())
+            {
                 ViewContractObservable = Observable<string>.Never;
                 return;
             }
@@ -74,11 +81,14 @@ namespace ReactiveUI
             var platform = Locator.Current.GetService<IPlatformOperations>();
             Func<string> platformGetter = () => default(string);
 
-            if (platform == null) {
+            if (platform == null)
+            {
                 // NB: This used to be an error but WPF design mode can't read
-                // good or do other stuff good.                
+                // good or do other stuff good.
                 this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation/nuget-packages for guidance.");
-            } else {
+            }
+            else
+            {
                 platformGetter = () => platform.GetOrientation();
             }
 
@@ -86,33 +96,38 @@ namespace ReactiveUI
                 .Select(_ => platformGetter())
                 .DistinctUntilChanged()
                 .StartWith(platformGetter())
-                .Select(x => x != null ? x.ToString() : default(string));
+                .Select(x => x != null ? x : default(string));
 
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyObservable(x => x.Router.CurrentViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
-                (vm, contract) => Tuple.Create(vm, contract));
+                Tuple.Create);
 
-            this.WhenActivated(d => {
-                // NB: The DistinctUntilChanged is useful because most views in 
+            this.WhenActivated(d =>
+            {
+                // NB: The DistinctUntilChanged is useful because most views in
                 // WinRT will end up getting here twice - once for configuring
                 // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-                d(vmAndContract.DistinctUntilChanged().Subscribe(x => {
-                    if (x.Item1 == null) {
-                        Content = DefaultContent;
-                        return;
-                    }
+                d(vmAndContract.DistinctUntilChanged().Subscribe(
+                    x =>
+                    {
+                        if (x.Item1 == null)
+                        {
+                            Content = DefaultContent;
+                            return;
+                        }
 
-                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
+                        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                        var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
 
-                    if (view == null) {
-                        throw new Exception(String.Format("Couldn't find view for '{0}'.", x.Item1));
-                    }
+                        if (view == null)
+                        {
+                            throw new Exception(string.Format("Couldn't find view for '{0}'.", x.Item1));
+                        }
 
-                    view.ViewModel = x.Item1;
-                    Content = view;
-                }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
+                        view.ViewModel = x.Item1;
+                        Content = view;
+                    }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
             });
         }
     }

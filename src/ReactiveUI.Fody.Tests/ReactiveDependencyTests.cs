@@ -62,7 +62,7 @@ namespace ReactiveUI.Fody.Tests
 
             var facade = new FacadeModel(new BaseModel());
 
-            var obj = (INotifyPropertyChanged) facade;
+            var obj = (INotifyPropertyChanged)facade;
             obj.PropertyChanged += (sender, args) => resultPropertyChanged = args.PropertyName;
 
             facade.IntProperty = 999;
@@ -78,7 +78,7 @@ namespace ReactiveUI.Fody.Tests
 
             var facade = new FacadeModel(new BaseModel());
 
-            var obj = (INotifyPropertyChanged) facade;
+            var obj = (INotifyPropertyChanged)facade;
             obj.PropertyChanged += (sender, args) => resultPropertyChanged = args.PropertyName;
 
             facade.AnotherStringProperty = "Some New Value";
@@ -105,14 +105,13 @@ namespace ReactiveUI.Fody.Tests
 
             var decorator = new DecoratorModel(new BaseModel());
 
-            var obj = (INotifyPropertyChanged) decorator;
+            var obj = (INotifyPropertyChanged)decorator;
             obj.PropertyChanged += (sender, args) => resultPropertyChanged = args.PropertyName;
 
             decorator.StringProperty = "Some New Value";
 
             Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
         }
-
 
         [Fact]
         public void DecoratorReactiveStringPropertyRaisesPropertyChanged()
@@ -133,6 +132,7 @@ namespace ReactiveUI.Fody.Tests
     public class BaseModel : ReactiveObject
     {
         public virtual int IntProperty { get; set; } = 5;
+
         public virtual string StringProperty { get; set; } = "Initial Value";
     }
 
@@ -152,8 +152,8 @@ namespace ReactiveUI.Fody.Tests
 
         public BaseModel Dependency
         {
-            get { return _dependency; }
-            private set { _dependency = value; }
+            get => _dependency;
+            private set => _dependency = value;
         }
 
         // Property with the same name, will look for a like for like name on the named dependency
@@ -190,7 +190,7 @@ namespace ReactiveUI.Fody.Tests
         // Can't be attributed as has additional functionality in the decorated get
         public override int IntProperty
         {
-            get { return _model.IntProperty * 2; }
+            get => _model.IntProperty * 2;
             set
             {
                 _model.IntProperty = value;

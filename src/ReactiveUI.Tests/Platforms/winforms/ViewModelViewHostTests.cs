@@ -35,8 +35,8 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldDisposePreviousView()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView()};
-            var target = new WinFormsViewModelViewHost()
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var target = new WinFormsViewModelViewHost
             {
                 CacheViews = false
             };
@@ -70,12 +70,12 @@ namespace ReactiveUI.Tests.Winforms
         {
             var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var defaultContent = new Control();
-            var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator,CacheViews = true };
+            var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = true };
 
             target.ViewModel = new FakeWinformViewModel();
             var cachedView = target.Content;
             target.ViewModel = new FakeWinformViewModel();
-            Assert.True(object.ReferenceEquals(cachedView, target.Content));
+            Assert.True(ReferenceEquals(cachedView, target.Content));
         }
 
         [Fact]
@@ -88,17 +88,18 @@ namespace ReactiveUI.Tests.Winforms
             target.ViewModel = new FakeWinformViewModel();
             var cachedView = target.CurrentView;
             target.ViewModel = new FakeWinformViewModel();
-            Assert.False(object.ReferenceEquals(cachedView,target.CurrentView));
+            Assert.False(ReferenceEquals(cachedView, target.CurrentView));
         }
     }
 
-    class FakeViewLocator : IViewLocator
+    internal class FakeViewLocator : IViewLocator
     {
         public Func<Type, IViewFor> LocatorFunc { get; set; }
 
-        public IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class
+        public IViewFor ResolveView<T>(T viewModel, string contract = null)
+            where T : class
         {
-            return this.LocatorFunc(viewModel.GetType());
+            return LocatorFunc(viewModel.GetType());
         }
     }
 }

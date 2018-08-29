@@ -20,7 +20,8 @@ namespace ReactiveUI
     [Obsolete("Use ViewModelViewHost instead. This class will be removed in a future release.")]
     public class AutoLayoutViewModelViewHostLegacy : ViewModelViewHostLegacy
     {
-        public AutoLayoutViewModelViewHostLegacy(NSView targetView) : base(targetView)
+        public AutoLayoutViewModelViewHostLegacy(NSView targetView)
+            : base(targetView)
         {
             AddAutoLayoutConstraintsToSubView = true;
         }

@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -17,18 +17,21 @@ namespace ReactiveUI.Tests
 {
     public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     {
-        public PropertyBindViewModel ViewModel {
-            get { return (PropertyBindViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+        public PropertyBindViewModel ViewModel
+        {
+            get => (PropertyBindViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
+
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
 
-        object IViewFor.ViewModel { 
-            get { return ViewModel; }
-            set { ViewModel = (PropertyBindViewModel)value; } 
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (PropertyBindViewModel)value;
         }
-        
+
         public TextBox SomeTextBox;
         public TextBox Property2;
         public PropertyBindFakeControl FakeControl;
@@ -45,28 +48,40 @@ namespace ReactiveUI.Tests
 
     public class PropertyBindFakeControl : Control
     {
-        public double? NullableDouble {
-            get { return (double?)GetValue(NullableDoubleProperty); }
-            set { SetValue(NullableDoubleProperty, value); }
-        }
+
+        public static readonly DependencyProperty NullHatingStringProperty =
+            DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new PropertyMetadata(string.Empty));
+
         public static readonly DependencyProperty NullableDoubleProperty =
             DependencyProperty.Register("NullableDouble", typeof(double?), typeof(PropertyBindFakeControl), new PropertyMetadata(null));
 
-        public double JustADouble {
-            get { return (double)GetValue(JustADoubleProperty); }
-            set { SetValue(JustADoubleProperty, value); }
-        }
         public static readonly DependencyProperty JustADoubleProperty =
             DependencyProperty.Register("JustADouble", typeof(double), typeof(PropertyBindFakeControl), new PropertyMetadata(0.0));
 
-        public string NullHatingString {
-            get { return (string)GetValue(NullHatingStringProperty); }
-            set {
-                if (value == null) throw new ArgumentNullException("No nulls! I get confused!");
-                SetValue(NullHatingStringProperty, value); 
+        public double? NullableDouble
+        {
+            get => (double?)GetValue(NullableDoubleProperty);
+            set => SetValue(NullableDoubleProperty, value);
+        }
+
+        public double JustADouble
+        {
+            get => (double)GetValue(JustADoubleProperty);
+            set => SetValue(JustADoubleProperty, value);
+        }
+
+        public string NullHatingString
+        {
+            get => (string)GetValue(NullHatingStringProperty);
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("No nulls! I get confused!");
+                }
+
+                SetValue(NullHatingStringProperty, value);
             }
         }
-        public static readonly DependencyProperty NullHatingStringProperty =
-            DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new PropertyMetadata(""));
     }
 }

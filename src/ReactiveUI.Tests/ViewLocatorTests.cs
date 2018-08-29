@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -8,9 +8,13 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    public interface IFooViewModel { }
+    public interface IFooViewModel
+    {
+    }
 
-    public interface IBarViewModel { }
+    public interface IBarViewModel
+    {
+    }
 
     public class FooViewModel : ReactiveObject, IFooViewModel
     {
@@ -24,14 +28,16 @@ namespace ReactiveUI.Tests
     {
     }
 
-    public interface IFooView : IViewFor<IFooViewModel> { }
+    public interface IFooView : IViewFor<IFooViewModel>
+    {
+    }
 
     public class FooView : IFooView
     {
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (IFooViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (IFooViewModel)value;
         }
 
         public IFooViewModel ViewModel { get; set; }
@@ -41,8 +47,8 @@ namespace ReactiveUI.Tests
     {
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (IBarViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (IBarViewModel)value;
         }
 
         public IBarViewModel ViewModel { get; set; }
@@ -52,8 +58,8 @@ namespace ReactiveUI.Tests
     {
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (IFooViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (IFooViewModel)value;
         }
 
         public IFooViewModel ViewModel { get; set; }
@@ -68,22 +74,29 @@ namespace ReactiveUI.Tests
 
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (IFooViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (IFooViewModel)value;
         }
 
         public IFooViewModel ViewModel { get; set; }
     }
 
-    public interface StrangeInterfaceNotFollowingConvention { }
+    public interface IStrangeInterfaceNotFollowingConvention
+    {
+    }
 
-    public class StrangeClassNotFollowingConvention : StrangeInterfaceNotFollowingConvention { }
+    public class StrangeClassNotFollowingConvention : IStrangeInterfaceNotFollowingConvention
+    {
+    }
 
-    public interface IRoutableFooViewModel : IRoutableViewModel { }
+    public interface IRoutableFooViewModel : IRoutableViewModel
+    {
+    }
 
     public class RoutableFooViewModel : ReactiveObject, IRoutableFooViewModel
     {
         public IScreen HostScreen { get; set; }
+
         public string UrlPathSegment { get; set; }
     }
 
@@ -91,12 +104,12 @@ namespace ReactiveUI.Tests
     {
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (IRoutableFooViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (IRoutableFooViewModel)value;
         }
+
         public IRoutableFooViewModel ViewModel { get; set; }
     }
-
 
     public class DefaultViewLocatorTests
     {
@@ -109,7 +122,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooView(), typeof(IViewFor<FooViewModel>));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new FooViewModel();
 
@@ -127,12 +141,13 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooView(), typeof(FooView));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 object vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
-                Assert.IsType<FooView>(result );
+                Assert.IsType<FooView>(result);
             }
         }
 
@@ -145,7 +160,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooWithWeirdConvention(), typeof(FooWithWeirdConvention));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 fixture.ViewModelToViewFunc = viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention");
                 var vm = new FooViewModel();
@@ -164,7 +180,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooView(), typeof(FooView));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new FooViewModel();
 
@@ -182,7 +199,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooView(), typeof(IFooView));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new FooViewModel();
 
@@ -200,7 +218,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooView(), typeof(IViewFor<FooViewModel>));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new FooViewModel();
 
@@ -218,7 +237,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooView(), typeof(FooView));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 IFooViewModel vm = new FooViewModelWithWeirdName();
 
@@ -236,7 +256,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooView(), typeof(IFooView));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 IFooViewModel vm = new FooViewModel();
 
@@ -254,7 +275,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooView(), typeof(IViewFor<IFooViewModel>));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 IFooViewModel vm = new FooViewModel();
 
@@ -273,7 +295,8 @@ namespace ReactiveUI.Tests
             resolver.Register(() => new FooView(), typeof(IViewFor<IFooViewModel>), "first");
             resolver.Register(() => new FooWithWeirdConvention(), typeof(IViewFor<IFooViewModel>), "second");
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new FooViewModel();
 
@@ -296,7 +319,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeSplat();
             resolver.InitializeReactiveUI();
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 fixture.ViewModelToViewFunc = viewModelName => "DoesNotExist";
                 var vm = new FooViewModel();
@@ -314,7 +338,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeSplat();
             resolver.InitializeReactiveUI();
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new FooViewModel();
 
@@ -332,7 +357,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => "this string does not implement IViewFor", typeof(IViewFor<IFooViewModel>));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new FooViewModel();
 
@@ -350,7 +376,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new FooThatThrowsView(), typeof(IViewFor<IFooViewModel>));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new FooViewModel();
 
@@ -367,12 +394,13 @@ namespace ReactiveUI.Tests
             resolver.InitializeSplat();
             resolver.InitializeReactiveUI();
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
 
                 var vm = new StrangeClassNotFollowingConvention();
 
-                fixture.ResolveView((StrangeInterfaceNotFollowingConvention)vm);
+                fixture.ResolveView((IStrangeInterfaceNotFollowingConvention)vm);
             }
         }
 
@@ -385,7 +413,8 @@ namespace ReactiveUI.Tests
             resolver.InitializeReactiveUI();
             resolver.Register(() => new RoutableFooView(), typeof(IViewFor<IRoutableFooViewModel>));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
                 var vm = new RoutableFooViewModel();
 

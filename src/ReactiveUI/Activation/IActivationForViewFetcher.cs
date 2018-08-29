@@ -9,11 +9,12 @@ namespace ReactiveUI
     /// <summary>
     /// Implement this interface to override how ReactiveUI determines when a
     /// View is activated or deactivated. This is usually only used when porting
-    /// ReactiveUI to a new UI framework
+    /// ReactiveUI to a new UI framework.
     /// </summary>
     public interface IActivationForViewFetcher
     {
         int GetAffinityForView(Type view);
+
         IObservable<bool> GetActivationForView(IActivatable view);
     }
 }

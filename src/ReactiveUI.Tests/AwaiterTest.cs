@@ -18,15 +18,16 @@ namespace ReactiveUI.Tests
         [Fact]
         public void AwaiterSmokeTest()
         {
-            var fixture = awaitAnObservable();
+            var fixture = AwaitAnObservable();
             fixture.Wait();
 
             Assert.Equal(42, fixture.Result);
         }
 
-        async Task<int> awaitAnObservable()
+        private async Task<int> AwaitAnObservable()
         {
-            var o = Observable.Start(() => {
+            var o = Observable.Start(() =>
+            {
                 Thread.Sleep(1000);
                 return 42;
             }, RxApp.TaskpoolScheduler);

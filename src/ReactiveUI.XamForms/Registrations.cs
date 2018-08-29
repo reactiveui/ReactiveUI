@@ -8,6 +8,7 @@ namespace ReactiveUI.XamForms
 {
     public class Registrations : IWantsToRegisterStuff
     {
+        /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));

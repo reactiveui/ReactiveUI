@@ -14,74 +14,84 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
     {
-        readonly CompositeDisposable disposables = new CompositeDisposable();
-
-        Control defaultContent;
-        IObservable<string> viewContractObservable;
-        object viewModel;
+        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private Control _defaultContent;
+        private IObservable<string> _viewContractObservable;
+        private object _viewModel;
 
         public static bool DefaultCacheViewsEnabled { get; set; }
-
 
         public ViewModelControlHost()
         {
             InitializeComponent();
-            this.cacheViews = DefaultCacheViewsEnabled;
+            _cacheViews = DefaultCacheViewsEnabled;
 
-            foreach (var subscription in this.setupBindings()) {
-                disposables.Add(subscription);
+            foreach (var subscription in SetupBindings())
+            {
+                _disposables.Add(subscription);
             }
         }
 
-        IEnumerable<IDisposable> setupBindings()
+        private IEnumerable<IDisposable> SetupBindings()
         {
             var viewChanges =
-                this.WhenAnyValue(x => x.Content).Select(x => x as Control).Where(x => x != null).Subscribe(x => {
+                this.WhenAnyValue(x => x.Content).Select(x => x as Control).Where(x => x != null).Subscribe(x =>
+                {
                     // change the view in the ui
-                    this.SuspendLayout();
+                    SuspendLayout();
 
                     // clear out existing visible control view
-                    foreach (Control c in this.Controls) {
+                    foreach (Control c in Controls)
+                    {
                         c.Dispose();
-                        this.Controls.Remove(c);
+                        Controls.Remove(c);
                     }
 
                     x.Dock = DockStyle.Fill;
-                    this.Controls.Add(x);
-                    this.ResumeLayout();
+                    Controls.Add(x);
+                    ResumeLayout();
                 });
 
             yield return viewChanges;
 
-            yield return this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
-                if (x != null) {
-                    this.Content = DefaultContent;
+            yield return this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
+            {
+                if (x != null)
+                {
+                    Content = DefaultContent;
                 }
             });
 
-            this.ViewContractObservable = Observable<string>.Default;
+            ViewContractObservable = Observable<string>.Default;
 
             var vmAndContract =
                 this.WhenAny(x => x.ViewModel, x => x.Value)
-                    .CombineLatest(this.WhenAnyObservable(x => x.ViewContractObservable),
+                    .CombineLatest(
+                        this.WhenAnyObservable(x => x.ViewContractObservable),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-            yield return vmAndContract.Subscribe(x => {
+            yield return vmAndContract.Subscribe(
+                x =>
+            {
                 // set content to default when viewmodel is null
-                if (this.ViewModel == null) {
-                    if (this.DefaultContent != null) {
-                        this.Content = DefaultContent;
+                if (ViewModel == null)
+                {
+                    if (DefaultContent != null)
+                    {
+                        Content = DefaultContent;
                     }
 
                     return;
                 }
 
-                if (CacheViews) {
+                if (CacheViews)
+                {
                     // when caching views, check the current viewmodel and type
-                    var c = content as IViewFor;
+                    var c = _content as IViewFor;
 
                     if (c != null && c.ViewModel != null
-                        && c.ViewModel.GetType() == x.ViewModel.GetType()) {
+                        && c.ViewModel.GetType() == x.ViewModel.GetType())
+                        {
                         c.ViewModel = x.ViewModel;
 
                         // return early here after setting the viewmodel
@@ -90,80 +100,81 @@ namespace ReactiveUI.Winforms
                     }
                 }
 
-                IViewLocator viewLocator = this.ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                 IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
                 view.ViewModel = x.ViewModel;
-                this.Content = view;
-
+                Content = view;
             }, RxApp.DefaultExceptionHandler.OnNext);
         }
 
+        /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
+        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
-        public Control CurrentView
-        {
-            get { return this.content as Control; }
-        }
+        public Control CurrentView => _content as Control;
 
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
         public Control DefaultContent
         {
-            get { return this.defaultContent; }
-            set { this.RaiseAndSetIfChanged(ref this.defaultContent, value); }
+            get => _defaultContent;
+            set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
         }
 
         [Browsable(false)]
         public IObservable<string> ViewContractObservable
         {
-            get { return this.viewContractObservable; }
-            set { this.RaiseAndSetIfChanged(ref this.viewContractObservable, value); }
+            get => _viewContractObservable;
+            set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
         }
 
         [Browsable(false)]
         public IViewLocator ViewLocator { get; set; }
 
+        /// <inheritdoc/>
         [Category("ReactiveUI")]
         [Description("The viewmodel to host.")]
         [Bindable(true)]
         public object ViewModel
         {
-            get { return this.viewModel; }
-            set { this.RaiseAndSetIfChanged(ref this.viewModel, value); }
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
-        object content;
+        private object _content;
 
         [Category("ReactiveUI")]
         [Description("The Current View")]
         [Bindable(true)]
         public object Content
         {
-            get { return this.content; }
-            protected set { this.RaiseAndSetIfChanged(ref this.content, value); }
+            get => _content;
+            protected set => this.RaiseAndSetIfChanged(ref _content, value);
         }
 
-        bool cacheViews;
+        private bool _cacheViews;
 
         [Category("ReactiveUI")]
         [Description("Cache Views")]
@@ -171,20 +182,22 @@ namespace ReactiveUI.Winforms
         [DefaultValue(true)]
         public bool CacheViews
         {
-            get { return this.cacheViews; }
-            set { this.RaiseAndSetIfChanged(ref this.cacheViews, value); }
+            get => _cacheViews;
+            set => this.RaiseAndSetIfChanged(ref _cacheViews, value);
         }
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null)) {
+            if (disposing && components != null)
+            {
                 components.Dispose();
-                this.disposables.Dispose();
+                _disposables.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }

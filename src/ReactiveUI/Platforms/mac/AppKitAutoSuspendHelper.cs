@@ -16,9 +16,9 @@ namespace ReactiveUI
 {
     public class AutoSuspendHelper : IEnableLogger
     {
-        readonly Subject<IDisposable> shouldPersistState = new Subject<IDisposable>();
-        readonly Subject<Unit> isResuming = new Subject<Unit>();
-        readonly Subject<Unit> isUnpausing = new Subject<Unit>();
+        private readonly Subject<IDisposable> _shouldPersistState = new Subject<IDisposable>();
+        private readonly Subject<Unit> _isResuming = new Subject<Unit>();
+        private readonly Subject<Unit> _isUnpausing = new Subject<Unit>();
 
         public AutoSuspendHelper(NSApplicationDelegate appDelegate)
         {
@@ -26,9 +26,9 @@ namespace ReactiveUI
                 "ApplicationShouldTerminate", "DidFinishLaunching", "DidResignActive", "DidBecomeActive", "DidHide");
 
             RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
-            RxApp.SuspensionHost.IsResuming = isResuming;
-            RxApp.SuspensionHost.IsUnpausing = isUnpausing;
-            RxApp.SuspensionHost.ShouldPersistState = shouldPersistState;
+            RxApp.SuspensionHost.IsResuming = _isResuming;
+            RxApp.SuspensionHost.IsUnpausing = _isUnpausing;
+            RxApp.SuspensionHost.ShouldPersistState = _shouldPersistState;
 
             var untimelyDemise = new Subject<Unit>();
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
@@ -40,7 +40,7 @@ namespace ReactiveUI
         public NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
         {
             RxApp.MainThreadScheduler.Schedule(() =>
-                shouldPersistState.OnNext(Disposable.Create(() =>
+                _shouldPersistState.OnNext(Disposable.Create(() =>
                     sender.ReplyToApplicationShouldTerminate(true))));
 
             return NSApplicationTerminateReply.Later;
@@ -48,22 +48,22 @@ namespace ReactiveUI
 
         public void DidFinishLaunching(NSNotification notification)
         {
-            isResuming.OnNext(Unit.Default);
+            _isResuming.OnNext(Unit.Default);
         }
 
         public void DidResignActive(NSNotification notification)
         {
-            shouldPersistState.OnNext(Disposable.Empty);
+            _shouldPersistState.OnNext(Disposable.Empty);
         }
 
         public void DidBecomeActive(NSNotification notification)
         {
-            isUnpausing.OnNext(Unit.Default);
+            _isUnpausing.OnNext(Unit.Default);
         }
 
         public void DidHide(NSNotification notification)
         {
-            shouldPersistState.OnNext(Disposable.Empty);
+            _shouldPersistState.OnNext(Disposable.Empty);
         }
     }
 }

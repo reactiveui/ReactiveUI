@@ -1,0 +1,29 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+namespace ReactiveUI
+{
+    using System;
+
+    /// <summary>
+    /// Allows an additional string to make view resolution more specific than
+    /// just a type. When applied to your <see cref="IViewFor{T}"/> -derived
+    /// View, you can select between different Views for a single ViewModel
+    /// instance.
+    /// </summary>
+    public class ViewContractAttribute : Attribute
+    {
+        /// <summary>
+        /// Constructs the ViewContractAttribute with a specific contract value.
+        /// </summary>
+        /// <param name="contract">The value of the contract for view
+        /// resolution.</param>
+        public ViewContractAttribute(string contract)
+        {
+            Contract = contract;
+        }
+
+        public string Contract { get; }
+    }
+}

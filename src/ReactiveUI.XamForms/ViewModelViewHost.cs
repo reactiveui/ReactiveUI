@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -21,8 +21,8 @@ namespace ReactiveUI.XamForms
         /// </summary>
         public object ViewModel
         {
-            get { return GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+            get => GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
         /// <summary>
@@ -40,8 +40,8 @@ namespace ReactiveUI.XamForms
         /// </summary>
         public View DefaultContent
         {
-            get { return (View)GetValue(DefaultContentProperty); }
-            set { SetValue(DefaultContentProperty, value); }
+            get => (View)GetValue(DefaultContentProperty);
+            set => SetValue(DefaultContentProperty, value);
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace ReactiveUI.XamForms
         /// </summary>
         public IObservable<string> ViewContractObservable
         {
-            get { return (IObservable<string>)GetValue(ViewContractObservableProperty); }
-            set { SetValue(ViewContractObservableProperty, value); }
+            get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+            set => SetValue(ViewContractObservableProperty, value);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace ReactiveUI.XamForms
             Observable<string>.Never,
             BindingMode.OneWay);
 
-        private string viewContract;
+        private string _viewContract;
 
         /// <summary>
         /// A fixed contract to use when resolving the view for the given view model.
@@ -83,8 +83,8 @@ namespace ReactiveUI.XamForms
         /// </remarks>
         public string ViewContract
         {
-            get { return this.viewContract; }
-            set { ViewContractObservable = Observable.Return(value); }
+            get => _viewContract;
+            set => ViewContractObservable = Observable.Return(value);
         }
 
         /// <summary>
@@ -95,7 +95,8 @@ namespace ReactiveUI.XamForms
         public ViewModelViewHost()
         {
             // NB: InUnitTestRunner also returns true in Design Mode
-            if (ModeDetector.InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner())
+            {
                 ViewContractObservable = Observable<string>.Never;
                 return;
             }
@@ -107,32 +108,39 @@ namespace ReactiveUI.XamForms
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-            this.WhenActivated(() => {
-                return new[] {
-                    vmAndContract.Subscribe(x => {
-                        this.viewContract = x.Contract;
+            this.WhenActivated(() =>
+            {
+                return new[]
+                {
+                    vmAndContract.Subscribe(x =>
+                    {
+                        _viewContract = x.Contract;
 
-                        if (x.ViewModel == null) {
-                            this.Content = this.DefaultContent;
+                        if (x.ViewModel == null)
+                        {
+                            Content = DefaultContent;
                             return;
                         }
 
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                         var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
 
-                        if (view == null) {
-                            throw new Exception(String.Format("Couldn't find view for '{0}'.", x.ViewModel));
+                        if (view == null)
+                        {
+                            throw new Exception(string.Format("Couldn't find view for '{0}'.", x.ViewModel));
                         }
 
                         var castView = view as View;
 
-                        if (castView == null) {
-                            throw new Exception(String.Format("View '{0}' is not a subclass of '{1}'.", view.GetType().FullName, typeof(View).FullName));
+                        if (castView == null)
+                        {
+                            throw new Exception(string.Format("View '{0}' is not a subclass of '{1}'.", view.GetType().FullName, typeof(View).FullName));
                         }
 
                         view.ViewModel = x.ViewModel;
-                        this.Content = castView;
-                    })};
+                        Content = castView;
+                    })
+                };
             });
         }
     }

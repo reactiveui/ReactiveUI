@@ -2,22 +2,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Windows.UI.Xaml;
+using System;
 using Microsoft.Xaml.Interactivity;
 using Windows.ApplicationModel;
-using System;
+using Windows.UI.Xaml;
 
 namespace ReactiveUI.Blend
 {
-    public class Behavior<T> : DependencyObject, IBehavior where T: DependencyObject
+    public class Behavior<T> : DependencyObject, IBehavior
+        where T : DependencyObject
     {
+        /// <inheritdoc/>
         public virtual void Attach(DependencyObject associatedObject)
         {
-            if (associatedObject == this.AssociatedObject || DesignMode.DesignModeEnabled) {
+            if (associatedObject == AssociatedObject || DesignMode.DesignModeEnabled)
+            {
                 return;
             }
 
-            if (this.AssociatedObject != null) {
+            if (AssociatedObject != null)
+            {
                 throw new InvalidOperationException("Cannot attach multiple objects.");
             }
 
@@ -25,6 +29,7 @@ namespace ReactiveUI.Blend
             OnAttached();
         }
 
+        /// <inheritdoc/>
         public virtual void Detach()
         {
             OnDetaching();
@@ -40,8 +45,10 @@ namespace ReactiveUI.Blend
 
         public T AssociatedObject { get; private set; }
 
-        DependencyObject IBehavior.AssociatedObject {
-            get { return this.AssociatedObject; }
+        /// <inheritdoc/>
+        DependencyObject IBehavior.AssociatedObject
+        {
+            get { return AssociatedObject; }
         }
     }
 }

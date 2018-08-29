@@ -9,17 +9,17 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using Splat;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Splat;
 
 namespace ReactiveUI
 {
     public class AutoSuspendHelper : IEnableLogger
     {
-        readonly ReplaySubject<IActivatedEventArgs> _activated = new ReplaySubject<IActivatedEventArgs>(1);
+        private readonly ReplaySubject<IActivatedEventArgs> _activated = new ReplaySubject<IActivatedEventArgs>(1);
 
         public AutoSuspendHelper(Application app)
         {
@@ -42,7 +42,8 @@ namespace ReactiveUI
             var shouldPersistState = new Subject<SuspendingEventArgs>();
             app.Suspending += (o, e) => shouldPersistState.OnNext(e);
             RxApp.SuspensionHost.ShouldPersistState =
-                shouldPersistState.Select(x => {
+                shouldPersistState.Select(x =>
+                {
                     var deferral = x.SuspendingOperation.GetDeferral();
                     return Disposable.Create(deferral.Complete);
                 });

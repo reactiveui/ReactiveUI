@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -17,7 +17,8 @@ namespace ReactiveUI.Tests.Winforms
             var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             var supportedComponents = new[] { typeof(Control), typeof(UserControl), typeof(Form) };
 
-            foreach (var c in supportedComponents) {
+            foreach (var c in supportedComponents)
+            {
                 Assert.Equal(10, target.GetAffinityForView(c));
             }
         }
@@ -31,7 +32,6 @@ namespace ReactiveUI.Tests.Winforms
 
             Assert.NotNull(formActivator);
         }
-
 
         [Fact]
         public void CanFetchActivatorForControl()
@@ -47,14 +47,19 @@ namespace ReactiveUI.Tests.Winforms
         public void SmokeTestWindowsForm()
         {
             var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
-            using (var form = new TestForm()) {
+            using (var form = new TestForm())
+            {
                 var formActivator = target.GetActivationForView(form);
 
                 int formActivateCount = 0, formDeActivateCount = 0;
-                formActivator.Subscribe(activated => {
-                    if (activated) {
+                formActivator.Subscribe(activated =>
+                {
+                    if (activated)
+                    {
                         formActivateCount++;
-                    } else {
+                    }
+                    else
+                    {
                         formDeActivateCount++;
                     }
                 });
@@ -82,14 +87,19 @@ namespace ReactiveUI.Tests.Winforms
         {
             var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             using (var userControl = new TestControl())
-            using (var parent = new TestForm()) {
+            using (var parent = new TestForm())
+            {
                 var userControlActivator = target.GetActivationForView(userControl);
 
                 int userControlActivateCount = 0, userControlDeActivateCount = 0;
-                userControlActivator.Subscribe(activated => {
-                    if (activated) {
+                userControlActivator.Subscribe(activated =>
+                {
+                    if (activated)
+                    {
                         userControlActivateCount++;
-                    } else {
+                    }
+                    else
+                    {
                         userControlDeActivateCount++;
                     }
                 });
@@ -105,14 +115,18 @@ namespace ReactiveUI.Tests.Winforms
                 userControl.Visible = true;
                 Assert.Equal(2, userControlActivateCount);
 
-                //closing the form deactivated the usercontrol
+                // closing the form deactivated the usercontrol
                 parent.Close();
                 Assert.Equal(2, userControlDeActivateCount);
             }
         }
 
-        class TestControl : System.Windows.Forms.Control, IActivatable { }
+        private class TestControl : Control, IActivatable
+        {
+        }
 
-        class TestForm : System.Windows.Forms.Form, IActivatable { }
+        private class TestForm : Form, IActivatable
+        {
+        }
     }
 }

@@ -14,28 +14,34 @@ namespace ReactiveUI
 {
     public static class ViewCommandExtensions
     {
-        public static IDisposable BindToTarget(this ICommand This, View control)
+        public static IDisposable BindToTarget(this ICommand @this, View control)
         {
-            var ev = new EventHandler((o, e) => {
-                if (!This.CanExecute(null)) return;
-                This.Execute(null);
+            var ev = new EventHandler((o, e) =>
+            {
+                if (!@this.CanExecute(null))
+                {
+                    return;
+                }
+
+                @this.Execute(null);
             });
 
-            var cech = new EventHandler((o, e) => {
-                var canExecute = This.CanExecute(null);
+            var cech = new EventHandler((o, e) =>
+            {
+                var canExecute = @this.CanExecute(null);
                 control.Enabled = canExecute;
             });
 
-            This.CanExecuteChanged += cech;
+            @this.CanExecuteChanged += cech;
             control.Click += ev;
 
-            control.Enabled = This.CanExecute(null);
+            control.Enabled = @this.CanExecute(null);
 
-            return Disposable.Create(() => {
-                This.CanExecuteChanged -= cech;
+            return Disposable.Create(() =>
+            {
+                @this.CanExecuteChanged -= cech;
                 control.Click -= ev;
             });
         }
     }
-
 }

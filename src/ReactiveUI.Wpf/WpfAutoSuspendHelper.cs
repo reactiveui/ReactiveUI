@@ -6,14 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Splat;
 using ReactiveUI;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -51,11 +51,10 @@ namespace ReactiveUI
                     .SelectMany(_ => Observable.Timer(IdleTimeout, RxApp.TaskpoolScheduler))
                     .TakeUntil(RxApp.SuspensionHost.IsUnpausing)
                     .Repeat()
-                    .Select(_ => Disposable.Empty)
-                );
+                    .Select(_ => Disposable.Empty));
 
             var untimelyDeath = new Subject<Unit>();
-            AppDomain.CurrentDomain.UnhandledException += (o,e) => untimelyDeath.OnNext(Unit.Default);
+            AppDomain.CurrentDomain.UnhandledException += (o, e) => untimelyDeath.OnNext(Unit.Default);
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
         }
     }

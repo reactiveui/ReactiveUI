@@ -19,14 +19,14 @@ namespace ReactiveUI
     /// <summary>
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
-    /// 
-    /// Locator.Current.GetService<ISuspensionHost>().SetupDefaultSuspendResume();
+    ///
+    /// Locator.Current.GetService.<ISuspensionHost>().SetupDefaultSuspendResume();
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger
     {
-        readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
-        readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
-        readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
+        private readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
+        private readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
+        private readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
 
         public IDictionary<string, string> LaunchOptions { get; protected set; }
 
@@ -44,11 +44,13 @@ namespace ReactiveUI
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
 
-            RxApp.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app => {
+            RxApp.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app =>
+            {
                 var taskId = app.BeginBackgroundTask(new NSAction(() => untimelyDeath.OnNext(Unit.Default)));
 
                 // NB: We're being force-killed, signal invalidate instead
-                if (taskId == UIApplication.BackgroundTaskInvalid) {
+                if (taskId == UIApplication.BackgroundTaskInvalid)
+                {
                     untimelyDeath.OnNext(Unit.Default);
                     return Observable<IDisposable>.Empty;
                 }
@@ -59,9 +61,12 @@ namespace ReactiveUI
 
         public void FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            if (launchOptions != null) {
+            if (launchOptions != null)
+            {
                 LaunchOptions = launchOptions.Keys.ToDictionary(k => k.ToString(), v => launchOptions[v].ToString());
-            } else {
+            }
+            else
+            {
                 LaunchOptions = new Dictionary<string, string>();
             }
 
@@ -81,4 +86,3 @@ namespace ReactiveUI
         }
     }
 }
-

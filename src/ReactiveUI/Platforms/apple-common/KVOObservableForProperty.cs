@@ -12,34 +12,38 @@ using System.Runtime.InteropServices;
 using Foundation;
 using Splat;
 
-
 namespace ReactiveUI
 {
     /// <summary>
     /// This class provides notifications for Cocoa Framework objects based on
     /// Key-Value Observing. Unfortunately, this class is a bit Tricky™, because
     /// of the caveat mentioned below - there is no way up-front to be able to
-    /// tell whether a given property on an object is Key-Value Observable, we 
-    /// only have to hope for the best :-/
+    /// tell whether a given property on an object is Key-Value Observable, we
+    /// only have to hope for the best :-/.
     /// </summary>
     public class KVOObservableForProperty : ICreatesObservableForProperty
     {
-        static readonly MemoizingMRUCache<Tuple<Type, string>, bool> declaredInNSObject;
+        private static readonly MemoizingMRUCache<Tuple<Type, string>, bool> declaredInNSObject;
 
         static KVOObservableForProperty()
         {
             var monotouchAssemblyName = typeof(NSObject).Assembly.FullName;
 
-            declaredInNSObject = new MemoizingMRUCache<Tuple<Type, string>, bool>((pair, _) => {
+            declaredInNSObject = new MemoizingMRUCache<Tuple<Type, string>, bool>(
+                (pair, _) =>
+            {
                 var thisType = pair.Item1;
 
                 // Types that aren't NSObjects at all are uninteresting to us
-                if (typeof(NSObject).IsAssignableFrom(thisType) == false) {
+                if (typeof(NSObject).IsAssignableFrom(thisType) == false)
+                {
                     return false;
                 }
 
-                while (thisType != null) {
-                    if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.Item2)) {
+                while (thisType != null)
+                {
+                    if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.Item2))
+                    {
                         // NB: This is a not-completely correct way to detect if
                         // an object is defined in an Obj-C class (it will fail if
                         // you're using a binding to a 3rd-party Obj-C library).
@@ -54,63 +58,87 @@ namespace ReactiveUI
             }, RxApp.BigCacheLimit);
         }
 
-
+        /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            lock (declaredInNSObject) {
+            lock (declaredInNSObject)
+            {
                 return declaredInNSObject.Get(Tuple.Create(type, propertyName)) ? 15 : 0;
             }
         }
 
+        /// <inheritdoc/>
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
         {
             var obj = sender as NSObject;
-            if (obj == null) {
+            if (obj == null)
+            {
                 throw new ArgumentException("Sender isn't an NSObject");
             }
 
-            return Observable.Create<IObservedChange<object, object>>(subj => {
-                var bobs = new BlockObserveValueDelegate((key, s, _) => {
+            return Observable.Create<IObservedChange<object, object>>(subj =>
+            {
+                var bobs = new BlockObserveValueDelegate((key, s, _) =>
+                {
                     subj.OnNext(new ObservedChange<object, object>(s, expression));
                 });
                 var pin = GCHandle.Alloc(bobs);
 
-                var keyPath = (NSString)findCocoaNameFromNetName(sender.GetType(), propertyName);
+                var keyPath = (NSString)FindCocoaNameFromNetName(sender.GetType(), propertyName);
 
                 obj.AddObserver(bobs, keyPath, beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New, IntPtr.Zero);
 
-                return Disposable.Create(() => {
+                return Disposable.Create(() =>
+                {
                     obj.RemoveObserver(bobs, keyPath);
                     pin.Free();
                 });
             });
         }
 
-        string findCocoaNameFromNetName(Type senderType, string propertyName)
+        private string FindCocoaNameFromNetName(Type senderType, string propertyName)
         {
             bool propIsBoolean = false;
 
             var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(x => !x.IsStatic());
-            if (pi == null) goto attemptGuess;
+            if (pi == null)
+            {
+                goto attemptGuess;
+            }
 
-            if (pi.DeclaringType == typeof(bool)) propIsBoolean = true;
+            if (pi.DeclaringType == typeof(bool))
+            {
+                propIsBoolean = true;
+            }
 
             var mi = pi.GetGetMethod();
-            if (mi == null) goto attemptGuess;
+            if (mi == null)
+            {
+                goto attemptGuess;
+            }
 
             var attr = mi.GetCustomAttributes(true).Select(x => x as ExportAttribute).FirstOrDefault(x => x != null);
-            if (attr == null) goto attemptGuess;
+            if (attr == null)
+            {
+                goto attemptGuess;
+            }
+
             return attr.Selector;
 
         attemptGuess:
-            if (propIsBoolean) propertyName = "Is" + propertyName;
-            return Char.ToLowerInvariant(propertyName[0]).ToString() + propertyName.Substring(1);
+            if (propIsBoolean)
+            {
+                propertyName = "Is" + propertyName;
+            }
+
+            return char.ToLowerInvariant(propertyName[0]).ToString() + propertyName.Substring(1);
         }
     }
 
-    class BlockObserveValueDelegate : NSObject
+    internal class BlockObserveValueDelegate : NSObject
     {
-        Action<string, NSObject, NSDictionary> _block;
+        private Action<string, NSObject, NSDictionary> _block;
+
         public BlockObserveValueDelegate(Action<string, NSObject, NSDictionary> block)
         {
             _block = block;

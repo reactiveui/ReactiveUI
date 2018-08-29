@@ -10,22 +10,24 @@ namespace ReactiveUI.Tests
 {
     public class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>
     {
-        ActivatingViewModel viewModel;
+        private ActivatingViewModel _viewModel;
+
         public ActivatingViewModel ViewModel
         {
-            get { return viewModel; }
-            set { this.RaiseAndSetIfChanged(ref viewModel, value); }
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (ActivatingViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (ActivatingViewModel)value;
         }
 
         public ActivatingView()
         {
-            this.WhenActivated(d => {
+            this.WhenActivated(d =>
+            {
                 IsActiveCount++;
                 d(Disposable.Create(() => IsActiveCount--));
             });

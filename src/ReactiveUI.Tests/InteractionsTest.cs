@@ -46,7 +46,8 @@ namespace ReactiveUI.Tests
         {
             var interaction = new Interaction<Unit, Unit>();
 
-            interaction.RegisterHandler(context => {
+            interaction.RegisterHandler(context =>
+            {
                 context.SetOutput(Unit.Default);
                 context.SetOutput(Unit.Default);
             });
@@ -60,7 +61,8 @@ namespace ReactiveUI.Tests
         {
             var interaction = new Interaction<Unit, Unit>();
 
-            interaction.RegisterHandler(context => {
+            interaction.RegisterHandler(context =>
+            {
                 var output = context.GetOutput();
             });
 
@@ -80,10 +82,12 @@ namespace ReactiveUI.Tests
         [Fact]
         public void HandlersAreExecutedOnHandlerScheduler()
         {
-            (new TestScheduler()).With(sched => {
+            new TestScheduler().With(sched =>
+            {
                 var interaction = new Interaction<Unit, string>(sched);
 
-                using (interaction.RegisterHandler(x => x.SetOutput("done"))) {
+                using (interaction.RegisterHandler(x => x.SetOutput("done")))
+                {
                     var handled = false;
                     interaction
                         .Handle(Unit.Default)
@@ -102,13 +106,16 @@ namespace ReactiveUI.Tests
         {
             var interaction = new Interaction<Unit, string>();
 
-            using (interaction.RegisterHandler(x => x.SetOutput("A"))) {
+            using (interaction.RegisterHandler(x => x.SetOutput("A")))
+            {
                 Assert.Equal("A", interaction.Handle(Unit.Default).FirstAsync().Wait());
 
-                using (interaction.RegisterHandler(x => x.SetOutput("B"))) {
+                using (interaction.RegisterHandler(x => x.SetOutput("B")))
+                {
                     Assert.Equal("B", interaction.Handle(Unit.Default).FirstAsync().Wait());
 
-                    using (interaction.RegisterHandler(x => x.SetOutput("C"))) {
+                    using (interaction.RegisterHandler(x => x.SetOutput("C")))
+                    {
                         Assert.Equal("C", interaction.Handle(Unit.Default).FirstAsync().Wait());
                     }
 
@@ -126,17 +133,22 @@ namespace ReactiveUI.Tests
 
             var handler1A = interaction.RegisterHandler(x => x.SetOutput("A"));
             var handler1B = interaction.RegisterHandler(
-                x => {
+                x =>
+                {
                     // only handle if the input is true
-                    if (x.Input) {
+                    if (x.Input)
+                    {
                         x.SetOutput("B");
                     }
                 });
             var handler1C = interaction.RegisterHandler(x => x.SetOutput("C"));
 
-            using (handler1A) {
-                using (handler1B) {
-                    using (handler1C) {
+            using (handler1A)
+            {
+                using (handler1B)
+                {
+                    using (handler1C)
+                    {
                         Assert.Equal("C", interaction.Handle(false).FirstAsync().Wait());
                         Assert.Equal("C", interaction.Handle(true).FirstAsync().Wait());
                     }
@@ -159,7 +171,8 @@ namespace ReactiveUI.Tests
             // even though handler B is "slow" (i.e. mimicks waiting for the user), it takes precedence over A, so we expect A to never even be called
             var handler1AWasCalled = false;
             var handler1A = interaction.RegisterHandler(
-                x => {
+                x =>
+                {
                     x.SetOutput("A");
                     handler1AWasCalled = true;
                 });
@@ -171,7 +184,8 @@ namespace ReactiveUI.Tests
                         .Do(_ => x.SetOutput("B")));
 
             using (handler1A)
-            using (handler1B) {
+            using (handler1B)
+            {
                 interaction
                     .Handle(Unit.Default)
                     .ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var result).Subscribe();
@@ -192,7 +206,8 @@ namespace ReactiveUI.Tests
         {
             var interaction = new Interaction<Unit, string>();
 
-            interaction.RegisterHandler(context => {
+            interaction.RegisterHandler(context =>
+            {
                 context.SetOutput("result");
                 return Task.FromResult(true);
             });

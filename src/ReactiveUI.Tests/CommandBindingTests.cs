@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Xunit;
 
@@ -36,8 +37,8 @@ namespace ReactiveUI.Tests
 
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (FakeViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (FakeViewModel)value;
         }
 
         public FakeViewModel ViewModel { get; set; }
@@ -111,11 +112,11 @@ namespace ReactiveUI.Tests
             Assert.NotNull(disp);
             Assert.Equal(0, invokeCount);
 
-            input.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            input.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
             Assert.Equal(1, invokeCount);
 
             disp.Dispose();
-            input.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            input.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
             Assert.Equal(1, invokeCount);
         }
     }
@@ -123,17 +124,19 @@ namespace ReactiveUI.Tests
     public class CommandBindViewModel : ReactiveObject
     {
         public ReactiveCommand _Command1;
+
         public ReactiveCommand Command1
         {
-            get { return _Command1; }
-            set { this.RaiseAndSetIfChanged(ref _Command1, value); }
+            get => _Command1;
+            set => this.RaiseAndSetIfChanged(ref _Command1, value);
         }
 
         public ReactiveCommand<Unit, Unit> _Command2;
+
         public ReactiveCommand<Unit, Unit> Command2
         {
-            get { return _Command2; }
-            set { this.RaiseAndSetIfChanged(ref _Command2, value); }
+            get => _Command2;
+            set => this.RaiseAndSetIfChanged(ref _Command2, value);
         }
 
         public CommandBindViewModel()
@@ -144,11 +147,12 @@ namespace ReactiveUI.Tests
 
         public FakeNestedViewModel NestedViewModel { get; set; }
 
-        private int value;
+        private int _value;
+
         public int Value
         {
-            get { return value; }
-            set { this.RaiseAndSetIfChanged(ref this.value, value); }
+            get => _value;
+            set => this.RaiseAndSetIfChanged(ref _value, value);
         }
     }
 
@@ -167,15 +171,15 @@ namespace ReactiveUI.Tests
         public event EventHandler<EventArgs> CustomClick;
 
         public void RaiseCustomClick() =>
-            this.CustomClick?.Invoke(this, EventArgs.Empty);
+            CustomClick?.Invoke(this, EventArgs.Empty);
     }
 
     public class CommandBindView : IViewFor<CommandBindViewModel>
     {
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (CommandBindViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (CommandBindViewModel)value;
         }
 
         public CommandBindViewModel ViewModel { get; set; }
@@ -195,15 +199,16 @@ namespace ReactiveUI.Tests
     {
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = (CommandBindViewModel)value; }
+            get => ViewModel;
+            set => ViewModel = (CommandBindViewModel)value;
         }
 
-        private CommandBindViewModel _vm;        
-        public CommandBindViewModel ViewModel 
+        private CommandBindViewModel _vm;
+
+        public CommandBindViewModel ViewModel
         {
-            get { return _vm; }
-            set { this.RaiseAndSetIfChanged(ref _vm, value); }
+            get => _vm;
+            set => this.RaiseAndSetIfChanged(ref _vm, value);
         }
 
         public CustomClickButton Command1 { get; protected set; }
@@ -217,14 +222,13 @@ namespace ReactiveUI.Tests
         }
     }
 
-
     public class CommandBindingImplementationTests
     {
         [WpfFact]
         public void CommandBindByNameWireup()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView() { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = vm };
 
             Assert.Null(view.Command1.Command);
 
@@ -242,7 +246,7 @@ namespace ReactiveUI.Tests
         [WpfFact]
         public void CommandBindNestedCommandWireup()
         {
-            var vm = new CommandBindViewModel()
+            var vm = new CommandBindViewModel
             {
                 NestedViewModel = new FakeNestedViewModel()
             };
@@ -258,7 +262,7 @@ namespace ReactiveUI.Tests
         public void CommandBindSetsInitialEnabledState_True()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView() { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = vm };
 
             var canExecute1 = new BehaviorSubject<bool>(true);
             var cmd1 = ReactiveCommand.Create(() => { }, canExecute1);
@@ -273,7 +277,7 @@ namespace ReactiveUI.Tests
         public void CommandBindSetsDisablesCommandWhenCanExecuteChanged()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView() { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = vm };
 
             var canExecute1 = new BehaviorSubject<bool>(true);
             var cmd1 = ReactiveCommand.Create(() => { }, canExecute1);
@@ -292,7 +296,7 @@ namespace ReactiveUI.Tests
         public void CommandBindSetsInitialEnabledState_False()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView() { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = vm };
 
             var canExecute1 = new BehaviorSubject<bool>(false);
             var cmd1 = ReactiveCommand.Create(() => { }, canExecute1);
@@ -307,7 +311,7 @@ namespace ReactiveUI.Tests
         public void CommandBindRaisesCanExecuteChangedOnBind()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView() { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = vm };
 
             var canExecute1 = new BehaviorSubject<bool>(true);
             var cmd1 = ReactiveCommand.Create(() => { }, canExecute1);
@@ -318,7 +322,6 @@ namespace ReactiveUI.Tests
             Assert.True(view.Command1.IsEnabled);
 
             // Now  change to a disabled cmd
-
             var canExecute2 = new BehaviorSubject<bool>(false);
             var cmd2 = ReactiveCommand.Create(() => { }, canExecute2);
             vm.Command1 = cmd2;
@@ -330,18 +333,18 @@ namespace ReactiveUI.Tests
         public void CommandBindToExplicitEventWireup()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView() { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = vm };
 
             var invokeCount = 0;
             vm.Command2.Subscribe(_ => invokeCount += 1);
 
             var disp = view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
 
-            view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = Image.MouseUpEvent });
+            view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
 
             disp.Dispose();
 
-            view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = Image.MouseUpEvent });
+            view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
             Assert.Equal(1, invokeCount);
         }
 
@@ -349,7 +352,7 @@ namespace ReactiveUI.Tests
         public void CommandBindWithParameterExpression()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView() { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = vm };
 
             var received = 0;
             var cmd = ReactiveCommand.Create<int>(i => { received = i; });
@@ -366,7 +369,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(13, received);
         }
 
-       [WpfFact]
+        [WpfFact]
         public void CommandBindWithDelaySetVMParameterExpression()
         {
             var vm = new CommandBindViewModel();
@@ -416,7 +419,7 @@ namespace ReactiveUI.Tests
         public void CommandBindWithParameterObservable()
         {
             var vm = new CommandBindViewModel();
-            var view = new CommandBindView() { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = vm };
 
             var received = 0;
             var cmd = ReactiveCommand.Create<int>(i => { received = i; });

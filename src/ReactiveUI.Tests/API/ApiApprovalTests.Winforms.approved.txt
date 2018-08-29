@@ -99,10 +99,10 @@ namespace ReactiveUI.Winforms.Legacy
         "ps://github.com/rolandpheasant/dynamicdata")]
     public class static ObservableCollectionMixin
     {
-        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> removed, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null) { }
-        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null) { }
-        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Action<TNew> removed, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null) { }
-        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(this System.Collections.Generic.IEnumerable<T> This, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null) { }
+        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> @this, System.Func<T, TNew> selector, System.Action<TNew> removed, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null) { }
+        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(this System.Collections.Generic.IEnumerable<T> @this, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null, System.IObservable<TDontCare> signalReset = null) { }
+        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(this System.Collections.Generic.IEnumerable<T> @this, System.Func<T, TNew> selector, System.Action<TNew> removed, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null) { }
+        public static ReactiveUI.Winforms.Legacy.IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(this System.Collections.Generic.IEnumerable<T> @this, System.Func<T, TNew> selector, System.Func<T, bool> filter = null, System.Func<TNew, TNew, int> orderer = null) { }
     }
     [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
         "ps://github.com/rolandpheasant/dynamicdata")]
@@ -127,7 +127,7 @@ namespace ReactiveUI.Winforms.Legacy
         public void CancelNew(int itemIndex) { }
         public void EndNew(int itemIndex) { }
         public int Find(System.ComponentModel.PropertyDescriptor property, object key) { }
-        protected override void raiseCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e) { }
+        protected override void RaiseCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e) { }
         public void RemoveIndex(System.ComponentModel.PropertyDescriptor property) { }
         public void RemoveSort() { }
     }

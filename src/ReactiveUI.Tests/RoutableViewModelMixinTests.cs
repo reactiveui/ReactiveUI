@@ -24,6 +24,7 @@ namespace ReactiveUI.Tests
             }
 
             public string UrlPathSegment => "Test";
+
             public IScreen HostScreen { get; }
         }
     }
@@ -38,7 +39,8 @@ namespace ReactiveUI.Tests
             var screen = new TestScreen();
             var vm = new RoutableViewModel(screen);
 
-            vm.WhenNavigatedTo(() => {
+            vm.WhenNavigatedTo(() =>
+            {
                 count++;
 
                 return Disposable.Empty;
@@ -58,7 +60,8 @@ namespace ReactiveUI.Tests
             var vm = new RoutableViewModel(screen);
             var vm2 = new RoutableViewModel(screen);
 
-            vm.WhenNavigatedTo(() => {
+            vm.WhenNavigatedTo(() =>
+            {
                 count++;
 
                 return Disposable.Empty;
@@ -80,7 +83,8 @@ namespace ReactiveUI.Tests
             var vm = new RoutableViewModel(screen);
             var vm2 = new RoutableViewModel(screen);
 
-            vm.WhenNavigatedTo(() => {
+            vm.WhenNavigatedTo(() =>
+            {
                 return Disposable.Create(() => count++);
             });
 
@@ -101,7 +105,8 @@ namespace ReactiveUI.Tests
             var screen = new TestScreen();
             var vm = new RoutableViewModel(screen);
 
-            vm.WhenNavigatedToObservable().Subscribe(_ => {
+            vm.WhenNavigatedToObservable().Subscribe(_ =>
+            {
                 count++;
             });
 
@@ -119,7 +124,8 @@ namespace ReactiveUI.Tests
             var vm = new RoutableViewModel(screen);
             var vm2 = new RoutableViewModel(screen);
 
-            vm.WhenNavigatedToObservable().Subscribe(_ => {
+            vm.WhenNavigatedToObservable().Subscribe(_ =>
+            {
                 count++;
             });
 
@@ -139,7 +145,7 @@ namespace ReactiveUI.Tests
             var vm = new RoutableViewModel(screen);
 
             vm.WhenNavigatedToObservable().Subscribe(
-                _ => {},
+                _ => { },
                 () => { count++; });
 
             screen.Router.Navigate.Execute(vm);
@@ -156,7 +162,8 @@ namespace ReactiveUI.Tests
             var vm = new RoutableViewModel(screen);
             var vm2 = new RoutableViewModel(screen);
 
-            vm.WhenNavigatingFromObservable().Subscribe(_ => {
+            vm.WhenNavigatingFromObservable().Subscribe(_ =>
+            {
                 count++;
             });
 
@@ -175,7 +182,7 @@ namespace ReactiveUI.Tests
             var vm = new RoutableViewModel(screen);
 
             vm.WhenNavigatingFromObservable().Subscribe(
-                _ => {},
+                _ => { },
                 () => { count++; });
 
             screen.Router.Navigate.Execute(vm);

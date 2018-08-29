@@ -8,10 +8,10 @@ using UIKit;
 namespace ReactiveUI.Cocoa
 {
     /// <summary>
-    /// This class exists to force the MT linker to include properties called by RxUI via reflection
+    /// This class exists to force the MT linker to include properties called by RxUI via reflection.
     /// </summary>
     [Preserve(AllMembers = true)]
-    class LinkerOverrides
+    internal class LinkerOverrides
     {
         public void KeepMe()
         {

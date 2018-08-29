@@ -17,40 +17,32 @@ namespace ReactiveUI
 
     public sealed class Update
     {
-        private readonly UpdateType type;
-        private readonly int index;
-        private readonly bool isDuplicate;
+        private readonly UpdateType _type;
+        private readonly int _index;
+        private readonly bool _isDuplicate;
 
         private Update(UpdateType type, int index, bool isDuplicate = false)
         {
-            this.type = type;
-            this.index = index;
-            this.isDuplicate = isDuplicate;
+            _type = type;
+            _index = index;
+            _isDuplicate = isDuplicate;
         }
 
-        public UpdateType Type
-        {
-            get { return this.type; }
-        }
+        public UpdateType Type => _type;
 
-        public int Index
-        {
-            get { return this.index; }
-        }
+        public int Index => _index;
 
-        public bool IsDuplicate
-        {
-            get { return this.isDuplicate; }
-        }
+        public bool IsDuplicate => _isDuplicate;
 
+        /// <inheritdoc/>
         public override string ToString()
         {
-            return this.type.ToString()[0] + this.index.ToString();
+            return _type.ToString()[0] + _index.ToString();
         }
 
         public Update AsDuplicate()
         {
-            return new Update(this.type, this.index, isDuplicate: true);
+            return new Update(_type, _index, isDuplicate: true);
         }
 
         public static Update Create(UpdateType type, int index)

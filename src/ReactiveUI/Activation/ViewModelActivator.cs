@@ -37,38 +37,37 @@ namespace ReactiveUI
     /// </summary>
     public sealed class ViewModelActivator
     {
-        readonly List<Func<IEnumerable<IDisposable>>> blocks;
-        readonly Subject<Unit> activated;
-        readonly Subject<Unit> deactivated;
-
-        IDisposable activationHandle = Disposable.Empty;
-        int refCount = 0;
+        private readonly List<Func<IEnumerable<IDisposable>>> _blocks;
+        private readonly Subject<Unit> _activated;
+        private readonly Subject<Unit> _deactivated;
+        private IDisposable _activationHandle = Disposable.Empty;
+        private int _refCount;
 
         /// <summary>
         /// Activated observable will tick every time the Activator is activated.
         /// </summary>
         /// <value>The activated.</value>
-        public IObservable<Unit> Activated { get { return activated; } }
+        public IObservable<Unit> Activated => _activated;
 
         /// <summary>
         /// Deactivated observable will tick every time the Activator is deactivated.
         /// </summary>
         /// <value>The deactivated.</value>
-        public IObservable<Unit> Deactivated { get { return deactivated; } }
+        public IObservable<Unit> Deactivated => _deactivated;
 
         /// <summary>
-        /// Constructs a new ViewModelActivator
+        /// Constructs a new ViewModelActivator.
         /// </summary>
         public ViewModelActivator()
         {
-            blocks = new List<Func<IEnumerable<IDisposable>>>();
-            activated = new Subject<Unit>();
-            deactivated = new Subject<Unit>();
+            _blocks = new List<Func<IEnumerable<IDisposable>>>();
+            _activated = new Subject<Unit>();
+            _deactivated = new Subject<Unit>();
         }
 
-        internal void addActivationBlock(Func<IEnumerable<IDisposable>> block)
+        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)
         {
-            blocks.Add(block);
+            _blocks.Add(block);
         }
 
         /// <summary>
@@ -79,10 +78,11 @@ namespace ReactiveUI
         /// <returns>A Disposable that calls Deactivate when disposed.</returns>
         public IDisposable Activate()
         {
-            if (Interlocked.Increment(ref refCount) == 1) {
-                var disp = new CompositeDisposable(blocks.SelectMany(x => x()));
-                Interlocked.Exchange(ref activationHandle, disp).Dispose();
-                activated.OnNext(Unit.Default);
+            if (Interlocked.Increment(ref _refCount) == 1)
+            {
+                var disp = new CompositeDisposable(_blocks.SelectMany(x => x()));
+                Interlocked.Exchange(ref _activationHandle, disp).Dispose();
+                _activated.OnNext(Unit.Default);
             }
 
             return Disposable.Create(() => Deactivate());
@@ -98,9 +98,10 @@ namespace ReactiveUI
         /// </param>
         public void Deactivate(bool ignoreRefCount = false)
         {
-            if (Interlocked.Decrement(ref refCount) == 0 || ignoreRefCount) {
-                Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
-                deactivated.OnNext(Unit.Default);
+            if (Interlocked.Decrement(ref _refCount) == 0 || ignoreRefCount)
+            {
+                Interlocked.Exchange(ref _activationHandle, Disposable.Empty).Dispose();
+                _deactivated.OnNext(Unit.Default);
             }
         }
     }

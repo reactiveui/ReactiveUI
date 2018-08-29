@@ -13,22 +13,24 @@ namespace ReactiveUI.Winforms
 {
     public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
     {
-        private bool? _isDesignModeCache = null;
+        private bool? _isDesignModeCache;
 
+        /// <inheritdoc/>
         public int GetAffinityForView(Type view)
         {
-            return (typeof(Control).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ? 10 : 0;
+            return typeof(Control).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
         }
 
+        /// <inheritdoc/>
         public IObservable<bool> GetActivationForView(IActivatable view)
         {
             // Startup: Control.HandleCreated > Control.BindingContextChanged > Form.Load > Control.VisibleChanged > Form.Activated > Form.Shown
             // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate
             // https://docs.microsoft.com/en-us/dotnet/framework/winforms/order-of-events-in-windows-forms
-
-            if (view is Control control) {
-
-                if (GetCachedIsDesignMode(control)) {
+            if (view is Control control)
+            {
+                if (GetCachedIsDesignMode(control))
+                {
                     return Observable<bool>.Empty;
                 }
 
@@ -39,25 +41,29 @@ namespace ReactiveUI.Winforms
                 var controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged)
                     .DistinctUntilChanged();
 
-                if (view is Form form) {
+                if (view is Form form)
+                {
                     var formClosed = Observable.FromEventPattern(form, "FormClosed").Select(_ => false);
                     controlActivation = controlActivation.Merge(formClosed)
                         .DistinctUntilChanged();
                 }
 
                 return controlActivation;
-            } else {
-                // Show a friendly warning in the log that this view will never be activated
-                this.Log().Warn("Expected a view of type System.Windows.Forms.Control but it is {0}.\r\nYou need to implement your own IActivationForViewFetcher for {0}.", view.GetType());
-                return Observable<bool>.Empty;
             }
+
+            // Show a friendly warning in the log that this view will never be activated
+            this.Log().Warn("Expected a view of type System.Windows.Forms.Control but it is {0}.\r\nYou need to implement your own IActivationForViewFetcher for {0}.", view.GetType());
+
+            return Observable<bool>.Empty;
         }
 
         private bool GetCachedIsDesignMode(Control control)
         {
-            if (_isDesignModeCache == null) {
+            if (_isDesignModeCache == null)
+            {
                 _isDesignModeCache = GetIsDesignMode(control);
             }
+
             return _isDesignModeCache.Value;
         }
 
@@ -65,15 +71,18 @@ namespace ReactiveUI.Winforms
         {
             var isDesignMode = false;
 
-            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) {
-                isDesignMode = true;
-            }
-                        
-            if (control.Site?.DesignMode == true) {
+            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
                 isDesignMode = true;
             }
 
-            if (control.Parent?.Site?.DesignMode == true) {
+            if (control.Site?.DesignMode == true)
+            {
+                isDesignMode = true;
+            }
+
+            if (control.Parent?.Site?.DesignMode == true)
+            {
                 isDesignMode = true;
             }
 
