@@ -17,7 +17,7 @@ using Android.Views;
 using DynamicData;
 using DynamicData.Binding;
 
-namespace ReactiveUI.Android.Support
+namespace ReactiveUI.AndroidSupport
 {
     /// <summary>
     /// An adapter for the Android <see cref="RecyclerView"/>.
