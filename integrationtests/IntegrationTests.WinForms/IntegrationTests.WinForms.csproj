@@ -90,9 +90,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ReactiveUI" Version="8.*" />
-    <PackageReference Include="ReactiveUI.Events.Winforms" Version="8.*" />
-    <PackageReference Include="ReactiveUI.Winforms" Version="8.*" />
+    <PackageReference Include="ReactiveUI.Events.Winforms" Version="*" />
+    <PackageReference Include="ReactiveUI.Winforms" Version="*" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -21,8 +21,7 @@
     </PackageReference>
     <PackageReference Include="Xunit.StaFact" Version="0.2.17" />
     <PackageReference Include="FluentAssertions" Version="5.4.1" />
-    <PackageReference Include="ReactiveUI" Version="8.7.2" />
-    <PackageReference Include="ReactiveUI.Testing" Version="8.7.2" />
+    <PackageReference Include="ReactiveUI.Testing" Version="*" />
   </ItemGroup>
 
   <ItemGroup>
