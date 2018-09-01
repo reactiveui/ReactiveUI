@@ -146,8 +146,8 @@
     <PackageReference Include="Acr.UserDialogs">
       <Version>7.0.1</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="2.5.1.444934" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.2" />
+    <PackageReference Include="Xamarin.Forms" Version="3.*" />
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.XamarinForms\IntegrationTests.XamarinForms.csproj">

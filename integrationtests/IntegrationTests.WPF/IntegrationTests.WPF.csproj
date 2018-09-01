@@ -109,21 +109,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MahApps.Metro">
-      <Version>1.6.1</Version>
-    </PackageReference>
-    <PackageReference Include="ReactiveUI">
-      <Version>8.0.0-alpha0136</Version>
-    </PackageReference>
-    <PackageReference Include="ReactiveUI.Events.WPF">
-      <Version>8.0.0-alpha0136</Version>
-    </PackageReference>
-    <PackageReference Include="ReactiveUI.WPF">
-      <Version>8.0.0-alpha0136</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reactive">
-      <Version>3.1.1</Version>
-    </PackageReference>
+    <PackageReference Include="MahApps.Metro" Version="1.6.5" />
+    <PackageReference Include="ReactiveUI.Events.WPF" Version="*" />
+    <PackageReference Include="ReactiveUI.WPF" Version="*" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
