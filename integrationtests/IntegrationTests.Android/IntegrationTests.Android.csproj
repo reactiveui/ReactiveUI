@@ -97,9 +97,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ReactiveUI">
-      <Version>8.0.0-alpha0136</Version>
+      <Version>8.7.2</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2" />
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
