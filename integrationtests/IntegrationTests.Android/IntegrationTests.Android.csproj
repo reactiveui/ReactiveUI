@@ -96,10 +96,8 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ReactiveUI">
-      <Version>8.7.2</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
+    <PackageReference Include="ReactiveUI" Version="8.*">
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
