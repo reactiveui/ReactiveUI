@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="genesis.ensure" Version="2.0.0" />
-    <PackageReference Include="ReactiveUI" Version="8.0.0-alpha0136" />
+    <PackageReference Include="ReactiveUI" Version="*" />
   </ItemGroup>
 
 </Project>
