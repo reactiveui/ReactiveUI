@@ -6,7 +6,7 @@
              x:Class="MasterDetail.MainPage"
              x:TypeArguments="local:MainViewModel"
              NavigationPage.HasNavigationBar="False">
-    
+
     <MasterDetailPage.Master>
         <ContentPage Title="Master" Padding="0,40,0,0" Icon="hamburger.png">
             <StackLayout>
@@ -20,13 +20,5 @@
             </StackLayout>
         </ContentPage>
     </MasterDetailPage.Master>
-    
-    <!--<MasterDetailPage.Detail>
-        <NavigationPage x:Name="DetailNavigationPage">
-            <x:Arguments>
-                <local:MyDetailPage x:Name="DetailPage" />
-            </x:Arguments>
-        </NavigationPage>
-    </MasterDetailPage.Detail>-->
 
 </rxui:ReactiveMasterDetailPage>
