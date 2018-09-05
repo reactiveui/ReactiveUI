@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<rxui:ReactiveMasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:rxui="clr-namespace:ReactiveUI.XamForms;assembly=ReactiveUI.XamForms"
+             xmlns:local="clr-namespace:MasterDetail"
+             x:Class="MasterDetail.MainPage"
+             x:TypeArguments="local:MainViewModel"
+             NavigationPage.HasNavigationBar="False">
+
+    <MasterDetailPage.Master>
+        <ContentPage Title="Master" Padding="0,40,0,0" Icon="hamburger.png">
+            <StackLayout>
+                <ListView x:Name="MyListView" SeparatorVisibility="None">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <local:CustomCell />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </ContentPage>
+    </MasterDetailPage.Master>
+
+</rxui:ReactiveMasterDetailPage>
