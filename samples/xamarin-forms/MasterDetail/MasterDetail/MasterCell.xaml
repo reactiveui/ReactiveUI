@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rxui:ReactiveViewCell xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:rxui="clr-namespace:ReactiveUI.XamForms;assembly=ReactiveUI.XamForms"
+             xmlns:local="clr-namespace:MasterDetail"
+             x:Class="MasterDetail.MasterCell"
+             x:TypeArguments="local:MasterCellViewModel">
+
+    <Grid Padding="5,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Image x:Name="IconImage" />
+        <Label x:Name="TitleLabel" Grid.Column="1" />
+    </Grid>
+    
+</rxui:ReactiveViewCell>
