@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="PublicApiGenerator" Version="6.4.0" />
+    <PackageReference Include="PublicApiGenerator" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
