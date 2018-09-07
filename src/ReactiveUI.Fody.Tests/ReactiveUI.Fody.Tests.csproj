@@ -36,6 +36,12 @@
   <ItemGroup>
     <WeaverFiles Include="..\ReactiveUI.Fody\bin\$(Configuration)\$(TargetFramework)\ReactiveUI.Fody.*" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="API\ApiApprovalTests.ReactiveUI_Fody.approved.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   
   <Target Name="CopyWeavers" BeforeTargets="BeforeBuild">
     <!-- Fody expects to find weavers in referenced NuGet packages or the Tools directory at the solution level.
