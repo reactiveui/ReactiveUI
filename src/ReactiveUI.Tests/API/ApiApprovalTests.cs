@@ -5,36 +5,34 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using ApprovalTests;
-using ApprovalTests.Reporters;
 using PublicApiGenerator;
+using Shouldly;
 using Xunit;
 
 namespace ReactiveUI.Tests.API
 {
     [ExcludeFromCodeCoverage]
-    [UseReporter(typeof(DiffReporter))]
     public class ApiApprovalTests
     {
         [Fact]
         public void Blend()
         {
             var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(Blend.ObservableTrigger).Assembly));
-            Approvals.Verify(publicApi);
+            publicApi.ShouldMatchApproved();
         }
 
         [Fact]
         public void Testing()
         {
             var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(Testing.TestUtils).Assembly));
-            Approvals.Verify(publicApi);
+            publicApi.ShouldMatchApproved();
         }
 
         [Fact]
         public void ReactiveUI()
         {
             var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(RxApp).Assembly));
-            Approvals.Verify(publicApi);
+            publicApi.ShouldMatchApproved();
         }
 
         [Fact]
@@ -42,7 +40,7 @@ namespace ReactiveUI.Tests.API
         {
             var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly));
 
-            Approvals.Verify(publicApi);
+            publicApi.ShouldMatchApproved();
         }
 
         private static string Filter(string text)
