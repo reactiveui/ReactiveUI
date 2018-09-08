@@ -46,7 +46,7 @@ namespace ReactiveUI.XamForms
                     })
                     .Subscribe ());
 
-                var previousCount = this.WhenAnyObservable(x => x.Router.NavigationChanged.CountChanged().Select(_ => x.Router.NavigationStack.Count)).StartWith(this.Router.NavigationStack.Count);
+                var previousCount = this.WhenAnyObservable(x => x.Router.NavigationChanged).CountChanged().Select(_ => this.Router.NavigationStack.Count).StartWith(this.Router.NavigationStack.Count);
                 var currentCount = previousCount.Skip(1);
 
                 d (Observable.Zip(previousCount, currentCount, (previous, current) => new { Delta = previous - current, Current = current })
