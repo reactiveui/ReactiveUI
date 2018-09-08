@@ -3,6 +3,7 @@
   <PropertyGroup>    
     <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +15,7 @@
     <PackageReference Include="xunit.runner.console" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="Xunit.StaFact" Version="0.2.17" />
-    <PackageReference Include="ApprovalTests" Version=" 3.0.16" />
+    <PackageReference Include="Shouldly" Version=" 3.0.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="8.0.0" />
   </ItemGroup>
@@ -48,20 +49,5 @@
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="API\ApiApprovalTests.Blend.approved.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="API\ApiApprovalTests.ReactiveUI.approved.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="API\ApiApprovalTests.Testing.approved.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="API\ApiApprovalTests.Winforms.approved.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

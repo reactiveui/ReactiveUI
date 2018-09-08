@@ -2,6 +2,7 @@
   <PropertyGroup>    
     <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApprovalTests" Version=" 3.0.15" />
+    <PackageReference Include="Shouldly" Version=" 3.0.0" />
     <PackageReference Include="System.Reactive" Version="4.0.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
   </ItemGroup>
@@ -38,15 +39,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="API\ApiApprovalTests.ReactiveUI_Fody.approved.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/" />
   </ItemGroup>
   
   <Target Name="CopyWeavers" BeforeTargets="BeforeBuild">
     <!-- Fody expects to find weavers in referenced NuGet packages or the Tools directory at the solution level.
          Since this is for testing purposes before a NuGet package is created, we'll just use the Tools directory
          until the projects are setup as suggested here: https://github.com/Fody/BasicFodyAddin -->
-    <Copy SourceFiles="@(WeaverFiles)" DestinationFolder="..\Tools" />
+    <Copy SourceFiles="@(WeaverFiles)" DestinationFolder="..\Tools"  />
   </Target>
 </Project>
