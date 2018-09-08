@@ -5,16 +5,14 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using ApprovalTests;
-using ApprovalTests.Reporters;
 using PublicApiGenerator;
 using ReactiveUI.Fody.Helpers;
+using Shouldly;
 using Xunit;
 
 namespace ReactiveUI.Fody.Tests.API
 {
     [ExcludeFromCodeCoverage]
-    [UseReporter(typeof(DiffReporter))]
     public class ApiApprovalTests
     {
 
@@ -22,7 +20,7 @@ namespace ReactiveUI.Fody.Tests.API
         public void ReactiveUI_Fody()
         {
             var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(ReactiveAttribute).Assembly));
-            Approvals.Verify(publicApi);
+            publicApi.ShouldMatchApproved();
         }
 
         private static string Filter(string text)

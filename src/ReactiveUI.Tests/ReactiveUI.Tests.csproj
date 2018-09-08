@@ -3,6 +3,7 @@
   <PropertyGroup>    
     <TargetFrameworks>net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,9 +15,9 @@
     <PackageReference Include="xunit.runner.console" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="Xunit.StaFact" Version="0.2.17" />
-    <PackageReference Include="ApprovalTests" Version=" 3.0.15" />
+    <PackageReference Include="Shouldly" Version=" 3.0.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
-    <PackageReference Include="PublicApiGenerator" Version="6.0.0" />
+    <PackageReference Include="PublicApiGenerator" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
