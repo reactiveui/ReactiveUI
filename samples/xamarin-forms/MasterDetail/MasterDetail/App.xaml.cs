@@ -13,9 +13,9 @@ namespace MasterDetail
         {
             InitializeComponent();
 
-            Locator.CurrentMutable.Register(() => new CustomCell(), typeof(IViewFor<CustomCellViewModel>));
+            var bootstrapper = new AppBootstrapper();
 
-            MainPage = new MainPage();
+            MainPage = new MainPage(bootstrapper.CreateMainViewModel());
         }
 
         protected override void OnStart()
