@@ -4,24 +4,22 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using ReactiveUI;
 using ReactiveUI.XamForms;
-using Xamarin.Forms;
 
 namespace MasterDetail
 {
     public partial class MainPage : ReactiveMasterDetailPage<MainViewModel>
     {
-        public MainPage()
+        public MainPage(MainViewModel viewModel)
         {
-            InitializeComponent();
+            ViewModel = viewModel;
 
-            ViewModel = new MainViewModel();
-            Detail = new NavigationPage(new MyDetailPage(ViewModel.Detail));
+            InitializeComponent();
 
             this.WhenActivated(
                 disposables =>
                 {
                     this
-                        .OneWayBind(ViewModel, vm => vm.MyList, v => v.MyListView.ItemsSource)
+                        .OneWayBind(ViewModel, vm => vm.MenuItems, v => v.MyListView.ItemsSource)
                         .DisposeWith(disposables);
                     this
                         .Bind(ViewModel, vm => vm.Selected, v => v.MyListView.SelectedItem)
@@ -30,9 +28,11 @@ namespace MasterDetail
                         .WhenAnyValue(x => x.ViewModel.Selected)
                         .Where(x => x != null)
                         .Subscribe(
-                            model =>
+                            _ =>
                             {
+                                // Deselect the cell.
                                 MyListView.SelectedItem = null;
+                                // Hide the master panel.
                                 IsPresented = false;
                             })
                         .DisposeWith(disposables);
