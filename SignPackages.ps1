@@ -6,18 +6,17 @@ if([string]::IsNullOrWhitespace($env:SIGNCLIENT_SECRET)){
     [System.Environment]::Exit(1);  
 }
 
-# Setup Variables we need to pass into the sign client tool
+dotnet tool install --tool-path . SignClient
 
+# Setup Variables we need to pass into the sign client tool
 $appSettings = "$currentDirectory\SignPackages.json"
 
-$appPath = "$currentDirectory\packages\SignClient\tools\netcoreapp2.0\SignClient.dll"
-
-$nupgks = ls $currentDirectory\artifacts\*.nupkg | Select -ExpandProperty FullName
+$nupgks = gci $Env:ArtifactDirectory\*.nupkg | Select -ExpandProperty FullName
 
 foreach ($nupkg in $nupgks){
     Write-Host "Submitting $nupkg for signing"
 
-    dotnet $appPath 'sign' -c $appSettings -i $nupkg -r $env:SIGNCLIENT_USER -s $env:SIGNCLIENT_SECRET -n 'ReactiveUI' -d 'ReactiveUI' -u 'https://reactiveui.net' 
+    .\SignClient 'sign' -c $appSettings -i $nupkg -r $env:SIGNCLIENT_USER -s $env:SIGNCLIENT_SECRET -n 'ReactiveUI' -d 'ReactiveUI' -u 'https://reactiveui.net' 
 
     Write-Host "Finished signing $nupkg"
 }
