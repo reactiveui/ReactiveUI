@@ -19,6 +19,7 @@ namespace ReactiveUI
             _inner = comparison;
         }
 
+        /// <inheritdoc />
         public int Compare(T x, T y)
         {
             int parentResult = _parent == null ? 0 : _parent.Compare(x, y);

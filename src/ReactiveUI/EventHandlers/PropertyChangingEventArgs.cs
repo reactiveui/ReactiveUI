@@ -11,6 +11,9 @@ namespace ReactiveUI
         object sender,
         PropertyChangingEventArgs e);
 
+    /// <summary>
+    /// The arguments for the PropertyChanging event.
+    /// </summary>
     public class PropertyChangingEventArgs : EventArgs
     {
         public PropertyChangingEventArgs(string propertyName)
@@ -18,6 +21,9 @@ namespace ReactiveUI
             PropertyName = propertyName;
         }
 
+        /// <summary>
+        /// Gets the name of the property that is changing.
+        /// </summary>
         public string PropertyName { get; protected set; }
     }
 }

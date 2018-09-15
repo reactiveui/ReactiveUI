@@ -13,6 +13,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Internal implementation details which performs Binding ICommand's to controls.
+    /// </summary>
     internal static class CommandBinderImplementationMixins
     {
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(

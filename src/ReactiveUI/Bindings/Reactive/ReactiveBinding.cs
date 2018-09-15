@@ -78,6 +78,7 @@ namespace ReactiveUI
         /// </value>
         public BindingDirection Direction { get; private set; }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             if (_bindingDisposable != null)

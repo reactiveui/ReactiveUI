@@ -5,17 +5,19 @@
 using System;
 using System.Collections.Specialized;
 
-namespace ReactiveUI
-{
-}
-
 #if PORTABLE || NETFX_CORE
 namespace ReactiveUI
 {
+    /// <summary>
+    /// A attribute to indicate if the target is localizable or not.
+    /// </summary>
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
     public sealed class LocalizableAttribute : Attribute
     {
-        // This is a positional argument
+        /// <summary>
+        /// Initializes a new instance of the LocalizableAttribute class.
+        /// </summary>
+        /// <param name="isLocalizable">If the target is localizable or not.</param>
         public LocalizableAttribute(bool isLocalizable)
         {
         }

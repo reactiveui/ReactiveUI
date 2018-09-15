@@ -15,6 +15,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Helper class for handling Reflection amd Expression tree related items.
+    /// </summary>
     public static class Reflection
     {
         private static readonly ExpressionRewriter expressionRewriter = new ExpressionRewriter();
@@ -24,6 +27,14 @@ namespace ReactiveUI
             return expressionRewriter.Visit(expression);
         }
 
+        /// <summary>
+        /// Will convert a Expression which points towards a property
+        /// to a string containing the property names.
+        /// The sub-properties will be separated by the '.' character.
+        /// Index based values will include [] after the name.
+        /// </summary>
+        /// <param name="expression">The expression to generate the property names from.</param>
+        /// <returns>A string form for the property the expression is pointing to.</returns>
         public static string ExpressionToPropertyNames(Expression expression)
         {
             Contract.Requires(expression != null);

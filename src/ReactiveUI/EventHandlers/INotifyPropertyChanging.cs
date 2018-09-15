@@ -7,13 +7,15 @@ using System.Collections.Specialized;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Classes which implement this interface will notify
+    /// external users when a property is changing.
+    /// </summary>
     public interface INotifyPropertyChanging
     {
+        /// <summary>
+        /// An event that is triggered before a property's value is going to change.
+        /// </summary>
         event PropertyChangingEventHandler PropertyChanging;
     }
 }
-
-#if PORTABLE || NETFX_CORE
-#endif
-
-// vim: tw=120 ts=4 sw=4 et :
