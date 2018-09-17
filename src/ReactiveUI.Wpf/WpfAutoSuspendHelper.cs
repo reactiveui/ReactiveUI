@@ -17,8 +17,16 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Class for helping with Auto Suspending.
+    /// Auto Suspender helpers will assist with saving out the application state
+    /// when the application closes or activates.
+    /// </summary>
     public class AutoSuspendHelper : IEnableLogger
     {
+        /// <summary>
+        /// Gets or sets the time out before the Auto Suspension happens.
+        /// </summary>
         public TimeSpan IdleTimeout { get; set; }
 
         public AutoSuspendHelper(Application app)

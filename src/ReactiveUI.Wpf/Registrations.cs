@@ -7,6 +7,9 @@ using System.Reactive.Concurrency;
 
 namespace ReactiveUI.Wpf
 {
+    /// <summary>
+    /// Registrations specific to the WPF platform.
+    /// </summary>
     public class Registrations : IWantsToRegisterStuff
     {
         /// <inheritdoc/>

@@ -12,17 +12,29 @@ using System.Windows.Interactivity;
 
 namespace ReactiveUI.Blend
 {
+    /// <summary>
+    /// A blend based trigger which will be activated when a IObservable triggers.
+    /// </summary>
     public class ObservableTrigger : TriggerBase<FrameworkElement>
     {
+        /// <summary>
+        /// Gets or sets the observable which will activate the trigger.
+        /// </summary>
         public IObservable<object> Observable
         {
             get => (IObservable<object>)GetValue(ObservableProperty);
             set => SetValue(ObservableProperty, value);
         }
 
+        /// <summary>
+        /// The dependency property registration for the Observable property.
+        /// </summary>
         public static readonly DependencyProperty ObservableProperty =
             DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(OnObservableChanged));
 
+        /// <summary>
+        /// Gets or set if we should resubscribe the trigger if there is a error when running the IObservable.
+        /// </summary>
         public bool AutoResubscribeOnError { get; set; }
 
         private IDisposable _watcher;

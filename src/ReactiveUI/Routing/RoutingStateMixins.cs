@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods associated with the RoutingState class.
+    /// </summary>
     public static class RoutingStateMixins
     {
         /// <summary>

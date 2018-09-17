@@ -9,6 +9,11 @@ using Windows.UI.Xaml;
 
 namespace ReactiveUI.Blend
 {
+    /// <summary>
+    /// A base class which allows us to declare our own behaviors.
+    /// Thisi s based on the WPF Blend SDK based Behaviors.
+    /// </summary>
+    /// <typeparam name="T">The type of DependencyObject to create a behavior for.</typeparam>
     public class Behavior<T> : DependencyObject, IBehavior
         where T : DependencyObject
     {

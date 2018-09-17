@@ -12,7 +12,7 @@ using Splat;
 namespace ReactiveUI
 {
     /// <summary>
-    /// 
+    /// The main registration point for common class instances throughout a ReactiveUI application.
     /// </summary>
     /// <remarks>
     /// N.B. Why we have this evil global class

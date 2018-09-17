@@ -18,6 +18,10 @@ namespace ReactiveUI
         private IScheduler _scheduler;
         private readonly Func<IScheduler> _schedulerFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitForDispatcherScheduler"/> class.
+        /// </summary>
+        /// <param name="schedulerFactory">A func which will return a new scheduler.</param>
         public WaitForDispatcherScheduler(Func<IScheduler> schedulerFactory)
         {
             _schedulerFactory = schedulerFactory;

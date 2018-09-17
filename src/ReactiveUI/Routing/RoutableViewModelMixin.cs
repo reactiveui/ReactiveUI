@@ -11,6 +11,9 @@ using DynamicData;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods associated with the IRoutableViewModel interface.
+    /// </summary>
     public static class RoutableViewModelMixin
     {
         /// <summary>
