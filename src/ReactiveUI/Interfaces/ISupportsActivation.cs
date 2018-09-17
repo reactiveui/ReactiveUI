@@ -13,6 +13,9 @@ namespace ReactiveUI
     /// </summary>
     public interface ISupportsActivation
     {
+        /// <summary>
+        /// Gets the Activator which will be used by the View when Activation/Deactivation occurs.
+        /// </summary>
         ViewModelActivator Activator { get; }
     }
 }

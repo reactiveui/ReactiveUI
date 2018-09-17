@@ -12,10 +12,14 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods associated with the Expression class.
+    /// </summary>
     public static class ExpressionMixins
     {
         /// <summary>
-        ///
+        /// Gets all the chain of child expressions within a Expression.
+        /// Handles property member accesses, objects and indexes.
         /// </summary>
         /// <param name="this">The expression.</param>
         /// <returns>An enumerable of expressions.</returns>
@@ -64,7 +68,9 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Gets the MemberInfo where a Expression is pointing towards.
+        /// Can handle MemberAccess and Index types and will handle
+        /// going through the Conversion Expressions.
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>The member info from the epxression.</returns>
@@ -90,7 +96,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Gets the parent Expression of the current Expression object.
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>The parent expression.</returns>
@@ -108,7 +114,9 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///  </summary>
+        /// For a Expression which is a Index type, will get all the arguments passed to the indexer.
+        /// Useful for when you are attempting to find the indexer when a constant value is passed in.
+        /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>An array of arguments.</returns>
         public static object[] GetArgumentsArray(this Expression expression)

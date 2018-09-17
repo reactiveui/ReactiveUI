@@ -12,6 +12,10 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods associated with the Observable Changes and the 
+    /// Reactive Notify Property Changed based events.
+    /// </summary>
     public static class ReactiveNotifyPropertyChangedMixin
     {
         static ReactiveNotifyPropertyChangedMixin()

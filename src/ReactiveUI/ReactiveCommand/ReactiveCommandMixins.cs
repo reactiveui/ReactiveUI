@@ -10,6 +10,9 @@ using System.Windows.Input;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods associated with the ReactiveCommand class.
+    /// </summary>
     public static class ReactiveCommandMixins
     {
         /// <summary>

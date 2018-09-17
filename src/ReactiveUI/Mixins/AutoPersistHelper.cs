@@ -20,6 +20,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Helper extension method class associated with the AutoPersist related functionality.
+    /// </summary>
     public static class AutoPersistHelper
     {
         private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new MemoizingMRUCache<Type, Dictionary<string, bool>>(

@@ -8,6 +8,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods to assist with Logging.
+    /// </summary>
     public static class ObservableLoggingMixin
     {
         /// <summary>

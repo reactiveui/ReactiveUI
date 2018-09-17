@@ -4,6 +4,9 @@
 
 namespace System.Reactive.Disposables
 {
+    /// <summary>
+    /// Extension methods associated with the IDisposable interface.
+    /// </summary>
     public static class DisposableMixins
     {
         /// <summary>

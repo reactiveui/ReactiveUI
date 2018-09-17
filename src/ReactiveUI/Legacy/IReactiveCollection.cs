@@ -22,7 +22,7 @@ namespace ReactiveUI.Legacy
     public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyCollectionChanged, INotifyCollectionChanging, IReactiveObject
     {
         /// <summary>
-        ///
+        /// Resets the collection and retriggers all the observables with fresh changes.
         /// </summary>
         void Reset();
     }

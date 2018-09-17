@@ -14,8 +14,14 @@ namespace ReactiveUI
     /// </summary>
     public interface ICanActivate
     {
+        /// <summary>
+        /// Gets a observable which is triggered when the ViewModel is activated.
+        /// </summary>
         IObservable<Unit> Activated { get; }
 
+        /// <summary>
+        /// Gets a obervable which is triggered when the ViewModel is deactivated.
+        /// </summary>
         IObservable<Unit> Deactivated { get; }
     }
 }

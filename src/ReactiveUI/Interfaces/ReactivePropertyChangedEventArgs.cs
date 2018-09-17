@@ -24,7 +24,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Gets the sender which triggered the property changed event.
         /// </summary>
 /// <inheritdoc/>
         public TSender Sender { get; private set; }

@@ -31,23 +31,21 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Gets the object which triggered the observed change.
         /// </summary>
 /// <inheritdoc/>
         public TSender Sender { get; private set; }
 
         /// <summary>
-        ///
+        /// Gets the Expression which was used to get the property changed value.
         /// </summary>
 /// <inheritdoc/>
         public Expression Expression { get; private set; }
 
         /// <summary>
-        ///
+        /// Gets the new value after the change.
         /// </summary>
 /// <inheritdoc/>
         public TValue Value { get; private set; }
     }
 }
-
-// vim: tw=120 ts=4 sw=4 et :

@@ -7,13 +7,15 @@ using System.Collections.Specialized;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Notifies when a collection is changing.
+    /// </summary>
     public interface INotifyCollectionChanging
     {
+        /// <summary>
+        /// An event for when a collection is changing. Used for getting values
+        /// before the change.
+        /// </summary>
         event NotifyCollectionChangedEventHandler CollectionChanging;
     }
 }
-
-#if PORTABLE || NETFX_CORE
-#endif
-
-// vim: tw=120 ts=4 sw=4 et :
