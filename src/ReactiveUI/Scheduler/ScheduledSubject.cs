@@ -11,6 +11,10 @@ using System.Threading;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// A subject which dispatches all its events on the specified Scheduler.
+    /// </summary>
+    /// <typeparam name="T">The type of item being dispatched by the Subject.</typeparam>
     public class ScheduledSubject<T> : ISubject<T>, IDisposable
     {
         private readonly IObserver<T> _defaultObserver;
@@ -18,7 +22,13 @@ namespace ReactiveUI
         private readonly ISubject<T> _subject;
         private int _observerRefCount;
         private IDisposable _defaultObserverSub = Disposable.Empty;
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScheduledSubject{T}"/> class.
+        /// </summary>
+        /// <param name="scheduler">The scheduler where to dispatch items to.</param>
+        /// <param name="defaultObserver">A optional default observer where notifications will be sent.</param>
+        /// <param name="defaultSubject">A optional default subject which this Subject will wrap.</param>
         public ScheduledSubject(IScheduler scheduler, IObserver<T> defaultObserver = null, ISubject<T> defaultSubject = null)
         {
             _scheduler = scheduler;

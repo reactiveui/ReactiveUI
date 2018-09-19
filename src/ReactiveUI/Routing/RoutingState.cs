@@ -28,19 +28,42 @@ namespace ReactiveUI
         private IScheduler _scheduler;
 
         /// <summary>
-        /// Represents the current navigation stack, the last element in the
-        /// collection being the currently visible ViewModel.
+        /// Initializes static members of the <see cref="RoutingState"/> class.
         /// </summary>
-        [IgnoreDataMember]
-        public ObservableCollection<IRoutableViewModel> NavigationStack => _navigationStack;
-
         static RoutingState()
         {
             RxApp.EnsureInitialized();
         }
 
         /// <summary>
-        /// The scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// Initializes a new instance of the <see cref="RoutingState"/> class.
+        /// </summary>
+        public RoutingState()
+            : this(RxApp.MainThreadScheduler)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RoutingState"/> class.
+        /// </summary>
+        /// <param name="scheduler">A scheduler for where to send navigation changes to.</param>
+        public RoutingState(IScheduler scheduler)
+        {
+            _navigationStack = new ObservableCollection<IRoutableViewModel>();
+            _scheduler = scheduler;
+            SetupRx();
+        }
+
+
+        /// <summary>
+        /// Gets the current navigation stack, the last element in the
+        /// collection being the currently visible ViewModel.
+        /// </summary>
+        [IgnoreDataMember]
+        public ObservableCollection<IRoutableViewModel> NavigationStack => _navigationStack;
+
+        /// <summary>
+        /// Gets or sets the scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </summary>
         [IgnoreDataMember]
         public IScheduler Scheduler
@@ -57,7 +80,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Navigates back to the previous element in the stack.
+        /// Gets or sets a observable which will navigate back to the previous element in the stack.
         /// </summary>
         [IgnoreDataMember]
         public ReactiveCommand<Unit, Unit> NavigateBack { get; protected set; }
@@ -78,23 +101,17 @@ namespace ReactiveUI
         [IgnoreDataMember]
         public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
 
+        /// <summary>
+        /// Gets the current view model which is to be shown for the Routing.
+        /// </summary>
         [IgnoreDataMember]
         public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
+        /// <summary>
+        /// Gets a Observable which will trigger when the Navigation changes.
+        /// </summary>
         [IgnoreDataMember]
         public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; }
-
-        public RoutingState()
-            : this(RxApp.MainThreadScheduler)
-        {
-        }
-
-        public RoutingState(IScheduler scheduler)
-        {
-            _navigationStack = new ObservableCollection<IRoutableViewModel>();
-            _scheduler = scheduler;
-            SetupRx();
-        }
 
         [OnDeserialized]
         private void SetupRx(StreamingContext sc)

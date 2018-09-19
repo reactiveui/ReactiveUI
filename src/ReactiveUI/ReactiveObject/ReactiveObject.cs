@@ -83,16 +83,9 @@ namespace ReactiveUI
         [IgnoreDataMember]
         public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => ((IReactiveObject)this).GetChangedObservable();
 
-        /// <summary>
-        ///
-        /// </summary>
-/// <inheritdoc/>
+        /// <inheritdoc/>
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
-
-        protected ReactiveObject()
-        {
-        }
 
         /// <inheritdoc/>
         public IDisposable SuppressChangeNotifications()
@@ -101,7 +94,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Determines if change notifications are enabled or not.
         /// </summary>
         /// <returns>A value indicating whether change notifications are enabled.</returns>
         public bool AreChangeNotificationsEnabled()
@@ -109,6 +102,10 @@ namespace ReactiveUI
             return IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
         }
 
+        /// <summary>
+        /// Delays notifications until the return IDisposable is disposed.
+        /// </summary>
+        /// <returns>A disposable which when disposed will send delayed notifications.</returns>
         public IDisposable DelayChangeNotifications()
         {
             return IReactiveObjectExtensions.DelayChangeNotifications(this);

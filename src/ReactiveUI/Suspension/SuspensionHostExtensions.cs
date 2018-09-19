@@ -11,10 +11,10 @@ namespace ReactiveUI
     public static class SuspensionHostExtensions
     {
         /// <summary>
-        ///
+        /// Observe changes to the AppState of a class derived from ISuspensionHost.
         /// </summary>
         /// <typeparam name="T">The observable type.</typeparam>
-        /// <param name="this">The suspenstion host.</param>
+        /// <param name="this">The suspension host.</param>
         /// <returns>An observable of the app state.</returns>
         public static IObservable<T> ObserveAppState<T>(this ISuspensionHost @this)
         {
@@ -23,7 +23,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Get the current App State of a class derived from ISuspensionHost.
         /// </summary>
         /// <typeparam name="T">The app state type.</typeparam>
         /// <param name="this">The suspenstion host.</param>
@@ -34,11 +34,12 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Setup our suspension driver for a class derived off ISuspensionHost interface.
+        /// This will make your suspension host respond to suspend and resume requests.
         /// </summary>
-        /// <param name="this">The suspenstion host.</param>
+        /// <param name="this">The suspension host.</param>
         /// <param name="driver">The suspension driver.</param>
-        /// <returns>A disposable.</returns>
+        /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
         public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost @this, ISuspensionDriver driver = null)
         {
             var ret = new CompositeDisposable();

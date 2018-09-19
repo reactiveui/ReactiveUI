@@ -290,12 +290,13 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Gets a 
+        /// Gets a Type from the specified type name.
+        /// Uses a cache to avoid having to use Reflection every time.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="throwOnFailure"></param>
-        /// <returns></returns>
-        /// <exception cref="TypeLoadException"></exception>
+        /// <param name="type">The name of the type.</param>
+        /// <param name="throwOnFailure">If we should throw an exception if the type can't be found.</param>
+        /// <returns>The type that was found or null.</returns>
+        /// <exception cref="TypeLoadException">If we were unable to find the type.</exception>
         public static Type ReallyFindType(string type, bool throwOnFailure)
         {
             lock (typeCache)
@@ -316,7 +317,7 @@ namespace ReactiveUI
             var ei = ti.GetRuntimeEvent(eventName);
             if (ei == null)
             {
-                throw new Exception(string.Format("Couldn't find {0}.{1}", type.FullName, eventName));
+                throw new Exception($"Couldn't find {type.FullName}.{eventName}");
             }
 
             // Find the EventArgs type parameter of the event via digging around via reflection

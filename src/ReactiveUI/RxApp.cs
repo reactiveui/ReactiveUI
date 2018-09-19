@@ -32,6 +32,10 @@ namespace ReactiveUI
     /// </remarks>
     public static class RxApp
     {
+        /// <summary>
+        /// Initializes static members of the <see cref="RxApp"/> class.
+        /// </summary>
+        /// <exception cref="UnhandledErrorException">Default exception when we have unhandled exception in RxUI.</exception>
         static RxApp()
         {
 #if !PORTABLE
@@ -236,10 +240,25 @@ namespace ReactiveUI
         }
 
 #if ANDROID || IOS
+
+        /// <summary>
+        /// The size of a small cache of items. Often used for the MemoizingMRUCache class.
+        /// </summary>
         public const int SmallCacheLimit = 32;
+
+        /// <summary>
+        /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
+        /// </summary>
         public const int BigCacheLimit = 64;
 #else
+        /// <summary>
+        /// The size of a small cache of items. Often used for the MemoizingMRUCache class.
+        /// </summary>
         public const int SmallCacheLimit = 64;
+
+        /// <summary>
+        /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
+        /// </summary>
         public const int BigCacheLimit = 256;
 #endif
     }

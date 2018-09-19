@@ -253,6 +253,7 @@ namespace ReactiveUI
             /// <summary>
             /// When this method is called, an object will not dispatch change
             /// Observable notifications until the return value is disposed.
+            /// When the Disposable it will dispatched all queued notifications.
             /// If this method is called multiple times it will reference count
             /// and not perform notification until all values returned are disposed.
             /// </summary>
@@ -314,25 +315,62 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Contains the state information about the current status of a Reactive Object.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender of the property changes.</typeparam>
         private interface IExtensionState<out TSender>
             where TSender : IReactiveObject
         {
+            /// <summary>
+            /// An observable for when a property is changing.
+            /// </summary>
             IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
 
+            /// <summary>
+            /// An observable for when the property has changed.
+            /// </summary>
             IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
 
+            /// <summary>
+            /// Raises a property changing event.
+            /// </summary>
+            /// <param name="propertyName">The name of the property that is changing.</param>
             void RaisePropertyChanging(string propertyName);
 
+            /// <summary>
+            /// Raises a property changed event.
+            /// </summary>
+            /// <param name="propertyName">The name of the property that has changed.</param>
             void RaisePropertyChanged(string propertyName);
 
+            /// <summary>
+            /// Gets a observable when a exception is thrown.
+            /// </summary>
             IObservable<Exception> ThrownExceptions { get; }
 
+            /// <summary>
+            /// Indicates if we are currently sending change notifications.
+            /// </summary>
+            /// <returns>If change notifications are being sent.</returns>
             bool AreChangeNotificationsEnabled();
 
+            /// <summary>
+            /// Suppress change notifications until the return value is disposed.
+            /// </summary>
+            /// <returns>A IDisposable which when disposed will re-enable change notifications.</returns>
             IDisposable SuppressChangeNotifications();
 
+            /// <summary>
+            /// Are change notifications currently delayed. Used for Observables change notifications only.
+            /// </summary>
+            /// <returns>If the change notifications are delayed.</returns>
             bool AreChangeNotificationsDelayed();
 
+            /// <summary>
+            /// Delay change notifications until the return value is disposed.
+            /// </summary>
+            /// <returns>A IDisposable which when disposed will re-enable change notifications.</returns>
             IDisposable DelayChangeNotifications();
         }
     }
