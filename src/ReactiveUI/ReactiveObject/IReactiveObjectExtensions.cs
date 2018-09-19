@@ -239,6 +239,8 @@ namespace ReactiveUI
             /// When this method is called, an object will not fire change
             /// notifications (neither traditional nor Observable notifications)
             /// until the return value is disposed.
+            /// If this method is called multiple times it will reference count
+            /// and not perform notification until all values returned are disposed.
             /// </summary>
             /// <returns>An object that, when disposed, reenables change
             /// notifications.</returns>
@@ -248,6 +250,14 @@ namespace ReactiveUI
                 return Disposable.Create(() => Interlocked.Decrement(ref _changeNotificationsSuppressed));
             }
 
+            /// <summary>
+            /// When this method is called, an object will not dispatch change
+            /// Observable notifications until the return value is disposed.
+            /// If this method is called multiple times it will reference count
+            /// and not perform notification until all values returned are disposed.
+            /// </summary>
+            /// <returns>An object that, when disposed, re-enables Observable change
+            /// notifications.</returns>
             public IDisposable DelayChangeNotifications()
             {
                 if (Interlocked.Increment(ref _changeNotificationsDelayed) == 1)

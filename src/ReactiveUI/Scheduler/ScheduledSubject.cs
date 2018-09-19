@@ -11,8 +11,14 @@ using System.Threading;
 
 namespace ReactiveUI
 {
-    public class ScheduledSubject<T> : ISubject<T>
+    public class ScheduledSubject<T> : ISubject<T>, IDisposable
     {
+        private readonly IObserver<T> _defaultObserver;
+        private readonly IScheduler _scheduler;
+        private readonly ISubject<T> _subject;
+        private int _observerRefCount;
+        private IDisposable _defaultObserverSub = Disposable.Empty;
+        
         public ScheduledSubject(IScheduler scheduler, IObserver<T> defaultObserver = null, ISubject<T> defaultSubject = null)
         {
             _scheduler = scheduler;
@@ -25,17 +31,12 @@ namespace ReactiveUI
             }
         }
 
-        private readonly IObserver<T> _defaultObserver;
-        private readonly IScheduler _scheduler;
-        private readonly ISubject<T> _subject;
-        private int _observerRefCount;
-        private IDisposable _defaultObserverSub = Disposable.Empty;
-
+        /// <inheritdoc />
         public void Dispose()
         {
-            if (_subject is IDisposable)
+            if (_subject is IDisposable disposable)
             {
-                ((IDisposable)_subject).Dispose();
+                disposable.Dispose();
             }
         }
 

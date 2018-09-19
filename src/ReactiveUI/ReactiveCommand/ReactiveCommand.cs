@@ -690,6 +690,13 @@ namespace ReactiveUI
         private readonly ScheduledSubject<Exception> _exceptions;
         private readonly IDisposable _canExecuteSubscription;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}"/> class.
+        /// </summary>
+        /// <param name="execute">The Func to perform when the command is executed.</param>
+        /// <param name="canExecute">A observable which has a value if the command can execute.</param>
+        /// <param name="outputScheduler">The scheduler where to send output after the main execution.</param>
+        /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
         protected internal ReactiveCommand(
             Func<TParam, IObservable<TResult>> execute,
             IObservable<bool> canExecute,

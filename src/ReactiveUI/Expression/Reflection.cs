@@ -10,7 +10,6 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Text;
-using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI
@@ -21,6 +20,12 @@ namespace ReactiveUI
     public static class Reflection
     {
         private static readonly ExpressionRewriter expressionRewriter = new ExpressionRewriter();
+
+        private static readonly MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>(
+            (type, _) =>
+            {
+                return Type.GetType(type, false);
+            }, 20);
 
         /// <summary>
         /// Uses the expression re-writer to simplify the Expression down to it's simplest Expression.
@@ -169,12 +174,23 @@ namespace ReactiveUI
 
             if (ret == null)
             {
-                throw new ArgumentException(string.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
+                throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
             }
 
             return ret;
         }
 
+        /// <summary>
+        /// Based on a list of Expressions get the value of the last property in the chain if possible.
+        /// The Expressions are typically property chains. Eg Property1.Property2.Property3
+        /// The method will make sure that each Expression can get a value along the way
+        /// and get each property until each expression is evaluated.
+        /// </summary>
+        /// <param name="changeValue">A output value where to store the value if the value can be fetched.</param>
+        /// <param name="current">The object that starts the property chain.</param>
+        /// <param name="expressionChain">A list of expressions which will point towards a property or field.</param>
+        /// <typeparam name="TValue">The type of the end value we are trying to get.</typeparam>
+        /// <returns>If the value was successfully retrieved or not.</returns>
         public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, IEnumerable<Expression> expressionChain)
         {
             foreach (var expression in expressionChain.SkipLast(1))
@@ -199,6 +215,17 @@ namespace ReactiveUI
             return true;
         }
 
+        /// <summary>
+        /// Based on a list of Expressions get a IObservedChanged for the value
+        /// of the last property in the chain if possible.
+        /// The Expressions are property chains. Eg Property1.Property2.Property3
+        /// The method will make sure that each Expression can get a value along the way
+        /// and get each property until each expression is evaluated.
+        /// </summary>
+        /// <param name="changeValues">A IObservedChanged for the value.</param>
+        /// <param name="current">The object that starts the property chain.</param>
+        /// <param name="expressionChain">A list of expressions which will point towards a property or field.</param>
+        /// <returns>If the value was successfully retrieved or not.</returns>
         public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, IEnumerable<Expression> expressionChain)
         {
             int currentIndex = 0;
@@ -262,12 +289,13 @@ namespace ReactiveUI
             return true;
         }
 
-        private static readonly MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>(
-            (type, _) =>
-        {
-            return Type.GetType(type, false);
-        }, 20);
-
+        /// <summary>
+        /// Gets a 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="throwOnFailure"></param>
+        /// <returns></returns>
+        /// <exception cref="TypeLoadException"></exception>
         public static Type ReallyFindType(string type, bool throwOnFailure)
         {
             lock (typeCache)
@@ -296,6 +324,14 @@ namespace ReactiveUI
             return eventArgsType;
         }
 
+        /// <summary>
+        /// Checks to make sure that the specified method names on the target object
+        /// are overriden.
+        /// </summary>
+        /// <param name="callingTypeName">The name of the calling type.</param>
+        /// <param name="targetObject">The object to check.</param>
+        /// <param name="methodsToCheck">The name of the methods to check.</param>
+        /// <exception cref="Exception">Thrown if the methods aren't overriden on the target object.</exception>
         public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck)
         {
             var missingMethod = methodsToCheck
@@ -312,6 +348,16 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Determines if the specified property is static or not.
+        /// </summary>
+        /// <param name="this">The property information to check.</param>
+        /// <returns>If the property is static or not.</returns>
+        public static bool IsStatic(this PropertyInfo @this)
+        {
+            return (@this.GetMethod ?? @this.SetMethod).IsStatic;
+        }
+
         internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel viewModel, TView view, Expression expression)
             where TView : IViewFor
             where TViewModel : class
@@ -320,14 +366,6 @@ namespace ReactiveUI
                 .Where(x => x != null)
                 .Select(x => ((TViewModel)x).WhenAnyDynamic(expression, y => y.Value))
                 .Switch();
-        }
-    }
-
-    public static class ReflectionExtensions
-    {
-        public static bool IsStatic(this PropertyInfo @this)
-        {
-            return (@this.GetMethod ?? @this.SetMethod).IsStatic;
         }
     }
 }

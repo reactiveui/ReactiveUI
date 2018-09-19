@@ -42,7 +42,7 @@ namespace ReactiveUI
 
             ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
         }
-        
+
         public IObservable<Unit> IsResuming
         {
             get => _isResuming.Switch();

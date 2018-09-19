@@ -14,6 +14,9 @@ using System.Text;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods which will generate observables when Property value changes.
+    /// </summary>
     public static class WhenAnyMixin
     {
         /// <summary>

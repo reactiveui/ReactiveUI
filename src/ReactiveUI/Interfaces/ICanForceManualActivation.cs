@@ -4,8 +4,16 @@
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Instead of using System events will allow for external classes to
+    /// manually Activate the View object.
+    /// </summary>
     internal interface ICanForceManualActivation
     {
+        /// <summary>
+        /// Activates the view object.
+        /// </summary>
+        /// <param name="activate">If we are activating or not.</param>
         void Activate(bool activate);
     }
 }

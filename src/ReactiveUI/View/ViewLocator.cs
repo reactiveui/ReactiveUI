@@ -8,8 +8,21 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Helper class which will get the currently registered IViewLocator interface inside
+    /// the Splat dependency injection container.
+    /// </summary>
     public static class ViewLocator
     {
+        /// <summary>
+        /// Gets the currently registered IViewLocator interface.
+        /// </summary>
+        /// <exception cref="Exception">
+        /// If there is no IViewLocator registered.
+        /// Can happen due to using your own DI container and don't rerun the
+        /// DependencyResolverMixins.InitializeReactiveUI() method.
+        /// Also can happen if you don't include all the NuGet packages.
+        /// </exception>
         public static IViewLocator Current
         {
             get
