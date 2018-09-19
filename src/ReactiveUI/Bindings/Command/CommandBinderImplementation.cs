@@ -66,8 +66,14 @@ namespace ReactiveUI
                 return ret;
             });
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlExpression, vmExpression,
-                source, BindingDirection.OneWay, bindingDisposable);
+            return new ReactiveBinding<TView, TViewModel, TProp>(
+                view,
+                viewModel,
+                controlExpression,
+                vmExpression,
+                source,
+                BindingDirection.OneWay,
+                bindingDisposable);
         }
 
         /// <summary>
@@ -81,10 +87,10 @@ namespace ReactiveUI
         /// <typeparam name="TParam">The parameter type.</typeparam>
         /// <returns>A class representing the binding. Dispose it to disconnect
         /// the binding.</returns>
-        /// <param name="view">The View.</param>
         /// <param name="viewModel">The View model.</param>
-        /// <param name="controlProperty">The name of the control on the view.</param>
+        /// <param name="view">The View.</param>
         /// <param name="vmProperty">The ViewModel command to bind.</param>
+        /// <param name="controlProperty">The name of the control on the view.</param>
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand.</param>
         /// <param name="toEvent">If specified, bind to the specific event

@@ -44,19 +44,7 @@ namespace ReactiveUI
         private int _refCount;
 
         /// <summary>
-        /// Activated observable will tick every time the Activator is activated.
-        /// </summary>
-        /// <value>The activated.</value>
-        public IObservable<Unit> Activated => _activated;
-
-        /// <summary>
-        /// Deactivated observable will tick every time the Activator is deactivated.
-        /// </summary>
-        /// <value>The deactivated.</value>
-        public IObservable<Unit> Deactivated => _deactivated;
-
-        /// <summary>
-        /// Constructs a new ViewModelActivator.
+        /// Initializes a new instance of the <see cref="ViewModelActivator"/> class.
         /// </summary>
         public ViewModelActivator()
         {
@@ -65,10 +53,17 @@ namespace ReactiveUI
             _deactivated = new Subject<Unit>();
         }
 
-        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)
-        {
-            _blocks.Add(block);
-        }
+        /// <summary>
+        /// Gets a observable which will tick every time the Activator is activated.
+        /// </summary>
+        /// <value>The activated.</value>
+        public IObservable<Unit> Activated => _activated;
+
+        /// <summary>
+        /// Gets a observable observable which will tick every time the Activator is deactivated.
+        /// </summary>
+        /// <value>The deactivated.</value>
+        public IObservable<Unit> Deactivated => _deactivated;
 
         /// <summary>
         /// This method is called by the framework when the corresponding View
@@ -86,6 +81,11 @@ namespace ReactiveUI
             }
 
             return Disposable.Create(() => Deactivate());
+        }
+
+        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)
+        {
+            _blocks.Add(block);
         }
 
         /// <summary>

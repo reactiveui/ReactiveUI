@@ -16,6 +16,17 @@ namespace ReactiveUI
     /// </summary>
     public static class ViewForMixins
     {
+        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache =
+            new MemoizingMRUCache<Type, IActivationForViewFetcher>(
+               (t, _) =>
+                   Locator.Current
+                          .GetServices<IActivationForViewFetcher>()
+                          .Aggregate(Tuple.Create(0, default(IActivationForViewFetcher)), (acc, x) =>
+                          {
+                              int score = x.GetAffinityForView(t);
+                              return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
+                          }).Item2, RxApp.SmallCacheLimit);
+
         static ViewForMixins()
         {
             RxApp.EnsureInitialized();
@@ -121,8 +132,7 @@ namespace ReactiveUI
             var activationEvents = activationFetcher.GetActivationForView(@this);
 
             var vmDisposable = Disposable.Empty;
-            var v = (view ?? @this) as IViewFor;
-            if (v != null)
+            if ((view ?? @this) is IViewFor v)
             {
                 vmDisposable = HandleViewModelActivation(v, activationEvents);
             }
@@ -253,16 +263,5 @@ namespace ReactiveUI
                 vmDisposable,
                 viewVmDisposable);
         }
-
-        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache =
-            new MemoizingMRUCache<Type, IActivationForViewFetcher>(
-                (t, _) =>
-                Locator.Current
-                       .GetServices<IActivationForViewFetcher>()
-                       .Aggregate(Tuple.Create(0, default(IActivationForViewFetcher)), (acc, x) =>
-                        {
-                           int score = x.GetAffinityForView(t);
-                           return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
-                       }).Item2, RxApp.SmallCacheLimit);
     }
 }

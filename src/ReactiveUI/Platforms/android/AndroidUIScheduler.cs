@@ -22,10 +22,18 @@ namespace ReactiveUI
     /// </summary>
     public class HandlerScheduler : IScheduler, IEnableLogger
     {
+        /// <summary>
+        /// A common instance to avoid allocations to the MainThread for the HandlerScheduler.
+        /// </summary>
         public static IScheduler MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper), Looper.MainLooper.Thread.Id);
         private Handler _handler;
         private long _looperId;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <param name="threadIdAssociatedWithHandler"></param>
         public HandlerScheduler(Handler handler, long? threadIdAssociatedWithHandler)
         {
             _handler = handler;
