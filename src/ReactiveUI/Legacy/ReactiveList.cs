@@ -18,6 +18,8 @@ using System.Runtime.Serialization;
 using System.Threading;
 using Splat;
 
+#pragma warning disable SA1600 // Elements should be documented -- not used for legacy
+
 namespace ReactiveUI.Legacy
 {
     [DebuggerDisplay("Count = {Count}")]

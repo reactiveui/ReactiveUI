@@ -5,6 +5,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods associated with the ISuspensionHost interface.
+    /// </summary>
     public static class SuspensionHostExtensions
     {
         /// <summary>

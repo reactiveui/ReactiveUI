@@ -42,6 +42,13 @@ namespace ReactiveUI
             extraNs.ForEach(ns => ProcessRegistrationForNamespace(ns, assmName, resolver));
         }
 
+        /// <summary>
+        /// Registers inside the Splat dependency container all the classes that derive off
+        /// IViewFor using Reflection. This is a easy way to register all the Views
+        /// that are associated with View Models for an entire assembly.
+        /// </summary>
+        /// <param name="resolver">The dependency injection resolver to register the Views with.</param>
+        /// <param name="assembly">The assembly to search using reflection for IViewFor classes.</param>
         public static void RegisterViewsForViewModels(this IMutableDependencyResolver resolver, Assembly assembly)
         {
             // for each type that implements IViewFor

@@ -20,6 +20,11 @@ namespace ReactiveUI
         private readonly Interaction<TInput, TOutput> _interaction;
         private readonly TInput _input;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnhandledInteractionException{TInput, TOutput}"/> class.
+        /// </summary>
+        /// <param name="interaction">The interaction that doesn't have a input handler.</param>
+        /// <param name="input">The input into the interaction.</param>
         public UnhandledInteractionException(Interaction<TInput, TOutput> interaction, TInput input)
         {
             _interaction = interaction;

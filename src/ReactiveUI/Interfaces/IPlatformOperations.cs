@@ -4,8 +4,16 @@
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Additional details implemented by the different ReactiveUI platform projects.
+    /// </summary>
     internal interface IPlatformOperations
     {
+        /// <summary>
+        /// Gets a descriptor that describes (if applicable) the orientation
+        /// of the screen.
+        /// </summary>
+        /// <returns>The orientation of the screen if supported.</returns>
         string GetOrientation();
     }
 }

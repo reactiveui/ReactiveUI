@@ -5,7 +5,7 @@
 namespace ReactiveUI
 {
     /// <summary>
-    ///
+    /// Event arguments for when a property is changing.
     /// </summary>
     /// <typeparam name="TSender">The sender type.</typeparam>
     public class ReactivePropertyChangingEventArgs<TSender> : PropertyChangingEventArgs, IReactivePropertyChangedEventArgs<TSender>

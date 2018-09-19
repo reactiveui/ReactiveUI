@@ -16,6 +16,10 @@ using System.Windows.Interactivity;
 
 namespace ReactiveUI.Blend
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="Control"></typeparam>
 #if NETFX_CORE
     public class FollowObservableStateBehavior : Behavior<Control>
 #else

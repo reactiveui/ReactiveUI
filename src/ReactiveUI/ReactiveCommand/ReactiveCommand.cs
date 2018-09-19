@@ -613,6 +613,10 @@ namespace ReactiveUI
             Dispose(true);
         }
 
+        /// <summary>
+        /// Disposes of the managed resources.
+        /// </summary>
+        /// <param name="disposing">If its getting called by the Dispose() method.</param>
         protected abstract void Dispose(bool disposing);
 
         /// <inheritdoc/>
@@ -634,18 +638,27 @@ namespace ReactiveUI
             ICommandExecute(parameter);
         }
 
+        /// <summary>
+        /// Will be called by the methods from the ICommand interface.
+        /// This method is called when the Command should evaluate if it can execute.
+        /// </summary>
+        /// <param name="parameter">The parameter being passed to the ICommand.</param>
+        /// <returns>If the command can be executed.</returns>
         protected abstract bool ICommandCanExecute(object parameter);
 
+        /// <summary>
+        /// Will be called by the methods from the ICommand interface.
+        /// This method is called when the Command should execute.
+        /// </summary>
+        /// <param name="parameter">The parameter being passed to the ICommand.</param>
         protected abstract void ICommandExecute(object parameter);
 
+        /// <summary>
+        /// Will trigger a event when the CanExecute condition has changed.
+        /// </summary>
         protected void OnCanExecuteChanged()
         {
-            var handler = _canExecuteChanged;
-
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            _canExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 

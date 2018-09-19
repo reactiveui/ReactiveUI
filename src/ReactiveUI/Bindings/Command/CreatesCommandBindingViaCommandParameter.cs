@@ -10,6 +10,9 @@ using System.Windows.Input;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Class that registers Command Binding and Command Parameter Binding.
+    /// </summary>
     public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
     {
         /// <inheritdoc/>

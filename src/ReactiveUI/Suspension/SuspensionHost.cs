@@ -9,25 +9,45 @@ using System.Reactive.Subjects;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// A internal state setup by other classes for the different suspension state of a application.
+    /// The user does not implement themselves but is often setup via the AutoSuspendHelper class.
+    /// </summary>
     internal class SuspensionHost : ReactiveObject, ISuspensionHost
     {
         private readonly ReplaySubject<IObservable<Unit>> _isLaunchingNew = new ReplaySubject<IObservable<Unit>>(1);
 
-        public IObservable<Unit> IsLaunchingNew
-        {
-            get => _isLaunchingNew.Switch();
-            set => _isLaunchingNew.OnNext(value);
-        }
-
         private readonly ReplaySubject<IObservable<Unit>> _isResuming = new ReplaySubject<IObservable<Unit>>(1);
 
+        private readonly ReplaySubject<IObservable<Unit>> _isUnpausing = new ReplaySubject<IObservable<Unit>>(1);
+
+        private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState =
+            new ReplaySubject<IObservable<IDisposable>>(1);
+
+        private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState =
+            new ReplaySubject<IObservable<Unit>>(1);
+
+        public SuspensionHost()
+        {
+#if COCOA
+            var message = "Your AppDelegate class needs to use AutoSuspendHelper";
+#elif ANDROID
+            var message = "You need to create an App class and use AutoSuspendHelper";
+#else
+            var message = "Your App class needs to use AutoSuspendHelper";
+#endif
+
+            IsLaunchingNew = IsResuming = IsUnpausing = ShouldInvalidateState =
+                                                            Observable.Throw<Unit>(new Exception(message));
+
+            ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
+        }
+        
         public IObservable<Unit> IsResuming
         {
             get => _isResuming.Switch();
             set => _isResuming.OnNext(value);
         }
-
-        private readonly ReplaySubject<IObservable<Unit>> _isUnpausing = new ReplaySubject<IObservable<Unit>>(1);
 
         public IObservable<Unit> IsUnpausing
         {
@@ -35,15 +55,17 @@ namespace ReactiveUI
             set => _isUnpausing.OnNext(value);
         }
 
-        private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState = new ReplaySubject<IObservable<IDisposable>>(1);
-
         public IObservable<IDisposable> ShouldPersistState
         {
             get => _shouldPersistState.Switch();
             set => _shouldPersistState.OnNext(value);
         }
 
-        private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState = new ReplaySubject<IObservable<Unit>>(1);
+        public IObservable<Unit> IsLaunchingNew
+        {
+            get => _isLaunchingNew.Switch();
+            set => _isLaunchingNew.OnNext(value);
+        }
 
         public IObservable<Unit> ShouldInvalidateState
         {
@@ -65,22 +87,6 @@ namespace ReactiveUI
         {
             get => _appState;
             set => this.RaiseAndSetIfChanged(ref _appState, value);
-        }
-
-        public SuspensionHost()
-        {
-#if COCOA
-            var message = "Your AppDelegate class needs to use AutoSuspendHelper";
-#elif ANDROID
-            var message = "You need to create an App class and use AutoSuspendHelper";
-#else
-            var message = "Your App class needs to use AutoSuspendHelper";
-#endif
-
-            IsLaunchingNew = IsResuming = IsUnpausing = ShouldInvalidateState =
-                Observable.Throw<Unit>(new Exception(message));
-
-            ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
         }
     }
 }

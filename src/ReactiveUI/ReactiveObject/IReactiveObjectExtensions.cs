@@ -17,75 +17,13 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods associated with the IReactiveObject interface.
+    /// </summary>
     [Preserve(AllMembers = true)]
     public static class IReactiveObjectExtensions
     {
         private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>>();
-
-        internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable<TSender>(this TSender @this)
-            where TSender : IReactiveObject
-        {
-            var val = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
-            return val.Changed.Cast<IReactivePropertyChangedEventArgs<TSender>>();
-        }
-
-        internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangingObservable<TSender>(this TSender @this)
-            where TSender : IReactiveObject
-        {
-            var val = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
-            return val.Changing.Cast<IReactivePropertyChangedEventArgs<TSender>>();
-        }
-
-        internal static IObservable<Exception> GetThrownExceptionsObservable<TSender>(this TSender @this)
-            where TSender : IReactiveObject
-        {
-            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
-            return s.ThrownExceptions;
-        }
-
-        internal static void RaisingPropertyChanging<TSender>(this TSender @this, string propertyName)
-            where TSender : IReactiveObject
-        {
-            Contract.Requires(propertyName != null);
-
-            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
-
-            s.RaisePropertyChanging(propertyName);
-        }
-
-        internal static void RaisingPropertyChanged<TSender>(this TSender @this, string propertyName)
-            where TSender : IReactiveObject
-        {
-            Contract.Requires(propertyName != null);
-
-            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
-
-            s.RaisePropertyChanged(propertyName);
-        }
-
-        internal static IDisposable SuppressChangeNotifications<TSender>(this TSender @this)
-            where TSender : IReactiveObject
-        {
-            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
-
-            return s.SuppressChangeNotifications();
-        }
-
-        internal static bool AreChangeNotificationsEnabled<TSender>(this TSender @this)
-            where TSender : IReactiveObject
-        {
-            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
-
-            return s.AreChangeNotificationsEnabled();
-        }
-
-        internal static IDisposable DelayChangeNotifications<TSender>(this TSender @this)
-            where TSender : IReactiveObject
-        {
-            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
-
-            return s.DelayChangeNotifications();
-        }
 
         /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
@@ -151,6 +89,71 @@ namespace ReactiveUI
             where TSender : IReactiveObject
         {
             @this.RaisingPropertyChanging(propertyName);
+        }
+
+        internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable<TSender>(this TSender @this)
+            where TSender : IReactiveObject
+        {
+            var val = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
+            return val.Changed.Cast<IReactivePropertyChangedEventArgs<TSender>>();
+        }
+
+        internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangingObservable<TSender>(this TSender @this)
+            where TSender : IReactiveObject
+        {
+            var val = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
+            return val.Changing.Cast<IReactivePropertyChangedEventArgs<TSender>>();
+        }
+
+        internal static IObservable<Exception> GetThrownExceptionsObservable<TSender>(this TSender @this)
+            where TSender : IReactiveObject
+        {
+            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
+            return s.ThrownExceptions;
+        }
+
+        internal static void RaisingPropertyChanging<TSender>(this TSender @this, string propertyName)
+            where TSender : IReactiveObject
+        {
+            Contract.Requires(propertyName != null);
+
+            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
+
+            s.RaisePropertyChanging(propertyName);
+        }
+
+        internal static void RaisingPropertyChanged<TSender>(this TSender @this, string propertyName)
+            where TSender : IReactiveObject
+        {
+            Contract.Requires(propertyName != null);
+
+            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
+
+            s.RaisePropertyChanged(propertyName);
+        }
+
+        internal static IDisposable SuppressChangeNotifications<TSender>(this TSender @this)
+            where TSender : IReactiveObject
+        {
+            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
+
+            return s.SuppressChangeNotifications();
+        }
+
+        internal static bool AreChangeNotificationsEnabled<TSender>(this TSender @this)
+            where TSender : IReactiveObject
+        {
+            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
+
+            return s.AreChangeNotificationsEnabled();
+        }
+
+        internal static IDisposable DelayChangeNotifications<TSender>(this TSender @this)
+            where TSender : IReactiveObject
+        {
+            var s = state.GetValue(@this, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(@this));
+
+            return s.DelayChangeNotifications();
         }
 
         // Filter a list of change notifications, returning the last change for each PropertyName in original order.

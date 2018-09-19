@@ -11,7 +11,7 @@ namespace ReactiveUI
     public interface IViewFor : IActivatable
     {
         /// <summary>
-        ///
+        /// Gets or sets the View Model associated with the View.
         /// </summary>
         object ViewModel { get; set; }
     }

@@ -16,6 +16,14 @@ namespace ReactiveUI
     /// </summary>
     public class EqualityTypeConverter : IBindingTypeConverter
     {
+        private static readonly MemoizingMRUCache<Type, MethodInfo> _referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>(
+              (t, _) =>
+              {
+                  return _methodInfo = _methodInfo ?? typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast));
+              }, RxApp.SmallCacheLimit);
+
+        private static MethodInfo _methodInfo;
+
         /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType)
         {
@@ -45,23 +53,15 @@ namespace ReactiveUI
             return 0;
         }
 
-        private static MethodInfo mi;
-
-        private static readonly MemoizingMRUCache<Type, MethodInfo> referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>(
-            (t, _) =>
-        {
-            return mi = mi ?? typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast));
-        }, RxApp.SmallCacheLimit);
-
         /// <inheritdoc/>
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
             Contract.Requires(toType != null);
 
             var mi = default(MethodInfo);
-            lock (referenceCastCache)
+            lock (_referenceCastCache)
             {
-                mi = referenceCastCache.Get(toType);
+                mi = _referenceCastCache.Get(toType);
             }
 
             try
@@ -78,6 +78,14 @@ namespace ReactiveUI
             return true;
         }
 
+        /// <summary>
+        /// Handles casting for a reference. Understands about nullable types
+        /// and can cast appropriately.
+        /// </summary>
+        /// <param name="from">The object we are casting from.</param>
+        /// <param name="targetType">The target we want to cast to.</param>
+        /// <returns>The new value after it has been casted.</returns>
+        /// <exception cref="InvalidCastException">If we cannot cast the object.</exception>
         public static object DoReferenceCast(object from, Type targetType)
         {
             var backingNullableType = Nullable.GetUnderlyingType(targetType);

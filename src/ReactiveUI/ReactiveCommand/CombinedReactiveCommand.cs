@@ -41,6 +41,14 @@ namespace ReactiveUI
         private readonly ScheduledSubject<Exception> _exceptions;
         private readonly IDisposable _exceptionsSubscription;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CombinedReactiveCommand{TParam, TResult}"/> class.
+        /// </summary>
+        /// <param name="childCommands">The child commands which will be executed.</param>
+        /// <param name="canExecute">A observable when the command can be executed.</param>
+        /// <param name="outputScheduler">The scheduler where to dispatch the output from the command.</param>
+        /// <exception cref="ArgumentNullException">Fires when required arguments are null.</exception>
+        /// <exception cref="ArgumentException">Fires if the child commands container is empty.</exception>
         protected internal CombinedReactiveCommand(
             IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
             IObservable<bool> canExecute,

@@ -22,6 +22,11 @@ namespace ReactiveUI
     {
         private static readonly ExpressionRewriter expressionRewriter = new ExpressionRewriter();
 
+        /// <summary>
+        /// Uses the expression re-writer to simplify the Expression down to it's simplest Expression.
+        /// </summary>
+        /// <param name="expression">The expression to rewrite.</param>
+        /// <returns>The rewritten expression.</returns>
         public static Expression Rewrite(Expression expression)
         {
             return expressionRewriter.Visit(expression);
@@ -78,6 +83,12 @@ namespace ReactiveUI
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Converts a MemberInfo into a Func which will fetch the value for the Member.
+        /// Handles either fields or properties.
+        /// </summary>
+        /// <param name="member">The member info to convert.</param>
+        /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
         public static Func<object, object[], object> GetValueFetcherForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
@@ -97,6 +108,14 @@ namespace ReactiveUI
             return null;
         }
 
+        /// <summary>
+        /// Converts a MemberInfo into a Func which will fetch the value for the Member.
+        /// Handles either fields or properties.
+        /// If there is no field or property with the matching MemberInfo it'll throw
+        /// an ArgumentException.
+        /// </summary>
+        /// <param name="member">The member info to convert.</param>
+        /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
         public static Func<object, object[], object> GetValueFetcherOrThrow(MemberInfo member)
         {
             var ret = GetValueFetcherForProperty(member);
@@ -109,6 +128,14 @@ namespace ReactiveUI
             return ret;
         }
 
+        /// <summary>
+        /// Converts a MemberInfo into a Func which will set the value for the Member.
+        /// Handles either fields or properties.
+        /// If there is no field or property with the matching MemberInfo it'll throw
+        /// an ArgumentException.
+        /// </summary>
+        /// <param name="member">The member info to convert.</param>
+        /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
         public static Action<object, object, object[]> GetValueSetterForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
@@ -128,6 +155,14 @@ namespace ReactiveUI
             return null;
         }
 
+        /// <summary>
+        /// Converts a MemberInfo into a Func which will set the value for the Member.
+        /// Handles either fields or properties.
+        /// If there is no field or property with the matching MemberInfo it'll throw
+        /// an ArgumentException.
+        /// </summary>
+        /// <param name="member">The member info to convert.</param>
+        /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
         public static Action<object, object, object[]> GetValueSetterOrThrow(MemberInfo member)
         {
             var ret = GetValueSetterForProperty(member);

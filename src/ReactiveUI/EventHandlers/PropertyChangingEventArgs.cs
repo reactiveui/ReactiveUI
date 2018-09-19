@@ -16,13 +16,17 @@ namespace ReactiveUI
     /// </summary>
     public class PropertyChangingEventArgs : EventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyChangingEventArgs"/> class.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that is changing.</param>
         public PropertyChangingEventArgs(string propertyName)
         {
             PropertyName = propertyName;
         }
 
         /// <summary>
-        /// Gets the name of the property that is changing.
+        /// Gets or sets the name of the property that is changing.
         /// </summary>
         public string PropertyName { get; protected set; }
     }

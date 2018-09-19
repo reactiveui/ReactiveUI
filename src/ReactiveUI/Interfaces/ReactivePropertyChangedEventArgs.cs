@@ -7,7 +7,8 @@ using System.ComponentModel;
 namespace ReactiveUI
 {
     /// <summary>
-    ///
+    /// Event arguments for when a property has changed.
+    /// Expands on the PropertyChangedEventArgs to add the Sender.
     /// </summary>
     /// <typeparam name="TSender">The sender type.</typeparam>
     public class ReactivePropertyChangedEventArgs<TSender> : PropertyChangedEventArgs, IReactivePropertyChangedEventArgs<TSender>

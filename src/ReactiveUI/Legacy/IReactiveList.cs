@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 
+#pragma warning disable SA1600 // Elements should be documented -- not used for legacy
+
 namespace ReactiveUI.Legacy
 {
     /// <summary>
