@@ -193,7 +193,8 @@ namespace ReactiveUI
         /// <returns>If the value was successfully retrieved or not.</returns>
         public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, IEnumerable<Expression> expressionChain)
         {
-            foreach (var expression in expressionChain.SkipLast(1))
+            var expressions = expressionChain.ToList();
+            foreach (var expression in expressions.SkipLast(1))
             {
                 if (current == null)
                 {
@@ -210,7 +211,7 @@ namespace ReactiveUI
                 return false;
             }
 
-            Expression lastExpression = expressionChain.Last();
+            Expression lastExpression = expressions.Last();
             changeValue = (TValue)GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray());
             return true;
         }
@@ -229,9 +230,10 @@ namespace ReactiveUI
         public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, IEnumerable<Expression> expressionChain)
         {
             int currentIndex = 0;
-            changeValues = new IObservedChange<object, object>[expressionChain.Count()];
+            var expressions = expressionChain.ToList();
+            changeValues = new IObservedChange<object, object>[expressions.Count()];
 
-            foreach (var expression in expressionChain.SkipLast(1))
+            foreach (var expression in expressions.SkipLast(1))
             {
                 if (current == null)
                 {
@@ -253,15 +255,29 @@ namespace ReactiveUI
                 return false;
             }
 
-            Expression lastExpression = expressionChain.Last();
+            Expression lastExpression = expressions.Last();
             changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray()));
 
             return true;
         }
 
+        /// <summary>
+        /// Based on a list of Expressions set a value
+        /// of the last property in the chain if possible.
+        /// The Expressions are property chains. Eg Property1.Property2.Property3
+        /// The method will make sure that each Expression can use each value along the way
+        /// and set the last value.
+        /// </summary>
+        /// <param name="target">The object that starts the property chain.</param>
+        /// <param name="expressionChain">A list of expressions which will point towards a property or field.</param>
+        /// <param name="value">The value to set on the last property in the Expression chain.</param>
+        /// <param name="shouldThrow">If we should throw if we are unable to set the value.</param>
+        /// <typeparam name="TValue">The type of the end value we are trying to set.</typeparam>
+        /// <returns>If the value was successfully retrieved or not.</returns>
         public static bool TrySetValueToPropertyChain<TValue>(object target, IEnumerable<Expression> expressionChain, TValue value, bool shouldThrow = true)
         {
-            foreach (var expression in expressionChain.SkipLast(1))
+            var expressions = expressionChain.ToList();
+            foreach (var expression in expressions.SkipLast(1))
             {
                 var getter = shouldThrow ?
                     GetValueFetcherOrThrow(expression.GetMemberInfo()) :
@@ -275,7 +291,7 @@ namespace ReactiveUI
                 return false;
             }
 
-            Expression lastExpression = expressionChain.Last();
+            Expression lastExpression = expressions.Last();
             var setter = shouldThrow ?
                 GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
                 GetValueSetterForProperty(lastExpression.GetMemberInfo());
@@ -311,6 +327,13 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Gets the appropriate EventArgs derived object for the specified event name for a Type.
+        /// </summary>
+        /// <param name="type">The type of object to find the event on.</param>
+        /// <param name="eventName">The mame of the event.</param>
+        /// <returns>The Type of the EventArgs to use.</returns>
+        /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
         public static Type GetEventArgsTypeForEvent(Type type, string eventName)
         {
             var ti = type;

@@ -103,6 +103,19 @@ namespace ReactiveUI
             return @this.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
         }
 
+        /// <summary>
+        /// Creates a observable which will subscribe to the each property and sub property
+        /// specified in the Expression. eg It will subscribe to x => x.Property1.Property2.Property3
+        /// each property in the lambda expression. It will then provide updates to the last value in the chain.
+        /// </summary>
+        /// <param name="source">The object where we start the chain.</param>
+        /// <param name="expression">A expression which will point towards the property.</param>
+        /// <param name="beforeChange">If we are interested in notifications before the property value is changed.</param>
+        /// <param name="skipInitial">If we don't want to get a notification about the default value of the property.</param>
+        /// <typeparam name="TSender">The type of the origin of the expression chain.</typeparam>
+        /// <typeparam name="TValue">The end value we want to subscribe to.</typeparam>
+        /// <returns>A observable which notifies about observed changes.</returns>
+        /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
             this TSender source,
             Expression expression,
@@ -147,10 +160,8 @@ namespace ReactiveUI
                 return new ObservedChange<object, object>(sourceChange.Value, expression);
             }
 
-            object value;
-
             // expression is always a simple expression
-            Reflection.TryGetValueForPropertyChain(out value, sourceChange.Value, new[] { expression });
+            Reflection.TryGetValueForPropertyChain(out object value, sourceChange.Value, new[] { expression });
 
             return new ObservedChange<object, object>(sourceChange.Value, expression, value);
         }

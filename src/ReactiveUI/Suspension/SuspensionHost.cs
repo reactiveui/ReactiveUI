@@ -27,6 +27,9 @@ namespace ReactiveUI
         private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState =
             new ReplaySubject<IObservable<Unit>>(1);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SuspensionHost"/> class.
+        /// </summary>
         public SuspensionHost()
         {
 #if COCOA
@@ -43,30 +46,45 @@ namespace ReactiveUI
             ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
         }
 
+        /// <summary>
+        /// Gets or sets a observable which notifies when the application is resuming.
+        /// </summary>
         public IObservable<Unit> IsResuming
         {
             get => _isResuming.Switch();
             set => _isResuming.OnNext(value);
         }
 
+        /// <summary>
+        /// Gets or sets a observable which notifies when the application is un-pausing.
+        /// </summary>
         public IObservable<Unit> IsUnpausing
         {
             get => _isUnpausing.Switch();
             set => _isUnpausing.OnNext(value);
         }
 
+        /// <summary>
+        /// Gets or sets a observable which notifies when the application should persist its state.
+        /// </summary>
         public IObservable<IDisposable> ShouldPersistState
         {
             get => _shouldPersistState.Switch();
             set => _shouldPersistState.OnNext(value);
         }
 
+        /// <summary>
+        /// Gets or sets a observable which notifies when a application is launching new.
+        /// </summary>
         public IObservable<Unit> IsLaunchingNew
         {
             get => _isLaunchingNew.Switch();
             set => _isLaunchingNew.OnNext(value);
         }
 
+        /// <summary>
+        /// Gets or sets a observable which notifies when the application state should be invalidated.
+        /// </summary>
         public IObservable<Unit> ShouldInvalidateState
         {
             get => _shouldInvalidateState.Switch();
@@ -74,14 +92,14 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Gets or sets a Func which will generate a fresh application state.
         /// </summary>
         public Func<object> CreateNewAppState { get; set; }
 
         private object _appState;
 
         /// <summary>
-        ///
+        /// Gets the application state that will be used when suspending and resuming the class.
         /// </summary>
         public object AppState
         {
