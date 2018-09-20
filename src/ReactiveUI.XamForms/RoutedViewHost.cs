@@ -13,8 +13,16 @@ using Xamarin.Forms;
 #pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'.
 namespace ReactiveUI.XamForms
 {
+    /// <summary>
+    /// This is a <see cref="NavigationPage"/> that serves as a router.
+    /// </summary>
+    /// <seealso cref="Xamarin.Forms.NavigationPage" />
+    /// <seealso cref="ReactiveUI.IActivatable" />
     public class RoutedViewHost : NavigationPage, IActivatable
     {
+        /// <summary>
+        /// The router bindable property.
+        /// </summary>
         public static readonly BindableProperty RouterProperty = BindableProperty.Create(
             nameof(Router),
             typeof(RoutingState),
@@ -22,12 +30,10 @@ namespace ReactiveUI.XamForms
             default(RoutingState),
             BindingMode.OneWay);
 
-        public RoutingState Router
-        {
-            get => (RoutingState)GetValue(RouterProperty);
-            set => SetValue(RouterProperty, value);
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
+        /// </summary>
+        /// <exception cref="Exception">You *must* register an IScreen class representing your App's main Screen.</exception>
         public RoutedViewHost()
         {
             this.WhenActivated(new Action<Action<IDisposable>>(d =>
@@ -165,6 +171,23 @@ namespace ReactiveUI.XamForms
                 .Subscribe();
         }
 
+        /// <summary>
+        /// Gets or sets the router.
+        /// </summary>
+        /// <value>
+        /// The router.
+        /// </value>
+        public RoutingState Router
+        {
+            get => (RoutingState)GetValue(RouterProperty);
+            set => SetValue(RouterProperty, value);
+        }
+
+        /// <summary>
+        /// Pages for view model.
+        /// </summary>
+        /// <param name="vm">The vm.</param>
+        /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
         protected IObservable<Page> PageForViewModel(IRoutableViewModel vm)
         {
             if (vm == null)

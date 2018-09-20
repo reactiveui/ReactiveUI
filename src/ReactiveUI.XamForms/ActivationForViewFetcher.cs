@@ -10,6 +10,10 @@ using Xamarin.Forms;
 
 namespace ReactiveUI.XamForms
 {
+    /// <summary>
+    /// This class is the default implementation that determines when views are Activated and Deactivated.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.IActivationForViewFetcher" />
     public class ActivationForViewFetcher : IActivationForViewFetcher
     {
         /// <inheritdoc/>
