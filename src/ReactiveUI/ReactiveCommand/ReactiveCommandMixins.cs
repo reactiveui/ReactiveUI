@@ -128,12 +128,6 @@ namespace ReactiveUI
                                             .Select(b => resultSelector(b, a)))
                                 .Switch());
 
-        private static class InvokeCommandInfo
-        {
-            public static InvokeCommandInfo<TCommand, TValue> From<TCommand, TValue>(TCommand command, bool canExecute, TValue value) =>
-                new InvokeCommandInfo<TCommand, TValue>(command, canExecute, value);
-        }
-
         private struct InvokeCommandInfo<TCommand, TValue>
         {
             private readonly TCommand _command;
@@ -160,6 +154,12 @@ namespace ReactiveUI
 
             public InvokeCommandInfo<TCommand, TValue> WithValue(TValue value) =>
                 new InvokeCommandInfo<TCommand, TValue>(_command, _canExecute, value);
+        }
+
+        private static class InvokeCommandInfo
+        {
+            public static InvokeCommandInfo<TCommand, TValue> From<TCommand, TValue>(TCommand command, bool canExecute, TValue value) =>
+                new InvokeCommandInfo<TCommand, TValue>(command, canExecute, value);
         }
     }
 }

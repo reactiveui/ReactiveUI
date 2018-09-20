@@ -229,9 +229,9 @@ namespace ReactiveUI
         /// <typeparam name="TValue">The value type.</typeparam>
         /// <typeparam name="TTarget">The target type.</typeparam>
         /// <typeparam name="TTValue">The target value type.</typeparam>
-        /// <param name="this">The target observable to bind to.</param>
+        /// <param name="observedChange">The target observable to bind to.</param>
         /// <param name="target">The target object whose property will be set.</param>
-        /// <param name="property">
+        /// <param name="propertyExpression">
         /// An expression representing the target property to set.
         /// This can be a child property (i.e. <c>x.Foo.Bar.Baz</c>).
         /// </param>
@@ -245,9 +245,9 @@ namespace ReactiveUI
         /// </param>
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         IDisposable BindTo<TValue, TTarget, TTValue>(
-            IObservable<TValue> @this,
+            IObservable<TValue> observedChange,
             TTarget target,
-            Expression<Func<TTarget, TTValue>> property,
+            Expression<Func<TTarget, TTValue>> propertyExpression,
             object conversionHint,
             IBindingTypeConverter vmToViewConverterOverride = null);
     }

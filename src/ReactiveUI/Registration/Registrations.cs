@@ -11,7 +11,7 @@ namespace ReactiveUI
     /// We have code that runs reflection through the different ReactiveUI classes
     /// searching for IWantsToRegiterStuff and will register all our required DI
     /// interfaces. The registered items in this classes are common for all Platforms.
-    /// To get these registrations after the main ReactiveUI Initialization use the 
+    /// To get these registrations after the main ReactiveUI Initialization use the
     /// DependencyResolverMixins.InitializeReactiveUI() extension method.
     /// </summary>
     public class Registrations : IWantsToRegisterStuff

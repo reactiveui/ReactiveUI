@@ -774,6 +774,13 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override IObservable<Exception> ThrownExceptions => _exceptions.AsObservable();
 
+        private enum ExecutionDemarcation
+        {
+            Begin,
+            Result,
+            End
+        }
+
         /// <inheritdoc/>
         public override IDisposable Subscribe(IObserver<TResult> observer)
         {
@@ -821,13 +828,6 @@ namespace ReactiveUI
                 _exceptions?.Dispose();
                 _canExecuteSubscription?.Dispose();
             }
-        }
-
-        private enum ExecutionDemarcation
-        {
-            Begin,
-            Result,
-            End
         }
 
         private struct ExecutionInfo

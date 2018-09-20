@@ -41,12 +41,12 @@ namespace ReactiveUI
                 if (expression.NodeType == ExpressionType.Index)
                 {
                     return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
-                        || x.EventArgs.PropertyName.Equals(propertyName + "[]", StringComparison.Ordinal))
+                        || x.EventArgs.PropertyName.Equals(propertyName + "[]", StringComparison.InvariantCulture))
                         .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
 
                 return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
-                    || x.EventArgs.PropertyName.Equals(propertyName, StringComparison.Ordinal))
+                    || x.EventArgs.PropertyName.Equals(propertyName, StringComparison.InvariantCulture))
                 .Select(x => new ObservedChange<object, object>(sender, expression));
             }
             else
@@ -57,12 +57,12 @@ namespace ReactiveUI
                 if (expression.NodeType == ExpressionType.Index)
                 {
                     return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
-                        || x.EventArgs.PropertyName.Equals(propertyName + "[]", StringComparison.Ordinal))
+                        || x.EventArgs.PropertyName.Equals(propertyName + "[]", StringComparison.InvariantCulture))
                     .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
 
                 return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
-                    || x.EventArgs.PropertyName.Equals(propertyName))
+                    || x.EventArgs.PropertyName.Equals(propertyName, StringComparison.InvariantCulture))
                 .Select(x => new ObservedChange<object, object>(sender, expression));
             }
         }

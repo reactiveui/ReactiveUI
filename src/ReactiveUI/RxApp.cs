@@ -54,6 +54,20 @@ namespace ReactiveUI
         public const int BigCacheLimit = 256;
 #endif
 
+        [ThreadStatic]
+        private static IScheduler _unitTestTaskpoolScheduler;
+        private static IScheduler _taskpoolScheduler;
+        [ThreadStatic]
+        private static IScheduler _unitTestMainThreadScheduler;
+        private static IScheduler _mainThreadScheduler;
+        private static IObserver<Exception> _defaultExceptionHandler;
+        [ThreadStatic]
+        private static ISuspensionHost _unitTestSuspensionHost;
+        private static ISuspensionHost _suspensionHost;
+        [ThreadStatic]
+        private static bool? _unitTestSupportsRangeNotifications;
+        private static bool _supportsRangeNotifications;
+
         /// <summary>
         /// Initializes static members of the <see cref="RxApp"/> class.
         /// </summary>
@@ -122,10 +136,6 @@ namespace ReactiveUI
             SuspensionHost = new SuspensionHost();
         }
 
-        [ThreadStatic]
-        private static IScheduler _unitTestMainThreadScheduler;
-        private static IScheduler _mainThreadScheduler;
-
         /// <summary>
         /// MainThreadScheduler is the scheduler used to schedule work items that
         /// should be run "on the UI thread". In normal mode, this will be
@@ -154,10 +164,6 @@ namespace ReactiveUI
             }
         }
 
-        [ThreadStatic]
-        private static IScheduler _unitTestTaskpoolScheduler;
-        private static IScheduler _taskpoolScheduler;
-
         /// <summary>
         /// TaskpoolScheduler is the scheduler used to schedule work items to
         /// run in a background thread. In both modes, this will run on the TPL
@@ -180,8 +186,6 @@ namespace ReactiveUI
             }
         }
 
-        private static IObserver<Exception> _defaultExceptionHandler;
-
         /// <summary>
         /// This Observer is signalled whenever an object that has a
         /// ThrownExceptions property doesn't Subscribe to that Observable. Use
@@ -193,10 +197,6 @@ namespace ReactiveUI
             get => _defaultExceptionHandler;
             set => _defaultExceptionHandler = value;
         }
-
-        [ThreadStatic]
-        private static ISuspensionHost _unitTestSuspensionHost;
-        private static ISuspensionHost _suspensionHost;
 
         /// <summary>
         /// This returns / allows you to override the current SuspensionHost, a
@@ -224,10 +224,6 @@ namespace ReactiveUI
                 }
             }
         }
-
-        [ThreadStatic]
-        private static bool? _unitTestSupportsRangeNotifications;
-        private static bool _supportsRangeNotifications;
 
         /// <summary>
         /// Returns whether your UI framework is brain-dead or not and will blow

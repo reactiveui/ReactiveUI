@@ -16,6 +16,13 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Splat;
 
+#pragma warning disable SA1600 // Elements should be documented -- not used for legacy
+#pragma warning disable SA1201 // Ordering -- not used for legacy
+#pragma warning disable SA1202 // Ordering -- not used for legacy
+#pragma warning disable SA1124 // Do not use regions -- not used for legacy
+#pragma warning disable RCS1165 // Unconstrained null check -- not used for legacy
+#pragma warning disable CA1001 // Undisposed type -- not used for legacy
+
 namespace ReactiveUI.Legacy
 {
     /// <summary>
@@ -269,7 +276,9 @@ namespace ReactiveUI.Legacy
         /// <param name="source">The source.</param>
         /// <param name="item">The item.</param>
         /// <param name="equalityComparer">The equality comparer.</param>
-        private List<int> IndexOfAll(IEnumerable<TSource> source, TSource item,
+        private List<int> IndexOfAll(
+            IEnumerable<TSource> source,
+            TSource item,
             IEqualityComparer<TSource> equalityComparer)
         {
             var indices = new List<int>(1);

@@ -14,65 +14,6 @@ namespace ReactiveUI
     /// </summary>
     public static class OAPHCreationHelperMixin
     {
-        private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
-            this TObj @this,
-            IObservable<TRet> observable,
-            Expression<Func<TObj, TRet>> property,
-            TRet initialValue = default(TRet),
-            bool deferSubscription = false,
-            IScheduler scheduler = null)
-            where TObj : IReactiveObject
-        {
-            Contract.Requires(@this != null);
-            Contract.Requires(observable != null);
-            Contract.Requires(property != null);
-
-            Expression expression = Reflection.Rewrite(property.Body);
-
-            if (expression.GetParent().NodeType != ExpressionType.Parameter)
-            {
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
-            }
-
-            var name = expression.GetMemberInfo().Name;
-            if (expression is IndexExpression)
-            {
-                name += "[]";
-            }
-
-            var ret = new ObservableAsPropertyHelper<TRet>(
-                                                           observable,
-                                                           _ => @this.RaisingPropertyChanged(name),
-                                                           _ => @this.RaisingPropertyChanging(name),
-                                                           initialValue,
-                                                           deferSubscription,
-                                                           scheduler);
-
-            return ret;
-        }
-
-        private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
-            this TObj @this,
-            IObservable<TRet> observable,
-            string property,
-            TRet initialValue = default(TRet),
-            bool deferSubscription = false,
-            IScheduler scheduler = null)
-            where TObj : IReactiveObject
-        {
-            Contract.Requires(@this != null);
-            Contract.Requires(observable != null);
-            Contract.Requires(property != null);
-
-            return new ObservableAsPropertyHelper<TRet>(
-                                                        observable,
-                                                        _ => @this.RaisingPropertyChanged(property),
-                                                        _ => @this.RaisingPropertyChanging(property),
-                                                        initialValue,
-                                                        deferSubscription,
-                                                        scheduler);
-        }
-
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
         /// automatically provides the onChanged method to raise the property
@@ -264,6 +205,65 @@ namespace ReactiveUI
                                                  scheduler);
 
             return result;
+        }
+
+        private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+            this TObj @this,
+            IObservable<TRet> observable,
+            Expression<Func<TObj, TRet>> property,
+            TRet initialValue = default(TRet),
+            bool deferSubscription = false,
+            IScheduler scheduler = null)
+            where TObj : IReactiveObject
+        {
+            Contract.Requires(@this != null);
+            Contract.Requires(observable != null);
+            Contract.Requires(property != null);
+
+            Expression expression = Reflection.Rewrite(property.Body);
+
+            if (expression.GetParent().NodeType != ExpressionType.Parameter)
+            {
+                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+            }
+
+            var name = expression.GetMemberInfo().Name;
+            if (expression is IndexExpression)
+            {
+                name += "[]";
+            }
+
+            var ret = new ObservableAsPropertyHelper<TRet>(
+                                                           observable,
+                                                           _ => @this.RaisingPropertyChanged(name),
+                                                           _ => @this.RaisingPropertyChanging(name),
+                                                           initialValue,
+                                                           deferSubscription,
+                                                           scheduler);
+
+            return ret;
+        }
+
+        private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+            this TObj @this,
+            IObservable<TRet> observable,
+            string property,
+            TRet initialValue = default(TRet),
+            bool deferSubscription = false,
+            IScheduler scheduler = null)
+            where TObj : IReactiveObject
+        {
+            Contract.Requires(@this != null);
+            Contract.Requires(observable != null);
+            Contract.Requires(property != null);
+
+            return new ObservableAsPropertyHelper<TRet>(
+                                                        observable,
+                                                        _ => @this.RaisingPropertyChanged(property),
+                                                        _ => @this.RaisingPropertyChanging(property),
+                                                        initialValue,
+                                                        deferSubscription,
+                                                        scheduler);
         }
     }
 }

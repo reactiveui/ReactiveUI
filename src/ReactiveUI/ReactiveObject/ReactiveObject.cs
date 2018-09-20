@@ -51,16 +51,16 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
         /// <inheritdoc/>

@@ -87,10 +87,15 @@ namespace ReactiveUI
         /// <inheritdoc />
         public void Dispose()
         {
-            if (_bindingDisposable != null)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (isDisposing)
             {
-                _bindingDisposable.Dispose();
-                _bindingDisposable = null;
+                _bindingDisposable?.Dispose();
             }
         }
     }

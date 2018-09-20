@@ -38,22 +38,22 @@ namespace ReactiveUI
             {
                 if (expression.NodeType == ExpressionType.Index)
                 {
-                    return obs.Where(x => x.PropertyName.Equals(propertyName + "[]"))
+                    return obs.Where(x => x.PropertyName.Equals(propertyName + "[]", StringComparison.InvariantCulture))
                         .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
 
-                return obs.Where(x => x.PropertyName.Equals(propertyName))
+                return obs.Where(x => x.PropertyName.Equals(propertyName, StringComparison.InvariantCulture))
                     .Select(x => new ObservedChange<object, object>(sender, expression));
             }
             else
             {
                 if (expression.NodeType == ExpressionType.Index)
                 {
-                    return obs.Where(x => x.PropertyName.Equals(propertyName + "[]"))
+                    return obs.Where(x => x.PropertyName.Equals(propertyName + "[]", StringComparison.InvariantCulture))
                         .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
 
-                return obs.Where(x => x.PropertyName.Equals(propertyName))
+                return obs.Where(x => x.PropertyName.Equals(propertyName, StringComparison.InvariantCulture))
                     .Select(x => new ObservedChange<object, object>(sender, expression));
             }
         }

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Convienience class providing a starting point for chaining comparers for anonymous types.
+    /// Convenience class providing a starting point for chaining comparers for anonymous types.
     /// </summary>
     /// <remarks>
     /// If the type you're creating a comparer for is known this class is nothing more than an alias for the generic
@@ -16,31 +16,6 @@ namespace ReactiveUI
     /// </remarks>
     public static class OrderedComparer
     {
-        private sealed class OrderedComparerTypeWrapper<T> : IComparerBuilder<T>
-        {
-            public static readonly OrderedComparerTypeWrapper<T> Instance = new OrderedComparerTypeWrapper<T>();
-
-            public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector)
-            {
-                return OrderedComparer<T>.OrderBy(selector);
-            }
-
-            public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer)
-            {
-                return OrderedComparer<T>.OrderBy(selector, comparer);
-            }
-
-            public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector)
-            {
-                return OrderedComparer<T>.OrderByDescending(selector);
-            }
-
-            public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer)
-            {
-                return OrderedComparer<T>.OrderByDescending(selector, comparer);
-            }
-        }
-
         /// <summary>
         /// Creates a type inferred comparer builder for the element type of the enumerable. Useful for creating
         /// comparers for anonymous types. Note that the builder is not a comparer in itself, you need to use the
@@ -66,11 +41,36 @@ namespace ReactiveUI
         {
             return OrderedComparerTypeWrapper<T>.Instance;
         }
+
+        private sealed class OrderedComparerTypeWrapper<T> : IComparerBuilder<T>
+        {
+            public static readonly OrderedComparerTypeWrapper<T> Instance = new OrderedComparerTypeWrapper<T>();
+
+            public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector)
+            {
+                return OrderedComparer<T>.OrderBy(selector);
+            }
+
+            public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer)
+            {
+                return OrderedComparer<T>.OrderBy(selector, comparer);
+            }
+
+            public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector)
+            {
+                return OrderedComparer<T>.OrderByDescending(selector);
+            }
+
+            public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer)
+            {
+                return OrderedComparer<T>.OrderByDescending(selector, comparer);
+            }
+        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single type
     /// <summary>
-    /// Convienience class providing a starting point for chaining comparers.
+    /// Convenience class providing a starting point for chaining comparers.
     /// </summary>
     /// <typeparam name="T">The comparison type.</typeparam>
     public static class OrderedComparer<T>

@@ -52,6 +52,25 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Given a stream of notification changes, this method will convert
+        /// the property changes to the current value of the property.
+        /// </summary>
+        /// <typeparam name="TSender">The sender type.</typeparam>
+        /// <typeparam name="TValue">The value type.</typeparam>
+        /// <param name="this">
+        /// The change notification stream to get the values of.
+        /// </param>
+        /// <returns>
+        /// An Observable representing the stream of current values of
+        /// the given change notification stream.
+        /// </returns>
+        public static IObservable<TValue> Value<TSender, TValue>(
+            this IObservable<IObservedChange<TSender, TValue>> @this)
+        {
+            return @this.Select(GetValue);
+        }
+
+        /// <summary>
         /// Attempts to return the current value of a property given a
         /// notification that it has changed. If any property in the
         /// property expression is null, false is returned.
@@ -103,25 +122,6 @@ namespace ReactiveUI
             Expression<Func<TTarget, TValue>> property)
         {
             Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), @this.GetValue());
-        }
-
-        /// <summary>
-        /// Given a stream of notification changes, this method will convert
-        /// the property changes to the current value of the property.
-        /// </summary>
-        /// <typeparam name="TSender">The sender type.</typeparam>
-        /// <typeparam name="TValue">The value type.</typeparam>
-        /// <param name="this">
-        /// The change notification stream to get the values of.
-        /// </param>
-        /// <returns>
-        /// An Observable representing the stream of current values of
-        /// the given change notification stream.
-        /// </returns>
-        public static IObservable<TValue> Value<TSender, TValue>(
-            this IObservable<IObservedChange<TSender, TValue>> @this)
-        {
-            return @this.Select(GetValue);
         }
     }
 }

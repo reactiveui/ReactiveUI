@@ -7,10 +7,6 @@ using System.Collections.Specialized;
 
 namespace ReactiveUI
 {
-    public delegate void PropertyChangingEventHandler(
-        object sender,
-        PropertyChangingEventArgs e);
-
     /// <summary>
     /// The arguments for the PropertyChanging event.
     /// </summary>

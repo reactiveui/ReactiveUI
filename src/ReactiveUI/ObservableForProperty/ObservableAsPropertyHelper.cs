@@ -29,7 +29,7 @@ namespace ReactiveUI
         private int _activated;
 
         /// <summary>
-        /// Constructs an ObservableAsPropertyHelper object.
+        /// Initializes a new instance of the <see cref="ObservableAsPropertyHelper{T}"/> class.
         /// </summary>
         /// <param name="observable">
         /// The Observable to base the property on.
@@ -62,7 +62,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Constructs an ObservableAsPropertyHelper object.
+        /// Initializes a new instance of the <see cref="ObservableAsPropertyHelper{T}"/> class.
         /// </summary>
         /// <param name="observable">
         /// The Observable to base the property on.
@@ -153,16 +153,7 @@ namespace ReactiveUI
         /// Fires whenever an exception would normally terminate ReactiveUI
         /// internal state.
         /// </summary>
-        public IObservable<Exception> ThrownExceptions { get; private set; }
-
-        /// <summary>
-        /// Disposes this ObservableAsPropertyHelper.
-        /// </summary>
-        public void Dispose()
-        {
-            (_inner ?? Disposable.Empty).Dispose();
-            _inner = null;
-        }
+        public IObservable<Exception> ThrownExceptions { get; }
 
         /// <summary>
         /// Constructs a "default" ObservableAsPropertyHelper object. This is
@@ -179,6 +170,15 @@ namespace ReactiveUI
         /// <returns>A default property helper.</returns>
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null) =>
             new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue, false, scheduler);
+
+        /// <summary>
+        /// Disposes this ObservableAsPropertyHelper.
+        /// </summary>
+        public void Dispose()
+        {
+            (_inner ?? Disposable.Empty).Dispose();
+            _inner = null;
+        }
     }
 }
 

@@ -54,7 +54,6 @@ namespace ReactiveUI
             SetupRx();
         }
 
-
         /// <summary>
         /// Gets the current navigation stack, the last element in the
         /// collection being the currently visible ViewModel.
