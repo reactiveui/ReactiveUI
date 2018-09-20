@@ -114,8 +114,14 @@ namespace ReactiveUI
 
             IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, withParameter, toEvent);
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlExpression, vmExpression,
-                source, BindingDirection.OneWay, bindingDisposable);
+            return new ReactiveBinding<TView, TViewModel, TProp>(
+                 view,
+                 viewModel,
+                 controlExpression,
+                 vmExpression,
+                 source,
+                 BindingDirection.OneWay,
+                 bindingDisposable);
         }
 
         private IDisposable BindCommandInternal<TView, TProp, TParam>(
@@ -131,7 +137,8 @@ namespace ReactiveUI
             IDisposable disp = Disposable.Empty;
 
             var bindInfo = Observable.CombineLatest(
-                @this, view.WhenAnyDynamic(controlExpression, x => x.Value),
+                @this,
+                view.WhenAnyDynamic(controlExpression, x => x.Value),
                 (val, host) => new { val, host });
 
             var propSub = bindInfo

@@ -45,7 +45,7 @@ namespace ReactiveUI
             TValue ret;
             if (!@this.TryGetValue(out ret))
             {
-                throw new Exception(string.Format("One of the properties in the expression '{0}' was null", @this.GetPropertyName()));
+                throw new Exception($"One of the properties in the expression '{@this.GetPropertyName()}' was null");
             }
 
             return ret;

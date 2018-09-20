@@ -27,6 +27,8 @@ namespace ReactiveUI
         private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState =
             new ReplaySubject<IObservable<Unit>>(1);
 
+        private object _appState;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SuspensionHost"/> class.
         /// </summary>
@@ -96,10 +98,8 @@ namespace ReactiveUI
         /// </summary>
         public Func<object> CreateNewAppState { get; set; }
 
-        private object _appState;
-
         /// <summary>
-        /// Gets the application state that will be used when suspending and resuming the class.
+        /// Gets or sets the application state that will be used when suspending and resuming the class.
         /// </summary>
         public object AppState
         {

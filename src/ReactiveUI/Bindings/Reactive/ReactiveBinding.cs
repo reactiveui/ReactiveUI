@@ -13,8 +13,14 @@ namespace ReactiveUI
     {
         private IDisposable _bindingDisposable;
 
-        public ReactiveBinding(TView view, TViewModel viewModel, Expression viewExpression, Expression viewModelExpression,
-            IObservable<TValue> changed, BindingDirection direction, IDisposable bindingDisposable)
+        public ReactiveBinding(
+            TView view,
+            TViewModel viewModel,
+            Expression viewExpression,
+            Expression viewModelExpression,
+            IObservable<TValue> changed,
+            BindingDirection direction,
+            IDisposable bindingDisposable)
         {
             View = view;
             ViewModel = viewModel;

@@ -44,10 +44,8 @@ namespace ReactiveUI
         /// <inheritdoc />
         public void Dispose()
         {
-            if (_subject is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <inheritdoc/>
@@ -84,6 +82,21 @@ namespace ReactiveUI
                         _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
                     }
                 }));
+        }
+
+        /// <summary>
+        /// Disposes of any managed resources in our class.
+        /// </summary>
+        /// <param name="isDisposing">If we are being called by the IDisposable method.</param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (isDisposing)
+            {
+                if (_subject is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
         }
     }
 }

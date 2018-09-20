@@ -83,11 +83,6 @@ namespace ReactiveUI
             return Disposable.Create(() => Deactivate());
         }
 
-        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)
-        {
-            _blocks.Add(block);
-        }
-
         /// <summary>
         /// This method is called by the framework when the corresponding View
         /// is deactivated.
@@ -103,6 +98,11 @@ namespace ReactiveUI
                 Interlocked.Exchange(ref _activationHandle, Disposable.Empty).Dispose();
                 _deactivated.OnNext(Unit.Default);
             }
+        }
+
+        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)
+        {
+            _blocks.Add(block);
         }
     }
 }

@@ -24,6 +24,52 @@ namespace ReactiveUI
 
         private static MethodInfo _methodInfo;
 
+        /// <summary>
+        /// Handles casting for a reference. Understands about nullable types
+        /// and can cast appropriately.
+        /// </summary>
+        /// <param name="from">The object we are casting from.</param>
+        /// <param name="targetType">The target we want to cast to.</param>
+        /// <returns>The new value after it has been casted.</returns>
+        /// <exception cref="InvalidCastException">If we cannot cast the object.</exception>
+        public static object DoReferenceCast(object from, Type targetType)
+        {
+            var backingNullableType = Nullable.GetUnderlyingType(targetType);
+
+            if (backingNullableType == null)
+            {
+                if (from == null)
+                {
+                    if (targetType.GetTypeInfo().IsValueType)
+                    {
+                        throw new InvalidCastException("Can't convert from nullable-type which is null to non-nullable type");
+                    }
+
+                    return null;
+                }
+
+                if (IsInstanceOfType(from, targetType))
+                {
+                    return from;
+                }
+
+                throw new InvalidCastException();
+            }
+
+            if (from == null)
+            {
+                return null;
+            }
+
+            var converted = Convert.ChangeType(from, backingNullableType, null);
+            if (!IsInstanceOfType(converted, targetType))
+            {
+                throw new InvalidCastException();
+            }
+
+            return converted;
+        }
+
         /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType)
         {
@@ -76,52 +122,6 @@ namespace ReactiveUI
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Handles casting for a reference. Understands about nullable types
-        /// and can cast appropriately.
-        /// </summary>
-        /// <param name="from">The object we are casting from.</param>
-        /// <param name="targetType">The target we want to cast to.</param>
-        /// <returns>The new value after it has been casted.</returns>
-        /// <exception cref="InvalidCastException">If we cannot cast the object.</exception>
-        public static object DoReferenceCast(object from, Type targetType)
-        {
-            var backingNullableType = Nullable.GetUnderlyingType(targetType);
-
-            if (backingNullableType == null)
-            {
-                if (from == null)
-                {
-                    if (targetType.GetTypeInfo().IsValueType)
-                    {
-                        throw new InvalidCastException("Can't convert from nullable-type which is null to non-nullable type");
-                    }
-
-                    return null;
-                }
-
-                if (IsInstanceOfType(from, targetType))
-                {
-                    return from;
-                }
-
-                throw new InvalidCastException();
-            }
-
-            if (from == null)
-            {
-                return null;
-            }
-
-            var converted = Convert.ChangeType(from, backingNullableType, null);
-            if (!IsInstanceOfType(converted, targetType))
-            {
-                throw new InvalidCastException();
-            }
-
-            return converted;
         }
 
         private static bool IsInstanceOfType(object from, Type targetType)

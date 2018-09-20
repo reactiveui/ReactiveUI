@@ -28,6 +28,9 @@ namespace ReactiveUI
     {
         private static readonly object StaticSource = new object();
 
+        private static readonly Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>> current =
+            new Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>>(() => new WeakEventManager<TEventSource, TEventHandler, TEventArgs>());
+
         /// <summary>
         /// Mapping between the target of the delegate (for example a Button) and the handler (EventHandler).
         /// Windows Phone needs this, otherwise the event handler gets garbage collected.
@@ -39,11 +42,6 @@ namespace ReactiveUI
         /// </summary>
         private readonly ConditionalWeakTable<object, WeakHandlerList> _sourceToWeakHandlers = new ConditionalWeakTable<object, WeakHandlerList>();
 
-        private static readonly Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>> current =
-            new Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>>(() => new WeakEventManager<TEventSource, TEventHandler, TEventArgs>());
-
-        private static WeakEventManager<TEventSource, TEventHandler, TEventArgs> Current => current.Value;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="WeakEventManager{TEventSource, TEventHandler, TEventArgs}"/> class.
         /// Protected to disallow instances of this class and force a subclass.
@@ -51,6 +49,8 @@ namespace ReactiveUI
         protected WeakEventManager()
         {
         }
+
+        private static WeakEventManager<TEventSource, TEventHandler, TEventArgs> Current => current.Value;
 
         /// <summary>
         /// Adds a weak reference to the handler and associates it with the source.
@@ -136,8 +136,7 @@ namespace ReactiveUI
 
         private void AddWeakHandler(TEventSource source, TEventHandler handler)
         {
-            WeakHandlerList weakHandlers;
-            if (_sourceToWeakHandlers.TryGetValue(source, out weakHandlers))
+            if (_sourceToWeakHandlers.TryGetValue(source, out var weakHandlers))
             {
                 // clone list if we are currently delivering an event
                 if (weakHandlers.IsDeliverActive)
@@ -165,16 +164,17 @@ namespace ReactiveUI
         {
             var @delegate = handler as Delegate;
             object key = @delegate.Target ?? StaticSource;
-            List<Delegate> delegates;
 
-            if (_targetToEventHandler.TryGetValue(key, out delegates))
+            if (_targetToEventHandler.TryGetValue(key, out var delegates))
             {
                 delegates.Add(@delegate);
             }
             else
             {
-                delegates = new List<Delegate>();
-                delegates.Add(@delegate);
+                delegates = new List<Delegate>
+                {
+                    @delegate,
+                };
 
                 _targetToEventHandler.Add(key, delegates);
             }
@@ -188,9 +188,7 @@ namespace ReactiveUI
 
         private void RemoveWeakHandler(TEventSource source, TEventHandler handler)
         {
-            var weakHandlers = default(WeakHandlerList);
-
-            if (_sourceToWeakHandlers.TryGetValue(source, out weakHandlers))
+            if (_sourceToWeakHandlers.TryGetValue(source, out var weakHandlers))
             {
                 // clone list if we are currently delivering an event
                 if (weakHandlers.IsDeliverActive)
@@ -211,10 +209,9 @@ namespace ReactiveUI
         private void RemoveTargetHandler(TEventHandler handler)
         {
             var @delegate = handler as Delegate;
-            object key = @delegate.Target ?? StaticSource;
+            object key = @delegate?.Target ?? StaticSource;
 
-            var delegates = default(List<Delegate>);
-            if (_targetToEventHandler.TryGetValue(key, out delegates))
+            if (_targetToEventHandler.TryGetValue(key, out var delegates))
             {
                 delegates.Remove(@delegate);
 
@@ -228,11 +225,10 @@ namespace ReactiveUI
         private void PrivateDeliverEvent(object sender, TEventArgs args)
         {
             object source = sender != null ? sender : StaticSource;
-            var weakHandlers = default(WeakHandlerList);
 
             bool hasStaleEntries = false;
 
-            if (_sourceToWeakHandlers.TryGetValue(source, out weakHandlers))
+            if (_sourceToWeakHandlers.TryGetValue(source, out var weakHandlers))
             {
                 using (weakHandlers.DeliverActive())
                 {
@@ -248,9 +244,7 @@ namespace ReactiveUI
 
         private void Purge(object source)
         {
-            var weakHandlers = default(WeakHandlerList);
-
-            if (_sourceToWeakHandlers.TryGetValue(source, out weakHandlers))
+            if (_sourceToWeakHandlers.TryGetValue(source, out var weakHandlers))
             {
                 if (weakHandlers.IsDeliverActive)
                 {
@@ -307,13 +301,17 @@ namespace ReactiveUI
 
         internal class WeakHandlerList
         {
-            private int _deliveries;
             private readonly List<WeakHandler> _handlers;
+            private int _deliveries;
 
             public WeakHandlerList()
             {
                 _handlers = new List<WeakHandler>();
             }
+
+            public int Count => _handlers.Count;
+
+            public bool IsDeliverActive => _deliveries > 0;
 
             public void AddWeakHandler(TEventSource source, TEventHandler handler)
             {
@@ -342,10 +340,6 @@ namespace ReactiveUI
                 return newList;
             }
 
-            public int Count => _handlers.Count;
-
-            public bool IsDeliverActive => _deliveries > 0;
-
             public IDisposable DeliverActive()
             {
                 Interlocked.Increment(ref _deliveries);
@@ -362,7 +356,7 @@ namespace ReactiveUI
                     if (handler.IsActive)
                     {
                         var @delegate = handler.Handler as Delegate;
-                        @delegate.DynamicInvoke(sender, args);
+                        @delegate?.DynamicInvoke(sender, args);
                     }
                     else
                     {

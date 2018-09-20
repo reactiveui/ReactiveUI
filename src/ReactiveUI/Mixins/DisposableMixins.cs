@@ -16,7 +16,7 @@ namespace System.Reactive.Disposables
         /// The type of the disposable.
         /// </typeparam>
         /// <param name="this">
-        /// The disposable.
+        /// The disposable we are going to want to be disposed by the CompositeDisposable.
         /// </param>
         /// <param name="compositeDisposable">
         /// The <see cref="CompositeDisposable"/> to which <paramref name="this"/> will be added.

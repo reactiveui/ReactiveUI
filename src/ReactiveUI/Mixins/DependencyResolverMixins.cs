@@ -37,7 +37,7 @@ namespace ReactiveUI
             var fdr = typeof(DependencyResolverMixins);
 
             var assmName = new AssemblyName(
-                fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", string.Empty));
+                fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", string.Empty, StringComparison.InvariantCulture));
 
             extraNs.ForEach(ns => ProcessRegistrationForNamespace(ns, assmName, resolver));
         }
@@ -97,7 +97,7 @@ namespace ReactiveUI
         private static void ProcessRegistrationForNamespace(string ns, AssemblyName assmName, IMutableDependencyResolver resolver)
         {
             var targetType = ns + ".Registrations";
-            var fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
+            var fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns, StringComparison.InvariantCulture);
 
             var registerTypeClass = Reflection.ReallyFindType(fullName, false);
             if (registerTypeClass != null)

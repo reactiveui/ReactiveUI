@@ -16,20 +16,19 @@ namespace ReactiveUI
         object ViewModel { get; set; }
     }
 
-#pragma warning disable SA1402
-    /// File may only contain a single type
+#pragma warning disable SA1402 // File may only contain a single type
     /// <summary>
     /// Implement this interface on your Views to support Routing and Binding.
     /// </summary>
+    /// <typeparam name="T">The type of ViewModel.</typeparam>
     public interface IViewFor<T> : IViewFor
 #pragma warning restore SA1402 // File may only contain a single type
         where T : class
     {
         /// <summary>
-        /// The ViewModel corresponding to this specific View. This should be
+        /// Gets or sets the ViewModel corresponding to this specific View. This should be
         /// a DependencyProperty if you're using XAML.
         /// </summary>
-
         new T ViewModel { get; set; }
     }
 }

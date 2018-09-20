@@ -15,8 +15,8 @@ namespace ReactiveUI
     /// </summary>
     public class WaitForDispatcherScheduler : IScheduler
     {
-        private IScheduler _scheduler;
         private readonly Func<IScheduler> _schedulerFactory;
+        private IScheduler _scheduler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitForDispatcherScheduler"/> class.
@@ -32,6 +32,9 @@ namespace ReactiveUI
             // early enough that this won't be the case.
             AttemptToCreateScheduler();
         }
+
+        /// <inheritdoc/>
+        public DateTimeOffset Now => AttemptToCreateScheduler().Now;
 
         /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
@@ -50,9 +53,6 @@ namespace ReactiveUI
         {
             return AttemptToCreateScheduler().Schedule(state, dueTime, action);
         }
-
-        /// <inheritdoc/>
-        public DateTimeOffset Now => AttemptToCreateScheduler().Now;
 
         private IScheduler AttemptToCreateScheduler()
         {

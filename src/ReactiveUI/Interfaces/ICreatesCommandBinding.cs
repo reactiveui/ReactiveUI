@@ -8,7 +8,7 @@ using System.Windows.Input;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Classes that implement this interface and registered inside Splat will be 
+    /// Classes that implement this interface and registered inside Splat will be
     /// used to potentially provide binding to a ICommand in the ViewModel to a Control
     /// in the View.
     /// </summary>

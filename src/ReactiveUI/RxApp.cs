@@ -32,6 +32,28 @@ namespace ReactiveUI
     /// </remarks>
     public static class RxApp
     {
+#if ANDROID || IOS
+/// <summary>
+/// The size of a small cache of items. Often used for the MemoizingMRUCache class.
+/// </summary>
+        public const int SmallCacheLimit = 32;
+
+        /// <summary>
+        /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
+        /// </summary>
+        public const int BigCacheLimit = 64;
+#else
+        /// <summary>
+        /// The size of a small cache of items. Often used for the MemoizingMRUCache class.
+        /// </summary>
+        public const int SmallCacheLimit = 64;
+
+        /// <summary>
+        /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
+        /// </summary>
+        public const int BigCacheLimit = 256;
+#endif
+
         /// <summary>
         /// Initializes static members of the <see cref="RxApp"/> class.
         /// </summary>
@@ -238,29 +260,6 @@ namespace ReactiveUI
         {
             // NB: This method only exists to invoke the static constructor
         }
-
-#if ANDROID || IOS
-
-        /// <summary>
-        /// The size of a small cache of items. Often used for the MemoizingMRUCache class.
-        /// </summary>
-        public const int SmallCacheLimit = 32;
-
-        /// <summary>
-        /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
-        /// </summary>
-        public const int BigCacheLimit = 64;
-#else
-        /// <summary>
-        /// The size of a small cache of items. Often used for the MemoizingMRUCache class.
-        /// </summary>
-        public const int SmallCacheLimit = 64;
-
-        /// <summary>
-        /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
-        /// </summary>
-        public const int BigCacheLimit = 256;
-#endif
     }
 }
 

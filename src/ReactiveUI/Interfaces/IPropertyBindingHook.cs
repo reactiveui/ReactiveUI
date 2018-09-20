@@ -22,7 +22,8 @@ namespace ReactiveUI
         /// <param name="getCurrentViewProperties">Get current view properties.</param>
         /// <param name="direction">The Binding direction.</param>
         bool ExecuteHook(
-            object source, object target,
+            object source,
+            object target,
             Func<IObservedChange<object, object>[]> getCurrentViewModelProperties,
             Func<IObservedChange<object, object>[]> getCurrentViewProperties,
             BindingDirection direction);

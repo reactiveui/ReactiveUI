@@ -35,7 +35,7 @@ namespace ReactiveUI
             case ExpressionType.Convert:
                 return VisitUnary((UnaryExpression)node);
             default:
-                throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", node.NodeType));
+                throw new NotSupportedException($"Unsupported expression type: '{node.NodeType}'");
             }
         }
 

@@ -59,7 +59,7 @@ namespace ReactiveUI
                     node = memberExpr.Expression;
                     break;
                 default:
-                    throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", node.NodeType));
+                    throw new NotSupportedException($"Unsupported expression type: '{node.NodeType}'");
                 }
             }
 
@@ -89,7 +89,7 @@ namespace ReactiveUI
             case ExpressionType.ConvertChecked:
                 return GetMemberInfo(((UnaryExpression)expression).Operand);
             default:
-                throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", expression.NodeType));
+                throw new NotSupportedException($"Unsupported expression type: '{expression.NodeType}'");
             }
 
             return info;
@@ -109,7 +109,7 @@ namespace ReactiveUI
             case ExpressionType.MemberAccess:
                 return ((MemberExpression)expression).Expression;
             default:
-                throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", expression.NodeType));
+                throw new NotSupportedException($"Unsupported expression type: '{expression.NodeType}'");
             }
         }
 

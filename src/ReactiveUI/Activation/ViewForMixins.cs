@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -126,7 +127,7 @@ namespace ReactiveUI
             if (activationFetcher == null)
             {
                 const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
-                throw new ArgumentException(string.Format(msg, @this.GetType().FullName));
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, msg, @this.GetType().FullName));
             }
 
             var activationEvents = activationFetcher.GetActivationForView(@this);

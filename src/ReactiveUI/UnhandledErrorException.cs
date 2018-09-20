@@ -13,14 +13,14 @@ namespace ReactiveUI
     public class UnhandledErrorException : Exception
     {
         /// <summary>
-        /// Creates a new instance of <c>UnhandledErrorException</c>.
+        /// Initializes a new instance of the <see cref="UnhandledErrorException"/> class.
         /// </summary>
         public UnhandledErrorException()
         {
         }
 
         /// <summary>
-        /// Creates a new instance of <c>UnhandledErrorException</c>.
+        /// Initializes a new instance of the <see cref="UnhandledErrorException"/> class.
         /// </summary>
         /// <param name="message">
         /// The exception message.

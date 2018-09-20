@@ -562,10 +562,19 @@ namespace ReactiveUI
         }
     }
 
-    // non-generic reactive command functionality
+    /// <summary>
+    /// Abstract base class of the ReactiveCommand's. Meant only for interop with the ICommand interface.
+    /// </summary>
     public abstract partial class ReactiveCommand : IDisposable, ICommand, IHandleObservableErrors
     {
         private EventHandler _canExecuteChanged;
+
+        /// <inheritdoc/>
+        event EventHandler ICommand.CanExecuteChanged
+        {
+            add => _canExecuteChanged += value;
+            remove => _canExecuteChanged -= value;
+        }
 
         /// <summary>
         /// An observable whose value indicates whether the command can currently execute.
@@ -605,12 +614,11 @@ namespace ReactiveUI
             get;
         }
 
-        /// <summary>
-        /// Disposes of this <c>ReactiveCommand</c>.
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -618,13 +626,6 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="disposing">If its getting called by the Dispose() method.</param>
         protected abstract void Dispose(bool disposing);
-
-        /// <inheritdoc/>
-        event EventHandler ICommand.CanExecuteChanged
-        {
-            add => _canExecuteChanged += value;
-            remove => _canExecuteChanged -= value;
-        }
 
         /// <inheritdoc/>
         bool ICommand.CanExecute(object parameter)
@@ -816,9 +817,9 @@ namespace ReactiveUI
         {
             if (disposing)
             {
-                _executionInfo.Dispose();
-                _exceptions.Dispose();
-                _canExecuteSubscription.Dispose();
+                _executionInfo?.Dispose();
+                _exceptions?.Dispose();
+                _canExecuteSubscription?.Dispose();
             }
         }
 

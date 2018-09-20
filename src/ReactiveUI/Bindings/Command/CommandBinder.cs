@@ -41,8 +41,8 @@ namespace ReactiveUI
         /// the binding.</returns>
         /// <param name="view">The View.</param>
         /// <param name="viewModel">The View model.</param>
-        /// <param name="controlName">The name of the control on the view.</param>
         /// <param name="propertyName">The ViewModel command to bind.</param>
+        /// <param name="controlName">The name of the control on the view.</param>
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand.</param>
         /// <param name="toEvent">If specified, bind to the specific event

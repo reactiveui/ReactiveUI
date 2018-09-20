@@ -58,9 +58,7 @@ namespace ReactiveUI
             if (eventInfo == null)
             {
                 throw new Exception(
-                                    string.Format(
-                                                  "Couldn't find a default event to bind to on {0}, specify an event expicitly",
-                                                  target.GetType().FullName));
+                       $"Couldn't find a default event to bind to on {target.GetType().FullName}, specify an event explicitly");
             }
 
             var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);

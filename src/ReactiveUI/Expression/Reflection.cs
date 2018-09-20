@@ -127,7 +127,7 @@ namespace ReactiveUI
 
             if (ret == null)
             {
-                throw new ArgumentException(string.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
+                throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
             }
 
             return ret;

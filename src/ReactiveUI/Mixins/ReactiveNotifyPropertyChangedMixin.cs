@@ -13,11 +13,23 @@ using Splat;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Extension methods associated with the Observable Changes and the 
+    /// Extension methods associated with the Observable Changes and the
     /// Reactive Notify Property Changed based events.
     /// </summary>
     public static class ReactiveNotifyPropertyChangedMixin
     {
+        private static readonly MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty> notifyFactoryCache =
+            new MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty>(
+                (t, _) =>
+                {
+                    return Locator.Current.GetServices<ICreatesObservableForProperty>()
+                                  .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) =>
+                                  {
+                                      int score = x.GetAffinityForObject(t.Item1, t.Item2, t.Item3);
+                                      return score > acc.Item1 ? Tuple.Create(score, x) : acc;
+                                  }).Item2;
+                }, RxApp.BigCacheLimit);
+
         static ReactiveNotifyPropertyChangedMixin()
         {
             RxApp.EnsureInitialized();
@@ -143,7 +155,7 @@ namespace ReactiveUI
                 var val = x.GetValue();
                 if (val != null && !(val is TValue))
                 {
-                    throw new InvalidCastException(string.Format("Unable to cast from {0} to {1}.", val.GetType(), typeof(TValue)));
+                    throw new InvalidCastException($"Unable to cast from {val.GetType()} to {typeof(TValue)}.");
                 }
 
                 return new ObservedChange<TSender, TValue>(source, expression, (TValue)val);
@@ -182,18 +194,6 @@ namespace ReactiveUI
                 .Select(x => new ObservedChange<object, object>(x.Sender, expression, x.GetValue()))
                 .StartWith(kicker);
         }
-
-        private static readonly MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty> notifyFactoryCache =
-            new MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty>(
-                (t, _) =>
-            {
-                return Locator.Current.GetServices<ICreatesObservableForProperty>()
-                    .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) =>
-                    {
-                        int score = x.GetAffinityForObject(t.Item1, t.Item2, t.Item3);
-                        return score > acc.Item1 ? Tuple.Create(score, x) : acc;
-                    }).Item2;
-            }, RxApp.BigCacheLimit);
 
         private static IObservable<IObservedChange<object, object>> NotifyForProperty(object sender, Expression expression, bool beforeChange)
         {

@@ -8,7 +8,7 @@ namespace ReactiveUI
     {
         public DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
         {
-            ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
+            ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View", StringComparison.Ordinal));
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace ReactiveUI
         /// </para>
         /// <para>
         /// Note that the name returned by the function is a starting point for view resolution. Variants on the name will be resolved according to the rules
-        /// set out by the <see cref="ResolveView"/> method.
+        /// set out by the <see cref="ResolveView{T}"/> method.
         /// </para>
         /// </remarks>
         public Func<string, string> ViewModelToViewFunc { get; set; }
@@ -112,6 +112,43 @@ namespace ReactiveUI
             return null;
         }
 
+        private static Type ToggleViewModelType(Type viewModelType)
+        {
+            var viewModelTypeName = viewModelType.AssemblyQualifiedName;
+
+            if (viewModelType.GetTypeInfo().IsInterface)
+            {
+                if (viewModelType.Name.StartsWith("I", StringComparison.InvariantCulture))
+                {
+                    var toggledTypeName = DeinterfaceifyTypeName(viewModelTypeName);
+                    var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
+                    return toggledType;
+                }
+            }
+            else
+            {
+                var toggledTypeName = InterfaceifyTypeName(viewModelTypeName);
+                var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
+                return toggledType;
+            }
+
+            return null;
+        }
+
+        private static string DeinterfaceifyTypeName(string typeName)
+        {
+            var idxComma = typeName.IndexOf(',', StringComparison.Ordinal);
+            var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
+            return typeName.Substring(0, idxPeriod + 1) + typeName.Substring(idxPeriod + 2);
+        }
+
+        private static string InterfaceifyTypeName(string typeName)
+        {
+            var idxComma = typeName.IndexOf(',', StringComparison.Ordinal);
+            var idxPeriod = typeName.LastIndexOf(".", idxComma - 1, StringComparison.Ordinal);
+            return typeName.Insert(idxPeriod + 1, "I");
+        }
+
         private IViewFor AttemptViewResolutionFor(Type viewModelType, string contract)
         {
             if (viewModelType == null)
@@ -174,43 +211,6 @@ namespace ReactiveUI
                 this.Log().ErrorException("Exception occurred whilst attempting to resolve type '" + viewTypeName + "' into a view.", ex);
                 throw;
             }
-        }
-
-        private static Type ToggleViewModelType(Type viewModelType)
-        {
-            var viewModelTypeName = viewModelType.AssemblyQualifiedName;
-
-            if (viewModelType.GetTypeInfo().IsInterface)
-            {
-                if (viewModelType.Name.StartsWith("I"))
-                {
-                    var toggledTypeName = DeinterfaceifyTypeName(viewModelTypeName);
-                    var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
-                    return toggledType;
-                }
-            }
-            else
-            {
-                var toggledTypeName = InterfaceifyTypeName(viewModelTypeName);
-                var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
-                return toggledType;
-            }
-
-            return null;
-        }
-
-        private static string DeinterfaceifyTypeName(string typeName)
-        {
-            var idxComma = typeName.IndexOf(',');
-            var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
-            return typeName.Substring(0, idxPeriod + 1) + typeName.Substring(idxPeriod + 2);
-        }
-
-        private static string InterfaceifyTypeName(string typeName)
-        {
-            var idxComma = typeName.IndexOf(',');
-            var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
-            return typeName.Insert(idxPeriod + 1, "I");
         }
     }
 }

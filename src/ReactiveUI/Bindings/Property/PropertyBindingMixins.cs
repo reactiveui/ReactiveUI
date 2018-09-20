@@ -67,8 +67,15 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>)null, conversionHint,
-                vmToViewConverterOverride, viewToVMConverterOverride);
+            return binderImplementation.Bind(
+                         viewModel,
+                         view,
+                         vmProperty,
+                         viewProperty,
+                         (IObservable<Unit>)null,
+                         conversionHint,
+                         vmToViewConverterOverride,
+                         viewToVMConverterOverride);
         }
 
         /// <summary>
@@ -270,7 +277,12 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, conversionHint,
+            return binderImplementation.OneWayBind(
+                viewModel,
+                view,
+                vmProperty,
+                viewProperty,
+                conversionHint,
                 vmToViewConverterOverride);
         }
 
@@ -282,8 +294,8 @@ namespace ReactiveUI
         /// <typeparam name="TView">The type of the view that is bound.</typeparam>
         /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
         /// <typeparam name="TOut">The return type of the <paramref name="selector"/>.</typeparam>
-        /// <param name="viewModel">The instance of the view model to bind to.</param>
         /// <param name="view">The instance of the view to bind to.</param>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
         /// <param name="vmProperty">
         /// An expression representing the property to be bound to on the view model.
         /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case

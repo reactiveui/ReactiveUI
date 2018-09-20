@@ -8,6 +8,7 @@ namespace ReactiveUI
     /// Obviously, this is not supported on Views that may be reused multiple
     /// times in the Visual Tree.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
     public class SingleInstanceViewAttribute : Attribute
     {
     }
