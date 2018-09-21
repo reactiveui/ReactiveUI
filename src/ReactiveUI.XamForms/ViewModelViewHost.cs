@@ -17,15 +17,6 @@ namespace ReactiveUI.XamForms
     public class ViewModelViewHost : ContentView, IViewFor
     {
         /// <summary>
-        /// The view model whose associated view is to be displayed.
-        /// </summary>
-        public object ViewModel
-        {
-            get => GetValue(ViewModelProperty);
-            set => SetValue(ViewModelProperty, value);
-        }
-
-        /// <summary>
         /// Identifies the <see cref="ViewModel"/> property.
         /// </summary>
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
@@ -36,15 +27,6 @@ namespace ReactiveUI.XamForms
             BindingMode.OneWay);
 
         /// <summary>
-        /// The content to display when <see cref="ViewModel"/> is <see langword="null"/>.
-        /// </summary>
-        public View DefaultContent
-        {
-            get => (View)GetValue(DefaultContentProperty);
-            set => SetValue(DefaultContentProperty, value);
-        }
-
-        /// <summary>
         /// Identifies the <see cref="DefaultContent"/> property.
         /// </summary>
         public static readonly BindableProperty DefaultContentProperty = BindableProperty.Create(
@@ -53,15 +35,6 @@ namespace ReactiveUI.XamForms
             typeof(ViewModelViewHost),
             default(View),
             BindingMode.OneWay);
-
-        /// <summary>
-        /// The contract to use when resolving the view for the given view model.
-        /// </summary>
-        public IObservable<string> ViewContractObservable
-        {
-            get => (IObservable<string>)GetValue(ViewContractObservableProperty);
-            set => SetValue(ViewContractObservableProperty, value);
-        }
 
         /// <summary>
         /// Identifies the <see cref="ViewContractObservable"/> property.
@@ -76,22 +49,8 @@ namespace ReactiveUI.XamForms
         private string _viewContract;
 
         /// <summary>
-        /// A fixed contract to use when resolving the view for the given view model.
+        /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
         /// </summary>
-        /// <remarks>
-        /// This property is a mere convenience so that a fixed contract can be assigned directly in XAML.
-        /// </remarks>
-        public string ViewContract
-        {
-            get => _viewContract;
-            set => ViewContractObservable = Observable.Return(value);
-        }
-
-        /// <summary>
-        /// Can be used to override the view locator to use when resolving the view. If unspecified, <see cref="ViewLocator.Current"/> will be used.
-        /// </summary>
-        public IViewLocator ViewLocator { get; set; }
-
         public ViewModelViewHost()
         {
             // NB: InUnitTestRunner also returns true in Design Mode
@@ -143,5 +102,49 @@ namespace ReactiveUI.XamForms
                 };
             });
         }
+
+        /// <summary>
+        /// The view model whose associated view is to be displayed.
+        /// </summary>
+        public object ViewModel
+        {
+            get => GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
+        }
+
+        /// <summary>
+        /// The content to display when <see cref="ViewModel"/> is <see langword="null"/>.
+        /// </summary>
+        public View DefaultContent
+        {
+            get => (View)GetValue(DefaultContentProperty);
+            set => SetValue(DefaultContentProperty, value);
+        }
+
+        /// <summary>
+        /// The contract to use when resolving the view for the given view model.
+        /// </summary>
+        public IObservable<string> ViewContractObservable
+        {
+            get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+            set => SetValue(ViewContractObservableProperty, value);
+        }
+
+        /// <summary>
+        /// A fixed contract to use when resolving the view for the given view model.
+        /// </summary>
+        /// <remarks>
+        /// This property is a mere convenience so that a fixed contract can be assigned directly in XAML.
+        /// </remarks>
+        public string ViewContract
+        {
+            get => _viewContract;
+            set => ViewContractObservable = Observable.Return(value);
+        }
+
+        /// <summary>
+        /// Can be used to override the view locator to use when resolving the view. If unspecified, <see cref="ViewLocator.Current"/> will be used.
+        /// </summary>
+        public IViewLocator ViewLocator { get; set; }
     }
 }
