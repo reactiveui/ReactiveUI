@@ -95,7 +95,7 @@ namespace ReactiveUI
                 IBindingTypeConverter vmToViewConverterOverride = null,
                 IBindingTypeConverter viewToVMConverterOverride = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : class, IViewFor
         {
             var vmToViewConverter = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp), typeof(TVProp));
             var viewToVMConverter = viewToVMConverterOverride ?? GetConverterForTypes(typeof(TVProp), typeof(TVMProp));
@@ -175,7 +175,7 @@ namespace ReactiveUI
                 Func<TVMProp, TVProp> vmToViewConverter,
                 Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : class, IViewFor
         {
             if (vmToViewConverter == null)
             {
@@ -253,7 +253,7 @@ namespace ReactiveUI
                 object conversionHint = null,
                 IBindingTypeConverter vmToViewConverterOverride = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : class, IViewFor
         {
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
@@ -330,7 +330,7 @@ namespace ReactiveUI
                 Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, TOut> selector)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : class, IViewFor
         {
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
@@ -376,6 +376,7 @@ namespace ReactiveUI
             Expression<Func<TTarget, TTValue>> propertyExpression,
             object conversionHint = null,
             IBindingTypeConverter vmToViewConverterOverride = null)
+            where TTarget : class
         {
             if (target == null)
             {
@@ -423,6 +424,7 @@ namespace ReactiveUI
             IObservable<TValue> @this,
             TTarget target,
             Expression viewExpression)
+            where TTarget : class
         {
             var setter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             if (viewExpression.GetParent().NodeType == ExpressionType.Parameter)
@@ -504,19 +506,21 @@ namespace ReactiveUI
             IObservable<TDontCare> signalViewUpdate,
             OutFunc<TVMProp, TVProp> vmToViewConverter,
             OutFunc<TVProp, TVMProp> viewToVmConverter)
+            where TView : class, IViewFor
             where TViewModel : class
-            where TView : IViewFor
         {
             var signalInitialUpdate = new Subject<bool>();
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
 
+            var signalObservable = signalViewUpdate != null
+                                       ? signalViewUpdate.Select(_ => false)
+                                       : view.WhenAnyDynamic(viewExpression, x => (TVProp)x.Value).Select(_ => false);
+
             var somethingChanged = Observable.Merge(
                                                     Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
                                                     signalInitialUpdate.Select(_ => true),
-                                                    signalViewUpdate != null ?
-                                                        signalViewUpdate.Select(_ => false) :
-                                                        view.WhenAnyDynamic(viewExpression, x => (TVProp)x.Value).Select(_ => false));
+                                                    signalObservable);
 
             var changeWithValues = somethingChanged.Select(isVm =>
             {

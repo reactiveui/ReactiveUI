@@ -25,6 +25,8 @@ namespace ReactiveUI
     /// <typeparam name="TEventHandler">The type of the event handler.</typeparam>
     /// <typeparam name="TEventArgs">The type of the event arguments.</typeparam>
     public class WeakEventManager<TEventSource, TEventHandler, TEventArgs>
+        where TEventSource : class
+        where TEventHandler : class
     {
         private static readonly object StaticSource = new object();
 
@@ -264,6 +266,12 @@ namespace ReactiveUI
             private readonly WeakReference _source;
             private readonly WeakReference _originalHandler;
 
+            public WeakHandler(object source, TEventHandler originalHandler)
+            {
+                _source = new WeakReference(source);
+                _originalHandler = new WeakReference(originalHandler);
+            }
+
             public bool IsActive => _source != null && _source.IsAlive && _originalHandler != null && _originalHandler.IsAlive;
 
             public TEventHandler Handler
@@ -279,23 +287,17 @@ namespace ReactiveUI
                 }
             }
 
-            public WeakHandler(object source, TEventHandler originalHandler)
-            {
-                _source = new WeakReference(source);
-                _originalHandler = new WeakReference(originalHandler);
-            }
-
             public bool Matches(object source, TEventHandler handler)
             {
                 return _source != null &&
                     ReferenceEquals(_source.Target, source) &&
                     _originalHandler != null &&
                     (ReferenceEquals(_originalHandler.Target, handler) ||
-                    _originalHandler.Target is PropertyChangedEventHandler &&
+                    _originalHandler.Target is PropertyChangedEventHandler eventHandler &&
                     handler is PropertyChangedEventHandler &&
                     Equals(
-                        (_originalHandler.Target as PropertyChangedEventHandler).Target,
-                        (handler as PropertyChangedEventHandler).Target));
+                        eventHandler.Target,
+                        (handler as PropertyChangedEventHandler)?.Target));
             }
         }
 

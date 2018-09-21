@@ -22,6 +22,10 @@ using Splat;
 #pragma warning disable SA1124 // Do not use regions -- not used for legacy
 #pragma warning disable RCS1165 // Unconstrained null check -- not used for legacy
 #pragma warning disable CA1001 // Undisposed type -- not used for legacy
+#pragma warning disable CA1822 // Mark member static -- not used for legacy
+#pragma warning disable SA1100 // Do not use prefix -- not used for legacy
+#pragma warning disable SA1407 // Expression should declare precedence -- not used for legacy
+#pragma warning disable SA1402 // File many contain only single type -- not used for legacy
 
 namespace ReactiveUI.Legacy
 {
@@ -687,7 +691,7 @@ namespace ReactiveUI.Legacy
             return ix >= currentIndex ? ix - 1 : ix;
         }
 
-        public override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -855,9 +859,10 @@ namespace ReactiveUI.Legacy
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        public virtual void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
         }
     }

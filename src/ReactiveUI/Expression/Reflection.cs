@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
@@ -59,13 +60,11 @@ namespace ReactiveUI
                     if (exp.NodeType == ExpressionType.Index)
                     {
                         var ie = (IndexExpression)exp;
-                        sb.Append(ie.Indexer.Name);
-                        sb.Append('[');
+                        sb.Append(ie.Indexer.Name).Append('[');
 
                         foreach (var argument in ie.Arguments)
                         {
-                            sb.Append(((ConstantExpression)argument).Value);
-                            sb.Append(',');
+                            sb.Append(((ConstantExpression)argument).Value).Append(',');
                         }
 
                         sb.Replace(',', ']', sb.Length - 1, 1);
@@ -368,7 +367,7 @@ namespace ReactiveUI
 
             if (missingMethod != null)
             {
-                throw new Exception(string.Format("Your class must implement {0} and call {1}.{0}", missingMethod.Item1, callingTypeName));
+                throw new Exception($"Your class must implement {missingMethod.Item1} and call {callingTypeName}.{missingMethod.Item1}");
             }
         }
 
@@ -382,8 +381,9 @@ namespace ReactiveUI
             return (@this.GetMethod ?? @this.SetMethod).IsStatic;
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "TViewModel used to help generic calling.")]
         internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel viewModel, TView view, Expression expression)
-            where TView : IViewFor
+            where TView : class, IViewFor
             where TViewModel : class
         {
             return view.WhenAnyValue(x => x.ViewModel)

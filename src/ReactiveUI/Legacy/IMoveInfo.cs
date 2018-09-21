@@ -4,6 +4,8 @@
 
 using System.Collections.Generic;
 
+#pragma warning disable CA1716 // don't use reserve word -- disabled for legacy.
+
 namespace ReactiveUI.Legacy
 {
     /// <summary>

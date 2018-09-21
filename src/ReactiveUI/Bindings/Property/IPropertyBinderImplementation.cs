@@ -73,7 +73,7 @@ namespace ReactiveUI
                 IBindingTypeConverter vmToViewConverterOverride = null,
                 IBindingTypeConverter viewToVMConverterOverride = null)
             where TViewModel : class
-            where TView : IViewFor;
+            where TView : class, IViewFor;
 
         /// <summary>
         /// Creates a two-way binding between a view model and a view.
@@ -129,7 +129,7 @@ namespace ReactiveUI
                 Func<TVMProp, TVProp> vmToViewConverter,
                 Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class
-            where TView : IViewFor;
+            where TView : class, IViewFor;
 
         /// <summary>
         /// Creates a one-way binding, i.e. a binding that flows from the
@@ -178,7 +178,7 @@ namespace ReactiveUI
                 object conversionHint,
                 IBindingTypeConverter vmToViewConverterOverride = null)
             where TViewModel : class
-            where TView : IViewFor;
+            where TView : class, IViewFor;
 
         /// <summary>
         /// Creates a one way binding with a selector, i.e. a binding that flows from the
@@ -218,7 +218,7 @@ namespace ReactiveUI
                 Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, TOut> selector)
             where TViewModel : class
-            where TView : IViewFor;
+            where TView : class, IViewFor;
 
         /// <summary>
         /// BindTo takes an Observable stream and applies it to a target
@@ -249,6 +249,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TTValue>> propertyExpression,
             object conversionHint,
-            IBindingTypeConverter vmToViewConverterOverride = null);
+            IBindingTypeConverter vmToViewConverterOverride = null)
+            where TTarget : class;
     }
 }

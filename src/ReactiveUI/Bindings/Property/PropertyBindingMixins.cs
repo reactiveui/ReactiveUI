@@ -65,7 +65,7 @@ namespace ReactiveUI
                 IBindingTypeConverter vmToViewConverterOverride = null,
                 IBindingTypeConverter viewToVMConverterOverride = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : class, IViewFor
         {
             return binderImplementation.Bind(
                          viewModel,
@@ -133,7 +133,7 @@ namespace ReactiveUI
                 IBindingTypeConverter vmToViewConverterOverride = null,
                 IBindingTypeConverter viewToVMConverterOverride = null)
             where TViewModel : class
-            where TView : IViewFor =>
+            where TView : class, IViewFor =>
             binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, conversionHint, vmToViewConverterOverride, viewToVMConverterOverride);
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace ReactiveUI
             Func<TVMProp, TVProp> vmToViewConverter,
             Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class
-            where TView : IViewFor => binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>)null, vmToViewConverter, viewToVmConverter);
+            where TView : class, IViewFor => binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>)null, vmToViewConverter, viewToVmConverter);
 
         /// <summary>
         /// Binds the specified view model property to the given view property.
@@ -226,7 +226,7 @@ namespace ReactiveUI
             Func<TVMProp, TVProp> vmToViewConverter,
             Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : class, IViewFor
         {
             return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter);
         }
@@ -275,7 +275,7 @@ namespace ReactiveUI
                 object conversionHint = null,
                 IBindingTypeConverter vmToViewConverterOverride = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : class, IViewFor
         {
             return binderImplementation.OneWayBind(
                 viewModel,
@@ -323,7 +323,7 @@ namespace ReactiveUI
                 Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, TOut> selector)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : class, IViewFor
         {
             return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
         }
@@ -358,6 +358,7 @@ namespace ReactiveUI
             Expression<Func<TTarget, TTValue>> property,
             object conversionHint = null,
             IBindingTypeConverter vmToViewConverterOverride = null)
+            where TTarget : class
         {
             return binderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
         }

@@ -70,6 +70,7 @@ namespace ReactiveUI
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
+            where TTarget : class
         {
             var command = target.WhenAnyValue(commandProperty);
             var commandCanExecuteChanged = command
@@ -99,6 +100,7 @@ namespace ReactiveUI
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>>> commandProperty)
+            where TTarget : class
         {
             var command = target.WhenAnyValue(commandProperty);
             var invocationInfo = command

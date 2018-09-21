@@ -26,6 +26,65 @@ namespace ReactiveUI
         private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>>();
 
         /// <summary>
+        /// Contains the state information about the current status of a Reactive Object.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender of the property changes.</typeparam>
+        private interface IExtensionState<out TSender>
+            where TSender : IReactiveObject
+        {
+            /// <summary>
+            /// Gets an observable for when a property is changing.
+            /// </summary>
+            IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
+
+            /// <summary>
+            /// Gets an observable for when the property has changed.
+            /// </summary>
+            IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
+
+            /// <summary>
+            /// Gets a observable when a exception is thrown.
+            /// </summary>
+            IObservable<Exception> ThrownExceptions { get; }
+
+            /// <summary>
+            /// Raises a property changing event.
+            /// </summary>
+            /// <param name="propertyName">The name of the property that is changing.</param>
+            void RaisePropertyChanging(string propertyName);
+
+            /// <summary>
+            /// Raises a property changed event.
+            /// </summary>
+            /// <param name="propertyName">The name of the property that has changed.</param>
+            void RaisePropertyChanged(string propertyName);
+
+            /// <summary>
+            /// Indicates if we are currently sending change notifications.
+            /// </summary>
+            /// <returns>If change notifications are being sent.</returns>
+            bool AreChangeNotificationsEnabled();
+
+            /// <summary>
+            /// Suppress change notifications until the return value is disposed.
+            /// </summary>
+            /// <returns>A IDisposable which when disposed will re-enable change notifications.</returns>
+            IDisposable SuppressChangeNotifications();
+
+            /// <summary>
+            /// Are change notifications currently delayed. Used for Observables change notifications only.
+            /// </summary>
+            /// <returns>If the change notifications are delayed.</returns>
+            bool AreChangeNotificationsDelayed();
+
+            /// <summary>
+            /// Delay change notifications until the return value is disposed.
+            /// </summary>
+            /// <returns>A IDisposable which when disposed will re-enable change notifications.</returns>
+            IDisposable DelayChangeNotifications();
+        }
+
+        /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
         /// property on a ReactiveObject, using CallerMemberName to raise the notification
         /// and the ref to the backing field to set the property.
@@ -156,7 +215,9 @@ namespace ReactiveUI
             return s.DelayChangeNotifications();
         }
 
-        // Filter a list of change notifications, returning the last change for each PropertyName in original order.
+        /// <summary>
+        /// Filter a list of change notifications, returning the last change for each PropertyName in original order.
+        /// </summary>
         private static IEnumerable<IReactivePropertyChangedEventArgs<TSender>> Dedup<TSender>(IList<IReactivePropertyChangedEventArgs<TSender>> batch)
         {
             if (batch.Count <= 1)
@@ -181,8 +242,6 @@ namespace ReactiveUI
         private class ExtensionState<TSender> : IExtensionState<TSender>
             where TSender : IReactiveObject
         {
-            private long _changeNotificationsSuppressed;
-            private long _changeNotificationsDelayed;
             private readonly ISubject<IReactivePropertyChangedEventArgs<TSender>> _changingSubject;
             private readonly IObservable<IReactivePropertyChangedEventArgs<TSender>> _changingObservable;
             private readonly ISubject<IReactivePropertyChangedEventArgs<TSender>> _changedSubject;
@@ -190,6 +249,8 @@ namespace ReactiveUI
             private readonly ISubject<Exception> _thrownExceptions;
             private readonly ISubject<Unit> _startDelayNotifications;
             private readonly TSender _sender;
+            private long _changeNotificationsSuppressed;
+            private long _changeNotificationsDelayed;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ExtensionState{TSender}"/> class.
@@ -313,65 +374,6 @@ namespace ReactiveUI
                     _thrownExceptions.OnNext(ex);
                 }
             }
-        }
-
-        /// <summary>
-        /// Contains the state information about the current status of a Reactive Object.
-        /// </summary>
-        /// <typeparam name="TSender">The type of the sender of the property changes.</typeparam>
-        private interface IExtensionState<out TSender>
-            where TSender : IReactiveObject
-        {
-            /// <summary>
-            /// An observable for when a property is changing.
-            /// </summary>
-            IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
-
-            /// <summary>
-            /// An observable for when the property has changed.
-            /// </summary>
-            IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
-
-            /// <summary>
-            /// Raises a property changing event.
-            /// </summary>
-            /// <param name="propertyName">The name of the property that is changing.</param>
-            void RaisePropertyChanging(string propertyName);
-
-            /// <summary>
-            /// Raises a property changed event.
-            /// </summary>
-            /// <param name="propertyName">The name of the property that has changed.</param>
-            void RaisePropertyChanged(string propertyName);
-
-            /// <summary>
-            /// Gets a observable when a exception is thrown.
-            /// </summary>
-            IObservable<Exception> ThrownExceptions { get; }
-
-            /// <summary>
-            /// Indicates if we are currently sending change notifications.
-            /// </summary>
-            /// <returns>If change notifications are being sent.</returns>
-            bool AreChangeNotificationsEnabled();
-
-            /// <summary>
-            /// Suppress change notifications until the return value is disposed.
-            /// </summary>
-            /// <returns>A IDisposable which when disposed will re-enable change notifications.</returns>
-            IDisposable SuppressChangeNotifications();
-
-            /// <summary>
-            /// Are change notifications currently delayed. Used for Observables change notifications only.
-            /// </summary>
-            /// <returns>If the change notifications are delayed.</returns>
-            bool AreChangeNotificationsDelayed();
-
-            /// <summary>
-            /// Delay change notifications until the return value is disposed.
-            /// </summary>
-            /// <returns>A IDisposable which when disposed will re-enable change notifications.</returns>
-            IDisposable DelayChangeNotifications();
         }
     }
 }

@@ -21,27 +21,7 @@ namespace ReactiveUI
         public event PropertyChangingEventHandler PropertyChanging;
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            var handler = PropertyChanging;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            var handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
-        }
 #else
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
@@ -55,18 +35,6 @@ namespace ReactiveUI
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 #endif
 
@@ -86,6 +54,40 @@ namespace ReactiveUI
         /// <inheritdoc/>
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+#if NET_461
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            var handler = PropertyChanging;
+            if (handler != null)
+            {
+                handler(this, args);
+            }
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, args);
+            }
+        }
+#else
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+#endif
 
         /// <inheritdoc/>
         public IDisposable SuppressChangeNotifications()

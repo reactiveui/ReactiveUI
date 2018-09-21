@@ -13,7 +13,7 @@ namespace ReactiveUI
     /// A internal state setup by other classes for the different suspension state of a application.
     /// The user does not implement themselves but is often setup via the AutoSuspendHelper class.
     /// </summary>
-    internal class SuspensionHost : ReactiveObject, ISuspensionHost
+    internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     {
         private readonly ReplaySubject<IObservable<Unit>> _isLaunchingNew = new ReplaySubject<IObservable<Unit>>(1);
 
@@ -105,6 +105,24 @@ namespace ReactiveUI
         {
             get => _appState;
             set => this.RaiseAndSetIfChanged(ref _appState, value);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _isLaunchingNew?.Dispose();
+                _isResuming?.Dispose();
+                _isUnpausing?.Dispose();
+                _shouldPersistState?.Dispose();
+                _shouldInvalidateState?.Dispose();
+            }
         }
     }
 }

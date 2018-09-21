@@ -35,7 +35,7 @@ namespace ReactiveUI
     /// NOTE: You **must** set up Activation in the corresponding View when using
     /// ViewModel Activation.
     /// </summary>
-    public sealed class ViewModelActivator
+    public sealed class ViewModelActivator : IDisposable
     {
         private readonly List<Func<IEnumerable<IDisposable>>> _blocks;
         private readonly Subject<Unit> _activated;
@@ -98,6 +98,14 @@ namespace ReactiveUI
                 Interlocked.Exchange(ref _activationHandle, Disposable.Empty).Dispose();
                 _deactivated.OnNext(Unit.Default);
             }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _activationHandle?.Dispose();
+            _activated?.Dispose();
+            _deactivated?.Dispose();
         }
 
         internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)

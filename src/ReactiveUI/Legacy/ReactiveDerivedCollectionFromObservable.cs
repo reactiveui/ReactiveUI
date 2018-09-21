@@ -57,7 +57,7 @@ namespace ReactiveUI.Legacy
                 (l, r) => l == r).Where(x => x).Subscribe(_ => disconnect.Dispose());
         }
 
-        public override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

@@ -17,6 +17,7 @@ namespace ReactiveUI
         /// <param name="this">The suspension host.</param>
         /// <returns>An observable of the app state.</returns>
         public static IObservable<T> ObserveAppState<T>(this ISuspensionHost @this)
+            where T : class
         {
             return @this.WhenAny(x => x.AppState, x => (T)x.Value)
                         .Where(x => x != null);

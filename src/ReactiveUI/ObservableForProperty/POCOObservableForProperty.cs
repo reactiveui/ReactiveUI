@@ -17,13 +17,13 @@ namespace ReactiveUI
     /// </summary>
     public class POCOObservableForProperty : ICreatesObservableForProperty
     {
+        private static readonly Dictionary<(Type, string), bool> hasWarned = new Dictionary<(Type, string), bool>();
+
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
             return 1;
         }
-
-        private static readonly Dictionary<(Type, string), bool> hasWarned = new Dictionary<(Type, string), bool>();
 
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)

@@ -87,10 +87,7 @@ namespace ReactiveUI
             if (parameter != null && !(parameter is TParam))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        "Command requires parameters of type {0}, but received parameter of type {1}.",
-                        typeof(TParam).FullName,
-                        parameter.GetType().FullName));
+                    $"Command requires parameters of type {typeof(TParam).FullName}, but received parameter of type {parameter.GetType().FullName}.");
             }
 
             Execute((TParam)parameter)

@@ -8,17 +8,17 @@ namespace ReactiveUI.Legacy
 {
     internal class MoveInfo<T> : IMoveInfo<T>
     {
-        public IEnumerable<T> MovedItems { get; protected set; }
-
-        public int From { get; protected set; }
-
-        public int To { get; protected set; }
-
         public MoveInfo(IEnumerable<T> movedItems, int from, int to)
         {
             MovedItems = movedItems;
             From = from;
             To = to;
         }
+
+        public IEnumerable<T> MovedItems { get; protected set; }
+
+        public int From { get; protected set; }
+
+        public int To { get; protected set; }
     }
 }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI
 {
@@ -24,6 +25,7 @@ namespace ReactiveUI
         /// <typeparam name="T">The type.</typeparam>
         /// <param name="enumerable">The enumerable.</param>
         /// <returns>A comparer builder.</returns>
+        [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "Existing API")]
         public static IComparerBuilder<T> For<T>(IEnumerable<T> enumerable)
         {
             return For<T>();

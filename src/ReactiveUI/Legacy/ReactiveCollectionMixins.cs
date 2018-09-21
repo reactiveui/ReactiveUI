@@ -58,12 +58,12 @@ namespace ReactiveUI.Legacy
         /// <param name="fromObservable">
         /// The Observable whose items will be put into the new collection.
         /// </param>
+        /// <param name="withDelay">
+        /// If set, items will be populated in the collection no faster than the delay provided.
+        /// </param>
         /// <param name="onError">
         /// The handler for errors from the Observable. If not specified,
         /// an error will go to DefaultExceptionHandler.
-        /// </param>
-        /// <param name="withDelay">
-        /// If set, items will be populated in the collection no faster than the delay provided.
         /// </param>
         /// <param name="scheduler">
         /// Optionally specifies the scheduler on which the collection will be populated.

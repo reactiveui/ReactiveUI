@@ -621,12 +621,6 @@ namespace ReactiveUI
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Disposes of the managed resources.
-        /// </summary>
-        /// <param name="disposing">If its getting called by the Dispose() method.</param>
-        protected abstract void Dispose(bool disposing);
-
         /// <inheritdoc/>
         bool ICommand.CanExecute(object parameter)
         {
@@ -638,6 +632,12 @@ namespace ReactiveUI
         {
             ICommandExecute(parameter);
         }
+
+        /// <summary>
+        /// Disposes of the managed resources.
+        /// </summary>
+        /// <param name="disposing">If its getting called by the Dispose() method.</param>
+        protected abstract void Dispose(bool disposing);
 
         /// <summary>
         /// Will be called by the methods from the ICommand interface.
@@ -765,6 +765,13 @@ namespace ReactiveUI
                 .Subscribe(_ => OnCanExecuteChanged());
         }
 
+        private enum ExecutionDemarcation
+        {
+            Begin,
+            Result,
+            End
+        }
+
         /// <inheritdoc/>
         public override IObservable<bool> CanExecute => _canExecute;
 
@@ -773,13 +780,6 @@ namespace ReactiveUI
 
         /// <inheritdoc/>
         public override IObservable<Exception> ThrownExceptions => _exceptions.AsObservable();
-
-        private enum ExecutionDemarcation
-        {
-            Begin,
-            Result,
-            End
-        }
 
         /// <inheritdoc/>
         public override IDisposable Subscribe(IObserver<TResult> observer)
