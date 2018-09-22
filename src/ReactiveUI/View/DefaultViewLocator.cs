@@ -137,15 +137,15 @@ namespace ReactiveUI
 
         private static string DeinterfaceifyTypeName(string typeName)
         {
-            var idxComma = typeName.IndexOf(',', StringComparison.Ordinal);
+            var idxComma = typeName.IndexOf(",", 0, StringComparison.InvariantCulture);
             var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
             return typeName.Substring(0, idxPeriod + 1) + typeName.Substring(idxPeriod + 2);
         }
 
         private static string InterfaceifyTypeName(string typeName)
         {
-            var idxComma = typeName.IndexOf(',', StringComparison.Ordinal);
-            var idxPeriod = typeName.LastIndexOf(".", idxComma - 1, StringComparison.Ordinal);
+            var idxComma = typeName.IndexOf(",", 0, StringComparison.InvariantCulture);
+            var idxPeriod = typeName.LastIndexOf(".", idxComma - 1, StringComparison.InvariantCulture);
             return typeName.Insert(idxPeriod + 1, "I");
         }
 

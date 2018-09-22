@@ -16,6 +16,10 @@ using AppKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// A control which will use Splat dependency injection to determine the View
+    /// to show. It uses 
+    /// </summary>
     public class ViewModelViewHost : ReactiveViewController
     {
         private readonly SerialDisposable _currentView;
@@ -25,6 +29,9 @@ namespace ReactiveUI
         private IReactiveObject _viewModel;
         private IObservable<string> _viewContractObservable;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ViewModelViewHost()
         {
             _currentView = new SerialDisposable();
