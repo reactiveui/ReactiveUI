@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
@@ -23,6 +24,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Roslynator", "RCS1211", Justification = "Neater with else clause.")]
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged)
         {
             var before = sender as INotifyPropertyChanging;

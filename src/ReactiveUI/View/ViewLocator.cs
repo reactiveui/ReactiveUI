@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI;
 using Splat;
 
@@ -23,6 +24,7 @@ namespace ReactiveUI
         /// DependencyResolverMixins.InitializeReactiveUI() method.
         /// Also can happen if you don't include all the NuGet packages.
         /// </exception>
+        [SuppressMessage("Microsoft.Reliability", "CA1065", Justification = "Exception required to keep interface same.")]
         public static IViewLocator Current
         {
             get
@@ -30,7 +32,7 @@ namespace ReactiveUI
                 var ret = Locator.Current.GetService<IViewLocator>();
                 if (ret == null)
                 {
-                    throw new Exception("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
+                    throw new ViewLocatorNotFoundException("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
                 }
 
                 return ret;

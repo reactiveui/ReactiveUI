@@ -109,9 +109,11 @@ namespace ReactiveUI
 
                 MainThreadScheduler.Schedule(() =>
                 {
+#pragma warning disable CA1065 // Avoid exceptions in constructors -- In scheduler.
                     throw new UnhandledErrorException(
                         "An object implementing IHandleObservableErrors (often a ReactiveCommand or ObservableAsPropertyHelper) has errored, thereby breaking its observable pipeline. To prevent this, ensure the pipeline does not error, or Subscribe to the ThrownExceptions property of the object in question to handle the erroneous case.",
                         ex);
+#pragma warning restore CA1065
                 });
             });
 
