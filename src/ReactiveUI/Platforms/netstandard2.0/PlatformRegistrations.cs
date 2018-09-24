@@ -6,6 +6,10 @@ using System;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// A mock platform registration for the .Net Standard.
+    /// It will fire an exception since we need a target platform to run.
+    /// </summary>
     public class PlatformRegistrations : IWantsToRegisterStuff
     {
         /// <inheritdoc/>

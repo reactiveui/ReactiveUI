@@ -8,7 +8,7 @@ namespace ReactiveUI
     {
         public DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
         {
-            ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View", StringComparison.Ordinal));
+            ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
         }
 
         /// <summary>
