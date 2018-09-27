@@ -1,11 +1,9 @@
-﻿using System;
+using Genesis.Ensure;
+using ReactiveUI;
+using System;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Genesis.Ensure;
-using ReactiveUI;
 
 namespace IntegrationTests.Shared
 {
@@ -37,8 +35,7 @@ namespace IntegrationTests.Shared
 
             Login = ReactiveCommand.CreateFromObservable(
                 () =>
-                    LoginAsync()
-                        .TakeUntil(Cancel),
+                    LoginInternal().TakeUntil(Cancel),
                 canLogin, _mainScheduler);
 
             Cancel = ReactiveCommand.Create(() => { }, Login.IsExecuting, _mainScheduler);
@@ -69,9 +66,9 @@ namespace IntegrationTests.Shared
             set => this.RaiseAndSetIfChanged(ref _password, value);
         }
 
-        private IObservable<bool> LoginAsync()
+        private IObservable<bool> LoginInternal()
         {
-            return Observable.Delay(Observable.Return(Password == "Mr. Goodbytes"), TimeSpan.FromSeconds(2), _mainScheduler);
+            return Observable.Return(Password == "Mr. Goodbytes").Delay(TimeSpan.FromSeconds(2), _mainScheduler);
         }
     }
 }

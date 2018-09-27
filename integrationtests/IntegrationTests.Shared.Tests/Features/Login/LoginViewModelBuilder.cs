@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reactive.Concurrency;
-using System.Text;
+﻿using System.Reactive.Concurrency;
 
 namespace IntegrationTests.Shared.Tests.Features.Login
 {

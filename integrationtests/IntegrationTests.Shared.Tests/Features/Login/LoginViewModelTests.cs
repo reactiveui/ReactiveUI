@@ -1,6 +1,6 @@
-﻿using System;
+using System;
+using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Microsoft.Reactive.Testing;
@@ -158,13 +158,20 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         [Fact]
         public async Task User_CannotLogin_WithIncorrect_Password()
         {
-            LoginViewModel sut = new LoginViewModelBuilder()
+            var scheduler = new TestScheduler();
+            var sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
                 .WithUserName("coolusername")
                 .WithPassword("incorrectpassword");
 
-            sut.Login.Subscribe(x => x.ShouldBe(true));
+            bool? value = null;
+            sut.Login.Subscribe(x => value = x);
 
             Observable.Return(Unit.Default).InvokeCommand(sut.Login);
+
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
+
+            value.ShouldBe(false);
         }
 
         /// <summary>
@@ -174,13 +181,39 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         [Fact]
         public async Task User_CanLogin_WithCorrect_Password()
         {
-            LoginViewModel sut = new LoginViewModelBuilder()
+            var scheduler = new TestScheduler();
+            var sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
                 .WithUserName("coolusername")
                 .WithPassword("Mr. Goodbytes");
 
-            sut.Login.Subscribe(x => x.ShouldBe(true));
+            bool? value = null;
+            sut.Login.Subscribe(x => value = x);
 
             Observable.Return(Unit.Default).InvokeCommand(sut.Login);
+
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
+
+            value.ShouldBe(true);
+        }
+
+        [Fact]
+        public void CanLogin_TicksCorrectly()
+        {
+            var scheduler = new TestScheduler();
+            var sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
+                .WithUserName("coolusername")
+                .WithPassword("Mr. Goodbytes")
+                .Build();
+
+            var collection = sut.Cancel.CanExecute.CreateCollection();
+
+            Observable.Return(Unit.Default).InvokeCommand(sut.Login);
+
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
+
+            collection.ToList().ShouldBe(new[] { false, true, false });
         }
     }
 }
