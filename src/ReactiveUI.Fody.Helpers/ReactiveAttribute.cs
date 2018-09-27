@@ -6,6 +6,10 @@ using System;
 
 namespace ReactiveUI.Fody.Helpers
 {
+    /// <summary>
+    /// Attribute that marks property for INotifyPropergyChanged weaving.
+    /// </summary>
+    /// <seealso cref="System.Attribute" />
     [AttributeUsage(AttributeTargets.Property)]
     public class ReactiveAttribute : Attribute
     {

@@ -7,6 +7,10 @@ using Fody;
 
 namespace ReactiveUI.Fody
 {
+    /// <summary>
+    /// ReactiveUI module weaver.
+    /// </summary>
+    /// <seealso cref="BaseModuleWeaver" />
     public class ModuleWeaver : BaseModuleWeaver
     {
         /// <inheritdoc/>

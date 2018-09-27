@@ -9,8 +9,28 @@ using System.Reflection;
 
 namespace ReactiveUI.Fody.Helpers
 {
+    /// <summary>
+    /// Extension methods for observable as property helpers.
+    /// </summary>
     public static class ObservableAsPropertyExtensions
     {
+        /// <summary>
+        /// To the property execute.
+        /// </summary>
+        /// <typeparam name="TObj">The type of the object.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="this">The this.</param>
+        /// <param name="source">The source.</param>
+        /// <param name="property">The property.</param>
+        /// <param name="initialValue">The initial value.</param>
+        /// <param name="deferSubscription">if set to <c>true</c> [defer subscription].</param>
+        /// <param name="scheduler">The scheduler.</param>
+        /// <returns>An observable property helper with the specified return value.</returns>
+        /// <exception cref="Exception">
+        /// Could not resolve expression " + property + " into a property.
+        /// or
+        /// Backing field not found for " + propertyInfo.
+        /// </exception>
         public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(this IObservable<TRet> @this, TObj source, Expression<Func<TObj, TRet>> property, TRet initialValue = default(TRet), bool deferSubscription = false, IScheduler scheduler = null)
             where TObj : ReactiveObject
         {
@@ -37,8 +57,7 @@ namespace ReactiveUI.Fody.Helpers
         private static PropertyInfo GetPropertyInfo(this LambdaExpression expression)
         {
             var current = expression.Body;
-            var unary = current as UnaryExpression;
-            if (unary != null)
+            if (current is UnaryExpression unary)
             {
                 current = unary.Operand;
             }

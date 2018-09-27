@@ -10,16 +10,45 @@ using Mono.Cecil.Rocks;
 
 namespace ReactiveUI.Fody
 {
+    /// <summary>
+    /// Weaver that generates an ObservableAsPropertyHelper.
+    /// </summary>
     public class ReactiveDependencyPropertyWeaver
     {
+        /// <summary>
+        /// Gets or sets the module definition.
+        /// </summary>
+        /// <value>
+        /// The module definition.
+        /// </value>
         public ModuleDefinition ModuleDefinition { get; set; }
 
-        // Will log an MessageImportance.High message to MSBuild. OPTIONAL
+        /// <summary>
+        /// Will log an MessageImportance.High message to MSBuild. OPTIONAL.
+        /// </summary>
+        /// <value>
+        /// The log information.
+        /// </value>
         public Action<string> LogInfo { get; set; }
 
-        // Will log an error message to MSBuild. OPTIONAL
+        /// <summary>
+        /// Will log an error message to MSBuild. OPTIONAL.
+        /// </summary>
+        /// <value>
+        /// The log error.
+        /// </value>
         public Action<string> LogError { get; set; }
 
+        /// <summary>
+        /// Executes this instance.
+        /// </summary>
+        /// <exception cref="Exception">
+        /// reactiveObjectExtensions is null
+        /// or
+        /// raisePropertyChangedMethod is null
+        /// or
+        /// reactiveDecoratorAttribute is null.
+        /// </exception>
         public void Execute()
         {
             var reactiveUI = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI").OrderByDescending(x => x.Version).FirstOrDefault();

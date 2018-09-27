@@ -10,13 +10,30 @@ using Mono.Cecil.Rocks;
 
 namespace ReactiveUI.Fody
 {
+    /// <summary>
+    /// Weaver that converts observables as property helper
+    /// </summary>
     public class ObservableAsPropertyWeaver
     {
+        /// <summary>
+        /// Gets or sets the module definition.
+        /// </summary>
+        /// <value>
+        /// The module definition.
+        /// </value>
         public ModuleDefinition ModuleDefinition { get; set; }
 
-        // Will log an MessageImportance.High message to MSBuild. OPTIONAL
+        /// <summary>
+        /// Will log an MessageImportance.High message to MSBuild. OPTIONAL.
+        /// </summary>
+        /// <value>
+        /// The log information.
+        /// </value>
         public Action<string> LogInfo { get; set; }
 
+        /// <summary>
+        /// Executes this property weaver.
+        /// </summary>
         public void Execute()
         {
             var reactiveUI = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI").OrderByDescending(x => x.Version).FirstOrDefault();
@@ -101,6 +118,12 @@ namespace ReactiveUI.Fody
             }
         }
 
+        /// <summary>
+        /// Emits the default value.
+        /// </summary>
+        /// <param name="methodBody">The method body.</param>
+        /// <param name="il">The il.</param>
+        /// <param name="type">The type.</param>
         public void EmitDefaultValue(MethodBody methodBody, ILProcessor il, TypeReference type)
         {
             if (type.CompareTo(ModuleDefinition.TypeSystem.Boolean) || type.CompareTo(ModuleDefinition.TypeSystem.Byte) ||

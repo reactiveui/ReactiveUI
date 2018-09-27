@@ -16,14 +16,42 @@ namespace ReactiveUI.Fody
     /// </summary>
     public class ReactiveUIPropertyWeaver
     {
+        /// <summary>
+        /// Gets or sets the module definition.
+        /// </summary>
+        /// <value>
+        /// The module definition.
+        /// </value>
         public ModuleDefinition ModuleDefinition { get; set; }
 
-        // Will log an MessageImportance.High message to MSBuild. OPTIONAL
+        /// <summary>
+        /// Will log an MessageImportance.High message to MSBuild. OPTIONAL.
+        /// </summary>
+        /// <value>
+        /// The log information.
+        /// </value>
         public Action<string> LogInfo { get; set; }
 
-        // Will log an error message to MSBuild. OPTIONAL
+        /// <summary>
+        /// Will log an error message to MSBuild. OPTIONAL.
+        /// </summary>
+        /// <value>
+        /// The log error.
+        /// </value>
         public Action<string> LogError { get; set; }
 
+        /// <summary>
+        /// Executes this property weaver.
+        /// </summary>
+        /// <exception cref="Exception">
+        /// reactiveObjectExtensions is null
+        /// or
+        /// raiseAndSetIfChangedMethod is null
+        /// or
+        /// reactiveAttribute is null
+        /// or
+        /// [Reactive] is decorating " + property.DeclaringType.FullName + "." + property.Name + ", but the property has no setter so there would be nothing to react to.  Consider removing the attribute.
+        /// </exception>
         public void Execute()
         {
             var reactiveUI = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI").OrderByDescending(x => x.Version).FirstOrDefault();
