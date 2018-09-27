@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Reactive.Testing;
 using ReactiveUI;
@@ -120,7 +119,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         [Fact]
         public async Task CancelButton_IsAvailableUntil_TwoSeconds()
         {
-            bool actual = false;
+            var actual = false;
             var scheduler = new TestScheduler();
 
             var sut = new LoginViewModelBuilder()
@@ -129,15 +128,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithPassword("excellentpassword")
                 .Build();
 
-
-            sut.Cancel.CanExecute.Subscribe(x => 
-            {
-                actual = x;   
-            });
-
-            sut.Login.IsExecuting.Subscribe(x => {
-                var a = x;
-            });
+            sut.Cancel.CanExecute.Subscribe(x => actual = x);
 
             sut.Login.Subscribe();
             Observable.Return(Unit.Default).InvokeCommand(sut.Login);

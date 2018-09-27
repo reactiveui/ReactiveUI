@@ -36,17 +36,15 @@ namespace IntegrationTests.Shared
                     (user, password) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(password));
 
             Login = ReactiveCommand.CreateFromObservable(
-                () => Observable.StartAsync(LoginAsync).TakeUntil(Cancel),
-                canLogin,
-                _mainScheduler);
+                () =>
+                    LoginAsync()
+                        .TakeUntil(Cancel),
+                canLogin, _mainScheduler);
 
             Cancel = ReactiveCommand.Create(() => { }, Login.IsExecuting, _mainScheduler);
         }
 
-        /// <summary>
-        /// Gets the login command.
-        /// </summary>
-        public ReactiveCommand<Unit, bool?> Login { get; }
+        public ReactiveCommand<Unit, bool> Login { get; }
 
         /// <summary>
         /// Gets the cancel command.
@@ -71,12 +69,9 @@ namespace IntegrationTests.Shared
             set => this.RaiseAndSetIfChanged(ref _password, value);
         }
 
-        private async Task<bool?> LoginAsync(CancellationToken ct)
+        private IObservable<bool> LoginAsync()
         {
-            var result = Password == "Mr. Goodbytes";
-            await Task.Delay(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false);
-
-            return result;
+            return Observable.Delay(Observable.Return(Password == "Mr. Goodbytes"), TimeSpan.FromSeconds(2), _mainScheduler);
         }
     }
 }
