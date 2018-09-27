@@ -161,7 +161,7 @@ namespace ReactiveUI.Fody
                     }
 
                     // Remove old field (the generated backing field for the auto property)
-                    var oldField = (FieldReference)facadeProperty.GetMethod.Body.Instructions.Where(x => x.Operand is FieldReference).Single().Operand;
+                    var oldField = (FieldReference)facadeProperty.GetMethod.Body.Instructions.Single(x => x.Operand is FieldReference).Operand;
                     var oldFieldDefinition = oldField.Resolve();
                     targetType.Fields.Remove(oldFieldDefinition);
 
@@ -183,7 +183,7 @@ namespace ReactiveUI.Fody
                     facadeProperty.GetMethod.Body = new MethodBody(facadeProperty.GetMethod);
                     facadeProperty.GetMethod.Body.Emit(il =>
                     {
-                        il.Emit(OpCodes.Ldarg_0);                                   // this
+                        il.Emit(OpCodes.Ldarg_0);
                         if (objPropertyTarget != null)
                         {
                             il.Emit(objPropertyTarget.GetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, objPropertyTarget.GetMethod);

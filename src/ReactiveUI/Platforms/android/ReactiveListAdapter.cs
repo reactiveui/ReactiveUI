@@ -13,6 +13,7 @@ using Splat;
 namespace ReactiveUI.Legacy
 {
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
+#pragma warning disable SA1600 // Elements should be documented
     public class ReactiveListAdapter<TViewModel> : BaseAdapter<TViewModel>, IEnableLogger
         where TViewModel : class
     {
@@ -89,4 +90,5 @@ namespace ReactiveUI.Legacy
             Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
         }
     }
+#pragma warning restore SA1600 // Elements should be documented
 }

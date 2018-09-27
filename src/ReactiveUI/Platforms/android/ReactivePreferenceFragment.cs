@@ -20,10 +20,18 @@ namespace ReactiveUI
     public class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceFragment{TViewModel}"/> class.
+        /// </summary>
         protected ReactivePreferenceFragment()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceFragment{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
         protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
             : base(handle, ownership)
         {

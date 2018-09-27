@@ -16,6 +16,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Helps manage android application lifecycle events.
+    /// </summary>
     public class AutoSuspendHelper : IEnableLogger
     {
         private readonly Subject<Bundle> _onCreate = new Subject<Bundle>();
@@ -23,15 +26,31 @@ namespace ReactiveUI
         private readonly Subject<Unit> _onPause = new Subject<Unit>();
         private readonly Subject<Bundle> _onSaveInstanceState = new Subject<Bundle>();
 
-        public static readonly Subject<Unit> untimelyDemise = new Subject<Unit>();
+        /// <summary>
+        /// The untimely demise of an application.
+        /// </summary>
+        public static readonly Subject<Unit> UntimelyDemise = new Subject<Unit>();
 
+        /// <summary>
+        /// Gets or sets the latest bundle.
+        /// </summary>
+        /// <value>
+        /// The latest bundle.
+        /// </value>
         public static Bundle LatestBundle { get; set; }
 
+        /// <summary>
+        /// Initializes the <see cref="AutoSuspendHelper"/> class.
+        /// </summary>
         static AutoSuspendHelper()
         {
-            AppDomain.CurrentDomain.UnhandledException += (o, e) => untimelyDemise.OnNext(Unit.Default);
+            AppDomain.CurrentDomain.UnhandledException += (o, e) => UntimelyDemise.OnNext(Unit.Default);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
+        /// </summary>
+        /// <param name="hostApplication">The host application.</param>
         public AutoSuspendHelper(Application hostApplication)
         {
             hostApplication.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
@@ -45,7 +64,7 @@ namespace ReactiveUI
             RxApp.SuspensionHost.ShouldPersistState = Observable.Merge(
                 _onPause.Select(_ => Disposable.Empty), _onSaveInstanceState.Select(_ => Disposable.Empty));
 
-            RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;
+            RxApp.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
         }
 
         private class ObservableLifecycle : Java.Lang.Object, Application.IActivityLifecycleCallbacks

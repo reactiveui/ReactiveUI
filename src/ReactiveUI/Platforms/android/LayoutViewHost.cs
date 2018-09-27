@@ -21,11 +21,23 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Interface that defines a layout view host.
+    /// </summary>
     public interface ILayoutViewHost
     {
+        /// <summary>
+        /// Gets the view.
+        /// </summary>
+        /// <value>
+        /// The view.
+        /// </value>
         View View { get; }
     }
 
+    /// <summary>
+    /// Default methods for <see cref="ILayoutViewHost"/>.
+    /// </summary>
     public static class ViewMixins
     {
         internal const int ViewHostTag = -4222;
@@ -97,10 +109,21 @@ namespace ReactiveUI
             return @this.View;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LayoutViewHost"/> class.
+        /// </summary>
         protected LayoutViewHost()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LayoutViewHost"/> class.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
+        /// <param name="layoutId">The layout identifier.</param>
+        /// <param name="parent">The parent.</param>
+        /// <param name="attachToRoot">if set to <c>true</c> [attach to root].</param>
+        /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wireup].</param>
         protected LayoutViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
         {
             var inflater = LayoutInflater.FromContext(ctx);
@@ -121,18 +144,29 @@ namespace ReactiveUI
     public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveViewHost<TViewModel>>, IReactiveObject
         where TViewModel : class, IReactiveObject
     {
+        private TViewModel _viewModel;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="ctx">The CTX.</param>
+        /// <param name="layoutId">The layout identifier.</param>
+        /// <param name="parent">The parent.</param>
+        /// <param name="attachToRoot">if set to <c>true</c> [attach to root].</param>
+        /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wireup].</param>
         protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
             : base(ctx, layoutId, parent, attachToRoot, performAutoWireup)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.
+        /// </summary>
         protected ReactiveViewHost()
         {
             SetupRxObj();
         }
-
-        private TViewModel _viewModel;
 
         /// <inheritdoc/>
         public TViewModel ViewModel
@@ -193,9 +227,15 @@ namespace ReactiveUI
             get { return this.GetChangedObservable(); }
         }
 
+        /// <summary>
+        /// All public properties.
+        /// </summary>
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
+        /// <summary>
+        /// Gets the thrown exceptions.
+        /// </summary>
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions
         {
@@ -226,6 +266,10 @@ namespace ReactiveUI
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
+        /// <summary>
+        /// Gets a value indicating if change notifications are enabled.
+        /// </summary>
+        /// <returns>A value indicating if change notifications are on or off.</returns>
         public bool AreChangeNotificationsEnabled()
         {
             return IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);

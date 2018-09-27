@@ -29,21 +29,29 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public TViewModel ViewModel
         {
-            get { return _viewModel; }
-            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
         /// <inheritdoc/>
         object IViewFor.ViewModel
         {
-            get { return _viewModel; }
-            set { _viewModel = (TViewModel)value; }
+            get => _viewModel;
+            set => _viewModel = (TViewModel)value;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceActivity{TViewModel}"/> class.
+        /// </summary>
         protected ReactivePreferenceActivity()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceActivity{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
         protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership)
             : base(handle, ownership)
         {
@@ -56,11 +64,16 @@ namespace ReactiveUI
     /// </summary>
     public class ReactivePreferenceActivity : PreferenceActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactivePreferenceActivity>, IHandleObservableErrors
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+        private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
+
+
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
         /// <inheritdoc/>
@@ -72,8 +85,8 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
         /// <inheritdoc/>
@@ -88,7 +101,7 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changing
         {
-            get { return this.GetChangingObservable(); }
+            get => this.GetChangingObservable();
         }
 
         /// <summary>
@@ -96,13 +109,60 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changed
         {
-            get { return this.GetChangedObservable(); }
+            get => this.GetChangedObservable();
         }
 
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions
+        {
+            get => this.GetThrownExceptionsObservable();
+        }
+
+        /// <summary>
+        ///  Gets a signal when the activity is activated.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
+        public IObservable<Unit> Activated
+        {
+            get => _activated.AsObservable();
+        }
+
+        /// <summary>
+        ///  Gets a signal when the activity is deactivated.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
+        public IObservable<Unit> Deactivated
+        {
+            get => _deactivated.AsObservable();
+        }
+
+        /// <summary>
+        ///  Gets a signal with an activity result.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult
+        {
+            get => _activityResult.AsObservable();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceActivity"/> class.
+        /// </summary>
         protected ReactivePreferenceActivity()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceActivity"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
+        /// <param name="ownership">The ownership.</param>
         protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership)
             : base(handle, ownership)
         {
@@ -115,59 +175,14 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
-        /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions
-        {
-            get { return this.GetThrownExceptionsObservable(); }
-        }
-
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-
-        public IObservable<Unit> Activated
-        {
-            get { return _activated.AsObservable(); }
-        }
-
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-
-        public IObservable<Unit> Deactivated
-        {
-            get { return _deactivated.AsObservable(); }
-        }
-
-        /// <inheritdoc/>
-        protected override void OnPause()
-        {
-            base.OnPause();
-            _deactivated.OnNext(Unit.Default);
-        }
-
-        /// <inheritdoc/>
-        protected override void OnResume()
-        {
-            base.OnResume();
-            _activated.OnNext(Unit.Default);
-        }
-
-        private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
-
-        public IObservable<Tuple<int, Result, Intent>> ActivityResult
-        {
-            get { return _activityResult.AsObservable(); }
-        }
-
-        /// <inheritdoc/>
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
-        {
-            base.OnActivityResult(requestCode, resultCode, data);
-            _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
-        }
-
+        /// <summary>
+        /// Starts the activity for result asynchronously.
+        /// </summary>
+        /// <param name="intent">The intent.</param>
+        /// <param name="requestCode">The request code.</param>
+        /// <returns>A task with the result and intent.</returns>
         public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Intent intent, int requestCode)
         {
             // NB: It's important that we set up the subscription *before* we
@@ -182,6 +197,12 @@ namespace ReactiveUI
             return ret;
         }
 
+        /// <summary>
+        /// Starts the activity for result asynchronously.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="requestCode">The request code.</param>
+        /// <returns>A task with the result and intent.</returns>
         public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Type type, int requestCode)
         {
             // NB: It's important that we set up the subscription *before* we
@@ -194,6 +215,27 @@ namespace ReactiveUI
 
             StartActivityForResult(type, requestCode);
             return ret;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
+        }
+
+        /// <inheritdoc/>
+        protected override void OnPause()
+        {
+            base.OnPause();
+            _deactivated.OnNext(Unit.Default);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnResume()
+        {
+            base.OnResume();
+            _activated.OnNext(Unit.Default);
         }
     }
 }

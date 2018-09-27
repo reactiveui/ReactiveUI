@@ -11,7 +11,7 @@ using Mono.Cecil.Rocks;
 namespace ReactiveUI.Fody
 {
     /// <summary>
-    /// Weaver that converts observables as property helper
+    /// Weaver that converts observables as property helper.
     /// </summary>
     public class ObservableAsPropertyWeaver
     {

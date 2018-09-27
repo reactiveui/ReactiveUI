@@ -11,7 +11,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace ReactiveUI
 {
     /// <summary>
-    ///
+    /// Loads and saves state to persistent storage.
     /// </summary>
     public class BundleSuspensionDriver : ISuspensionDriver
     {

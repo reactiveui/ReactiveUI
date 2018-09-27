@@ -18,7 +18,7 @@ namespace ReactiveUI
     /// Fragments via property names, similar to Butter Knife, as well as allows
     /// you to fetch controls manually.
     /// </summary>
-    public static class ControlFetcherMixin
+    public static partial class ControlFetcherMixin
     {
         private static readonly Dictionary<string, int> controlIds;
 
@@ -63,7 +63,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Gets the control from an activiy.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
         /// <param name="this">The activity.</param>
@@ -73,7 +73,7 @@ namespace ReactiveUI
             where T : View => (T)GetCachedControl(propertyName, @this, () => @this.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
 
         /// <summary>
-        ///
+        /// Gets the control from an activiy.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
         /// <param name="this">The view.</param>
@@ -83,7 +83,7 @@ namespace ReactiveUI
             where T : View => (T)GetCachedControl(propertyName, @this, () => @this.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
 
         /// <summary>
-        ///
+        /// Gets the control from an activiy.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
         /// <param name="this">The fragment.</param>
@@ -93,7 +93,7 @@ namespace ReactiveUI
             where T : View => GetControl<T>(@this.View, propertyName);
 
         /// <summary>
-        ///
+        /// Wires a control to a property.
         /// </summary>
         /// <param name="this">The layout view host.</param>
         /// <param name="resolveMembers">The resolve members.</param>
@@ -119,7 +119,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Wires a control to a property.
         /// </summary>
         /// <param name="this">The view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
@@ -145,6 +145,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Wires a control to a property.
         /// This should be called in the Fragement's OnCreateView, with the newly inflated layout.
         /// </summary>
         /// <param name="this">The fragment.</param>
@@ -172,7 +173,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Wires a control to a property.
         /// </summary>
         /// <param name="this">The Activity.</param>
         /// <param name="resolveMembers">The resolve members.</param>
@@ -250,40 +251,41 @@ namespace ReactiveUI
                                          && m.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
             }
         }
-
-        public enum ResolveStrategy
-        {
-            /// <summary>
-            /// Resolve all properties that use a subclass of View.
-            /// </summary>
-            Implicit,
-
-            /// <summary>
-            /// Resolve only properties with an WireUpResource attribute.
-            /// </summary>
-            ExplicitOptIn,
-
-            /// <summary>
-            /// Resolve all View properties and those that use a subclass of View, except those with an IgnoreResource attribute.
-            /// </summary>
-            ExplicitOptOut
-        }
     }
 
+    /// <summary>
+    /// Attribute that marks a resource for wiring.
+    /// </summary>
     public class WireUpResourceAttribute : Attribute
     {
+        /// <summary>
+        /// Gets the resource name override.
+        /// </summary>
+        /// <value>
+        /// The resource name override.
+        /// </value>
         public string ResourceNameOverride { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WireUpResourceAttribute"/> class.
+        /// </summary>
         public WireUpResourceAttribute()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WireUpResourceAttribute"/> class.
+        /// </summary>
+        /// <param name="resourceName">Name of the resource.</param>
         public WireUpResourceAttribute(string resourceName)
         {
             ResourceNameOverride = resourceName;
         }
     }
 
+    /// <summary>
+    /// Attribute that marks a resource to be ignored.
+    /// </summary>
     public class IgnoreResourceAttribute : Attribute
     {
     }

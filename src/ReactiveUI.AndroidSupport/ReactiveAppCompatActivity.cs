@@ -24,11 +24,14 @@ namespace ReactiveUI.AndroidSupport
     public class ReactiveAppCompatActivity<TViewModel> : ReactiveAppCompatActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
+        private TViewModel _viewModel;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity{TViewModel}"/> class.
+        /// </summary>
         protected ReactiveAppCompatActivity()
         {
         }
-
-        private TViewModel _viewModel;
 
         /// <inheritdoc/>
         public TViewModel ViewModel
@@ -51,6 +54,10 @@ namespace ReactiveUI.AndroidSupport
     /// </summary>
     public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+        private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
+
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
@@ -59,16 +66,16 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
         /// <inheritdoc/>
@@ -88,12 +95,20 @@ namespace ReactiveUI.AndroidSupport
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed => this.GetChangedObservable();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
+        /// </summary>
         protected ReactiveAppCompatActivity()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
         protected ReactiveAppCompatActivity(IntPtr handle, JniHandleOwnership ownership)
-            : base(handle, ownership)
+                    : base(handle, ownership)
         {
         }
 
@@ -112,13 +127,69 @@ namespace ReactiveUI.AndroidSupport
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-
+        /// <summary>
+        /// Gets a signal when activated.
+        /// </summary>
+        /// <value>
+        /// The activated.
+        /// </value>
         public IObservable<Unit> Activated => _activated.AsObservable();
 
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-
+        /// <summary>
+        /// Gets a signal when deactivated.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <summary>
+        /// Gets the activity result.
+        /// </summary>
+        /// <value>
+        /// The activity result.
+        /// </value>
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult => _activityResult.AsObservable();
+
+        /// <summary>
+        /// Starts the activity for result asynchronously.
+        /// </summary>
+        /// <param name="intent">The intent.</param>
+        /// <param name="requestCode">The request code.</param>
+        /// <returns>A task with the result and intent.</returns>
+        public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Intent intent, int requestCode)
+        {
+            // NB: It's important that we set up the subscription *before* we
+            // call ActivityForResult
+            var ret = ActivityResult
+                .Where(x => x.Item1 == requestCode)
+                .Select(x => Tuple.Create(x.Item2, x.Item3))
+                .FirstAsync()
+                .ToTask();
+
+            StartActivityForResult(intent, requestCode);
+            return ret;
+        }
+
+        /// <summary>
+        /// Starts the activity for result asynchronously.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="requestCode">The request code.</param>
+        /// <returns>A task with the result and intent.</returns>
+        public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Type type, int requestCode)
+        {
+            // NB: It's important that we set up the subscription *before* we
+            // call ActivityForResult
+            var ret = ActivityResult
+                .Where(x => x.Item1 == requestCode)
+                .Select(x => Tuple.Create(x.Item2, x.Item3))
+                .FirstAsync()
+                .ToTask();
+
+            StartActivityForResult(type, requestCode);
+            return ret;
+        }
 
         /// <inheritdoc/>
         protected override void OnPause()
@@ -134,43 +205,11 @@ namespace ReactiveUI.AndroidSupport
             _activated.OnNext(Unit.Default);
         }
 
-        private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
-
-        public IObservable<Tuple<int, Result, Intent>> ActivityResult => _activityResult.AsObservable();
-
         /// <inheritdoc/>
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
             _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
-        }
-
-        public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Intent intent, int requestCode)
-        {
-            // NB: It's important that we set up the subscription *before* we
-            // call ActivityForResult
-            var ret = ActivityResult
-                .Where(x => x.Item1 == requestCode)
-                .Select(x => Tuple.Create(x.Item2, x.Item3))
-                .FirstAsync()
-                .ToTask();
-
-            StartActivityForResult(intent, requestCode);
-            return ret;
-        }
-
-        public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Type type, int requestCode)
-        {
-            // NB: It's important that we set up the subscription *before* we
-            // call ActivityForResult
-            var ret = ActivityResult
-                .Where(x => x.Item1 == requestCode)
-                .Select(x => Tuple.Create(x.Item2, x.Item3))
-                .FirstAsync()
-                .ToTask();
-
-            StartActivityForResult(type, requestCode);
-            return ret;
         }
     }
 }

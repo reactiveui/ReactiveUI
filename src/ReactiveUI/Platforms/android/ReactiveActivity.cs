@@ -53,10 +53,18 @@ namespace ReactiveUI
             set { _viewModel = (TViewModel)value; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
+        /// </summary>
         protected ReactiveActivity()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
         protected ReactiveActivity(IntPtr handle, JniHandleOwnership ownership)
             : base(handle, ownership)
         {
@@ -69,6 +77,10 @@ namespace ReactiveUI
     /// </summary>
     public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+
+
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
@@ -112,10 +124,18 @@ namespace ReactiveUI
             get { return this.GetChangedObservable(); }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveActivity"/> class.
+        /// </summary>
         protected ReactiveActivity()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveActivity"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
         protected ReactiveActivity(IntPtr handle, JniHandleOwnership ownership)
             : base(handle, ownership)
         {
@@ -128,26 +148,31 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions
         {
-            get { return this.GetThrownExceptionsObservable(); }
+            get => this.GetThrownExceptionsObservable();
         }
 
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-
+        /// <summary>
+        /// Gets a signal when the activity is activated.
+        /// </summary>
+        /// <value>
+        /// The activated.
+        /// </value>
         public IObservable<Unit> Activated
         {
-            get { return _activated.AsObservable(); }
+            get => _activated.AsObservable();
         }
 
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-
+        /// <summary>
+        ///  Gets a signal when the activity is deactivated.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
         public IObservable<Unit> Deactivated
         {
             get { return _deactivated.AsObservable(); }
@@ -169,6 +194,12 @@ namespace ReactiveUI
 
         private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
 
+        /// <summary>
+        /// Gets the activity result.
+        /// </summary>
+        /// <value>
+        /// The activity result.
+        /// </value>
         public IObservable<Tuple<int, Result, Intent>> ActivityResult
         {
             get { return _activityResult.AsObservable(); }
@@ -181,6 +212,12 @@ namespace ReactiveUI
             _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
         }
 
+        /// <summary>
+        /// Starts the activity for result asynchronously.
+        /// </summary>
+        /// <param name="intent">The intent.</param>
+        /// <param name="requestCode">The request code.</param>
+        /// <returns>A task with the result and the intent.</returns>
         public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Intent intent, int requestCode)
         {
             // NB: It's important that we set up the subscription *before* we
@@ -195,6 +232,12 @@ namespace ReactiveUI
             return ret;
         }
 
+        /// <summary>
+        /// Starts the activity for result asynchronously.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="requestCode">The request code.</param>
+        /// <returns>A task with the result and intent.</returns>
         public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Type type, int requestCode)
         {
             // NB: It's important that we set up the subscription *before* we

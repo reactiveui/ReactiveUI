@@ -9,6 +9,9 @@ using Android.Views;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Android platform specific details.
+    /// </summary>
     public class PlatformOperations : IPlatformOperations
     {
         /// <inheritdoc/>

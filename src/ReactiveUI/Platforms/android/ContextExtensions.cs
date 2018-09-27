@@ -9,6 +9,9 @@ using Android.OS;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods for <see cref="Context"/>.
+    /// </summary>
     public static class ContextExtensions
     {
         /// <summary>

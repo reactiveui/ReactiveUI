@@ -30,10 +30,10 @@ namespace ReactiveUI
         private long _looperId;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="HandlerScheduler"/> class.
         /// </summary>
-        /// <param name="handler"></param>
-        /// <param name="threadIdAssociatedWithHandler"></param>
+        /// <param name="handler">The handler.</param>
+        /// <param name="threadIdAssociatedWithHandler">The thread identifier associated with handler.</param>
         public HandlerScheduler(Handler handler, long? threadIdAssociatedWithHandler)
         {
             _handler = handler;

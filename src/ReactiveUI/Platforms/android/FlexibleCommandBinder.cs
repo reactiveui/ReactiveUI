@@ -12,6 +12,9 @@ using System.Windows.Input;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Command binder for android controls.
+    /// </summary>
     public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
         /// <inheritdoc/>

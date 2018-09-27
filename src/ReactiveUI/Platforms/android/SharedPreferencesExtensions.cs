@@ -9,6 +9,9 @@ using Android.Content;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods for shared preferences.
+    /// </summary>
     public static class SharedPreferencesExtensions
     {
         /// <summary>

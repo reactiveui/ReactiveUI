@@ -12,8 +12,17 @@ using Android.Views;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods for view commands.
+    /// </summary>
     public static class ViewCommandExtensions
     {
+        /// <summary>
+        /// Binds the command to target view control.
+        /// </summary>
+        /// <param name="this">The this.</param>
+        /// <param name="control">The control.</param>
+        /// <returns>A disposable.</returns>
         public static IDisposable BindToTarget(this ICommand @this, View control)
         {
             var ev = new EventHandler((o, e) =>
