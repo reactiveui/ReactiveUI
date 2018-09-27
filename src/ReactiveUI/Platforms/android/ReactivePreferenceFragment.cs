@@ -60,10 +60,21 @@ namespace ReactiveUI
     /// </summary>
     public class ReactivePreferenceFragment : PreferenceFragment, IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.
+        /// </summary>
         protected ReactivePreferenceFragment()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
         protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
             : base(handle, ownership)
         {
@@ -72,21 +83,15 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
 
         /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
         /// <inheritdoc/>
@@ -95,13 +100,19 @@ namespace ReactiveUI
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changing
         {
-            get { return this.GetChangingObservable(); }
+            get => this.GetChangingObservable();
         }
 
         /// <summary>
@@ -109,7 +120,29 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changed
         {
-            get { return this.GetChangedObservable(); }
+            get => this.GetChangedObservable();
+        }
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions
+        {
+            get => this.GetThrownExceptionsObservable();
+        }
+
+        /// <summary>
+        /// Gets a signal when the fragment is activated.
+        /// </summary>
+        public IObservable<Unit> Activated
+        {
+            get => _activated.AsObservable();
+        }
+
+        /// <summary>
+        /// Gets a signal when the fragment is deactivated.
+        /// </summary>
+        public IObservable<Unit> Deactivated
+        {
+            get => _deactivated.AsObservable();
         }
 
         /// <summary>
@@ -119,30 +152,7 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
-
-        /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions
-        {
-            get { return this.GetThrownExceptionsObservable(); }
-        }
-
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-
-        public IObservable<Unit> Activated
-        {
-            get { return _activated.AsObservable(); }
-        }
-
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-
-        public IObservable<Unit> Deactivated
-        {
-            get { return _deactivated.AsObservable(); }
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         public override void OnPause()

@@ -11,6 +11,9 @@ using Android.Hardware.Usb;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods for the usb manager.
+    /// </summary>
     public static class UsbManagerExtensions
     {
         private const string ACTION_USB_PERMISSION = "com.reactiveui.USB_PERMISSION";
