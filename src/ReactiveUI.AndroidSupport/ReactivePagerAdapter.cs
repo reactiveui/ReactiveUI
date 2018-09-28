@@ -17,6 +17,7 @@ using Object = Java.Lang.Object;
 
 namespace ReactiveUI.AndroidSupport
 {
+#pragma warning disable SA1600 // Elements should be documented
     /// <summary>
     /// ReactivePagerAdapter is a PagerAdapter that will interface with a
     /// Observable change set, in a similar fashion to ReactiveTableViewSource.
@@ -102,4 +103,5 @@ namespace ReactiveUI.AndroidSupport
         {
         }
     }
+#pragma warning restore SA1600 // Elements should be documented
 }

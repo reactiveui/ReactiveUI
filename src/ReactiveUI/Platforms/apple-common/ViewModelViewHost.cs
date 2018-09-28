@@ -42,12 +42,24 @@ namespace ReactiveUI
             Initialize();
         }
 
+        /// <summary>
+        /// Gets or sets the view locator.
+        /// </summary>
+        /// <value>
+        /// The view locator.
+        /// </value>
         public IViewLocator ViewLocator
         {
             get => _viewLocator;
             set => this.RaiseAndSetIfChanged(ref _viewLocator, value);
         }
 
+        /// <summary>
+        /// Gets or sets the default content.
+        /// </summary>
+        /// <value>
+        /// The default content.
+        /// </value>
         public NSViewController DefaultContent
         {
             get => _defaultContent;

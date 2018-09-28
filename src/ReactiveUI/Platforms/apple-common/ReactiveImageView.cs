@@ -24,37 +24,68 @@ namespace ReactiveUI
 {
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
+        private Subject<Unit> _activated = new Subject<Unit>();
+        private Subject<Unit> _deactivated = new Subject<Unit>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
         protected ReactiveImageView()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
         protected ReactiveImageView(CGRect frame)
             : base(frame)
         {
         }
 
 #if UIKIT
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="image">The image.</param>
         protected ReactiveImageView(NSImage image)
             : base(image)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="t">The flag.</param>
         protected ReactiveImageView(NSObjectFlag t)
             : base(t)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="highlightedImage">The higlighted image.</param>
         protected ReactiveImageView(NSImage image, NSImage highlightedImage)
             : base(image, highlightedImage)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
         protected ReactiveImageView(NSCoder coder)
             : base(coder)
         {
         }
 #endif
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
         protected ReactiveImageView(IntPtr handle)
             : base(handle)
         {
@@ -68,12 +99,6 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
@@ -81,10 +106,13 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
@@ -98,23 +126,22 @@ namespace ReactiveUI
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
         public IDisposable SuppressChangeNotifications()
         {
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
-
-        /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
-
-        private Subject<Unit> _activated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Activated => _activated.AsObservable();
-
-        private Subject<Unit> _deactivated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
 #if UIKIT
         /// <inheritdoc/>

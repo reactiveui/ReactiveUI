@@ -18,11 +18,14 @@ namespace ReactiveUI.AndroidSupport
     public class ReactiveDialogFragment<TViewModel> : ReactiveDialogFragment, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
+        private TViewModel _viewModel;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveDialogFragment{TViewModel}"/> class.
+        /// </summary>
         protected ReactiveDialogFragment()
         {
         }
-
-        private TViewModel _viewModel;
 
         /// <inheritdoc/>
         public TViewModel ViewModel
@@ -45,6 +48,12 @@ namespace ReactiveUI.AndroidSupport
     /// </summary>
     public class ReactiveDialogFragment : Android.Support.V4.App.DialogFragment, IReactiveNotifyPropertyChanged<ReactiveDialogFragment>, IReactiveObject, IHandleObservableErrors
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveDialogFragment"/> class.
+        /// </summary>
         protected ReactiveDialogFragment()
         {
         }
@@ -57,12 +66,6 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
@@ -70,10 +73,17 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <summary>
+        /// Gets a signal when the fragment is activated.
+        /// </summary>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <summary>
+        /// Gets a signal when the fragment is deactivated.
+        /// </summary>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
@@ -86,6 +96,18 @@ namespace ReactiveUI.AndroidSupport
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveDialogFragment>> Changed => this.GetChangedObservable();
 
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
         /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
@@ -97,17 +119,6 @@ namespace ReactiveUI.AndroidSupport
         {
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
-
-        /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
-
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-
-        public IObservable<Unit> Activated => _activated.AsObservable();
-
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-
-        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <inheritdoc/>
         public override void OnPause()

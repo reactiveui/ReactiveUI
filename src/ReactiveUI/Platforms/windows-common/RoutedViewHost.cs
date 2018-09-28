@@ -37,6 +37,9 @@ namespace ReactiveUI
             set => SetValue(RouterProperty, value);
         }
 
+        /// <summary>
+        /// The router dependency property.
+        /// </summary>
         public static readonly DependencyProperty RouterProperty =
             DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
 
@@ -50,20 +53,41 @@ namespace ReactiveUI
             set => SetValue(DefaultContentProperty, value);
         }
 
+        /// <summary>
+        /// The default content property.
+        /// </summary>
         public static readonly DependencyProperty DefaultContentProperty =
             DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
 
+        /// <summary>
+        /// Gets or sets the view contract observable.
+        /// </summary>
+        /// <value>
+        /// The view contract observable.
+        /// </value>
         public IObservable<string> ViewContractObservable
         {
             get => (IObservable<string>)GetValue(ViewContractObservableProperty);
             set => SetValue(ViewContractObservableProperty, value);
         }
 
+        /// <summary>
+        /// The view contract observable property.
+        /// </summary>
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable<string>.Default));
 
+        /// <summary>
+        /// Gets or sets the view locator.
+        /// </summary>
+        /// <value>
+        /// The view locator.
+        /// </value>
         public IViewLocator ViewLocator { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
+        /// </summary>
         public RoutedViewHost()
         {
 #if NETFX_CORE

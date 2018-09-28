@@ -48,7 +48,7 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <summary>
-        ///
+        /// Gets the control from an activiy.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
         /// <param name="this">The activity.</param>
@@ -58,7 +58,7 @@ namespace ReactiveUI.AndroidSupport
             where T : View => (T)GetCachedControl(propertyName, @this, () => @this.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
 
         /// <summary>
-        ///
+        /// Gets the control from a view.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
         /// <param name="this">The view.</param>
