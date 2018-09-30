@@ -19,6 +19,10 @@ using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TSource">The type of the source.</typeparam>
     public class TableSectionInformation<TSource> : ISectionInformation<TSource, UITableView, UITableViewCell>
     {
         /// <inheritdoc/>
@@ -30,6 +34,9 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public Func<object, NSString> CellKeySelector { get; protected set; }
 
+        /// <summary>
+        /// Gets or sets the size hint.
+        /// </summary>
         public float SizeHint { get; protected set; }
 
         /// <summary>
@@ -45,9 +52,21 @@ namespace ReactiveUI
         public TableSectionHeader Footer { get; set; }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TSource">The type of the source.</typeparam>
+    /// <typeparam name="TCell">The type of the cell.</typeparam>
     public class TableSectionInformation<TSource, TCell> : TableSectionInformation<TSource>
         where TCell : UITableViewCell
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TableSectionInformation{TSource, TCell}"/> class.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="cellKeySelector">The cell key selector.</param>
+        /// <param name="sizeHint">The size hint.</param>
+        /// <param name="initializeCellAction">The initialize cell action.</param>
         public TableSectionInformation(INotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, float sizeHint, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
@@ -59,6 +78,13 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TableSectionInformation{TSource, TCell}"/> class.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="cellKey">The cell key.</param>
+        /// <param name="sizeHint">The size hint.</param>
+        /// <param name="initializeCellAction">The initialize cell action.</param>
         public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
             : this(collection, _ => cellKey, sizeHint, initializeCellAction)
         {
@@ -249,6 +275,14 @@ namespace ReactiveUI
         private readonly Subject<object> _elementSelected = new Subject<object>();
         private readonly UITableViewAdapter _adapter;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
+        /// </summary>
+        /// <param name="tableView">The table view.</param>
+        /// <param name="collection">The collection.</param>
+        /// <param name="cellKey">The cell key.</param>
+        /// <param name="sizeHint">The size hint.</param>
+        /// <param name="initializeCellAction">The initialize cell action.</param>
         public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
             : this(tableView)
         {
@@ -256,12 +290,18 @@ namespace ReactiveUI
         }
 
         [Obsolete("Please bind your view model to the Data property.")]
+#pragma warning disable SA1600 // Elements should be documented
         public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation<TSource>> sectionInformation)
+#pragma warning restore SA1600 // Elements should be documented
             : this(tableView)
         {
             Data = sectionInformation;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
+        /// </summary>
+        /// <param name="tableView">The table view.</param>
         public ReactiveTableViewSource(UITableView tableView)
         {
             SetupRxObj();
@@ -462,6 +502,11 @@ namespace ReactiveUI
             return footer == null || footer.View == null ? null : footer.View.Invoke();
         }
 
+        /// <summary>
+        /// Items at.
+        /// </summary>
+        /// <param name="indexPath">The index path.</param>
+        /// <returns>The item.</returns>
         public object ItemAt(NSIndexPath indexPath) => _commonSource.ItemAt(indexPath);
 
         /// <inheritdoc/>

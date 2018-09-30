@@ -7,6 +7,10 @@ using System.Reactive.Concurrency;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// .NET Framework platform registrations.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
     public class PlatformRegistrations : IWantsToRegisterStuff
     {
         /// <inheritdoc/>

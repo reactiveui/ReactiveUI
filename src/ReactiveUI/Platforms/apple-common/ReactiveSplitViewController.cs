@@ -23,6 +23,11 @@ namespace ReactiveUI
     IReactiveNotifyPropertyChanged<ReactiveSplitViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
 #if UIKIT
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
+        /// </summary>
+        /// <param name="nibName"></param>
+        /// <param name="bundle"></param>
         protected ReactiveSplitViewController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
@@ -30,24 +35,39 @@ namespace ReactiveUI
         }
 
 #endif
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
+        /// </summary>
+        /// <param name="handle"></param>
         protected ReactiveSplitViewController(IntPtr handle)
             : base(handle)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
+        /// </summary>
+        /// <param name="t"></param>
         protected ReactiveSplitViewController(NSObjectFlag t)
             : base(t)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
+        /// </summary>
+        /// <param name="coder"></param>
         protected ReactiveSplitViewController(NSCoder coder)
             : base(coder)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
+        /// </summary>
         protected ReactiveSplitViewController()
         {
             SetupRxObj();
@@ -158,27 +178,47 @@ namespace ReactiveUI
         where TViewModel : class
     {
 #if UIKIT
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="nibName"></param>
+        /// <param name="bundle"></param>
         protected ReactiveSplitViewController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
         }
 
 #endif
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle"></param>
         protected ReactiveSplitViewController(IntPtr handle)
             : base(handle)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="t"></param>
         protected ReactiveSplitViewController(NSObjectFlag t)
             : base(t)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="coder"></param>
         protected ReactiveSplitViewController(NSCoder coder)
             : base(coder)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
+        /// </summary>
         protected ReactiveSplitViewController()
         {
         }

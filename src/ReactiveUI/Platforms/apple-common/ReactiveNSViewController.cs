@@ -26,25 +26,45 @@ namespace ReactiveUI
     public class ReactiveViewController : NSViewController,
         IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
+        /// </summary>
         protected ReactiveViewController()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
+        /// </summary>
+        /// <param name="c"></param>
         protected ReactiveViewController(NSCoder c)
             : base(c)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
+        /// </summary>
+        /// <param name="f"></param>
         protected ReactiveViewController(NSObjectFlag f)
             : base(f)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
+        /// </summary>
+        /// <param name="handle"></param>
         protected ReactiveViewController(IntPtr handle)
             : base(handle)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
+        /// </summary>
+        /// <param name="nibNameOrNull"></param>
+        /// <param name="nibBundleOrNull"></param>
         protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull)
             : base(nibNameOrNull, nibBundleOrNull)
         {
@@ -150,25 +170,45 @@ namespace ReactiveUI
     public abstract class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
         where TViewModel : class
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
+        /// </summary>
         protected ReactiveViewController()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="c"></param>
         protected ReactiveViewController(NSCoder c)
             : base(c)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="f"></param>
         protected ReactiveViewController(NSObjectFlag f)
             : base(f)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle"></param>
         protected ReactiveViewController(IntPtr handle)
             : base(handle)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="nibNameOrNull"></param>
+        /// <param name="nibBundleOrNull"></param>
         protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull)
             : base(nibNameOrNull, nibBundleOrNull)
         {

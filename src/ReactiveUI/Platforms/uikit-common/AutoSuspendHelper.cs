@@ -30,6 +30,10 @@ namespace ReactiveUI
 
         public IDictionary<string, string> LaunchOptions { get; protected set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
+        /// </summary>
+        /// <param name="appDelegate"></param>
         public AutoSuspendHelper(UIApplicationDelegate appDelegate)
         {
             Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", appDelegate,

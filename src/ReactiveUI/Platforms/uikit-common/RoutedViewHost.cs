@@ -26,20 +26,32 @@ namespace ReactiveUI
         private IObservable<string> _viewContractObservable;
         private bool _routerInstigated;
 
+        /// <summary>
+        /// Gets or sets the <see cref="RoutingState"/> of the navigation.
+        /// </summary>
         public RoutingState Router
         {
             get => _router;
             set => this.RaiseAndSetIfChanged(ref _router, value);
         }
 
+        /// <summary>
+        /// Gets or sets the view contract observable.
+        /// </summary>
         public IObservable<string> ViewContractObservable
         {
             get => _viewContractObservable;
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
         }
 
+        /// <summary>
+        /// Gets or sets the view locator.
+        /// </summary>
         public IViewLocator ViewLocator { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
+        /// </summary>
         public RoutedViewHost()
         {
             ViewContractObservable = Observable.Return<string>(null);
@@ -192,6 +204,7 @@ namespace ReactiveUI
     {
         private RoutingState _router;
 
+#pragma warning disable SA1600 // Elements should be documented
         public RoutingState Router
         {
             get => _router;
@@ -265,5 +278,6 @@ namespace ReactiveUI
                 targetView.AddSubview(viewLastAdded);
             }, RxApp.DefaultExceptionHandler.OnNext);
         }
+#pragma warning restore SA1600 // Elements should be documented
     }
 }

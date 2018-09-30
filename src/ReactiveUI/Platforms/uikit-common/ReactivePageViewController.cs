@@ -12,57 +12,108 @@ using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This is a UIPageViewController that is both an UIPageViewController and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
     public abstract class ReactivePageViewController : UIPageViewController,
         IReactiveNotifyPropertyChanged<ReactivePageViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
+        private Subject<Unit> _activated = new Subject<Unit>();
+        private Subject<Unit> _deactivated = new Subject<Unit>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="orientation">The orientation.</param>
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation)
             : base(style, orientation)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="orientation">The orientation.</param>
+        /// <param name="options">The options.</param>
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, NSDictionary options)
             : base(style, orientation, options)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="orientation">The orientation.</param>
+        /// <param name="spineLocation">The spine location.</param>
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, UIPageViewControllerSpineLocation spineLocation)
             : base(style, orientation, spineLocation)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="orientation">The orientation.</param>
+        /// <param name="spineLocation">The spine location.</param>
+        /// <param name="interPageSpacing">The inter page spacing.</param>
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, UIPageViewControllerSpineLocation spineLocation, float interPageSpacing)
             : base(style, orientation, spineLocation, interPageSpacing)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
+        /// <param name="nibName">Name of the nib.</param>
+        /// <param name="bundle">The bundle.</param>
         protected ReactivePageViewController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
         protected ReactivePageViewController(IntPtr handle)
             : base(handle)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
+        /// <param name="t">The t.</param>
         protected ReactivePageViewController(NSObjectFlag t)
             : base(t)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
         protected ReactivePageViewController(NSCoder coder)
             : base(coder)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
+        /// </summary>
         protected ReactivePageViewController()
         {
             SetupRxObj();
@@ -76,22 +127,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
@@ -108,8 +147,22 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-        private void SetupRxObj()
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
@@ -123,16 +176,6 @@ namespace ReactiveUI
         {
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
-
-        private Subject<Unit> _activated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Activated => _activated.AsObservable();
-
-        private Subject<Unit> _deactivated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <inheritdoc/>
         public override void ViewWillAppear(bool animated)
@@ -149,56 +192,109 @@ namespace ReactiveUI
             _deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
         }
+
+        private void SetupRxObj()
+        {
+        }
     }
 
+    /// <summary>
+    /// This is a UIPageViewController that is both an UIPageViewController and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactivePageViewController<TViewModel> : ReactivePageViewController, IViewFor<TViewModel>
         where TViewModel : class
     {
+        private TViewModel _viewModel;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="style">The view controller transition style.</param>
+        /// <param name="orientation">The view controller navigation orientation.</param>
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation)
             : base(style, orientation)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="style">The view controller transition style.</param>
+        /// <param name="orientation">The view controller navigation orientation.</param>
+        /// <param name="options">The options.</param>
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, NSDictionary options)
             : base(style, orientation, options)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="style">The view controller transition style.</param>
+        /// <param name="orientation">The view controller navigation orientation.</param>
+        /// <param name="spineLocation">The view controller spine location.</param>
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, UIPageViewControllerSpineLocation spineLocation)
             : base(style, orientation, spineLocation)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="style">The view controller transition style.</param>
+        /// <param name="orientation">The view controller navigation orientation.</param>
+        /// <param name="spineLocation">The view controller spine location.</param>
+        /// <param name="interPageSpacing">The spacing between pages.</param>
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, UIPageViewControllerSpineLocation spineLocation, float interPageSpacing)
             : base(style, orientation, spineLocation, interPageSpacing)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="nibName">The name.</param>
+        /// <param name="bundle">The bundle.</param>
         protected ReactivePageViewController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The pointer.</param>
         protected ReactivePageViewController(IntPtr handle)
             : base(handle)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="t">The object flag.</param>
         protected ReactivePageViewController(NSObjectFlag t)
             : base(t)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
         protected ReactivePageViewController(NSCoder coder)
             : base(coder)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
+        /// </summary>
         protected ReactivePageViewController()
         {
         }
-
-        private TViewModel _viewModel;
 
         /// <inheritdoc/>
         public TViewModel ViewModel

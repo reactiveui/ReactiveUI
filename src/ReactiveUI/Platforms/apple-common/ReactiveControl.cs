@@ -157,7 +157,7 @@ namespace ReactiveUI
     /// <summary>
     /// Reactive UIControl.
     /// </summary>
-    /// <typeparam name="TViewModel"></typeparam>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactiveControl<TViewModel> : ReactiveControl, IViewFor<TViewModel>
         where TViewModel : class
     {

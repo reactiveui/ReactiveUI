@@ -12,6 +12,9 @@ namespace ReactiveUI
     {
         public static Lazy<UIKitObservableForProperty> Instance = new Lazy<UIKitObservableForProperty>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIKitObservableForProperty"/> class.
+        /// </summary>
         public UIKitObservableForProperty()
         {
             Register(typeof(UIControl), "Value", 20, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));

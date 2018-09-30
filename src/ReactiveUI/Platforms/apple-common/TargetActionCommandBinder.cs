@@ -29,6 +29,9 @@ namespace ReactiveUI
     {
         private readonly Type[] _validTypes;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetActionCommandBinder"/> class.
+        /// </summary>
         public TargetActionCommandBinder()
         {
 #if UIKIT

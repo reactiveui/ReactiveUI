@@ -18,7 +18,7 @@ namespace ReactiveUI
 {
     /// <summary>
     /// A control which will use Splat dependency injection to determine the View
-    /// to show. It uses 
+    /// to show. It uses. 
     /// </summary>
     public class ViewModelViewHost : ReactiveViewController
     {
@@ -30,7 +30,7 @@ namespace ReactiveUI
         private IObservable<string> _viewContractObservable;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
         /// </summary>
         public ViewModelViewHost()
         {
@@ -66,18 +66,27 @@ namespace ReactiveUI
             set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
         }
 
+        /// <summary>
+        /// Gets or sets the view model.
+        /// </summary>
         public IReactiveObject ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
+        /// <summary>
+        /// Gets or sets the view contract observable.
+        /// </summary>
         public IObservable<string> ViewContractObservable
         {
             get => _viewContractObservable;
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
         }
 
+        /// <summary>
+        /// Gets or sets the view contract.
+        /// </summary>
         public string ViewContract
         {
             get => _viewContract.Value;
@@ -223,6 +232,7 @@ namespace ReactiveUI
 #pragma warning restore 1584, 1711, 1572, 1581, 1580
         public bool AddAutoLayoutConstraintsToSubView { get; set; }
 
+#pragma warning disable SA1600 // Elements should be documented
         public ViewModelViewHostLegacy(NSView targetView)
         {
             if (targetView == null)
@@ -334,5 +344,6 @@ namespace ReactiveUI
         }
 
         public IViewLocator ViewLocator { get; set; }
+#pragma warning restore SA1600 // Elements should be documented
     }
 }

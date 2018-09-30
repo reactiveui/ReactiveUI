@@ -35,6 +35,12 @@ namespace ReactiveUI
     public class CollectionViewSectionInformation<TSource, TCell> : CollectionViewSectionInformation<TSource>
         where TCell : UICollectionViewCell
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CollectionViewSectionInformation{TSource, TCell}"/> class.
+        /// </summary>
+        /// <param name="collection">The notify collection changed.</param>
+        /// <param name="cellKeySelector">The key selector function.</param>
+        /// <param name="initializeCellAction">The cell initialization action.</param>
         public CollectionViewSectionInformation(INotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
@@ -46,6 +52,12 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CollectionViewSectionInformation{TSource, TCell}"/> class.
+        /// </summary>
+        /// <param name="collection">The notify collection changed.</param>
+        /// <param name="cellKeySelector">The key selector function.</param>
+        /// <param name="initializeCellAction">The cell initialization action.</param>
         public CollectionViewSectionInformation(INotifyCollectionChanged collection, NSString cellKey, Action<TCell> initializeCellAction = null)
             : this(collection, _ => cellKey, initializeCellAction)
         {
@@ -170,12 +182,24 @@ namespace ReactiveUI
         private readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> _commonSource;
         private readonly Subject<object> _elementSelected = new Subject<object>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
+        /// </summary>
+        /// <param name="collectionView">The ui collection view.</param>
+        /// <param name="collection">The notify collection chaged.</param>
+        /// <param name="cellKey">The cell key.</param>
+        /// <param name="initializeCellAction">The cell initialization action.</param>
         public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell> initializeCellAction = null)
             : this(collectionView)
         {
             Data = new[] { new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction) };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
+        /// </summary>
+        /// <param name="collectionView">The ui collection view.</param>
+        /// <param name="sectionInformation">The section information.</param>
         [Obsolete("Please bind your view model to the Data property.")]
         public ReactiveCollectionViewSource(UICollectionView collectionView, IReadOnlyList<CollectionViewSectionInformation<TSource>> sectionInformation)
             : this(collectionView)
@@ -183,6 +207,10 @@ namespace ReactiveUI
             Data = sectionInformation;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
+        /// </summary>
+        /// <param name="collectionView">The ui collection view.</param>
         public ReactiveCollectionViewSource(UICollectionView collectionView)
         {
             SetupRxObj();

@@ -13,8 +13,18 @@ using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Generic command binder platform registrations.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.ICreatesCommandBinding" />
     public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
+        /// <summary>
+        /// Configuration map.
+        /// </summary>
+        private readonly Dictionary<Type, CommandBindingInfo> _config =
+            new Dictionary<Type, CommandBindingInfo>();
+
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, bool hasEventTarget)
         {
@@ -69,12 +79,6 @@ namespace ReactiveUI
             public int Affinity;
             public Func<ICommand, object, IObservable<object>, IDisposable> CreateBinding;
         }
-
-        /// <summary>
-        /// Configuration map.
-        /// </summary>
-        private readonly Dictionary<Type, CommandBindingInfo> _config =
-            new Dictionary<Type, CommandBindingInfo>();
 
         /// <summary>
         /// Registers an observable factory for the specified type and property.

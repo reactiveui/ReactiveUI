@@ -26,25 +26,44 @@ namespace ReactiveUI
     /// </summary>
     public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView"/> class.
+        /// </summary>
         protected ReactiveView()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView"/> class.
+        /// </summary>
+        /// <param name="c"></param>
         protected ReactiveView(NSCoder c)
             : base(c)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView"/> class.
+        /// </summary>
+        /// <param name="f"></param>
         protected ReactiveView(NSObjectFlag f)
             : base(f)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView"/> class.
+        /// </summary>
+        /// <param name="handle"></param>
         protected ReactiveView(IntPtr handle)
             : base(handle)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView"/> class.
+        /// </summary>
+        /// <param name="frame"></param>
         protected ReactiveView(CGRect frame)
             : base(frame)
         {
@@ -143,25 +162,44 @@ namespace ReactiveUI
     public abstract class ReactiveView<TViewModel> : ReactiveView, IViewFor<TViewModel>
         where TViewModel : class
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
+        /// </summary>
         protected ReactiveView()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="c"></param>
         protected ReactiveView(NSCoder c)
             : base(c)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="f"></param>
         protected ReactiveView(NSObjectFlag f)
             : base(f)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle"></param>
         protected ReactiveView(IntPtr handle)
             : base(handle)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="frame"></param>
         protected ReactiveView(CGRect frame)
             : base(frame)
         {
