@@ -29,7 +29,7 @@ namespace ReactiveUI
     public class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
     {
         /// <summary>
-        /// The Router associated with this View Host.
+        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
         /// </summary>
         public RoutingState Router
         {

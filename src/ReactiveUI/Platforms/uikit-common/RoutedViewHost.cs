@@ -27,7 +27,7 @@ namespace ReactiveUI
         private bool _routerInstigated;
 
         /// <summary>
-        /// Gets or sets the <see cref="RoutingState"/> of the navigation.
+        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
         /// </summary>
         public RoutingState Router
         {

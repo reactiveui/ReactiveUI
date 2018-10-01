@@ -105,6 +105,9 @@ namespace ReactiveUI.Winforms
             set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
+        /// </summary>
         [Category("ReactiveUI")]
         [Description("The router.")]
         public RoutingState Router

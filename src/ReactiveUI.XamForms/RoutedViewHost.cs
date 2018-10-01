@@ -172,11 +172,8 @@ namespace ReactiveUI.XamForms
         }
 
         /// <summary>
-        /// Gets or sets the router.
+        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
         /// </summary>
-        /// <value>
-        /// The router.
-        /// </value>
         public RoutingState Router
         {
             get => (RoutingState)GetValue(RouterProperty);
