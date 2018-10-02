@@ -1,4 +1,4 @@
-<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Avalonia specific extensions to ReactiveUI</Description>
@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
     <PackageReference Include="Avalonia" Version="0.6.2-build6248-beta" />
     <PackageReference Include="System.Reactive.Compatibility" Version="4.1.0" />
-    <PackageReference Include="ReactiveUI" Version="8.7.2" />
   </ItemGroup>
 </Project>
