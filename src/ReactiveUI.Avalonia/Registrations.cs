@@ -1,4 +1,5 @@
 ﻿using System;
+using Avalonia.Threading;
 
 namespace ReactiveUI.Avalonia
 {
@@ -9,6 +10,7 @@ namespace ReactiveUI.Avalonia
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new AvaloniaObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new AvaloniaCommandBinding(), typeof(ICreatesCommandBinding));
+            RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         }
     }
 }
