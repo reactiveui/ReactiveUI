@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Reactive.Linq;
 using Avalonia;
@@ -15,9 +15,8 @@ namespace ReactiveUI.Avalonia
 
         public IObservable<bool> GetActivationForView(IActivatable view)
         {
-            var visual = view as IVisual;
-            if (visual == null) return Observable.Return(false);
-            
+            if (!(view is IVisual visual)) return Observable.Return(false);
+
             var viewLoaded = Observable
                 .FromEventPattern<VisualTreeAttachmentEventArgs>(
                     x => visual.AttachedToVisualTree += x,
