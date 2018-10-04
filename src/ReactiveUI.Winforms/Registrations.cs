@@ -9,6 +9,10 @@ using Splat;
 
 namespace ReactiveUI.Winforms
 {
+    /// <summary>
+    /// .NET Framework platform registrations.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
     public class Registrations : IWantsToRegisterStuff
     {
         /// <inheritdoc/>

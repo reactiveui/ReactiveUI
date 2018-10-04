@@ -14,6 +14,11 @@ using Splat;
 
 namespace ReactiveUI.Winforms
 {
+    /// <summary>
+    /// WinForm view objects are not Generally Observable™, so hard-code some
+    /// particularly useful types.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
     public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
     {
         private static readonly MemoizingMRUCache<Tuple<Type, string>, EventInfo> eventInfoCache = new MemoizingMRUCache<Tuple<Type, string>, EventInfo>(

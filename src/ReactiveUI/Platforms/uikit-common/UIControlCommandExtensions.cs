@@ -9,8 +9,18 @@ using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods for binding <see cref="ICommand"/> to a <see cref="UIControl"/>.
+    /// </summary>
     public static class UIControlCommandExtensions
     {
+        /// <summary>
+        /// Binds the <see cref="ICommand"/> to target <see cref="UIControl"/>.
+        /// </summary>
+        /// <param name="this">The this.</param>
+        /// <param name="control">The control.</param>
+        /// <param name="events">The events.</param>
+        /// <returns>A disposable.</returns>
         public static IDisposable BindToTarget(this ICommand @this, UIControl control, UIControlEvent events)
         {
             var ev = new EventHandler((o, e) =>

@@ -13,6 +13,7 @@ using ReactiveUI.Legacy;
 namespace ReactiveUI.Winforms.Legacy
 {
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
+#pragma warning disable SA1600 // Elements should be documented
     public class ReactiveBindingList<T> : ReactiveList<T>,
         IList<T>, ICollection<T>, IEnumerable<T>,
         ICollection, IEnumerable, IList, IBindingList,
@@ -123,4 +124,5 @@ namespace ReactiveUI.Winforms.Legacy
         /// <inheritdoc/>
         public event ListChangedEventHandler ListChanged;
     }
+#pragma warning restore SA1600 // Elements should be documented
 }

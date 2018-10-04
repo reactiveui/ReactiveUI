@@ -29,6 +29,10 @@ namespace ReactiveUI
         /// </summary>
         public TimeSpan IdleTimeout { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
+        /// </summary>
+        /// <param name="app">The application.</param>
         public AutoSuspendHelper(Application app)
         {
             IdleTimeout = TimeSpan.FromSeconds(15.0);

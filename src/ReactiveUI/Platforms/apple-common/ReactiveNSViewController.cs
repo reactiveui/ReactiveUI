@@ -20,12 +20,15 @@ using AppKit;
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is an View that is both an NSViewController and has ReactiveObject powers
+    /// This is a View that is both a NSViewController and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     public class ReactiveViewController : NSViewController,
         IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
         /// </summary>
@@ -36,7 +39,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="c">The coder.</param>
         protected ReactiveViewController(NSCoder c)
             : base(c)
         {
@@ -45,7 +48,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
         /// </summary>
-        /// <param name="f"></param>
+        /// <param name="f">The object flag.</param>
         protected ReactiveViewController(NSObjectFlag f)
             : base(f)
         {
@@ -54,7 +57,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
         /// </summary>
-        /// <param name="handle"></param>
+        /// <param name="handle">The pointer.</param>
         protected ReactiveViewController(IntPtr handle)
             : base(handle)
         {
@@ -63,8 +66,8 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
         /// </summary>
-        /// <param name="nibNameOrNull"></param>
-        /// <param name="nibBundleOrNull"></param>
+        /// <param name="nibNameOrNull">The name.</param>
+        /// <param name="nibBundleOrNull">The bundle.</param>
         protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull)
             : base(nibNameOrNull, nibBundleOrNull)
         {
@@ -78,22 +81,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
@@ -110,6 +101,24 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
         /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
@@ -121,16 +130,6 @@ namespace ReactiveUI
         {
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
-
-        private Subject<Unit> _activated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Activated => _activated.AsObservable();
-
-        private Subject<Unit> _deactivated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
 #if UIKIT
         /// <inheritdoc/>
@@ -167,9 +166,16 @@ namespace ReactiveUI
 #endif
     }
 
+    /// <summary>
+    /// This is a View that is both a NSViewController and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
         where TViewModel : class
     {
+        private TViewModel _viewModel;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
         /// </summary>
@@ -180,7 +186,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="c">The coder.</param>
         protected ReactiveViewController(NSCoder c)
             : base(c)
         {
@@ -189,7 +195,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
         /// </summary>
-        /// <param name="f"></param>
+        /// <param name="f">The object flag.</param>
         protected ReactiveViewController(NSObjectFlag f)
             : base(f)
         {
@@ -198,7 +204,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
         /// </summary>
-        /// <param name="handle"></param>
+        /// <param name="handle">The pointer.</param>
         protected ReactiveViewController(IntPtr handle)
             : base(handle)
         {
@@ -207,14 +213,12 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
         /// </summary>
-        /// <param name="nibNameOrNull"></param>
-        /// <param name="nibBundleOrNull"></param>
+        /// <param name="nibNameOrNull">The name.</param>
+        /// <param name="nibBundleOrNull">The bundle.</param>
         protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull)
             : base(nibNameOrNull, nibBundleOrNull)
         {
         }
-
-        private TViewModel _viewModel;
 
         /// <inheritdoc/>
         public TViewModel ViewModel

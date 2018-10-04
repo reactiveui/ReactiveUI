@@ -11,6 +11,9 @@ using System.Windows;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Enum that hints at the visibility of a ui element.
+    /// </summary>
     [Flags]
     public enum BooleanToVisibilityHint
     {

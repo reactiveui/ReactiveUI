@@ -17,10 +17,20 @@ using Windows.UI.Xaml.Controls;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// AutoSuspend-based Application. To use AutoSuspend with WinRT, change your
+    /// Application to inherit from this class, then call:
+    ///
+    /// Locator.Current.GetService.<ISuspensionHost>().SetupDefaultSuspendResume();
+    /// </summary>
     public class AutoSuspendHelper : IEnableLogger
     {
         private readonly ReplaySubject<IActivatedEventArgs> _activated = new ReplaySubject<IActivatedEventArgs>(1);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
+        /// </summary>
+        /// <param name="app">The application.</param>
         public AutoSuspendHelper(Application app)
         {
             Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", app, "OnLaunched");
@@ -53,6 +63,10 @@ namespace ReactiveUI
             RxApp.SuspensionHost.ShouldInvalidateState = shouldInvalidateState;
         }
 
+        /// <summary>
+        /// Raises the <see cref="E:Launched" /> event.
+        /// </summary>
+        /// <param name="args">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
         public void OnLaunched(IActivatedEventArgs args)
         {
             _activated.OnNext(args);

@@ -115,7 +115,8 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// 
+    /// Interface used to extract a common API between <see cref="UIKit.UIView"/>
+    /// and <see cref="UIKit.UITableViewCell"/>.
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     /// <typeparam name="TUIView">The type of the UI view.</typeparam>

@@ -12,6 +12,9 @@ using Windows.UI.Xaml;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Creates a observable for a property if available that is based on a DependencyProperty.
+    /// </summary>
     public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
     {
         /// <inheritdoc/>

@@ -21,8 +21,10 @@ using UIControl = AppKit.NSControl;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Reactive UIControl.
+    /// This is a UIControl that is both and UIControl and has a ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
         /// <summary>
@@ -155,7 +157,8 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// Reactive UIControl.
+    /// This is a UIControl that is both and UIControl and has a ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactiveControl<TViewModel> : ReactiveControl, IViewFor<TViewModel>

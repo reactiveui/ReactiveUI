@@ -40,14 +40,23 @@ namespace ReactiveUI.Blend
             OnDetaching();
         }
 
+        /// <summary>
+        /// Called when [attached].
+        /// </summary>
         protected virtual void OnAttached()
         {
         }
 
+        /// <summary>
+        /// Called when [detaching].
+        /// </summary>
         protected virtual void OnDetaching()
         {
         }
 
+        /// <summary>
+        /// Gets the associated object.
+        /// </summary>
         public T AssociatedObject { get; private set; }
 
         /// <inheritdoc/>

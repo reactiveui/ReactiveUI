@@ -24,6 +24,9 @@ namespace ReactiveUI
     /// </summary>
     public class AutoDataTemplateBindingHook : IPropertyBindingHook
     {
+        /// <summary>
+        /// The default item template.
+        /// </summary>
         public static Lazy<DataTemplate> DefaultItemTemplate = new Lazy<DataTemplate>(() =>
         {
 #if NETFX_CORE

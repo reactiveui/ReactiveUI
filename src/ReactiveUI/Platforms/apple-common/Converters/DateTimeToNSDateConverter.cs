@@ -7,6 +7,9 @@ using Foundation;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Binding Type Converter for DateTime to NSDateTime.
+    /// </summary>
     public class DateTimeNSDateConverter :
         IBindingTypeConverter
     {

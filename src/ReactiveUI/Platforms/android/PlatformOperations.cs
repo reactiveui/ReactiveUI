@@ -10,7 +10,7 @@ using Android.Views;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Android platform specific details.
+    /// Returns the current orientation of the device on Android.
     /// </summary>
     public class PlatformOperations : IPlatformOperations
     {

@@ -7,9 +7,19 @@ using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
 {
+    /// <summary>
+    /// This is an  UserControl that is both and UserControl and has a ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <seealso cref="System.Windows.Forms.UserControl" />
+    /// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
     public partial class ReactiveUserControl<TViewModel> : UserControl, IViewFor<TViewModel>
         where TViewModel : class
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
+        /// </summary>
         public ReactiveUserControl()
         {
             InitializeComponent();

@@ -28,16 +28,18 @@ namespace ReactiveUI
         private readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
         private readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
 
-        public IDictionary<string, string> LaunchOptions { get; protected set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
         /// </summary>
-        /// <param name="appDelegate"></param>
+        /// <param name="appDelegate">The uiappdelegate.</param>
         public AutoSuspendHelper(UIApplicationDelegate appDelegate)
         {
-            Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", appDelegate,
-                "FinishedLaunching", "OnActivated", "DidEnterBackground");
+            Reflection.ThrowIfMethodsNotOverloaded(
+                "AutoSuspendHelper",
+                appDelegate,
+                "FinishedLaunching",
+                "OnActivated",
+                "DidEnterBackground");
 
             RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
             RxApp.SuspensionHost.IsResuming = _finishedLaunching.Select(_ => Unit.Default);
@@ -63,6 +65,20 @@ namespace ReactiveUI
             });
         }
 
+        /// <summary>
+        /// Gets or sets the launch options.
+        /// </summary>
+        /// <value>
+        /// The launch options.
+        /// </value>
+        public IDictionary<string, string> LaunchOptions { get; protected set; }
+
+        /// <summary>
+        /// Advances the finished launching observable.
+        /// Finisheds the launching.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="launchOptions">The launch options.</param>
         public void FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
             if (launchOptions != null)
@@ -79,11 +95,19 @@ namespace ReactiveUI
             _finishedLaunching.OnNext(application);
         }
 
+        /// <summary>
+        /// Advances the on activated observable.
+        /// </summary>
+        /// <param name="application">The application.</param>
         public void OnActivated(UIApplication application)
         {
             _activated.OnNext(application);
         }
 
+        /// <summary>
+        /// Advances the enter background observable.
+        /// </summary>
+        /// <param name="application">The application.</param>
         public void DidEnterBackground(UIApplication application)
         {
             _backgrounded.OnNext(application);

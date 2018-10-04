@@ -8,6 +8,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Binding Type Converter for component model.
+    /// </summary>
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
         private readonly MemoizingMRUCache<Tuple<Type, Type>, TypeConverter> _typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, TypeConverter>(

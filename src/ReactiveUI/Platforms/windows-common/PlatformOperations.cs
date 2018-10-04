@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Returns the current orientation of the device on Windows.
+    /// </summary>
     public class PlatformOperations : IPlatformOperations
     {
         /// <inheritdoc/>

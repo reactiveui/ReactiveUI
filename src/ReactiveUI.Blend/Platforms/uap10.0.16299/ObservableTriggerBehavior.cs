@@ -15,18 +15,27 @@ using Windows.UI.Xaml.Markup;
 
 namespace ReactiveUI.Blend
 {
+    /// <summary>
+    /// Behavior that response to triggered observables.
+    /// </summary>
     [ContentProperty(Name = "Actions")]
     public sealed class ObservableTriggerBehavior : Behavior<DependencyObject>
     {
         private object _resolvedSource;
         private SerialDisposable _watcher;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObservableTriggerBehavior"/> class.
+        /// </summary>
         public ObservableTriggerBehavior()
         {
             _watcher = new SerialDisposable();
             _watcher.Disposable = Disposable.Empty;
         }
 
+        /// <summary>
+        /// Gets the actions.
+        /// </summary>
         public ActionCollection Actions
         {
             get
@@ -43,26 +52,44 @@ namespace ReactiveUI.Blend
             }
         }
 
+        /// <summary>
+        /// The actions dependency property.
+        /// </summary>
         public static readonly DependencyProperty ActionsProperty =
             DependencyProperty.Register("Actions", typeof(ActionCollection), typeof(ObservableTriggerBehavior), new PropertyMetadata(null));
 
+        /// <summary>
+        /// Gets or sets the source object.
+        /// </summary>
         public object SourceObject
         {
-            get { return GetValue(ObservableTriggerBehavior.SourceObjectProperty); }
-            set { SetValue(ObservableTriggerBehavior.SourceObjectProperty, value); }
+            get => GetValue(ObservableTriggerBehavior.SourceObjectProperty);
+            set => SetValue(ObservableTriggerBehavior.SourceObjectProperty, value);
         }
 
+        /// <summary>
+        /// The source object dependency property.
+        /// </summary>
         public static readonly DependencyProperty SourceObjectProperty =
             DependencyProperty.Register("SourceObject", typeof(object), typeof(ObservableTriggerBehavior), new PropertyMetadata(null, OnSourceObjectChanged));
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [automatic resubscribe on error].
+        /// </summary>
         public bool AutoResubscribeOnError { get; set; }
 
+        /// <summary>
+        /// Gets or sets the observable.
+        /// </summary>
         public IObservable<object> Observable
         {
-            get { return (IObservable<object>)GetValue(ObservableProperty); }
-            set { SetValue(ObservableProperty, value); }
+            get => (IObservable<object>)GetValue(ObservableProperty);
+            set => SetValue(ObservableProperty, value);
         }
 
+        /// <summary>
+        /// The observable dependency property.
+        /// </summary>
         public static readonly DependencyProperty ObservableProperty =
             DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTriggerBehavior), new PropertyMetadata(null, OnObservableChanged));
 

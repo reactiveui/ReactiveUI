@@ -20,49 +20,6 @@ using NSAction = System.Action;
 
 namespace ReactiveUI
 {
-    public class CollectionViewSectionInformation<TSource> : ISectionInformation<TSource, UICollectionView, UICollectionViewCell>
-    {
-        /// <inheritdoc/>
-        public INotifyCollectionChanged Collection { get; protected set; }
-
-        /// <inheritdoc/>
-        public Action<UICollectionViewCell> InitializeCellAction { get; protected set; }
-
-        /// <inheritdoc/>
-        public Func<object, NSString> CellKeySelector { get; protected set; }
-    }
-
-    public class CollectionViewSectionInformation<TSource, TCell> : CollectionViewSectionInformation<TSource>
-        where TCell : UICollectionViewCell
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionViewSectionInformation{TSource, TCell}"/> class.
-        /// </summary>
-        /// <param name="collection">The notify collection changed.</param>
-        /// <param name="cellKeySelector">The key selector function.</param>
-        /// <param name="initializeCellAction">The cell initialization action.</param>
-        public CollectionViewSectionInformation(INotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, Action<TCell> initializeCellAction = null)
-        {
-            Collection = collection;
-            CellKeySelector = cellKeySelector;
-
-            if (initializeCellAction != null)
-            {
-                InitializeCellAction = cell => initializeCellAction((TCell)cell);
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionViewSectionInformation{TSource, TCell}"/> class.
-        /// </summary>
-        /// <param name="collection">The notify collection changed.</param>
-        /// <param name="cellKeySelector">The key selector function.</param>
-        /// <param name="initializeCellAction">The cell initialization action.</param>
-        public CollectionViewSectionInformation(INotifyCollectionChanged collection, NSString cellKey, Action<TCell> initializeCellAction = null)
-            : this(collection, _ => cellKey, initializeCellAction)
-        {
-        }
-    }
 
     internal class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UICollectionViewCell>
     {
@@ -271,6 +228,11 @@ namespace ReactiveUI
             _elementSelected.OnNext(_commonSource.ItemAt(indexPath));
         }
 
+        /// <summary>
+        /// Returns the Item at the specified index path.
+        /// </summary>
+        /// <param name="indexPath">The index path.</param>
+        /// <returns>The object at the specified index.</returns>
         public object ItemAt(NSIndexPath indexPath)
         {
             return _commonSource.ItemAt(indexPath);

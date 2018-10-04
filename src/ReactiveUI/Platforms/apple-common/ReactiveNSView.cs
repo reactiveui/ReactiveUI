@@ -21,11 +21,14 @@ using AppKit;
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is an View that is both an NSView and has ReactiveObject powers
+    /// This is a View that is both a NSView and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView"/> class.
         /// </summary>
@@ -36,7 +39,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView"/> class.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="c">The coder.</param>
         protected ReactiveView(NSCoder c)
             : base(c)
         {
@@ -45,7 +48,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView"/> class.
         /// </summary>
-        /// <param name="f"></param>
+        /// <param name="f">The object flag.</param>
         protected ReactiveView(NSObjectFlag f)
             : base(f)
         {
@@ -54,7 +57,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView"/> class.
         /// </summary>
-        /// <param name="handle"></param>
+        /// <param name="handle">The pointer.</param>
         protected ReactiveView(IntPtr handle)
             : base(handle)
         {
@@ -63,7 +66,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView"/> class.
         /// </summary>
-        /// <param name="frame"></param>
+        /// <param name="frame">The frame.</param>
         protected ReactiveView(CGRect frame)
             : base(frame)
         {
@@ -77,12 +80,6 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
@@ -90,10 +87,13 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
@@ -106,6 +106,18 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveView>> Changed => this.GetChangedObservable();
 
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
         /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
@@ -117,19 +129,6 @@ namespace ReactiveUI
         {
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
-
-        /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
-
-        private Subject<Unit> _activated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Activated => _activated.AsObservable();
-
-        private Subject<Unit> _deactivated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
 #if UIKIT
         /// <inheritdoc/>
@@ -159,9 +158,16 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// This is a View that is both a NSView and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
     public abstract class ReactiveView<TViewModel> : ReactiveView, IViewFor<TViewModel>
         where TViewModel : class
     {
+        private TViewModel _viewModel;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
         /// </summary>
@@ -172,7 +178,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="c">The coder.</param>
         protected ReactiveView(NSCoder c)
             : base(c)
         {
@@ -181,7 +187,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
         /// </summary>
-        /// <param name="f"></param>
+        /// <param name="f">The object flag.</param>
         protected ReactiveView(NSObjectFlag f)
             : base(f)
         {
@@ -190,7 +196,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
         /// </summary>
-        /// <param name="handle"></param>
+        /// <param name="handle">The pointer.</param>
         protected ReactiveView(IntPtr handle)
             : base(handle)
         {
@@ -199,13 +205,11 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
         /// </summary>
-        /// <param name="frame"></param>
+        /// <param name="frame">The frame.</param>
         protected ReactiveView(CGRect frame)
             : base(frame)
         {
         }
-
-        private TViewModel _viewModel;
 
         /// <inheritdoc/>
         public TViewModel ViewModel

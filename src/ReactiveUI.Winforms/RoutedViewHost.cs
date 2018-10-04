@@ -18,6 +18,9 @@ namespace ReactiveUI.Winforms
         private Control _defaultContent;
         private IObservable<string> _viewContractObservable;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
+        /// </summary>
         public RoutedControlHost()
         {
             InitializeComponent();
@@ -79,24 +82,18 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
-
+        /// <summary>
+        /// Gets or sets the default content.
+        /// </summary>
+        /// <value>
+        /// The default content.
+        /// </value>
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
         public Control DefaultContent
@@ -116,6 +113,9 @@ namespace ReactiveUI.Winforms
             set => this.RaiseAndSetIfChanged(ref _router, value);
         }
 
+        /// <summary>
+        /// Gets or sets the view contract observable.
+        /// </summary>
         [Browsable(false)]
         public IObservable<string> ViewContractObservable
         {
@@ -123,8 +123,23 @@ namespace ReactiveUI.Winforms
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
         }
 
+        /// <summary>
+        /// Gets or sets the view locator.
+        /// </summary>
         [Browsable(false)]
         public IViewLocator ViewLocator { get; set; }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
 
         /// <summary>
         /// Clean up any resources being used.

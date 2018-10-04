@@ -11,6 +11,11 @@ using Splat;
 
 namespace ReactiveUI.Winforms
 {
+    /// <summary>
+    /// ActiveationForViewFetcher is how ReactiveUI determine when a
+    /// View is activated or deactivated. This is usually only used when porting
+    /// ReactiveUI to a new UI framework.
+    /// </summary>
     public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
     {
         private bool? _isDesignModeCache;

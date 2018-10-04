@@ -19,6 +19,9 @@ using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Loads and saves state to persistent storage.
+    /// </summary>
     public class WinRTAppDataDriver : ISuspensionDriver
     {
         /// <inheritdoc/>

@@ -39,6 +39,11 @@ namespace ReactiveUI.Blend
 
         private IDisposable _watcher;
 
+        /// <summary>
+        /// Called when [observable changed].
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             ObservableTrigger This = (ObservableTrigger)sender;

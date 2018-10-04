@@ -104,6 +104,7 @@ namespace ReactiveUI.Winforms.Legacy
     }
 
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
+#pragma warning disable SA1600 // Elements should be documented
     public static class ObservableCollectionMixin
     {
         /// <summary>
@@ -261,4 +262,6 @@ namespace ReactiveUI.Winforms.Legacy
             return @this.CreateDerivedBindingList(selector, null, filter, orderer, (IObservable<Unit>)null);
         }
     }
+
+#pragma warning restore SA1600 // Elements should be documented
 }

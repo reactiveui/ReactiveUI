@@ -18,9 +18,21 @@ using AppKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// ObservableForPropertyBase represents an object that knows how to
+    /// create notifications for a given type of object. Implement this if you
+    /// are porting RxUI to a new UI toolkit, or generally want to enable WhenAny
+    /// for another type of object that can be observed in a unique way.
+    /// </summary>
     [Preserve]
     public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     {
+        /// <summary>
+        /// Configuration map.
+        /// </summary>
+        private readonly Dictionary<Type, Dictionary<string, ObservablePropertyInfo>> _config =
+            new Dictionary<Type, Dictionary<string, ObservablePropertyInfo>>();
+
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
@@ -30,10 +42,10 @@ namespace ReactiveUI
             }
 
             var match = _config.Keys
-                .Where(x => x.IsAssignableFrom(type) && _config[x].Keys.Contains(propertyName))
-                .Select(x => _config[x][propertyName])
-                .OrderByDescending(x => x.Affinity)
-                .FirstOrDefault();
+                               .Where(x => x.IsAssignableFrom(type) && _config[x].Keys.Contains(propertyName))
+                               .Select(x => _config[x][propertyName])
+                               .OrderByDescending(x => x.Affinity)
+                               .FirstOrDefault();
 
             if (match == null)
             {
@@ -54,10 +66,10 @@ namespace ReactiveUI
             var type = sender.GetType();
 
             var match = _config.Keys
-                .Where(x => x.IsAssignableFrom(type) && _config[x].Keys.Contains(propertyName))
-                .Select(x => _config[x][propertyName])
-                .OrderByDescending(x => x.Affinity)
-                .FirstOrDefault();
+                               .Where(x => x.IsAssignableFrom(type) && _config[x].Keys.Contains(propertyName))
+                               .Select(x => _config[x][propertyName])
+                               .OrderByDescending(x => x.Affinity)
+                               .FirstOrDefault();
 
             if (match == null)
             {
@@ -65,38 +77,6 @@ namespace ReactiveUI
             }
 
             return match.CreateObservable((NSObject)sender, expression);
-        }
-
-        internal class ObservablePropertyInfo
-        {
-            public int Affinity;
-            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> CreateObservable;
-        }
-
-        /// <summary>
-        /// Configuration map.
-        /// </summary>
-        private readonly Dictionary<Type, Dictionary<string, ObservablePropertyInfo>> _config =
-            new Dictionary<Type, Dictionary<string, ObservablePropertyInfo>>();
-
-        /// <summary>
-        /// Registers an observable factory for the specified type and property.
-        /// </summary>
-        /// <param name="type">Type.</param>
-        /// <param name="property">Property.</param>
-        /// <param name="affinity">Affinity.</param>
-        /// <param name="createObservable">Create observable.</param>
-        protected void Register(Type type, string property, int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> createObservable)
-        {
-            Dictionary<string, ObservablePropertyInfo> typeProperties;
-            if (!_config.TryGetValue(type, out typeProperties))
-            {
-                typeProperties = new Dictionary<string, ObservablePropertyInfo>();
-                _config[type] = typeProperties;
-            }
-
-            var info = new ObservablePropertyInfo { Affinity = affinity, CreateObservable = createObservable };
-            typeProperties[property] = info;
         }
 
 #if UIKIT
@@ -158,7 +138,6 @@ namespace ReactiveUI
         /// <param name="sender">Sender.</param>
         /// <param name="expression">The expression.</param>
         /// <param name="eventName">The event name.</param>
-        /// <param name="notification">Notification.</param>
         protected static IObservable<IObservedChange<object, object>> ObservableFromEvent(NSObject sender, Expression expression, string eventName)
         {
             return Observable.Create<IObservedChange<object, object>>(subj =>
@@ -168,6 +147,32 @@ namespace ReactiveUI
                     subj.OnNext(new ObservedChange<object, object>(sender, expression));
                 });
             });
+        }
+
+        /// <summary>
+        /// Registers an observable factory for the specified type and property.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        /// <param name="property">Property.</param>
+        /// <param name="affinity">Affinity.</param>
+        /// <param name="createObservable">Create observable.</param>
+        protected void Register(Type type, string property, int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> createObservable)
+        {
+            Dictionary<string, ObservablePropertyInfo> typeProperties;
+            if (!_config.TryGetValue(type, out typeProperties))
+            {
+                typeProperties = new Dictionary<string, ObservablePropertyInfo>();
+                _config[type] = typeProperties;
+            }
+
+            var info = new ObservablePropertyInfo { Affinity = affinity, CreateObservable = createObservable };
+            typeProperties[property] = info;
+        }
+
+        internal class ObservablePropertyInfo
+        {
+            public int Affinity;
+            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> CreateObservable;
         }
     }
 }

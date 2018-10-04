@@ -11,6 +11,9 @@ using Foundation;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Loads and saves state to persistent storage.
+    /// </summary>
     public class AppSupportJsonSuspensionDriver : ISuspensionDriver
     {
         /// <inheritdoc/>

@@ -8,8 +8,15 @@ using UIKit;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// UI Kit command binder platform registrations.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.ICreatesCommandBinding" />
     public class UIKitCommandBinders : FlexibleCommandBinder
     {
+        /// <summary>
+        /// The UIKitCommandBinders instance.
+        /// </summary>
         public static Lazy<UIKitCommandBinders> Instance = new Lazy<UIKitCommandBinders>();
 
         /// <summary>

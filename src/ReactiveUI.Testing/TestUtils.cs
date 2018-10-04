@@ -13,7 +13,9 @@ using ReactiveUI;
 
 namespace ReactiveUI.Testing
 {
+#pragma warning disable SA1600 // Elements should be documented
     public static class TestUtils
+#pragma warning restore SA1600 // Elements should be documented
     {
         private static readonly AutoResetEvent schedGate = new AutoResetEvent(true);
         private static readonly object mbGate = 42;

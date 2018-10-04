@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -11,44 +11,79 @@ using Foundation;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This is a NSWindowController that is both a NSWindowController and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
     public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged<ReactiveWindowController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
+        /// </summary>
+        /// <param name="window">The window.</param>
         protected ReactiveWindowController(NSWindow window)
             : base(window)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
+        /// </summary>
+        /// <param name="windowNibName">Name of the window nib.</param>
         protected ReactiveWindowController(string windowNibName)
             : base(windowNibName)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
+        /// </summary>
+        /// <param name="windowNibName">Name of the window nib.</param>
+        /// <param name="owner">The owner.</param>
         protected ReactiveWindowController(string windowNibName, NSObject owner)
             : base(windowNibName, owner)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
+        /// </summary>
+        /// <param name="coder">The coder.</param>
         protected ReactiveWindowController(NSCoder coder)
             : base(coder)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
+        /// </summary>
+        /// <param name="t">The t.</param>
         protected ReactiveWindowController(NSObjectFlag t)
             : base(t)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
         protected ReactiveWindowController(IntPtr handle)
             : base(handle)
         {
             SetupRxObj();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
+        /// </summary>
         protected ReactiveWindowController()
         {
             SetupRxObj();
@@ -56,6 +91,29 @@ namespace ReactiveUI
 
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging;
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Represents an Observable that fires *before* a property is about to
+        /// be changed.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveWindowController>> Changing => this.GetChangingObservable();
+
+        /// <summary>
+        /// Represents an Observable that fires *after* a property has changed.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveWindowController>> Changed => this.GetChangedObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated;
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated;
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
@@ -68,9 +126,6 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             var handler = PropertyChanged;
@@ -78,33 +133,6 @@ namespace ReactiveUI
             {
                 handler(this, args);
             }
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveWindowController>> Changing
-        {
-            get { return this.GetChangingObservable(); }
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveWindowController>> Changed
-        {
-            get { return this.GetChangedObservable(); }
-        }
-
-        /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions
-        {
-            get { return this.GetThrownExceptionsObservable(); }
-        }
-
-        private void SetupRxObj()
-        {
         }
 
         /// <summary>
@@ -119,22 +147,6 @@ namespace ReactiveUI
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
 
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Activated
-        {
-            get { return _activated; }
-        }
-
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Deactivated
-        {
-            get { return _deactivated; }
-        }
-
         /// <inheritdoc/>
         public override void WindowDidLoad()
         {
@@ -147,6 +159,10 @@ namespace ReactiveUI
                 .AddObserver(NSWindow.WillCloseNotification, _ => _deactivated.OnNext(Unit.Default), Window);
 
             _activated.OnNext(Unit.Default);
+        }
+
+        private void SetupRxObj()
+        {
         }
     }
 }
