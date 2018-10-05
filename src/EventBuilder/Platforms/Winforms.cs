@@ -6,8 +6,16 @@ using System;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// Win Forms platform assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class Winforms : BasePlatform
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Winforms"/> class.
+        /// </summary>
+        /// <exception cref="NotSupportedException">Building events for Winforms on Mac is not implemented.</exception>
         public Winforms()
         {
             if (PlatformHelper.IsRunningOnMono())

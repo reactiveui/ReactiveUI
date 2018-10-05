@@ -82,6 +82,11 @@ namespace EventBuilder.Cecil
                     .ToArray();
         }
 
+        /// <summary>
+        /// Creates the specified target assemblies.
+        /// </summary>
+        /// <param name="targetAssemblies">The target assemblies.</param>
+        /// <returns>The namespace information for the assemblies.</returns>
         public static NamespaceInfo[] Create(AssemblyDefinition[] targetAssemblies)
         {
             var publicTypesWithEvents = targetAssemblies

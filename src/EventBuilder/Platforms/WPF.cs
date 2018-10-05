@@ -6,8 +6,16 @@ using System;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// WPF platform assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class WPF : BasePlatform
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WPF"/> class.
+        /// </summary>
+        /// <exception cref="NotSupportedException">Building events for WPF on Mac is not implemented.</exception>
         public WPF()
         {
             if (PlatformHelper.IsRunningOnMono())

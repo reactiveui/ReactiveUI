@@ -7,10 +7,17 @@ using Serilog;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// Xamarin Essentials  platform.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class Essentials : BasePlatform
     {
         private const string _packageName = "Xamarin.Essentials";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Essentials"/> class.
+        /// </summary>
         public Essentials()
         {
             var packageUnzipPath = Environment.CurrentDirectory;

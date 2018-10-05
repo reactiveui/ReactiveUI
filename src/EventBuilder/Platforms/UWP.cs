@@ -6,6 +6,10 @@ using System;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// UWP platform assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class UWP : BasePlatform
     {
         public UWP()

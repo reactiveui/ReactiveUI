@@ -8,8 +8,16 @@ using System.Linq;
 namespace EventBuilder.Platforms
 {
     // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// Mac platform assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class Mac : BasePlatform
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Mac"/> class.
+        /// </summary>
+        /// <param name="referenceAssembliesLocation">The reference assemblies location.</param>
         public Mac(string referenceAssembliesLocation)
         {
             if (PlatformHelper.IsRunningOnMono())

@@ -8,8 +8,16 @@ using System.Linq;
 namespace EventBuilder.Platforms
 {
     // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// TV OS platform assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class TVOS : BasePlatform
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TVOS"/> class.
+        /// </summary>
+        /// <param name="referenceAssembliesLocation">The reference assemblies location.</param>
         public TVOS(string referenceAssembliesLocation)
         {
             if (PlatformHelper.IsRunningOnMono())

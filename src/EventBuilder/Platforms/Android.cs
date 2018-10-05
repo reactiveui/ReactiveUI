@@ -7,8 +7,17 @@ using System.Linq;
 
 namespace EventBuilder.Platforms
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// The Android platform.
+    /// </summary>
+    /// <seealso cref="T:EventBuilder.Platforms.BasePlatform" />
     public class Android : BasePlatform
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EventBuilder.Platforms.Android" /> class.
+        /// </summary>
+        /// <param name="referenceAssembliesLocation">The reference assemblies location.</param>
         public Android(string referenceAssembliesLocation)
         {
             if (PlatformHelper.IsRunningOnMono())

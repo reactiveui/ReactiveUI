@@ -11,6 +11,11 @@ namespace EventBuilder.Cecil
 {
     public static class DelegateTemplateInformation
     {
+        /// <summary>
+        /// Creates namespace information from the specified target assemblies.
+        /// </summary>
+        /// <param name="targetAssemblies">The target assemblies.</param>
+        /// <returns>The namespaces in the target assemblies.</returns>
         public static NamespaceInfo[] Create(AssemblyDefinition[] targetAssemblies)
         {
             var garbageTypeList = new[]
