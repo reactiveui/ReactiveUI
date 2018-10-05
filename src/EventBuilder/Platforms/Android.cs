@@ -9,15 +9,15 @@ namespace EventBuilder.Platforms
 {
     public class Android : BasePlatform
     {
-        public override AutoPlatform Platform => AutoPlatform.Android;
-
         public Android(string referenceAssembliesLocation)
         {
-            if (PlatformHelper.IsRunningOnMono()) {
+            if (PlatformHelper.IsRunningOnMono())
+            {
                 var sdks =
                     Directory.GetFiles(
                         @"/Library/Frameworks/Xamarin.Android.framework/Libraries/xbuild-frameworks/MonoAndroid",
-                        "Mono.Android.dll", SearchOption.AllDirectories);
+                        "Mono.Android.dll",
+                        SearchOption.AllDirectories);
 
                 var latestVersion = sdks.Last();
                 Assemblies.Add(latestVersion);
@@ -25,11 +25,15 @@ namespace EventBuilder.Platforms
                 CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
                 CecilSearchDirectories.Add(
                     "/Library/Frameworks/Xamarin.Android.framework/Libraries/xbuild-frameworks/MonoAndroid/v1.0");
-            } else {
+            }
+            else
+            {
 
                 var assemblies =
-                   Directory.GetFiles(Path.Combine(referenceAssembliesLocation, "MonoAndroid"),
-                       "Mono.Android.dll", SearchOption.AllDirectories);
+                   Directory.GetFiles(
+                       Path.Combine(referenceAssembliesLocation, "MonoAndroid"),
+                       "Mono.Android.dll",
+                       SearchOption.AllDirectories);
 
                 // Pin to a particular framework version https://github.com/reactiveui/ReactiveUI/issues/1517
                 var latestVersion = assemblies.Last(x => x.Contains("v8"));
@@ -39,5 +43,8 @@ namespace EventBuilder.Platforms
                 CecilSearchDirectories.Add(Path.Combine(referenceAssembliesLocation, "MonoAndroid", "v1.0"));
             }
         }
+
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.Android;
     }
 }

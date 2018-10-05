@@ -2,16 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Mono.Cecil;
 using System.Linq;
+using Mono.Cecil;
 
 namespace EventBuilder.Cecil
 {
     public static class SafeTypes
     {
-        public static TypeDefinition[] GetSafeTypes(AssemblyDefinition a)
-        {
-            return a.Modules.SelectMany(x => x.GetTypes()).ToArray();
-        }
+        public static TypeDefinition[] GetSafeTypes(AssemblyDefinition a) =>
+            a.Modules.SelectMany(x => x.GetTypes()).ToArray();
     }
 }

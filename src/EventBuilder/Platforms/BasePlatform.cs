@@ -17,6 +17,7 @@ namespace EventBuilder.Platforms
         public abstract AutoPlatform Platform { get; }
 
         public List<string> Assemblies { get; set; }
+
         public List<string> CecilSearchDirectories { get; set; }
     }
 }

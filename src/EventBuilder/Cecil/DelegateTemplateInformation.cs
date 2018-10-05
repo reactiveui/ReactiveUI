@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using EventBuilder.Entities;
-using Mono.Cecil;
 using System;
 using System.Linq;
+using EventBuilder.Entities;
+using Mono.Cecil;
 
 namespace EventBuilder.Cecil
 {
@@ -16,21 +16,23 @@ namespace EventBuilder.Cecil
             var garbageTypeList = new[]
             {
                 "AVPlayerItemLegibleOutputPushDelegate"
+
                 // NB: Aparrently this used to break "build on device because of reasons". We don't know what these reasons are and this may not be needed anymore.
             };
 
             var publicDelegateTypes = targetAssemblies
-                .SelectMany(x => SafeTypes.GetSafeTypes(x))
+                .SelectMany(SafeTypes.GetSafeTypes)
                 .Where(x => x.IsPublic && !x.IsInterface && !x.HasGenericParameters && IsCocoaDelegateName(x.Name))
                 .Where(x => x.BaseType == null || !x.BaseType.FullName.Contains("MulticastDelegate"))
                 .Where(x => !garbageTypeList.Any(y => x.FullName.Contains(y)))
-                .Select(x => new {Type = x, Delegates = GetPublicDelegateMethods(x)})
+                .Select(x => new { Type = x, Delegates = GetPublicDelegateMethods(x) })
                 .Where(x => x.Delegates.Length > 0)
                 .ToArray();
 
             var namespaceData = publicDelegateTypes
                 .GroupBy(x => x.Type.Namespace)
-                //.Where(x => !garbageNamespaceList.Contains(x.Key))    // NB: We don't know why this is disabled.
+
+                // .Where(x => !garbageNamespaceList.Contains(x.Key))    // NB: We don't know why this is disabled.
                 .Select(x => new NamespaceInfo
                 {
                     Name = x.Key,
@@ -38,7 +40,7 @@ namespace EventBuilder.Cecil
                     {
                         Name = y.Type.Name,
                         Type = y.Type,
-                        Abstract = y.Type.IsAbstract ? "abstract" : "",
+                        Abstract = y.Type.IsAbstract ? "abstract" : string.Empty,
                         ZeroParameterMethods =
                             y.Delegates.Where(z => z.Parameters.Count == 0).Select(z => new ParentInfo
                             {
@@ -56,7 +58,8 @@ namespace EventBuilder.Cecil
                             {
                                 Name = z.Name,
                                 ParameterList =
-                                    string.Join(", ",
+                                    string.Join(
+                                        ", ",
                                         z.Parameters.Select(
                                             a => string.Format("{0} {1}", a.ParameterType.FullName, a.Name))),
                                 ParameterTypeList =
@@ -71,14 +74,22 @@ namespace EventBuilder.Cecil
 
         private static bool IsCocoaDelegateName(string name)
         {
-            if (name.EndsWith("Delegate", StringComparison.OrdinalIgnoreCase)) return true;
-            if (name.EndsWith("UITableViewSource", StringComparison.OrdinalIgnoreCase)) return true;
+            if (name.EndsWith("Delegate", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (name.EndsWith("UITableViewSource", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
             return false;
         }
 
         private static MethodDefinition[] GetPublicDelegateMethods(TypeDefinition t)
         {
-            var bannedMethods = new[] {"Dispose", "Finalize"};
+            var bannedMethods = new[] { "Dispose", "Finalize" };
             return t.Methods
                 .Where(x => x.IsVirtual && !x.IsConstructor && !x.IsSetter && x.ReturnType.FullName == "System.Void")
                 .Where(x => x.Parameters.All(y => y.ParameterType.FullName.Contains("&") == false))

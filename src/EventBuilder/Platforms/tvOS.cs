@@ -10,20 +10,23 @@ namespace EventBuilder.Platforms
     // ReSharper disable once InconsistentNaming
     public class TVOS : BasePlatform
     {
-        public override AutoPlatform Platform => AutoPlatform.TVOS;
-		
         public TVOS(string referenceAssembliesLocation)
         {
-            if (PlatformHelper.IsRunningOnMono()) {
+            if (PlatformHelper.IsRunningOnMono())
+            {
                 var assembly =
                     @"/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.TVOS10/Xamarin.TVOS10.dll";
                 Assemblies.Add(assembly);
 
                 CecilSearchDirectories.Add(Path.GetDirectoryName(assembly));
-            } else {
+            }
+            else
+            {
                 var assemblies =
-                    Directory.GetFiles(Path.Combine(referenceAssembliesLocation, "Xamarin.TVOS"),
-                        "Xamarin.TVOS.dll", SearchOption.AllDirectories);
+                    Directory.GetFiles(
+                        Path.Combine(referenceAssembliesLocation, "Xamarin.TVOS"),
+                        "Xamarin.TVOS.dll",
+                        SearchOption.AllDirectories);
 
                 var latestVersion = assemblies.Last();
                 Assemblies.Add(latestVersion);
@@ -31,5 +34,8 @@ namespace EventBuilder.Platforms
                 CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
             }
         }
+
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.TVOS;
     }
 }

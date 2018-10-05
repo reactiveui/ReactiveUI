@@ -14,15 +14,19 @@ namespace EventBuilder.Platforms
 
         public iOS(string referenceAssembliesLocation)
         {
-            if (PlatformHelper.IsRunningOnMono()) {
+            if (PlatformHelper.IsRunningOnMono())
+            {
                 var assembly =
                     @"/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.iOS/Xamarin.iOS.dll";
                 Assemblies.Add(assembly);
 
                 CecilSearchDirectories.Add(Path.GetDirectoryName(assembly));
-            } else {
+            }
+            else
+            {
                 var assemblies =
-                    Directory.GetFiles(Path.Combine(referenceAssembliesLocation, "Xamarin.iOS"),
+                    Directory.GetFiles(
+                        Path.Combine(referenceAssembliesLocation, "Xamarin.iOS"),
                         "Xamarin.iOS.dll", SearchOption.AllDirectories);
 
                 var latestVersion = assemblies.Last();

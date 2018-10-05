@@ -8,34 +8,15 @@ using CommandLine.Text;
 
 namespace EventBuilder
 {
-    public enum AutoPlatform
-    {
-        None,
-        Android,
-        iOS,
-        Mac,
-        Tizen,
-        WPF,
-        XamForms,
-        UWP,
-        Winforms,
-        TVOS,
-        Essentials
-    }
-
     public class CommandLineOptions
     {
         [ParserState]
         public IParserState LastParserState { get; set; }
 
-        [Option('p', "platform", Required = true,
-            HelpText =
-                "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, WPF, MAC, TIZEN, UWP, XAMFORMS, WINFORMS, TVOS"
-            )]
+        [Option('p', "platform", Required = true, HelpText = "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, WPF, MAC, TIZEN, UWP, XAMFORMS, WINFORMS, TVOS")]
         public AutoPlatform Platform { get; set; }
 
-        [Option('t', "template", Required = false,
-            HelpText = "Specify another mustache template other than the default.")]
+        [Option('t', "template", Required = false, HelpText = "Specify another mustache template other than the default.")]
         public string Template { get; set; }
 
         [Option('r', "reference", Required = false, HelpText = "Specify a Reference Assemblies location to override the default")]
@@ -48,7 +29,8 @@ namespace EventBuilder
         [HelpOption]
         public string GetUsage()
         {
-            return HelpText.AutoBuild(this,
+            return HelpText.AutoBuild(
+                this,
                 current => HelpText.DefaultParsingErrorsHandler(this, current));
         }
     }
