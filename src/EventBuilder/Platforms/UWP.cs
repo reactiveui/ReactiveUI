@@ -12,6 +12,10 @@ namespace EventBuilder.Platforms
     /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class UWP : BasePlatform
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UWP"/> class.
+        /// </summary>
+        /// <exception cref="NotSupportedException">Building events for UWP on Mac is not implemented yet.</exception>
         public UWP()
         {
             if (PlatformHelper.IsRunningOnMono())

@@ -7,8 +7,16 @@ using Mono.Cecil;
 
 namespace EventBuilder.Cecil
 {
+    /// <summary>
+    /// Safe type helper methods.
+    /// </summary>
     public static class SafeTypes
     {
+        /// <summary>
+        /// Gets the safe types from an assembly definition.
+        /// </summary>
+        /// <param name="a">The assembly definition.</param>
+        /// <returns>Type definitions from the assembly.</returns>
         public static TypeDefinition[] GetSafeTypes(AssemblyDefinition a) =>
             a.Modules.SelectMany(x => x.GetTypes()).ToArray();
     }

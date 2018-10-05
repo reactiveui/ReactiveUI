@@ -10,15 +10,29 @@ using Serilog;
 
 namespace EventBuilder.Cecil
 {
+    /// <summary>
+    /// Assembly resolver.
+    /// </summary>
+    /// <seealso cref="Mono.Cecil.IAssemblyResolver" />
     public class PathSearchAssemblyResolver : IAssemblyResolver
     {
         private readonly string[] _targetAssemblyDirs;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PathSearchAssemblyResolver"/> class.
+        /// </summary>
+        /// <param name="targetAssemblyDirs">The target assembly dirs.</param>
         public PathSearchAssemblyResolver(string[] targetAssemblyDirs)
         {
             _targetAssemblyDirs = targetAssemblyDirs;
         }
 
+        /// <summary>
+        /// Resolves the specified full assembly name.
+        /// </summary>
+        /// <param name="fullName">The full name.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>The assembly definition.</returns>
         public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
         {
             var dllName = fullName.Split(',')[0] + ".dll";
@@ -49,6 +63,11 @@ namespace EventBuilder.Cecil
             return AssemblyDefinition.ReadAssembly(fullPath, parameters);
         }
 
+        /// <summary>
+        /// Resolves the specified full assembly name.
+        /// </summary>
+        /// <param name="fullName">The full name.</param>
+        /// <returns>The assembly definition.</returns>
         public AssemblyDefinition Resolve(string fullName)
         {
             var dllName = fullName.Split(',')[0] + ".dll";
@@ -78,11 +97,22 @@ namespace EventBuilder.Cecil
             return AssemblyDefinition.ReadAssembly(fullPath);
         }
 
+        /// <summary>
+        /// Resolves the specified full assembly name.
+        /// </summary>
+        /// <param name="name">The assembly name reference.</param>
+        /// <param name="parameters">The reader parameters.</param>
+        /// <returns>The assembly definition.</returns>
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
         {
             return Resolve(name.FullName, parameters);
         }
 
+        /// <summary>
+        /// Resolves the specified full assembly name.
+        /// </summary>
+        /// <param name="name">The assembly name reference.</param>
+        /// <returns>The assembly definition.</returns>
         public AssemblyDefinition Resolve(AssemblyNameReference name)
         {
             return Resolve(name.FullName);

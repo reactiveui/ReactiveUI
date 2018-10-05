@@ -5,8 +5,79 @@ using Mono.Cecil;
 
 namespace EventBuilder.Cecil
 {
+    /// <summary>
+    /// Static event template methods.
+    /// </summary>
     public static class StaticEventTemplateInformation
     {
+        /// <summary>
+        /// Creates the specified target assemblies.
+        /// </summary>
+        /// <param name="targetAssemblies">The target assemblies.</param>
+        /// <returns>The namespace information for the assemblies.</returns>
+        public static NamespaceInfo[] Create(AssemblyDefinition[] targetAssemblies)
+        {
+            var publicTypesWithEvents = targetAssemblies
+                .SelectMany(SafeTypes.GetSafeTypes)
+                .Where(x => x.IsPublic && !x.HasGenericParameters)
+                .Select(x => new { Type = x, Events = GetPublicEvents(x) })
+                .Where(x => x.Events.Length > 0)
+                .ToArray();
+
+            var garbageNamespaceList = new[]
+            {
+                "ReactiveUI.Events"
+            };
+
+            var namespaceData = publicTypesWithEvents
+                .GroupBy(x => x.Type.Namespace)
+                .Where(x => !garbageNamespaceList.Contains(x.Key))
+                .Select(x => new NamespaceInfo
+                {
+                    Name = x.Key,
+                    Types = x.Select(y => new PublicTypeInfo
+                    {
+                        Name = y.Type.Name,
+                        Type = y.Type,
+                        Events = y.Events.Select(z => new PublicEventInfo
+                        {
+                            Name = z.Name,
+                            EventHandlerType = GetRealTypeName(z.EventType),
+                            EventArgsType = GetEventArgsTypeForEvent(z)
+                        }).ToArray()
+                    }).ToArray()
+                }).ToArray();
+
+            foreach (var type in namespaceData.SelectMany(x => x.Types))
+            {
+                var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => GetPublicEvents(x).Any());
+                if (parentWithEvents == null)
+                {
+                    continue;
+                }
+
+                type.Parent = new ParentInfo { Name = parentWithEvents.FullName };
+            }
+
+            return namespaceData;
+        }
+
+        private static IEnumerable<TypeDefinition> GetParents(TypeDefinition type)
+        {
+            var current = type.BaseType != null && type.BaseType.ToString() != "System.Object"
+                ? type.BaseType.Resolve()
+                : null;
+
+            while (current != null)
+            {
+                yield return current.Resolve();
+
+                current = current.BaseType != null
+                    ? current.BaseType.Resolve()
+                    : null;
+            }
+        }
+
         private static string GetEventArgsTypeForEvent(EventDefinition ei)
         {
             // Find the EventArgs type parameter of the event via digging around via reflection
@@ -80,74 +151,6 @@ namespace EventBuilder.Cecil
                         return x.AddMethod.IsPublic && GetEventArgsTypeForEvent(x) != null;
                     })
                     .ToArray();
-        }
-
-        /// <summary>
-        /// Creates the specified target assemblies.
-        /// </summary>
-        /// <param name="targetAssemblies">The target assemblies.</param>
-        /// <returns>The namespace information for the assemblies.</returns>
-        public static NamespaceInfo[] Create(AssemblyDefinition[] targetAssemblies)
-        {
-            var publicTypesWithEvents = targetAssemblies
-                .SelectMany(SafeTypes.GetSafeTypes)
-                .Where(x => x.IsPublic && !x.HasGenericParameters)
-                .Select(x => new { Type = x, Events = GetPublicEvents(x) })
-                .Where(x => x.Events.Length > 0)
-                .ToArray();
-
-            var garbageNamespaceList = new[]
-            {
-                "ReactiveUI.Events"
-            };
-
-            var namespaceData = publicTypesWithEvents
-                .GroupBy(x => x.Type.Namespace)
-                .Where(x => !garbageNamespaceList.Contains(x.Key))
-                .Select(x => new NamespaceInfo
-                {
-                    Name = x.Key,
-                    Types = x.Select(y => new PublicTypeInfo
-                    {
-                        Name = y.Type.Name,
-                        Type = y.Type,
-                        Events = y.Events.Select(z => new PublicEventInfo
-                        {
-                            Name = z.Name,
-                            EventHandlerType = GetRealTypeName(z.EventType),
-                            EventArgsType = GetEventArgsTypeForEvent(z)
-                        }).ToArray()
-                    }).ToArray()
-                }).ToArray();
-
-            foreach (var type in namespaceData.SelectMany(x => x.Types))
-            {
-                var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => GetPublicEvents(x).Any());
-                if (parentWithEvents == null)
-                {
-                    continue;
-                }
-
-                type.Parent = new ParentInfo { Name = parentWithEvents.FullName };
-            }
-
-            return namespaceData;
-        }
-
-        private static IEnumerable<TypeDefinition> GetParents(TypeDefinition type)
-        {
-            var current = type.BaseType != null && type.BaseType.ToString() != "System.Object"
-                ? type.BaseType.Resolve()
-                : null;
-
-            while (current != null)
-            {
-                yield return current.Resolve();
-
-                current = current.BaseType != null
-                    ? current.BaseType.Resolve()
-                    : null;
-            }
         }
     }
 }

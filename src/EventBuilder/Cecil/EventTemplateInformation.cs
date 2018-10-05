@@ -9,6 +9,9 @@ using Mono.Cecil;
 
 namespace EventBuilder.Cecil
 {
+    /// <summary>
+    /// Event template information about events and handlers.
+    /// </summary>
     public static class EventTemplateInformation
     {
         private static readonly Dictionary<string, string> SubstitutionList = new Dictionary<string, string>
@@ -141,6 +144,11 @@ namespace EventBuilder.Cecil
                     .ToArray();
         }
 
+        /// <summary>
+        /// Creates namespace information from the specified target assemblies.
+        /// </summary>
+        /// <param name="targetAssemblies">The target assemblies.</param>
+        /// <returns>The namespaces in the target assemblies.</returns>
         public static NamespaceInfo[] Create(AssemblyDefinition[] targetAssemblies)
         {
             var publicTypesWithEvents = targetAssemblies

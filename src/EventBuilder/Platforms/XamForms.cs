@@ -11,10 +11,17 @@ using Serilog;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// Xamarin Forms assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class XamForms : BasePlatform
     {
         private const string _packageName = "Xamarin.Forms";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XamForms"/> class.
+        /// </summary>
         public XamForms()
         {
             var packageUnzipPath = Environment.CurrentDirectory;

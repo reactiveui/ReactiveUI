@@ -9,6 +9,9 @@ using Mono.Cecil;
 
 namespace EventBuilder.Cecil
 {
+    /// <summary>
+    /// Represents delegate handler mapping from assemblies.
+    /// </summary>
     public static class DelegateTemplateInformation
     {
         /// <summary>

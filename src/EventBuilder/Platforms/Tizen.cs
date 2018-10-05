@@ -11,10 +11,17 @@ using Serilog;
 
 namespace EventBuilder.Platforms
 {
+    /// <summary>
+    /// Tizen platform assemblies and events.
+    /// </summary>
+    /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class Tizen : BasePlatform
     {
         private const string _packageName = "Tizen.NET";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tizen"/> class.
+        /// </summary>
         public Tizen()
         {
             var packageUnzipPath = Environment.CurrentDirectory;
