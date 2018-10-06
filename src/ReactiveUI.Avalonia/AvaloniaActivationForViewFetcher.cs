@@ -6,7 +6,7 @@ using Avalonia.VisualTree;
 
 namespace ReactiveUI.Avalonia
 {
-    public class ActivationForViewFetcher : IActivationForViewFetcher
+    public class AvaloniaActivationForViewFetcher : IActivationForViewFetcher
     {
         public int GetAffinityForView(Type view)
         {
