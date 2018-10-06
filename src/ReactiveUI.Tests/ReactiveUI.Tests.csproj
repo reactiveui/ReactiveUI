@@ -46,6 +46,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Compile Include="Platforms\Winforms\**\*.cs" />
     <Compile Include="Platforms\Xaml\**\*.cs" />
+    <Compile Include="Platforms\avalonia\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
