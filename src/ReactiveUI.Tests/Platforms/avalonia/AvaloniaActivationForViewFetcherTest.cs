@@ -8,7 +8,6 @@ using Avalonia.Platform;
 using Avalonia;
 using DynamicData;
 using Xunit;
-using Splat;
 
 namespace ReactiveUI.Tests.Platforms.Avalonia
 {
@@ -71,22 +70,15 @@ namespace ReactiveUI.Tests.Platforms.Avalonia
         [Fact]
         public void ActivationForViewFetcherShouldSupportWhenActivated()
         {
-            var locator = new ModernDependencyResolver();
-            locator.InitializeSplat();
-            locator.InitializeReactiveUI();
-            locator.Register(() => new AvaloniaActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-            using (locator.WithResolver()) 
-            {
-                var userControl = new TestUserControlWithWhenActivated();
-                Assert.False(userControl.Active);
+            var userControl = new TestUserControlWithWhenActivated();
+            Assert.False(userControl.Active);
 
-                var fakeRenderedDecorator = new FakeRenderDecorator();
-                fakeRenderedDecorator.Child = userControl;
-                Assert.True(userControl.Active);
+            var fakeRenderedDecorator = new FakeRenderDecorator();
+            fakeRenderedDecorator.Child = userControl;
+            Assert.True(userControl.Active);
 
-                fakeRenderedDecorator.Child = null;
-                Assert.False(userControl.Active);
-            }
+            fakeRenderedDecorator.Child = null;
+            Assert.False(userControl.Active);
         }
     }
 }
