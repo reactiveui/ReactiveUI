@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using Avalonia;
 using Avalonia.Controls;
 using DynamicData;
-using ReactiveUI.Avalonia;
 using Xunit;
 
 namespace ReactiveUI.Tests.Platforms.Avalonia
@@ -37,86 +33,37 @@ namespace ReactiveUI.Tests.Platforms.Avalonia
         }
 
         [Fact]
-        public void GetAffinityForObjectShouldReturnZeroOnlyIfPropertyDoesntExist()
-        {
-            var createsObservable = new AvaloniaObjectObservableForProperty();
-            var objectType = typeof(AvaloniaObjectFixture);
-
-            Assert.NotEqual(0, createsObservable.GetAffinityForObject(objectType, "Text"));
-            Assert.Equal(0, createsObservable.GetAffinityForObject(objectType, "DoesntExist"));
-        }
-
-        [Fact]
-        public void ObservableForPropertyShouldSendNotificationsWhenPropertyChanges()
+        public void AvaloniaObjectShouldSupportWhenAnyValue()
         {
             var avaloniaObjectFixture = new AvaloniaObjectFixture();
-            var propertyName = nameof(avaloniaObjectFixture.Text);
-            Expression<Func<AvaloniaObjectFixture, string>> expression = x => x.Text;
-
-            var notifications = new List<IObservedChange<object, object>>();
-            var subscription = new AvaloniaObjectObservableForProperty()
-                .GetNotificationForProperty(avaloniaObjectFixture, expression, propertyName)
-                .Subscribe(notifications.Add);
-
-            avaloniaObjectFixture.Text = "Hello!";
-            Assert.Equal(1, notifications.Count);
-
-            avaloniaObjectFixture.Text = "World!";
-            Assert.Equal(2, notifications.Count);
-            subscription.Dispose();
-        }
-
-        [Fact]
-        public void GetAffinityForDerivedObjectShouldReturnZeroOnlyIfPropertyDoesntExist()
-        {
-            var createsObservable = new AvaloniaObjectObservableForProperty();
-            var objectType = typeof(DerivedAvaloniaObjectFixture);
-
-            Assert.NotEqual(0, createsObservable.GetAffinityForObject(objectType, "Text"));
-            Assert.Equal(0, createsObservable.GetAffinityForObject(objectType, "DoesntExist"));
-        }
-
-        [Fact]
-        public void ObservableForPropertyShouldSendNotificationsWhenDerivedPropertyChanges()
-        {
-            var avaloniaObjectFixture = new DerivedAvaloniaObjectFixture();
-            var propertyName = nameof(avaloniaObjectFixture.Text);
-            Expression<Func<DerivedAvaloniaObjectFixture, string>> expression = x => x.Text;
-
-            var notifications = new List<IObservedChange<object, object>>();
-            var subscription = new AvaloniaObjectObservableForProperty()
-                .GetNotificationForProperty(avaloniaObjectFixture, expression, propertyName)
-                .Subscribe(notifications.Add);
-
-            avaloniaObjectFixture.Text = "Hello!";
-            Assert.Equal(1, notifications.Count);
-
-            avaloniaObjectFixture.Text = "World!";
-            Assert.Equal(2, notifications.Count);
-            subscription.Dispose();
-        }
-        
-        [Fact]
-        public void AvaloniaPropertyShouldSupportWhenAnyValue()
-        {
-            var inputs = new[] { "Foo", "Bar", "Baz" };
-            var avaloniaObjectFixture = new DerivedAvaloniaObjectFixture();
-
-            avaloniaObjectFixture
-                .WhenAnyValue(x => x.Text)
+            avaloniaObjectFixture.WhenAnyValue(x => x.Text)
                 .ToObservableChangeSet()
-                .Bind(out var propertyValues)
+                .Bind(out var changes)
                 .Subscribe();
+            Assert.Equal(1, changes.Count);
 
-            inputs.ForEach(x => avaloniaObjectFixture.Text = x);
-            var allPropertiesEqual = inputs
-                .Zip(propertyValues.Skip(1),
-                    (expected, actual) => expected == actual)
-                .All(x => x);
+            avaloniaObjectFixture.Text = "Foo";
+            Assert.Equal(2, changes.Count);
 
-            Assert.Null(propertyValues.First());
-            Assert.Equal(4, propertyValues.Count);
-            Assert.True(allPropertiesEqual);
+            avaloniaObjectFixture.Text = "Bar";
+            Assert.Equal(3, changes.Count);
+        }
+
+        [Fact]
+        public void AvaloniaDerivedObjectShouldSupportWhenAnyValue()
+        {
+            var avaloniaObjectFixture = new DerivedAvaloniaObjectFixture();
+            avaloniaObjectFixture.WhenAnyValue(x => x.Text)
+                .ToObservableChangeSet()
+                .Bind(out var changes)
+                .Subscribe();
+            Assert.Equal(1, changes.Count);
+
+            avaloniaObjectFixture.Text = "Foo";
+            Assert.Equal(2, changes.Count);
+
+            avaloniaObjectFixture.Text = "Bar";
+            Assert.Equal(3, changes.Count);
         }
 
         [Fact]

@@ -8,7 +8,6 @@ namespace ReactiveUI.Avalonia
         public void Register(Action<Func<object>, Type> registerFunction)
         {
             registerFunction(() => new AvaloniaActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-            registerFunction(() => new AvaloniaObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         }
     }
