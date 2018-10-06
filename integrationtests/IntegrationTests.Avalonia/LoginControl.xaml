@@ -1,0 +1,19 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <StackPanel Width="300" Margin="50">
+
+    <TextBlock Text="User name:" Margin="5 0" />
+    <TextBox Text="{Binding UserName, Mode=TwoWay}" Margin="5" />
+
+    <TextBlock Text="Password:" Margin="5 0" />
+    <TextBox Text="{Binding Password, Mode=TwoWay}" Margin="5" />
+
+    <Button Content="Login" 
+            Command="{Binding Login}"  
+            Margin="5" />
+    <Button Content="Cancel" 
+            Command="{Binding Cancel}" 
+            Margin="5" />
+
+  </StackPanel>
+</UserControl>
