@@ -21,13 +21,11 @@ namespace {{Name}}
 {{#Types}}
 {{#Events}}
         public static IObservable<{{EventArgsType}}>
-    {{#Type}}{{Name}}{{/Type}}{{Name}}()
-    => Observable
-    .FromEventPattern<{{EventArgsType}}>
-        (
-        x => {{#Type}}{{Name}}{{/Type}}.{{Name}} += x,
-        x => {{#Type}}{{Name}}{{/Type}}.{{Name}} -= x)
-        .Select(x => x.EventArgs);
+    {{#Type}}{{Name}}{{/Type}}{{Name}}() =>
+        Observable.FromEventPattern<{{EventArgsType}}>(
+            x => {{#Type}}{{Name}}{{/Type}}.{{Name}} += x,
+            x => {{#Type}}{{Name}}{{/Type}}.{{Name}} -= x)
+                    .Select(x => x.EventArgs);
 
         {{/Events}}
         {{/Types}}
