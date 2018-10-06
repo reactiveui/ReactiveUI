@@ -20,73 +20,96 @@ using {{Name}};
 {{#Namespaces}}
 namespace {{Name}}
 {
+    /// <summary>
+    /// Methods that expose events for the platform.
+    /// </summary>
     public static class EventsMixin
     {
+        /// <summary>
+        /// This class emits {{Name}} events as observables.
+        /// </summary>
 {{#Types}}
-        public static {{Name}}Events Events(this {{Name}} This)
+        public static {{Name}}Events Events(this {{Name}} @this)
         {
-            return new {{Name}}Events(This);
+            return new {{Name}}Events(@this);
         }
 {{/Types}}
     }
 
+    /// <summary>
+    /// This class emits {{Name}} events as observables.
+    /// </summary>
 {{#Types}}
     public class {{Name}}Events
 {{#Parent}}
         : {{Name}}Events
 {{/Parent}}
     {
-        {{Name}} This;
-
-        public {{Name}}Events({{Name}} This)
+{{Name}} _this;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="{{Name}}" /> class.
+        /// </summary>
+        /// <param name="@this">The this.</param>
+        public {{Name}}Events({{Name}} @this)
 {{#Parent}}
-            : base(This)
+            : base(@this)
 {{/Parent}}
         {
-            this.This = This;
+            _this = @this;
         }
 
 {{#Events}}
 
-        {{#ObsoleteEventInfo}}
+        /// <summary>
+        /// Returns an observable sequence of {{EventArgsType}}.
+        /// </summary>
+{{#ObsoleteEventInfo}}
         [Obsolete{{#ObsoleteEventInfo.Message}}("{{ObsoleteEventInfo.Message}}"{{#ObsoleteEventInfo.IsError}}, true{{/ObsoleteEventInfo.IsError}}){{/ObsoleteEventInfo.Message}}]
-        {{/ObsoleteEventInfo}}
-        public IObservable<{{EventArgsType}}> {{Name}} {
-            get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => This.{{Name}} += x, x => This.{{Name}} -= x).Select(x => x.EventArgs); }
+{{/ObsoleteEventInfo}}
+        public IObservable<{{EventArgsType}}>
+    {{Name}} {
+    get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>
+        (x => _this.{{Name}} += x, x => _this.{{Name}} -= x).Select(x => x.EventArgs); }
         }
 
-{{/Events}}
-    }
-{{/Types}}
-}
-{{/Namespaces}}
+        {{/Events}}
+        }
+        {{/Types}}
+        }
+        {{/Namespaces}}
 
-{{#DelegateNamespaces}}
-namespace {{Name}}.Rx
-{
-{{#Types}}
-    public {{Abstract}} partial class {{Name}}Rx : {{Name}}
-    {
-{{#ZeroParameterMethods}}
-        readonly SingleAwaitSubject<Unit> _{{Name}} = new SingleAwaitSubject<Unit>();
-        public IObservable<Unit> {{Name}}Obs { get { return _{{Name}}; } }
-        public override void {{Name}}()
+        {{#DelegateNamespaces}}
+        namespace {{Name}}.Rx
         {
-            _{{Name}}.OnNext(Unit.Default);
-        }
-
-{{/ZeroParameterMethods}}
-{{#SingleParameterMethods}}
-        readonly SingleAwaitSubject<{{ParameterType}}> _{{Name}} = new SingleAwaitSubject<{{ParameterType}}>();
-        public IObservable<{{ParameterType}}> {{Name}}Obs { get { return _{{Name}}; } }
-        public override void {{Name}}({{ParameterType}} {{ParameterName}})
+        {{#Types}}
+        public {{Abstract}} partial class {{Name}}Rx : {{Name}}
         {
-            _{{Name}}.OnNext({{ParameterName}});
-        }
+        {{#ZeroParameterMethods}}
+        readonly SingleAwaitSubject<Unit>
+            _{{Name}} = new SingleAwaitSubject<Unit>
+                ();
+                public IObservable<Unit>
+                    {{Name}}Obs { get { return _{{Name}}; } }
+                    public override void {{Name}}()
+                    {
+                    _{{Name}}.OnNext(Unit.Default);
+                    }
 
-{{/SingleParameterMethods}}
-{{#MultiParameterMethods}}
-        readonly SingleAwaitSubject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new SingleAwaitSubject<Tuple<{{ParameterTypeList}}>>();
+                    {{/ZeroParameterMethods}}
+                    {{#SingleParameterMethods}}
+                    readonly SingleAwaitSubject<{{ParameterType}}>
+                        _{{Name}} = new SingleAwaitSubject<{{ParameterType}}>
+                            ();
+                            public IObservable<{{ParameterType}}>
+                                {{Name}}Obs { get { return _{{Name}}; } }
+                                public override void {{Name}}({{ParameterType}} {{ParameterName}})
+                                {
+                                _{{Name}}.OnNext({{ParameterName}});
+                                }
+
+                                {{/SingleParameterMethods}}
+                                {{#MultiParameterMethods}}
+                                readonly SingleAwaitSubject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new SingleAwaitSubject<Tuple<{{ParameterTypeList}}>>();
         public IObservable<Tuple<{{ParameterTypeList}}>> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterList}})
         {
