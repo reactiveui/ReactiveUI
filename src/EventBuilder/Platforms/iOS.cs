@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -11,7 +11,7 @@ namespace EventBuilder.Platforms
     /// <summary>
     /// iOS platform assemblies and events.
     /// </summary>
-    /// <seealso cref="T:EventBuilder.Platforms.BasePlatform" />
+    /// <seealso cref="BasePlatform" />
     // ReSharper disable once InconsistentNaming
     public class iOS : BasePlatform
     {
