@@ -15,10 +15,12 @@
         /// </summary>
         Android,
 
+#pragma warning disable SA1300 // Element should begin with upper-case letter
         /// <summary>
         /// iOS platform.
         /// </summary>
         iOS,
+#pragma warning restore SA1300 // Element should begin with upper-case letter
 
         /// <summary>
         /// Mac platform.
