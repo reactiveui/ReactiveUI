@@ -101,12 +101,12 @@
     <Rule Id="RCS1201" Action="Warning" />
     <Rule Id="RCS1207" Action="Warning" />
     <Rule Id="RCS1211" Action="Warning" />
-    <Rule Id="RCS1018" Action="Error" />
-    <Rule Id="RCS1507" Action="Error" />
+    <Rule Id="RCS1018" Action="Warning" />
+    <Rule Id="RCS1507" Action="Warning" />
     <Rule Id="RCS1163" Action="Info" />
-    <Rule Id="RCS1037" Action="Error" />
-    <Rule Id="RCS1139" Action="Error" />
-    <Rule Id="RCS1001" Action="Error" />
+    <Rule Id="RCS1037" Action="Warning" />
+    <Rule Id="RCS1139" Action="Warning" />
+    <Rule Id="RCS1001" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1200" Action="None" />
@@ -119,25 +119,25 @@
     <Rule Id="SA1626" Action="None" />
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SA1202" Action="Warning" />
-    <Rule Id="SA1107" Action="Error" />
-    <Rule Id="SA1208" Action="Error" />
-    <Rule Id="SA1400" Action="Error" />
+    <Rule Id="SA1107" Action="Warning" />
+    <Rule Id="SA1208" Action="Warning" />
+    <Rule Id="SA1400" Action="Warning" />
     <Rule Id="SA1401" Action="None" />
     <Rule Id="SA1402" Action="None" />
     <Rule Id="SA1405" Action="None" />
     <Rule Id="SA1413" Action="None" />
-    <Rule Id="SA1500" Action="Error" />
-    <Rule Id="SA1503" Action="Error" />
+    <Rule Id="SA1500" Action="Warning" />
+    <Rule Id="SA1503" Action="Warning" />
     <Rule Id="SA1600" Action="None" />
-    <Rule Id="SA1614" Action="Error" />
-    <Rule Id="SA1629" Action="Error" />
+    <Rule Id="SA1614" Action="Warning" />
+    <Rule Id="SA1629" Action="Warning" />
     <Rule Id="SA1649" Action="None" />
-    <Rule Id="SX1101" Action="Error" />
-    <Rule Id="SX1309" Action="Error" />
+    <Rule Id="SX1101" Action="Warning" />
+    <Rule Id="SX1309" Action="Warning" />
     <Rule Id="SA1116" Action="None" />
     <Rule Id="SA1119" Action="None" />
     <Rule Id="SA1134" Action="None" />
-    <Rule Id="SA1513" Action="Error" />
-    <Rule Id="SA1127" Action="Error" />
+    <Rule Id="SA1513" Action="Warning" />
+    <Rule Id="SA1127" Action="Warning" />
   </Rules>
 </RuleSet>
