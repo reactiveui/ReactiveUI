@@ -8,7 +8,7 @@ namespace EventBuilder.Platforms
     /// <summary>
     /// The Bespoke platform.
     /// </summary>
-    /// <seealso cref="T:EventBuilder.Platforms.BasePlatform" />
+    /// <seealso cref="BasePlatform" />
     public class Bespoke : BasePlatform
     {
         /// <inheritdoc />
