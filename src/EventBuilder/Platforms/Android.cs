@@ -11,11 +11,11 @@ namespace EventBuilder.Platforms
     /// <summary>
     /// The Android platform.
     /// </summary>
-    /// <seealso cref="T:EventBuilder.Platforms.BasePlatform" />
+    /// <seealso cref="BasePlatform" />
     public class Android : BasePlatform
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EventBuilder.Platforms.Android" /> class.
+        /// Initializes a new instance of the <see cref="Android" /> class.
         /// </summary>
         /// <param name="referenceAssembliesLocation">The reference assemblies location.</param>
         public Android(string referenceAssembliesLocation)
