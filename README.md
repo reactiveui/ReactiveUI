@@ -23,7 +23,7 @@
 
 <a href="https://reactiveui.net/">ReactiveUI</a> is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming which is a paradigm that allows you to <a href="https://www.youtube.com/watch?v=3HwEytvngXk">abstract mutable state away from your user interfaces and express the idea around a feature in one readable place</a> and improve the testability of your application. 
 
-<a href="https://reactiveui.net/docs/getting-started/">🔨 Get Started</a>, <a href="https://reactiveui.net/docs/getting-started/installation/nuget-packages/">🛍 Install Packages</a>, <a href="https://reactiveui.net/docs/resources/videos">🎞 Watch Videos</a>, <a href="https://reactiveui.net/docs/samples/">🎓 View Samples</a>, <a href="https://reactiveui.net/slack">🎤 Discuss ReactiveUI</a>
+<a href="https://reactiveui.net/docs/getting-started/">🔨 Get Started</a> <a href="https://reactiveui.net/docs/getting-started/installation/nuget-packages/">🛍 Install Packages</a> <a href="https://reactiveui.net/docs/resources/videos">🎞 Watch Videos</a> <a href="https://reactiveui.net/docs/resources/samples/">🎓 View Samples</a> <a href="https://reactiveui.net/slack">🎤 Discuss ReactiveUI</a>
 
 <h2>Introduction to Reactive Programming</h2>
 
