@@ -23,7 +23,7 @@
 
 <a href="https://reactiveui.net/">ReactiveUI</a> is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming which is a paradigm that allows you to <a href="https://www.youtube.com/watch?v=3HwEytvngXk">abstract mutable state away from your user interfaces and express the idea around a feature in one readable place</a> and improve the testability of your application. 
 
-<a href="https://reactiveui.net/docs/getting-started/">🔨 Get Started</a> <a href="https://reactiveui.net/docs/getting-started/installation/nuget-packages/">🛍 Install Packages</a> <a href="https://reactiveui.net/docs/resources/videos">🎞 Watch Videos</a> <a href="https://reactiveui.net/docs/resources/samples/">🎓 View Samples</a> <a href="https://reactiveui.net/slack">🎤 Discuss ReactiveUI</a>
+<a href="https://reactiveui.net/docs/getting-started/">🔨 Get Started</a> <a href="https://reactiveui.net/docs/getting-started/installation/">🛍 Install Packages</a> <a href="https://reactiveui.net/docs/resources/videos">🎞 Watch Videos</a> <a href="https://reactiveui.net/docs/resources/samples/">🎓 View Samples</a> <a href="https://reactiveui.net/slack">🎤 Discuss ReactiveUI</a>
 
 <h2>Introduction to Reactive Programming</h2>
 
@@ -38,6 +38,23 @@ ReactiveUI is inspired by the paradigm of Functional Reactive Programming, which
 * Whenever A or B changes, C reacts to update itself.
 
 That's reactive programming: changes propagate throughout a system automatically. Welcome to the peanut butter and jelly of programming paradigms. For further information please watch the this video from the Xamarin Evolve conference - [Why You Should Be Building Better Mobile Apps with Reactive Programming](http://www.youtube.com/watch?v=DYEbUF4xs1Q) by Michael Stonis.
+
+<h2>Packages Installation</h2>
+
+Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific packages are required. This means your app won't perform as expected until you install the packages properly. See the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
+
+| Target Platform                 | Required ReactiveUI Packages | Events Packages              |
+| ------------------------------- | ---------------------------- | ---------------------------- |
+| Class library | <a href="https://reactiveui.net/docs/getting-started/installation/">`ReactiveUI`</a> | None |
+| Unit testing library | <a href="https://reactiveui.net/docs/handbook/testing/">`ReactiveUI.Testing`</a> | None |   
+| Universal Windows Platform | <a href="https://reactiveui.net/docs/getting-started/installation/universal-windows-platform">`ReactiveUI`</a> | `ReactiveUI.Events` |
+| Windows Presentation Foundation | <a href="https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation">`ReactiveUI.WPF`</a> | `ReactiveUI.Events.WPF` |
+| Windows Forms | <a href="https://reactiveui.net/docs/getting-started/installation/windows-forms">`ReactiveUI.WinForms`</a> | `ReactiveUI.Events.WinForms` |
+| Xamarin.Forms library | <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-forms">`ReactiveUI.XamForms`</a> | `ReactiveUI.Events.XamForms` |
+| Xamarin.Android | <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-android">`ReactiveUI.AndroidSupport`</a>  | `ReactiveUI.Events`          |
+| Xamarin.Mac | <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-mac">`ReactiveUI`</a> | `ReactiveUI.Events` |
+| Xamarin.iOS | <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-ios">`ReactiveUI`</a> | `ReactiveUI.Events` |
+| AvaloniaUI | <a href="https://reactiveui.net/docs/getting-started/installation/avalonia">`Avalonia.ReactiveUI`</a> | None |
 
 <h2>A Compelling Example</h2>
 
