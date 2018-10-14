@@ -43,7 +43,7 @@ That's reactive programming: changes propagate throughout a system automatically
 
 Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific packages are required. This means your app won't perform as expected until you install the packages properly. See the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
 
-| Target Platform                 | Required ReactiveUI Packages | Events Packages              |
+| Target Platform                 | Required ReactiveUI Packages | <a href="https://reactiveui.net/docs/handbook/events/">Events</a> Packages   |
 | ------------------------------- | ---------------------------- | ---------------------------- |
 | Class library | <a href="https://reactiveui.net/docs/getting-started/installation/">`ReactiveUI`</a> | None |
 | Unit testing library | <a href="https://reactiveui.net/docs/handbook/testing/">`ReactiveUI.Testing`</a> | None |   
