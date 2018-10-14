@@ -45,16 +45,16 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 
 | Target Platform                 | Required ReactiveUI Packages | <a href="https://reactiveui.net/docs/handbook/events/">Events</a> Packages   |
 | ------------------------------- | ---------------------------- | ---------------------------- |
-| Class library | <a href="https://reactiveui.net/docs/getting-started/installation/">`ReactiveUI`</a> | None |
-| Unit testing library | <a href="https://reactiveui.net/docs/handbook/testing/">`ReactiveUI.Testing`</a> | None |   
-| Universal Windows Platform | <a href="https://reactiveui.net/docs/getting-started/installation/universal-windows-platform">`ReactiveUI`</a> | `ReactiveUI.Events` |
-| Windows Presentation Foundation | <a href="https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation">`ReactiveUI.WPF`</a> | `ReactiveUI.Events.WPF` |
-| Windows Forms | <a href="https://reactiveui.net/docs/getting-started/installation/windows-forms">`ReactiveUI.WinForms`</a> | `ReactiveUI.Events.WinForms` |
-| Xamarin.Forms library | <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-forms">`ReactiveUI.XamForms`</a> | `ReactiveUI.Events.XamForms` |
-| Xamarin.Android | <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-android">`ReactiveUI.AndroidSupport`</a>  | `ReactiveUI.Events`          |
-| Xamarin.Mac | <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-mac">`ReactiveUI`</a> | `ReactiveUI.Events` |
-| Xamarin.iOS | <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-ios">`ReactiveUI`</a> | `ReactiveUI.Events` |
-| AvaloniaUI | <a href="https://reactiveui.net/docs/getting-started/installation/avalonia">`Avalonia.ReactiveUI`</a> | None |
+| <a href="https://reactiveui.net/docs/getting-started/installation/">Class library</a> | `ReactiveUI` | None |
+| <a href="https://reactiveui.net/docs/handbook/testing/">Unit testing library</a> | `ReactiveUI.Testing` | None |   
+| <a href="https://reactiveui.net/docs/getting-started/installation/universal-windows-platform">Universal Windows Platform</a> | `ReactiveUI` | `ReactiveUI.Events` |
+| <a href="https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation">Windows Presentation Foundation</a> | `ReactiveUI.WPF` | `ReactiveUI.Events.WPF` |
+| <a href="https://reactiveui.net/docs/getting-started/installation/windows-forms">Windows Forms</a> | `ReactiveUI.WinForms` | `ReactiveUI.Events.WinForms` |
+| <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-forms">Xamarin.Forms library</a> | `ReactiveUI.XamForms` | `ReactiveUI.Events.XamForms` |
+| <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-android">Xamarin.Android</a> | `ReactiveUI.AndroidSupport`  | `ReactiveUI.Events`          |
+| <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-mac">Xamarin.Mac</a> | `ReactiveUI` | `ReactiveUI.Events` |
+| <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-ios">Xamarin.iOS</a> | `ReactiveUI` | `ReactiveUI.Events` |
+| <a href="https://reactiveui.net/docs/getting-started/installation/avalonia">AvaloniaUI</a> | `Avalonia.ReactiveUI` | None |
 
 <h2>A Compelling Example</h2>
 
