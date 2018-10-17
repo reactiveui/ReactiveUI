@@ -33,6 +33,8 @@ if (string.IsNullOrWhiteSpace(target))
 }
 
 var includePrerelease = Argument("includePrerelease", false);
+var vsLocationString = Argument("vsLocation", string.Empty);
+var msBuildPathString = Argument("msBuildPath", string.Empty);
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -47,7 +49,8 @@ var isPullRequest = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariabl
 var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", TFBuild.Environment.Repository.RepoName);
 
 var vsWhereSettings = new VSWhereLatestSettings() { IncludePrerelease = includePrerelease };
-var msBuildPath = VSWhereLatest(vsWhereSettings).CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+var vsLocation = string.IsNullOrWhiteSpace(vsLocationString) ? VSWhereLatest(vsWhereSettings) : new DirectoryPath(vsLocationString);
+var msBuildPath = string.IsNullOrWhiteSpace(msBuildPathString) ? vsLocation.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe") : new FilePath(msBuildPathString);
 
 var informationalVersion = EnvironmentVariable("GitAssemblyInformationalVersion");
 
@@ -119,7 +122,7 @@ Task("GenerateEvents")
 {
     var eventBuilder = "./src/EventBuilder/bin/Release/net461/EventBuilder.exe";
     var workingDirectory = "./src/EventBuilder/bin/Release/Net461";
-    var referenceAssembliesPath = VSWhereLatest(vsWhereSettings).CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
+    var referenceAssembliesPath = vsLocation.CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
     Information(referenceAssembliesPath.ToString());
 
