@@ -9,7 +9,14 @@
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <OutputType>Exe</OutputType>
+    <CodeAnalysisRuleSet>..\src\reactiveui.tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ReactiveUI.Benchmarks\**" />
+    <EmbeddedResource Remove="ReactiveUI.Benchmarks\**" />
+    <None Remove="ReactiveUI.Benchmarks\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.4.0.2419" />
