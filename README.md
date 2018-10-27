@@ -66,66 +66,67 @@ Let’s say you have a text field, and whenever the user types something into it
 public interface ISearchViewModel
 {
     string SearchQuery { get; set; }	 
-    ReactiveCommand<string, List<SearchResult>> Search { get; }
-    ObservableCollection<SearchResult> SearchResults { get; }
+    ReactiveCommand<string, IEnumerable<SearchResult>> Search { get; }
+    IEnumerable<SearchResult> SearchResults { get; }
 }
 ```
 
 <h3>Define under what conditions a network request will be made</h3>
 
+We're describing here, in a *declarative way*, the conditions in which the Search command is enabled. Now our Command IsEnabled is perfectly efficient, because we're only updating the UI in the scenario when it should change.
+
 ```csharp
-// Here we're describing here, in a *declarative way*, the conditions in
-// which the Search command is enabled.  Now our Command IsEnabled is
-// perfectly efficient, because we're only updating the UI in the scenario
-// when it should change.
 var canSearch = this.WhenAnyValue(x => x.SearchQuery, query => !string.IsNullOrWhiteSpace(query));
 ```
 
 <h3>Make the network connection</h3>
 
+ReactiveCommand has built-in support for background operations and guarantees that this block will only run exactly once at a time, and that the CanExecute will auto-disable and that property IsExecuting will be set accordingly whilst it is running.
+
 ```csharp
-// ReactiveCommand has built-in support for background operations and
-// guarantees that this block will only run exactly once at a time, and
-// that the CanExecute will auto-disable and that property IsExecuting will
-// be set accordingly whilst it is running.
 Search = ReactiveCommand.CreateFromTask(_ => searchService.Search(this.SearchQuery), canSearch);
 ```
 
 <h3>Update the user interface</h3>
 
-```csharp
-// ReactiveCommands are themselves IObservables, whose value are the results
-// from the async method, guaranteed to arrive on the UI thread. We're going
-// to take the list of search results that the background operation loaded, 
-// and them into our SearchResults.
-Search.Subscribe(results => 
-{
-    SearchResults.Clear();
-    SearchResults.AddRange(results);
-});
+ReactiveCommands are themselves `IObservables`, whose values are the results from the async method, guaranteed to arrive on the UI thread. We're going to take the list of search results that the background operation loaded, and turn them into our SearchResults property declared as [`ObservableAsPropertyHelper<T>`](https://reactiveui.net/docs/handbook/oaph/#example).
 
+```csharp
+_searchResults = Search.ToProperty(this, x => x.SearchResults);
 ```
 
 <h3>Handling failures</h3>
 
+Any exception thrown from the [`ReactiveCommand.CreateFromTask`](https://reactiveui.net/docs/handbook/commands/) gets piped to the `ThrownExceptions` Observable. Subscribing to this allows you to handle errors on the UI thread.
+
 ```csharp
-// ThrownExceptions is any exception thrown from the CreateAsyncTask piped
-// to this Observable. Subscribing to this allows you to handle errors on
-// the UI thread. 
-Search.ThrownExceptions.Subscribe(error => 
-{
-    UserError.Throw("Potential Network Connectivity Error", error);
-});
+Search.ThrownExceptions.Subscribe(error => { /* Handle exceptions. */ });
 ```
 
 <h3>Throttling network requests and automatic search execution behaviour</h3>
 
+Whenever the Search query changes, we're going to wait for one second of "dead airtime", then automatically invoke the subscribe command.
+
 ```csharp
-// Whenever the Search query changes, we're going to wait for one second
-// of "dead airtime", then automatically invoke the subscribe command.
 this.WhenAnyValue(x => x.SearchQuery)
     .Throttle(TimeSpan.FromSeconds(1), RxApp.MainThreadScheduler)
     .InvokeCommand(Search);
+```
+
+<h3>Binding our ViewModel to the platform-specific UI</h3>
+
+ReactiveUI fully supports XAML markup bindings, but we have more to offer. [ReactiveUI Bindings](https://reactiveui.net/docs/handbook/data-binding/) work on **all platforms**, including Xamarin Native and Windows Forms, and operate the same. Those bindings are strongly typed, and renaming a ViewModel property, or a control in the UI layout without updating the binding, the build will fail.
+
+```csharp
+this.WhenActivated(cleanup => 
+{
+    this.Bind(ViewModel, x => x.SearchQuery, x => x.TextBox)
+        .DisposeWith(cleanup);
+    this.OneWayBind(ViewModel, x => x.SearchResults, x => x.ListView)
+        .DisposeWith(cleanup);
+    this.BindCommand(ViewModel, x => x.Search, x => x.Button)
+        .DisposeWith(cleanup);
+});
 ```
 
 <h2>Support</h2>
