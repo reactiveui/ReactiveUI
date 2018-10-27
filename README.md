@@ -89,7 +89,7 @@ Search = ReactiveCommand.CreateFromTask(_ => searchService.Search(this.SearchQue
 
 <h3>Update the user interface</h3>
 
-ReactiveCommands are themselves `IObservables`, whose values are the results from the async method, guaranteed to arrive on the UI thread. We're going to take the list of search results that the background operation loaded, and turn them into our SearchResults property declared as `ObservableAsPropertyHelper<T>`.
+ReactiveCommands are themselves `IObservables`, whose values are the results from the async method, guaranteed to arrive on the UI thread. We're going to take the list of search results that the background operation loaded, and turn them into our SearchResults property declared as [`ObservableAsPropertyHelper<T>`](https://reactiveui.net/docs/handbook/oaph/#example).
 
 ```csharp
 _searchResults = Search.ToProperty(this, x => x.SearchResults);
@@ -97,7 +97,7 @@ _searchResults = Search.ToProperty(this, x => x.SearchResults);
 
 <h3>Handling failures</h3>
 
-Any exception thrown from the `ReactiveCommand.CreateFromTask` gets piped to the `ThrownExceptions` Observable. Subscribing to this allows you to handle errors on the UI thread.
+Any exception thrown from the [`ReactiveCommand.CreateFromTask`](https://reactiveui.net/docs/handbook/commands/) gets piped to the `ThrownExceptions` Observable. Subscribing to this allows you to handle errors on the UI thread.
 
 ```csharp
 Search.ThrownExceptions.Subscribe(error => { /* Handle exceptions. */ });
