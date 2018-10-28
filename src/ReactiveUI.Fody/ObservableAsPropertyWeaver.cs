@@ -32,6 +32,11 @@ namespace ReactiveUI.Fody
         public Action<string> LogInfo { get; set; }
 
         /// <summary>
+        /// Locates a type from referenced assemblies by name.
+        /// </summary>
+        public Func<string, TypeDefinition> FindType { get; internal set; }
+
+        /// <summary>
         /// Executes this property weaver.
         /// </summary>
         public void Execute()
@@ -61,10 +66,7 @@ namespace ReactiveUI.Fody
             var observableAsPropertyHelper = ModuleDefinition.FindType("ReactiveUI", "ObservableAsPropertyHelper`1", reactiveUI, "T");
             var observableAsPropertyAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ObservableAsPropertyAttribute", helpers);
             var observableAsPropertyHelperGetValue = ModuleDefinition.ImportReference(observableAsPropertyHelper.Resolve().Properties.Single(x => x.Name == "Value").GetMethod);
-            var systemRuntimeName = ModuleDefinition.AssemblyReferences.FirstOrDefault(x => x.Name == "System.Runtime");
-            var exceptionDefinition = systemRuntimeName == null
-                ? ModuleDefinition.ImportReference(typeof(Exception)).Resolve() // Referenced from .NET Framework
-                : ModuleDefinition.AssemblyResolver.Resolve(systemRuntimeName).MainModule.Types.First(x => x.Name == "Exception"); // Referenced from .NET Standard
+            var exceptionDefinition = FindType(typeof(Exception).FullName);
             var constructorDefinition = exceptionDefinition.GetConstructors().Single(x => x.Parameters.Count == 1);
             var exceptionConstructor = ModuleDefinition.ImportReference(constructorDefinition);
 
