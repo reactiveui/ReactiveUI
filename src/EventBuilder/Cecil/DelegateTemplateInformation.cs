@@ -1,8 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using EventBuilder.Entities;
 using Mono.Cecil;
@@ -69,7 +70,11 @@ namespace EventBuilder.Cecil
                                     string.Join(
                                         ", ",
                                         z.Parameters.Select(
-                                            a => string.Format("{0} {1}", a.ParameterType.FullName, a.Name))),
+                                            a => string.Format(
+                                                CultureInfo.InvariantCulture,
+                                                "{0} {1}",
+                                                a.ParameterType.FullName,
+                                                a.Name))),
                                 ParameterTypeList =
                                     string.Join(", ", z.Parameters.Select(a => a.ParameterType.FullName)),
                                 ParameterNameList = string.Join(", ", z.Parameters.Select(a => a.Name))

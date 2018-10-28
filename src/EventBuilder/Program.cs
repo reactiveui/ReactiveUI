@@ -16,21 +16,12 @@ using Parser = CommandLine.Parser;
 
 namespace EventBuilder
 {
-    internal class Program
+    internal static class Program
     {
-        /// <summary>
-        ///     The exit/return code (aka %ERRORLEVEL%) on application exit.
-        /// </summary>
-        public enum ExitCode
-        {
-            Success = 0,
-            Error = 1
-        }
-
         private static string _mustacheTemplate = "DefaultTemplate.mustache";
         private static string _referenceAssembliesLocation = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework";
 
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.AppSettings()
@@ -79,12 +70,11 @@ namespace EventBuilder
                         }
 
                         platform = new Bespoke();
-                        platform.Assemblies = options.Assemblies;
+                        platform.Assemblies.AddRange(options.Assemblies);
 
                         if (PlatformHelper.IsRunningOnMono())
                         {
-                            platform.CecilSearchDirectories =
-                                platform.Assemblies.Select(Path.GetDirectoryName).Distinct().ToList();
+                            platform.CecilSearchDirectories.AddRange(platform.Assemblies.Select(Path.GetDirectoryName).Distinct().ToList());
                         }
                         else
                         {
@@ -135,7 +125,7 @@ namespace EventBuilder
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentException($"Platform not {options.Platform} supported");
                     }
 
                     ExtractEventsFromAssemblies(platform);

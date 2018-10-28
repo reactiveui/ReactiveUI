@@ -42,7 +42,9 @@ namespace EventBuilder
         /// Manual generation using the specified assemblies. Use with --platform=NONE.
         /// </summary>
         [ValueList(typeof(List<string>))]
+#pragma warning disable CA2227 // Collection properties should be read only
         public List<string> Assemblies { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets the usage.
