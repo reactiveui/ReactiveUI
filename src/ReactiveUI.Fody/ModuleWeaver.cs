@@ -27,7 +27,8 @@ namespace ReactiveUI.Fody
             var observableAsPropertyWeaver = new ObservableAsPropertyWeaver
             {
                 ModuleDefinition = ModuleDefinition,
-                LogInfo = LogInfo
+                LogInfo = LogInfo,
+                FindType = FindType
             };
             observableAsPropertyWeaver.Execute();
 
