@@ -19,12 +19,12 @@ namespace EventBuilder.Platforms
         /// <summary>
         /// Gets or sets the assemblies.
         /// </summary>
-        List<string> Assemblies { get; set; }
+        List<string> Assemblies { get; }
 
         /// <summary>
         /// Gets or sets the cecil search directories.
         /// Cecil when run on Mono needs some direction as to the location of the platform specific MSCORLIB.
         /// </summary>
-        List<string> CecilSearchDirectories { get; set; }
+        List<string> CecilSearchDirectories { get; }
     }
 }

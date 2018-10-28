@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using EventBuilder.Entities;
 using Mono.Cecil;
@@ -116,6 +117,7 @@ namespace EventBuilder.Cecil
             }
 
             var ret = string.Format(
+                CultureInfo.InvariantCulture,
                 "{0}<{1}>",
                 t.Namespace + "." + t.Name,
                 string.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
@@ -133,6 +135,7 @@ namespace EventBuilder.Cecil
             }
 
             var ret = string.Format(
+                CultureInfo.InvariantCulture,
                 "{0}<{1}>",
                 generic.Namespace + "." + generic.Name,
                 string.Join(",", generic.GenericArguments.Select(GetRealTypeName)));

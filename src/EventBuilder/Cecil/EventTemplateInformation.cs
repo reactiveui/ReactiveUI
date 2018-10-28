@@ -1,8 +1,10 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using EventBuilder.Entities;
 using Mono.Cecil;
@@ -34,115 +36,6 @@ namespace EventBuilder.Cecil
             { "Tizen.NUI.EventHandlerWithReturnType`2", "Tizen.NUI.EventHandlerWithReturnType" },
             { "Tizen.NUI.EventHandlerWithReturnType`3", "Tizen.NUI.EventHandlerWithReturnType" },
         };
-
-        private static string RenameBogusTypes(string typeName)
-        {
-            if (SubstitutionList.ContainsKey(typeName))
-            {
-                return SubstitutionList[typeName];
-            }
-
-            return typeName;
-        }
-
-        private static string GetEventArgsTypeForEvent(EventDefinition ei)
-        {
-            // Find the EventArgs type parameter of the event via digging around via reflection
-            var type = ei.EventType.Resolve();
-            var invoke = type.Methods.First(x => x.Name == "Invoke");
-            if (invoke.Parameters.Count < 2)
-            {
-                return null;
-            }
-
-            var param = invoke.Parameters[1];
-            var ret = RenameBogusTypes(param.ParameterType.FullName);
-
-            var generic = ei.EventType as GenericInstanceType;
-            if (generic != null)
-            {
-                foreach (
-                    var kvp in
-                        type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new { name, actual }))
-                        {
-                    var realType = GetRealTypeName(kvp.actual);
-
-                    var temp = ret.Replace(kvp.name.FullName, realType);
-                    if (temp != ret)
-                    {
-                        ret = temp;
-                        break;
-                    }
-                }
-            }
-
-            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
-            return ret.Replace('/', '.');
-        }
-
-        private static string GetRealTypeName(TypeDefinition t)
-        {
-            if (t.GenericParameters.Count == 0)
-            {
-                return RenameBogusTypes(t.FullName);
-            }
-
-            var ret = string.Format(
-                "{0}<{1}>",
-                RenameBogusTypes(t.Namespace + "." + t.Name),
-                string.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
-
-            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
-            return ret.Replace('/', '.');
-        }
-
-        private static string GetRealTypeName(TypeReference t)
-        {
-            var generic = t as GenericInstanceType;
-            if (generic == null)
-            {
-                return RenameBogusTypes(t.FullName);
-            }
-
-            var ret = string.Format(
-                "{0}<{1}>",
-                RenameBogusTypes(generic.Namespace + "." + generic.Name),
-                string.Join(",", generic.GenericArguments.Select(GetRealTypeName)));
-
-            // NB: Handy place to hook to troubleshoot if something needs to be added to SubstitutionList
-            // if (generic.FullName.Contains("MarkReachedEventArgs")) {
-            //    // Tizen.NUI.EventHandlerWithReturnType`3
-            //    //<System.Object,Tizen.NUI.UIComponents.Slider/
-            //    //MarkReachedEventArgs,
-            //    //System.Boolean>
-            // }
-
-            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
-            return ret.Replace('/', '.');
-        }
-
-        private static ObsoleteEventInfo GetObsoleteInfo(EventDefinition ei)
-        {
-            var obsoleteAttribute = ei.CustomAttributes.FirstOrDefault(attr => attr.AttributeType.FullName.Equals("System.ObsoleteAttribute"));
-
-            if (obsoleteAttribute == null)
-            {
-                return null;
-            }
-
-            return new ObsoleteEventInfo
-            {
-                Message = obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(0).Value?.ToString() ?? string.Empty,
-                IsError = bool.Parse(obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(1).Value?.ToString() ?? bool.FalseString)
-            };
-        }
-
-        private static EventDefinition[] GetPublicEvents(TypeDefinition t)
-        {
-            return
-                t.Events.Where(x => x.AddMethod.IsPublic && !x.AddMethod.IsStatic && GetEventArgsTypeForEvent(x) != null)
-                    .ToArray();
-        }
 
         /// <summary>
         /// Creates namespace information from the specified target assemblies.
@@ -222,6 +115,118 @@ namespace EventBuilder.Cecil
             }
 
             return namespaceData;
+        }
+
+        private static string RenameBogusTypes(string typeName)
+        {
+            if (SubstitutionList.ContainsKey(typeName))
+            {
+                return SubstitutionList[typeName];
+            }
+
+            return typeName;
+        }
+
+        private static string GetEventArgsTypeForEvent(EventDefinition ei)
+        {
+            // Find the EventArgs type parameter of the event via digging around via reflection
+            var type = ei.EventType.Resolve();
+            var invoke = type.Methods.First(x => x.Name == "Invoke");
+            if (invoke.Parameters.Count < 2)
+            {
+                return null;
+            }
+
+            var param = invoke.Parameters[1];
+            var ret = RenameBogusTypes(param.ParameterType.FullName);
+
+            var generic = ei.EventType as GenericInstanceType;
+            if (generic != null)
+            {
+                foreach (
+                    var kvp in
+                        type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new { name, actual }))
+                        {
+                    var realType = GetRealTypeName(kvp.actual);
+
+                    var temp = ret.Replace(kvp.name.FullName, realType);
+                    if (temp != ret)
+                    {
+                        ret = temp;
+                        break;
+                    }
+                }
+            }
+
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
+        }
+
+        private static string GetRealTypeName(TypeDefinition t)
+        {
+            if (t.GenericParameters.Count == 0)
+            {
+                return RenameBogusTypes(t.FullName);
+            }
+
+            var ret = string.Format(
+                CultureInfo.InvariantCulture,
+                "{0}<{1}>",
+                RenameBogusTypes(t.Namespace + "." + t.Name),
+                string.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
+
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
+        }
+
+        private static string GetRealTypeName(TypeReference t)
+        {
+            var generic = t as GenericInstanceType;
+            if (generic == null)
+            {
+                return RenameBogusTypes(t.FullName);
+            }
+
+            var ret = string.Format(
+                CultureInfo.InvariantCulture,
+                "{0}<{1}>",
+                RenameBogusTypes(generic.Namespace + "." + generic.Name),
+                string.Join(",", generic.GenericArguments.Select(GetRealTypeName)));
+
+            // NB: Handy place to hook to troubleshoot if something needs to be added to SubstitutionList
+            // if (generic.FullName.Contains("MarkReachedEventArgs")) {
+            //    // Tizen.NUI.EventHandlerWithReturnType`3
+            //    //<System.Object,Tizen.NUI.UIComponents.Slider/
+            //    //MarkReachedEventArgs,
+            //    //System.Boolean>
+            // }
+
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
+        }
+
+        private static ObsoleteEventInfo GetObsoleteInfo(EventDefinition ei)
+        {
+            var obsoleteAttribute = ei.CustomAttributes
+                .FirstOrDefault(attr => attr.AttributeType.FullName.Equals("System.ObsoleteAttribute", StringComparison.InvariantCulture));
+
+            if (obsoleteAttribute == null)
+            {
+                return null;
+            }
+
+            return new ObsoleteEventInfo
+            {
+                Message = obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(0).Value?.ToString() ?? string.Empty,
+                IsError = bool.Parse(obsoleteAttribute.ConstructorArguments?.ElementAtOrDefault(1).Value?.ToString() ?? bool.FalseString)
+            };
+        }
+
+        private static EventDefinition[] GetPublicEvents(TypeDefinition t)
+        {
+            return
+                t.Events.Where(x => x.AddMethod.IsPublic && !x.AddMethod.IsStatic && GetEventArgsTypeForEvent(x) != null)
+                    .ToArray();
         }
 
         private static IEnumerable<TypeDefinition> GetParents(TypeDefinition type)
