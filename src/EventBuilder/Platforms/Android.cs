@@ -37,7 +37,6 @@ namespace EventBuilder.Platforms
             }
             else
             {
-
                 var assemblies =
                    Directory.GetFiles(
                        Path.Combine(referenceAssembliesLocation, "MonoAndroid"),

@@ -50,6 +50,6 @@ namespace EventBuilder.Entities
         /// <summary>
         /// Gets or sets the multi parameter methods.
         /// </summary>
-        public MultiParameterMethod[] MultiParameterMethods { get; set; }
+        public IEnumerable<MultiParameterMethod> MultiParameterMethods { get; set; }
     }
 }

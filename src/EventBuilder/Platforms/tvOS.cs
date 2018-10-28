@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace EventBuilder.Platforms
 {
-    // ReSharper disable once InconsistentNaming
     /// <summary>
     /// TV OS platform assemblies and events.
     /// </summary>
     /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
+    // ReSharper disable once InconsistentNaming
     public class TVOS : BasePlatform
     {
         /// <summary>

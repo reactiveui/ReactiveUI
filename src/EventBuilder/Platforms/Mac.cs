@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace EventBuilder.Platforms
 {
-    // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Mac platform assemblies and events.
     /// </summary>
     /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
+    // ReSharper disable once InconsistentNaming
     public class Mac : BasePlatform
     {
         /// <summary>
