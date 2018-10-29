@@ -73,7 +73,7 @@
   <ItemGroup>
     <PackageReference Include="NuGet.Client" Version="4.2.0" />
     <PackageReference Include="NuGet.Protocol.Core.v3" Version="4.2.0" />
-    <PackageReference Include="ReactiveUI.WPF" Version="9.1.1" />
+    <PackageReference Include="ReactiveUI.WPF" Version="*" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
