@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
-using System.Linq;
-using ReactiveUI;
-using NuGet.Protocol.Core.Types;
-using NuGet.Protocol;
+using System.Threading.Tasks;
 using NuGet.Configuration;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
+using ReactiveUI;
 
 namespace ReactiveDemo
 {
@@ -108,13 +108,13 @@ namespace ReactiveDemo
         {
             var providers = new List<Lazy<INuGetResourceProvider>>();
             providers.AddRange(Repository.Provider.GetCoreV3()); // Add v3 API support
-            var packageSource = new PackageSource("https://api.nuget.org/v3/index.json");
-            var sourceRepository = new SourceRepository(packageSource, providers);
+            var package = new PackageSource("https://api.nuget.org/v3/index.json");
+            var source = new SourceRepository(package, providers);
 
             var filter = new SearchFilter(false);
-            var searchResource = await sourceRepository.GetResourceAsync<PackageSearchResource>();
-            var searchMetadata = await searchResource.SearchAsync(term, filter, 0, 10, null, token);
-            return searchMetadata.Select(x => new NugetDetailsViewModel(x));
+            var resource = await source.GetResourceAsync<PackageSearchResource>().ConfigureAwait(false);
+            var metadata = await resource.SearchAsync(term, filter, 0, 10, null, token).ConfigureAwait(false);
+            return metadata.Select(x => new NugetDetailsViewModel(x));
         }
     }
 }
