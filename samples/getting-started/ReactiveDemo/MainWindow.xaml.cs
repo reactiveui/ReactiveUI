@@ -1,29 +1,24 @@
 ﻿using System.Reactive.Disposables;
-using System.Windows;
 using ReactiveUI;
 
 namespace ReactiveDemo
 {
-    public partial class MainWindow : IViewFor<AppViewModel>
+    // MainWindow class derives off ReactiveWindow which implements the IViewFor<TViewModel>
+    // interface using a WPF DependencyProperty. We need this to use WhenActivated extension
+    // method that helps us handling View and ViewModel activation and deactivation.
+    public partial class MainWindow : ReactiveWindow<AppViewModel>
     {
-        // Using a DependencyProperty as the backing store for ViewModel.  
-        // This enables animation, styling, binding, etc.
-        public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel",
-                typeof(AppViewModel), typeof(MainWindow),
-                new PropertyMetadata(null));
-
         public MainWindow()
         {
             InitializeComponent();
             ViewModel = new AppViewModel();
 
-            // We create our bindings here. These are the code behind bindings which allow 
+            // We create our bindings here. These are the code behind bindings which allow
             // type safety. The bindings will only become active when the Window is being shown.
-            // We register our subscription in our disposableRegistration, this will cause 
+            // We register our subscription in our disposableRegistration, this will cause
             // the binding subscription to become inactive when the Window is closed.
-            // The disposableRegistration is a CompositeDisposable which is a container of 
-            // other Disposables. We use the DisposeWith() extension method which simply adds 
+            // The disposableRegistration is a CompositeDisposable which is a container of
+            // other Disposables. We use the DisposeWith() extension method which simply adds
             // the subscription disposable to the CompositeDisposable.
             this.WhenActivated(disposableRegistration =>
             {
@@ -44,22 +39,6 @@ namespace ReactiveDemo
                     view => view.searchTextBox.Text)
                     .DisposeWith(disposableRegistration);
             });
-        }
-
-        // Our main view model instance.
-        public AppViewModel ViewModel
-        {
-            get => (AppViewModel)GetValue(ViewModelProperty);
-            set => SetValue(ViewModelProperty, value);
-        }
-
-        // This is required by the interface IViewFor, you always just set it to use the 
-        // main ViewModel property. Note on XAML based platforms we have a control called
-        // ReactiveUserControl that abstracts this.
-        object IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (AppViewModel)value;
         }
     }
 }
