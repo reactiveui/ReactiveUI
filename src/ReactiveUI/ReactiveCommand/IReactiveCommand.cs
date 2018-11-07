@@ -8,8 +8,11 @@ namespace ReactiveUI
 {
     /// <summary>
     /// Encapsulates a user action behind a reactive interface.
+    /// This is for interop inside for the command binding.
+    /// Not meant for external use due to the fact it doesn't implement ICommand
+    /// to force the user to favor the Reactive style command execution.
     /// </summary>
-    public interface IReactiveCommand : IDisposable, IHandleObservableErrors
+    internal interface IReactiveCommand : IDisposable, IHandleObservableErrors
     {
         /// <summary>
         /// Gets an observable whose value indicates whether the command is currently executing.
