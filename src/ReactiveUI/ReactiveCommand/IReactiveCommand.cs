@@ -9,7 +9,7 @@ namespace ReactiveUI
     /// <summary>
     /// Encapsulates a user action behind a reactive interface.
     /// </summary>
-    internal interface IReactiveCommand : IDisposable, IHandleObservableErrors
+    public interface IReactiveCommand : IDisposable, IHandleObservableErrors
     {
         /// <summary>
         /// Gets an observable whose value indicates whether the command is currently executing.
