@@ -20,8 +20,8 @@ namespace ReactiveUI
     /// <summary>
     /// AutoSuspend-based Application. To use AutoSuspend with WinRT, change your
     /// Application to inherit from this class, then call:
-    ///
-    /// Locator.Current.GetService.<ISuspensionHost>().SetupDefaultSuspendResume();
+    /// Locator.Current.GetService.&lt;ISuspensionHost&gt;().SetupDefaultSuspendResume();
+    /// This will register your suspension host.
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger
     {
