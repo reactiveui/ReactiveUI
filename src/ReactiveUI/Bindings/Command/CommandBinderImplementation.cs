@@ -56,14 +56,13 @@ namespace ReactiveUI
 
             IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent, cmd =>
             {
-                var rc = cmd as ReactiveCommand;
+                var rc = cmd as IReactiveCommand;
                 if (rc == null)
                 {
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 }
 
-                var ret = ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
-                return ret;
+                return ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
             });
 
             return new ReactiveBinding<TView, TViewModel, TProp>(
