@@ -293,11 +293,11 @@ namespace ReactiveUI
                     ReferenceEquals(_source.Target, source) &&
                     _originalHandler != null &&
                     (ReferenceEquals(_originalHandler.Target, handler) ||
-                    _originalHandler.Target is PropertyChangedEventHandler eventHandler &&
+                    (_originalHandler.Target is PropertyChangedEventHandler eventHandler &&
                     handler is PropertyChangedEventHandler &&
                     Equals(
                         eventHandler.Target,
-                        (handler as PropertyChangedEventHandler)?.Target));
+                        (handler as PropertyChangedEventHandler)?.Target)));
             }
         }
 
