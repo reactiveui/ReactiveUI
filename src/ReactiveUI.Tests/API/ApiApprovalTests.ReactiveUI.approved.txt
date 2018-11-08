@@ -458,13 +458,8 @@ namespace ReactiveUI
         public string PropertyName { get; set; }
     }
     public delegate void PropertyChangingEventHandler(object sender, ReactiveUI.PropertyChangingEventArgs e);
-    public abstract class ReactiveCommand : ReactiveUI.IHandleObservableErrors, System.IDisposable, System.Windows.Input.ICommand
+    public class static ReactiveCommand
     {
-        protected ReactiveCommand() { }
-        public abstract System.IObservable<bool> CanExecute { get; }
-        public abstract System.IObservable<bool> IsExecuting { get; }
-        public abstract System.IObservable<System.Exception> ThrownExceptions { get; }
-        public event System.EventHandler System.Windows.Input.ICommand.CanExecuteChanged;
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> Create(System.Action execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> Create<TResult>(System.Func<TResult> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> Create<TParam>(System.Action<TParam> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
@@ -480,11 +475,6 @@ namespace ReactiveUI
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.Tasks.Task> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
-        public void Dispose() { }
-        protected abstract void Dispose(bool disposing);
-        protected abstract bool ICommandCanExecute(object parameter);
-        protected abstract void ICommandExecute(object parameter);
-        protected void OnCanExecuteChanged() { }
     }
     public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
     {
@@ -496,12 +486,19 @@ namespace ReactiveUI
         public override System.IObservable<TResult> Execute(TParam parameter = null) { }
         public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
     }
-    public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.ReactiveCommand, System.IObservable<TResult>
+    public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
     {
         protected ReactiveCommandBase() { }
+        public abstract System.IObservable<bool> CanExecute { get; }
+        public abstract System.IObservable<bool> IsExecuting { get; }
+        public abstract System.IObservable<System.Exception> ThrownExceptions { get; }
+        public event System.EventHandler System.Windows.Input.ICommand.CanExecuteChanged;
+        public void Dispose() { }
+        protected abstract void Dispose(bool disposing);
         public abstract System.IObservable<TResult> Execute(TParam parameter = null);
-        protected override bool ICommandCanExecute(object parameter) { }
-        protected override void ICommandExecute(object parameter) { }
+        protected virtual bool ICommandCanExecute(object parameter) { }
+        protected virtual void ICommandExecute(object parameter) { }
+        protected void OnCanExecuteChanged() { }
         public abstract System.IDisposable Subscribe(System.IObserver<TResult> observer);
     }
     public class static ReactiveCommandMixins

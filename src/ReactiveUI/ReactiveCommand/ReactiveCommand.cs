@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -14,7 +13,6 @@ using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace ReactiveUI
 {
@@ -23,51 +21,10 @@ namespace ReactiveUI
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This non-generic base class defines the base behavior for all reactive commands.
-    /// </para>
-    /// <para>
-    /// Reactive commands encapsulate the behavior of running some execution logic and then surfacing the results on the UI
-    /// thread. Importantly, no scheduling is performed against input observables (the <c>canExecute</c> and execution pipelines).
-    /// </para>
-    /// <para>
-    /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
-    /// <see cref="Create"/> can be used when your execution logic is synchronous.
-    /// <see cref="CreateFromObservable{TResult}(Func{IObservable{TResult}}, IObservable{bool}, IScheduler)"/> and
-    /// <see cref="CreateFromTask(Func{Task}, IObservable{bool}, IScheduler)"/> (and overloads) can be used for asynchronous
-    /// execution logic. Optionally, you can provide an observable that governs the availability of the command for execution,
-    /// as well as a scheduler to which events will be delivered.
-    /// </para>
-    /// <para>
-    /// The <see cref="CanExecute"/> property provides an observable that can be used to determine whether the command is
-    /// eligible for execution. The value of this observable is determined by both the <c>canExecute</c> observable provided
-    /// during command creation, and the current execution status of the command. A command that is already executing will
-    /// yield <c>false</c> from its <see cref="CanExecute"/> observable regardless of the <c>canExecute</c> observable provided
-    /// during command creation.
-    /// </para>
-    /// <para>
-    /// The <see cref="IsExecuting"/> property provides an observable whose value indicates whether the command is currently
-    /// executing. This can be a useful means of triggering UI, such as displaying an activity indicator whilst a command is
-    /// executing.
-    /// </para>
-    /// <para>
-    /// As discussed above, you are under no obligation to somehow incorporate this into your <c>canExecute</c> observable
-    /// because that is taken care of for you. That is, if the value of <c>IsExecuting</c> is <c>true</c>, the value of
-    /// <c>CanExecute</c> will be <c>false</c>. However, if the value of <c>CanExecute</c> is <c>false</c>, that does not imply
-    /// the value of <c>IsExecuting</c> is <c>true</c>.
-    /// </para>
-    /// <para>
-    /// Any errors in your command's execution logic (including any <c>canExecute</c> observable you choose to provide) will be
-    /// surfaced via the <see cref="ThrownExceptions"/> observable. This gives you the opportunity to handle the error before
-    /// it triggers a default handler that tears down the application. For example, you might use this as a means of alerting
-    /// the user that something has gone wrong executing the command.
-    /// </para>
-    /// <para>
-    /// For the sake of convenience, all <c>ReactiveCommand</c> instances are also implementations of <see cref="ICommand"/>.
-    /// This allows you to easily integrate instances of <c>ReactiveCommand</c> into platforms that understands <c>ICommand</c>
-    /// natively (such as WPF and UWP).
+    /// This non-generic base class defines the creation behavior of the ReactiveCommand's.
     /// </para>
     /// </remarks>
-    public abstract partial class ReactiveCommand
+    public static class ReactiveCommand
     {
         /// <summary>
         /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with synchronous execution logic.
@@ -559,107 +516,6 @@ namespace ReactiveUI
             IScheduler outputScheduler = null)
         {
             return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observables.True, outputScheduler ?? RxApp.MainThreadScheduler);
-        }
-    }
-
-    /// <summary>
-    /// Abstract base class of the ReactiveCommand's. Meant only for interop with the ICommand interface.
-    /// </summary>
-    public abstract partial class ReactiveCommand : IDisposable, ICommand, IHandleObservableErrors
-    {
-        private EventHandler _canExecuteChanged;
-
-        /// <inheritdoc/>
-        event EventHandler ICommand.CanExecuteChanged
-        {
-            add => _canExecuteChanged += value;
-            remove => _canExecuteChanged -= value;
-        }
-
-        /// <summary>
-        /// An observable whose value indicates whether the command can currently execute.
-        /// </summary>
-        /// <remarks>
-        /// The value provided by this observable is governed both by any <c>canExecute</c> observable provided during
-        /// command creation, as well as the current execution status of the command. A command that is currently executing
-        /// will always yield <c>false</c> from this observable, even if the <c>canExecute</c> pipeline is currently <c>true</c>.
-        /// </remarks>
-        public abstract IObservable<bool> CanExecute
-        {
-            get;
-        }
-
-        /// <summary>
-        /// An observable whose value indicates whether the command is currently executing.
-        /// </summary>
-        /// <remarks>
-        /// This observable can be particularly useful for updating UI, such as showing an activity indicator whilst a command
-        /// is executing.
-        /// </remarks>
-        public abstract IObservable<bool> IsExecuting
-        {
-            get;
-        }
-
-        /// <summary>
-        /// An observable that ticks any exceptions in command execution logic.
-        /// </summary>
-        /// <remarks>
-        /// Any exceptions that are not observed via this observable will propagate out and cause the application to be torn
-        /// down. Therefore, you will always want to subscribe to this observable if you expect errors could occur (e.g. if
-        /// your command execution includes network activity).
-        /// </remarks>
-        public abstract IObservable<Exception> ThrownExceptions
-        {
-            get;
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <inheritdoc/>
-        bool ICommand.CanExecute(object parameter)
-        {
-            return ICommandCanExecute(parameter);
-        }
-
-        /// <inheritdoc/>
-        void ICommand.Execute(object parameter)
-        {
-            ICommandExecute(parameter);
-        }
-
-        /// <summary>
-        /// Disposes of the managed resources.
-        /// </summary>
-        /// <param name="disposing">If its getting called by the Dispose() method.</param>
-        protected abstract void Dispose(bool disposing);
-
-        /// <summary>
-        /// Will be called by the methods from the ICommand interface.
-        /// This method is called when the Command should evaluate if it can execute.
-        /// </summary>
-        /// <param name="parameter">The parameter being passed to the ICommand.</param>
-        /// <returns>If the command can be executed.</returns>
-        protected abstract bool ICommandCanExecute(object parameter);
-
-        /// <summary>
-        /// Will be called by the methods from the ICommand interface.
-        /// This method is called when the Command should execute.
-        /// </summary>
-        /// <param name="parameter">The parameter being passed to the ICommand.</param>
-        protected abstract void ICommandExecute(object parameter);
-
-        /// <summary>
-        /// Will trigger a event when the CanExecute condition has changed.
-        /// </summary>
-        protected void OnCanExecuteChanged()
-        {
-            _canExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
