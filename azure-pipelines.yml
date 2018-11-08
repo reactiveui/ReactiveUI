@@ -2,6 +2,10 @@ trigger:
 - master
 - rel/*
 
+pr:
+- master
+- rel/*
+
 pool:
   vmImage: vs2017-win2016
 
@@ -19,11 +23,9 @@ steps:
     custom: tool
     arguments: install --tool-path . nbgv
   displayName: Install NBGV tool
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
 - script: nbgv cloud
   displayName: Set Version
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
 - script: build.cmd
   displayName: Build 
@@ -39,7 +41,6 @@ steps:
     Contents: 'artifacts/*.nupkg'
     TargetFolder: '$(build.artifactstagingdirectory)\packages'
     flattenFolders: true
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Package Artifacts
@@ -47,13 +48,11 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\packages'
     artifactType: container
     artifactName: Packages
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
 - task: CopyFiles@2
   inputs:
     Contents: '**/bin/*'
     TargetFolder: '$(build.artifactstagingdirectory)\binaries'
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Binaries
@@ -61,13 +60,11 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\binaries'
     artifactType: container
     artifactName: Binaries
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
 - task: CopyFiles@2
   inputs:
     Contents: 'src/ReactiveUI.**/Events_*.cs'
     TargetFolder: '$(build.artifactstagingdirectory)\Events'
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Generated Events
@@ -75,4 +72,3 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\Events'
     artifactType: container
     artifactName: Events
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
