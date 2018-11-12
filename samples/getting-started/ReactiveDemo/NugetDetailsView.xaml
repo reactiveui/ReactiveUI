@@ -1,6 +1,7 @@
-﻿<reactiveDemo:NugetDetailsViewBase
+﻿<reactiveui:ReactiveUserControl
     x:Class="ReactiveDemo.NugetDetailsView"
     xmlns:reactiveDemo="clr-namespace:ReactiveDemo"
+    x:TypeArguments="reactiveDemo:NugetDetailsViewModel"
     xmlns:reactiveui="http://reactiveui.net"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -20,4 +21,4 @@
           <Hyperlink x:Name="openButton">Open</Hyperlink>
         </TextBlock>
     </Grid>
-</reactiveDemo:NugetDetailsViewBase>
+</reactiveui:ReactiveUserControl>
