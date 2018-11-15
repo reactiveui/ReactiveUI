@@ -2,7 +2,7 @@
  [![Coverage Status](https://coveralls.io/repos/github/reactiveui/ReactiveUI/badge.svg?branch=master)](https://coveralls.io/github/reactiveui/ReactiveUI?branch=master) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) <!--[![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui)--> [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI?ref=badge_shield)
 <br>
 <a href="https://www.nuget.org/packages/reactiveui">
-        <img src="https://img.shields.io/nuget/dt/reactiveui-core.svg">
+        <img src="https://img.shields.io/nuget/dt/reactiveui.svg">
 </a>
 <a href="#backers">
         <img src="https://opencollective.com/reactiveui/backers/badge.svg">
