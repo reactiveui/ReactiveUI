@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>MonoAndroid80</TargetFrameworks>
+    <TargetFrameworks>MonoAndroid81</TargetFrameworks>
     <AssemblyName>ReactiveUI.AndroidSupport</AssemblyName>
     <RootNamespace>ReactiveUI.AndroidSupport</RootNamespace>
     <Description>ReactiveUI extensions for the Android Support Library</Description>
