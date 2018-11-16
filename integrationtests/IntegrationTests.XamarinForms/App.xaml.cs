@@ -4,6 +4,9 @@ using Xamarin.Forms;
 
 namespace IntegrationTests.XamarinForms
 {
+    /// <summary>
+    /// The class which represents the main application.
+    /// </summary>
     public partial class App : Application
     {
         /// <summary>

@@ -18,9 +18,9 @@ namespace IntegrationTests.XamarinForms
         /// <summary>
         /// Initializes a new instance of the <see cref="MainPage"/> class.
         /// </summary>
-		public MainPage()
-		{
-			InitializeComponent();
+        public MainPage()
+        {
+            InitializeComponent();
             this
                .WhenActivated(
                    disposables =>
@@ -65,5 +65,5 @@ namespace IntegrationTests.XamarinForms
                            .DisposeWith(disposables);
                    });
         }
-	}
+    }
 }

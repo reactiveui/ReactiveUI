@@ -15,13 +15,19 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntegrationTests.XamarinForms.UWP
 {
+    /// <summary>
+    /// The main page for the application.
+    /// </summary>
     public sealed partial class MainPage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainPage"/> class.
+        /// </summary>
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            LoadApplication(new IntegrationTests.XamarinForms.App());
+            LoadApplication(new XamarinForms.App());
         }
     }
 }
