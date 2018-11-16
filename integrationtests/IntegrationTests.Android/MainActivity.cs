@@ -11,24 +11,59 @@ using ReactiveUI;
 
 namespace IntegrationTests.Android
 {
-	[Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
-	public class MainActivity : ReactiveActivity<LoginViewModel>
+    /// <summary>
+    /// The main activity for the application.
+    /// </summary>
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
+    public class MainActivity : ReactiveActivity<LoginViewModel>
     {
+        /// <summary>
+        /// Gets or sets the user name edit text.
+        /// </summary>
         public EditText Username { get; set; }
 
+        /// <summary>
+        /// Gets or sets the password edit text.
+        /// </summary>
         public EditText Password { get; set; }
 
+        /// <summary>
+        /// Gets or sets the login button.
+        /// </summary>
         public Button Login { get; set; }
 
+        /// <summary>
+        /// Gets or sets the cancel butotn.
+        /// </summary>
         public Button Cancel { get; set; }
 
+        /// <inheritdoc />
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.menu_main, menu);
+            return true;
+        }
+
+        /// <inheritdoc />
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            int id = item.ItemId;
+            if (id == Resource.Id.action_settings)
+            {
+                return true;
+            }
+
+            return base.OnOptionsItemSelected(item);
+        }
+
+        /// <inheritdoc />
         protected override void OnCreate(Bundle savedInstanceState)
-		{
-			base.OnCreate(savedInstanceState);
+        {
+            base.OnCreate(savedInstanceState);
 
-			SetContentView(Resource.Layout.activity_main);
+            SetContentView(Resource.Layout.activity_main);
 
-            var toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
+            Toolbar toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
             SetActionBar(toolbar);
 
             Username = FindViewById<EditText>(Resource.Id.Username);
@@ -55,18 +90,17 @@ namespace IntegrationTests.Android
                            .BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
                            .DisposeWith(disposables);
 
-                       this
-                           .ViewModel
+                       ViewModel
                            .Login
                            .SelectMany(
                                result =>
                                {
-                                   if(!result.HasValue)
+                                   if (!result.HasValue)
                                    {
                                        return Observable.Empty<Unit>();
                                    }
 
-                                   if(result.Value)
+                                   if (result.Value)
                                    {
                                        new AlertDialog.Builder(this)
                                            .SetTitle("Login Successful")
@@ -87,23 +121,5 @@ namespace IntegrationTests.Android
                            .DisposeWith(disposables);
                    });
         }
-
-		public override bool OnCreateOptionsMenu(IMenu menu)
-        {
-            MenuInflater.Inflate(Resource.Menu.menu_main, menu);
-            return true;
-        }
-
-        public override bool OnOptionsItemSelected(IMenuItem item)
-        {
-            int id = item.ItemId;
-            if (id == Resource.Id.action_settings)
-            {
-                return true;
-            }
-
-            return base.OnOptionsItemSelected(item);
-        }
-	}
+    }
 }
-

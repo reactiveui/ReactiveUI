@@ -1,7 +1,4 @@
-﻿using IntegrationTests.Shared;
-using MahApps.Metro.Controls.Dialogs;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -17,14 +14,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using IntegrationTests.Shared;
+using MahApps.Metro.Controls.Dialogs;
+using ReactiveUI;
 
 namespace IntegrationTests.WPF
 {
     /// <summary>
-    /// Interaction logic for LoginControl.xaml
+    /// Interaction logic for LoginControl.xaml.
     /// </summary>
     public partial class LoginControl : ReactiveUserControl<LoginViewModel>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginControl"/> class.
+        /// </summary>
         public LoginControl()
         {
             InitializeComponent();
@@ -47,16 +50,14 @@ namespace IntegrationTests.WPF
 
             // we marshal changes to password manually because WPF's
             // PasswordBox.Password property doesn't support change notifications
-            this
-              .Password
+            Password
               .Events()
               .PasswordChanged
               .Select(_ => Password.Password)
               .Subscribe(x => ViewModel.Password = x)
               .DisposeWith(disposables);
 
-            this
-                .ViewModel
+            ViewModel
                 .Login
                 .SelectMany(
                     result =>
@@ -70,10 +71,8 @@ namespace IntegrationTests.WPF
                         {
                             return this.ShowMessage("Login Successful", "Welcome!");
                         }
-                        else
-                        {
-                            return this.ShowMessage("Login Failed", "Ah, ah, ah, you didn't say the magic word!");
-                        }
+
+                        return this.ShowMessage("Login Failed", "Ah, ah, ah, you didn't say the magic word!");
                     })
                 .Subscribe()
                 .DisposeWith(disposables);
