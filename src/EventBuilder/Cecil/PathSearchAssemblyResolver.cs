@@ -14,7 +14,7 @@ namespace EventBuilder.Cecil
     /// Assembly resolver.
     /// </summary>
     /// <seealso cref="Mono.Cecil.IAssemblyResolver" />
-    public class PathSearchAssemblyResolver : IAssemblyResolver
+    public sealed class PathSearchAssemblyResolver : IAssemblyResolver
     {
         private readonly string[] _targetAssemblyDirs;
 
@@ -25,6 +25,11 @@ namespace EventBuilder.Cecil
         public PathSearchAssemblyResolver(string[] targetAssemblyDirs)
         {
             _targetAssemblyDirs = targetAssemblyDirs;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
         }
 
         /// <summary>
