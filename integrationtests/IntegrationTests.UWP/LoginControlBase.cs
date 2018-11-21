@@ -11,5 +11,7 @@ namespace IntegrationTests.UWP
     /// <summary>
     /// A base level control for logging the user in.
     /// </summary>
-    public class LoginControlBase : ReactiveUserControl<LoginViewModel> { }
+    public class LoginControlBase : ReactiveUserControl<LoginViewModel>
+    {
+    }
 }

@@ -15,7 +15,7 @@ namespace IntegrationTests.Mac
     public partial class LoginViewController : ReactiveViewController<LoginViewModel>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MultiStream"/> class.
+        /// Initializes a new instance of the <see cref="LoginViewController"/> class.
         /// </summary>
         /// <param name="handle">The handle for the control.</param>
         public LoginViewController(IntPtr handle)

@@ -29,6 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <DocumentationFile>bin\Debug\IntegrationTests.XamarinForms.Android.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,6 +40,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <DocumentationFile>bin\Release\IntegrationTests.XamarinForms.Android.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -50,7 +52,11 @@
   <ItemGroup>
     <PackageReference Include="Acr.UserDialogs" Version="7.0.1" />
     <PackageReference Include="ReactiveUI.AndroidSupport" Version="*" />
-	<PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="26.1.*" />
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.*" />
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.*" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.*" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="27.0.*" />
+    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="27.0.*" />	
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

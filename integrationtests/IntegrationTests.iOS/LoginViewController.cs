@@ -6,14 +6,27 @@ using IntegrationTests.Shared;
 using ReactiveUI;
 using UIKit;
 
+#pragma warning disable CA1710 // Identifiers should have correct suffix
+#pragma warning disable CA1010 // Collections should implement generic interface
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+
 namespace IntegrationTests.iOS
 {
+    /// <summary>
+    /// The main login view controller for the application.
+    /// </summary>
     public partial class LoginViewController : ReactiveViewController<LoginViewModel>
     {
-        public LoginViewController(IntPtr handle) : base(handle)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginViewController"/> class.
+        /// </summary>
+        /// <param name="handle">The handle to the controller instance.</param>
+        public LoginViewController(IntPtr handle)
+            : base(handle)
         {
         }
 
+        /// <inheritdoc />
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();

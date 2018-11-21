@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using IntegrationTests.Shared;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
@@ -48,35 +43,35 @@ namespace IntegrationTests.WPF
                            .BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
                            .DisposeWith(disposables);
 
-            // we marshal changes to password manually because WPF's
-            // PasswordBox.Password property doesn't support change notifications
-            Password
-              .Events()
-              .PasswordChanged
-              .Select(_ => Password.Password)
-              .Subscribe(x => ViewModel.Password = x)
-              .DisposeWith(disposables);
+                       // we marshal changes to password manually because WPF's
+                       // PasswordBox.Password property doesn't support change notifications
+                       Password
+                          .Events()
+                          .PasswordChanged
+                          .Select(_ => Password.Password)
+                          .Subscribe(x => ViewModel.Password = x)
+                          .DisposeWith(disposables);
 
-            ViewModel
-                .Login
-                .SelectMany(
-                    result =>
-                    {
-                        if (!result.HasValue)
-                        {
-                            return Observable.Empty<MessageDialogResult>();
-                        }
+                       ViewModel
+                        .Login
+                        .SelectMany(
+                            result =>
+                            {
+                                if (!result.HasValue)
+                                {
+                                    return Observable.Empty<MessageDialogResult>();
+                                }
 
-                        if (result.Value)
-                        {
-                            return this.ShowMessage("Login Successful", "Welcome!");
-                        }
+                                if (result.Value)
+                                {
+                                    return this.ShowMessage("Login Successful", "Welcome!");
+                                }
 
-                        return this.ShowMessage("Login Failed", "Ah, ah, ah, you didn't say the magic word!");
-                    })
-                .Subscribe()
-                .DisposeWith(disposables);
-            });
+                                return this.ShowMessage("Login Failed", "Ah, ah, ah, you didn't say the magic word!");
+                            })
+                        .Subscribe()
+                        .DisposeWith(disposables);
+                   });
         }
     }
 }

@@ -49,21 +49,15 @@ namespace IntegrationTests.WinForms
                                return Observable.Empty<DialogResult>();
                            }
 
-                           if (result.Value)
-                           {
-                               var dialogResult = Task.Run(() => MessageBox.Show("Welcome!", "Login Successful"));
-                               return dialogResult.ToObservable();
-                           }
-                           else
-                           {
-                               var dialogResult = Task.Run(() => MessageBox.Show("Ah, ah, ah, you didn't say the magic word!", "Login Failed"));
-                               return dialogResult.ToObservable();
-                           }
+                           var dialogResult = Task.Run(() => result.Value ?
+                               MessageBox.Show("Welcome!", "Login Successful") :
+                               MessageBox.Show("Ah, ah, ah, you didn't say the magic word!", "Login Failed"));
+
+                           return dialogResult.ToObservable();
                        })
                        .Subscribe()
                        .DisposeWith(disposables);
                    });
-
         }
 
         /// <summary>
