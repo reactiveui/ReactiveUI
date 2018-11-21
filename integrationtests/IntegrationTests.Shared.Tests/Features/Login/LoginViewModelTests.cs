@@ -90,7 +90,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         {
             var scheduler = new TestScheduler();
 
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithScheduler(scheduler)
                     .WithUserName("coolusername")
                     .WithPassword("excellentpassword");
@@ -122,11 +122,10 @@ namespace IntegrationTests.Shared.Tests.Features.Login
             var actual = false;
             var scheduler = new TestScheduler();
 
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithScheduler(scheduler)
                 .WithUserName("coolusername")
-                .WithPassword("excellentpassword")
-                .Build();
+                .WithPassword("excellentpassword");
 
             sut.Cancel.CanExecute.Subscribe(x => actual = x);
 
@@ -159,7 +158,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         public async Task User_CannotLogin_WithIncorrect_Password()
         {
             var scheduler = new TestScheduler();
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithScheduler(scheduler)
                 .WithUserName("coolusername")
                 .WithPassword("incorrectpassword");
@@ -182,7 +181,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         public async Task User_CanLogin_WithCorrect_Password()
         {
             var scheduler = new TestScheduler();
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithScheduler(scheduler)
                 .WithUserName("coolusername")
                 .WithPassword("Mr. Goodbytes");
@@ -201,11 +200,10 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         public void CanLogin_TicksCorrectly()
         {
             var scheduler = new TestScheduler();
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithScheduler(scheduler)
                 .WithUserName("coolusername")
-                .WithPassword("Mr. Goodbytes")
-                .Build();
+                .WithPassword("Mr. Goodbytes");
 
             var collection = sut.Cancel.CanExecute.CreateCollection();
 
