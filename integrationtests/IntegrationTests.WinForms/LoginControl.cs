@@ -10,8 +10,14 @@ using ReactiveUI;
 
 namespace IntegrationTests.WinForms
 {
+    /// <summary>
+    /// A control for logging in a user.
+    /// </summary>
     public partial class LoginControl : UserControl, IViewFor<LoginViewModel>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginControl"/> class.
+        /// </summary>
         public LoginControl()
         {
             InitializeComponent();
@@ -19,8 +25,8 @@ namespace IntegrationTests.WinForms
             ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);
             this
                .WhenActivated(
-                   disposables => {
-
+                   disposables =>
+                   {
                        this
                            .Bind(ViewModel, vm => vm.UserName, v => v.Username.Text)
                            .DisposeWith(disposables);
@@ -34,30 +40,32 @@ namespace IntegrationTests.WinForms
                            .BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
                            .DisposeWith(disposables);
 
-
                        ViewModel
                        .Login
-                       .SelectMany(result => {
-                           if (!result.HasValue) {
+                       .SelectMany(result =>
+                       {
+                           if (!result.HasValue)
+                           {
                                return Observable.Empty<DialogResult>();
                            }
 
-                           if (result.Value) {
-                               var dialogResult = Task.Run(() => MessageBox.Show("Welcome!", "Login Successful"));
-                               return dialogResult.ToObservable();
-                           } else {
-                               var dialogResult = Task.Run(() => MessageBox.Show("Ah, ah, ah, you didn't say the magic word!", "Login Failed"));
-                               return dialogResult.ToObservable();
-                           }
+                           var dialogResult = Task.Run(() => result.Value ?
+                               MessageBox.Show("Welcome!", "Login Successful") :
+                               MessageBox.Show("Ah, ah, ah, you didn't say the magic word!", "Login Failed"));
+
+                           return dialogResult.ToObservable();
                        })
                        .Subscribe()
                        .DisposeWith(disposables);
                    });
-
         }
 
+        /// <summary>
+        /// Gets or sets the login view model.
+        /// </summary>
         public LoginViewModel ViewModel { get; set; }
 
+        /// <inheritdoc />
         object IViewFor.ViewModel
         {
             get => ViewModel;

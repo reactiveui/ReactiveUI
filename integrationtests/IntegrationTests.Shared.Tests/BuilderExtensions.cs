@@ -4,8 +4,20 @@ using System.Text;
 
 namespace IntegrationTests.Shared.Tests
 {
+    /// <summary>
+    /// Extension methods that assist with builder type operations.
+    /// </summary>
     public static class BuilderExtensions
     {
+        /// <summary>
+        /// Sets a field to the specified value.
+        /// </summary>
+        /// <typeparam name="TBuilder">The type of builder.</typeparam>
+        /// <typeparam name="TField">The type of field.</typeparam>
+        /// <param name="this">The builder instance to use.</param>
+        /// <param name="field">The reference to the field we are setting.</param>
+        /// <param name="value">The new value of the field.</param>
+        /// <returns>The builder instance.</returns>
         public static TBuilder With<TBuilder, TField>(this TBuilder @this, ref TField field, TField value)
             where TBuilder : IBuilder
         {
@@ -13,18 +25,41 @@ namespace IntegrationTests.Shared.Tests
             return @this;
         }
 
+        /// <summary>
+        /// Sets a field to the specified enumerable value.
+        /// It will add the values to the specified list, and won't override existing values.
+        /// </summary>
+        /// <typeparam name="TBuilder">The type of builder.</typeparam>
+        /// <typeparam name="TField">The type of field.</typeparam>
+        /// <param name="this">The builder instance to use.</param>
+        /// <param name="field">The reference to the list field we are setting.</param>
+        /// <param name="values">The new values of the field.</param>
+        /// <returns>The builder instance.</returns>
         public static TBuilder With<TBuilder, TField>(this TBuilder @this, ref List<TField> field, IEnumerable<TField> values)
             where TBuilder : IBuilder
         {
-            if (values == null) {
+            if (values == null)
+            {
                 field = null;
-            } else {
+            }
+            else
+            {
                 field.AddRange(values);
             }
 
             return @this;
         }
 
+        /// <summary>
+        /// Sets a list field to the specified value.
+        /// It will add the value to the specified list, and won't override existing values.
+        /// </summary>
+        /// <typeparam name="TBuilder">The type of builder.</typeparam>
+        /// <typeparam name="TField">The type of field.</typeparam>
+        /// <param name="this">The builder instance to use.</param>
+        /// <param name="field">The reference to the list field we are setting.</param>
+        /// <param name="value">The new value to add to the list field.</param>
+        /// <returns>The builder instance.</returns>
         public static TBuilder With<TBuilder, TField>(this TBuilder @this, ref List<TField> field, TField value)
             where TBuilder : IBuilder
         {
