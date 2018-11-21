@@ -3,13 +3,16 @@ using System.Windows.Forms;
 
 namespace IntegrationTests.WinForms
 {
-    static class Program
+    /// <summary>
+    /// The class which hosts the main entry point to the application.
+    /// </summary>
+    public static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

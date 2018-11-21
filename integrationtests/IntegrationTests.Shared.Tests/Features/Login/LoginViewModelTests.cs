@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
@@ -9,19 +10,30 @@ using Xunit;
 
 namespace IntegrationTests.Shared.Tests.Features.Login
 {
+    /// <summary>
+    /// Tests associated with the LoginViewModel class.
+    /// </summary>
     public class LoginViewModelTests
     {
+        /// <summary>
+        /// Checks to make sure that the login button is disabled with default values.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public void LoginButton_IsDisabled_ByDefault()
+        public async Task LoginButton_IsDisabled_ByDefault()
         {
-            var sut = new LoginViewModelBuilder()
-                .Build();
+            LoginViewModel sut = new LoginViewModelBuilder();
 
-            sut.Login.CanExecute
-                .FirstAsync().Wait()
-                .Should().BeFalse();;
+            var result = await sut.Login.CanExecute.FirstAsync();
+            result.Should().BeFalse();
         }
 
+        /// <summary>
+        /// Checks to make sure that the login button is disabled with empty password or username values.
+        /// </summary>
+        /// <param name="userName">The current user name being tested.</param>
+        /// <param name="password">The current password being tested.</param>
+        /// <returns>A task to monitor the progress.</returns>
         [Theory]
         [InlineData(null, null)]
         [InlineData("", null)]
@@ -29,86 +41,89 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         [InlineData(" ", "")]
         [InlineData("", " ")]
         [InlineData(" ", " ")]
-        public void LoginButton_IsDisabled_WhenUserNameOrPassword_IsEmpty(string userName, string password)
+        public async Task LoginButton_IsDisabled_WhenUserNameOrPassword_IsEmpty(string userName, string password)
         {
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithUserName(userName)
-                .WithPassword(password)
-                .Build();
+                .WithPassword(password);
 
-            sut.Login.CanExecute
-                .FirstAsync().Wait()
-                .Should().BeFalse();;
+            var result = await sut.Login.CanExecute.FirstAsync();
+            result.Should().BeFalse();
         }
 
+        /// <summary>
+        /// Checks to make sure that the login button is enabled if both the username and password aren't empty.
+        /// </summary>
+        /// <param name="userName">The current user name being tested.</param>
+        /// <param name="password">The current password being tested.</param>
+        /// <returns>A task to monitor the progress.</returns>
         [Theory]
         [InlineData("coolusername", "excellentpassword")]
-        public void LoginButton_IsEnabled_WhenUserNameAndPassword_IsNotEmptyAsync(string userName, string password)
+        public async Task LoginButton_IsEnabled_WhenUserNameAndPassword_IsNotEmptyAsync(string userName, string password)
         {
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithUserName(userName)
-                .WithPassword(password)
-                .Build();
+                .WithPassword(password);
 
-            sut.Login.CanExecute
-                .FirstAsync().Wait()
-                .Should().BeTrue();
+            var result = await sut.Login.CanExecute.FirstAsync();
+            result.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Checks to make sure that the login button is disabled when not logging in.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public void CancelButton_IsDisabled_WhenNot_LoggingIn()
+        public async Task CancelButton_IsDisabled_WhenNot_LoggingIn()
         {
-            var sut = new LoginViewModelBuilder()
-                .Build();
+            LoginViewModel sut = new LoginViewModelBuilder();
 
-            sut.Cancel.CanExecute
-                .FirstAsync().Wait()
-                .Should().BeFalse();;
+            var result = await sut.Cancel.CanExecute.FirstAsync();
+            result.Should().BeFalse();
         }
 
+        /// <summary>
+        /// Checks to make sure that the cancel command actually cancels a login attempt.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public void CancelButton_Cancels_Login()
+        public async Task CancelButton_Cancels_Login()
         {
-            (new TestScheduler()).With(sched => {
-
-                var sut = new LoginViewModelBuilder()
+            await new TestScheduler().With(async sched =>
+            {
+                LoginViewModel sut = new LoginViewModelBuilder()
                     .WithScheduler(sched)
                     .WithUserName("coolusername")
-                    .WithPassword("excellentpassword")
-                    .Build();
+                    .WithPassword("excellentpassword");
 
-                sut.Login.Subscribe(x => {
-                    x.Should().BeTrue();
-                });
-
-                //sut.Login.Execute();
+                sut.Login.Subscribe(x => x.Should().BeTrue());
 
                 sched.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
 
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeTrue();
-
-                //sut.Cancel.Execute();
-            });
+                var result = await sut.Cancel.CanExecute.FirstAsync();
+                result.Should().BeTrue();
+            }).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Checks to make sure that the cancel button is available within two seconds.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public void CancelButton_IsAvailableUntil_TwoSeconds()
+        public async Task CancelButton_IsAvailableUntil_TwoSeconds()
         {
-            (new TestScheduler()).With(sched => {
-
-                var sut = new LoginViewModelBuilder()
+            new TestScheduler().With(sched =>
+            {
+                LoginViewModel sut = new LoginViewModelBuilder()
                     .WithScheduler(sched)
                     .WithUserName("coolusername")
-                    .WithPassword("excellentpassword")
-                    .Build();
+                    .WithPassword("excellentpassword");
 
                 sut.Login.Execute().Subscribe();
 
                 sut.Cancel.CanExecute
                     .FirstAsync().Wait()
-                    .Should().BeFalse();;
+                    .Should().BeFalse();
 
                 // 50ms
                 sched.AdvanceByMs(50);
@@ -129,34 +144,36 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
                 sut.Cancel.CanExecute
                     .FirstAsync().Wait()
-                    .Should().BeFalse();;
+                    .Should().BeFalse();
             });
         }
 
+        /// <summary>
+        /// Checks to make sure the user cannot login with a incorrect password.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public void User_CannotLogin_WithIncorrect_Password()
+        public async Task User_CannotLogin_WithIncorrect_Password()
         {
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithUserName("coolusername")
-                .WithPassword("incorrectpassword")
-                .Build();
-
+                .WithPassword("incorrectpassword");
 
             Assert.False(true);
-
         }
 
+        /// <summary>
+        /// Checks to make sure the user can login with a correct password.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public void User_CanLogin_WithCorrect_Password()
+        public async Task User_CanLogin_WithCorrect_Password()
         {
-            var sut = new LoginViewModelBuilder()
+            LoginViewModel sut = new LoginViewModelBuilder()
                 .WithUserName("coolusername")
-                .WithPassword("Mr. Goodbytes")
-                .Build();
+                .WithPassword("Mr. Goodbytes");
 
             Assert.False(true);
-            
         }
-
     }
 }
