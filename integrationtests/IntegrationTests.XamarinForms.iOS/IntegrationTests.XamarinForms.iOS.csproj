@@ -51,6 +51,10 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>SA1300</NoWarn>
+    <DocumentationFile>bin\iPhone\Debug\IntegrationTests.XamarinForms.iOS.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -62,6 +66,10 @@
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>SA1300</NoWarn>
+    <DocumentationFile>bin\iPhone\Release\IntegrationTests.XamarinForms.iOS.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
@@ -75,6 +83,10 @@
     <CodesignProvision>Automatic:AdHoc</CodesignProvision>
     <CodesignKey>iPhone Distribution</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>SA1300</NoWarn>
+    <DocumentationFile>bin\iPhone\Ad-Hoc\IntegrationTests.XamarinForms.iOS.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>none</DebugType>
@@ -87,12 +99,16 @@
     <CodesignProvision>Automatic:AppStore</CodesignProvision>
     <CodesignKey>iPhone Distribution</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>SA1300</NoWarn>
+    <DocumentationFile>bin\iPhone\AppStore\IntegrationTests.XamarinForms.iOS.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
+    <Compile Include="AppLaunch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -145,7 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Acr.UserDialogs" Version="7.0.1" />
-    <PackageReference Include="Xamarin.Forms" Version="3.0.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.XamarinForms\IntegrationTests.XamarinForms.csproj">

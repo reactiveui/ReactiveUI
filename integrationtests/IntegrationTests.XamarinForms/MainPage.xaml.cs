@@ -1,20 +1,26 @@
-﻿using Acr.UserDialogs;
-using IntegrationTests.Shared;
-using ReactiveUI;
-using ReactiveUI.XamForms;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Acr.UserDialogs;
+using IntegrationTests.Shared;
+using ReactiveUI;
+using ReactiveUI.XamForms;
 
 namespace IntegrationTests.XamarinForms
 {
+    /// <summary>
+    /// The main page for the application.
+    /// </summary>
     public partial class MainPage : ReactiveContentPage<LoginViewModel>
     {
-		public MainPage()
-		{
-			InitializeComponent();
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainPage"/> class.
+        /// </summary>
+        public MainPage()
+        {
+            InitializeComponent();
             this
                .WhenActivated(
                    disposables =>
@@ -34,8 +40,7 @@ namespace IntegrationTests.XamarinForms
                            .BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
                            .DisposeWith(disposables);
 
-                       this
-                           .ViewModel
+                       ViewModel
                            .Login
                            .Select(
                                result =>
@@ -60,5 +65,5 @@ namespace IntegrationTests.XamarinForms
                            .DisposeWith(disposables);
                    });
         }
-	}
+    }
 }

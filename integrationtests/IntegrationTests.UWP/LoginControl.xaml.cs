@@ -1,25 +1,29 @@
-﻿using IntegrationTests.Shared;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Windows.Foundation;
+using IntegrationTests.Shared;
+using ReactiveUI;
 using Windows.UI.Popups;
 
 namespace IntegrationTests.UWP
 {
-    public class LoginControlBase : ReactiveUserControl<LoginViewModel> { }
-
+    /// <summary>
+    /// A control for logging the user in.
+    /// </summary>
     public partial class LoginControl : LoginControlBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginControl"/> class.
+        /// </summary>
         public LoginControl()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             ViewModel = new LoginViewModel(RxApp.MainThreadScheduler)
             {
-                UserName = "",
-                Password = ""
+                UserName = string.Empty,
+                Password = string.Empty
             };
 
             this
@@ -38,9 +42,8 @@ namespace IntegrationTests.UWP
                        this
                            .BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
                            .DisposeWith(disposables);
-                       
-                       this
-                           .ViewModel
+
+                       ViewModel
                            .Login
                            .SelectMany(
                                result =>
@@ -50,16 +53,11 @@ namespace IntegrationTests.UWP
                                        return Observable.Empty<IUICommand>();
                                    }
 
-                                   if (result.Value)
-                                   {
-                                       var dialog = new MessageDialog("Login Successful", "Welcome!");
-                                       return dialog.ShowAsync().ToObservable();
-                                   }
-                                   else
-                                   {
-                                       var dialog = new MessageDialog("Login Failed", "Ah, ah, ah, you didn't say the magic word!");
-                                       return dialog.ShowAsync().ToObservable();
-                                   }
+                                   var dialog = result.Value ?
+                                       new MessageDialog("Login Successful", "Welcome!") :
+                                       new MessageDialog("Login Failed", "Ah, ah, ah, you didn't say the magic word!");
+
+                                   return dialog.ShowAsync().ToObservable();
                                })
                            .Subscribe()
                            .DisposeWith(disposables);
