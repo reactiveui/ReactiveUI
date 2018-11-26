@@ -129,6 +129,32 @@ this.WhenActivated(cleanup =>
 });
 ```
 
+<h3>Forget about INotifyPropertyChanged boilerplate code</h3>
+
+[ReactiveUI.Fody](https://www.nuget.org/packages/ReactiveUI.Fody/) package allows you to decorate read-write properties with `Reactive` attribute — and code responsible for property change notifications will get injected into your property setters automatically at compile time. We use [Fody](https://github.com/Fody/Fody) tooling to make this magic work.
+
+```csharp
+public class ManagedViewModel : ReactiveObject
+{
+    // This reactive property will notify the UI when it changes.
+    [Reactive] public string SearchQuery { get; set; }
+}
+```
+
+The code above gets compiled into the following code:
+
+```csharp
+public class CompiledViewModel : ReactiveObject
+{
+    private string searchQuery;
+    public string SearchQuery 
+    {
+        get => searchQuery;
+        set => this.RaiseAndSetIfChanged(ref searchQuery, value);
+    }
+}
+```
+
 <h2>Support</h2>
 
 If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
