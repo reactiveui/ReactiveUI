@@ -49,7 +49,7 @@ namespace ReactiveUI
 
             if (converter == null)
             {
-                throw new ArgumentException(string.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", fromType, toType));
+                throw new ArgumentException($"Can't convert {fromType} to {toType}. To fix this, register a IBindingTypeConverter");
             }
 
             try
@@ -78,7 +78,7 @@ namespace ReactiveUI
                     return false;
                 }
 
-                throw new Exception(string.Format("Can't convert from {0} to {1}.", from.GetType(), toType), e);
+                throw new Exception($"Can't convert from {@from.GetType()} to {toType}.", e);
             }
         }
     }
