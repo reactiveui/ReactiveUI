@@ -9,13 +9,13 @@ namespace ReactiveUI
     using System.Diagnostics;
     using System.Linq;
 
-    ///<summary> takes a batch of updates in their natural order (i.e. the order they occurred in the client code) and normalizes them to
+    /// <summary> takes a batch of updates in their natural order (i.e. the order they occurred in the client code) and normalizes them to
     /// something iOS can consume when performing batch updates to a table or collection view
     /// iOS requires that all deletes be specified first with indexes relative to the source data *before* any insertions are applied
     /// it then requires insertions be specified next relative to the source data *after* any deletions are applied
     /// this code also de-duplicates as necessary. The simplest possible scenario for this is adding and immediately deleting an
     /// item. iOS should never even be told about this set of updates because they cancel each other out.
-    ///</summary>
+    /// </summary>
     public static class IndexNormalizer
     {
         /// <summary>

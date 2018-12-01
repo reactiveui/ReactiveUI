@@ -40,8 +40,8 @@ namespace ReactiveUI
         {
             SetupRxObj();
         }
-
 #endif
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
         /// </summary>
@@ -172,6 +172,7 @@ namespace ReactiveUI
             this.ActivateSubviews(false);
         }
 #endif
+
         private void SetupRxObj()
         {
         }
@@ -199,6 +200,7 @@ namespace ReactiveUI
         }
 
 #endif
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
         /// </summary>

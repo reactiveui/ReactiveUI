@@ -68,7 +68,6 @@ namespace ReactiveUI
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
         private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
 
-
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
