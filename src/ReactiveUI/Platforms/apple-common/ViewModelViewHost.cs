@@ -120,11 +120,11 @@ namespace ReactiveUI
 
                         if (view == null)
                         {
-                            var message = string.Format("Unable to resolve view for \"{0}\"", x.ViewModel.GetType());
+                            var message = $"Unable to resolve view for \"{x.ViewModel.GetType()}\"";
 
                             if (x.Contract != null)
                             {
-                                message += string.Format(" and contract \"{0}\"", x.Contract.GetType());
+                                message += $" and contract \"{x.Contract.GetType()}\"";
                             }
 
                             message += ".";
@@ -135,11 +135,7 @@ namespace ReactiveUI
 
                         if (viewController == null)
                         {
-                            throw new Exception(
-                                string.Format(
-                                    "Resolved view type '{0}' is not a '{1}'.",
-                                    viewController.GetType().FullName,
-                                    typeof(NSViewController).FullName));
+                            throw new Exception($"Resolved view type '{viewController.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                         }
 
                         view.ViewModel = x.ViewModel;
@@ -272,11 +268,11 @@ namespace ReactiveUI
                 // if not found, throw
                 if (viewController == null)
                 {
-                    var message = string.Format("Unable to resolve view for \"{0}\"", x.ViewModel.GetType());
+                    var message = $"Unable to resolve view for \"{x.ViewModel.GetType()}\"";
 
                     if (x.Contract != null)
                     {
-                        message += string.Format(" and contract \"{0}\"", x.Contract.GetType());
+                        message += $" and contract \"{x.Contract.GetType()}\"";
                     }
 
                     message += ".";
@@ -290,7 +286,7 @@ namespace ReactiveUI
                 // sanity check, view controllers are expect to have a view
                 if (viewLastAdded == null)
                 {
-                    var message = string.Format("No view associated with view controller {0}.", viewController.GetType());
+                    var message = $"No view associated with view controller {viewController.GetType()}.";
                     throw new Exception(message);
                 }
 

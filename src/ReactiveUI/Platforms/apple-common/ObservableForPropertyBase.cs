@@ -73,7 +73,7 @@ namespace ReactiveUI
 
             if (match == null)
             {
-                throw new NotSupportedException(string.Format("Notifications for {0}.{1} are not supported", type.Name, propertyName));
+                throw new NotSupportedException($"Notifications for {type.Name}.{propertyName} are not supported");
             }
 
             return match.CreateObservable((NSObject)sender, expression);

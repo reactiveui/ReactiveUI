@@ -86,14 +86,14 @@ namespace ReactiveUI.XamForms
 
                         if (view == null)
                         {
-                            throw new Exception(string.Format("Couldn't find view for '{0}'.", x.ViewModel));
+                            throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
                         }
 
                         var castView = view as View;
 
                         if (castView == null)
                         {
-                            throw new Exception(string.Format("View '{0}' is not a subclass of '{1}'.", view.GetType().FullName, typeof(View).FullName));
+                            throw new Exception($"View '{view.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
                         }
 
                         view.ViewModel = x.ViewModel;
