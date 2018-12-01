@@ -80,7 +80,6 @@ namespace ReactiveUI
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
 
-
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {

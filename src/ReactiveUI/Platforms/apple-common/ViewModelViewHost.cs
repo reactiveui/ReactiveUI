@@ -18,7 +18,7 @@ namespace ReactiveUI
 {
     /// <summary>
     /// A control which will use Splat dependency injection to determine the View
-    /// to show. It uses. 
+    /// to show. It uses.
     /// </summary>
     public class ViewModelViewHost : ReactiveViewController
     {

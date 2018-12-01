@@ -48,7 +48,6 @@ namespace ReactiveUI.Tests
 
     public class PropertyBindFakeControl : Control
     {
-
         public static readonly DependencyProperty NullHatingStringProperty =
             DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new PropertyMetadata(string.Empty));
 
