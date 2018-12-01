@@ -17,7 +17,6 @@ namespace ReactiveUI.XamForms
     public class ReactiveContentPage<TViewModel> : ContentPage, IViewFor<TViewModel>
         where TViewModel : class
     {
-
         /// <summary>
         /// The view model bindable property.
         /// </summary>
