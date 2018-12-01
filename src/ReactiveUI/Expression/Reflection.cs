@@ -25,6 +25,13 @@ namespace ReactiveUI
         private static readonly MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>(
             (type, _) =>
             {
+                Type resolvedType = Type.GetType(type, false);
+
+                if (resolvedType != null)
+                {
+                    return resolvedType;
+                }
+
                 return Type.GetType(type, assemblyName => AppDomain.CurrentDomain.GetAssemblies().Where(z => z.FullName == assemblyName.FullName).FirstOrDefault(), null, false);
             },
             20);
