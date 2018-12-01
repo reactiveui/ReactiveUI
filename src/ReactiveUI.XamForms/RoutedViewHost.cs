@@ -195,9 +195,7 @@ namespace ReactiveUI.XamForms
             var ret = ViewLocator.Current.ResolveView(vm);
             if (ret == null)
             {
-                var msg = string.Format(
-                    "Couldn't find a View for ViewModel. You probably need to register an IViewFor<{0}>",
-                    vm.GetType().Name);
+                var msg = $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{vm.GetType().Name}>";
 
                 return Observable.Throw<Page>(new Exception(msg));
             }
