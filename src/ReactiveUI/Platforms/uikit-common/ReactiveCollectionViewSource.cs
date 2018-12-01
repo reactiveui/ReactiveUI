@@ -20,7 +20,6 @@ using NSAction = System.Action;
 
 namespace ReactiveUI
 {
-
     internal class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UICollectionViewCell>
     {
         private readonly UICollectionView _view;

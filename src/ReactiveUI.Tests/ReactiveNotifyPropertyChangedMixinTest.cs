@@ -354,7 +354,7 @@ namespace ReactiveUI.Tests
             Assert.True(obsUpdated);
 
             obsUpdated = false;
-            obj.Model.Model = new ObjChain3 { Model = new HostTestFixture { SomeOtherParam = 10 } } ;
+            obj.Model.Model = new ObjChain3 { Model = new HostTestFixture { SomeOtherParam = 10 } };
             Assert.True(obsUpdated);
 
             obsUpdated = false;
