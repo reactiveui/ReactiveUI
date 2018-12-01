@@ -168,10 +168,7 @@ namespace ReactiveUI
 
             if (view == null)
             {
-                throw new Exception(
-                    string.Format(
-                        "Couldn't find a view for view model. You probably need to register an IViewFor<{0}>",
-                        viewModel.GetType().Name));
+                throw new Exception($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
             }
 
             view.ViewModel = viewModel;
@@ -179,11 +176,7 @@ namespace ReactiveUI
 
             if (viewController == null)
             {
-                throw new Exception(
-                    string.Format(
-                        "View type {0} for view model type {1} is not a UIViewController",
-                        view.GetType().Name,
-                        viewModel.GetType().Name));
+                throw new Exception($"View type {view.GetType().Name} for view model type {viewModel.GetType().Name} is not a UIViewController");
             }
 
             return viewController;
@@ -272,7 +265,7 @@ namespace ReactiveUI
                 }
                 else
                 {
-                    throw new Exception(string.Format("'{0}' must be an NSViewController or NSView", view.GetType().FullName));
+                    throw new Exception($"'{view.GetType().FullName}' must be an NSViewController or NSView");
                 }
 
                 targetView.AddSubview(viewLastAdded);

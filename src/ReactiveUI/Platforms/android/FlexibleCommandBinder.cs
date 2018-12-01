@@ -51,7 +51,7 @@ namespace ReactiveUI
 
             if (match == null)
             {
-                throw new NotSupportedException(string.Format("CommandBinding for {0} is not supported", type.Name));
+                throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
             }
 
             var typeProperties = _config[match];

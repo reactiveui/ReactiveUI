@@ -146,7 +146,7 @@ namespace ReactiveUI
 
                         if (view == null)
                         {
-                            throw new Exception(string.Format("Couldn't find view for '{0}'.", x.Item1));
+                            throw new Exception($"Couldn't find view for '{x.Item1}'.");
                         }
 
                         view.ViewModel = x.Item1;
