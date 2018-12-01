@@ -25,8 +25,29 @@ namespace ReactiveUI
         private static readonly MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>(
             (type, _) =>
             {
-                return Type.GetType(type, false);
-            }, 20);
+                return Type.GetType(
+                                    type,
+                                    assemblyName =>
+                                    {
+                                        var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(z => z.FullName == assemblyName.FullName).FirstOrDefault();
+                                        if (assembly != null)
+                                        {
+                                            return assembly;
+                                        }
+
+                                        try
+                                        {
+                                            return Assembly.Load(assemblyName);
+                                        }
+                                        catch
+                                        {
+                                            return null;
+                                        }
+                                    },
+                                    null,
+                                    false);
+            },
+            20);
 
         /// <summary>
         /// Uses the expression re-writer to simplify the Expression down to it's simplest Expression.
@@ -52,7 +73,7 @@ namespace ReactiveUI
 
             StringBuilder sb = new StringBuilder();
 
-            foreach (var exp in expression.GetExpressionChain())
+            foreach (Expression exp in expression.GetExpressionChain())
             {
                 if (exp.NodeType != ExpressionType.Parameter)
                 {
@@ -100,7 +121,7 @@ namespace ReactiveUI
             FieldInfo field = member as FieldInfo;
             if (field != null)
             {
-                return (obj, args) => field.GetValue(obj);
+                return (obj, _) => field.GetValue(obj);
             }
 
             PropertyInfo property = member as PropertyInfo;
@@ -147,7 +168,7 @@ namespace ReactiveUI
             FieldInfo field = member as FieldInfo;
             if (field != null)
             {
-                return (obj, val, args) => field.SetValue(obj, val);
+                return (obj, val, _) => field.SetValue(obj, val);
             }
 
             PropertyInfo property = member as PropertyInfo;
@@ -193,7 +214,7 @@ namespace ReactiveUI
         public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, IEnumerable<Expression> expressionChain)
         {
             var expressions = expressionChain.ToList();
-            foreach (var expression in expressions.SkipLast(1))
+            foreach (Expression expression in expressions.SkipLast(1))
             {
                 if (current == null)
                 {
@@ -232,7 +253,7 @@ namespace ReactiveUI
             var expressions = expressionChain.ToList();
             changeValues = new IObservedChange<object, object>[expressions.Count()];
 
-            foreach (var expression in expressions.SkipLast(1))
+            foreach (Expression expression in expressions.SkipLast(1))
             {
                 if (current == null)
                 {
@@ -242,9 +263,7 @@ namespace ReactiveUI
 
                 var sender = current;
                 current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
-                var box = new ObservedChange<object, object>(sender, expression, current);
-
-                changeValues[currentIndex] = box;
+                changeValues[currentIndex] = new ObservedChange<object, object>(sender, expression, current);
                 currentIndex++;
             }
 
@@ -276,7 +295,7 @@ namespace ReactiveUI
         public static bool TrySetValueToPropertyChain<TValue>(object target, IEnumerable<Expression> expressionChain, TValue value, bool shouldThrow = true)
         {
             var expressions = expressionChain.ToList();
-            foreach (var expression in expressions.SkipLast(1))
+            foreach (Expression expression in expressions.SkipLast(1))
             {
                 var getter = shouldThrow ?
                     GetValueFetcherOrThrow(expression.GetMemberInfo()) :
@@ -291,7 +310,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressions.Last();
-            var setter = shouldThrow ?
+            Action<object, object, object[]> setter = shouldThrow ?
                 GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
                 GetValueSetterForProperty(lastExpression.GetMemberInfo());
 
@@ -316,7 +335,7 @@ namespace ReactiveUI
         {
             lock (typeCache)
             {
-                var ret = typeCache.Get(type);
+                Type ret = typeCache.Get(type);
                 if (ret != null || !throwOnFailure)
                 {
                     return ret;
@@ -335,16 +354,15 @@ namespace ReactiveUI
         /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
         public static Type GetEventArgsTypeForEvent(Type type, string eventName)
         {
-            var ti = type;
-            var ei = ti.GetRuntimeEvent(eventName);
+            Type ti = type;
+            EventInfo ei = ti.GetRuntimeEvent(eventName);
             if (ei == null)
             {
                 throw new Exception($"Couldn't find {type.FullName}.{eventName}");
             }
 
             // Find the EventArgs type parameter of the event via digging around via reflection
-            var eventArgsType = ei.EventHandlerType.GetRuntimeMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
-            return eventArgsType;
+            return ei.EventHandlerType.GetRuntimeMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
         }
 
         /// <summary>
@@ -360,7 +378,7 @@ namespace ReactiveUI
             var missingMethod = methodsToCheck
                 .Select(x =>
                 {
-                    var methods = targetObject.GetType().GetTypeInfo().DeclaredMethods;
+                    IEnumerable<MethodInfo> methods = targetObject.GetType().GetTypeInfo().DeclaredMethods;
                     return Tuple.Create(x, methods.FirstOrDefault(y => y.Name == x));
                 })
                 .FirstOrDefault(x => x.Item2 == null);
