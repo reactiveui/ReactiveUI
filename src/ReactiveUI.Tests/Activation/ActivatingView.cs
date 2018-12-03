@@ -10,7 +10,19 @@ namespace ReactiveUI.Tests
 {
     public class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>
     {
+        public Subject<Unit> Loaded = new Subject<Unit>();
+        public Subject<Unit> Unloaded = new Subject<Unit>();
+
         private ActivatingViewModel _viewModel;
+
+        public ActivatingView()
+        {
+            this.WhenActivated(d =>
+            {
+                IsActiveCount++;
+                d(Disposable.Create(() => IsActiveCount--));
+            });
+        }
 
         public ActivatingViewModel ViewModel
         {
@@ -24,18 +36,6 @@ namespace ReactiveUI.Tests
             set => ViewModel = (ActivatingViewModel)value;
         }
 
-        public ActivatingView()
-        {
-            this.WhenActivated(d =>
-            {
-                IsActiveCount++;
-                d(Disposable.Create(() => IsActiveCount--));
-            });
-        }
-
         public int IsActiveCount { get; set; }
-
-        public Subject<Unit> Loaded = new Subject<Unit>();
-        public Subject<Unit> Unloaded = new Subject<Unit>();
     }
 }

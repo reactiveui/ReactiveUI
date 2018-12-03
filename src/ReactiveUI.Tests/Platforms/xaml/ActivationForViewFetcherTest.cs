@@ -21,9 +21,6 @@ namespace ReactiveUI.Tests
     {
         public class TestUserControl : UserControl, IActivatable
         {
-            public TestUserControl()
-            {
-            }
         }
 
         [WpfFact]

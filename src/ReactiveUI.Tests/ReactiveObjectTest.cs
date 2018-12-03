@@ -21,15 +21,34 @@ namespace ReactiveUI.Tests
         [IgnoreDataMember]
         private string _isNotNullString;
 
+        [IgnoreDataMember]
+        private string _isOnlyOneWord;
+
+        [IgnoreDataMember]
+        private List<string> _stackOverflowTrigger;
+
+        [IgnoreDataMember]
+        private string _usesExprRaiseSet;
+
+        [IgnoreDataMember]
+        private string _pocoProperty;
+
+        private string _notSerialized;
+
+        [IgnoreDataMember]
+        private int? _nullableInt;
+
+        public TestFixture()
+        {
+            TestCollection = new ObservableCollectionExtended<int>();
+        }
+
         [DataMember]
         public string IsNotNullString
         {
             get => _isNotNullString;
             set => this.RaiseAndSetIfChanged(ref _isNotNullString, value);
         }
-
-        [IgnoreDataMember]
-        private string _isOnlyOneWord;
 
         [DataMember]
         public string IsOnlyOneWord
@@ -38,9 +57,6 @@ namespace ReactiveUI.Tests
             set => this.RaiseAndSetIfChanged(ref _isOnlyOneWord, value);
         }
 
-        [IgnoreDataMember]
-        private List<string> _stackOverflowTrigger;
-
         [DataMember]
         public List<string> StackOverflowTrigger
         {
@@ -48,18 +64,12 @@ namespace ReactiveUI.Tests
             set => this.RaiseAndSetIfChanged(ref _stackOverflowTrigger, value.ToList());
         }
 
-        [IgnoreDataMember]
-        private string _usesExprRaiseSet;
-
         [DataMember]
         public string UsesExprRaiseSet
         {
             get => _usesExprRaiseSet;
             set => this.RaiseAndSetIfChanged(ref _usesExprRaiseSet, value);
         }
-
-        [IgnoreDataMember]
-        private string _pocoProperty;
 
         [DataMember]
         public string PocoProperty
@@ -71,27 +81,17 @@ namespace ReactiveUI.Tests
         [DataMember]
         public ObservableCollectionExtended<int> TestCollection { get; protected set; }
 
-        private string _notSerialized;
-
         public string NotSerialized
         {
             get => _notSerialized;
             set => this.RaiseAndSetIfChanged(ref _notSerialized, value);
         }
 
-        [IgnoreDataMember]
-        private int? _nullableInt;
-
         [DataMember]
         public int? NullableInt
         {
             get => _nullableInt;
             set => this.RaiseAndSetIfChanged(ref _nullableInt, value);
-        }
-
-        public TestFixture()
-        {
-            TestCollection = new ObservableCollectionExtended<int>();
         }
     }
 
@@ -100,15 +100,15 @@ namespace ReactiveUI.Tests
         [IgnoreDataMember]
         private readonly ObservableAsPropertyHelper<string> _firstThreeLettersOfOneWord;
 
-        [IgnoreDataMember]
-        public string FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;
-
         public OaphTestFixture()
         {
             this.WhenAnyValue(x => x.IsOnlyOneWord)
                 .Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x)
                 .ToProperty(this, x => x.FirstThreeLettersOfOneWord, out _firstThreeLettersOfOneWord);
         }
+
+        [IgnoreDataMember]
+        public string FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;
     }
 
     public class OaphNameOfTestFixture : TestFixture

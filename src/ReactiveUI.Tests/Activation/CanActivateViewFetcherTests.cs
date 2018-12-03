@@ -10,13 +10,6 @@ namespace ReactiveUI.Tests
 {
     public class CanActivateViewFetcherTests
     {
-        private class CanActivateStub : ICanActivate
-        {
-            public IObservable<Unit> Activated { get; }
-
-            public IObservable<Unit> Deactivated { get; }
-        }
-
         [Fact]
         public void ReturnsPositiveForICanActivate()
         {
@@ -39,6 +32,13 @@ namespace ReactiveUI.Tests
             var canActivateViewFetcher = new CanActivateViewFetcher();
             var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateViewFetcherTests));
             Assert.Equal(0, affinity);
+        }
+
+        private class CanActivateStub : ICanActivate
+        {
+            public IObservable<Unit> Activated { get; }
+
+            public IObservable<Unit> Deactivated { get; }
         }
     }
 }

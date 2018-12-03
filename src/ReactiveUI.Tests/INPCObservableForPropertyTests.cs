@@ -122,6 +122,8 @@ namespace ReactiveUI.Tests
             private string _property;
             private string _property2;
 
+            public event PropertyChangedEventHandler PropertyChanged;
+
             public string Property1
             {
                 get => _property;
@@ -142,15 +144,9 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            public event PropertyChangedEventHandler PropertyChanged;
-
             public void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
-                var handler = PropertyChanged;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangedEventArgs(propertyName));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
@@ -184,10 +180,7 @@ namespace ReactiveUI.Tests
             public void OnPropertyChanging([CallerMemberName] string propertyName = null)
             {
                 var handler = PropertyChanging;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangingEventArgs(propertyName));
-                }
+                handler?.Invoke(this, new PropertyChangingEventArgs(propertyName));
             }
         }
     }

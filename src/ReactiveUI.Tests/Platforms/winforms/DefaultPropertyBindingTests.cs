@@ -148,16 +148,23 @@ namespace ReactiveUI.Tests.Winforms
 
     public class FakeWinformViewModel : ReactiveObject, IRoutableViewModel
     {
-        public string UrlPathSegment => "fake";
-
-        public IScreen HostScreen { get; private set; }
+        private bool _someBooleanProperty;
+        private int _someInteger;
+        private string _someText;
+        private double _someDouble;
+        private string _property1;
+        private string _property2;
+        private string _property3;
+        private string _property4;
 
         public FakeWinformViewModel(IScreen screen = null)
         {
             HostScreen = screen;
         }
 
-        private int _someInteger;
+        public string UrlPathSegment => "fake";
+
+        public IScreen HostScreen { get; }
 
         public int SomeInteger
         {
@@ -165,15 +172,11 @@ namespace ReactiveUI.Tests.Winforms
             set => this.RaiseAndSetIfChanged(ref _someInteger, value);
         }
 
-        private string _someText;
-
         public string SomeText
         {
             get => _someText;
             set => this.RaiseAndSetIfChanged(ref _someText, value);
         }
-
-        private double _someDouble;
 
         public double SomeDouble
         {
@@ -181,15 +184,11 @@ namespace ReactiveUI.Tests.Winforms
             set => this.RaiseAndSetIfChanged(ref _someDouble, value);
         }
 
-        private string _property1;
-
         public string Property1
         {
             get => _property1;
             set => this.RaiseAndSetIfChanged(ref _property1, value);
         }
-
-        private string _property2;
 
         public string Property2
         {
@@ -197,23 +196,17 @@ namespace ReactiveUI.Tests.Winforms
             set => this.RaiseAndSetIfChanged(ref _property2, value);
         }
 
-        private string _property3;
-
         public string Property3
         {
             get => _property3;
             set => this.RaiseAndSetIfChanged(ref _property3, value);
         }
 
-        private string _property4;
-
         public string Property4
         {
             get => _property4;
             set => this.RaiseAndSetIfChanged(ref _property4, value);
         }
-
-        private bool _someBooleanProperty;
 
         public bool BooleanProperty
         {
@@ -224,26 +217,6 @@ namespace ReactiveUI.Tests.Winforms
 
     public class FakeWinformsView : Control, IViewFor<FakeWinformViewModel>
     {
-        object IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (FakeWinformViewModel)value;
-        }
-
-        public FakeWinformViewModel ViewModel { get; set; }
-
-        public Button Property1 { get; private set; }
-
-        public Label Property2 { get; private set; }
-
-        public TextBox Property3 { get; private set; }
-
-        public RichTextBox Property4 { get; private set; }
-
-        public CheckBox BooleanProperty { get; private set; }
-
-        public TextBox SomeDouble { get; private set; }
-
         public FakeWinformsView()
         {
             Property1 = new Button();
@@ -253,6 +226,26 @@ namespace ReactiveUI.Tests.Winforms
             BooleanProperty = new CheckBox();
             SomeDouble = new TextBox();
         }
+
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (FakeWinformViewModel)value;
+        }
+
+        public FakeWinformViewModel ViewModel { get; set; }
+
+        public Button Property1 { get; }
+
+        public Label Property2 { get; }
+
+        public TextBox Property3 { get; }
+
+        public RichTextBox Property4 { get; }
+
+        public CheckBox BooleanProperty { get; }
+
+        public TextBox SomeDouble { get; }
     }
 }
 
@@ -261,6 +254,8 @@ namespace AThirdPartyNamespace
     public class ThirdPartyControl : Control
     {
         private string _value;
+
+        public event EventHandler ValueChanged;
 
         public string Value
         {
@@ -275,14 +270,9 @@ namespace AThirdPartyNamespace
             }
         }
 
-        public event EventHandler ValueChanged;
-
         protected virtual void OnValueChanged()
         {
-            if (ValueChanged != null)
-            {
-                ValueChanged(this, EventArgs.Empty);
-            }
+            ValueChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -29,13 +29,21 @@ namespace ReactiveUI.Tests
 {
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
+        private ObservableCollectionExtended<int> _myListOfInts;
+        private IObservable<IChangeSet<int>> _changes;
+
+        public TestWhenAnyObsViewModel()
+        {
+            Command1 = ReactiveCommand.CreateFromObservable<int, int>(Observable.Return);
+            Command2 = ReactiveCommand.CreateFromObservable<int, int>(Observable.Return);
+            Command3 = ReactiveCommand.CreateFromObservable<string, string>(Observable.Return);
+        }
+
         public ReactiveCommand<int, int> Command1 { get; set; }
 
         public ReactiveCommand<int, int> Command2 { get; set; }
 
         public ReactiveCommand<string, string> Command3 { get; set; }
-
-        private ObservableCollectionExtended<int> _myListOfInts;
 
         public ObservableCollectionExtended<int> MyListOfInts
         {
@@ -47,19 +55,10 @@ namespace ReactiveUI.Tests
             }
         }
 
-        private IObservable<IChangeSet<int>> _changes;
-
         public IObservable<IChangeSet<int>> Changes
         {
             get => _changes;
             set => this.RaiseAndSetIfChanged(ref _changes, value);
-        }
-
-        public TestWhenAnyObsViewModel()
-        {
-            Command1 = ReactiveCommand.CreateFromObservable<int, int>(Observable.Return);
-            Command2 = ReactiveCommand.CreateFromObservable<int, int>(Observable.Return);
-            Command3 = ReactiveCommand.CreateFromObservable<string, string>(Observable.Return);
         }
     }
 
@@ -113,12 +112,7 @@ namespace ReactiveUI.Tests
 
                 _inpcProperty = value;
 
-                if (PropertyChanged == null)
-                {
-                    return;
-                }
-
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(InpcProperty)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InpcProperty)));
             }
         }
     }
@@ -780,14 +774,14 @@ namespace ReactiveUI.Tests
 #if !MONO
     public class HostTestView : Control, IViewFor<HostTestFixture>
     {
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
+
         public HostTestFixture ViewModel
         {
             get => (HostTestFixture)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
-
-        public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
 
         object IViewFor.ViewModel
         {

@@ -17,23 +17,23 @@ namespace ReactiveUI.Tests
 {
     public class FakeViewModel : ReactiveObject
     {
-        public ReactiveCommand<Unit, Unit> Cmd { get; protected set; }
-
         public FakeViewModel()
         {
             Cmd = ReactiveCommand.Create(() => { });
         }
+
+        public ReactiveCommand<Unit, Unit> Cmd { get; protected set; }
     }
 
     public class FakeView : IViewFor<FakeViewModel>
     {
-        public TextBox TheTextBox { get; protected set; }
-
         public FakeView()
         {
             TheTextBox = new TextBox();
             ViewModel = new FakeViewModel();
         }
+
+        public TextBox TheTextBox { get; protected set; }
 
         object IViewFor.ViewModel
         {
@@ -124,20 +124,9 @@ namespace ReactiveUI.Tests
     public class CommandBindViewModel : ReactiveObject
     {
         public ReactiveCommand<int, Unit> _Command1;
-
-        public ReactiveCommand<int, Unit> Command1
-        {
-            get => _Command1;
-            set => this.RaiseAndSetIfChanged(ref _Command1, value);
-        }
-
         public ReactiveCommand<Unit, Unit> _Command2;
 
-        public ReactiveCommand<Unit, Unit> Command2
-        {
-            get => _Command2;
-            set => this.RaiseAndSetIfChanged(ref _Command2, value);
-        }
+        private int _value;
 
         public CommandBindViewModel()
         {
@@ -145,9 +134,19 @@ namespace ReactiveUI.Tests
             Command2 = ReactiveCommand.Create(() => { });
         }
 
-        public FakeNestedViewModel NestedViewModel { get; set; }
+        public ReactiveCommand<int, Unit> Command1
+        {
+            get => _Command1;
+            set => this.RaiseAndSetIfChanged(ref _Command1, value);
+        }
 
-        private int _value;
+        public ReactiveCommand<Unit, Unit> Command2
+        {
+            get => _Command2;
+            set => this.RaiseAndSetIfChanged(ref _Command2, value);
+        }
+
+        public FakeNestedViewModel NestedViewModel { get; set; }
 
         public int Value
         {
@@ -176,6 +175,12 @@ namespace ReactiveUI.Tests
 
     public class CommandBindView : IViewFor<CommandBindViewModel>
     {
+        public CommandBindView()
+        {
+            Command1 = new CustomClickButton();
+            Command2 = new Image();
+        }
+
         object IViewFor.ViewModel
         {
             get => ViewModel;
@@ -187,23 +192,23 @@ namespace ReactiveUI.Tests
         public CustomClickButton Command1 { get; protected set; }
 
         public Image Command2 { get; protected set; }
-
-        public CommandBindView()
-        {
-            Command1 = new CustomClickButton();
-            Command2 = new Image();
-        }
     }
 
     public class ReactiveObjectCommandBindView : ReactiveObject, IViewFor<CommandBindViewModel>
     {
+        private CommandBindViewModel _vm;
+
+        public ReactiveObjectCommandBindView()
+        {
+            Command1 = new CustomClickButton();
+            Command2 = new Image();
+        }
+
         object IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (CommandBindViewModel)value;
         }
-
-        private CommandBindViewModel _vm;
 
         public CommandBindViewModel ViewModel
         {
@@ -214,12 +219,6 @@ namespace ReactiveUI.Tests
         public CustomClickButton Command1 { get; protected set; }
 
         public Image Command2 { get; protected set; }
-
-        public ReactiveObjectCommandBindView()
-        {
-            Command1 = new CustomClickButton();
-            Command2 = new Image();
-        }
     }
 
     public class CommandBindingImplementationTests

@@ -50,6 +50,8 @@ namespace ReactiveUI.Tests
         private class INPCClass : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler PropertyChanged;
+
+            public void NotifyPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         }
 
         private class TestLogger : ILogger

@@ -192,23 +192,7 @@ namespace ReactiveUI.Tests
 
     public class NewGameViewModel : ReactiveObject
     {
-        public ObservableCollectionExtended<string> Players { get; private set; }
-
-        public ReactiveCommand<Unit, Unit> AddPlayer { get; private set; }
-
-        public ReactiveCommand<string, Unit> RemovePlayer { get; private set; }
-
-        public ReactiveCommand<Unit, Unit> StartGame { get; private set; }
-
-        public ReactiveCommand<Unit, Unit> RandomizeOrder { get; private set; }
-
         private string _newPlayerName;
-
-        public string NewPlayerName
-        {
-            get => _newPlayerName;
-            set => this.RaiseAndSetIfChanged(ref _newPlayerName, value);
-        }
 
         public NewGameViewModel()
         {
@@ -217,27 +201,43 @@ namespace ReactiveUI.Tests
             var canStart = Players.ToObservableChangeSet().CountChanged().Select(_ => Players.Count >= 3);
             StartGame = ReactiveCommand.Create(() => { }, canStart);
             RandomizeOrder = ReactiveCommand.Create(() =>
-            {
-                    using (Players.SuspendNotifications())
-                    {
-                        var r = new Random();
-                        var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
-                        Players.Clear();
-                        Players.AddRange(newOrder);
-                    }
-                },
-                canStart);
+                                                    {
+                                                        using (Players.SuspendNotifications())
+                                                        {
+                                                            var r = new Random();
+                                                            var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
+                                                            Players.Clear();
+                                                            Players.AddRange(newOrder);
+                                                        }
+                                                    },
+                                                    canStart);
 
             RemovePlayer = ReactiveCommand.Create<string>(player => Players.Remove(player));
             var canAddPlayer = this.WhenAnyValue(x => x.Players.Count,
-                x => x.NewPlayerName,
-                (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName));
+                                                 x => x.NewPlayerName,
+                                                 (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName));
             AddPlayer = ReactiveCommand.Create(() =>
-            {
-                    Players.Add(NewPlayerName.Trim());
-                    NewPlayerName = string.Empty;
-                },
-                canAddPlayer);
+                                               {
+                                                   Players.Add(NewPlayerName.Trim());
+                                                   NewPlayerName = string.Empty;
+                                               },
+                                               canAddPlayer);
+        }
+
+        public ObservableCollectionExtended<string> Players { get; }
+
+        public ReactiveCommand<Unit, Unit> AddPlayer { get; }
+
+        public ReactiveCommand<string, Unit> RemovePlayer { get; }
+
+        public ReactiveCommand<Unit, Unit> StartGame { get; }
+
+        public ReactiveCommand<Unit, Unit> RandomizeOrder { get; }
+
+        public string NewPlayerName
+        {
+            get => _newPlayerName;
+            set => this.RaiseAndSetIfChanged(ref _newPlayerName, value);
         }
     }
 }
