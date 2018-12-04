@@ -32,7 +32,7 @@ namespace ReactiveUI.Tests.Winforms
                 commandExecuted = true;
             });
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {
                 input.PerformClick();
 
@@ -58,7 +58,7 @@ namespace ReactiveUI.Tests.Winforms
                 commandExecuted = true;
             });
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {
                 input.PerformClick();
 
@@ -84,7 +84,7 @@ namespace ReactiveUI.Tests.Winforms
                 commandExecuted = true;
             });
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {
                 input.PerformClick();
 
@@ -103,7 +103,7 @@ namespace ReactiveUI.Tests.Winforms
             var cmd = ReactiveCommand.Create(() => { }, canExecute);
             var input = new Button { };
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {
                 canExecute.OnNext(true);
                 Assert.True(input.Enabled);
@@ -123,7 +123,7 @@ namespace ReactiveUI.Tests.Winforms
             var cmd = ReactiveCommand.Create(() => { }, canExecute);
             var input = new ToolStripButton { }; // ToolStripButton is a Component, not a Control
 
-            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+            using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {
                 canExecute.OnNext(true);
                 Assert.True(input.Enabled);
@@ -140,10 +140,7 @@ namespace ReactiveUI.Tests.Winforms
 
         public void PerformClick()
         {
-            if (Click != null)
-            {
-                Click(this, EventArgs.Empty);
-            }
+            Click?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -215,23 +212,23 @@ namespace ReactiveUI.Tests.Winforms
 
     public class FakeViewModel : ReactiveObject
     {
-        public ReactiveCommand<Unit, Unit> Cmd { get; protected set; }
-
         public FakeViewModel()
         {
             Cmd = ReactiveCommand.Create(() => { });
         }
+
+        public ReactiveCommand<Unit, Unit> Cmd { get; protected set; }
     }
 
     public class FakeView : IViewFor<FakeViewModel>
     {
-        public TextBox TheTextBox { get; protected set; }
-
         public FakeView()
         {
             TheTextBox = new TextBox();
             ViewModel = new FakeViewModel();
         }
+
+        public TextBox TheTextBox { get; protected set; }
 
         object IViewFor.ViewModel
         {
@@ -246,29 +243,35 @@ namespace ReactiveUI.Tests.Winforms
     {
         private ReactiveCommand<Unit, Unit> _command1;
 
-        public ReactiveCommand<Unit, Unit> Command1
-        {
-            get => _command1;
-            set => this.RaiseAndSetIfChanged(ref _command1, value);
-        }
-
         private ReactiveCommand<Unit, Unit> _command2;
-
-        public ReactiveCommand<Unit, Unit> Command2
-        {
-            get => _command2;
-            set => this.RaiseAndSetIfChanged(ref _command2, value);
-        }
 
         public WinformCommandBindViewModel()
         {
             Command1 = ReactiveCommand.Create(() => { });
             Command2 = ReactiveCommand.Create(() => { });
         }
+
+        public ReactiveCommand<Unit, Unit> Command1
+        {
+            get => _command1;
+            set => this.RaiseAndSetIfChanged(ref _command1, value);
+        }
+
+        public ReactiveCommand<Unit, Unit> Command2
+        {
+            get => _command2;
+            set => this.RaiseAndSetIfChanged(ref _command2, value);
+        }
     }
 
     public class WinformCommandBindView : IViewFor<WinformCommandBindViewModel>
     {
+        public WinformCommandBindView()
+        {
+            Command1 = new Button();
+            Command2 = new CustomClickableControl();
+        }
+
         object IViewFor.ViewModel
         {
             get => ViewModel;
@@ -280,11 +283,5 @@ namespace ReactiveUI.Tests.Winforms
         public Button Command1 { get; protected set; }
 
         public CustomClickableControl Command2 { get; protected set; }
-
-        public WinformCommandBindView()
-        {
-            Command1 = new Button();
-            Command2 = new CustomClickableControl();
-        }
     }
 }

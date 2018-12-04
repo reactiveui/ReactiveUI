@@ -9,13 +9,12 @@ namespace ReactiveUI.Tests
 {
     public static class JSONHelper
     {
-        public static string Serialize<T>(T obj)
+        public static string Serialize<T>(T serializeObject)
         {
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
+            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(serializeObject.GetType());
             var ms = new MemoryStream();
-            serializer.WriteObject(ms, obj);
-            var retVal = Encoding.Default.GetString(ms.ToArray());
-            return retVal;
+            serializer.WriteObject(ms, serializeObject);
+            return Encoding.Default.GetString(ms.ToArray());
         }
 
         public static T Deserialize<T>(string json)

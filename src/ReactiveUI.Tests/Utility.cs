@@ -96,22 +96,6 @@ namespace ReactiveUI.Tests
         }
     }
 
-    internal static class CompatMixins
-    {
-        public static void Run<T>(this IEnumerable<T> @this, Action<T> block)
-        {
-            foreach (var v in @this)
-            {
-                block(v);
-            }
-        }
-
-        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count)
-        {
-            return @this.Take(@this.Count() - count);
-        }
-    }
-
     // run tests on invariant culture to avoid problems e.g with culture specific decimal separator
     public class UseInvariantCulture : BeforeAfterTestAttribute
     {
@@ -126,6 +110,22 @@ namespace ReactiveUI.Tests
         public override void After(MethodInfo methodUnderTest)
         {
             Thread.CurrentThread.CurrentCulture = _storedCulture;
+        }
+    }
+
+    internal static class CompatMixins
+    {
+        public static void Run<T>(this IEnumerable<T> @this, Action<T> block)
+        {
+            foreach (var v in @this)
+            {
+                block(v);
+            }
+        }
+
+        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count)
+        {
+            return @this.Take(@this.Count() - count);
         }
     }
 }

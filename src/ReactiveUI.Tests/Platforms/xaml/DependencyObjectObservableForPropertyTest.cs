@@ -28,14 +28,14 @@ namespace ReactiveUI.Tests
 
     public class DerivedDepObjFixture : DepObjFixture
     {
+        public static readonly DependencyProperty AnotherTestStringProperty =
+            DependencyProperty.Register("AnotherTestString", typeof(string), typeof(DerivedDepObjFixture), new PropertyMetadata(null));
+
         public string AnotherTestString
         {
             get => (string)GetValue(AnotherTestStringProperty);
             set => SetValue(AnotherTestStringProperty, value);
         }
-
-        public static readonly DependencyProperty AnotherTestStringProperty =
-            DependencyProperty.Register("AnotherTestString", typeof(string), typeof(DerivedDepObjFixture), new PropertyMetadata(null));
     }
 
     public class DependencyObjectObservableForPropertyTest

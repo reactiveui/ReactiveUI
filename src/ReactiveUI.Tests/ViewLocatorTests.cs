@@ -16,6 +16,18 @@ namespace ReactiveUI.Tests
     {
     }
 
+    public interface IFooView : IViewFor<IFooViewModel>
+    {
+    }
+
+    public interface IStrangeInterfaceNotFollowingConvention
+    {
+    }
+
+    public interface IRoutableFooViewModel : IRoutableViewModel
+    {
+    }
+
     public class FooViewModel : ReactiveObject, IFooViewModel
     {
     }
@@ -25,10 +37,6 @@ namespace ReactiveUI.Tests
     }
 
     public class BarViewModel : ReactiveObject, IBarViewModel
-    {
-    }
-
-    public interface IFooView : IViewFor<IFooViewModel>
     {
     }
 
@@ -81,15 +89,7 @@ namespace ReactiveUI.Tests
         public IFooViewModel ViewModel { get; set; }
     }
 
-    public interface IStrangeInterfaceNotFollowingConvention
-    {
-    }
-
     public class StrangeClassNotFollowingConvention : IStrangeInterfaceNotFollowingConvention
-    {
-    }
-
-    public interface IRoutableFooViewModel : IRoutableViewModel
     {
     }
 

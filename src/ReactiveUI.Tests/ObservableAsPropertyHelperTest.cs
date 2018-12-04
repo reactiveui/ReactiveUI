@@ -356,51 +356,10 @@ namespace ReactiveUI.Tests
         }
     }
 
-    internal class ProductionMode : IModeDetector
-    {
-        public bool? InUnitTestRunner()
-        {
-            return false;
-        }
-
-        public bool? InDesignMode()
-        {
-            return false;
-        }
-
-        public static IDisposable Set()
-        {
-            ModeDetector.OverrideModeDetector(new ProductionMode());
-            return Disposable.Create(() => ModeDetector.OverrideModeDetector(new PlatformModeDetector()));
-        }
-    }
-
-    internal class OAPHIndexerTestFixture : ReactiveObject
-    {
-        private string _text;
-
-        public string Text
-        {
-            get => _text;
-            set => this.RaiseAndSetIfChanged(ref _text, value);
-        }
-
-        public string this[string propertyName] => string.Empty;
-
-        public OAPHIndexerTestFixture()
-        {
-            var temp = this.WhenAnyValue(f => f.Text)
-                   .ToProperty(this, f => f["Whatever"])
-                   .Value;
-        }
-    }
-
     public class RaceConditionFixture : ReactiveObject
     {
         public ObservableAsPropertyHelper<bool> _A;
         public int Count;
-
-        public bool A => _A.Value;
 
         public RaceConditionFixture()
         {
@@ -414,14 +373,14 @@ namespace ReactiveUI.Tests
                 .Do(_ => Count++)
                 .ToProperty(this, x => x.A, out _A);
         }
+
+        public bool A => _A.Value;
     }
 
     public class RaceConditionNameOfFixture : ReactiveObject
     {
         public ObservableAsPropertyHelper<bool> _A;
         public int Count;
-
-        public bool A => _A.Value;
 
         public RaceConditionNameOfFixture()
         {
@@ -435,5 +394,46 @@ namespace ReactiveUI.Tests
                 .Do(_ => Count++)
                 .ToProperty(this, nameof(A), out _A);
         }
+
+        public bool A => _A.Value;
+    }
+
+    internal class ProductionMode : IModeDetector
+    {
+        public static IDisposable Set()
+        {
+            ModeDetector.OverrideModeDetector(new ProductionMode());
+            return Disposable.Create(() => ModeDetector.OverrideModeDetector(new PlatformModeDetector()));
+        }
+
+        public bool? InUnitTestRunner()
+        {
+            return false;
+        }
+
+        public bool? InDesignMode()
+        {
+            return false;
+        }
+    }
+
+    internal class OAPHIndexerTestFixture : ReactiveObject
+    {
+        private string _text;
+
+        public OAPHIndexerTestFixture()
+        {
+            var temp = this.WhenAnyValue(f => f.Text)
+                           .ToProperty(this, f => f["Whatever"])
+                           .Value;
+        }
+
+        public string Text
+        {
+            get => _text;
+            set => this.RaiseAndSetIfChanged(ref _text, value);
+        }
+
+        public string this[string propertyName] => string.Empty;
     }
 }

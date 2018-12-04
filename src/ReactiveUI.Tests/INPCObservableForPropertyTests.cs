@@ -7,8 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using Microsoft.Reactive.Testing;
-using ReactiveUI.Testing;
+
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -120,7 +119,10 @@ namespace ReactiveUI.Tests
         private class TestClassChanged : INotifyPropertyChanged
         {
             private string _property;
+
             private string _property2;
+
+            public event PropertyChangedEventHandler PropertyChanged;
 
             public string Property1
             {
@@ -142,22 +144,19 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            public event PropertyChangedEventHandler PropertyChanged;
-
             public void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
-                var handler = PropertyChanged;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangedEventArgs(propertyName));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
         private class TestClassChanging : INotifyPropertyChanging
         {
             private string _property1;
+
             private string _property2;
+
+            public event PropertyChangingEventHandler PropertyChanging;
 
             public string Property1
             {
@@ -179,15 +178,10 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            public event PropertyChangingEventHandler PropertyChanging;
-
             public void OnPropertyChanging([CallerMemberName] string propertyName = null)
             {
                 var handler = PropertyChanging;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangingEventArgs(propertyName));
-                }
+                handler?.Invoke(this, new PropertyChangingEventArgs(propertyName));
             }
         }
     }

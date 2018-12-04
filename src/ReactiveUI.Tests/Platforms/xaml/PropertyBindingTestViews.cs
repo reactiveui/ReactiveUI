@@ -17,20 +17,8 @@ namespace ReactiveUI.Tests
 {
     public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     {
-        public PropertyBindViewModel ViewModel
-        {
-            get => (PropertyBindViewModel)GetValue(ViewModelProperty);
-            set => SetValue(ViewModelProperty, value);
-        }
-
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
-
-        object IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (PropertyBindViewModel)value;
-        }
 
         public TextBox SomeTextBox;
         public TextBox Property2;
@@ -43,6 +31,18 @@ namespace ReactiveUI.Tests
             Property2 = new TextBox();
             FakeControl = new PropertyBindFakeControl();
             FakeItemsControl = new ListBox();
+        }
+
+        public PropertyBindViewModel ViewModel
+        {
+            get => (PropertyBindViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
+        }
+
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (PropertyBindViewModel)value;
         }
     }
 
@@ -76,7 +76,7 @@ namespace ReactiveUI.Tests
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("No nulls! I get confused!");
+                    throw new ArgumentNullException(nameof(value), "No nulls! I get confused!");
                 }
 
                 SetValue(NullHatingStringProperty, value);
