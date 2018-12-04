@@ -76,7 +76,7 @@ namespace ReactiveUI.Tests
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("No nulls! I get confused!");
+                    throw new ArgumentNullException(nameof(value), "No nulls! I get confused!");
                 }
 
                 SetValue(NullHatingStringProperty, value);

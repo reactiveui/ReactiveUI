@@ -34,6 +34,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, affinity);
         }
 
+        #pragma warning disable CA1812 // Class is not instantiated
         private class CanActivateStub : ICanActivate
         {
             public IObservable<Unit> Activated { get; }
