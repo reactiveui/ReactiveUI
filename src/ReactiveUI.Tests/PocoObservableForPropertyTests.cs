@@ -47,10 +47,14 @@ namespace ReactiveUI.Tests
             public string Property2 { get; set; }
         }
 
+#pragma warning disable CA1812 // Class is not instantiated
         private class INPCClass : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler PropertyChanged;
+
+            public void NotifyPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         }
+#pragma warning restore CA1812 // Class is not instantiated
 
         private class TestLogger : ILogger
         {

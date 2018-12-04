@@ -8,10 +8,6 @@ namespace ReactiveUI.Tests
 {
     public class ActivatingViewModel : ReactiveObject, ISupportsActivation
     {
-        public ViewModelActivator Activator { get; protected set; }
-
-        public int IsActiveCount { get; protected set; }
-
         public ActivatingViewModel()
         {
             Activator = new ViewModelActivator();
@@ -22,5 +18,9 @@ namespace ReactiveUI.Tests
                 d(Disposable.Create(() => IsActiveCount--));
             });
         }
+
+        public ViewModelActivator Activator { get; protected set; }
+
+        public int IsActiveCount { get; protected set; }
     }
 }

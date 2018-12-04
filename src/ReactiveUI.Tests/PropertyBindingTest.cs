@@ -75,7 +75,7 @@ namespace ReactiveUI.Tests
             set => this.RaiseAndSetIfChanged(ref _NullableDouble, value);
         }
 
-        public ObservableCollectionExtended<string> SomeCollectionOfStrings { get; protected set; }
+        public ObservableCollectionExtended<string> SomeCollectionOfStrings { get; }
 
         public PropertyBindModel Model
         {

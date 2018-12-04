@@ -19,13 +19,6 @@ namespace ReactiveUI.Tests
 {
     public class ActivationForViewFetcherTest
     {
-        public class TestUserControl : UserControl, IActivatable
-        {
-            public TestUserControl()
-            {
-            }
-        }
-
         [WpfFact]
         public void FrameworkElementIsActivatedAndDeactivated()
         {
@@ -134,6 +127,10 @@ namespace ReactiveUI.Tests
             uc.RaiseEvent(unloaded);
 
             new[] { true, false, true, false }.AssertAreEqual(activated);
+        }
+
+        public class TestUserControl : UserControl, IActivatable
+        {
         }
     }
 }

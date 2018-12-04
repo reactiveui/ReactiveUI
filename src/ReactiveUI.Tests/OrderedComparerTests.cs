@@ -13,14 +13,6 @@ namespace ReactiveUI.Tests
 {
     public class OrderedComparerTests
     {
-        [DebuggerDisplay("{Name}")]
-        public class Employee
-        {
-            public string Name;
-            public int Age;
-            public int Salary;
-        }
-
         [Fact]
         public void SmokeTest()
         {
@@ -91,6 +83,14 @@ namespace ReactiveUI.Tests
 
             items.Sort(OrderedComparer.For(items).OrderBy(x => x.FirstLetter));
             Assert.True(items.Select(x => x.FirstLetter).SequenceEqual("abc"));
+        }
+
+        [DebuggerDisplay("{Name}")]
+        public class Employee
+        {
+            public string Name;
+            public int Age;
+            public int Salary;
         }
     }
 }
