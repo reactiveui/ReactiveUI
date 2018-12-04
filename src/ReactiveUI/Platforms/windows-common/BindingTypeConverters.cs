@@ -17,9 +17,20 @@ namespace ReactiveUI
     [Flags]
     public enum BooleanToVisibilityHint
     {
+        /// <summary>
+        /// Do not modify the boolean type conversion from it's default action of using the Visibility.Collapsed.
+        /// </summary>
         None = 0,
+
+        /// <summary>
+        /// Inverse the action of the boolean type conversion, when it's true collapse the visibility.
+        /// </summary>
         Inverse = 1 << 1,
+
 #if !NETFX_CORE
+        /// <summary>
+        /// Use the hidden version rather than the Collapsed.
+        /// </summary>
         UseHidden = 1 << 2,
 #endif
     }

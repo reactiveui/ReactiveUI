@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
+
 using ReactiveUI;
 using ReactiveUI.Tests;
 using Splat;
@@ -37,21 +39,21 @@ namespace ReactiveUI.Tests
     {
     }
 
-    public class ExampleView : ReactiveUserControl<ExampleViewModel>
+    public class ExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>
     {
     }
 
-    public class AnotherView : ReactiveUserControl<AnotherViewModel>
+    public class AnotherView : ReactiveUI.Winforms.ReactiveUserControl<AnotherViewModel>
     {
     }
 
     [ViewContract("contract")]
-    public class ContractExampleView : ReactiveUserControl<ExampleViewModel>
+    public class ContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>
     {
     }
 
     [SingleInstanceView]
-    public class NeverUsedView : ReactiveUserControl<NeverUsedViewModel>
+    public class NeverUsedView : ReactiveUI.Winforms.ReactiveUserControl<NeverUsedViewModel>
     {
         public static int Instances;
 
@@ -62,7 +64,7 @@ namespace ReactiveUI.Tests
     }
 
     [SingleInstanceView]
-    public class SingleInstanceExampleView : ReactiveUserControl<SingleInstanceExampleViewModel>
+    public class SingleInstanceExampleView : ReactiveUI.Winforms.ReactiveUserControl<SingleInstanceExampleViewModel>
     {
         public static int Instances;
 
@@ -74,7 +76,7 @@ namespace ReactiveUI.Tests
 
     [ViewContract("contract")]
     [SingleInstanceView]
-    public class SingleInstanceWithContractExampleView : ReactiveUserControl<SingleInstanceExampleViewModel>
+    public class SingleInstanceWithContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<SingleInstanceExampleViewModel>
     {
         public static int Instances;
 
@@ -84,11 +86,11 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class ViewWithoutMatchingName : ReactiveUserControl<ViewModelWithWeirdName>
+    public class ViewWithoutMatchingName : ReactiveUI.Winforms.ReactiveUserControl<ViewModelWithWeirdName>
     {
     }
 
-    public class DependencyResolverTests
+    public sealed class DependencyResolverTests : IDisposable
     {
         private readonly IMutableDependencyResolver _resolver;
 
@@ -180,6 +182,11 @@ namespace ReactiveUI.Tests
 
                 Assert.Same(instance, instance2);
             }
+        }
+
+        public void Dispose()
+        {
+            _resolver?.Dispose();
         }
     }
 }

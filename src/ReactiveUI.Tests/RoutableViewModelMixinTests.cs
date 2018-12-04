@@ -3,9 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using ReactiveUI.Tests.RoutableViewMixinTests;
 using Xunit;
+
+#pragma warning disable SA1403 // FileMayOnlyContainASingleNamespace
 
 namespace ReactiveUI.Tests
 {
