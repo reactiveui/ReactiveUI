@@ -4,10 +4,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using EventBuilder.Entities;
 using Mono.Cecil;
+using Serilog;
 
 namespace EventBuilder.Cecil
 {
@@ -127,10 +129,18 @@ namespace EventBuilder.Cecil
             return typeName;
         }
 
+        [SuppressMessage("Globalization", "CA1307: Specify StringComparison", Justification = "Replace overload is for .NET Standard only")]
         private static string GetEventArgsTypeForEvent(EventDefinition ei)
         {
             // Find the EventArgs type parameter of the event via digging around via reflection
             var type = ei.EventType.Resolve();
+
+            if (type == null)
+            {
+                Log.Debug($"Type for {ei.EventType} is not valid");
+                return null;
+            }
+
             var invoke = type.Methods.First(x => x.Name == "Invoke");
             if (invoke.Parameters.Count < 2)
             {

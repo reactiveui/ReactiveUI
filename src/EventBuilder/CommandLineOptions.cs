@@ -14,16 +14,16 @@ namespace EventBuilder
     public class CommandLineOptions
     {
         /// <summary>
-        /// Gets or sets the last state of the parser.
-        /// </summary>
-        [ParserState]
-        public IParserState LastParserState { get; set; }
-
-        /// <summary>
         /// Gets or sets the platform.
         /// </summary>
         [Option('p', "platform", Required = true, HelpText = "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, WPF, MAC, TIZEN, UWP, XAMFORMS, WINFORMS, TVOS")]
         public AutoPlatform Platform { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path where to output the contents.
+        /// </summary>
+        [Option('o', "output-path", Required = true, HelpText = "The file path where to output the contents.")]
+        public string OutputPath { get; set; }
 
         /// <summary>
         /// Gets or sets the template.
@@ -41,21 +41,9 @@ namespace EventBuilder
         /// Gets or sets the assemblies.
         /// Manual generation using the specified assemblies. Use with --platform=NONE.
         /// </summary>
-        [ValueList(typeof(List<string>))]
+        [Option('a', "assemblies", Required = false, HelpText = "List of assemblies to process. Used for the NONE option")]
 #pragma warning disable CA2227 // Collection properties should be read only
-        public List<string> Assemblies { get; set; }
+        public IEnumerable<string> Assemblies { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
-
-        /// <summary>
-        /// Gets the usage.
-        /// </summary>
-        /// <returns>The help text usage.</returns>
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(
-                this,
-                current => HelpText.DefaultParsingErrorsHandler(this, current));
-        }
     }
 }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using EventBuilder.Entities;
@@ -32,16 +33,14 @@ namespace EventBuilder.Cecil
             var publicDelegateTypes = targetAssemblies
                 .SelectMany(SafeTypes.GetSafeTypes)
                 .Where(x => x.IsPublic && !x.IsInterface && !x.HasGenericParameters && IsCocoaDelegateName(x.Name))
-                .Where(x => x.BaseType == null || !x.BaseType.FullName.Contains("MulticastDelegate"))
-                .Where(x => !garbageTypeList.Any(y => x.FullName.Contains(y)))
+                .Where(x => x.BaseType == null || !x.BaseType.FullName.Contains("MulticastDelegate", StringComparison.InvariantCulture))
+                .Where(x => !garbageTypeList.Any(y => x.FullName.Contains(y, StringComparison.InvariantCulture)))
                 .Select(x => new { Type = x, Delegates = GetPublicDelegateMethods(x) })
                 .Where(x => x.Delegates.Length > 0)
                 .ToArray();
 
-            var namespaceData = publicDelegateTypes
+            return publicDelegateTypes
                 .GroupBy(x => x.Type.Namespace)
-
-                // .Where(x => !garbageNamespaceList.Contains(x.Key))    // NB: We don't know why this is disabled.
                 .Select(x => new NamespaceInfo
                 {
                     Name = x.Key,
@@ -81,8 +80,6 @@ namespace EventBuilder.Cecil
                             }).ToArray()
                     }).ToArray()
                 }).ToArray();
-
-            return namespaceData;
         }
 
         private static bool IsCocoaDelegateName(string name)
@@ -105,7 +102,7 @@ namespace EventBuilder.Cecil
             var bannedMethods = new[] { "Dispose", "Finalize" };
             return t.Methods
                 .Where(x => x.IsVirtual && !x.IsConstructor && !x.IsSetter && x.ReturnType.FullName == "System.Void")
-                .Where(x => x.Parameters.All(y => y.ParameterType.FullName.Contains("&") == false))
+                .Where(x => x.Parameters.All(y => !y.ParameterType.FullName.Contains("&", StringComparison.InvariantCulture)))
                 .Where(x => !bannedMethods.Contains(x.Name))
                 .GroupBy(x => x.Name).Select(x => x.OrderByDescending(y => y.Parameters.Count).First())
                 .ToArray();
