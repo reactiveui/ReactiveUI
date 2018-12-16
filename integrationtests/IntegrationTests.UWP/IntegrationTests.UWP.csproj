@@ -137,12 +137,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.1.0-preview1-26328-03</Version>
-    </PackageReference>
-    <PackageReference Include="ReactiveUI">
-      <Version>8.7.1</Version>
-    </PackageReference>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
