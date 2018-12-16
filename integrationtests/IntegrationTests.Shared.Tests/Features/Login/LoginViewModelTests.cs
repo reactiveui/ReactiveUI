@@ -1,8 +1,10 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using DynamicData;
 using Microsoft.Reactive.Testing;
 using ReactiveUI;
 using ReactiveUI.Testing;
@@ -19,9 +21,8 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         /// <summary>
         /// Checks to make sure that the cancel command actually cancels a login attempt.
         /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task CancelButton_Cancels_Login()
+        public void CancelButton_Cancels_Login()
         {
             var scheduler = new TestScheduler();
 
@@ -50,9 +51,8 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         /// <summary>
         /// Checks to make sure that the cancel button is available within two seconds.
         /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task CancelButton_IsAvailableUntil_TwoSeconds()
+        public void CancelButton_IsAvailableUntil_TwoSeconds()
         {
             var actual = false;
             var scheduler = new TestScheduler();
@@ -99,6 +99,9 @@ namespace IntegrationTests.Shared.Tests.Features.Login
             (await sut.Cancel.CanExecute.FirstAsync()).ShouldBe(false);
         }
 
+        /// <summary>
+        /// Checks to make sure that the login ticks correctly and the action is performed.
+        /// </summary>
         [Fact]
         public void CanLogin_TicksCorrectly()
         {
@@ -108,7 +111,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName("coolusername")
                 .WithPassword("Mr. Goodbytes");
 
-            var collection = sut.Cancel.CanExecute.CreateCollection();
+            sut.Cancel.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var collection).Subscribe();
 
             Observable.Return(Unit.Default).InvokeCommand(sut.Login);
 
@@ -126,9 +129,8 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         {
             LoginViewModel sut = new LoginViewModelBuilder();
 
-            sut.Login.CanExecute
-                .FirstAsync().Wait()
-                .ShouldBe(false);
+            var result = await sut.Login.CanExecute.FirstAsync();
+            result.ShouldBe(false);
         }
 
         /// <summary>
@@ -173,9 +175,8 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         /// <summary>
         /// Checks to make sure the user can login with a correct password.
         /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task User_CanLogin_WithCorrect_Password()
+        public void User_CanLogin_WithCorrect_Password()
         {
             var scheduler = new TestScheduler();
             LoginViewModel sut = new LoginViewModelBuilder()
@@ -196,9 +197,8 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         /// <summary>
         /// Checks to make sure the user cannot login with a incorrect password.
         /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task User_CannotLogin_WithIncorrect_Password()
+        public void User_CannotLogin_WithIncorrect_Password()
         {
             var scheduler = new TestScheduler();
             LoginViewModel sut = new LoginViewModelBuilder()

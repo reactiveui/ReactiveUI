@@ -1,7 +1,9 @@
-using System;
+﻿using System;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Genesis.Ensure;
 using ReactiveUI;
 
@@ -13,9 +15,9 @@ namespace IntegrationTests.Shared
     /// <seealso cref="ReactiveUI.ReactiveObject" />
     public class LoginViewModel : ReactiveObject
     {
-        private IScheduler _mainScheduler;
-        private string _password;
         private string _userName;
+        private string _password;
+        private IScheduler _mainScheduler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginViewModel"/> class.
@@ -34,7 +36,7 @@ namespace IntegrationTests.Shared
                     (user, password) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(password));
 
             Login = ReactiveCommand.CreateFromObservable(
-                () => LoginInternal().TakeUntil(Cancel),
+                () => Observable.StartAsync(LoginAsync).TakeUntil(Cancel),
                 canLogin,
                 _mainScheduler);
 
@@ -42,23 +44,14 @@ namespace IntegrationTests.Shared
         }
 
         /// <summary>
+        /// Gets the login command.
+        /// </summary>
+        public ReactiveCommand<Unit, bool?> Login { get; }
+
+        /// <summary>
         /// Gets the cancel command.
         /// </summary>
         public ReactiveCommand<Unit, Unit> Cancel { get; }
-
-        /// <summary>
-        /// Gets the login command.
-        /// </summary>
-        public ReactiveCommand<Unit, bool> Login { get; }
-
-        /// <summary>
-        /// Gets or sets the password.
-        /// </summary>
-        public string Password
-        {
-            get => _password;
-            set => this.RaiseAndSetIfChanged(ref _password, value);
-        }
 
         /// <summary>
         /// Gets or sets the name of the user.
@@ -69,9 +62,21 @@ namespace IntegrationTests.Shared
             set => this.RaiseAndSetIfChanged(ref _userName, value);
         }
 
-        private IObservable<bool> LoginInternal()
+        /// <summary>
+        /// Gets or sets the password.
+        /// </summary>
+        public string Password
         {
-            return Observable.Return(Password == "Mr. Goodbytes").Delay(TimeSpan.FromSeconds(2), _mainScheduler);
+            get => _password;
+            set => this.RaiseAndSetIfChanged(ref _password, value);
+        }
+
+        private async Task<bool?> LoginAsync(CancellationToken ct)
+        {
+            var result = Password == "Mr. Goodbytes";
+            await Task.Delay(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false);
+
+            return result;
         }
     }
 }
