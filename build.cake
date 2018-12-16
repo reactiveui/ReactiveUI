@@ -8,7 +8,7 @@
 
 #addin "nuget:?package=Cake.FileHelpers&version=3.1.0"
 #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
-#addin "nuget:?package=Cake.PinNuGetDependency&version=3.1.0"
+#addin "nuget:?package=Cake.PinNuGetDependency&loaddependencies=true&version=3.2.3"
 #addin "nuget:?package=Cake.Powershell&version=0.4.7"
 
 //////////////////////////////////////////////////////////////////////
