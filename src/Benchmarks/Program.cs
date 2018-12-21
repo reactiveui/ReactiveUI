@@ -7,8 +7,15 @@ using BenchmarkDotNet.Running;
 
 namespace ReactiveUI.Benchmarks
 {
-     class Program
+    /// <summary>
+    /// Class which hosts the main entry point into the application.
+    /// </summary>
+    public static class Program
     {
-        static void Main(string[] args) => BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+        /// <summary>
+        /// The main entry point into the benchmarking application.
+        /// </summary>
+        /// <param name="args">Arguments from the command line.</param>
+        public static void Main(string[] args) => BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
     }
 }

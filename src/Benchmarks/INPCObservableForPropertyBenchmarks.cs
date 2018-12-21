@@ -4,66 +4,73 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Order;
 
 namespace ReactiveUI.Benchmarks
 {
+    /// <summary>
+    /// Bench marks checking the performance of the INotifyPropertyChanged related classes.
+    /// </summary>
     [ClrJob]
     [CoreJob]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class INPCObservableForPropertyBenchmarks
     {
-        private Expression exp;
-        private readonly Expression<Func<TestClassChanged, string>> expr = x => x.Property1;
-        private readonly INPCObservableForProperty instance = new INPCObservableForProperty();
-        private string propertyName;
+        private readonly Expression<Func<TestClassChanged, string>> _expr = x => x.Property1;
+        private readonly INPCObservableForProperty _instance = new INPCObservableForProperty();
+        private Expression _exp;
+        private string _propertyName;
 
-
+        /// <summary>
+        /// Setup the benchmarks. This will be run once per set of benchmarks.
+        /// </summary>
         [GlobalSetup]
         public void Setup()
         {
-            exp = Reflection.Rewrite(expr.Body);
-            propertyName = exp.GetMemberInfo().Name;
+            _exp = Reflection.Rewrite(_expr.Body);
+            _propertyName = _exp.GetMemberInfo().Name;
         }
 
+        /// <summary>
+        /// Check the performance of the property binding system.
+        /// </summary>
         [Benchmark]
         public void PropertyBinding()
         {
             var testClass = new TestClassChanged();
 
             var changes = new List<IObservedChange<object, object>>();
-            var dispose = instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(c => changes.Add(c));
+            var dispose = _instance.GetNotificationForProperty(testClass, _exp, _propertyName, false).Subscribe(c => changes.Add(c));
             dispose.Dispose();
         }
 
         private class TestClassChanged : INotifyPropertyChanged
         {
-            private string property;
+            private string _property;
 
-            private string property2;
+            private string _property2;
+
+            public event PropertyChangedEventHandler PropertyChanged;
 
             public string Property1
             {
-                get => property;
+                get => _property;
                 set
                 {
-                    property = value;
+                    _property = value;
                     OnPropertyChanged();
                 }
             }
 
             public string Property2
             {
-                get => property2;
+                get => _property2;
                 set
                 {
-                    property2 = value;
+                    _property2 = value;
                     OnPropertyChanged();
                 }
             }
-
-            public event PropertyChangedEventHandler PropertyChanged;
 
             public void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {

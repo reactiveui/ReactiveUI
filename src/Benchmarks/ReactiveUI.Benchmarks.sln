@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CB287F1A-1E15-40D7-85F5-F2A97A944B57}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI", "..\src\ReactiveUI\ReactiveUI.csproj", "{1BB9FAA2-4E90-4E93-8B77-434DF10166ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI", "..\ReactiveUI\ReactiveUI.csproj", "{98C335CB-EAB7-4115-8131-FB02B8A0D2C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,17 +21,17 @@ Global
 		{EC6DD0F1-4D99-4BE8-B3F1-1DD71D86C24A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC6DD0F1-4D99-4BE8-B3F1-1DD71D86C24A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC6DD0F1-4D99-4BE8-B3F1-1DD71D86C24A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1BB9FAA2-4E90-4E93-8B77-434DF10166ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1BB9FAA2-4E90-4E93-8B77-434DF10166ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1BB9FAA2-4E90-4E93-8B77-434DF10166ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1BB9FAA2-4E90-4E93-8B77-434DF10166ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98C335CB-EAB7-4115-8131-FB02B8A0D2C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98C335CB-EAB7-4115-8131-FB02B8A0D2C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98C335CB-EAB7-4115-8131-FB02B8A0D2C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98C335CB-EAB7-4115-8131-FB02B8A0D2C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EC6DD0F1-4D99-4BE8-B3F1-1DD71D86C24A} = {0DB2C65F-BE8F-4021-8860-D2D6EB9DD80A}
-		{1BB9FAA2-4E90-4E93-8B77-434DF10166ED} = {CB287F1A-1E15-40D7-85F5-F2A97A944B57}
+		{98C335CB-EAB7-4115-8131-FB02B8A0D2C9} = {CB287F1A-1E15-40D7-85F5-F2A97A944B57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A602807A-CF55-4092-A5CD-646572A09B88}
