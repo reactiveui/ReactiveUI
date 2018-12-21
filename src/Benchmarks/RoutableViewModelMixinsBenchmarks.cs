@@ -7,6 +7,9 @@ using ReactiveUI;
 
 namespace ReactiveUI.Benchmarks
 {
+    /// <summary>
+    /// Benchmarking the Mixin class for the RoutableViewModel classes.
+    /// </summary>
     [ClrJob]
     [CoreJob]
     [MemoryDiagnoser]
@@ -16,6 +19,9 @@ namespace ReactiveUI.Benchmarks
         private Func<MockViewModel> _mockViewModel;
         private RoutingState _router;
 
+        /// <summary>
+        /// Setup before all benchmarks are run.
+        /// </summary>
         [GlobalSetup]
         public void Setup()
         {
@@ -23,6 +29,9 @@ namespace ReactiveUI.Benchmarks
             _mockViewModel = () => new MockViewModel();
         }
 
+        /// <summary>
+        /// Cleanup after all benchmark iterations have been completed.
+        /// </summary>
         [GlobalCleanup]
         public void Cleanup()
         {
@@ -30,12 +39,18 @@ namespace ReactiveUI.Benchmarks
             _mockViewModel = null;
         }
 
+        /// <summary>
+        /// Setup before each benchmark iteration starts.
+        /// </summary>
         [IterationSetup]
         public void IterationSetup()
         {
             _router.NavigationStack.Clear();
         }
 
+        /// <summary>
+        /// Benchmark for getting and using the NavigatedTo observable.
+        /// </summary>
         [Benchmark]
         public void WhenNavigatedToObservable()
         {
@@ -45,12 +60,15 @@ namespace ReactiveUI.Benchmarks
             }
         }
 
+        /// <summary>
+        /// Benchmark for getting and using the NavigateFrom observable.
+        /// </summary>
         [Benchmark]
         public void WhenNavigatingFromObservable()
         {
            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
            using (_mockViewModel().WhenNavigatingFromObservable().Subscribe())
-           using (_router.NavigateBack.Execute().Subscribe()) 
+           using (_router.NavigateBack.Execute().Subscribe())
            {
            }
         }
