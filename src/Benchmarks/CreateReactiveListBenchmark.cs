@@ -1,35 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Order;
-using BenchmarkDotNet.Toolchains.CsProj;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI.Legacy;
 
 #pragma warning disable CS0618 // Item is obsolete warning
 
 namespace ReactiveUI.Benchmarks.Legacy
 {
+    /// <summary>
+    /// Creates bench marks to the deprecated ReactiveList. This allows us to compare to the DynamicData approach.
+    /// </summary>
     [ClrJob]
     [CoreJob]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
     public class CreateReactiveListBenchmark
     {
-        [Benchmark(Baseline = true)]
-        public object CreateList() => new List<string>();
-
-        [Benchmark]
-        public object CreateObservableCollection() => new ObservableCollection<string>();
-
-        [Benchmark]
-        public object CreateReactiveList() => new ReactiveList<string>();
-
-        [Benchmark]
-        public object CreateReactiveListFromList() => new ReactiveList<string>(new string[]
+        private static readonly string[] _testData =
         {
             "ReactiveUI",
             "ReactiveUI.XamForms",
@@ -39,12 +28,48 @@ namespace ReactiveUI.Benchmarks.Legacy
             "ReactiveUI.XamForms",
             "ReactiveUI.WPF",
             "ReactiveUI.Events"
-        });
+        };
 
+        /// <summary>
+        /// Benchmarks using a System.Collections.Generic.List class as our base benchmark.
+        /// </summary>
+        /// <returns>The created list.</returns>
+        [Benchmark(Baseline = true)]
+        public object CreateList() => new List<string>();
+
+        /// <summary>
+        /// Benchmark using the ObservableCollection class to compare against.
+        /// </summary>
+        /// <returns>The created list.</returns>
+        [Benchmark]
+        public object CreateObservableCollection() => new ObservableCollection<string>(_testData);
+
+        /// <summary>
+        /// Benchmark using the legacy ReactiveList interface.
+        /// </summary>
+        /// <returns>The cretaed list.</returns>
+        [Benchmark]
+        public object CreateReactiveList() => new ReactiveList<string>(_testData);
+
+        /// <summary>
+        /// Benchmark using the ObservableCollection class wrapped in a ReadOnlyObservableCollection.
+        /// </summary>
+        /// <returns>The created list.</returns>
         [Benchmark]
         public object CreateReadOnlyObservableList() =>
-            new ReadOnlyObservableCollection<string>(new ObservableCollection<string>(Enumerable.Empty<string>()));
+            new ReadOnlyObservableCollection<string>(new ObservableCollection<string>(_testData));
 
+        /// <summary>
+        /// Benchmark using the ObservableCollection class wrapped in a ReadOnlyObservableCollection.
+        /// </summary>
+        /// <returns>The created list.</returns>
+        [Benchmark]
+        public object CreateObservableCollectionExtended() => new ObservableCollectionExtended<string>(_testData);
+
+        /// <summary>
+        /// Benchmark using the source list class from DynamicData.
+        /// </summary>
+        /// <returns>The created list.</returns>
         [Benchmark]
         public object CreateSourceList() => new SourceList<string>().Connect().AsObservableList();
     }
