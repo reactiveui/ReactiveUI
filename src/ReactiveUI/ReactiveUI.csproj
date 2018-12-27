@@ -29,7 +29,7 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
     <Compile Include="Platforms\shared\**\*.cs" />
   </ItemGroup>
 
