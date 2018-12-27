@@ -1,7 +1,5 @@
 <Project>
   <PropertyGroup>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <NoWarn>$(NoWarn);1591;1701;1702;1705</NoWarn>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
     <Platform>AnyCPU</Platform>
@@ -21,10 +19,6 @@
     <None Include="..\..\LICENSE" Pack="true" PackagePath="LICENSE" />
   </ItemGroup>
   
-  <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="2.3.38" PrivateAssets="all" />
-  </ItemGroup>
-
   <ItemGroup Condition="$(IsTestProject)">
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.console" Version="2.4.1" />
