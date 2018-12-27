@@ -10,6 +10,7 @@
 #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
 #addin "nuget:?package=Cake.PinNuGetDependency&loaddependencies=true&version=3.2.3"
 #addin "nuget:?package=Cake.Powershell&version=0.4.7"
+#addin "nuget:?package=Cake.Incubator&version=3.1.0"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -217,11 +218,19 @@ Task("RunUnitTests")
     .Does(() =>
 {
     Action<ICakeContext> testAction = tool => {
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
+        var settings = new DotNetCoreTestSettings
+            {
+                Configuration = "Release",
+                
+            };
+
+        var xunitSettings = new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReport = true,
             NoAppDomain = true
         });
+        DotNetCoreTest("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", settings, xunitSettings);        
+        tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", 
     };
 
     Action<ICakeContext> testFodyAction = tool => {
