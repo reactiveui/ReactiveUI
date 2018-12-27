@@ -10,6 +10,7 @@
 #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
 #addin "nuget:?package=Cake.PinNuGetDependency&loaddependencies=true&version=3.2.3"
 #addin "nuget:?package=Cake.Powershell&version=0.4.7"
+#addin "nuget:?package=Cake.Codecov&version=0.5.0"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -21,6 +22,7 @@
 #tool "nuget:?package=ReportGenerator&version=4.0.4"
 #tool "nuget:?package=vswhere&version=2.5.2"
 #tool "nuget:?package=xunit.runner.console&version=2.4.1"
+#tool "nuget:?package=Codecov&version=1.1.0"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -57,7 +59,9 @@ var informationalVersion = EnvironmentVariable("GitAssemblyInformationalVersion"
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testsArtifactDirectory = artifactDirectory + "tests/";
-var testCoverageOutputFile = testsArtifactDirectory + "OpenCover.xml";
+var testCoverageOutputFile = MakeAbsolute(File(testsArtifactDirectory + "OpenCover.xml"));
+
+// Whitelisted Packages
 var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events",
                                "ReactiveUI.Events.WPF",
@@ -70,7 +74,12 @@ var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Blend",
                                "ReactiveUI.WPF",
                                "ReactiveUI.Winforms",
-                               "ReactiveUI.XamForms" };
+                               "ReactiveUI.XamForms",
+                                // TODO: seems the leak tests never worked as part of the CI, fix. For the moment just make sure it compiles.
+                               "ReactiveUI.LeakTests" };
+
+var packageTestWhitelist = new[] { "ReactiveUI.Tests", 
+                                   "ReactiveUI.Fody.Tests" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -113,18 +122,22 @@ Action<string, string, bool, bool> Build = (solution, outputFolder, createPackag
         .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false);
 
+    if (forceUseFullDebugType)
+    {
+        msBuildSettings = msBuildSettings.WithProperty("DebugType",  "full").WithTarget("clean");
+    }
+
     if (createPackage)
     {
         msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(outputFolder)).ToString().Quote()).WithTarget("build;pack");
     }
     else
     {
-        msBuildSettings = msBuildSettings.WithProperty("OutputPath",  MakeAbsolute(Directory(outputFolder)).ToString().Quote()).WithTarget("build");
-    }
-
-    if (forceUseFullDebugType)
-    {
-        msBuildSettings = msBuildSettings.WithProperty("DebugType",  "full");
+        msBuildSettings = msBuildSettings.WithTarget("build");
+        if (outputFolder != null)
+        {
+            msBuildSettings = msBuildSettings.WithProperty("OutputPath",  MakeAbsolute(Directory(outputFolder)).ToString().Quote());
+        }
     }
 
     MSBuild(solution, msBuildSettings);
@@ -198,29 +211,15 @@ Task("RunUnitTests")
     .IsDependentOn("BuildReactiveUI")
     .Does(() =>
 {
-    Action<ICakeContext, string> RunTests = (tool, projectName) => {
-        var testsArtifactProjectDirectory = testsArtifactDirectory + projectName + "/";
-        Build("./src/" + projectName + "/" + projectName + ".csproj", testsArtifactProjectDirectory, false, true);
-
-        var xunitSettings = new XUnit2Settings {
-            OutputDirectory = testsArtifactProjectDirectory,
-            XmlReport = true,
-            NoAppDomain = true
-        };
-
-        tool.XUnit2(testsArtifactProjectDirectory + "**/*.Tests.dll", xunitSettings);
-    };
-
     var openCoverSettings =  new OpenCoverSettings {
             ReturnTargetCodeOffset = 0,
-            ArgumentCustomization = args => args.Append("-mergeoutput")
+            MergeOutput = true,
         }
         .WithFilter("+[*]*")
         .WithFilter("-[*.Testing]*")
         .WithFilter("-[*.Tests*]*")
         .WithFilter("-[ReactiveUI.Events]*")
         .WithFilter("-[Splat*]*")
-        .WithFilter("-[ApprovalTests*]*")
         .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
         .ExcludeByFile("*/*Designer.cs")
         .ExcludeByFile("*/*.g.cs")
@@ -228,13 +227,24 @@ Task("RunUnitTests")
         .ExcludeByFile("*splat/splat*")
         .ExcludeByFile("*ApprovalTests*");
 
-    OpenCover(tool => RunTests(tool, "ReactiveUI.Tests"), testCoverageOutputFile, openCoverSettings);
-    OpenCover(tool => RunTests(tool, "ReactiveUI.Fody.Tests"), testCoverageOutputFile, openCoverSettings);
-    // TODO: seems the leak tests never worked as part of the CI, fix. For the moment just make sure it compiles.
-    // OpenCover(tool => RunTests(tool, "ReactiveUI.LeakTests"), testCoverageOutputFile, openCoverSettings);
-    Build("./src/ReactiveUI.LeakTests/ReactiveUI.LeakTests.csproj", testsArtifactDirectory + "LeakTests/", false, true);
+    var xunitSettings = new XUnit2Settings {
+        HtmlReport = true,
+        OutputDirectory = testsArtifactDirectory,
+    };
 
-    ReportGenerator(testCoverageOutputFile, artifactDirectory);
+    foreach (var projectName in packageTestWhitelist)
+    {
+        OpenCover(tool => 
+        {
+            Build("./src/" + projectName + "/" + projectName + ".csproj", null, false, true);
+
+            tool.XUnit2("./src/" + projectName + "/bin/" + "**/*.Tests.dll", xunitSettings);
+        },
+        testCoverageOutputFile,
+        openCoverSettings);
+    }
+
+    ReportGenerator(testCoverageOutputFile, testsArtifactDirectory + "Report/");
 }).ReportError(exception =>
 {
     var apiApprovals = GetFiles("./**/ApiApprovalTests.*");
@@ -248,13 +258,13 @@ Task("UploadTestCoverage")
     .Does(() =>
 {
     // Resolve the API key.
-    var token = EnvironmentVariable("COVERALLS_TOKEN");
+    var token = EnvironmentVariable("CODECOV_TOKEN");
     if (!string.IsNullOrEmpty(token))
     {
-        CoverallsIo(testCoverageOutputFile, new CoverallsIoSettings()
-        {
-            RepoToken = token
-        });
+        Information("Upload {0} to Codecov server", testCoverageOutputFile);
+
+        // Upload a coverage report.
+        Codecov(testCoverageOutputFile.ToString(), token);
     }
 });
 
