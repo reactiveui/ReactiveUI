@@ -56,7 +56,8 @@ var informationalVersion = EnvironmentVariable("GitAssemblyInformationalVersion"
 
 // Artifacts
 var artifactDirectory = "./artifacts/";
-var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
+var testsArtifactDirectory = artifactDirectory + "tests/";
+var testCoverageOutputFile = testsArtifactDirectory + "OpenCover.xml";
 var packageWhitelist = new[] { "ReactiveUI.Testing",
                                "ReactiveUI.Events",
                                "ReactiveUI.Events.WPF",
@@ -87,12 +88,47 @@ Setup(context =>
     Information("Building version {0} of ReactiveUI.", informationalVersion);
 
     CreateDirectory(artifactDirectory);
+    CreateDirectory(testsArtifactDirectory);
 });
 
 Teardown(context =>
 {
     // Executed AFTER the last task.
 });
+
+
+//////////////////////////////////////////////////////////////////////
+// HELPER METHODS
+//////////////////////////////////////////////////////////////////////
+Action<string, string, bool, bool> Build = (solution, outputFolder, createPackage, forceUseFullDebugType) =>
+{
+    Information("Building {0} using {1}, createPackage = {2}", solution, msBuildPath, createPackage);
+
+    var msBuildSettings = new MSBuildSettings() {
+            ToolPath = msBuildPath,
+            ArgumentCustomization = args => args.Append("/m /restore")
+        }
+        .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+        .SetConfiguration("Release")                        
+        .SetVerbosity(Verbosity.Minimal)
+        .SetNodeReuse(false);
+
+    if (createPackage)
+    {
+        msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(outputFolder)).ToString().Quote()).WithTarget("build;pack");
+    }
+    else
+    {
+        msBuildSettings = msBuildSettings.WithProperty("OutputPath",  MakeAbsolute(Directory(outputFolder)).ToString().Quote()).WithTarget("build");
+    }
+
+    if (forceUseFullDebugType)
+    {
+        msBuildSettings = msBuildSettings.WithProperty("DebugType",  "full");
+    }
+
+    MSBuild(solution, msBuildSettings);
+};
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -101,27 +137,15 @@ Teardown(context =>
 Task("BuildEventBuilder")
     .Does (() =>
 {
-    var solution = "./src/EventBuilder.sln";
-    Information("Building {0} using {1}", solution, msBuildPath);
-
-    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
-
-    MSBuild(solution, new MSBuildSettings() {
-            ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/m")
-        }
-        .SetConfiguration("Release")
-        .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-        .SetVerbosity(Verbosity.Minimal)
-        .SetNodeReuse(false));
+    Build("./src/EventBuilder.sln", artifactDirectory + "eventbuilder", false, false);
 });
 
 Task("GenerateEvents")
     .IsDependentOn("BuildEventBuilder")
     .Does (() =>
 {
-    var eventBuilder = "./src/EventBuilder/bin/Release/net461/EventBuilder.exe";
-    var workingDirectory = "./src/EventBuilder/bin/Release/Net461";
+    var workingDirectory = artifactDirectory + "eventbuilder/";
+    var eventBuilder = workingDirectory + "EventBuilder.exe";
     var referenceAssembliesPath = vsLocation.CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
     Information(referenceAssembliesPath.ToString());
@@ -186,55 +210,30 @@ Task("BuildReactiveUI")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
-    Action<string,string> build = (solution, name) =>
-    {
-        Information("Building {0} using {1}", solution, msBuildPath);
-
-        MSBuild(solution, new MSBuildSettings() {
-                ToolPath = msBuildPath,
-                ArgumentCustomization = args => args.Append("/m /restore")
-            }
-            .WithTarget("build;pack") 
-            .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString().Quote())
-            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-            .SetConfiguration("Release")                        
-            .SetVerbosity(Verbosity.Minimal)
-            .SetNodeReuse(false));
-    };
-
     foreach(var package in packageWhitelist)
     {
-        build("./src/" + package + "/" + package + ".csproj", package);
+        Build("./src/" + package + "/" + package + ".csproj", artifactDirectory, true, false);
     }
-
-    build("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj", "ReactiveUI.Tests");
-    build("./src/ReactiveUI.LeakTests/ReactiveUI.LeakTests.csproj", "ReactiveUI.LeakTests");
-    build("./src/ReactiveUI.Fody.Tests/ReactiveUI.Fody.Tests.csproj", "ReactiveUI.Fody.Tests");
 });
 
 Task("RunUnitTests")
     .IsDependentOn("BuildReactiveUI")
     .Does(() =>
 {
-    Action<ICakeContext> testAction = tool => {
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
-            OutputDirectory = artifactDirectory,
+    Action<ICakeContext, string> RunTests = (tool, projectName) => {
+        var testsArtifactProjectDirectory = testsArtifactDirectory + projectName + "/";
+        Build("./src/" + projectName + "/" + projectName + ".csproj", testsArtifactProjectDirectory, false, true);
+
+        var xunitSettings = new XUnit2Settings {
+            OutputDirectory = testsArtifactProjectDirectory,
             XmlReport = true,
             NoAppDomain = true
-        });
+        };
+
+        tool.XUnit2(testsArtifactProjectDirectory + "**/*.Tests.dll", xunitSettings);
     };
 
-    Action<ICakeContext> testFodyAction = tool => {
-        tool.XUnit2("./src/ReactiveUI.Fody.Tests/bin/**/*.Tests.dll", new XUnit2Settings {
-            OutputDirectory = artifactDirectory,
-            XmlReport = true,
-            NoAppDomain = true
-        });
-    };
-
-    OpenCover(testAction,
-        testCoverageOutputFile,
-        new OpenCoverSettings {
+    var openCoverSettings =  new OpenCoverSettings {
             ReturnTargetCodeOffset = 0,
             ArgumentCustomization = args => args.Append("-mergeoutput")
         }
@@ -249,26 +248,13 @@ Task("RunUnitTests")
         .ExcludeByFile("*/*.g.cs")
         .ExcludeByFile("*/*.g.i.cs")
         .ExcludeByFile("*splat/splat*")
-        .ExcludeByFile("*ApprovalTests*"));
+        .ExcludeByFile("*ApprovalTests*");
 
-    OpenCover(testFodyAction,
-        testCoverageOutputFile,
-        new OpenCoverSettings {
-            ReturnTargetCodeOffset = 0,
-            ArgumentCustomization = args => args.Append("-mergeoutput")
-        }
-        .WithFilter("+[*]*")
-        .WithFilter("-[*.Testing]*")
-        .WithFilter("-[*.Tests*]*")
-        .WithFilter("-[ReactiveUI.Events]*")
-        .WithFilter("-[Splat*]*")
-        .WithFilter("-[ApprovalTests*]*")
-        .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
-        .ExcludeByFile("*/*Designer.cs")
-        .ExcludeByFile("*/*.g.cs")
-        .ExcludeByFile("*/*.g.i.cs")
-        .ExcludeByFile("*splat/splat*")
-        .ExcludeByFile("*ApprovalTests*"));
+    OpenCover(tool => RunTests(tool, "ReactiveUI.Tests"), testCoverageOutputFile, openCoverSettings);
+    OpenCover(tool => RunTests(tool, "ReactiveUI.Fody.Tests"), testCoverageOutputFile, openCoverSettings);
+    // TODO: seems the leak tests never worked as part of the CI, fix. For the moment just make sure it compiles.
+    // OpenCover(tool => RunTests(tool, "ReactiveUI.LeakTests"), testCoverageOutputFile, openCoverSettings);
+    Build("./src/ReactiveUI.LeakTests/ReactiveUI.LeakTests.csproj", testsArtifactDirectory + "LeakTests/", false, true);
 
     ReportGenerator(testCoverageOutputFile, artifactDirectory);
 }).ReportError(exception =>
