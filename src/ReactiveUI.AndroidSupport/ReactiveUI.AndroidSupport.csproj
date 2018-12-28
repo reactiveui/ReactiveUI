@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid81</TargetFrameworks>
-    <AssemblyName>ReactiveUI.AndroidSupport</AssemblyName>
-    <RootNamespace>ReactiveUI.AndroidSupport</RootNamespace>
     <Description>ReactiveUI extensions for the Android Support Library</Description>
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
   </PropertyGroup>

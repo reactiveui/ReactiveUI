@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using Foundation;
 using UIKit;
 
@@ -10,6 +11,7 @@ namespace ReactiveUI
     /// and <see cref="UIKit.UITableViewCell"/>.
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class TableSectionInformation<TSource> : ISectionInformation<TSource, UITableView, UITableViewCell>
     {
         /// <inheritdoc/>
@@ -45,6 +47,7 @@ namespace ReactiveUI
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     /// <typeparam name="TCell">The type of the cell.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class TableSectionInformation<TSource, TCell> : TableSectionInformation<TSource>
         where TCell : UITableViewCell
     {

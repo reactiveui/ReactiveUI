@@ -17,11 +17,6 @@ namespace ReactiveUI
     public class AppKitObservableForProperty : ObservableForPropertyBase
     {
         /// <summary>
-        /// The App Kit ObservableForProperty instance.
-        /// </summary>
-        public static Lazy<AppKitObservableForProperty> Instance = new Lazy<AppKitObservableForProperty>();
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="AppKitObservableForProperty"/> class.
         /// </summary>
         public AppKitObservableForProperty()
@@ -35,5 +30,10 @@ namespace ReactiveUI
             Register(typeof(NSControl), "StringValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
             Register(typeof(NSControl), "AttributedStringValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
         }
+
+        /// <summary>
+        /// Gets the App Kit ObservableForProperty instance.
+        /// </summary>
+        public static Lazy<AppKitObservableForProperty> Instance { get; } = new Lazy<AppKitObservableForProperty>();
     }
 }

@@ -16,17 +16,17 @@ namespace ReactiveUI
     public interface IObservedChange<out TSender, out TValue>
     {
         /// <summary>
-        /// The object that has raised the change.
+        /// Gets the object that has raised the change.
         /// </summary>
         TSender Sender { get; }
 
         /// <summary>
-        /// The expression of the member that has changed on Sender.
+        /// Gets the expression of the member that has changed on Sender.
         /// </summary>
         Expression Expression { get; }
 
         /// <summary>
-        /// The value of the property that has changed. IMPORTANT NOTE: This
+        /// Gets the value of the property that has changed. IMPORTANT NOTE: This
         /// property is often not set for performance reasons, unless you have
         /// explicitly requested an Observable for a property via a method such
         /// as ObservableForProperty. To retrieve the value for the property,

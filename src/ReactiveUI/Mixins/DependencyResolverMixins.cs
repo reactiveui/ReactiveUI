@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -21,6 +23,7 @@ namespace ReactiveUI
         /// Locator.Current.
         /// </summary>
         /// <param name="resolver">The resolver to initialize.</param>
+        [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
         public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
         {
             var extraNs = new[]
@@ -36,10 +39,9 @@ namespace ReactiveUI
 
             var fdr = typeof(DependencyResolverMixins);
 
-            var assmName = new AssemblyName(
-                fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", string.Empty));
+            var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", string.Empty));
 
-            extraNs.ForEach(ns => ProcessRegistrationForNamespace(ns, assmName, resolver));
+            extraNs.ForEach(ns => ProcessRegistrationForNamespace(ns, assemblyName, resolver));
         }
 
         /// <summary>
@@ -84,6 +86,7 @@ namespace ReactiveUI
             }
         }
 
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Used on some platforms")]
         private static Func<object> TypeFactory(TypeInfo typeInfo)
         {
 #if PORTABLE
@@ -94,6 +97,7 @@ namespace ReactiveUI
 #endif
         }
 
+        [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
         private static void ProcessRegistrationForNamespace(string ns, AssemblyName assemblyName, IMutableDependencyResolver resolver)
         {
             var targetType = ns + ".Registrations";
@@ -102,9 +106,9 @@ namespace ReactiveUI
             var registerTypeClass = Reflection.ReallyFindType(fullName, false);
             if (registerTypeClass != null)
             {
-            var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
-            registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
+                var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
+                registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
+            }
         }
     }
-}
 }

@@ -28,7 +28,8 @@ namespace ReactiveUI.Tests
 
             new TestScheduler().With(sched =>
             {
-                var fixture = new ObservableAsPropertyHelper<int>(input,
+                var fixture = new ObservableAsPropertyHelper<int>(
+                    input,
                     x => output.Add(x),
                     -5);
 
@@ -50,7 +51,8 @@ namespace ReactiveUI.Tests
 
             new TestScheduler().With(sched =>
             {
-                var fixture = new ObservableAsPropertyHelper<int>(input,
+                var fixture = new ObservableAsPropertyHelper<int>(
+                    input,
                     x => output.Add(x),
                     1);
 
@@ -69,7 +71,8 @@ namespace ReactiveUI.Tests
 
             new TestScheduler().With(sched =>
             {
-                var fixture = new ObservableAsPropertyHelper<int>(Observable<int>.Never,
+                var fixture = new ObservableAsPropertyHelper<int>(
+                    Observable<int>.Never,
                     x => output.Add(x),
                     32);
 
@@ -83,7 +86,8 @@ namespace ReactiveUI.Tests
             var sched = new TestScheduler();
             var input = new Subject<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(input,
+            var fixture = new ObservableAsPropertyHelper<int>(
+                input,
                 _ => { },
                 -5,
                 scheduler: sched);

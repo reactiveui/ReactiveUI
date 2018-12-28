@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -24,6 +25,7 @@ namespace ReactiveUI
     /// This non-generic base class defines the creation behavior of the ReactiveCommand's.
     /// </para>
     /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Same class just generic.")]
     public static class ReactiveCommand
     {
         /// <summary>
@@ -535,6 +537,7 @@ namespace ReactiveUI
     /// <typeparam name="TResult">
     /// The type of the values that are the result of command execution.
     /// </typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Same class just generic.")]
     public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
     {
         private readonly Func<TParam, IObservable<TResult>> _execute;

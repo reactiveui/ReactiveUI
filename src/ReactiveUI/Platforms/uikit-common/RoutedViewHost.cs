@@ -4,13 +4,12 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
-using UIKit;
-using NSView = UIKit.UIView;
 using NSViewController = UIKit.UIViewController;
 
 namespace ReactiveUI
@@ -19,35 +18,13 @@ namespace ReactiveUI
     /// RoutedViewHost is a ReactiveNavigationController that monitors its RoutingState
     /// and keeps the navigation stack in line with it.
     /// </summary>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public class RoutedViewHost : ReactiveNavigationController
     {
         private readonly SerialDisposable _titleUpdater;
         private RoutingState _router;
         private IObservable<string> _viewContractObservable;
         private bool _routerInstigated;
-
-        /// <summary>
-        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
-        /// </summary>
-        public RoutingState Router
-        {
-            get => _router;
-            set => this.RaiseAndSetIfChanged(ref _router, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the view contract observable.
-        /// </summary>
-        public IObservable<string> ViewContractObservable
-        {
-            get => _viewContractObservable;
-            set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the view locator.
-        /// </summary>
-        public IViewLocator ViewLocator { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
@@ -88,7 +65,7 @@ namespace ReactiveUI
 
                     d(navigationStackChanged
                         .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add)
-                        .Select(contract => new { View = ResolveView(Router.GetCurrentViewModel(), /*contract*/null), Animate = Router.NavigationStack.Count > 1 })
+                        .Select(_ => new { View = ResolveView(Router.GetCurrentViewModel(), /*contract*/null), Animate = Router.NavigationStack.Count > 1 })
                         .Subscribe(x =>
                         {
                             if (_routerInstigated)
@@ -129,6 +106,29 @@ namespace ReactiveUI
                 });
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
+        /// </summary>
+        public RoutingState Router
+        {
+            get => _router;
+            set => this.RaiseAndSetIfChanged(ref _router, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the view contract observable.
+        /// </summary>
+        public IObservable<string> ViewContractObservable
+        {
+            get => _viewContractObservable;
+            set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the view locator.
+        /// </summary>
+        public IViewLocator ViewLocator { get; set; }
+
         /// <inheritdoc/>
         public override void PushViewController(NSViewController viewController, bool animated)
         {
@@ -156,7 +156,7 @@ namespace ReactiveUI
             return base.PopViewController(animated);
         }
 
-        private UIViewController ResolveView(IRoutableViewModel viewModel, string contract)
+        private NSViewController ResolveView(IRoutableViewModel viewModel, string contract)
         {
             if (viewModel == null)
             {
@@ -172,105 +172,13 @@ namespace ReactiveUI
             }
 
             view.ViewModel = viewModel;
-            var viewController = view as UIViewController;
 
-            if (viewController == null)
+            if (!(view is NSViewController viewController))
             {
                 throw new Exception($"View type {view.GetType().Name} for view model type {viewModel.GetType().Name} is not a UIViewController");
             }
 
             return viewController;
         }
-    }
-
-    /// <summary>
-    /// RoutedViewHost is a helper class that will connect a RoutingState
-    /// to an arbitrary NSView and attempt to load the View for the latest
-    /// ViewModel as a child view of the target. Usually the target view will
-    /// be the NSWindow.
-    ///
-    /// This is a bit different than the XAML's RoutedViewHost in the sense
-    /// that this isn't a Control itself, it only manipulates other Views.
-    /// </summary>
-    [Obsolete("Use RoutedViewHost instead. This class will be removed in a later release.")]
-    public class RoutedViewHostLegacy : ReactiveObject
-    {
-        private RoutingState _router;
-
-#pragma warning disable SA1600 // Elements should be documented
-        public RoutingState Router
-        {
-            get => _router;
-            set => this.RaiseAndSetIfChanged(ref _router, value);
-        }
-
-        private IObservable<string> _viewContractObservable;
-
-        public IObservable<string> ViewContractObservable
-        {
-            get => _viewContractObservable;
-            set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
-        }
-
-        private NSViewController _defaultContent;
-
-        public NSViewController DefaultContent
-        {
-            get => _defaultContent;
-            set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
-        }
-
-        public IViewLocator ViewLocator { get; set; }
-
-        public RoutedViewHostLegacy(NSView targetView)
-        {
-            NSView viewLastAdded = null;
-
-            ViewContractObservable = Observable.Return(default(string));
-
-            var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel),
-                this.WhenAnyObservable(x => x.ViewContractObservable),
-                (vm, contract) => new { ViewModel = vm, Contract = contract, });
-
-            vmAndContract.Subscribe(
-                x =>
-            {
-                if (viewLastAdded != null)
-                {
-                    viewLastAdded.RemoveFromSuperview();
-                }
-
-                if (x.ViewModel == null)
-                {
-                    if (DefaultContent != null)
-                    {
-                        targetView.AddSubview(DefaultContent.View);
-                    }
-
-                    return;
-                }
-
-                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
-                view.ViewModel = x.ViewModel;
-
-                if (view is NSViewController)
-                {
-                    viewLastAdded = ((NSViewController)view).View;
-                }
-                else if (view is NSView)
-                {
-                    viewLastAdded = (NSView)view;
-                }
-                else
-                {
-                    throw new Exception($"'{view.GetType().FullName}' must be an NSViewController or NSView");
-                }
-
-                targetView.AddSubview(viewLastAdded);
-            }, RxApp.DefaultExceptionHandler.OnNext);
-        }
-#pragma warning restore SA1600 // Elements should be documented
     }
 }

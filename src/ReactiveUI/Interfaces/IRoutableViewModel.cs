@@ -10,12 +10,12 @@ namespace ReactiveUI
     public interface IRoutableViewModel : IReactiveObject
     {
         /// <summary>
-        /// A string token representing the current ViewModel, such as 'login' or 'user'.
+        /// Gets a string token representing the current ViewModel, such as 'login' or 'user'.
         /// </summary>
         string UrlPathSegment { get; }
 
         /// <summary>
-        /// The IScreen that this ViewModel is currently being shown in. This
+        /// Gets the IScreen that this ViewModel is currently being shown in. This
         /// is usually passed into the ViewModel in the Constructor and saved
         /// as a ReadOnly Property.
         /// </summary>

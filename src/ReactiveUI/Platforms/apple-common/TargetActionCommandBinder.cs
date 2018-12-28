@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -38,7 +39,7 @@ namespace ReactiveUI
             _validTypes = new[]
             {
                 typeof(UIControl),
-             };
+            };
 #else
             _validTypes = new[]
             {
@@ -108,16 +109,23 @@ namespace ReactiveUI
             return compDisp;
         }
 
+        /// <inheritdoc/>
+        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+            where TEventArgs : EventArgs
+        {
+            throw new NotImplementedException();
+        }
+
         private class ControlDelegate : NSObject
         {
-            public bool IsEnabled { get; set; }
-
             private readonly Action<NSObject> _block;
 
             public ControlDelegate(Action<NSObject> block)
             {
                 _block = block;
             }
+
+            public bool IsEnabled { get; set; }
 
             [Export("theAction:")]
             public void TheAction(NSObject sender)
@@ -127,18 +135,12 @@ namespace ReactiveUI
 
 #if !UIKIT
             [Export("validateMenuItem:")]
+            [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
             public bool ValidateMenuItem(NSMenuItem menuItem)
             {
                 return IsEnabled;
             }
 #endif
-        }
-
-        /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-            where TEventArgs : EventArgs
-        {
-            throw new NotImplementedException();
         }
     }
 }

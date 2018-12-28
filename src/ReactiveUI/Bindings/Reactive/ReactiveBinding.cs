@@ -32,56 +32,22 @@ namespace ReactiveUI
             _bindingDisposable = bindingDisposable;
         }
 
-        /// <summary>
-        /// The instance of the view model this binding is applied to.
-        /// </summary>
-        /// <value>
-        /// The view model.
-        /// </value>
+        /// <inheritdoc />
         public TViewModel ViewModel { get; private set; }
 
-        /// <summary>
-        /// An expression representing the propertyon the viewmodel bound to the view.
-        /// This can be a child property, for example x.Foo.Bar.Baz in which case
-        /// that will be the expression.
-        /// </summary>
-        /// <value>
-        /// The expression.
-        /// </value>
+        /// <inheritdoc />
         public Expression ViewModelExpression { get; private set; }
 
-        /// <summary>
-        /// The instance of the view this binding is applied to.
-        /// </summary>
-        /// <value>
-        /// The view.
-        /// </value>
+        /// <inheritdoc />
         public TView View { get; private set; }
 
-        /// <summary>
-        /// An expression representing the property on the view bound to the viewmodel.
-        /// This can be a child property, for example x.Foo.Bar.Baz in which case
-        /// that will be the expression.
-        /// </summary>
-        /// <value>
-        /// The expression.
-        /// </value>
+        /// <inheritdoc />
         public Expression ViewExpression { get; private set; }
 
-        /// <summary>
-        /// An observable representing changed values for the binding.
-        /// </summary>
-        /// <value>
-        /// The changed.
-        /// </value>
+        /// <inheritdoc />
         public IObservable<TValue> Changed { get; private set; }
 
-        /// <summary>
-        /// Gets the direction of the binding.
-        /// </summary>
-        /// <value>
-        /// The direction.
-        /// </value>
+        /// <inheritdoc />
         public BindingDirection Direction { get; private set; }
 
         /// <inheritdoc />
@@ -91,6 +57,10 @@ namespace ReactiveUI
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Disposes of resources inside the class.
+        /// </summary>
+        /// <param name="isDisposing">If we are disposing managed resources.</param>
         protected virtual void Dispose(bool isDisposing)
         {
             if (isDisposing)

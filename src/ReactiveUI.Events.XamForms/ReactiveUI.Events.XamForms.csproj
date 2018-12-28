@@ -5,6 +5,7 @@
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for Xamarin Forms UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>ReactiveUI.Events.XamForms</PackageId>
+    <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.AndroidSupport")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.AndroidSupport")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Wpf")]

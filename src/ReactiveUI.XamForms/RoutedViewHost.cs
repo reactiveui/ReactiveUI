@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -185,6 +186,7 @@ namespace ReactiveUI.XamForms
         /// </summary>
         /// <param name="vm">The vm.</param>
         /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
+        [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
         protected IObservable<Page> PageForViewModel(IRoutableViewModel vm)
         {
             if (vm == null)

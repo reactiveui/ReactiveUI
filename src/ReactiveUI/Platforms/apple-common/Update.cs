@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+
 namespace ReactiveUI
 {
     /// <summary>
@@ -9,57 +11,27 @@ namespace ReactiveUI
     /// </summary>
     public sealed class Update
     {
-        private readonly UpdateType _type;
-        private readonly int _index;
-        private readonly bool _isDuplicate;
-
         private Update(UpdateType type, int index, bool isDuplicate = false)
         {
-            _type = type;
-            _index = index;
-            _isDuplicate = isDuplicate;
+            Type = type;
+            Index = index;
+            IsDuplicate = isDuplicate;
         }
 
         /// <summary>
         /// Gets the type.
         /// </summary>
-        public UpdateType Type => _type;
+        public UpdateType Type { get; }
 
         /// <summary>
         /// Gets the index.
         /// </summary>
-        public int Index => _index;
+        public int Index { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is duplicate.
         /// </summary>
-        public bool IsDuplicate => _isDuplicate;
-
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            return _type.ToString()[0] + _index.ToString();
-        }
-
-        /// <summary>
-        /// Created a duplicate update.
-        /// </summary>
-        /// <returns>The duplicate update.</returns>
-        public Update AsDuplicate()
-        {
-            return new Update(_type, _index, isDuplicate: true);
-        }
-
-        /// <summary>
-        /// Creates an update of the specified type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="index">The index.</param>
-        /// <returns>And update.</returns>
-        public static Update Create(UpdateType type, int index)
-        {
-            return new Update(type, index);
-        }
+        public bool IsDuplicate { get; }
 
         /// <summary>
         /// Creates an update for the added index.
@@ -79,6 +51,32 @@ namespace ReactiveUI
         public static Update CreateDelete(int index)
         {
             return new Update(UpdateType.Delete, index);
+        }
+
+        /// <summary>
+        /// Creates an update of the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>And update.</returns>
+        public static Update Create(UpdateType type, int index)
+        {
+            return new Update(type, index);
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return Type.ToString()[0] + Index.ToString(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Created a duplicate update.
+        /// </summary>
+        /// <returns>The duplicate update.</returns>
+        public Update AsDuplicate()
+        {
+            return new Update(Type, Index, isDuplicate: true);
         }
     }
 }

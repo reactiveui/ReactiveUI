@@ -77,7 +77,7 @@ namespace ReactiveUI
                 case UpdateType.Add:
                     return CalculateAdditionIndex(updates, 0, updates.Count, updateIndex);
                 case UpdateType.Delete:
-                    return CalculateDeletionIndex(updates, 0, updates.Count, updateIndex, updates[updateIndex].Index);
+                    return CalculateDeletionIndex(updates, 0, updateIndex, updates[updateIndex].Index);
                 default:
                     throw new NotSupportedException();
             }
@@ -94,7 +94,7 @@ namespace ReactiveUI
         private static int CalculateAdditionIndex(IList<Update> updates, int start, int count, int updateIndex)
         {
             var update = updates[updateIndex];
-            Debug.Assert(update.Type == UpdateType.Add);
+            Debug.Assert(update.Type == UpdateType.Add, "Must be adding items");
             var originalIndex = update.Index;
             var runningCalculation = originalIndex;
 
@@ -133,7 +133,7 @@ namespace ReactiveUI
         //    Io = the deletion's original index (as specified by client code)
         //    Nd = the number of prior deletion updates whose original index is <= the running (calculated) index of the update whose index is being calculated
         //    Na = the number of prior addition updates whose original index is <= the running (calculated) index of the update whose index is being calculated
-        private static int CalculateDeletionIndex(IList<Update> updates, int start, int count, int deletionIndex, int originalIndex)
+        private static int CalculateDeletionIndex(IList<Update> updates, int start, int deletionIndex, int originalIndex)
         {
             var runningCalculation = originalIndex;
 

@@ -13,7 +13,7 @@ namespace ReactiveUI
         /// Gets a descriptor that describes (if applicable) the orientation
         /// of the screen.
         /// </summary>
-        /// <returns>The orientation of the screen if supported.</returns>
+        /// <returns>The device orientation descriptor.</returns>
         string GetOrientation();
     }
 }

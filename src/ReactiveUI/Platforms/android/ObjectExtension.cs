@@ -10,16 +10,6 @@ using Object = Java.Lang.Object;
 
 namespace ReactiveUI
 {
-    internal class JavaHolder : Object
-    {
-        public readonly object Instance;
-
-        public JavaHolder(object instance)
-        {
-            Instance = instance;
-        }
-    }
-
     internal static class ObjectExtension
     {
         public static TObject ToNetObject<TObject>(this Object value)
@@ -44,9 +34,7 @@ namespace ReactiveUI
                 return null;
             }
 
-            var holder = new JavaHolder(value);
-
-            return (Object)holder;
+            return new JavaHolder(value);
         }
     }
 }

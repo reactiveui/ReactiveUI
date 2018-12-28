@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -24,9 +25,13 @@ namespace ReactiveUI
     /// This is a UIControl that is both and UIControl and has a ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
+        private Subject<Unit> _deactivated = new Subject<Unit>();
+        private Subject<Unit> _activated = new Subject<Unit>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveControl"/> class.
         /// </summary>
@@ -84,52 +89,25 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveControl>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveControl>> Changed => this.GetChangedObservable();
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
-
-        /// <summary>
-        /// When this method is called, an object will not fire change
-        /// notifications (neither traditional nor Observable notifications)
-        /// until the return value is disposed.
-        /// </summary>
-        /// <returns>An object that, when disposed, reenables change
-        /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
 
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-        private Subject<Unit> _activated = new Subject<Unit>();
-
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets a observable when the control is activated.
+        /// </summary>
+        [SuppressMessage("Design", "CS0108: member hides inherited member", Justification = "Different type.")]
         public IObservable<Unit> Activated => _activated.AsObservable();
 
-        private Subject<Unit> _deactivated = new Subject<Unit>();
-
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets a observable that occurrs when the control is deactivated.
+        /// </summary>
+        [SuppressMessage("Design", "CS0108: member hides inherited member", Justification = "Different type.")]
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
 #if UIKIT
@@ -154,6 +132,30 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? _activated : _deactivated).OnNext(Unit.Default));
         }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
+        /// <summary>
+        /// When this method is called, an object will not fire change
+        /// notifications (neither traditional nor Observable notifications)
+        /// until the return value is disposed.
+        /// </summary>
+        /// <returns>An object that, when disposed, reenables change
+        /// notifications.</returns>
+        public IDisposable SuppressChangeNotifications()
+        {
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
+        }
     }
 
     /// <summary>
@@ -161,20 +163,22 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveControl<TViewModel> : ReactiveControl, IViewFor<TViewModel>
         where TViewModel : class
     {
         private TViewModel _viewModel;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveControl"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveControl{TViewModel}"/> class.
         /// </summary>
         protected ReactiveControl()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveControl"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveControl{TViewModel}"/> class.
         /// </summary>
         /// <param name="c">The coder.</param>
         protected ReactiveControl(NSCoder c)
@@ -183,7 +187,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveControl"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveControl{TViewModel}"/> class.
         /// </summary>
         /// <param name="f">The object flag.</param>
         protected ReactiveControl(NSObjectFlag f)
@@ -192,7 +196,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveControl"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveControl{TViewModel}"/> class.
         /// </summary>
         /// <param name="handle">The pointer handle.</param>
         protected ReactiveControl(IntPtr handle)
@@ -201,7 +205,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveControl"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveControl{TViewModel}"/> class.
         /// </summary>
         /// <param name="frame">The frame.</param>
         protected ReactiveControl(CGRect frame)

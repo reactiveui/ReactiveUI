@@ -16,7 +16,7 @@ namespace ReactiveUI.Fody.Tests.API
     public class ApiApprovalTests
     {
         [Fact]
-        public void ReactiveUI_Fody()
+        public void ReactiveUIFody()
         {
             var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(ReactiveAttribute).Assembly));
             publicApi.ShouldMatchApproved();
@@ -24,14 +24,15 @@ namespace ReactiveUI.Fody.Tests.API
 
         private static string Filter(string text)
         {
-            return string.Join(Environment.NewLine, text.Split(new[]
-            {
-                Environment.NewLine
-            }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(l => !l.StartsWith("[assembly: AssemblyVersion("))
-                .Where(l => !l.StartsWith("[assembly: AssemblyFileVersion("))
-                .Where(l => !l.StartsWith("[assembly: AssemblyInformationalVersion("))
-                .Where(l => !string.IsNullOrWhiteSpace(l)));
+            return string.Join(Environment.NewLine, text.Split(
+                new[]
+                {
+                    Environment.NewLine
+                }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(l => !l.StartsWith("[assembly: AssemblyVersion("))
+                    .Where(l => !l.StartsWith("[assembly: AssemblyFileVersion("))
+                    .Where(l => !l.StartsWith("[assembly: AssemblyInformationalVersion("))
+                    .Where(l => !string.IsNullOrWhiteSpace(l)));
         }
     }
 }

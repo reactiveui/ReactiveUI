@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -16,8 +17,9 @@ namespace ReactiveUI
     /// This is a UINavigationController that is both an UINavigationController and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    public abstract class ReactiveNavigationController : UINavigationController,
-    IReactiveNotifyPropertyChanged<ReactiveNavigationController>, IHandleObservableErrors, IReactiveObject, ICanActivate, IActivatable
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    public abstract class ReactiveNavigationController : UINavigationController, IReactiveNotifyPropertyChanged<ReactiveNavigationController>, IHandleObservableErrors, IReactiveObject, ICanActivate, IActivatable
     {
         private Subject<Unit> _activated = new Subject<Unit>();
         private Subject<Unit> _deactivated = new Subject<Unit>();
@@ -29,7 +31,6 @@ namespace ReactiveUI
         protected ReactiveNavigationController(UIViewController rootViewController)
             : base(rootViewController)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -40,7 +41,6 @@ namespace ReactiveUI
         protected ReactiveNavigationController(Type navigationBarType, Type toolbarType)
             : base(navigationBarType, toolbarType)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -51,7 +51,6 @@ namespace ReactiveUI
         protected ReactiveNavigationController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -61,7 +60,6 @@ namespace ReactiveUI
         protected ReactiveNavigationController(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -71,7 +69,6 @@ namespace ReactiveUI
         protected ReactiveNavigationController(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -81,7 +78,6 @@ namespace ReactiveUI
         protected ReactiveNavigationController(NSCoder coder)
             : base(coder)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -89,7 +85,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveNavigationController()
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -106,15 +101,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveNavigationController>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveNavigationController>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -165,10 +155,6 @@ namespace ReactiveUI
             _deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
         }
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -176,6 +162,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveNavigationController<TViewModel> : ReactiveNavigationController, IViewFor<TViewModel>
         where TViewModel : class
     {

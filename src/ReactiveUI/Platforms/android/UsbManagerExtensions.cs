@@ -16,7 +16,7 @@ namespace ReactiveUI
     /// </summary>
     public static class UsbManagerExtensions
     {
-        private const string ACTION_USB_PERMISSION = "com.reactiveui.USB_PERMISSION";
+        private const string ActionUsbPermission = "com.reactiveui.USB_PERMISSION";
 
         /// <summary>
         /// Requests temporary permission for the given package to access the device.
@@ -31,9 +31,9 @@ namespace ReactiveUI
             return Observable.Create<bool>(observer =>
             {
                 var usbPermissionReceiver = new UsbDevicePermissionReceiver(observer, device);
-                context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+                context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
 
-                var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ActionUsbPermission), 0);
                 manager.RequestPermission(device, intent);
 
                 return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
@@ -53,9 +53,9 @@ namespace ReactiveUI
             return Observable.Create<bool>(observer =>
             {
                 var usbPermissionReceiver = new UsbAccessoryPermissionReceiver(observer, accessory);
-                context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+                context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
 
-                var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ActionUsbPermission), 0);
                 manager.RequestPermission(accessory, intent);
 
                 return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));

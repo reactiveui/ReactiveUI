@@ -3,28 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading;
 using Android.App;
-using Android.Content;
-using Android.OS;
 using Android.Runtime;
-using Android.Util;
-using Android.Views;
-using Android.Widget;
-using Splat;
 
 namespace ReactiveUI
 {
@@ -33,6 +18,7 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
@@ -74,24 +60,11 @@ namespace ReactiveUI
     /// This is a Fragment that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-
-        /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveFragment"/> class.
@@ -110,15 +83,24 @@ namespace ReactiveUI
         {
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>

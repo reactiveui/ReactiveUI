@@ -24,7 +24,7 @@ namespace ReactiveUI.Fody
         public ModuleDefinition ModuleDefinition { get; set; }
 
         /// <summary>
-        /// Will log an MessageImportance.High message to MSBuild. OPTIONAL.
+        /// Gets or sets a action that will log an MessageImportance.High message to MSBuild. OPTIONAL.
         /// </summary>
         /// <value>
         /// The log information.
@@ -32,7 +32,7 @@ namespace ReactiveUI.Fody
         public Action<string> LogInfo { get; set; }
 
         /// <summary>
-        /// Locates a type from referenced assemblies by name.
+        /// Gets a function that will find a type from referenced assemblies by name.
         /// </summary>
         public Func<string, TypeDefinition> FindType { get; internal set; }
 
@@ -135,7 +135,7 @@ namespace ReactiveUI.Fody
             }
             else if (type.CompareTo(ModuleDefinition.TypeSystem.Single))
             {
-                il.Emit(OpCodes.Ldc_R4, (float)0);
+                il.Emit(OpCodes.Ldc_R4, 0F);
             }
             else if (type.CompareTo(ModuleDefinition.TypeSystem.Int64))
             {
@@ -143,7 +143,7 @@ namespace ReactiveUI.Fody
             }
             else if (type.CompareTo(ModuleDefinition.TypeSystem.Double))
             {
-                il.Emit(OpCodes.Ldc_R8, (double)0);
+                il.Emit(OpCodes.Ldc_R8, 0D);
             }
             else if (type.IsGenericParameter || type.IsValueType)
             {

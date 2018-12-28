@@ -23,7 +23,7 @@ namespace ReactiveUI
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
+    public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger, IDisposable
     {
         /// <summary>
         /// The view model dependency property.
@@ -45,6 +45,7 @@ namespace ReactiveUI
 
         private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
         private string _viewContract;
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
@@ -124,7 +125,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// If no ViewModel is displayed, this content (i.e. a control) will be displayed.
+        /// Gets or sets the content displayed by default when no content is set.
         /// </summary>
         public object DefaultContent
         {
@@ -133,7 +134,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// The ViewModel to display.
+        /// Gets or sets the ViewModel to display.
         /// </summary>
         public object ViewModel
         {
@@ -154,6 +155,32 @@ namespace ReactiveUI
         /// Gets or sets the view locator.
         /// </summary>
         public IViewLocator ViewLocator { get; set; }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes of resources inside the class.
+        /// </summary>
+        /// <param name="isDisposing">If we are disposing managed resources.</param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            if (isDisposing)
+            {
+                _updateViewModel?.Dispose();
+            }
+
+            _isDisposed = true;
+        }
 
         private static void SomethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {

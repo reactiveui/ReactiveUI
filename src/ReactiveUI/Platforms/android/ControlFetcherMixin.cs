@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -28,6 +29,7 @@ namespace ReactiveUI
         private static readonly MethodInfo getControlActivity;
         private static readonly MethodInfo getControlView;
 
+        [SuppressMessage("Design", "CA1065: Not not throw exceptions in static constructor", Justification = "TODO: Future fix")]
         static ControlFetcherMixin()
         {
             // NB: This is some hacky shit, but on Xamarin.Android at the moment,
@@ -47,14 +49,15 @@ namespace ReactiveUI
                                           .Where(x => x.FieldType == typeof(int))
                                           .GroupBy(k => k.Name.ToLowerInvariant())
                                           .Where(g => g.Count() > 1)
-                                          .Select(g => "{ " + string.Join(" = ", g.Select(v => v.Name)) + " }");
+                                          .Select(g => "{ " + string.Join(" = ", g.Select(v => v.Name)) + " }")
+                                          .ToList();
 
                 if (duplicates.Any())
                 {
                     throw new InvalidOperationException("You're using multiple resource ID's with the same name but with different casings which isn't allowed for WireUpControls: " + string.Join(", ", duplicates), argumentException);
                 }
 
-                throw argumentException;
+                throw;
             }
 
             var type = typeof(ControlFetcherMixin);
@@ -63,7 +66,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Gets the control from an activiy.
+        /// Gets the control from an activity.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
         /// <param name="this">The activity.</param>
@@ -73,7 +76,7 @@ namespace ReactiveUI
             where T : View => (T)GetCachedControl(propertyName, @this, () => @this.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
 
         /// <summary>
-        /// Gets the control from an activiy.
+        /// Gets the control from an activity.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
         /// <param name="this">The view.</param>
@@ -83,7 +86,7 @@ namespace ReactiveUI
             where T : View => (T)GetCachedControl(propertyName, @this, () => @this.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
 
         /// <summary>
-        /// Gets the control from an activiy.
+        /// Gets the control from an activity.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
         /// <param name="this">The fragment.</param>
@@ -212,18 +215,17 @@ namespace ReactiveUI
 
         private static View GetCachedControl(string propertyName, object rootView, Func<View> fetchControlFromView)
         {
-            var ret = default(View);
             var ourViewCache = viewCache.GetOrCreateValue(rootView);
 
-            if (ourViewCache.TryGetValue(propertyName, out ret))
+            if (ourViewCache.TryGetValue(propertyName, out View view))
             {
-                return ret;
+                return view;
             }
 
-            ret = fetchControlFromView();
+            view = fetchControlFromView();
 
-            ourViewCache.Add(propertyName, ret);
-            return ret;
+            ourViewCache.Add(propertyName, view);
+            return view;
         }
 
         private static string GetResourceName(this PropertyInfo member)
@@ -238,8 +240,7 @@ namespace ReactiveUI
 
             switch (resolveStrategy)
             {
-                default:
-                case ResolveStrategy.Implicit:
+                default: // Implicit matches the Default.
                     return members.Where(m => m.PropertyType.IsSubclassOf(typeof(View))
                                          || m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 
@@ -251,42 +252,5 @@ namespace ReactiveUI
                                          && m.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
             }
         }
-    }
-
-    /// <summary>
-    /// Attribute that marks a resource for wiring.
-    /// </summary>
-    public class WireUpResourceAttribute : Attribute
-    {
-        /// <summary>
-        /// Gets the resource name override.
-        /// </summary>
-        /// <value>
-        /// The resource name override.
-        /// </value>
-        public string ResourceNameOverride { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WireUpResourceAttribute"/> class.
-        /// </summary>
-        public WireUpResourceAttribute()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WireUpResourceAttribute"/> class.
-        /// </summary>
-        /// <param name="resourceName">Name of the resource.</param>
-        public WireUpResourceAttribute(string resourceName)
-        {
-            ResourceNameOverride = resourceName;
-        }
-    }
-
-    /// <summary>
-    /// Attribute that marks a resource to be ignored.
-    /// </summary>
-    public class IgnoreResourceAttribute : Attribute
-    {
     }
 }

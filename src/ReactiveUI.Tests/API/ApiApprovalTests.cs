@@ -45,14 +45,16 @@ namespace ReactiveUI.Tests.API
 
         private static string Filter(string text)
         {
-            return string.Join(Environment.NewLine, text.Split(new[]
-            {
-                Environment.NewLine
-            }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(l => !l.StartsWith("[assembly: AssemblyVersion("))
-                .Where(l => !l.StartsWith("[assembly: AssemblyFileVersion("))
-                .Where(l => !l.StartsWith("[assembly: AssemblyInformationalVersion("))
-                .Where(l => !string.IsNullOrWhiteSpace(l)));
+            return string.Join(Environment.NewLine, text.Split(
+                new[]
+                {
+                    Environment.NewLine
+                }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(l =>
+                    !l.StartsWith("[assembly: AssemblyVersion(") &&
+                    !l.StartsWith("[assembly: AssemblyFileVersion(") &&
+                    !l.StartsWith("[assembly: AssemblyInformationalVersion(") &&
+                    !string.IsNullOrWhiteSpace(l)));
         }
     }
 }

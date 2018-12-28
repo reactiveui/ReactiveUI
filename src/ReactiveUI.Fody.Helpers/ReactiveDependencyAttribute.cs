@@ -27,12 +27,12 @@ namespace ReactiveUI.Fody.Helpers
         }
 
         /// <summary>
-        /// The name of the backing property.
+        /// Gets the name of the backing property.
         /// </summary>
         public string Target => _targetName;
 
         /// <summary>
-        /// Target property on the backing property.
+        /// Gets or sets the target property on the backing property.
         /// </summary>
         public string TargetProperty { get; set; }
     }

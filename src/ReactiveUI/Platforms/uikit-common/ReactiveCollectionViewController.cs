@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -16,6 +17,8 @@ namespace ReactiveUI
     /// This is a UICollectionViewController that is both an UICollectionViewController and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveCollectionViewController : UICollectionViewController,
         IReactiveNotifyPropertyChanged<ReactiveCollectionViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
@@ -29,7 +32,6 @@ namespace ReactiveUI
         protected ReactiveCollectionViewController(UICollectionViewLayout withLayout)
             : base(withLayout)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -40,7 +42,6 @@ namespace ReactiveUI
         protected ReactiveCollectionViewController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -50,7 +51,6 @@ namespace ReactiveUI
         protected ReactiveCollectionViewController(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -60,7 +60,6 @@ namespace ReactiveUI
         protected ReactiveCollectionViewController(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -70,7 +69,6 @@ namespace ReactiveUI
         protected ReactiveCollectionViewController(NSCoder coder)
             : base(coder)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -78,7 +76,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveCollectionViewController()
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -95,15 +92,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewController>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewController>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -154,10 +146,6 @@ namespace ReactiveUI
             _deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
         }
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -165,6 +153,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveCollectionViewController<TViewModel> : ReactiveCollectionViewController, IViewFor<TViewModel>
         where TViewModel : class
     {

@@ -42,13 +42,14 @@ namespace ReactiveUI.Tests
                 var manualSave = new Subject<Unit>();
 
                 var timesSaved = 0;
-                fixture.AutoPersist(x =>
-                {
-                    timesSaved++;
-                    return Observables.Unit;
-                },
-                manualSave,
-                TimeSpan.FromMilliseconds(100));
+                fixture.AutoPersist(
+                    _ =>
+                    {
+                        timesSaved++;
+                        return Observables.Unit;
+                    },
+                    manualSave,
+                    TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
                 sched.AdvanceByMs(2 * 100);
@@ -70,13 +71,14 @@ namespace ReactiveUI.Tests
                 var manualSave = new Subject<Unit>();
 
                 var timesSaved = 0;
-                fixture.AutoPersist(x =>
-                {
-                    timesSaved++;
-                    return Observables.Unit;
-                },
-                manualSave,
-                TimeSpan.FromMilliseconds(100));
+                fixture.AutoPersist(
+                    _ =>
+                    {
+                        timesSaved++;
+                        return Observables.Unit;
+                    },
+                    manualSave,
+                    TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
                 sched.AdvanceByMs(2 * 100);
@@ -110,13 +112,14 @@ namespace ReactiveUI.Tests
                 var manualSave = new Subject<Unit>();
 
                 var timesSaved = 0;
-                var disp = fixture.AutoPersist(x =>
-                {
-                    timesSaved++;
-                    return Observables.Unit;
-                },
-                manualSave,
-                TimeSpan.FromMilliseconds(100));
+                var disp = fixture.AutoPersist(
+                    _ =>
+                    {
+                        timesSaved++;
+                        return Observables.Unit;
+                    },
+                    manualSave,
+                    TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
                 sched.AdvanceByMs(2 * 100);
@@ -155,13 +158,14 @@ namespace ReactiveUI.Tests
                 var fixture = new ObservableCollectionExtended<TestFixture> { item };
 
                 var timesSaved = 0;
-                fixture.AutoPersistCollection(x =>
-                {
-                    timesSaved++;
-                    return Observables.Unit;
-                },
-                manualSave,
-                TimeSpan.FromMilliseconds(100));
+                fixture.AutoPersistCollection(
+                    _ =>
+                    {
+                        timesSaved++;
+                        return Observables.Unit;
+                    },
+                    manualSave,
+                    TimeSpan.FromMilliseconds(100));
 
                 sched.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);
@@ -215,13 +219,14 @@ namespace ReactiveUI.Tests
                 var fixture = new ObservableCollectionExtended<TestFixture> { item };
 
                 var timesSaved = 0;
-                var disp = fixture.AutoPersistCollection(x =>
-                {
-                    timesSaved++;
-                    return Observables.Unit;
-                },
-                manualSave,
-                TimeSpan.FromMilliseconds(100));
+                var disp = fixture.AutoPersistCollection(
+                    _ =>
+                    {
+                        timesSaved++;
+                        return Observables.Unit;
+                    },
+                    manualSave,
+                    TimeSpan.FromMilliseconds(100));
 
                 sched.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);

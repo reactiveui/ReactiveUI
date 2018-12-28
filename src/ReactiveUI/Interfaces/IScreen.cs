@@ -11,7 +11,7 @@ namespace ReactiveUI
     public interface IScreen
     {
         /// <summary>
-        /// The Router associated with this Screen.
+        /// Gets the Router associated with this Screen.
         /// </summary>
         RoutingState Router { get; }
     }

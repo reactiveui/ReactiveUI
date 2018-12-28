@@ -8,7 +8,7 @@ using System.Reactive.Subjects;
 
 namespace ReactiveUI.Events
 {
-    internal class SingleAwaitSubject<T> : ISubject<T>
+    internal sealed class SingleAwaitSubject<T> : ISubject<T>, IDisposable
     {
         private readonly Subject<T> _inner = new Subject<T>();
 
@@ -35,6 +35,12 @@ namespace ReactiveUI.Events
         public IDisposable Subscribe(IObserver<T> observer)
         {
             return _inner.Subscribe(observer);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _inner?.Dispose();
         }
     }
 }
