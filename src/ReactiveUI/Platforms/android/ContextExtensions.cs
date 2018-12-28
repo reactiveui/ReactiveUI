@@ -62,23 +62,19 @@ namespace ReactiveUI
         /// A private implementation of IServiceConnection and IDisposable.
         /// </summary>
         /// <typeparam name="TBinder">The binder type.</typeparam>
-        private class ServiceConnection<TBinder>
-            : Java.Lang.Object,
-            IServiceConnection
-        where TBinder
-            : class,
-            IBinder
+        private class ServiceConnection<TBinder> : Java.Lang.Object, IServiceConnection
+        where TBinder : class, IBinder
         {
             private readonly Context _context;
             private readonly IObserver<TBinder> _observer;
+
+            private bool _disposed;
 
             public ServiceConnection(Context context, IObserver<TBinder> observer)
             {
                 _context = context;
                 _observer = observer;
             }
-
-            #region IServiceConnection implemention
 
             void IServiceConnection.OnServiceConnected(ComponentName name, IBinder binder)
             {
@@ -90,12 +86,6 @@ namespace ReactiveUI
                 // lost connection to the remote service but it may be revived
                 _observer.OnNext(null);
             }
-
-            #endregion
-
-            #region Dispose implementation
-
-            private bool _disposed;
 
             protected override void Dispose(bool disposing)
             {
@@ -111,8 +101,6 @@ namespace ReactiveUI
 
                 base.Dispose(disposing);
             }
-
-            #endregion
         }
     }
 }

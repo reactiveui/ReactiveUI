@@ -10,10 +10,9 @@ namespace ReactiveUI
     /// <summary>
     /// Binding Type Converter for DateTime to NSDateTime.
     /// </summary>
-    public class DateTimeNSDateConverter :
-        IBindingTypeConverter
+    public class DateTimeNSDateConverter : IBindingTypeConverter
     {
-        internal static Lazy<DateTimeNSDateConverter> Instance = new Lazy<DateTimeNSDateConverter>();
+        internal static Lazy<DateTimeNSDateConverter> Instance { get; } = new Lazy<DateTimeNSDateConverter>();
 
         /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType)

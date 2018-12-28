@@ -200,28 +200,31 @@ namespace ReactiveUI.Tests
 
             var canStart = Players.ToObservableChangeSet().CountChanged().Select(_ => Players.Count >= 3);
             StartGame = ReactiveCommand.Create(() => { }, canStart);
-            RandomizeOrder = ReactiveCommand.Create(() =>
-                                                    {
-                                                        using (Players.SuspendNotifications())
-                                                        {
-                                                            var r = new Random();
-                                                            var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
-                                                            Players.Clear();
-                                                            Players.AddRange(newOrder);
-                                                        }
-                                                    },
-                                                    canStart);
+            RandomizeOrder = ReactiveCommand.Create(
+                () =>
+                {
+                    using (Players.SuspendNotifications())
+                    {
+                        var r = new Random();
+                        var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
+                        Players.Clear();
+                        Players.AddRange(newOrder);
+                    }
+                },
+                canStart);
 
             RemovePlayer = ReactiveCommand.Create<string>(player => Players.Remove(player));
-            var canAddPlayer = this.WhenAnyValue(x => x.Players.Count,
-                                                 x => x.NewPlayerName,
-                                                 (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName));
-            AddPlayer = ReactiveCommand.Create(() =>
-                                               {
-                                                   Players.Add(NewPlayerName.Trim());
-                                                   NewPlayerName = string.Empty;
-                                               },
-                                               canAddPlayer);
+            var canAddPlayer = this.WhenAnyValue(
+                x => x.Players.Count,
+                x => x.NewPlayerName,
+                (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName));
+            AddPlayer = ReactiveCommand.Create(
+                () =>
+                {
+                    Players.Add(NewPlayerName.Trim());
+                    NewPlayerName = string.Empty;
+                },
+                canAddPlayer);
         }
 
         public ObservableCollectionExtended<string> Players { get; }

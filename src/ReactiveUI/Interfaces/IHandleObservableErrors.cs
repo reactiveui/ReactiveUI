@@ -20,7 +20,7 @@ namespace ReactiveUI
     public interface IHandleObservableErrors
     {
         /// <summary>
-        /// Fires whenever an exception would normally terminate ReactiveUI
+        /// Gets a observable which will fire whenever an exception would normally terminate ReactiveUI
         /// internal state.
         /// </summary>
         IObservable<Exception> ThrownExceptions { get; }

@@ -16,12 +16,12 @@ namespace ReactiveUI
     public interface IReactivePropertyChangedEventArgs<out TSender>
     {
         /// <summary>
-        /// The name of the property that has changed on Sender.
+        /// Gets the name of the property that has changed on Sender.
         /// </summary>
         string PropertyName { get; }
 
         /// <summary>
-        /// The object that has raised the change.
+        /// Gets the object that has raised the change.
         /// </summary>
         TSender Sender { get; }
     }

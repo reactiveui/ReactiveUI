@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -21,6 +22,7 @@ namespace ReactiveUI.AndroidSupport
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveAppCompatActivity<TViewModel> : ReactiveAppCompatActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
@@ -52,48 +54,12 @@ namespace ReactiveUI.AndroidSupport
     /// This is an Activity that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
         private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
-
-        /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changing => this.GetChangingObservable();
-
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed => this.GetChangedObservable();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
@@ -112,17 +78,25 @@ namespace ReactiveUI.AndroidSupport
         {
         }
 
-        /// <summary>
-        /// When this method is called, an object will not fire change
-        /// notifications (neither traditional nor Observable notifications)
-        /// until the return value is disposed.
-        /// </summary>
-        /// <returns>An object that, when disposed, reenables change
-        /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
         {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
         }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changing => this.GetChangingObservable();
+
+        /// <inheritdoc/>
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
@@ -150,6 +124,24 @@ namespace ReactiveUI.AndroidSupport
         /// The activity result.
         /// </value>
         public IObservable<Tuple<int, Result, Intent>> ActivityResult => _activityResult.AsObservable();
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        public IDisposable SuppressChangeNotifications()
+        {
+            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
+        }
 
         /// <summary>
         /// Starts the activity for result asynchronously.

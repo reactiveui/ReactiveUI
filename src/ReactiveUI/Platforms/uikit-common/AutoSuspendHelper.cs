@@ -20,13 +20,17 @@ namespace ReactiveUI
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
     ///
-    /// Locator.Current.GetService.<ISuspensionHost>().SetupDefaultSuspendResume();
+    /// Locator.Current.GetService{ISuspensionHost}().SetupDefaultSuspendResume();
+    ///
+    /// This will get your suspension host.
     /// </summary>
-    public class AutoSuspendHelper : IEnableLogger
+    public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
         private readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
         private readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
         private readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
+
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
@@ -111,6 +115,34 @@ namespace ReactiveUI
         public void DidEnterBackground(UIApplication application)
         {
             _backgrounded.OnNext(application);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes of any disposable entities within the class.
+        /// </summary>
+        /// <param name="isDisposing">If we are going to call Dispose methods on field items.</param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            if (isDisposing)
+            {
+                _activated?.Dispose();
+                _backgrounded?.Dispose();
+                _finishedLaunching?.Dispose();
+            }
+
+            _isDisposed = true;
         }
     }
 }

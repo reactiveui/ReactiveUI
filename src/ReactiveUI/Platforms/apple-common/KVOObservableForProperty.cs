@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
@@ -96,7 +97,7 @@ namespace ReactiveUI
             });
         }
 
-        private string FindCocoaNameFromNetName(Type senderType, string propertyName)
+        private static string FindCocoaNameFromNetName(Type senderType, string propertyName)
         {
             bool propIsBoolean = false;
 
@@ -131,22 +132,7 @@ namespace ReactiveUI
                 propertyName = "Is" + propertyName;
             }
 
-            return char.ToLowerInvariant(propertyName[0]).ToString() + propertyName.Substring(1);
-        }
-    }
-
-    internal class BlockObserveValueDelegate : NSObject
-    {
-        private Action<string, NSObject, NSDictionary> _block;
-
-        public BlockObserveValueDelegate(Action<string, NSObject, NSDictionary> block)
-        {
-            _block = block;
-        }
-
-        public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
-        {
-            _block(keyPath, ofObject, change);
+            return char.ToLowerInvariant(propertyName[0]).ToString(CultureInfo.InvariantCulture) + propertyName.Substring(1);
         }
     }
 }

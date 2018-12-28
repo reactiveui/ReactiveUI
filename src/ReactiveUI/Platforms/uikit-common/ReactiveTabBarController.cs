@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -16,8 +17,9 @@ namespace ReactiveUI
     /// This is a TabBar that is both an TabBar and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    public abstract class ReactiveTabBarController : UITabBarController,
-    IReactiveNotifyPropertyChanged<ReactiveTabBarController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    public abstract class ReactiveTabBarController : UITabBarController, IReactiveNotifyPropertyChanged<ReactiveTabBarController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         private Subject<Unit> _activated = new Subject<Unit>();
         private Subject<Unit> _deactivated = new Subject<Unit>();
@@ -30,7 +32,6 @@ namespace ReactiveUI
         protected ReactiveTabBarController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -40,7 +41,6 @@ namespace ReactiveUI
         protected ReactiveTabBarController(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -50,7 +50,6 @@ namespace ReactiveUI
         protected ReactiveTabBarController(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -60,7 +59,6 @@ namespace ReactiveUI
         protected ReactiveTabBarController(NSCoder coder)
             : base(coder)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -68,7 +66,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveTabBarController()
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -85,15 +82,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTabBarController>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTabBarController>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -144,10 +136,6 @@ namespace ReactiveUI
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -155,6 +143,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveTabBarController<TViewModel> : ReactiveTabBarController, IViewFor<TViewModel>
         where TViewModel : class
     {

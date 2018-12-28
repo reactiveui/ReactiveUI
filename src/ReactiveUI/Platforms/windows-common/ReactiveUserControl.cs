@@ -72,11 +72,6 @@ namespace ReactiveUI
         where TViewModel : class
     {
         /// <summary>
-        /// Gets the binding root view model.
-        /// </summary>
-        public TViewModel BindingRoot => ViewModel;
-
-        /// <summary>
         /// The view model dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewModelProperty =
@@ -85,6 +80,11 @@ namespace ReactiveUI
                 typeof(TViewModel),
                 typeof(ReactiveUserControl<TViewModel>),
                 new PropertyMetadata(null));
+
+        /// <summary>
+        /// Gets the binding root view model.
+        /// </summary>
+        public TViewModel BindingRoot => ViewModel;
 
         /// <inheritdoc/>
         public TViewModel ViewModel

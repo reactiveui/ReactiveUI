@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -22,12 +22,8 @@ namespace ReactiveUI
     /// </summary>
     public class HandlerScheduler : IScheduler, IEnableLogger
     {
-        /// <summary>
-        /// A common instance to avoid allocations to the MainThread for the HandlerScheduler.
-        /// </summary>
-        public static IScheduler MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper), Looper.MainLooper.Thread.Id);
-        private Handler _handler;
-        private long _looperId;
+        private readonly Handler _handler;
+        private readonly long _looperId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HandlerScheduler"/> class.
@@ -39,6 +35,14 @@ namespace ReactiveUI
             _handler = handler;
             _looperId = threadIdAssociatedWithHandler ?? -1;
         }
+
+        /// <summary>
+        /// Gets a common instance to avoid allocations to the MainThread for the HandlerScheduler.
+        /// </summary>
+        public static IScheduler MainThreadScheduler { get; } = new HandlerScheduler(new Handler(Looper.MainLooper), Looper.MainLooper.Thread.Id);
+
+        /// <inheritdoc/>
+        public DateTimeOffset Now => DateTimeOffset.Now;
 
         /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
@@ -97,12 +101,6 @@ namespace ReactiveUI
             }
 
             return Schedule(state, dueTime - Now, action);
-        }
-
-        /// <inheritdoc/>
-        public DateTimeOffset Now
-        {
-            get { return DateTimeOffset.Now; }
         }
     }
 }

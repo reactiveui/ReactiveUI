@@ -24,7 +24,7 @@ namespace ReactiveUI.Fody
         public ModuleDefinition ModuleDefinition { get; set; }
 
         /// <summary>
-        /// Will log an MessageImportance.High message to MSBuild. OPTIONAL.
+        /// Gets or sets a action that will log an MessageImportance.High message to MSBuild. OPTIONAL.
         /// </summary>
         /// <value>
         /// The log information.
@@ -32,7 +32,7 @@ namespace ReactiveUI.Fody
         public Action<string> LogInfo { get; set; }
 
         /// <summary>
-        /// Will log an error message to MSBuild. OPTIONAL.
+        /// Gets or sets a action which will log an error message to MSBuild. OPTIONAL.
         /// </summary>
         /// <value>
         /// The log error.

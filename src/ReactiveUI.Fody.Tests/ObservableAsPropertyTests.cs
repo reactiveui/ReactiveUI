@@ -19,13 +19,13 @@ namespace ReactiveUI.Fody.Tests
 
         public class TestModel : ReactiveObject
         {
-            [ObservableAsProperty]
-            public string TestProperty { get; private set; }
-
             public TestModel()
             {
                 Observable.Return("foo").ToPropertyEx(this, x => x.TestProperty);
             }
+
+            [ObservableAsProperty]
+            public string TestProperty { get; private set; }
         }
     }
 }

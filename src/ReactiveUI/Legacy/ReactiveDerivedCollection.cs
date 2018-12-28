@@ -26,6 +26,7 @@ using Splat;
 #pragma warning disable SA1100 // Do not use prefix -- not used for legacy
 #pragma warning disable SA1407 // Expression should declare precedence -- not used for legacy
 #pragma warning disable SA1402 // File many contain only single type -- not used for legacy
+#pragma warning disable SA1405 // Asset should provide message -- not used for legacy
 
 namespace ReactiveUI.Legacy
 {

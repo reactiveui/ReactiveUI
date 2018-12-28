@@ -108,6 +108,11 @@ namespace ReactiveUI
             _deactivated?.Dispose();
         }
 
+        /// <summary>
+        /// Adds a action blocks to the list of registered blocks. These will called
+        /// on activation, then disposed on deactivation.
+        /// </summary>
+        /// <param name="block">The block to add.</param>
         internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)
         {
             _blocks.Add(block);

@@ -139,7 +139,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// MainThreadScheduler is the scheduler used to schedule work items that
+        /// Gets or sets a scheduler used to schedule work items that
         /// should be run "on the UI thread". In normal mode, this will be
         /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
         /// to simplify writing common unit tests.
@@ -167,7 +167,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// TaskpoolScheduler is the scheduler used to schedule work items to
+        /// Gets or sets the a the scheduler used to schedule work items to
         /// run in a background thread. In both modes, this will run on the TPL
         /// Task Pool.
         /// </summary>
@@ -189,7 +189,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// This Observer is signalled whenever an object that has a
+        /// Gets or sets the Observer which signalled whenever an object that has a
         /// ThrownExceptions property doesn't Subscribe to that Observable. Use
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.
@@ -201,7 +201,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// This returns / allows you to override the current SuspensionHost, a
+        /// Gets or sets the current SuspensionHost, a
         /// class which provides events for process lifetime events, especially
         /// on mobile devices.
         /// </summary>
@@ -228,7 +228,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Returns whether your UI framework is brain-dead or not and will blow
+        /// Gets or sets a value indicating whether your UI framework is brain-dead or not and will blow
         /// up if a INotifyCollectionChanged object returns a ranged Add.
         /// </summary>
         public static bool SupportsRangeNotifications

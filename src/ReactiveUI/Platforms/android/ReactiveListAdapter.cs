@@ -35,18 +35,6 @@ namespace ReactiveUI.Legacy
         }
 
         /// <inheritdoc/>
-        public override TViewModel this[int index]
-        {
-            get { return _list[index]; }
-        }
-
-        /// <inheritdoc/>
-        public override long GetItemId(int position)
-        {
-            return _list[position].GetHashCode();
-        }
-
-        /// <inheritdoc/>
         public override bool HasStableIds
         {
             get { return true; }
@@ -56,6 +44,18 @@ namespace ReactiveUI.Legacy
         public override int Count
         {
             get { return _list.Count; }
+        }
+
+        /// <inheritdoc/>
+        public override TViewModel this[int index]
+        {
+            get { return _list[index]; }
+        }
+
+        /// <inheritdoc/>
+        public override long GetItemId(int position)
+        {
+            return _list[position].GetHashCode();
         }
 
         /// <inheritdoc/>

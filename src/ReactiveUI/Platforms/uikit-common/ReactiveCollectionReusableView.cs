@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -17,8 +18,9 @@ namespace ReactiveUI
     /// This is a UICollectionReusableView that is both an UICollectionReusableView and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    public abstract class ReactiveCollectionReusableView : UICollectionReusableView,
-        IReactiveNotifyPropertyChanged<ReactiveCollectionReusableView>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    public abstract class ReactiveCollectionReusableView : UICollectionReusableView, IReactiveNotifyPropertyChanged<ReactiveCollectionReusableView>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         private Subject<Unit> _activated = new Subject<Unit>();
         private Subject<Unit> _deactivated = new Subject<Unit>();
@@ -30,7 +32,6 @@ namespace ReactiveUI
         protected ReactiveCollectionReusableView(CGRect frame)
             : base(frame)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -38,7 +39,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveCollectionReusableView()
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -48,7 +48,6 @@ namespace ReactiveUI
         protected ReactiveCollectionReusableView(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -58,7 +57,6 @@ namespace ReactiveUI
         protected ReactiveCollectionReusableView(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -68,7 +66,6 @@ namespace ReactiveUI
         protected ReactiveCollectionReusableView(NSCoder coder)
             : base(coder)
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -77,15 +74,10 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionReusableView>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionReusableView>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -142,10 +134,6 @@ namespace ReactiveUI
             base.RemoveFromSuperview();
             _deactivated.OnNext(Unit.Default);
         }
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -153,6 +141,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveCollectionReusableView<TViewModel> : ReactiveCollectionReusableView, IViewFor<TViewModel>
         where TViewModel : class
     {

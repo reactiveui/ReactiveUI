@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 namespace ReactiveUI.Legacy
 {
+    /// <summary>
+    /// Information about a move between locations within a Reactive collection.
+    /// </summary>
+    /// <typeparam name="T">The type of item contained in the move.</typeparam>
     internal class MoveInfo<T> : IMoveInfo<T>
     {
         public MoveInfo(IEnumerable<T> movedItems, int from, int to)

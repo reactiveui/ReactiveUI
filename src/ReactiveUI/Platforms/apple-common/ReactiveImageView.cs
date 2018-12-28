@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -26,6 +27,8 @@ namespace ReactiveUI
     /// This is an  ImageView that is both and ImageView and has a ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
         private Subject<Unit> _activated = new Subject<Unit>();
@@ -113,20 +116,17 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <inheritdoc/>
+        [SuppressMessage("Design", "CS0108: member hides inherited member", Justification = "Different type.")]
         public IObservable<Unit> Activated => _activated.AsObservable();
 
         /// <inheritdoc/>
+        [SuppressMessage("Design", "CS0108: member hides inherited member", Justification = "Different type.")]
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -176,20 +176,22 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
         where TViewModel : class
     {
         private TViewModel _viewModel;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
         /// </summary>
         protected ReactiveImageView()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
         /// </summary>
         /// <param name="frame">The frame.</param>
         protected ReactiveImageView(CGRect frame)
@@ -199,7 +201,7 @@ namespace ReactiveUI
 
 #if UIKIT
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
         /// </summary>
         /// <param name="image">The image.</param>
         protected ReactiveImageView(NSImage image)
@@ -208,7 +210,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
         /// </summary>
         /// <param name="t">The object flag.</param>
         protected ReactiveImageView(NSObjectFlag t)
@@ -217,7 +219,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="highlightedImage">The highlighted image.</param>
@@ -227,7 +229,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
         protected ReactiveImageView(NSCoder coder)
@@ -237,7 +239,7 @@ namespace ReactiveUI
 #endif
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
         /// </summary>
         /// <param name="handle">The pointer.</param>
         protected ReactiveImageView(IntPtr handle)

@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -21,24 +22,11 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactivePreferenceActivity<TViewModel> : ReactivePreferenceActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
         private TViewModel _viewModel;
-
-        /// <inheritdoc/>
-        public TViewModel ViewModel
-        {
-            get => _viewModel;
-            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-        }
-
-        /// <inheritdoc/>
-        object IViewFor.ViewModel
-        {
-            get => _viewModel;
-            set => _viewModel = (TViewModel)value;
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactivePreferenceActivity{TViewModel}"/> class.
@@ -56,99 +44,32 @@ namespace ReactiveUI
             : base(handle, ownership)
         {
         }
+
+        /// <inheritdoc/>
+        public TViewModel ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        /// <inheritdoc/>
+        object IViewFor.ViewModel
+        {
+            get => _viewModel;
+            set => _viewModel = (TViewModel)value;
+        }
     }
 
     /// <summary>
     /// This is an Activity that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactivePreferenceActivity : PreferenceActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactivePreferenceActivity>, IHandleObservableErrors
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
         private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
-
-        /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changing
-        {
-            get => this.GetChangingObservable();
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changed
-        {
-            get => this.GetChangedObservable();
-        }
-
-        /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions
-        {
-            get => this.GetThrownExceptionsObservable();
-        }
-
-        /// <summary>
-        ///  Gets a signal when the activity is activated.
-        /// </summary>
-        /// <value>
-        /// The deactivated.
-        /// </value>
-        public IObservable<Unit> Activated
-        {
-            get => _activated.AsObservable();
-        }
-
-        /// <summary>
-        ///  Gets a signal when the activity is deactivated.
-        /// </summary>
-        /// <value>
-        /// The deactivated.
-        /// </value>
-        public IObservable<Unit> Deactivated
-        {
-            get => _deactivated.AsObservable();
-        }
-
-        /// <summary>
-        ///  Gets a signal with an activity result.
-        /// </summary>
-        /// <value>
-        /// The deactivated.
-        /// </value>
-        public IObservable<Tuple<int, Result, Intent>> ActivityResult
-        {
-            get => _activityResult.AsObservable();
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactivePreferenceActivity"/> class.
@@ -167,6 +88,53 @@ namespace ReactiveUI
         {
         }
 
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc />
+        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changing => this.GetChangingObservable();
+
+        /// <inheritdoc />
+        public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceActivity>> Changed => this.GetChangedObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+        /// <summary>
+        ///  Gets a signal when the activity is activated.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <summary>
+        ///  Gets a signal when the activity is deactivated.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <summary>
+        ///  Gets a signal with an activity result.
+        /// </summary>
+        /// <value>
+        /// The deactivated.
+        /// </value>
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult => _activityResult.AsObservable();
+
         /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
@@ -175,6 +143,18 @@ namespace ReactiveUI
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
 
         /// <summary>
         /// Starts the activity for result asynchronously.

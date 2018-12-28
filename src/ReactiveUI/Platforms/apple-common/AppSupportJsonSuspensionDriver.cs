@@ -75,7 +75,7 @@ namespace ReactiveUI
             }
         }
 
-        private string CreateAppDirectory(NSSearchPathDirectory targetDir, string subDir = "Data")
+        private static string CreateAppDirectory(NSSearchPathDirectory targetDir, string subDir = "Data")
         {
             NSError err;
 

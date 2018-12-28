@@ -26,11 +26,13 @@ namespace ReactiveUI.Tests
 
         private async Task<int> AwaitAnObservable()
         {
-            var o = Observable.Start(() =>
-            {
-                Thread.Sleep(1000);
-                return 42;
-            }, RxApp.TaskpoolScheduler);
+            var o = Observable.Start(
+                () =>
+                {
+                    Thread.Sleep(1000);
+                    return 42;
+                },
+                RxApp.TaskpoolScheduler);
 
             var ret = await o;
             return ret;

@@ -18,134 +18,6 @@ using UIKit;
 
 namespace ReactiveUI
 {
-    internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewCell>
-    {
-        private readonly UITableView _view;
-        private readonly BehaviorSubject<bool> _isReloadingData;
-        private int _inFlightReloads;
-
-        internal UITableViewAdapter(UITableView view)
-        {
-            _view = view;
-            _isReloadingData = new BehaviorSubject<bool>(false);
-        }
-
-        public IObservable<bool> IsReloadingData => _isReloadingData.AsObservable();
-
-        public UITableViewRowAnimation InsertSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
-
-        public UITableViewRowAnimation DeleteSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
-
-        public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
-
-        public UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
-
-        public UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
-
-        public UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
-
-        public void ReloadData()
-        {
-            ++_inFlightReloads;
-            _view.ReloadData();
-
-            if (_inFlightReloads == 1)
-            {
-                Debug.Assert(!_isReloadingData.Value);
-                _isReloadingData.OnNext(true);
-            }
-
-            // since ReloadData() queues the appropriate messages on the UI thread, we know we're done reloading
-            // when this subsequent message is processed (with one caveat - see FinishReloadData for details)
-            RxApp.MainThreadScheduler.Schedule(FinishReloadData);
-        }
-
-        public void BeginUpdates()
-        {
-            _view.BeginUpdates();
-        }
-
-        public void PerformUpdates(Action updates, Action completion)
-        {
-            _view.BeginUpdates();
-            try
-            {
-                updates();
-            }
-            finally
-            {
-                _view.EndUpdates();
-                completion();
-            }
-        }
-
-        public void EndUpdates()
-        {
-            _view.EndUpdates();
-        }
-
-        public void InsertSections(NSIndexSet indexes)
-        {
-            _view.InsertSections(indexes, InsertSectionsAnimation);
-        }
-
-        public void DeleteSections(NSIndexSet indexes)
-        {
-            _view.DeleteSections(indexes, DeleteSectionsAnimation);
-        }
-
-        public void ReloadSections(NSIndexSet indexes)
-        {
-            _view.ReloadSections(indexes, ReloadSectionsAnimation);
-        }
-
-        public void MoveSection(int fromIndex, int toIndex)
-        {
-            _view.MoveSection(fromIndex, toIndex);
-        }
-
-        public void InsertItems(NSIndexPath[] paths)
-        {
-            _view.InsertRows(paths, InsertRowsAnimation);
-        }
-
-        public void DeleteItems(NSIndexPath[] paths)
-        {
-            _view.DeleteRows(paths, DeleteRowsAnimation);
-        }
-
-        public void ReloadItems(NSIndexPath[] paths)
-        {
-            _view.ReloadRows(paths, ReloadRowsAnimation);
-        }
-
-        public void MoveItem(NSIndexPath path, NSIndexPath newPath)
-        {
-            _view.MoveRow(path, newPath);
-        }
-
-        public UITableViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path)
-        {
-            return _view.DequeueReusableCell(cellKey, path);
-        }
-
-        private void FinishReloadData()
-        {
-            --_inFlightReloads;
-
-            if (_inFlightReloads == 0)
-            {
-                // this is required because sometimes iOS schedules further work that results in calls to GetCell
-                // that work could happen after FinishReloadData unless we force layout here
-                // of course, we can't have that work running after IsReloading ticks to false because otherwise
-                // some updates may occur before the calls to GetCell and thus the calls to GetCell could fail due to invalid indexes
-                _view.LayoutIfNeeded();
-                Debug.Assert(_isReloadingData.Value);
-                _isReloadingData.OnNext(false);
-            }
-        }
-    }
-
     /// <summary>
     /// ReactiveTableViewSource is a Table View Source that is connected to
     /// a List that automatically updates the View based on the
@@ -153,7 +25,7 @@ namespace ReactiveUI
     /// items are animated in and out as items are added.
     /// </summary>
     /// <typeparam name="TSource">The source type.</typeparam>
-    public class ReactiveTableViewSource<TSource> : UITableViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
+    public class ReactiveTableViewSource<TSource> : UITableViewSource, IEnableLogger, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         private readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> _commonSource;
         private readonly Subject<object> _elementSelected = new Subject<object>();
@@ -188,9 +60,22 @@ namespace ReactiveUI
         /// <param name="tableView">The table view.</param>
         public ReactiveTableViewSource(UITableView tableView)
         {
-            SetupRxObj();
             _adapter = new UITableViewAdapter(tableView);
             _commonSource = new CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>>(_adapter);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add => PropertyChangingEventManager.AddHandler(this, value);
+            remove => PropertyChangingEventManager.RemoveHandler(this, value);
+        }
+
+        /// <inheritdoc/>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add => PropertyChangedEventManager.AddHandler(this, value);
+            remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
         /// <summary>
@@ -277,6 +162,15 @@ namespace ReactiveUI
             set => _adapter.ReloadRowsAnimation = value;
         }
 
+        /// <inheritdoc />
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewSource<TSource>>> Changing => this.GetChangingObservable();
+
+        /// <inheritdoc />
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewSource<TSource>>> Changed => this.GetChangedObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
         /// <inheritdoc/>
         public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
         {
@@ -312,17 +206,6 @@ namespace ReactiveUI
         public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
         {
             _elementSelected.OnNext(_commonSource.ItemAt(indexPath));
-        }
-
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _commonSource.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
 
         /// <inheritdoc/>
@@ -393,50 +276,6 @@ namespace ReactiveUI
         /// <returns>The item.</returns>
         public object ItemAt(NSIndexPath indexPath) => _commonSource.ItemAt(indexPath);
 
-        /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewSource<TSource>>> Changing => this.GetChangingObservable();
-
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewSource<TSource>>> Changed => this.GetChangedObservable();
-
-        /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
-
-        private void SetupRxObj()
-        {
-        }
-
         /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
@@ -447,6 +286,29 @@ namespace ReactiveUI
         public IDisposable SuppressChangeNotifications()
         {
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _commonSource.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
     }
 }
