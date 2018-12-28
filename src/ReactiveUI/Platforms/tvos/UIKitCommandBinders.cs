@@ -15,11 +15,6 @@ namespace ReactiveUI
     public class UIKitCommandBinders : FlexibleCommandBinder
     {
         /// <summary>
-        /// The UIKitCommandBinders instance.
-        /// </summary>
-        public static Lazy<UIKitCommandBinders> Instance = new Lazy<UIKitCommandBinders>();
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.
         /// </summary>
         public UIKitCommandBinders()
@@ -27,5 +22,10 @@ namespace ReactiveUI
             Register(typeof(UIControl), 9, (cmd, t, cp) => ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty("Enabled")));
             Register(typeof(UIBarButtonItem), 10, (cmd, t, cp) => ForEvent(cmd, t, cp, "Clicked", typeof(UIBarButtonItem).GetRuntimeProperty("Enabled")));
         }
+
+        /// <summary>
+        /// Gets the UIKitCommandBinders instance.
+        /// </summary>
+        public static Lazy<UIKitCommandBinders> Instance { get; } = new Lazy<UIKitCommandBinders>();
     }
 }

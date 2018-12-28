@@ -29,7 +29,7 @@ namespace ReactiveUI.XamForms
             propertyChanged: OnViewModelChanged);
 
         /// <summary>
-        /// The ViewModel to display.
+        /// Gets or sets the ViewModel to display.
         /// </summary>
         public TViewModel ViewModel
         {

@@ -6,6 +6,7 @@
     <Description>Provides Observable-based events API for Winforms UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>ReactiveUI.Events.Winforms</PackageId>
     <ExtrasEnableWinFormsProjectSetup>true</ExtrasEnableWinFormsProjectSetup >
+    <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>  
 
   <ItemGroup>

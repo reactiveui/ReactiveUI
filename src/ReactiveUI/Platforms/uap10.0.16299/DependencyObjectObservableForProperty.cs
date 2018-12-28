@@ -44,7 +44,8 @@ namespace ReactiveUI
             {
                 this.Log().Warn(
                     "Tried to bind DP on a non-DependencyObject. Binding as POCO object",
-                    type.FullName, propertyName);
+                    type.FullName,
+                    propertyName);
 
                 var ret = new POCOObservableForProperty();
                 return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
@@ -54,7 +55,8 @@ namespace ReactiveUI
             {
                 this.Log().Warn(
                     "Tried to bind DO {0}.{1}, but DPs can't do beforeChanged. Binding as POCO object",
-                    type.FullName, propertyName);
+                    type.FullName,
+                    propertyName);
 
                 var ret = new POCOObservableForProperty();
                 return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
@@ -65,7 +67,8 @@ namespace ReactiveUI
             {
                 this.Log().Warn(
                     "Tried to bind DO {0}.{1}, but DP doesn't exist. Binding as POCO object",
-                    type.FullName, propertyName);
+                    type.FullName,
+                    propertyName);
 
                 var ret = new POCOObservableForProperty();
                 return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
@@ -83,27 +86,7 @@ namespace ReactiveUI
             });
         }
 
-        private Func<DependencyProperty> GetDependencyPropertyFetcher(Type type, string propertyName)
-        {
-            var typeInfo = type.GetTypeInfo();
-
-            // Look for the DependencyProperty attached to this property name
-            var pi = ActuallyGetProperty(typeInfo, propertyName + "Property");
-            if (pi != null)
-            {
-                return () => (DependencyProperty)pi.GetValue(null);
-            }
-
-            var fi = ActuallyGetField(typeInfo, propertyName + "Property");
-            if (fi != null)
-            {
-                return () => (DependencyProperty)fi.GetValue(null);
-            }
-
-            return null;
-        }
-
-        private PropertyInfo ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
+        private static PropertyInfo ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
         {
             var current = typeInfo;
             while (current != null)
@@ -120,7 +103,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private FieldInfo ActuallyGetField(TypeInfo typeInfo, string propertyName)
+        private static FieldInfo ActuallyGetField(TypeInfo typeInfo, string propertyName)
         {
             var current = typeInfo;
             while (current != null)
@@ -132,6 +115,26 @@ namespace ReactiveUI
                 }
 
                 current = current.BaseType != null ? current.BaseType.GetTypeInfo() : null;
+            }
+
+            return null;
+        }
+
+        private static Func<DependencyProperty> GetDependencyPropertyFetcher(Type type, string propertyName)
+        {
+            var typeInfo = type.GetTypeInfo();
+
+            // Look for the DependencyProperty attached to this property name
+            var pi = ActuallyGetProperty(typeInfo, propertyName + "Property");
+            if (pi != null)
+            {
+                return () => (DependencyProperty)pi.GetValue(null);
+            }
+
+            var fi = ActuallyGetField(typeInfo, propertyName + "Property");
+            if (fi != null)
+            {
+                return () => (DependencyProperty)fi.GetValue(null);
             }
 
             return null;

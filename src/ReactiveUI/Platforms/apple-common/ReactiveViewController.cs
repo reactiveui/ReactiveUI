@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -23,8 +24,9 @@ namespace ReactiveUI
     /// This is a View that is both a NSViewController and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    public class ReactiveViewController : NSViewController,
-        IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
@@ -87,15 +89,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewController>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewController>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -171,6 +168,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
         where TViewModel : class
     {
@@ -232,29 +231,6 @@ namespace ReactiveUI
         {
             get => ViewModel;
             set => ViewModel = (TViewModel)value;
-        }
-    }
-
-    internal static class UIViewControllerMixins
-    {
-        internal static void ActivateSubviews(this NSViewController @this, bool activate)
-        {
-            @this.View.ActivateSubviews(activate);
-        }
-
-        private static void ActivateSubviews(this NSView @this, bool activate)
-        {
-            foreach (var view in @this.Subviews)
-            {
-                var subview = view as ICanForceManualActivation;
-
-                if (subview != null)
-                {
-                    subview.Activate(activate);
-                }
-
-                view.ActivateSubviews(activate);
-            }
         }
     }
 }

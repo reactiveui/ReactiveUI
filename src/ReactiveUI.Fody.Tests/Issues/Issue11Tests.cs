@@ -19,11 +19,15 @@ namespace ReactiveUI.Fody.Tests.Issues
 
         public class TestModel : ReactiveObject
         {
-            public extern string MyProperty { [ObservableAsProperty]get; }
-
             public TestModel(string myProperty)
             {
                 Observable.Return(myProperty).ToPropertyEx(this, x => x.MyProperty);
+            }
+
+            public extern string MyProperty
+            {
+                [ObservableAsProperty]
+                get;
             }
         }
     }

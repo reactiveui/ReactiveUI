@@ -53,7 +53,7 @@ namespace ReactiveUI.Legacy
             CollectionChanged?.Invoke(this, ReplaceIfUnsupported(args));
         }
 
-        private NotifyCollectionChangedEventArgs ReplaceIfUnsupported(NotifyCollectionChangedEventArgs args)
+        private static NotifyCollectionChangedEventArgs ReplaceIfUnsupported(NotifyCollectionChangedEventArgs args)
         {
             // see System.Windows.Data.ListCollectionView.ValidateCollectionChangedEventArgs
             switch (args.Action)

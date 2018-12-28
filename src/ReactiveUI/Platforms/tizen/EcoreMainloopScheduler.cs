@@ -11,7 +11,7 @@ namespace ReactiveUI
 {
     internal class EcoreMainloopScheduler : IScheduler
     {
-        public static IScheduler MainThreadScheduler = new EcoreMainloopScheduler();
+        public static IScheduler MainThreadScheduler { get; } = new EcoreMainloopScheduler();
 
         public DateTimeOffset Now => DateTimeOffset.Now;
 

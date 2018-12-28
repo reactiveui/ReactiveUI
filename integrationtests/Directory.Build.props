@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
     <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
-    <PackageLicenseUrl>https://opensource.org/licenses/mit</PackageLicenseUrl>
     <PackageProjectUrl>https://reactiveui.net</PackageProjectUrl>
     <PackageIconUrl>https://i.imgur.com/7WDbqSy.png</PackageIconUrl>
     <Authors>.NET Foundation and Contributors</Authors>

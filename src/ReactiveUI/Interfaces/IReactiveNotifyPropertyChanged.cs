@@ -14,14 +14,14 @@ namespace ReactiveUI
     public interface IReactiveNotifyPropertyChanged<out TSender>
     {
         /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
+        /// Gets an observable that fires *before* a property is about to
         /// be changed. Note that this should not fire duplicate change notifications if a
         /// property is set to the same value multiple times.
         /// </summary>
         IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
 
         /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
+        /// Gets an Observable that fires *after* a property has changed.
         /// Note that this should not fire duplicate change notifications if a
         /// property is set to the same value multiple times.
         /// </summary>

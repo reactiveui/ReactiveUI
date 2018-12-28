@@ -54,7 +54,7 @@ namespace ReactiveUI
         private readonly IScheduler _handlerScheduler;
 
         /// <summary>
-        /// Creates a new interaction instance.
+        /// Initializes a new instance of the <see cref="Interaction{TInput, TOutput}"/> class.
         /// </summary>
         /// <param name="handlerScheduler">
         /// The scheduler to use when invoking handlers, which defaults to <c>CurrentThreadScheduler.Instance</c> if <see langword="null"/>.

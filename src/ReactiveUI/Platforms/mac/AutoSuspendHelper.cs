@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -18,13 +19,17 @@ namespace ReactiveUI
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
     ///
-    /// Locator.Current.GetService.<ISuspensionHost>().SetupDefaultSuspendResume();
+    /// Locator.Current.GetService.{ISuspensionHost}().SetupDefaultSuspendResume();
+    ///
+    /// This will fetch your SuspensionHost.
     /// </summary>
-    public class AutoSuspendHelper : IEnableLogger
+    public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
         private readonly Subject<IDisposable> _shouldPersistState = new Subject<IDisposable>();
         private readonly Subject<Unit> _isResuming = new Subject<Unit>();
         private readonly Subject<Unit> _isUnpausing = new Subject<Unit>();
+
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
@@ -71,6 +76,7 @@ namespace ReactiveUI
         /// Dids the finish launching.
         /// </summary>
         /// <param name="notification">The notification.</param>
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         public void DidFinishLaunching(NSNotification notification)
         {
             _isResuming.OnNext(Unit.Default);
@@ -80,6 +86,7 @@ namespace ReactiveUI
         /// Dids the resign active.
         /// </summary>
         /// <param name="notification">The notification.</param>
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         public void DidResignActive(NSNotification notification)
         {
             _shouldPersistState.OnNext(Disposable.Empty);
@@ -89,6 +96,7 @@ namespace ReactiveUI
         /// Dids the become active.
         /// </summary>
         /// <param name="notification">The notification.</param>
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         public void DidBecomeActive(NSNotification notification)
         {
             _isUnpausing.OnNext(Unit.Default);
@@ -98,9 +106,37 @@ namespace ReactiveUI
         /// Dids the hide.
         /// </summary>
         /// <param name="notification">The notification.</param>
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         public void DidHide(NSNotification notification)
         {
             _shouldPersistState.OnNext(Disposable.Empty);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes of resources inside the class.
+        /// </summary>
+        /// <param name="isDisposing">If we are disposing managed resources.</param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            if (isDisposing)
+            {
+                _isResuming?.Dispose();
+                _isUnpausing?.Dispose();
+            }
+
+            _isDisposed = true;
         }
     }
 }

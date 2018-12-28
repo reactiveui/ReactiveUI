@@ -27,7 +27,6 @@ namespace ReactiveUI
         protected ReactiveWindowController(NSWindow window)
             : base(window)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -37,7 +36,6 @@ namespace ReactiveUI
         protected ReactiveWindowController(string windowNibName)
             : base(windowNibName)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -48,7 +46,6 @@ namespace ReactiveUI
         protected ReactiveWindowController(string windowNibName, NSObject owner)
             : base(windowNibName, owner)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -58,7 +55,6 @@ namespace ReactiveUI
         protected ReactiveWindowController(NSCoder coder)
             : base(coder)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -68,7 +64,6 @@ namespace ReactiveUI
         protected ReactiveWindowController(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -78,7 +73,6 @@ namespace ReactiveUI
         protected ReactiveWindowController(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -86,7 +80,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveWindowController()
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -95,15 +88,10 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveWindowController>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveWindowController>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -159,10 +147,6 @@ namespace ReactiveUI
                 .AddObserver(NSWindow.WillCloseNotification, _ => _deactivated.OnNext(Unit.Default), Window);
 
             _activated.OnNext(Unit.Default);
-        }
-
-        private void SetupRxObj()
-        {
         }
     }
 }

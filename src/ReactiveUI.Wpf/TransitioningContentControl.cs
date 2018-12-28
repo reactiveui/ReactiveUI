@@ -159,6 +159,31 @@ namespace ReactiveUI
             }
         }
 
+        /// <inheritdoc/>
+        public override void OnApplyTemplate()
+        {
+            // Wire up all of the various control parts.
+            _container = (Grid)GetTemplateChild("PART_Container");
+            if (_container == null)
+            {
+                throw new ArgumentException("PART_Container not found.");
+            }
+
+            _currentContentPresentationSite =
+                (ContentPresenter)GetTemplateChild("PART_CurrentContentPresentationSite");
+            if (_currentContentPresentationSite == null)
+            {
+                throw new ArgumentException("PART_CurrentContentPresentationSite not found.");
+            }
+
+            _previousContentPresentationSite =
+                (ContentPresenter)GetTemplateChild("PART_PreviousContentPresentationSite");
+
+            // Set the current content site to the first piece of content.
+            _currentContentPresentationSite.Content = Content;
+            VisualStateManager.GoToState(this, NormalState, false);
+        }
+
         /// <summary>
         /// Called when the value of the <see cref="ContentControl.Content"/> property changes.
         /// </summary>
@@ -306,31 +331,6 @@ namespace ReactiveUI
             }
 
             return transition;
-        }
-
-        /// <inheritdoc/>
-        public override void OnApplyTemplate()
-        {
-            // Wire up all of the various control parts.
-            _container = (Grid)GetTemplateChild("PART_Container");
-            if (_container == null)
-            {
-                throw new ArgumentException("PART_Container not found.");
-            }
-
-            _currentContentPresentationSite =
-                (ContentPresenter)GetTemplateChild("PART_CurrentContentPresentationSite");
-            if (_currentContentPresentationSite == null)
-            {
-                throw new ArgumentException("PART_CurrentContentPresentationSite not found.");
-            }
-
-            _previousContentPresentationSite =
-                (ContentPresenter)GetTemplateChild("PART_PreviousContentPresentationSite");
-
-            // Set the current content site to the first piece of content.
-            _currentContentPresentationSite.Content = Content;
-            VisualStateManager.GoToState(this, NormalState, false);
         }
 
         /// <summary>

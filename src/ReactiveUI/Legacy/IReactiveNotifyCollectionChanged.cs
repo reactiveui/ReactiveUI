@@ -19,69 +19,74 @@ namespace ReactiveUI.Legacy
     public interface IReactiveNotifyCollectionChanged<out T>
     {
         /// <summary>
-        /// Fires when items are added to the collection, once per item added.
+        /// Gets an observable that signals when items are added to the collection, once per item added.
         /// Functions that add multiple items such AddRange should fire this
         /// multiple times. The object provided is the item that was added.
         /// </summary>
         IObservable<T> ItemsAdded { get; }
 
         /// <summary>
-        /// Fires before an item is going to be added to the collection.
+        /// Gets an observable that signals before an item is going to be added to the collection.
         /// </summary>
         IObservable<T> BeforeItemsAdded { get; }
 
         /// <summary>
-        /// Fires once an item has been removed from a collection, providing the
+        /// Gets an observable that signals once an item has been removed from a collection, providing the
         /// item that was removed.
         /// </summary>
         IObservable<T> ItemsRemoved { get; }
 
         /// <summary>
-        /// Fires before an item will be removed from a collection, providing
+        /// Gets an observable that signals before an item will be removed from a collection, providing
         /// the item that will be removed.
         /// </summary>
         IObservable<T> BeforeItemsRemoved { get; }
 
         /// <summary>
-        /// Fires before an items moves from one position in the collection to
+        /// Gets an observable that signals before an items moves from one position in the collection to
         /// another, providing the item(s) to be moved as well as source and destination
         /// indices.
         /// </summary>
         IObservable<IMoveInfo<T>> BeforeItemsMoved { get; }
 
         /// <summary>
-        /// Fires once one or more items moves from one position in the collection to
+        /// Gets an observable that signals once one or more items moves from one position in the collection to
         /// another, providing the item(s) that was moved as well as source and destination
         /// indices.
         /// </summary>
         IObservable<IMoveInfo<T>> ItemsMoved { get; }
 
         /// <summary>
+        /// Gets an observable that signals when the collection is changing.
         /// This Observable is equivalent to the NotifyCollectionChanged event,
         /// but fires before the collection is changed.
         /// </summary>
         IObservable<NotifyCollectionChangedEventArgs> Changing { get; }
 
         /// <summary>
+        /// Gets an observable that signals when the collection has changed.
         /// This Observable is equivalent to the NotifyCollectionChanged event,
         /// and fires after the collection is changed.
         /// </summary>
         IObservable<NotifyCollectionChangedEventArgs> Changed { get; }
 
         /// <summary>
-        /// Fires when the collection count changes, regardless of reason.
+        /// Gets an observable that signals when the collection count changes, regardless of reason.
         /// </summary>
         IObservable<int> CountChanging { get; }
 
         /// <summary>
-        /// Fires when the collection count changes, regardless of reason.
+        /// Gets an observable that signals when the collection count changes, regardless of reason.
         /// </summary>
         IObservable<int> CountChanged { get; }
 
+        /// <summary>
+        /// Gets an observable that signals when the collection has become empty or not.
+        /// </summary>
         IObservable<bool> IsEmptyChanged { get; }
 
         /// <summary>
-        /// This Observable is fired when a ShouldReset fires on the collection. This
+        /// Gets an observable that signals when a ShouldReset fires on the collection. This
         /// means that you should forget your previous knowledge of the state
         /// of the collection and reread it.
         ///
@@ -90,6 +95,10 @@ namespace ReactiveUI.Legacy
         /// </summary>
         IObservable<Unit> ShouldReset { get; }
 
+        /// <summary>
+        /// Stops change notifications, and returns a disposable which when disposed will trigger a reset event.
+        /// </summary>
+        /// <returns>The disposable to use to turn back on notifications.</returns>
         IDisposable SuppressChangeNotifications();
     }
 }

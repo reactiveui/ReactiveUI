@@ -17,6 +17,11 @@ namespace ReactiveUI
     /// </summary>
     public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
+        /// <summary>
+        /// Configuration map.
+        /// </summary>
+        private readonly Dictionary<Type, CommandBindingInfo> _config = new Dictionary<Type, CommandBindingInfo>();
+
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, bool hasEventTarget)
         {
@@ -68,29 +73,6 @@ namespace ReactiveUI
             throw new NotImplementedException();
         }
 
-        private class CommandBindingInfo
-        {
-            public int Affinity { get; set; }
-
-            public Func<ICommand, object, IObservable<object>, IDisposable> CreateBinding { get; set; }
-        }
-
-        /// <summary>
-        /// Configuration map.
-        /// </summary>
-        private readonly Dictionary<Type, CommandBindingInfo> _config = new Dictionary<Type, CommandBindingInfo>();
-
-        /// <summary>
-        /// Registers an observable factory for the specified type and property.
-        /// </summary>
-        /// <param name="type">Type.</param>
-        /// <param name="affinity">The affinity for the type.</param>
-        /// <param name="createBinding">Creates the binding.</param>
-        protected void Register(Type type, int affinity, Func<System.Windows.Input.ICommand, object, IObservable<object>, IDisposable> createBinding)
-        {
-            _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
-        }
-
         /// <summary>
         /// Creates a commands binding from event and a property.
         /// </summary>
@@ -132,6 +114,24 @@ namespace ReactiveUI
                     .Subscribe(x => enabledSetter(target, x, null)));
 
             return compDisp;
+        }
+
+        /// <summary>
+        /// Registers an observable factory for the specified type and property.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        /// <param name="affinity">The affinity for the type.</param>
+        /// <param name="createBinding">Creates the binding.</param>
+        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding)
+        {
+            _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
+        }
+
+        private class CommandBindingInfo
+        {
+            public int Affinity { get; set; }
+
+            public Func<ICommand, object, IObservable<object>, IDisposable> CreateBinding { get; set; }
         }
     }
 }

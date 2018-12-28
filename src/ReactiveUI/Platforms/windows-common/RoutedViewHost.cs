@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
 using System.Windows;
 using ReactiveUI;
 using Splat;
@@ -29,29 +27,10 @@ namespace ReactiveUI
     public class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
     {
         /// <summary>
-        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
-        /// </summary>
-        public RoutingState Router
-        {
-            get => (RoutingState)GetValue(RouterProperty);
-            set => SetValue(RouterProperty, value);
-        }
-
-        /// <summary>
         /// The router dependency property.
         /// </summary>
         public static readonly DependencyProperty RouterProperty =
             DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
-
-        /// <summary>
-        /// This content is displayed whenever there is no page currently
-        /// routed.
-        /// </summary>
-        public object DefaultContent
-        {
-            get => (object)GetValue(DefaultContentProperty);
-            set => SetValue(DefaultContentProperty, value);
-        }
 
         /// <summary>
         /// The default content property.
@@ -60,30 +39,10 @@ namespace ReactiveUI
             DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
 
         /// <summary>
-        /// Gets or sets the view contract observable.
-        /// </summary>
-        /// <value>
-        /// The view contract observable.
-        /// </value>
-        public IObservable<string> ViewContractObservable
-        {
-            get => (IObservable<string>)GetValue(ViewContractObservableProperty);
-            set => SetValue(ViewContractObservableProperty, value);
-        }
-
-        /// <summary>
         /// The view contract observable property.
         /// </summary>
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable<string>.Default));
-
-        /// <summary>
-        /// Gets or sets the view locator.
-        /// </summary>
-        /// <value>
-        /// The view locator.
-        /// </value>
-        public IViewLocator ViewLocator { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
@@ -154,5 +113,44 @@ namespace ReactiveUI
                     }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
             });
         }
+
+        /// <summary>
+        /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
+        /// </summary>
+        public RoutingState Router
+        {
+            get => (RoutingState)GetValue(RouterProperty);
+            set => SetValue(RouterProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the content displayed whenever there is no page currently
+        /// routed.
+        /// </summary>
+        public object DefaultContent
+        {
+            get => (object)GetValue(DefaultContentProperty);
+            set => SetValue(DefaultContentProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the view contract observable.
+        /// </summary>
+        /// <value>
+        /// The view contract observable.
+        /// </value>
+        public IObservable<string> ViewContractObservable
+        {
+            get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+            set => SetValue(ViewContractObservableProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the view locator.
+        /// </summary>
+        /// <value>
+        /// The view locator.
+        /// </value>
+        public IViewLocator ViewLocator { get; set; }
     }
 }

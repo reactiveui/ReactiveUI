@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -17,8 +18,9 @@ namespace ReactiveUI
     /// This is a NSTableViewController that is both an NSTableViewController and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    public abstract class ReactiveTableViewController : NSTableViewController,
-    IReactiveNotifyPropertyChanged<ReactiveTableViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    public abstract class ReactiveTableViewController : NSTableViewController, IReactiveNotifyPropertyChanged<ReactiveTableViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         private Subject<Unit> _activated = new Subject<Unit>();
         private Subject<Unit> _deactivated = new Subject<Unit>();
@@ -30,7 +32,6 @@ namespace ReactiveUI
         protected ReactiveTableViewController(NSTableViewStyle withStyle)
             : base(withStyle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -41,7 +42,6 @@ namespace ReactiveUI
         protected ReactiveTableViewController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -51,7 +51,6 @@ namespace ReactiveUI
         protected ReactiveTableViewController(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -61,7 +60,6 @@ namespace ReactiveUI
         protected ReactiveTableViewController(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -71,7 +69,6 @@ namespace ReactiveUI
         protected ReactiveTableViewController(NSCoder coder)
             : base(coder)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -79,7 +76,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveTableViewController()
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -96,15 +92,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewController>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewController>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -155,10 +146,6 @@ namespace ReactiveUI
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -166,6 +153,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveTableViewController<TViewModel> : ReactiveTableViewController, IViewFor<TViewModel>
         where TViewModel : class
     {

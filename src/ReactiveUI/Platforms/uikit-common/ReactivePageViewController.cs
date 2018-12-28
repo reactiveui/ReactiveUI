@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -16,8 +17,9 @@ namespace ReactiveUI
     /// This is a UIPageViewController that is both an UIPageViewController and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    public abstract class ReactivePageViewController : UIPageViewController,
-        IReactiveNotifyPropertyChanged<ReactivePageViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    public abstract class ReactivePageViewController : UIPageViewController, IReactiveNotifyPropertyChanged<ReactivePageViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         private Subject<Unit> _activated = new Subject<Unit>();
         private Subject<Unit> _deactivated = new Subject<Unit>();
@@ -30,7 +32,6 @@ namespace ReactiveUI
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation)
             : base(style, orientation)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -42,7 +43,6 @@ namespace ReactiveUI
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, NSDictionary options)
             : base(style, orientation, options)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -54,7 +54,6 @@ namespace ReactiveUI
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, UIPageViewControllerSpineLocation spineLocation)
             : base(style, orientation, spineLocation)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -67,7 +66,6 @@ namespace ReactiveUI
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, UIPageViewControllerSpineLocation spineLocation, float interPageSpacing)
             : base(style, orientation, spineLocation, interPageSpacing)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -78,7 +76,6 @@ namespace ReactiveUI
         protected ReactivePageViewController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -88,7 +85,6 @@ namespace ReactiveUI
         protected ReactivePageViewController(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -98,7 +94,6 @@ namespace ReactiveUI
         protected ReactivePageViewController(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -108,7 +103,6 @@ namespace ReactiveUI
         protected ReactivePageViewController(NSCoder coder)
             : base(coder)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -116,7 +110,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactivePageViewController()
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -133,15 +126,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactivePageViewController>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactivePageViewController>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -192,10 +180,6 @@ namespace ReactiveUI
             _deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
         }
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -203,6 +187,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactivePageViewController<TViewModel> : ReactivePageViewController, IViewFor<TViewModel>
         where TViewModel : class
     {

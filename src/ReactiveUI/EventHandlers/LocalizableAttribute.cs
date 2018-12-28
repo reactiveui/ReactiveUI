@@ -15,12 +15,18 @@ namespace ReactiveUI
     public sealed class LocalizableAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the LocalizableAttribute class.
+        /// Initializes a new instance of the <see cref="LocalizableAttribute"/> class.
         /// </summary>
         /// <param name="isLocalizable">If the target is localizable or not.</param>
         public LocalizableAttribute(bool isLocalizable)
         {
+            IsLocalizable = isLocalizable;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the target is localizable.
+        /// </summary>
+        public bool IsLocalizable { get; }
     }
 }
 #endif

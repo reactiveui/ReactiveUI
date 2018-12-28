@@ -18,6 +18,14 @@ namespace ReactiveUI.Blend
     public class ObservableTrigger : TriggerBase<FrameworkElement>
     {
         /// <summary>
+        /// The dependency property registration for the Observable property.
+        /// </summary>
+        public static readonly DependencyProperty ObservableProperty =
+            DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(OnObservableChanged));
+
+        private IDisposable _watcher;
+
+        /// <summary>
         /// Gets or sets the observable which will activate the trigger.
         /// </summary>
         public IObservable<object> Observable
@@ -27,17 +35,9 @@ namespace ReactiveUI.Blend
         }
 
         /// <summary>
-        /// The dependency property registration for the Observable property.
-        /// </summary>
-        public static readonly DependencyProperty ObservableProperty =
-            DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(OnObservableChanged));
-
-        /// <summary>
-        /// Gets or set if we should resubscribe the trigger if there is a error when running the IObservable.
+        /// Gets or sets a value indicating whether to resubscribe the trigger if there is a error when running the IObservable.
         /// </summary>
         public bool AutoResubscribeOnError { get; set; }
-
-        private IDisposable _watcher;
 
         /// <summary>
         /// Called when [observable changed].
@@ -46,23 +46,23 @@ namespace ReactiveUI.Blend
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            ObservableTrigger This = (ObservableTrigger)sender;
-            if (This._watcher != null)
+            ObservableTrigger triggerItem = (ObservableTrigger)sender;
+            if (triggerItem._watcher != null)
             {
-                This._watcher.Dispose();
-                This._watcher = null;
+                triggerItem._watcher.Dispose();
+                triggerItem._watcher = null;
             }
 
-            This._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
-                x => This.InvokeActions(x),
+            triggerItem._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+                x => triggerItem.InvokeActions(x),
                 ex =>
                 {
-                    if (!This.AutoResubscribeOnError)
+                    if (!triggerItem.AutoResubscribeOnError)
                     {
                         return;
                     }
 
-                    OnObservableChanged(This, e);
+                    OnObservableChanged(triggerItem, e);
                 });
         }
     }

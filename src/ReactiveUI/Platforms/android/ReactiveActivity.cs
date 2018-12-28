@@ -3,29 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Splat;
 
 namespace ReactiveUI
 {
@@ -34,10 +22,28 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
         private TViewModel _viewModel;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
+        /// </summary>
+        protected ReactiveActivity()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="ownership">The ownership.</param>
+        protected ReactiveActivity(IntPtr handle, JniHandleOwnership ownership)
+            : base(handle, ownership)
+        {
+        }
 
         /// <inheritdoc/>
         public TViewModel ViewModel
@@ -52,16 +58,28 @@ namespace ReactiveUI
             get { return _viewModel; }
             set { _viewModel = (TViewModel)value; }
         }
+    }
+
+    /// <summary>
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
+    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
+    {
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+        private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveActivity"/> class.
         /// </summary>
         protected ReactiveActivity()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveActivity"/> class.
         /// </summary>
         /// <param name="handle">The handle.</param>
         /// <param name="ownership">The ownership.</param>
@@ -69,16 +87,6 @@ namespace ReactiveUI
             : base(handle, ownership)
         {
         }
-    }
-
-    /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers
-    /// (i.e. you can call RaiseAndSetIfChanged).
-    /// </summary>
-    public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
-    {
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
 
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
@@ -88,57 +96,44 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
-
-        /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged
         {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
 
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
-
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changing
         {
             get { return this.GetChangingObservable(); }
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changed
         {
             get { return this.GetChangedObservable(); }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveActivity"/> class.
-        /// </summary>
-        protected ReactiveActivity()
-        {
-        }
+        /// <inheritdoc/>
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveActivity"/> class.
+        /// Gets a signal when the activity is activated.
         /// </summary>
-        /// <param name="handle">The handle.</param>
-        /// <param name="ownership">The ownership.</param>
-        protected ReactiveActivity(IntPtr handle, JniHandleOwnership ownership)
-            : base(handle, ownership)
-        {
-        }
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <summary>
+        ///  Gets a signal when the activity is deactivated.
+        /// </summary>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+        /// <summary>
+        /// Gets the activity result.
+        /// </summary>
+        /// <value>
+        /// The activity result.
+        /// </value>
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult => _activityResult.AsObservable();
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -150,65 +145,15 @@ namespace ReactiveUI
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
-        public IObservable<Exception> ThrownExceptions
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            get => this.GetThrownExceptionsObservable();
-        }
-
-        /// <summary>
-        /// Gets a signal when the activity is activated.
-        /// </summary>
-        /// <value>
-        /// The activated.
-        /// </value>
-        public IObservable<Unit> Activated
-        {
-            get => _activated.AsObservable();
-        }
-
-        /// <summary>
-        ///  Gets a signal when the activity is deactivated.
-        /// </summary>
-        /// <value>
-        /// The deactivated.
-        /// </value>
-        public IObservable<Unit> Deactivated
-        {
-            get { return _deactivated.AsObservable(); }
+            PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
         /// <inheritdoc/>
-        protected override void OnPause()
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
-            base.OnPause();
-            _deactivated.OnNext(Unit.Default);
-        }
-
-        /// <inheritdoc/>
-        protected override void OnResume()
-        {
-            base.OnResume();
-            _activated.OnNext(Unit.Default);
-        }
-
-        private readonly Subject<Tuple<int, Result, Intent>> _activityResult = new Subject<Tuple<int, Result, Intent>>();
-
-        /// <summary>
-        /// Gets the activity result.
-        /// </summary>
-        /// <value>
-        /// The activity result.
-        /// </value>
-        public IObservable<Tuple<int, Result, Intent>> ActivityResult
-        {
-            get { return _activityResult.AsObservable(); }
-        }
-
-        /// <inheritdoc/>
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
-        {
-            base.OnActivityResult(requestCode, resultCode, data);
-            _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
@@ -249,6 +194,27 @@ namespace ReactiveUI
 
             StartActivityForResult(type, requestCode);
             return ret;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnPause()
+        {
+            base.OnPause();
+            _deactivated.OnNext(Unit.Default);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnResume()
+        {
+            base.OnResume();
+            _activated.OnNext(Unit.Default);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
         }
     }
 }

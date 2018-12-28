@@ -19,8 +19,26 @@ namespace ReactiveUI.Blend
     /// Behavior that response to triggered observables.
     /// </summary>
     [ContentProperty(Name = "Actions")]
-    public sealed class ObservableTriggerBehavior : Behavior<DependencyObject>
+    public sealed class ObservableTriggerBehavior : Behavior<DependencyObject>, IDisposable
     {
+        /// <summary>
+        /// The observable dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ObservableProperty =
+            DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTriggerBehavior), new PropertyMetadata(null, OnObservableChanged));
+
+        /// <summary>
+        /// The actions dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ActionsProperty =
+            DependencyProperty.Register("Actions", typeof(ActionCollection), typeof(ObservableTriggerBehavior), new PropertyMetadata(null));
+
+        /// <summary>
+        /// The source object dependency property.
+        /// </summary>
+        public static readonly DependencyProperty SourceObjectProperty =
+            DependencyProperty.Register("SourceObject", typeof(object), typeof(ObservableTriggerBehavior), new PropertyMetadata(null, OnSourceObjectChanged));
+
         private object _resolvedSource;
         private SerialDisposable _watcher;
 
@@ -53,12 +71,6 @@ namespace ReactiveUI.Blend
         }
 
         /// <summary>
-        /// The actions dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ActionsProperty =
-            DependencyProperty.Register("Actions", typeof(ActionCollection), typeof(ObservableTriggerBehavior), new PropertyMetadata(null));
-
-        /// <summary>
         /// Gets or sets the source object.
         /// </summary>
         public object SourceObject
@@ -66,12 +78,6 @@ namespace ReactiveUI.Blend
             get => GetValue(ObservableTriggerBehavior.SourceObjectProperty);
             set => SetValue(ObservableTriggerBehavior.SourceObjectProperty, value);
         }
-
-        /// <summary>
-        /// The source object dependency property.
-        /// </summary>
-        public static readonly DependencyProperty SourceObjectProperty =
-            DependencyProperty.Register("SourceObject", typeof(object), typeof(ObservableTriggerBehavior), new PropertyMetadata(null, OnSourceObjectChanged));
 
         /// <summary>
         /// Gets or sets a value indicating whether [automatic resubscribe on error].
@@ -87,11 +93,44 @@ namespace ReactiveUI.Blend
             set => SetValue(ObservableProperty, value);
         }
 
-        /// <summary>
-        /// The observable dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ObservableProperty =
-            DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTriggerBehavior), new PropertyMetadata(null, OnObservableChanged));
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _watcher?.Dispose();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnAttached()
+        {
+            base.OnAttached();
+            SetResolvedSource(ComputeResolvedSource());
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDetaching()
+        {
+            SetResolvedSource(null);
+            base.OnDetaching();
+
+            _watcher.Dispose();
+        }
+
+        private static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            ObservableTriggerBehavior @this = (ObservableTriggerBehavior)sender;
+
+            @this._watcher.Disposable = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+                x => Interaction.ExecuteActions(@this._resolvedSource, @this.Actions, x),
+                ex =>
+                {
+                    if (!@this.AutoResubscribeOnError)
+                    {
+                        return;
+                    }
+
+                    OnObservableChanged(@this, e);
+                });
+        }
 
         private static void OnSourceObjectChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
@@ -118,39 +157,6 @@ namespace ReactiveUI.Blend
             }
 
             return AssociatedObject;
-        }
-
-        private static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            ObservableTriggerBehavior @this = (ObservableTriggerBehavior)sender;
-
-            @this._watcher.Disposable = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
-                x => Interaction.ExecuteActions(@this._resolvedSource, @this.Actions, x),
-                ex =>
-                {
-                    if (!@this.AutoResubscribeOnError)
-                    {
-                        return;
-                    }
-
-                    OnObservableChanged(@this, e);
-                });
-        }
-
-        /// <inheritdoc/>
-        protected override void OnAttached()
-        {
-            base.OnAttached();
-            SetResolvedSource(ComputeResolvedSource());
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDetaching()
-        {
-            SetResolvedSource(null);
-            base.OnDetaching();
-
-            _watcher.Dispose();
         }
     }
 }

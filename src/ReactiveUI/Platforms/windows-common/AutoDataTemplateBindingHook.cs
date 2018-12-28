@@ -25,9 +25,9 @@ namespace ReactiveUI
     public class AutoDataTemplateBindingHook : IPropertyBindingHook
     {
         /// <summary>
-        /// The default item template.
+        /// Gets the default item template.
         /// </summary>
-        public static Lazy<DataTemplate> DefaultItemTemplate = new Lazy<DataTemplate>(() =>
+        public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new Lazy<DataTemplate>(() =>
         {
 #if NETFX_CORE
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>" +
@@ -36,9 +36,10 @@ namespace ReactiveUI
             return (DataTemplate)XamlReader.Load(template);
 #else
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-                    "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
-                "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
-            "</DataTemplate>";
+                     "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
+                 "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
+             "</DataTemplate>";
+
             var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
             assemblyName = assemblyName.Substring(0, assemblyName.IndexOf(','));
 

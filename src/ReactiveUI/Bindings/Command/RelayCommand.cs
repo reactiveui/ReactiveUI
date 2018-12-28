@@ -13,6 +13,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Internal relay command used for Command binding.
+    /// </summary>
     internal class RelayCommand : ICommand
     {
         private readonly Func<object, bool> _canExecute;

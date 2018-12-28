@@ -24,15 +24,17 @@ namespace ReactiveUI.Fody.Tests.Issues
 
         private class VM : ReactiveObject
         {
-            [ObservableAsProperty] public double P1 { get; }
-
-            [ObservableAsProperty] public double P2 { get; }
-
             public VM()
             {
                 Observable.Return(0.0).ToPropertyEx(this, vm => vm.P1);
                 this.WhenAnyValue(vm => vm.P1).ToPropertyEx(this, vm => vm.P2);
             }
+
+            [ObservableAsProperty]
+            public double P1 { get; }
+
+            [ObservableAsProperty]
+            public double P2 { get; }
         }
     }
 }

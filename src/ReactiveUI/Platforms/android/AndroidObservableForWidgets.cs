@@ -59,15 +59,6 @@ namespace ReactiveUI
             return dispatchTable[tableItem](sender, expression);
         }
 
-        private class DispatchTuple
-        {
-            public Type Type { get; set; }
-
-            public string Property { get; set; }
-
-            public Func<object, Expression, IObservable<IObservedChange<object, object>>> Func { get; set; }
-        }
-
         private static DispatchTuple CreateFromAdapterView()
         {
             // AdapterView is more complicated because there are two events - one for select and one for deselect
@@ -135,6 +126,15 @@ namespace ReactiveUI
                         .Select(_ => new ObservedChange<object, object>(v, ex));
                 }
             };
+        }
+
+        private class DispatchTuple
+        {
+            public Type Type { get; set; }
+
+            public string Property { get; set; }
+
+            public Func<object, Expression, IObservable<IObservedChange<object, object>>> Func { get; set; }
         }
     }
 }

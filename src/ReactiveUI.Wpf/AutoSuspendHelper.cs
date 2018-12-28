@@ -25,11 +25,6 @@ namespace ReactiveUI
     public class AutoSuspendHelper : IEnableLogger
     {
         /// <summary>
-        /// Gets or sets the time out before the Auto Suspension happens.
-        /// </summary>
-        public TimeSpan IdleTimeout { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
         /// </summary>
         /// <param name="app">The application.</param>
@@ -69,5 +64,10 @@ namespace ReactiveUI
             AppDomain.CurrentDomain.UnhandledException += (o, e) => untimelyDeath.OnNext(Unit.Default);
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
         }
+
+        /// <summary>
+        /// Gets or sets the time out before the Auto Suspension happens.
+        /// </summary>
+        public TimeSpan IdleTimeout { get; set; }
     }
 }

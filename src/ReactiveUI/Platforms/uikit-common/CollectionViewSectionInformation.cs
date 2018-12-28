@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using Foundation;
 using UIKit;
 
@@ -10,6 +11,7 @@ namespace ReactiveUI
     /// and <see cref="UIKit.UICollectionViewCell"/>.
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class CollectionViewSectionInformation<TSource> : ISectionInformation<TSource, UICollectionView, UICollectionViewCell>
     {
         /// <inheritdoc/>
@@ -28,6 +30,7 @@ namespace ReactiveUI
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     /// <typeparam name="TCell">The type of the UI collection view cell.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class CollectionViewSectionInformation<TSource, TCell> : CollectionViewSectionInformation<TSource>
         where TCell : UICollectionViewCell
     {

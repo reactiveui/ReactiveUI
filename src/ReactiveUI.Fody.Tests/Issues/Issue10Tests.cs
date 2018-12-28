@@ -21,6 +21,11 @@ namespace ReactiveUI.Fody.Tests.Issues
 
         private class TestModel : ReactiveObject
         {
+            public TestModel()
+            {
+                OtherProperty = MyProperty;
+            }
+
             [ObservableAsProperty]
             public string MyProperty { get; private set; }
 
@@ -31,11 +36,6 @@ namespace ReactiveUI.Fody.Tests.Issues
             public DateTime MyDateTimeProperty { get; private set; }
 
             public string OtherProperty { get; private set; }
-
-            public TestModel()
-            {
-                OtherProperty = MyProperty;
-            }
         }
     }
 }

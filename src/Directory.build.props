@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
     <Authors>.NET Foundation and Contributors</Authors>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)reactiveui.ruleset</CodeAnalysisRuleSet>  
     <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/mit</PackageLicenseUrl>
     <PackageProjectUrl>https://reactiveui.net</PackageProjectUrl>
@@ -13,9 +12,7 @@
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  
     <NoWarn>$(NoWarn);1591;1701;1702;1705;VSX1000</NoWarn>
-    <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
     <Platform>AnyCPU</Platform>
     <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
 	
@@ -28,15 +25,15 @@
     <!-- Optional: Include PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>  
   </PropertyGroup>
-  
+
+  <PropertyGroup Condition="!$(IsTestProject)">
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)reactiveui.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
   <PropertyGroup Condition="$(IsTestProject)">
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)reactiveui.tests.ruleset</CodeAnalysisRuleSet>  	
     <IsPackable>false</IsPackable>	
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\..\LICENSE" Pack="true" PackagePath="LICENSE" />
-  </ItemGroup>
   
   <ItemGroup Condition="$(IsTestProject)">
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
@@ -48,6 +45,10 @@
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="8.0.1" />
   </ItemGroup>
+  
+  <ItemGroup Condition="$(IsTestProject)">
+	<Compile Include="$(MSBuildThisFileDirectory)ApiGeneratorGlobalSuppressions.cs" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" /> 
@@ -56,7 +57,11 @@
    <PropertyGroup>
     <SolutionDir Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)</SolutionDir>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\LICENSE" Pack="true" PackagePath="LICENSE" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="stylecop.analyzers" Version="1.1.1-beta.61" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.2" PrivateAssets="all" />

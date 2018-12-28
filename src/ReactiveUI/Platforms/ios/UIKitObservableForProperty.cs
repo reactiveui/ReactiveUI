@@ -17,11 +17,6 @@ namespace ReactiveUI
     public class UIKitObservableForProperty : ObservableForPropertyBase
     {
         /// <summary>
-        /// The UI Kit ObservableForProperty instance.
-        /// </summary>
-        public static Lazy<UIKitObservableForProperty> Instance = new Lazy<UIKitObservableForProperty>();
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="UIKitObservableForProperty"/> class.
         /// </summary>
         public UIKitObservableForProperty()
@@ -40,5 +35,10 @@ namespace ReactiveUI
             // Warning: This will stomp the Control's delegate
             Register(typeof(UISearchBar), "Text", 30, (s, p) => ObservableFromEvent(s, p, "TextChanged"));
         }
+
+        /// <summary>
+        /// Gets the UI Kit ObservableForProperty instance.
+        /// </summary>
+        public static Lazy<UIKitObservableForProperty> Instance { get; } = new Lazy<UIKitObservableForProperty>();
     }
 }

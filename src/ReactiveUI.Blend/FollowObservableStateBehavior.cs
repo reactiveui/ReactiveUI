@@ -14,6 +14,8 @@ using System.Windows.Controls;
 using System.Windows.Interactivity;
 #endif
 
+#pragma warning disable SA1201 // A field should not follow a property - macro if statements make this hard
+
 namespace ReactiveUI.Blend
 {
     /// <summary>
@@ -79,18 +81,6 @@ namespace ReactiveUI.Blend
         /// </summary>
         public bool AutoResubscribeOnError { get; set; }
 
-        /// <inheritdoc/>
-        protected override void OnDetaching()
-        {
-            if (_watcher != null)
-            {
-                _watcher.Dispose();
-                _watcher = null;
-            }
-
-            base.OnDetaching();
-        }
-
         /// <summary>
         /// Called when [state observable changed].
         /// </summary>
@@ -131,6 +121,18 @@ namespace ReactiveUI.Blend
 
                     OnStateObservableChanged(@this, e);
                 });
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDetaching()
+        {
+            if (_watcher != null)
+            {
+                _watcher.Dispose();
+                _watcher = null;
+            }
+
+            base.OnDetaching();
         }
     }
 }
