@@ -21,55 +21,37 @@ namespace ReactiveUI
         where TView : IViewFor
     {
         /// <summary>
-        /// The instance of the view model this binding is applied to.
+        /// Gets the instance of the view model this binding is applied to.
         /// </summary>
-        /// <value>
-        /// The view model.
-        /// </value>
         TViewModel ViewModel { get; }
 
         /// <summary>
-        /// An expression representing the propertyon the viewmodel bound to the view.
+        /// Gets an expression representing the propertyon the viewmodel bound to the view.
         /// This can be a child property, for example x.Foo.Bar.Baz in which case
         /// that will be the expression.
         /// </summary>
-        /// <value>
-        /// The expression.
-        /// </value>
         Expression ViewModelExpression { get; }
 
         /// <summary>
-        /// The instance of the view this binding is applied to.
+        /// Gets the instance of the view this binding is applied to.
         /// </summary>
-        /// <value>
-        /// The view.
-        /// </value>
         TView View { get; }
 
         /// <summary>
-        /// An expression representing the property on the view bound to the viewmodel.
+        /// Gets an expression representing the property on the view bound to the viewmodel.
         /// This can be a child property, for example x.Foo.Bar.Baz in which case
         /// that will be the expression.
         /// </summary>
-        /// <value>
-        /// The expression.
-        /// </value>
         Expression ViewExpression { get; }
 
         /// <summary>
-        /// An observable representing changed values for the binding.
+        /// Gets an observable representing changed values for the binding.
         /// </summary>
-        /// <value>
-        /// The changed.
-        /// </value>
         IObservable<TValue> Changed { get; }
 
         /// <summary>
         /// Gets the direction of the binding.
         /// </summary>
-        /// <value>
-        /// The direction.
-        /// </value>
         BindingDirection Direction { get; }
     }
 }

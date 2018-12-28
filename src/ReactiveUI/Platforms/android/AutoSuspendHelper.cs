@@ -19,28 +19,17 @@ namespace ReactiveUI
     /// <summary>
     /// Helps manage android application lifecycle events.
     /// </summary>
-    public class AutoSuspendHelper : IEnableLogger
+    public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
         private readonly Subject<Bundle> _onCreate = new Subject<Bundle>();
         private readonly Subject<Unit> _onRestart = new Subject<Unit>();
         private readonly Subject<Unit> _onPause = new Subject<Unit>();
         private readonly Subject<Bundle> _onSaveInstanceState = new Subject<Bundle>();
 
-        /// <summary>
-        /// The untimely demise of an application.
-        /// </summary>
-        public static readonly Subject<Unit> UntimelyDemise = new Subject<Unit>();
+        private bool _disposedValue; // To detect redundant calls
 
         /// <summary>
-        /// Gets or sets the latest bundle.
-        /// </summary>
-        /// <value>
-        /// The latest bundle.
-        /// </value>
-        public static Bundle LatestBundle { get; set; }
-
-        /// <summary>
-        /// Initializes the <see cref="AutoSuspendHelper"/> class.
+        /// Initializes static members of the <see cref="AutoSuspendHelper"/> class.
         /// </summary>
         static AutoSuspendHelper()
         {
@@ -62,9 +51,49 @@ namespace ReactiveUI
             RxApp.SuspensionHost.IsUnpausing = _onRestart;
 
             RxApp.SuspensionHost.ShouldPersistState = Observable.Merge(
-                _onPause.Select(_ => Disposable.Empty), _onSaveInstanceState.Select(_ => Disposable.Empty));
+                                                                       _onPause.Select(_ => Disposable.Empty), _onSaveInstanceState.Select(_ => Disposable.Empty));
 
             RxApp.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
+        }
+
+        /// <summary>
+        /// Gets a subject to indicate whether the application has untimely dismised.
+        /// </summary>
+        public static Subject<Unit> UntimelyDemise { get; } = new Subject<Unit>();
+
+        /// <summary>
+        /// Gets or sets the latest bundle.
+        /// </summary>
+        public static Bundle LatestBundle { get; set; }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes of the items inside the class.
+        /// </summary>
+        /// <param name="disposing">If we are disposing of managed objects or not.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposedValue)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _onCreate?.Dispose();
+                _onPause?.Dispose();
+                _onRestart?.Dispose();
+                _onSaveInstanceState?.Dispose();
+            }
+
+            _disposedValue = true;
         }
 
         private class ObservableLifecycle : Java.Lang.Object, Application.IActivityLifecycleCallbacks

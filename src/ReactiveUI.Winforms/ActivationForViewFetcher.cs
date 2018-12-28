@@ -62,17 +62,7 @@ namespace ReactiveUI.Winforms
             return Observable<bool>.Empty;
         }
 
-        private bool GetCachedIsDesignMode(Control control)
-        {
-            if (_isDesignModeCache == null)
-            {
-                _isDesignModeCache = GetIsDesignMode(control);
-            }
-
-            return _isDesignModeCache.Value;
-        }
-
-        private bool GetIsDesignMode(Control control)
+        private static bool GetIsDesignMode(Control control)
         {
             var isDesignMode = false;
 
@@ -92,6 +82,16 @@ namespace ReactiveUI.Winforms
             }
 
             return isDesignMode;
+        }
+
+        private bool GetCachedIsDesignMode(Control control)
+        {
+            if (_isDesignModeCache == null)
+            {
+                _isDesignModeCache = GetIsDesignMode(control);
+            }
+
+            return _isDesignModeCache.Value;
         }
     }
 }

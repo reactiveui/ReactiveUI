@@ -15,24 +15,21 @@ namespace ReactiveUI.Legacy
     public interface IReactiveNotifyCollectionItemChanged<out TSender>
     {
         /// <summary>
-        /// Provides Item Changing notifications for any item in collection that
+        /// Gets an observable that signals when item changing notifications have occurred for any item in collection that
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
         IObservable<IReactivePropertyChangedEventArgs<TSender>> ItemChanging { get; }
 
         /// <summary>
-        /// Provides Item Changed notifications for any item in collection that
+        /// Gets an observable that signals when item change notifications have occurred Item Changed notifications for any item in collection that
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
         IObservable<IReactivePropertyChangedEventArgs<TSender>> ItemChanged { get; }
 
         /// <summary>
-        /// Enables the ItemChanging and ItemChanged properties; when this is
-        /// enabled, whenever a property on any object implementing
-        /// IReactiveNotifyPropertyChanged changes, the change will be
-        /// rebroadcast through ItemChanging/ItemChanged.
+        /// Gets or sets a value indicating whether to track if contained items INotifyPropertyChanged events have been triggered.
         /// </summary>
         bool ChangeTrackingEnabled { get; set; }
     }

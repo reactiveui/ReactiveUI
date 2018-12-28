@@ -72,11 +72,11 @@ namespace ReactiveUI.AndroidSupport
         /// This should be called in the Fragement's OnCreateView, with the newly inflated layout.
         /// </summary>
         /// <param name="this">The fragment.</param>
-        /// <param name="inflatedView">The newly inflated <see cref="View"/> returned from <see cref="LayoutInflater.Inflate"/>.</param>
+        /// <param name="inflatedView">The newly inflated <see cref="View"/> returned from Inflate.</param>
         /// <param name="resolveMembers">The strategy used to resolve properties that either subclass <see cref="View"/>, have a <see cref="WireUpResourceAttribute"/> or have a <see cref="IgnoreResourceAttribute"/>.</param>
         public static void WireUpControls(this Android.Support.V4.App.Fragment @this, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
-            var members = @this.GetWireUpMembers(ResolveStrategy.Implicit);
+            var members = @this.GetWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m =>
             {
@@ -104,8 +104,7 @@ namespace ReactiveUI.AndroidSupport
 
             switch (resolveStrategy)
             {
-                default:
-                case ResolveStrategy.Implicit:
+                default: // Implicit uses the default case.
                     return members.Where(m => m.PropertyType.IsSubclassOf(typeof(View))
                                          || m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 

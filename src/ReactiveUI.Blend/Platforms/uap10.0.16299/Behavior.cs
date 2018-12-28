@@ -17,6 +17,14 @@ namespace ReactiveUI.Blend
     public class Behavior<T> : DependencyObject, IBehavior
         where T : DependencyObject
     {
+        /// <summary>
+        /// Gets the associated object.
+        /// </summary>
+        public T AssociatedObject { get; private set; }
+
+        /// <inheritdoc/>
+        DependencyObject IBehavior.AssociatedObject => AssociatedObject;
+
         /// <inheritdoc/>
         public virtual void Attach(DependencyObject associatedObject)
         {
@@ -52,17 +60,6 @@ namespace ReactiveUI.Blend
         /// </summary>
         protected virtual void OnDetaching()
         {
-        }
-
-        /// <summary>
-        /// Gets the associated object.
-        /// </summary>
-        public T AssociatedObject { get; private set; }
-
-        /// <inheritdoc/>
-        DependencyObject IBehavior.AssociatedObject
-        {
-            get { return AssociatedObject; }
         }
     }
 }

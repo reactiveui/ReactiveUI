@@ -17,12 +17,12 @@ namespace EventBuilder.Platforms
         AutoPlatform Platform { get; }
 
         /// <summary>
-        /// Gets or sets the assemblies.
+        /// Gets the assemblies.
         /// </summary>
         List<string> Assemblies { get; }
 
         /// <summary>
-        /// Gets or sets the cecil search directories.
+        /// Gets the cecil search directories.
         /// Cecil when run on Mono needs some direction as to the location of the platform specific MSCORLIB.
         /// </summary>
         List<string> CecilSearchDirectories { get; }

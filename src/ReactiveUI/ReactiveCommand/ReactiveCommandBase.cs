@@ -82,7 +82,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// An observable whose value indicates whether the command can currently execute.
+        /// Gets an observable whose value indicates whether the command can currently execute.
         /// </summary>
         /// <remarks>
         /// The value provided by this observable is governed both by any <c>canExecute</c> observable provided during
@@ -95,7 +95,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// An observable whose value indicates whether the command is currently executing.
+        /// Gets an observable whose value indicates whether the command is currently executing.
         /// </summary>
         /// <remarks>
         /// This observable can be particularly useful for updating UI, such as showing an activity indicator whilst a command
@@ -107,7 +107,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// An observable that ticks any exceptions in command execution logic.
+        /// Gets an observable that ticks any exceptions in command execution logic.
         /// </summary>
         /// <remarks>
         /// Any exceptions that are not observed via this observable will propagate out and cause the application to be torn
@@ -168,7 +168,7 @@ namespace ReactiveUI
         /// </para>
         /// <para>
         /// In those cases where execution fails, there will be no result value. Instead, the failure will tick through the
-        /// <see cref="ReactiveCommand.ThrownExceptions"/> observable.
+        /// <see cref="ThrownExceptions"/> observable.
         /// </para>
         /// </remarks>
         /// <param name="parameter">

@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -18,6 +19,8 @@ namespace ReactiveUI
     /// This is a UICollectionViewCell that is both an UICollectionViewCell and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged<ReactiveCollectionViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         private Subject<Unit> _activated = new Subject<Unit>();
@@ -30,7 +33,6 @@ namespace ReactiveUI
         protected ReactiveCollectionViewCell(CGRect frame)
             : base(frame)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -40,17 +42,16 @@ namespace ReactiveUI
         protected ReactiveCollectionViewCell(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         protected ReactiveCollectionViewCell(NSCoder coder)
             : base(NSObjectFlag.Empty)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -58,7 +59,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveCollectionViewCell()
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -68,7 +68,6 @@ namespace ReactiveUI
         protected ReactiveCollectionViewCell(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -85,15 +84,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewCell>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewCell>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -135,10 +129,6 @@ namespace ReactiveUI
             base.WillMoveToSuperview(newsuper);
             (newsuper != null ? _activated : _deactivated).OnNext(Unit.Default);
         }
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -146,6 +136,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveCollectionViewCell<TViewModel> : ReactiveCollectionViewCell, IViewFor<TViewModel>
         where TViewModel : class
     {
@@ -164,6 +156,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell{TViewModel}"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         protected ReactiveCollectionViewCell(NSCoder coder)
             : base(NSObjectFlag.Empty)
         {

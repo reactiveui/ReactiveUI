@@ -15,6 +15,7 @@ namespace ReactiveUI
     /// If the type you're creating a comparer for is known this class is nothing more than an alias for the generic
     /// OrderedComparer. This class can be used to create comparers for anonymous types.
     /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public static class OrderedComparer
     {
         /// <summary>
@@ -70,13 +71,12 @@ namespace ReactiveUI
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single type
     /// <summary>
     /// Convenience class providing a starting point for chaining comparers.
     /// </summary>
     /// <typeparam name="T">The comparison type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public static class OrderedComparer<T>
-#pragma warning restore SA1402 // File may only contain a single type
     {
         /// <summary>
         /// Creates a comparer that will sort elements in ascending order based on the values returned by the provided

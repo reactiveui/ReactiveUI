@@ -12,17 +12,62 @@ using ReactiveUI.Legacy;
 
 namespace ReactiveUI.Winforms.Legacy
 {
+    /// <summary>
+    /// A version of the ReactiveList that works with the Winforms IBindingList.
+    /// </summary>
+    /// <typeparam name="T">The type of item in the list.</typeparam>
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
-#pragma warning disable SA1600 // Elements should be documented
-    public class ReactiveBindingList<T> : ReactiveList<T>,
-        IList<T>, ICollection<T>, IEnumerable<T>,
-        ICollection, IEnumerable, IList, IBindingList,
-        ICancelAddNew, IRaiseItemChangedEvents
+    public class ReactiveBindingList<T> : ReactiveList<T>, IBindingList, ICancelAddNew, IRaiseItemChangedEvents
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveBindingList{T}"/> class.
+        /// </summary>
         public ReactiveBindingList()
             : this(null)
         {
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveBindingList{T}"/> class.
+        /// </summary>
+        /// <param name="items">The items.</param>
+        public ReactiveBindingList(IEnumerable<T> items)
+            : base(items)
+        {
+        }
+
+        /// <inheritdoc/>
+        public event ListChangedEventHandler ListChanged;
+
+        /// <inheritdoc/>
+        public bool RaisesItemChangedEvents => ChangeTrackingEnabled;
+
+        /// <inheritdoc/>
+        public bool AllowNew => true;
+
+        /// <inheritdoc/>
+        public bool AllowEdit => true;
+
+        /// <inheritdoc/>
+        public bool AllowRemove => true;
+
+        /// <inheritdoc/>
+        public bool SupportsChangeNotification => true;
+
+        /// <inheritdoc/>
+        public bool SupportsSearching => false;
+
+        /// <inheritdoc/>
+        public bool SupportsSorting => false;
+
+        /// <inheritdoc/>
+        public bool IsSorted => false;
+
+        /// <inheritdoc/>
+        public PropertyDescriptor SortProperty => null;
+
+        /// <inheritdoc/>
+        public ListSortDirection SortDirection => ListSortDirection.Ascending;
 
         /// <inheritdoc/>
         public void CancelNew(int itemIndex)
@@ -34,28 +79,6 @@ namespace ReactiveUI.Winforms.Legacy
         public void EndNew(int itemIndex)
         {
             // throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public bool RaisesItemChangedEvents => ChangeTrackingEnabled;
-
-        /// <summary>
-        /// ReactiveBindingList constructor.
-        /// </summary>
-        /// <param name="items">The items.</param>
-        public ReactiveBindingList(IEnumerable<T> items)
-            : base(items)
-        {
-        }
-
-        /// <inheritdoc/>
-        protected override void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            base.RaiseCollectionChanged(e);
-            if (ListChanged != null)
-            {
-                e.AsListChangedEventArgs().ForEach(x => ListChanged(this, x));
-            }
         }
 
         /// <inheritdoc/>
@@ -95,34 +118,13 @@ namespace ReactiveUI.Winforms.Legacy
         }
 
         /// <inheritdoc/>
-        public bool AllowNew => true;
-
-        /// <inheritdoc/>
-        public bool AllowEdit => true;
-
-        /// <inheritdoc/>
-        public bool AllowRemove => true;
-
-        /// <inheritdoc/>
-        public bool SupportsChangeNotification => true;
-
-        /// <inheritdoc/>
-        public bool SupportsSearching => false;
-
-        /// <inheritdoc/>
-        public bool SupportsSorting => false;
-
-        /// <inheritdoc/>
-        public bool IsSorted => false;
-
-        /// <inheritdoc/>
-        public PropertyDescriptor SortProperty => null;
-
-        /// <inheritdoc/>
-        public ListSortDirection SortDirection => ListSortDirection.Ascending;
-
-        /// <inheritdoc/>
-        public event ListChangedEventHandler ListChanged;
+        protected override void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            base.RaiseCollectionChanged(e);
+            if (ListChanged != null)
+            {
+                e.AsListChangedEventArgs().ForEach(x => ListChanged(this, x));
+            }
+        }
     }
-#pragma warning restore SA1600 // Elements should be documented
 }

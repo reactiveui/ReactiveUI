@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Class for simplifying and validating expressions.
+    /// </summary>
     internal class ExpressionRewriter : ExpressionVisitor
     {
         public override Expression Visit(Expression node)

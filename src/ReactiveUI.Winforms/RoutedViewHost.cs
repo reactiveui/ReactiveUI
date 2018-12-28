@@ -10,6 +10,9 @@ using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
 {
+    /// <summary>
+    /// A control host which will handling routing between different ViewModels and Views.
+    /// </summary>
     [DefaultProperty("ViewModel")]
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
@@ -156,7 +159,7 @@ namespace ReactiveUI.Winforms
             base.Dispose(disposing);
         }
 
-        private Control InitView(Control view)
+        private static Control InitView(Control view)
         {
             view.Dock = DockStyle.Fill;
             return view;

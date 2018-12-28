@@ -27,45 +27,45 @@ namespace ReactiveUI
     public interface ISuspensionHost : IReactiveObject
     {
         /// <summary>
-        /// Signals when the application is launching new. This can happen when
+        /// Gets or sets the observable which signals when the application is launching new. This can happen when
         /// an app has recently crashed, as well as the first time the app has
         /// been launched. Apps should create their state from scratch.
         /// </summary>
         IObservable<Unit> IsLaunchingNew { get; set; }
 
         /// <summary>
-        /// Signals when the application is resuming from suspended state (i.e.
+        /// Gets or sets the observable which signals when the application is resuming from suspended state (i.e.
         /// it was previously running but its process was destroyed).
         /// </summary>
         IObservable<Unit> IsResuming { get; set; }
 
         /// <summary>
-        /// Signals when the application is activated. Note that this may mean
+        /// Gets or sets the observable which signals when the application is activated. Note that this may mean
         /// that your process was not actively running before this signal.
         /// </summary>
         IObservable<Unit> IsUnpausing { get; set; }
 
         /// <summary>
-        /// Signals when the application should persist its state to disk.
+        /// Gets or sets the observable which signals when the application should persist its state to disk.
         /// </summary>
         /// <value>Returns an IDisposable that should be disposed once the
         /// application finishes persisting its state.</value>
         IObservable<IDisposable> ShouldPersistState { get; set; }
 
         /// <summary>
-        /// Signals that the saved application state should be deleted, this
+        /// Gets or sets the observable which signals that the saved application state should be deleted, this
         /// usually is called after an app has crashed.
         /// </summary>
         IObservable<Unit> ShouldInvalidateState { get; set; }
 
         /// <summary>
-        /// A method that can be used to create a new application state - usually
+        /// Gets or sets a function that can be used to create a new application state - usually
         /// this method just calls 'new' on an object.
         /// </summary>
         Func<object> CreateNewAppState { get; set; }
 
         /// <summary>
-        /// The current application state - get a typed version of this via
+        /// Gets or sets the current application state - get a typed version of this via
         /// <see cref="SuspensionHostExtensions.GetAppState{T}(ISuspensionHost)"/>.
         /// The "application state" is a notion entirely defined
         /// via the client application - the framework places no restrictions on

@@ -93,17 +93,11 @@ namespace ReactiveUI
             {
                 var control = (UIControl)sender;
 
-                EventHandler handler = (s, e) =>
-                {
-                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
-                };
+                EventHandler handler = (s, e) => subj.OnNext(new ObservedChange<object, object>(sender, expression));
 
                 control.AddTarget(handler, evt);
 
-                return Disposable.Create(() =>
-                {
-                    control.RemoveTarget(handler, evt);
-                });
+                return Disposable.Create(() => control.RemoveTarget(handler, evt));
             });
         }
 #endif
@@ -119,10 +113,10 @@ namespace ReactiveUI
         {
             return Observable.Create<IObservedChange<object, object>>(subj =>
             {
-                var handle = NSNotificationCenter.DefaultCenter.AddObserver(notification, (e) =>
-                {
-                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
-                }, sender);
+                var handle = NSNotificationCenter.DefaultCenter.AddObserver(
+                    notification,
+                    _ => subj.OnNext(new ObservedChange<object, object>(sender, expression)),
+                    sender);
 
                 return Disposable.Create(() =>
                 {
@@ -165,14 +159,14 @@ namespace ReactiveUI
                 _config[type] = typeProperties;
             }
 
-            var info = new ObservablePropertyInfo { Affinity = affinity, CreateObservable = createObservable };
-            typeProperties[property] = info;
+            typeProperties[property] = new ObservablePropertyInfo { Affinity = affinity, CreateObservable = createObservable };
         }
 
         internal class ObservablePropertyInfo
         {
-            public int Affinity;
-            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> CreateObservable;
+            public int Affinity { get; set; }
+
+            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> CreateObservable { get; set; }
         }
     }
 }

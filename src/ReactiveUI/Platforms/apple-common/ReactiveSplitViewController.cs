@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -23,8 +24,9 @@ namespace ReactiveUI
     /// This is a View that is both a NSSplitViewController and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    public abstract class ReactiveSplitViewController : NSSplitViewController,
-    IReactiveNotifyPropertyChanged<ReactiveSplitViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
+    public abstract class ReactiveSplitViewController : NSSplitViewController, IReactiveNotifyPropertyChanged<ReactiveSplitViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
@@ -38,7 +40,6 @@ namespace ReactiveUI
         protected ReactiveSplitViewController(string nibName, NSBundle bundle)
             : base(nibName, bundle)
         {
-            SetupRxObj();
         }
 #endif
 
@@ -49,7 +50,6 @@ namespace ReactiveUI
         protected ReactiveSplitViewController(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -59,7 +59,6 @@ namespace ReactiveUI
         protected ReactiveSplitViewController(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -69,7 +68,6 @@ namespace ReactiveUI
         protected ReactiveSplitViewController(NSCoder coder)
             : base(coder)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -77,7 +75,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveSplitViewController()
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -94,15 +91,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveSplitViewController>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveSplitViewController>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -172,10 +164,6 @@ namespace ReactiveUI
             this.ActivateSubviews(false);
         }
 #endif
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -183,6 +171,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveSplitViewController<TViewModel> : ReactiveSplitViewController, IViewFor<TViewModel>
         where TViewModel : class
     {

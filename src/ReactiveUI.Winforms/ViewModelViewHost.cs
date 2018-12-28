@@ -11,6 +11,9 @@ using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
 {
+    /// <summary>
+    /// A view model control host which will find and host the View for a ViewModel.
+    /// </summary>
     [DefaultProperty("ViewModel")]
     public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
     {
@@ -18,11 +21,8 @@ namespace ReactiveUI.Winforms
         private Control _defaultContent;
         private IObservable<string> _viewContractObservable;
         private object _viewModel;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [default cache views enabled].
-        /// </summary>
-        public static bool DefaultCacheViewsEnabled { get; set; }
+        private object _content;
+        private bool _cacheViews;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelControlHost"/> class.
@@ -51,6 +51,11 @@ namespace ReactiveUI.Winforms
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [default cache views enabled].
+        /// </summary>
+        public static bool DefaultCacheViewsEnabled { get; set; }
 
         /// <summary>
         /// Gets the current view.
@@ -97,8 +102,6 @@ namespace ReactiveUI.Winforms
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
-        private object _content;
-
         /// <summary>
         /// Gets or sets the content.
         /// </summary>
@@ -110,8 +113,6 @@ namespace ReactiveUI.Winforms
             get => _content;
             protected set => this.RaiseAndSetIfChanged(ref _content, value);
         }
-
-        private bool _cacheViews;
 
         /// <summary>
         /// Gets or sets a value indicating whether to cache views.

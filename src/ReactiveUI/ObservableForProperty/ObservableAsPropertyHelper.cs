@@ -126,7 +126,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// The last provided value from the Observable.
+        /// Gets the last provided value from the Observable.
         /// </summary>
         public T Value
         {
@@ -142,7 +142,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Gets a boolean value indicating whether the ObservableAsPropertyHelper
+        /// Gets a value indicating whether the ObservableAsPropertyHelper
         /// has subscribed to the source Observable.
         /// Useful for scenarios where you use deferred subscription and want to know if
         /// the ObservableAsPropertyHelper Value has been accessed yet.
@@ -150,7 +150,7 @@ namespace ReactiveUI
         public bool IsSubscribed => _activated > 0;
 
         /// <summary>
-        /// Fires whenever an exception would normally terminate ReactiveUI
+        /// Gets an observable which signals whenever an exception would normally terminate ReactiveUI
         /// internal state.
         /// </summary>
         public IObservable<Exception> ThrownExceptions { get; }

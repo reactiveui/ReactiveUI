@@ -259,6 +259,11 @@ namespace ReactiveUI
         TViewModel ViewModel { get; }
         System.Linq.Expressions.Expression ViewModelExpression { get; }
     }
+    public interface IReactiveCommand : ReactiveUI.IHandleObservableErrors, System.IDisposable
+    {
+        System.IObservable<bool> CanExecute { get; }
+        System.IObservable<bool> IsExecuting { get; }
+    }
     public interface IReactiveNotifyPropertyChanged<out TSender>
     {
         System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
@@ -486,7 +491,7 @@ namespace ReactiveUI
         public override System.IObservable<TResult> Execute(TParam parameter = null) { }
         public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
     }
-    public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
+    public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
     {
         protected ReactiveCommandBase() { }
         public abstract System.IObservable<bool> CanExecute { get; }

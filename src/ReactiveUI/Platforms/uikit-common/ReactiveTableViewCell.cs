@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -18,6 +19,8 @@ namespace ReactiveUI
     /// This is a UITableViewCell that is both an UITableViewCell and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged<ReactiveTableViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         private Subject<Unit> _activated = new Subject<Unit>();
@@ -30,7 +33,6 @@ namespace ReactiveUI
         protected ReactiveTableViewCell(CGRect frame)
             : base(frame)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -40,17 +42,16 @@ namespace ReactiveUI
         protected ReactiveTableViewCell(NSObjectFlag t)
             : base(t)
         {
-            SetupRxObj();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         protected ReactiveTableViewCell(NSCoder coder)
             : base(NSObjectFlag.Empty)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -58,7 +59,6 @@ namespace ReactiveUI
         /// </summary>
         protected ReactiveTableViewCell()
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -69,7 +69,6 @@ namespace ReactiveUI
         protected ReactiveTableViewCell(UITableViewCellStyle style, string reuseIdentifier)
             : base(style, reuseIdentifier)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -80,7 +79,6 @@ namespace ReactiveUI
         protected ReactiveTableViewCell(UITableViewCellStyle style, NSString reuseIdentifier)
             : base(style, reuseIdentifier)
         {
-            SetupRxObj();
         }
 
         /// <summary>
@@ -90,7 +88,6 @@ namespace ReactiveUI
         protected ReactiveTableViewCell(IntPtr handle)
             : base(handle)
         {
-            SetupRxObj();
         }
 
         /// <inheritdoc/>
@@ -107,15 +104,10 @@ namespace ReactiveUI
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
 
-        /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewCell>> Changing => this.GetChangingObservable();
 
-        /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
-        /// </summary>
+        /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewCell>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
@@ -157,10 +149,6 @@ namespace ReactiveUI
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
-
-        private void SetupRxObj()
-        {
-        }
     }
 
     /// <summary>
@@ -168,6 +156,8 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveTableViewCell<TViewModel> : ReactiveTableViewCell, IViewFor<TViewModel>
         where TViewModel : class
     {
@@ -195,6 +185,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
+        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         protected ReactiveTableViewCell(NSCoder coder)
             : base(NSObjectFlag.Empty)
         {

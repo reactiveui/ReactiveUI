@@ -16,7 +16,7 @@ namespace ReactiveUI
     /// <summary>
     /// Generic command binder platform registrations.
     /// </summary>
-    /// <seealso cref="ReactiveUI.ICreatesCommandBinding" />
+    /// <seealso cref="ICreatesCommandBinding" />
     public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
         /// <summary>
@@ -74,23 +74,6 @@ namespace ReactiveUI
             throw new NotImplementedException();
         }
 
-        private class CommandBindingInfo
-        {
-            public int Affinity;
-            public Func<ICommand, object, IObservable<object>, IDisposable> CreateBinding;
-        }
-
-        /// <summary>
-        /// Registers an observable factory for the specified type and property.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="affinity">The affinity.</param>
-        /// <param name="createBinding">The create binding.</param>
-        protected void Register(Type type, int affinity, Func<System.Windows.Input.ICommand, object, IObservable<object>, IDisposable> createBinding)
-        {
-            _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
-        }
-
         /// <summary>
         /// Creates a commands binding from event and a property.
         /// </summary>
@@ -124,14 +107,12 @@ namespace ReactiveUI
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
 
-            var compDisp = new CompositeDisposable(
+            return new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                     .Select(_ => command.CanExecute(latestParam))
                     .Subscribe(x => enabledSetter(target, x, null)));
-
-            return compDisp;
         }
 
         /// <summary>
@@ -174,14 +155,30 @@ namespace ReactiveUI
             // Initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
 
-            var compDisp = new CompositeDisposable(
+            return new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                     .Select(_ => command.CanExecute(latestParam))
                     .Subscribe(x => enabledSetter(target, x, null)));
+        }
 
-            return compDisp;
+        /// <summary>
+        /// Registers an observable factory for the specified type and property.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="affinity">The affinity.</param>
+        /// <param name="createBinding">The create binding.</param>
+        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding)
+        {
+            _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
+        }
+
+        private class CommandBindingInfo
+        {
+            public int Affinity { get; set; }
+
+            public Func<ICommand, object, IObservable<object>, IDisposable> CreateBinding { get; set; }
         }
     }
 }

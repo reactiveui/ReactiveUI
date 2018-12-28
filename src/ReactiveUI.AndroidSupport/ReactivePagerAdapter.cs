@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
@@ -17,13 +18,12 @@ using Object = Java.Lang.Object;
 
 namespace ReactiveUI.AndroidSupport
 {
-#pragma warning disable SA1600 // Elements should be documented
     /// <summary>
     /// ReactivePagerAdapter is a PagerAdapter that will interface with a
     /// Observable change set, in a similar fashion to ReactiveTableViewSource.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
-    [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
         where TViewModel : class
     {
@@ -32,6 +32,12 @@ namespace ReactiveUI.AndroidSupport
         private readonly Action<TViewModel, View> _viewInitializer;
         private IDisposable _inner;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.
+        /// </summary>
+        /// <param name="changeSet">The change set to page.</param>
+        /// <param name="viewCreator">A function which will create the view.</param>
+        /// <param name="viewInitializer">A action which will initialize a view.</param>
         public ReactivePagerAdapter(
             IObservable<IChangeSet<TViewModel>> changeSet,
             Func<TViewModel, ViewGroup, View> viewCreator,
@@ -43,6 +49,9 @@ namespace ReactiveUI.AndroidSupport
 
             _inner = _list.Connect().Subscribe(_ => NotifyDataSetChanged());
         }
+
+        /// <inheritdoc/>
+        public override int Count => _list.Count;
 
         /// <inheritdoc/>
         public override bool IsViewFromObject(View view, Object @object)
@@ -64,10 +73,7 @@ namespace ReactiveUI.AndroidSupport
                 ivf.ViewModel = data;
             }
 
-            if (_viewInitializer != null)
-            {
-                _viewInitializer(data, theView);
-            }
+            _viewInitializer?.Invoke(data, theView);
 
             container.AddView(theView, 0);
             return theView;
@@ -81,9 +87,6 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        public override int Count => _list.Count;
-
-        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -91,10 +94,23 @@ namespace ReactiveUI.AndroidSupport
         }
     }
 
+    /// <summary>
+    /// ReactivePagerAdapter is a PagerAdapter that will interface with a
+    /// Observable change set, in a similar fashion to ReactiveTableViewSource.
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <typeparam name="TCollection">The type of collection.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactivePagerAdapter<TViewModel, TCollection> : ReactivePagerAdapter<TViewModel>
         where TViewModel : class
         where TCollection : INotifyCollectionChanged, IEnumerable<TViewModel>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel, TCollection}"/> class.
+        /// </summary>
+        /// <param name="collection">The collection to page.</param>
+        /// <param name="viewCreator">The function which will create the view.</param>
+        /// <param name="viewInitializer">A action which will initialize the view.</param>
         public ReactivePagerAdapter(
             TCollection collection,
             Func<TViewModel, ViewGroup, View> viewCreator,

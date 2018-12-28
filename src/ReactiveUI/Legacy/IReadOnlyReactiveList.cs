@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 
-#pragma warning disable SA1600 // Elements should be documented -- not used for legacy
-
 namespace ReactiveUI.Legacy
 {
     /// <summary>
@@ -22,6 +20,9 @@ namespace ReactiveUI.Legacy
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
     public interface IReadOnlyReactiveList<out T> : IReadOnlyReactiveCollection<T>, IReadOnlyList<T>
     {
+        /// <summary>
+        /// Gets a value indicating whether the list is empty.
+        /// </summary>
         bool IsEmpty { get; }
     }
 }

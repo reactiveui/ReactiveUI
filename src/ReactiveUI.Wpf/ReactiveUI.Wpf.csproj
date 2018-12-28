@@ -10,4 +10,8 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />    
     <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />
+  </ItemGroup>
 </Project>

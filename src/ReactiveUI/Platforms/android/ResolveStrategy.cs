@@ -4,6 +4,9 @@
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Extension methods associated with the ControlFetcher class.
+    /// </summary>
     public static partial class ControlFetcherMixin
     {
         /// <summary>
