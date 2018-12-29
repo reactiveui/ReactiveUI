@@ -16,6 +16,8 @@ namespace ReactiveUI
     /// </summary>
     public static class RoutableViewModelMixin
     {
+        private static readonly ListChangeReason[] NavigationStackRemovalOperations = { ListChangeReason.Remove, ListChangeReason.RemoveRange };
+
         /// <summary>
         /// This method allows you to set up connections that only operate
         /// while the ViewModel has focus, and cleans up when the ViewModel
@@ -97,10 +99,9 @@ namespace ReactiveUI
         {
             var router = @this.HostScreen.Router;
             var navigationStackChanged = router.NavigationChanged.CountChanged();
-
-            var itemRemoved = navigationStackChanged
-                .Where(x => x.Any(change => change.Reason == ListChangeReason.Remove && change.Item.Current == @this));
-
+            bool StackIsCleared(Change<IRoutableViewModel> change) => change.Reason == ListChangeReason.Clear;
+            bool ThisViewModelIsRemoved(Change<IRoutableViewModel> change) => NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == @this;
+            var itemRemoved = navigationStackChanged.Where(x => x.Any(change => StackIsCleared(change) || ThisViewModelIsRemoved(change)));
             var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel[2], (previous, current) => new[] { previous[1], router.GetCurrentViewModel() });
             return viewModelsChanged
                 .Where(x => x[0] == @this)
