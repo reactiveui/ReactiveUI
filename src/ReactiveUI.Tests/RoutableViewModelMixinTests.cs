@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
+using DynamicData;
 using ReactiveUI.Tests.RoutableViewMixinTests;
 using Xunit;
 
@@ -190,6 +191,25 @@ namespace ReactiveUI.Tests
 
             screen.Router.Navigate.Execute(vm);
             screen.Router.NavigateBack.Execute();
+
+            Assert.Equal(1, count);
+        }
+
+        [Fact]
+        public void WhenNavigatingFromObservableCompletesWhenNavigationStackIsReset()
+        {
+            var count = 0;
+
+            var screen = new TestScreen();
+            var vm1 = new RoutableViewModel(screen);
+            var vm2 = new RoutableViewModel(screen);
+
+            vm1.WhenNavigatingFromObservable().Subscribe(
+                _ => { },
+                () => { count++; });
+
+            screen.Router.Navigate.Execute(vm1);
+            screen.Router.NavigateAndReset.Execute(vm2);
 
             Assert.Equal(1, count);
         }
