@@ -1,9 +1,8 @@
 <Project>
   <PropertyGroup>
     <Authors>.NET Foundation and Contributors</Authors>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)reactiveui.ruleset</CodeAnalysisRuleSet>  
     <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
-    <PackageLicenseUrl>https://opensource.org/licenses/mit</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://reactiveui.net</PackageProjectUrl>
     <PackageIconUrl>https://i.imgur.com/7WDbqSy.png</PackageIconUrl>
     <Owners>xpaulbettsx;ghuntley</Owners>
