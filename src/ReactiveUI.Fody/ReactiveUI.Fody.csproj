@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <AssemblyName>ReactiveUI.Fody</AssemblyName>
-    <RootNamespace>ReactiveUI.Fody</RootNamespace>
     <Description>Fody Weavers for ReactiveUI.Fody.</Description>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="3.3.4" />
+    <PackageReference Include="FodyHelpers" Version="3.3.5" />
   </ItemGroup>
 </Project>
