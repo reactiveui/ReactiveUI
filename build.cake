@@ -151,7 +151,7 @@ Task("RestoreNuGet")
     .Does(() =>
 {
     var settings = new NuGetRestoreSettings() {
-        ArgumentCustomization = args => args.Append($"-Recursive -MSBuildPath {msBuildPath.Quote()}")
+        ArgumentCustomization = args => args.Append($"-Recursive -MSBuildPath {MakeAbsolute(msBuildPath).ToString().Quote()}")
     };
 
     var solutions = GetFiles("./src/**/*.sln");
