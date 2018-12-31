@@ -1,7 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using EventBuilder.NuGet;
 using NuGet;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 using Polly;
 using Serilog;
 
@@ -13,40 +17,20 @@ namespace EventBuilder.Platforms
     /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class Essentials : BasePlatform
     {
-        private const string _packageName = "Xamarin.Essentials";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Essentials"/> class.
-        /// </summary>
-        public Essentials()
+        private readonly PackageIdentity[] _packageNames = new[]
         {
-            var packageUnzipPath = Environment.CurrentDirectory;
+            new PackageIdentity("Xamarin.Essentials", new NuGetVersion("1.0.0")),
+        };
 
-            var retryPolicy = Policy
-                .Handle<Exception>()
-                .WaitAndRetry(
-                    5,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, context) =>
-                    {
-                        Log.Warning(
-                            "An exception was thrown whilst retrieving or installing {packageName}: {exception}",
-                            _packageName,
-                            exception);
-                    });
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.Essentials;
 
-            retryPolicy.Execute(() =>
-            {
-                var repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
-                var packageManager = new PackageManager(repo, packageUnzipPath);
-                var fpid = packageManager.SourceRepository.FindPackagesById(_packageName);
-                var package = fpid.Single(x => x.Version.ToString() == "0.9.1-preview");
+        /// <inheritdoc />
+        public async override Task Extract()
+        {
+            var packageUnzipPath = await NuGetPackageHelper.InstallPackages(_packageNames, Platform).ConfigureAwait(false);
 
-                packageManager.InstallPackage(package, true, true);
-
-                Log.Debug("Using Xamarin Essentials {Version} released on {Published}", package.Version, package.Published);
-                Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
-            });
+            Log.Debug($"Package unzip path is {packageUnzipPath}");
 
             var xamarinForms =
                 Directory.GetFiles(
@@ -54,7 +38,7 @@ namespace EventBuilder.Platforms
                     "Xamarin.Essentials.dll",
                     SearchOption.AllDirectories);
 
-            var latestVersion = xamarinForms.First(x => x.Contains("netstandard1.0"));
+            var latestVersion = xamarinForms.First(x => x.Contains("netstandard1.0", StringComparison.InvariantCulture));
             Assemblies.Add(latestVersion);
 
             if (PlatformHelper.IsRunningOnMono())
@@ -67,8 +51,5 @@ namespace EventBuilder.Platforms
                 CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile\Profile111");
             }
         }
-
-        /// <inheritdoc />
-        public override AutoPlatform Platform => AutoPlatform.Essentials;
     }
 }

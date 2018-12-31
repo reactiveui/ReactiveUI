@@ -4,6 +4,7 @@
 
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EventBuilder.Platforms
 {
@@ -14,11 +15,22 @@ namespace EventBuilder.Platforms
     // ReSharper disable once InconsistentNaming
     public class TVOS : BasePlatform
     {
+        private readonly string _referenceAssembliesLocation;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TVOS"/> class.
         /// </summary>
         /// <param name="referenceAssembliesLocation">The reference assemblies location.</param>
         public TVOS(string referenceAssembliesLocation)
+        {
+            _referenceAssembliesLocation = referenceAssembliesLocation;
+        }
+
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.TVOS;
+
+        /// <inheritdoc />
+        public override Task Extract()
         {
             if (PlatformHelper.IsRunningOnMono())
             {
@@ -32,7 +44,7 @@ namespace EventBuilder.Platforms
             {
                 var assemblies =
                     Directory.GetFiles(
-                        Path.Combine(referenceAssembliesLocation, "Xamarin.TVOS"),
+                        Path.Combine(_referenceAssembliesLocation, "Xamarin.TVOS"),
                         "Xamarin.TVOS.dll",
                         SearchOption.AllDirectories);
 
@@ -41,9 +53,8 @@ namespace EventBuilder.Platforms
 
                 CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
             }
-        }
 
-        /// <inheritdoc />
-        public override AutoPlatform Platform => AutoPlatform.TVOS;
+            return Task.CompletedTask;
+        }
     }
 }

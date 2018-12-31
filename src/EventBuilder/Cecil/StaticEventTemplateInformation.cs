@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using EventBuilder.Entities;
@@ -79,6 +80,7 @@ namespace EventBuilder.Cecil
             }
         }
 
+        [SuppressMessage("Globalization", "CA1307: Specify StringComparison", Justification = "Replace overload is for .NET Standard only")]
         private static string GetEventArgsTypeForEvent(EventDefinition ei)
         {
             // Find the EventArgs type parameter of the event via digging around via reflection
@@ -149,10 +151,7 @@ namespace EventBuilder.Cecil
             return
                 t.Events
 
-                    .Where(x =>
-                    {
-                        return x.AddMethod.IsPublic && GetEventArgsTypeForEvent(x) != null;
-                    })
+                    .Where(x => x.AddMethod.IsPublic && GetEventArgsTypeForEvent(x) != null)
                     .ToArray();
         }
     }
