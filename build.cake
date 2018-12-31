@@ -238,7 +238,7 @@ Task("BuildReactiveUIPackages")
 });
 
 Task("RunUnitTests")
-    .IsDependentOn("BuildReactiveUIPackages")
+    .IsDependentOn("GenerateEvents")
     .Does(() =>
 {
     var fodyPackages = new string[]
