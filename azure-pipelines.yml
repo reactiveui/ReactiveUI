@@ -36,11 +36,12 @@ steps:
     SIGNCLIENT_USER: $(SignClientUser)
     VSTS_ACCESS_TOKEN: $(System.AccessToken)
     COVERALLS_TOKEN: $(COVERALLS_TOKEN)
+    CODECOV_TOKEN: $(CODECOV_TOKEN)
     ArtifactDirectory: $(System.DefaultWorkingDirectory)\artifacts
 
 - task: CopyFiles@2
   inputs:
-    Contents: 'artifacts/*.nupkg'
+    Contents: 'artifacts/packages/*.nupkg'
     TargetFolder: '$(build.artifactstagingdirectory)\packages'
     flattenFolders: true
 
@@ -53,7 +54,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    Contents: '**/bin/*'
+    Contents: 'artifacts/binaries/**/*'
     TargetFolder: '$(build.artifactstagingdirectory)\binaries'
 
 - task: PublishBuildArtifacts@1
@@ -65,7 +66,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    Contents: 'src/ReactiveUI.**/Events_*.cs'
+    Contents: 'artifacts/Events/*.cs'
     TargetFolder: '$(build.artifactstagingdirectory)\Events'
 
 - task: PublishBuildArtifacts@1
@@ -74,3 +75,15 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\Events'
     artifactType: container
     artifactName: Events
+
+- task: CopyFiles@2
+  inputs:
+    Contents: 'artifacts/tests/**/*'
+    TargetFolder: '$(build.artifactstagingdirectory)\Tests'
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Test Data
+  inputs:
+    pathToPublish: '$(build.artifactstagingdirectory)\Tests'
+    artifactType: container
+    artifactName: Tests
