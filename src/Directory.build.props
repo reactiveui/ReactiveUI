@@ -54,6 +54,10 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\LICENSE" Pack="true" PackagePath="LICENSE" />
   </ItemGroup>
+   
+  <ItemGroup>	
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.3.38" PrivateAssets="all" />	
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="stylecop.analyzers" Version="1.1.1-beta.61" PrivateAssets="all" />
