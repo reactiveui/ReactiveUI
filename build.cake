@@ -111,7 +111,7 @@ Teardown(context =>
 //////////////////////////////////////////////////////////////////////
 Action<string, string, bool, bool> Build = (solution, outputFolder, createPackage, forceUseFullDebugType) =>
 {
-    Information("Building {0} using {1}, createPackage = {2}", solution, msBuildPath, createPackage);
+    Information("Building {0} using {1}, createPackage = {2}, forceUseFullDebugType = {3]", solution, msBuildPath, createPackage, forceUseFullDebugType);
 
     var msBuildSettings = new MSBuildSettings() {
             ToolPath = msBuildPath,
@@ -124,7 +124,7 @@ Action<string, string, bool, bool> Build = (solution, outputFolder, createPackag
 
     if (forceUseFullDebugType)
     {
-        msBuildSettings = msBuildSettings.WithProperty("DebugType",  "full").WithTarget("clean");
+        msBuildSettings = msBuildSettings.WithProperty("DebugType",  "full");
     }
 
     if (createPackage)
@@ -211,6 +211,10 @@ Task("RunUnitTests")
     .IsDependentOn("BuildReactiveUI")
     .Does(() =>
 {
+    // Clean the directories since we'll need to re-generate the debug type.
+    CleanDirectories(string.Format("./src/**/obj/Release");
+    CleanDirectories(string.Format("./src/**/bin/Release");
+
     var openCoverSettings =  new OpenCoverSettings {
             ReturnTargetCodeOffset = 0,
             MergeOutput = true,
