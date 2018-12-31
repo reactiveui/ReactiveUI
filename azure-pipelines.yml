@@ -36,6 +36,7 @@ steps:
     SIGNCLIENT_USER: $(SignClientUser)
     VSTS_ACCESS_TOKEN: $(System.AccessToken)
     COVERALLS_TOKEN: $(COVERALLS_TOKEN)
+    CODECOV_TOKEN: $(CODECOV_TOKEN)
     ArtifactDirectory: $(System.DefaultWorkingDirectory)\artifacts
 
 - task: CopyFiles@2

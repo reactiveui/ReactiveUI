@@ -62,24 +62,44 @@ var testsArtifactDirectory = artifactDirectory + "tests/";
 var testCoverageOutputFile = MakeAbsolute(File(testsArtifactDirectory + "OpenCover.xml"));
 
 // Whitelisted Packages
-var packageWhitelist = new[] { "ReactiveUI",
-                               "ReactiveUI.Testing",
-                               "ReactiveUI.Events",
-                               "ReactiveUI.Events.WPF",
-                               "ReactiveUI.Events.Winforms",
-                               "ReactiveUI.Events.XamForms",
-                               "ReactiveUI.Fody",
-                               "ReactiveUI.Fody.Helpers",
-                               "ReactiveUI.AndroidSupport",
-                               "ReactiveUI.Blend",
-                               "ReactiveUI.WPF",
-                               "ReactiveUI.Winforms",
-                               "ReactiveUI.XamForms",
-                                // TODO: seems the leak tests never worked as part of the CI, fix. For the moment just make sure it compiles.
-                               "ReactiveUI.LeakTests" };
+var packageWhitelist = new[] 
+{ 
+    "ReactiveUI",
+    "ReactiveUI.Testing",
+    "ReactiveUI.Events",
+    "ReactiveUI.Events.WPF",
+    "ReactiveUI.Events.Winforms",
+    "ReactiveUI.Events.XamForms",
+    "ReactiveUI.Fody",
+    "ReactiveUI.Fody.Helpers",
+    "ReactiveUI.AndroidSupport",
+    "ReactiveUI.Blend",
+    "ReactiveUI.WPF",
+    "ReactiveUI.Winforms",
+    "ReactiveUI.XamForms",
+    // TODO: seems the leak tests never worked as part of the CI, fix. For the moment just make sure it compiles.
+    "ReactiveUI.LeakTests"
+};
 
-var packageTestWhitelist = new[] { "ReactiveUI.Tests", 
-                                   "ReactiveUI.Fody.Tests" };
+var packageTestWhitelist = new[]
+{
+    "ReactiveUI.Tests", 
+    "ReactiveUI.Fody.Tests"
+};
+
+(string targetName, string destination)[] eventGenerators = new[]
+{
+    ("android", "src/ReactiveUI.Events/"),
+    ("ios", "src/ReactiveUI.Events/"),
+    ("mac", "src/ReactiveUI.Events/"),
+    ("uwp", "src/ReactiveUI.Events/"),
+    ("tizen4", "src/ReactiveUI.Events/"),
+    ("wpf", "src/ReactiveUI.Events.WPF/"),
+    ("xamforms", "src/ReactiveUI.Events.XamForms/"),
+    ("winforms", "src/ReactiveUI.Events.Winforms/"),
+    ("essentials", "src/ReactiveUI.Events/"),
+    ("tvos", "src/ReactiveUI.Events/"),
+};
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -115,7 +135,9 @@ Action<string, string, bool, bool> Build = (solution, packageOutputPath, createP
 
     var msBuildSettings = new MSBuildSettings() {
             ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/m /NoWarn:VSX1000")
+            ArgumentCustomization = args => args.Append("/m /NoWarn:VSX1000"),
+            NodeReuse = false,
+            Restore = true
         }
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetConfiguration("Release")                        
@@ -128,7 +150,12 @@ Action<string, string, bool, bool> Build = (solution, packageOutputPath, createP
 
     if (createPackage)
     {
-        msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(packageOutputPath)).ToString().Quote()).WithTarget("build;pack");
+        if (!string.IsNullOrWhiteSpace(packageOutputPath))
+        {
+            msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(packageOutputPath)).ToString().Quote());
+        }
+        
+        msBuildSettings = msBuildSettings.WithTarget("build;pack");
     }
     else
     {
@@ -180,16 +207,7 @@ Task("GenerateEvents")
         Information("The events have been written to '{0}'", output);
     };
 
-    generate("android", "src/ReactiveUI.Events/");
-    generate("ios", "src/ReactiveUI.Events/");
-    generate("mac", "src/ReactiveUI.Events/");
-    generate("uwp", "src/ReactiveUI.Events/");
-    generate("tizen4", "src/ReactiveUI.Events/");
-    generate("wpf", "src/ReactiveUI.Events.WPF/");
-    generate("xamforms", "src/ReactiveUI.Events.XamForms/");
-    generate("winforms", "src/ReactiveUI.Events.Winforms/");
-    generate("essentials", "src/ReactiveUI.Events/");
-    generate("tvos", "src/ReactiveUI.Events/");
+    Parallel.ForEach(eventGenerators, arg => generate(arg.targetName, arg.destination));
 });
 
 Task("BuildReactiveUI")
@@ -235,7 +253,7 @@ Task("RunUnitTests")
     {
         OpenCover(tool => 
         {
-            Build("./src/" + projectName + "/" + projectName + ".csproj", null, false, true);
+            Build("./src/" + projectName + "/" + projectName + ".csproj", null, true, true);
 
             tool.XUnit2("./src/" + projectName + "/bin/" + "**/*.Tests.dll", xunitSettings);
         },
