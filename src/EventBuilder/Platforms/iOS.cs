@@ -4,6 +4,7 @@
 
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EventBuilder.Platforms
 {
@@ -19,11 +20,22 @@ namespace EventBuilder.Platforms
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 #pragma warning restore IDE1006 // Naming Styles
     {
+        private readonly string _referenceAssembliesLocation;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="iOS"/> class.
         /// </summary>
         /// <param name="referenceAssembliesLocation">The reference assemblies location.</param>
         public iOS(string referenceAssembliesLocation)
+        {
+            _referenceAssembliesLocation = referenceAssembliesLocation;
+        }
+
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.iOS;
+
+        /// <inheritdoc />
+        public override Task Extract()
         {
             if (PlatformHelper.IsRunningOnMono())
             {
@@ -37,7 +49,7 @@ namespace EventBuilder.Platforms
             {
                 var assemblies =
                     Directory.GetFiles(
-                        Path.Combine(referenceAssembliesLocation, "Xamarin.iOS"),
+                        Path.Combine(_referenceAssembliesLocation, "Xamarin.iOS"),
                         "Xamarin.iOS.dll",
                         SearchOption.AllDirectories);
 
@@ -46,9 +58,8 @@ namespace EventBuilder.Platforms
 
                 CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
             }
-        }
 
-        /// <inheritdoc />
-        public override AutoPlatform Platform => AutoPlatform.iOS;
+            return Task.CompletedTask;
+        }
     }
 }

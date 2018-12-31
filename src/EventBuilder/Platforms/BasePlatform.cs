@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EventBuilder.Platforms
 {
@@ -29,5 +30,8 @@ namespace EventBuilder.Platforms
 
         /// <inheritdoc />
         public List<string> CecilSearchDirectories { get; }
+
+        /// <inheritdoc />
+        public abstract Task Extract();
     }
 }

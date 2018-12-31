@@ -5,7 +5,11 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using EventBuilder.NuGet;
 using NuGet;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 using Polly;
 using Serilog;
 
@@ -17,43 +21,20 @@ namespace EventBuilder.Platforms
     /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class XamForms : BasePlatform
     {
-        private const string _packageName = "Xamarin.Forms";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="XamForms"/> class.
-        /// </summary>
-        public XamForms()
+        private readonly PackageIdentity[] _packageNames = new[]
         {
-            var packageUnzipPath = Environment.CurrentDirectory;
+            new PackageIdentity("Xamarin.Forms", new NuGetVersion("3.3.0.967583")),
+        };
 
-            Log.Debug("Package unzip path is {PackageUnzipPath}", packageUnzipPath);
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.XamForms;
 
-            var retryPolicy = Policy
-                .Handle<Exception>()
-                .WaitAndRetry(
-                    5,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, context) =>
-                    {
-                        Log.Warning(
-                            "An exception was thrown whilst retrieving or installing {packageName}: {exception}",
-                            _packageName,
-                            exception);
-                    });
+        /// <inheritdoc />
+        public async override Task Extract()
+        {
+            var packageUnzipPath = await NuGetPackageHelper.InstallPackages(_packageNames, Platform).ConfigureAwait(false);
 
-            retryPolicy.Execute(() =>
-            {
-                var repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
-
-                var packageManager = new PackageManager(repo, packageUnzipPath);
-
-                var package = repo.FindPackagesById(_packageName).Single(x => x.Version.ToString() == "3.3.0.967583");
-
-                Log.Debug("Using Xamarin Forms {Version} released on {Published}", package.Version, package.Published);
-                Log.Debug("{ReleaseNotes}", package.ReleaseNotes);
-
-                packageManager.InstallPackage(package, ignoreDependencies: true, allowPrereleaseVersions: false);
-            });
+            Log.Debug($"Package unzip path is {packageUnzipPath}");
 
             var xamarinForms =
                 Directory.GetFiles(
@@ -72,11 +53,8 @@ namespace EventBuilder.Platforms
             }
             else
             {
-                CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\Facades");
+                CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades");
             }
         }
-
-        /// <inheritdoc />
-        public override AutoPlatform Platform => AutoPlatform.XamForms;
     }
 }
