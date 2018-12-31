@@ -62,12 +62,12 @@ var testsArtifactDirectory = artifactDirectory + "tests/";
 var testCoverageOutputFile = MakeAbsolute(File(testsArtifactDirectory + "OpenCover.xml"));
 
 // Whitelisted Packages
-var packageWhitelist = new[] { "ReactiveUI.Testing",
+var packageWhitelist = new[] { "ReactiveUI",
+                               "ReactiveUI.Testing",
                                "ReactiveUI.Events",
                                "ReactiveUI.Events.WPF",
                                "ReactiveUI.Events.Winforms",
                                "ReactiveUI.Events.XamForms",
-                               "ReactiveUI",
                                "ReactiveUI.Fody",
                                "ReactiveUI.Fody.Helpers",
                                "ReactiveUI.AndroidSupport",
@@ -109,7 +109,7 @@ Teardown(context =>
 //////////////////////////////////////////////////////////////////////
 // HELPER METHODS
 //////////////////////////////////////////////////////////////////////
-Action<string, string, bool, bool> Build = (solution, outputFolder, createPackage, forceUseFullDebugType) =>
+Action<string, string, bool, bool> Build = (solution, packageOutputPath, createPackage, forceUseFullDebugType) =>
 {
     Information("Building {0} using {1}, createPackage = {2}, forceUseFullDebugType = {3}", solution, msBuildPath, createPackage, forceUseFullDebugType);
 
@@ -119,8 +119,7 @@ Action<string, string, bool, bool> Build = (solution, outputFolder, createPackag
         }
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetConfiguration("Release")                        
-        .SetVerbosity(Verbosity.Minimal)
-        .SetNodeReuse(false);
+        .SetVerbosity(Verbosity.Minimal);
 
     if (forceUseFullDebugType)
     {
@@ -129,15 +128,11 @@ Action<string, string, bool, bool> Build = (solution, outputFolder, createPackag
 
     if (createPackage)
     {
-        msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(outputFolder)).ToString().Quote()).WithTarget("build;pack");
+        msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(packageOutputPath)).ToString().Quote()).WithTarget("build;pack");
     }
     else
     {
         msBuildSettings = msBuildSettings.WithTarget("build");
-        if (outputFolder != null)
-        {
-            msBuildSettings = msBuildSettings.WithProperty("OutputPath",  MakeAbsolute(Directory(outputFolder)).ToString().Quote());
-        }
     }
 
     MSBuild(solution, msBuildSettings);
@@ -147,20 +142,7 @@ Action<string, string, bool, bool> Build = (solution, outputFolder, createPackag
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
-Task("RestoreNuGet")
-    .Does(() =>
-{
-    var settings = new NuGetRestoreSettings() {
-        ArgumentCustomization = args => args.Append($"-MSBuildPath {MakeAbsolute(msBuildPath.GetDirectory()).ToString().Quote()}"),
-        Verbosity = NuGetVerbosity.Quiet,
-    };
-
-    var solutions = GetFiles("./src/**/*.sln");
-    NuGetRestore(solutions, settings);
-});
-
 Task("BuildEventBuilder")
-    .IsDependentOn("RestoreNuGet")
     .Does(() =>
 {
     Build("./src/EventBuilder.sln", artifactDirectory + "eventbuilder", false, false);
@@ -170,8 +152,8 @@ Task("GenerateEvents")
     .IsDependentOn("BuildEventBuilder")
     .Does (() =>
 {
-    var workingDirectory = artifactDirectory + "eventbuilder/";
-    var eventBuilder = workingDirectory + "EventBuilder.dll";
+    var workingDirectory = MakeAbsolute(Directory("./src/EventBuilder/bin/Release/netcoreapp2.1"));
+    var eventBuilder = workingDirectory + "/EventBuilder.dll";
     var referenceAssembliesPath = vsLocation.CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
     Information(referenceAssembliesPath.ToString());
