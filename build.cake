@@ -154,7 +154,7 @@ Task("RestoreNuGet")
         ArgumentCustomization = args => args.Append($"-Recursive -MSBuildPath {msBuildPath.Quote()}")
     };
 
-    var solutions = GetFiles("./**/*.sln");
+    var solutions = GetFiles("./src/**/*.sln");
     NuGetRestore(solutions, settings);
 });
 
