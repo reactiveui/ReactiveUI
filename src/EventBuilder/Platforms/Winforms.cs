@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Threading.Tasks;
 
 namespace EventBuilder.Platforms
 {
@@ -12,11 +13,12 @@ namespace EventBuilder.Platforms
     /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class Winforms : BasePlatform
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Winforms"/> class.
-        /// </summary>
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.Winforms;
+
+        /// <inheritdoc />
         /// <exception cref="NotSupportedException">Building events for Winforms on Mac is not implemented.</exception>
-        public Winforms()
+        public override Task Extract()
         {
             if (PlatformHelper.IsRunningOnMono())
             {
@@ -120,9 +122,8 @@ namespace EventBuilder.Platforms
             Assemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.ServiceProcess.dll");
 
             CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1");
-        }
 
-        /// <inheritdoc />
-        public override AutoPlatform Platform => AutoPlatform.Winforms;
+            return Task.CompletedTask;
+        }
     }
 }

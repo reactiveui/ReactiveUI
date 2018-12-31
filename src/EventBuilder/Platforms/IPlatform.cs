@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EventBuilder.Platforms
 {
@@ -26,5 +27,11 @@ namespace EventBuilder.Platforms
         /// Cecil when run on Mono needs some direction as to the location of the platform specific MSCORLIB.
         /// </summary>
         List<string> CecilSearchDirectories { get; }
+
+        /// <summary>
+        /// Extract details about the platform.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
+        Task Extract();
     }
 }

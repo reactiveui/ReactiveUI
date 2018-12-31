@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Threading.Tasks;
 
 namespace EventBuilder.Platforms
 {
@@ -12,11 +13,11 @@ namespace EventBuilder.Platforms
     /// <seealso cref="EventBuilder.Platforms.BasePlatform" />
     public class UWP : BasePlatform
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UWP"/> class.
-        /// </summary>
-        /// <exception cref="NotSupportedException">Building events for UWP on Mac is not implemented yet.</exception>
-        public UWP()
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.UWP;
+
+        /// <inheritdoc />
+        public override Task Extract()
         {
             if (PlatformHelper.IsRunningOnMono())
             {
@@ -24,9 +25,8 @@ namespace EventBuilder.Platforms
             }
 
             Assemblies.Add(@"C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.16299.0\Windows.winmd");
-        }
 
-        /// <inheritdoc />
-        public override AutoPlatform Platform => AutoPlatform.UWP;
+            return Task.CompletedTask;
+        }
     }
 }

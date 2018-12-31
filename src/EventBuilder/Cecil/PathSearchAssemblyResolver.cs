@@ -51,7 +51,7 @@ namespace EventBuilder.Cecil
 
             // NB: This hacks WinRT's weird mscorlib to just use the regular one
             // We forget why this was needed, maybe it's not needed anymore?
-            if (fullName.Contains("mscorlib") && fullName.Contains("255"))
+            if (fullName.Contains("mscorlib", StringComparison.InvariantCulture) && fullName.Contains("255", StringComparison.InvariantCulture))
             {
                 fullPath =
                     Environment.ExpandEnvironmentVariables(
@@ -85,11 +85,9 @@ namespace EventBuilder.Cecil
             }
 
             // NB: This hacks WinRT's weird mscorlib to just use the regular one
-            if (fullName.Contains("mscorlib") && fullName.Contains("255"))
+            if (fullName.Contains("mscorlib", StringComparison.InvariantCulture) && fullName.Contains("255", StringComparison.InvariantCulture))
             {
-                fullPath =
-                    Environment.ExpandEnvironmentVariables(
-                        @"%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
+                fullPath = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
             }
 
             if (fullPath == null)

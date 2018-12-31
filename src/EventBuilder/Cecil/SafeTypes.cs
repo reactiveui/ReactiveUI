@@ -17,7 +17,6 @@ namespace EventBuilder.Cecil
         /// </summary>
         /// <param name="a">The assembly definition.</param>
         /// <returns>Type definitions from the assembly.</returns>
-        public static TypeDefinition[] GetSafeTypes(AssemblyDefinition a) =>
-            a.Modules.SelectMany(x => x.GetTypes()).ToArray();
+        public static TypeDefinition[] GetSafeTypes(AssemblyDefinition a) => a.Modules.SelectMany(x => x.GetTypes()).ToArray();
     }
 }

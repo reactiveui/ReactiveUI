@@ -30,7 +30,7 @@
         /// <summary>
         /// Tizen platform.
         /// </summary>
-        Tizen,
+        Tizen4,
 
         /// <summary>
         /// WPF platform.

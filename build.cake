@@ -106,7 +106,7 @@ Action<string, string, bool, bool> Build = (solution, outputFolder, createPackag
 
     var msBuildSettings = new MSBuildSettings() {
             ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/m /restore")
+            ArgumentCustomization = args => args.Append("/m /restore /NoWarn:VSX1000")
         }
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetConfiguration("Release")                        
@@ -145,60 +145,38 @@ Task("GenerateEvents")
     .Does (() =>
 {
     var workingDirectory = artifactDirectory + "eventbuilder/";
-    var eventBuilder = workingDirectory + "EventBuilder.exe";
+    var eventBuilder = workingDirectory + "EventBuilder.dll";
     var referenceAssembliesPath = vsLocation.CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
     Information(referenceAssembliesPath.ToString());
 
     Action<string, string> generate = (string platform, string directory) =>
     {
-        using(var process = StartAndReturnProcess(eventBuilder,
-            new ProcessSettings{
-                Arguments = new ProcessArgumentBuilder()
-                    .AppendSwitch("--platform","=", platform)
-                    .AppendSwitchQuoted("--reference","=", referenceAssembliesPath.ToString()),
-                WorkingDirectory = workingDirectory,
-                RedirectStandardOutput = true }))
+        var settings = new DotNetCoreExecuteSettings
         {
-            // super important to ensure that the platform is always
-            // uppercase so that the events are written to the write
-            // filename as UNIX is case-sensitive - even though OSX
-            // isn't by default.
-            platform = platform.ToUpper();
+            WorkingDirectory = workingDirectory,
+        };
 
-            Information("Generating events for '{0}'", platform);
-            
-            int timeout = 10 * 60 * 1000;   // x Minute, y Second, z Millisecond
-            process.WaitForExit(timeout);
+        var filename = String.Format("Events_{0}.cs", platform);
+        var output = MakeAbsolute(File(System.IO.Path.Combine(directory, filename))).ToString().Quote();
 
-            var stdout = process.GetStandardOutput();
+        Information("Generating events for '{0}'", platform);
+        DotNetCoreExecute(
+                    eventBuilder,
+                    new ProcessArgumentBuilder()
+                        .AppendSwitch("--platform","=", platform)
+                        .AppendSwitchQuoted("--reference","=", referenceAssembliesPath.ToString())
+                        .AppendSwitchQuoted("--output-path", "=", output),
+                    settings);
 
-            int success = 0;    // exit code aka %ERRORLEVEL% or $?
-            if (process.GetExitCode() != success)
-            {
-                Error("Failed to generate events for '{0}'", platform);
-
-                foreach (var line in stdout)
-                {
-                    Error(line);
-                }
-
-                Abort();
-            }
-
-            var filename = String.Format("Events_{0}.cs", platform);
-            var output = System.IO.Path.Combine(directory, filename);
-
-            FileWriteLines(output, stdout.ToArray());
-            Information("The events have been written to '{0}'", output);
-        }
+        Information("The events have been written to '{0}'", output);
     };
 
     generate("android", "src/ReactiveUI.Events/");
     generate("ios", "src/ReactiveUI.Events/");
     generate("mac", "src/ReactiveUI.Events/");
     generate("uwp", "src/ReactiveUI.Events/");
-    generate("tizen", "src/ReactiveUI.Events/");
+    generate("tizen4", "src/ReactiveUI.Events/");
     generate("wpf", "src/ReactiveUI.Events.WPF/");
     generate("xamforms", "src/ReactiveUI.Events.XamForms/");
     generate("winforms", "src/ReactiveUI.Events.Winforms/");

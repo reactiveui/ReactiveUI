@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>EventBuilder</AssemblyName>
     <RootNamespace>EventBuilder</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  
   
   <ItemGroup>
     <Content Include="DefaultTemplate.mustache">
@@ -17,13 +17,16 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="1.9.71" />
-    <PackageReference Include="Microsoft.Web.Xdt" Version="2.1.2" />
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
     <PackageReference Include="Mono.Cecil" Version="0.10.1" />
-    <PackageReference Include="Nustache" Version="1.16.0.8" />
-    <PackageReference Include="Polly" Version="6.1.1" />
+    <PackageReference Include="Polly" Version="6.1.2" />
     <PackageReference Include="Serilog" Version="2.7.1" />
     <PackageReference Include="Serilog.Settings.AppSettings" Version="2.2.2" />
-    <PackageReference Include="NuGet.Core" Version="2.14.0" />
+    <PackageReference Include="serilog.sinks.coloredconsole" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+    <PackageReference Include="Stubble.Core" Version="1.2.7" />
+    <PackageReference Include="NuGet.Protocol" Version="4.9.2" />
+    <PackageReference Include="NuGet.Packaging" Version="4.9.2" />
+    <PackageReference Include="NuGet.PackageManagement.NetStandard" Version="4.9.2" />
   </ItemGroup>
 </Project>
