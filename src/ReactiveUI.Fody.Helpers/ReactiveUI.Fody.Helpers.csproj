@@ -47,5 +47,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Fody\ReactiveUI.Fody.csproj" ReferenceOutputAssembly="False" />
   </ItemGroup> 
 </Project>
