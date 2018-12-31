@@ -111,11 +111,11 @@ Teardown(context =>
 //////////////////////////////////////////////////////////////////////
 Action<string, string, bool, bool> Build = (solution, outputFolder, createPackage, forceUseFullDebugType) =>
 {
-    Information("Building {0} using {1}, createPackage = {2}, forceUseFullDebugType = {3]", solution, msBuildPath, createPackage, forceUseFullDebugType);
+    Information("Building {0} using {1}, createPackage = {2}, forceUseFullDebugType = {3}", solution, msBuildPath, createPackage, forceUseFullDebugType);
 
     var msBuildSettings = new MSBuildSettings() {
             ToolPath = msBuildPath,
-            ArgumentCustomization = args => args.Append("/m /restore /NoWarn:VSX1000")
+            ArgumentCustomization = args => args.Append("/m /NoWarn:VSX1000")
         }
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetConfiguration("Release")                        
@@ -147,8 +147,20 @@ Action<string, string, bool, bool> Build = (solution, outputFolder, createPackag
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
+Task("RestoreNuGet")
+    .Does(() =>
+{
+    var settings = new NuGetRestoreSettings() {
+        ArgumentCustomization = args => args.Append($"-Recursive -MSBuildPath {msBuildPath.Quote()}")
+    };
+
+    var solutions = GetFiles("./**/*.sln");
+    NuGetRestore(solutions, settings);
+});
+
 Task("BuildEventBuilder")
-    .Does (() =>
+    .IsDependentOn("RestoreNuGet")
+    .Does(() =>
 {
     Build("./src/EventBuilder.sln", artifactDirectory + "eventbuilder", false, false);
 });
