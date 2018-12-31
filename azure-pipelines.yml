@@ -29,7 +29,7 @@ steps:
 - script: nbgv cloud
   displayName: Set Version
 
-- script: build.cmd
+- powershell: .\build.ps1
   displayName: Build 
   env:
     SIGNCLIENT_SECRET: $(SignClientSecret)

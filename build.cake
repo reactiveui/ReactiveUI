@@ -326,8 +326,6 @@ Task("SignPackages")
 
 Task("Package")
     .IsDependentOn("BuildReactiveUIPackages")
-    .IsDependentOn("RunUnitTests")
-    .IsDependentOn("UploadTestCoverage")
     .IsDependentOn("PinNuGetDependencies")
     .IsDependentOn("SignPackages")
     .Does (() =>
