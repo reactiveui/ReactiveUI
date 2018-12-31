@@ -212,8 +212,8 @@ Task("RunUnitTests")
     .Does(() =>
 {
     // Clean the directories since we'll need to re-generate the debug type.
-    CleanDirectories(string.Format("./src/**/obj/Release");
-    CleanDirectories(string.Format("./src/**/bin/Release");
+    CleanDirectories("./src/**/obj/Release");
+    CleanDirectories("./src/**/bin/Release");
 
     var openCoverSettings =  new OpenCoverSettings {
             ReturnTargetCodeOffset = 0,
