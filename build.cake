@@ -59,6 +59,11 @@ var informationalVersion = EnvironmentVariable("GitAssemblyInformationalVersion"
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testsArtifactDirectory = artifactDirectory + "tests/";
+var eventsArtifactDirectory = artifactDirectory + "Events/";
+var binariesArtifactDirectory = artifactDirectory + "binaries/";
+var packagesArtifactDirectory = artifactDirectory + "packages/";
+
+// OpenCover file location
 var testCoverageOutputFile = MakeAbsolute(File(testsArtifactDirectory + "OpenCover.xml"));
 
 // Whitelisted Packages
@@ -117,7 +122,11 @@ Setup(context =>
     Information("Building version {0} of ReactiveUI.", informationalVersion);
 
     CreateDirectory(artifactDirectory);
+    CleanDirectories(artifactDirectory);
     CreateDirectory(testsArtifactDirectory);
+    CreateDirectory(eventsArtifactDirectory);
+    CreateDirectory(binariesArtifactDirectory);
+    CreateDirectory(packagesArtifactDirectory);
 });
 
 Teardown(context =>
@@ -208,6 +217,8 @@ Task("GenerateEvents")
     };
 
     Parallel.ForEach(eventGenerators, arg => generate(arg.targetName, arg.destination));
+
+    CopyFiles(GetFiles("./src/ReactiveUI.**/Events_*.cs"), Directory(eventsArtifactDirectory));
 });
 
 Task("BuildReactiveUIPackages")
@@ -220,8 +231,10 @@ Task("BuildReactiveUIPackages")
 
     foreach(var package in packageWhitelist)
     {
-        Build("./src/" + package + "/" + package + ".csproj", artifactDirectory, true, false);
+        Build("./src/" + package + "/" + package + ".csproj", packagesArtifactDirectory, true, false);
     }
+
+    CopyFiles(GetFiles("./src/**/bin/Release/**/*"), Directory(binariesArtifactDirectory), true);
 });
 
 Task("RunUnitTests")
@@ -262,6 +275,7 @@ Task("RunUnitTests")
     var xunitSettings = new XUnit2Settings {
         HtmlReport = true,
         OutputDirectory = testsArtifactDirectory,
+        NoAppDomain = true
     };
 
     foreach (var projectName in packageTestWhitelist)

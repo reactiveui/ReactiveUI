@@ -39,23 +39,12 @@ steps:
     CODECOV_TOKEN: $(CODECOV_TOKEN)
     ArtifactDirectory: $(System.DefaultWorkingDirectory)\artifacts
 
-- task: CopyFiles@2
-  inputs:
-    Contents: 'artifacts/*.nupkg'
-    TargetFolder: '$(build.artifactstagingdirectory)\packages'
-    flattenFolders: true
-
 - task: PublishBuildArtifacts@1
   displayName: Publish Package Artifacts
   inputs:
     pathToPublish: '$(build.artifactstagingdirectory)\packages'
     artifactType: container
     artifactName: Packages
-
-- task: CopyFiles@2
-  inputs:
-    Contents: '**/bin/*'
-    TargetFolder: '$(build.artifactstagingdirectory)\binaries'
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Binaries
@@ -64,14 +53,16 @@ steps:
     artifactType: container
     artifactName: Binaries
 
-- task: CopyFiles@2
-  inputs:
-    Contents: 'src/ReactiveUI.**/Events_*.cs'
-    TargetFolder: '$(build.artifactstagingdirectory)\Events'
-
 - task: PublishBuildArtifacts@1
   displayName: Publish Generated Events
   inputs:
     pathToPublish: '$(build.artifactstagingdirectory)\Events'
     artifactType: container
     artifactName: Events
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Test Data
+  inputs:
+    pathToPublish: '$(build.artifactstagingdirectory)\tests'
+    artifactType: container
+    artifactName: Tests
