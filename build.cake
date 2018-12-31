@@ -210,10 +210,14 @@ Task("GenerateEvents")
     Parallel.ForEach(eventGenerators, arg => generate(arg.targetName, arg.destination));
 });
 
-Task("BuildReactiveUI")
+Task("BuildReactiveUIPackages")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
+    // Clean the directories since we'll need to re-generate the debug type.
+    CleanDirectories("./src/**/obj/Release");
+    CleanDirectories("./src/**/bin/Release");
+
     foreach(var package in packageWhitelist)
     {
         Build("./src/" + package + "/" + package + ".csproj", artifactDirectory, true, false);
@@ -221,12 +225,23 @@ Task("BuildReactiveUI")
 });
 
 Task("RunUnitTests")
-    .IsDependentOn("BuildReactiveUI")
+    .IsDependentOn("BuildReactiveUIPackages")
     .Does(() =>
 {
+    var fodyPackages = new string[]
+    {
+        "ReactiveUI.Fody",
+        "ReactiveUI.Fody.Helpers",
+    };       
+
     // Clean the directories since we'll need to re-generate the debug type.
     CleanDirectories("./src/**/obj/Release");
     CleanDirectories("./src/**/bin/Release");
+
+    foreach (var package in fodyPackages)
+    {
+        Build("./src/" + package + "/" + package + ".csproj", null, true, true);
+    }
 
     var openCoverSettings =  new OpenCoverSettings {
             ReturnTargetCodeOffset = 0,
@@ -296,7 +311,7 @@ Task("SignPackages")
 });
 
 Task("Package")
-    .IsDependentOn("BuildReactiveUI")
+    .IsDependentOn("BuildReactiveUIPackages")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("UploadTestCoverage")
     .IsDependentOn("PinNuGetDependencies")
