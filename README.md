@@ -39,22 +39,60 @@ ReactiveUI is inspired by the paradigm of Functional Reactive Programming, which
 
 That's reactive programming: changes propagate throughout a system automatically. Welcome to the peanut butter and jelly of programming paradigms. For further information please watch the this video from the Xamarin Evolve conference - [Why You Should Be Building Better Mobile Apps with Reactive Programming](http://www.youtube.com/watch?v=DYEbUF4xs1Q) by Michael Stonis.
 
-<h2>Packages Installation</h2>
+<h2>NuGet Packages</h2>
 
 Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific packages are required. This means your app won't perform as expected until you install the packages properly. See the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
 
-| Target Platform                 | Required ReactiveUI Packages | <a href="https://reactiveui.net/docs/handbook/events/">Events</a> Packages   |
-| ------------------------------- | ---------------------------- | ---------------------------- |
-| <a href="https://reactiveui.net/docs/getting-started/installation/">Class library</a> | `ReactiveUI` | None |
-| <a href="https://reactiveui.net/docs/handbook/testing/">Unit testing library</a> | `ReactiveUI.Testing` | None |   
-| <a href="https://reactiveui.net/docs/getting-started/installation/universal-windows-platform">Universal Windows Platform</a> | `ReactiveUI` | `ReactiveUI.Events` |
-| <a href="https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation">Windows Presentation Foundation</a> | `ReactiveUI.WPF` | `ReactiveUI.Events.WPF` |
-| <a href="https://reactiveui.net/docs/getting-started/installation/windows-forms">Windows Forms</a> | `ReactiveUI.WinForms` | `ReactiveUI.Events.WinForms` |
-| <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-forms">Xamarin.Forms library</a> | `ReactiveUI.XamForms` | `ReactiveUI.Events.XamForms` |
-| <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-android">Xamarin.Android</a> | `ReactiveUI.AndroidSupport`  | `ReactiveUI.Events`          |
-| <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-mac">Xamarin.Mac</a> | `ReactiveUI` | `ReactiveUI.Events` |
-| <a href="https://reactiveui.net/docs/getting-started/installation/xamarin-ios">Xamarin.iOS</a> | `ReactiveUI` | `ReactiveUI.Events` |
-| <a href="https://reactiveui.net/docs/getting-started/installation/avalonia">AvaloniaUI</a> | `Avalonia.ReactiveUI` | None |
+| Platform          | ReactiveUI Package                  | NuGet                | [Events][EventsDocs] Package            |
+| ----------------- | ----------------------------------- | -------------------- | --------------------------------------- |
+| .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] | None                                    |
+| Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test] | None                                    |
+| Universal Windows | [ReactiveUI][UniDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
+| WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]   | [ReactiveUI.Events.WPF][WpfEvents]      |
+| Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]   | [ReactiveUI.Events.WinForms][WinEvents] |
+| Xamarin Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   | [ReactiveUI.Events.XamForms][XamEvents] |
+| Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]   | [ReactiveUI.Events][CoreEvents]         |
+| Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
+| Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
+| Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   | None                                    |
+
+[Core]: https://www.nuget.org/packages/ReactiveUI/
+[CoreEvents]: https://www.nuget.org/packages/ReactiveUI.Events/
+[CoreBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.svg
+[CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
+
+[Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
+[TestBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.Testing.svg
+[TestDoc]: https://reactiveui.net/docs/handbook/testing/
+
+[UniDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
+
+[Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
+[WpfEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WPF/
+[WpfBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.WPF.svg
+[WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
+
+[Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
+[WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
+[WinBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.WinForms.svg
+[WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
+
+[Xam]: https://www.nuget.org/packages/ReactiveUI.XamForms/
+[XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.XamForms/
+[XamBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.XamForms.svg
+[XamDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-forms
+
+[Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
+[DroBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.AndroidSupport.svg
+[DroDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-android
+
+[MacDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-mac
+[IosDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-ios
+
+[Ava]: https://www.nuget.org/packages/Avalonia.ReactiveUI/
+[AvaBadge]: https://img.shields.io/nuget/vpre/Avalonia.ReactiveUI.svg
+[AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
+[EventsDocs]: https://reactiveui.net/docs/handbook/events/
 
 <h2>A Compelling Example</h2>
 
@@ -134,17 +172,17 @@ this.WhenActivated(cleanup =>
 [ReactiveUI.Fody](https://www.nuget.org/packages/ReactiveUI.Fody/) package allows you to decorate read-write properties with `Reactive` attribute — and code responsible for property change notifications will get injected into your property setters automatically at compile time. We use [Fody](https://github.com/Fody/Fody) tooling to make this magic work.
 
 ```csharp
-public class ManagedViewModel : ReactiveObject
+public class ReactiveViewModel : ReactiveObject
 {
-    // This reactive property will notify the UI when it changes.
-    [Reactive] public string SearchQuery { get; set; }
+    [Reactive] 
+    public string SearchQuery { get; set; }
 }
 ```
 
 The code above gets compiled into the following code:
 
 ```csharp
-public class CompiledViewModel : ReactiveObject
+public class ReactiveViewModel : ReactiveObject
 {
     private string searchQuery;
     public string SearchQuery 
@@ -205,43 +243,43 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
   <tbody>
     <tr>
       <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/ghuntley.png?s=150">
+        <img width="100" height="100" src="https://github.com/ghuntley.png?s=150">
         <br>
         <a href="https://github.com/ghuntley">Geoffrey Huntley</a>
         <p>Sydney, Australia</p>
       </td>
       <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/kentcb.png?s=150">
+        <img width="100" height="100" src="https://github.com/kentcb.png?s=150">
         <br>
         <a href="https://github.com/kentcb">Kent Boogaart</a>
         <p>Adelaide, Australia</p>
       </td>
       <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/olevett.png?s=150">
+        <img width="100" height="100" src="https://github.com/olevett.png?s=150">
         <br>
         <a href="https://github.com/olevett">Olly Levett</a>
         <p>London, United Kingdom</p>
       </td>
       <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/paulcbetts.png?s=150">
+        <img width="100" height="100" src="https://github.com/paulcbetts.png?s=150">
         <br>
         <a href="https://github.com/paulcbetts">Paul Betts</a>
         <p>San Francisco, USA</p>
       </td>
       <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/shiftkey.png?s=150">
+        <img width="100" height="100" src="https://github.com/shiftkey.png?s=150">
         <br>
         <a href="https://github.com/shiftkey">Brendan Forster</a>
         <p>Melbourne, Australia</p>
       </td>
       <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/onovotny.png?s=150">
+        <img width="120" height="100" src="https://github.com/onovotny.png?s=150">
         <br>
         <a href="https://github.com/onovotny">Oren Novotny</a>
         <p>New York, USA</p>
       </td>
       <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/glennawatson.png?s=150">
+        <img width="100" height="100" src="https://github.com/glennawatson.png?s=150">
         <br>
         <a href="https://github.com/glennawatson">Glenn Watson</a>
         <p>Washington, USA</p>
@@ -250,37 +288,25 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
   </tbody>
 </table>
 
+<!--
 <h2 align="center">Core Team</h2>
-
 <h2 align="center">Learning Team</h2>
-
 <h2 align="center">Android Team</h2>
-
 <h2 align="center">Apple TV Team</h2>
-
 <h2 align="center">Dot Net Core Team</h2>
-
 <h2 align="center">Fody Team</h2>
-
 <h2 align="center">iOS Team</h2>
-
 <h2 align="center">Mac Team</h2>
-
 <h2 align="center">Tizen Team</h2>
-
 <h2 align="center">UWP Team</h2>
-
 <h2 align="center">Web Assembly Team</h2>
-
 <h2 align="center">WinForms Team</h2>
-
 <h2 align="center">WPF Team</h2>
-
 <h2 align="center">Xamarin Forms Team</h2>
-
 <h2 align="center">Alumni</h2>
+-->
 
-<h2 align="center">Sponsorship</h2>
+<h2>Sponsorship</h2>
 
 The core team members, ReactiveUI contributors and contributors in the ecosystem do this open source work in their free time. If you use ReactiveUI a serious task, and you'd like us to invest more time on it, please donate. This project increases your income/productivity too. It makes development and applications faster and it reduces the required bandwidth.
 
