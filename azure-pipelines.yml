@@ -75,15 +75,3 @@ steps:
     pathToPublish: '$(build.artifactstagingdirectory)\Events'
     artifactType: container
     artifactName: Events
-
-- task: CopyFiles@2
-  inputs:
-    Contents: 'artifacts/tests/**/*'
-    TargetFolder: '$(build.artifactstagingdirectory)\Tests'
-
-- task: PublishBuildArtifacts@1
-  displayName: Publish Test Data
-  inputs:
-    pathToPublish: '$(build.artifactstagingdirectory)\Tests'
-    artifactType: container
-    artifactName: Tests
