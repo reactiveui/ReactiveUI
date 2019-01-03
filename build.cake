@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #tool "nuget:?package=GitReleaseManager&version=0.7.1"
-#tool "nuget:?package=coveralls.io&version=1.4.2"
 #tool "nuget:?package=OpenCover&version=4.6.519"
 #tool "nuget:?package=ReportGenerator&version=4.0.4"
 #tool "nuget:?package=vswhere&version=2.5.2"
@@ -74,6 +73,7 @@ var packageWhitelist = new[]
     "ReactiveUI.Events",
     "ReactiveUI.Events.WPF",
     "ReactiveUI.Events.Winforms",
+    "ReactiveUI.Events.XamEssentials",
     "ReactiveUI.Events.XamForms",
     "ReactiveUI.Fody",
     "ReactiveUI.Fody.Helpers",
@@ -102,7 +102,7 @@ var packageTestWhitelist = new[]
     ("wpf", "src/ReactiveUI.Events.WPF/"),
     ("xamforms", "src/ReactiveUI.Events.XamForms/"),
     ("winforms", "src/ReactiveUI.Events.Winforms/"),
-    ("essentials", "src/ReactiveUI.Events/"),
+    ("essentials", "src/ReactiveUI.Events.XamEssentials/"),
     ("tvos", "src/ReactiveUI.Events/"),
 };
 
