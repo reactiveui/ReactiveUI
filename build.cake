@@ -13,6 +13,12 @@
 #addin "nuget:?package=Cake.Codecov&version=0.5.0"
 
 //////////////////////////////////////////////////////////////////////
+// MODULES
+//////////////////////////////////////////////////////////////////////
+
+#module nuget:?package=Cake.DotNetTool.Module&version=0.1.0
+
+//////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
@@ -22,6 +28,12 @@
 #tool "nuget:?package=vswhere&version=2.5.2"
 #tool "nuget:?package=xunit.runner.console&version=2.4.1"
 #tool "nuget:?package=Codecov&version=1.1.0"
+
+//////////////////////////////////////////////////////////////////////
+// DOTNET TOOLS
+//////////////////////////////////////////////////////////////////////
+
+#tool "dotnet:?package=SignClient&version=1.0.82"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -319,9 +331,32 @@ Task("SignPackages")
     .WithCriteria(() => !isPullRequest)
     .Does(() =>
 {
-    StartPowershellFile("./SignPackages.ps1", args =>
+    if(EnvironmentVariable("SIGNCLIENT_SECRET") == null)
     {
-    });
+        throw new Exception("Client Secret not found, not signing packages.");
+    }
+
+    var nupkgs = GetFiles(packagesArtifactDirectory + "/*.nupkg");
+    foreach(FilePath nupkg in nupkgs)
+    {
+        var packageName = nupkg.GetFilenameWithoutExtension();
+        Information($"Submitting {packageName} for signing");
+
+        DotNetCoreTool("SignClient", new DotNetCoreToolSettings{
+            ArgumentCustomization = args =>
+                args.AppendSwitch("-c", "./SignPackages.json")
+                    .AppendSwitch("-i", nupkg.FullPath)
+                    .AppendSwitch("-r", EnvironmentVariable("SIGNCLIENT_USER"))
+                    .AppendSwitch("-s", EnvironmentVariable("SIGNCLIENT_SECRET"))
+                    .AppendSwitch("-n", "ReactiveUI")
+                    .AppendSwitch("-d", "ReactiveUI")
+                    .AppendSwitch("-u", "https://reactiveui.net")
+                });
+
+        Information($"Finished signing {packageName}");
+    }
+    
+    Information("Sign-package complete");
 });
 
 Task("Package")
