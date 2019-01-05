@@ -49,10 +49,7 @@ namespace ReactiveUI
             RxApp.SuspensionHost.IsLaunchingNew = _onCreate.Where(x => x == null).Select(_ => Unit.Default);
             RxApp.SuspensionHost.IsResuming = _onCreate.Where(x => x != null).Select(_ => Unit.Default);
             RxApp.SuspensionHost.IsUnpausing = _onRestart;
-
-            RxApp.SuspensionHost.ShouldPersistState = Observable.Merge(
-                                                                       _onPause.Select(_ => Disposable.Empty), _onSaveInstanceState.Select(_ => Disposable.Empty));
-
+            RxApp.SuspensionHost.ShouldPersistState = _onPause.Select(_ => Disposable.Empty);
             RxApp.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
         }
 
