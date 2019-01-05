@@ -50,7 +50,8 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Universal Windows | [ReactiveUI][UniDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]   | [ReactiveUI.Events.WPF][WpfEvents]      |
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]   | [ReactiveUI.Events.WinForms][WinEvents] |
-| Xamarin Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   | [ReactiveUI.Events.XamForms][XamEvents] |
+| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   | [ReactiveUI.Events.XamForms][XamEvents] |
+| Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events.XamEssentials][XamE] |
 | Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]   | [ReactiveUI.Events][CoreEvents]         |
 | Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
@@ -81,6 +82,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.XamForms/
 [XamBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.XamForms.svg
 [XamDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-forms
+[XamE]: https://www.nuget.org/packages/ReactiveUI.Events.XamEssentials/
 
 [Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
 [DroBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.AndroidSupport.svg
