@@ -61,14 +61,9 @@ namespace IntegrationTests.Mac
                 ViewModel.Login
                          .SelectMany(result =>
                          {
-                             if (!result.HasValue)
-                             {
-                                 return Observable.Empty<Unit>();
-                             }
-
                              var alert = new NSAlert();
 
-                             if (result.Value)
+                             if (result)
                              {
                                  alert.AlertStyle = NSAlertStyle.Informational;
                                  alert.MessageText = "Login Successful";
