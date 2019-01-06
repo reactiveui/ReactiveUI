@@ -48,12 +48,7 @@ namespace IntegrationTests.UWP
                            .SelectMany(
                                result =>
                                {
-                                   if (!result.HasValue)
-                                   {
-                                       return Observable.Empty<IUICommand>();
-                                   }
-
-                                   var dialog = result.Value ?
+                                   var dialog = result ?
                                        new MessageDialog("Login Successful", "Welcome!") :
                                        new MessageDialog("Login Failed", "Ah, ah, ah, you didn't say the magic word!");
 

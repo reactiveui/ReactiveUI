@@ -57,12 +57,7 @@ namespace IntegrationTests.WPF
                         .SelectMany(
                             result =>
                             {
-                                if (!result.HasValue)
-                                {
-                                    return Observable.Empty<MessageDialogResult>();
-                                }
-
-                                if (result.Value)
+                                if (result)
                                 {
                                     return this.ShowMessage("Login Successful", "Welcome!");
                                 }
