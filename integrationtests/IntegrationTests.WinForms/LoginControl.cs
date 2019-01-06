@@ -44,12 +44,7 @@ namespace IntegrationTests.WinForms
                        .Login
                        .SelectMany(result =>
                        {
-                           if (!result.HasValue)
-                           {
-                               return Observable.Empty<DialogResult>();
-                           }
-
-                           var dialogResult = Task.Run(() => result.Value ?
+                           var dialogResult = Task.Run(() => result ?
                                MessageBox.Show("Welcome!", "Login Successful") :
                                MessageBox.Show("Ah, ah, ah, you didn't say the magic word!", "Login Failed"));
 

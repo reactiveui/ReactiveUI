@@ -45,12 +45,7 @@ namespace IntegrationTests.XamarinForms
                            .Select(
                                result =>
                                {
-                                   if (!result.HasValue)
-                                   {
-                                       UserDialogs.Instance.Alert("Oops, Something is wrong!", "Oops!");
-                                   }
-
-                                   if (result.Value)
+                                   if (result)
                                    {
                                        UserDialogs.Instance.Alert("Login Successful", "Welcome!");
                                    }
