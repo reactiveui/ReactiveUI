@@ -50,14 +50,9 @@ namespace IntegrationTests.iOS
                 ViewModel.Login
                          .SelectMany(result =>
                          {
-                             if (!result.HasValue)
-                             {
-                                 return Observable.Empty<Unit>();
-                             }
-
                              UIAlertController alert;
 
-                             if (result.Value)
+                             if (result)
                              {
                                  alert = UIAlertController.Create("Login Successful", "Welcome!", UIAlertControllerStyle.Alert);
                              }

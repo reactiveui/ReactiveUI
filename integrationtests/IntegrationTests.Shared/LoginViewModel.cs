@@ -2,8 +2,6 @@
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Genesis.Ensure;
 using ReactiveUI;
 
@@ -36,7 +34,7 @@ namespace IntegrationTests.Shared
                     (user, password) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(password));
 
             Login = ReactiveCommand.CreateFromObservable(
-                () => Observable.StartAsync(LoginAsync).TakeUntil(Cancel),
+                () => LoginInternal().TakeUntil(Cancel),
                 canLogin,
                 _mainScheduler);
 
@@ -46,7 +44,7 @@ namespace IntegrationTests.Shared
         /// <summary>
         /// Gets the login command.
         /// </summary>
-        public ReactiveCommand<Unit, bool?> Login { get; }
+        public ReactiveCommand<Unit, bool> Login { get; }
 
         /// <summary>
         /// Gets the cancel command.
@@ -71,12 +69,11 @@ namespace IntegrationTests.Shared
             set => this.RaiseAndSetIfChanged(ref _password, value);
         }
 
-        private async Task<bool?> LoginAsync(CancellationToken ct)
+        private IObservable<bool> LoginInternal()
         {
-            var result = Password == "Mr. Goodbytes";
-            await Task.Delay(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false);
-
-            return result;
+            return Observable
+                .Return(Password == "Mr. Goodbytes")
+                .Delay(TimeSpan.FromSeconds(2), _mainScheduler);
         }
     }
 }
