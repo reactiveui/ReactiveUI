@@ -76,7 +76,7 @@ namespace ReactiveUI.XamForms
                                 {
                                     await PopToRootAsync(true);
                                 }
-                                else
+                                else if (!popToRootPending)
                                 {
                                     for (var i = 0; i < x.Delta; ++i)
                                     {
