@@ -1,11 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
+using DynamicData;
 using Microsoft.Reactive.Testing;
+using ReactiveUI;
 using ReactiveUI.Testing;
+using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Shared.Tests.Features.Login
@@ -16,6 +19,108 @@ namespace IntegrationTests.Shared.Tests.Features.Login
     public class LoginViewModelTests
     {
         /// <summary>
+        /// Checks to make sure that the cancel command actually cancels a login attempt.
+        /// </summary>
+        [Fact]
+        public void CancelButton_Cancels_Login()
+        {
+            var scheduler = new TestScheduler();
+
+            LoginViewModel sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
+                    .WithUserName("coolusername")
+                    .WithPassword("excellentpassword");
+
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
+
+            sut.Login.Subscribe(x => x.ShouldBe(true));
+
+            Observable
+                .Return(Unit.Default)
+                .InvokeCommand(sut.Login);
+
+            sut.Cancel.CanExecute.Subscribe(x => x.ShouldBe(true));
+
+            scheduler.AdvanceByMs(1000);
+
+            Observable
+                .Return(Unit.Default)
+                .InvokeCommand(sut.Cancel);
+        }
+
+        /// <summary>
+        /// Checks to make sure that the cancel button is available within two seconds.
+        /// </summary>
+        [Fact]
+        public void CancelButton_IsAvailableUntil_TwoSeconds()
+        {
+            var actual = false;
+            var scheduler = new TestScheduler();
+
+            LoginViewModel sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
+                .WithUserName("coolusername")
+                .WithPassword("excellentpassword");
+
+            sut.Cancel.CanExecute.Subscribe(x =>
+            {
+                actual = x;
+            });
+
+            Observable.Return(Unit.Default).InvokeCommand(sut.Login);
+
+            actual.ShouldBe(false);
+
+            // 50ms
+            scheduler.AdvanceByMs(50);
+
+            actual.ShouldBe(true);
+
+            // 1sec 50ms
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).TotalMilliseconds);
+
+            actual.ShouldBe(true);
+
+            // 2sec 50sms
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).TotalMilliseconds);
+
+            actual.ShouldBe(false);
+        }
+
+        /// <summary>
+        /// Checks to make sure that the login button is disabled when not logging in.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
+        [Fact]
+        public async Task CancelButton_IsDisabled_WhenNot_LoggingIn()
+        {
+            LoginViewModel sut = new LoginViewModelBuilder();
+
+            (await sut.Cancel.CanExecute.FirstAsync()).ShouldBe(false);
+        }
+
+        /// <summary>
+        /// Checks to make sure that the login ticks correctly and the action is performed.
+        /// </summary>
+        [Fact]
+        public void CanLogin_TicksCorrectly()
+        {
+            var scheduler = new TestScheduler();
+            LoginViewModel sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
+                .WithUserName("coolusername")
+                .WithPassword("Mr. Goodbytes");
+
+            sut.Cancel.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var collection).Subscribe();
+
+            Observable.Return(Unit.Default).InvokeCommand(sut.Login);
+
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(5).TotalMilliseconds);
+
+            collection.ToList().ShouldBe(new[] { false, true, false });
+        }
+
+        /// <summary>
         /// Checks to make sure that the login button is disabled with default values.
         /// </summary>
         /// <returns>A task to monitor the progress.</returns>
@@ -25,7 +130,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
             LoginViewModel sut = new LoginViewModelBuilder();
 
             var result = await sut.Login.CanExecute.FirstAsync();
-            result.Should().BeFalse();
+            result.ShouldBe(false);
         }
 
         /// <summary>
@@ -47,8 +152,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName(userName)
                 .WithPassword(password);
 
-            var result = await sut.Login.CanExecute.FirstAsync();
-            result.Should().BeFalse();
+            (await sut.Login.CanExecute.FirstAsync()).ShouldBe(false);
         }
 
         /// <summary>
@@ -65,115 +169,51 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName(userName)
                 .WithPassword(password);
 
-            var result = await sut.Login.CanExecute.FirstAsync();
-            result.Should().BeTrue();
-        }
-
-        /// <summary>
-        /// Checks to make sure that the login button is disabled when not logging in.
-        /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
-        [Fact]
-        public async Task CancelButton_IsDisabled_WhenNot_LoggingIn()
-        {
-            LoginViewModel sut = new LoginViewModelBuilder();
-
-            var result = await sut.Cancel.CanExecute.FirstAsync();
-            result.Should().BeFalse();
-        }
-
-        /// <summary>
-        /// Checks to make sure that the cancel command actually cancels a login attempt.
-        /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
-        [Fact]
-        public async Task CancelButton_Cancels_Login()
-        {
-            await new TestScheduler().With(async sched =>
-            {
-                LoginViewModel sut = new LoginViewModelBuilder()
-                    .WithScheduler(sched)
-                    .WithUserName("coolusername")
-                    .WithPassword("excellentpassword");
-
-                sut.Login.Subscribe(x => x.Should().BeTrue());
-
-                sched.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
-
-                var result = await sut.Cancel.CanExecute.FirstAsync();
-                result.Should().BeTrue();
-            }).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Checks to make sure that the cancel button is available within two seconds.
-        /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
-        [Fact]
-        public async Task CancelButton_IsAvailableUntil_TwoSeconds()
-        {
-            new TestScheduler().With(sched =>
-            {
-                LoginViewModel sut = new LoginViewModelBuilder()
-                    .WithScheduler(sched)
-                    .WithUserName("coolusername")
-                    .WithPassword("excellentpassword");
-
-                sut.Login.Execute().Subscribe();
-
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeFalse();
-
-                // 50ms
-                sched.AdvanceByMs(50);
-
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeTrue();
-
-                // 1sec 50ms
-                sched.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
-
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeTrue();
-
-                // 2sec 50sms
-                sched.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
-
-                sut.Cancel.CanExecute
-                    .FirstAsync().Wait()
-                    .Should().BeFalse();
-            });
-        }
-
-        /// <summary>
-        /// Checks to make sure the user cannot login with a incorrect password.
-        /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
-        [Fact]
-        public async Task User_CannotLogin_WithIncorrect_Password()
-        {
-            LoginViewModel sut = new LoginViewModelBuilder()
-                .WithUserName("coolusername")
-                .WithPassword("incorrectpassword");
-
-            Assert.False(true);
+            (await sut.Login.CanExecute.FirstAsync()).ShouldBe(true);
         }
 
         /// <summary>
         /// Checks to make sure the user can login with a correct password.
         /// </summary>
-        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task User_CanLogin_WithCorrect_Password()
+        public void User_CanLogin_WithCorrect_Password()
         {
+            var scheduler = new TestScheduler();
             LoginViewModel sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
                 .WithUserName("coolusername")
                 .WithPassword("Mr. Goodbytes");
 
-            Assert.False(true);
+            bool? value = null;
+            sut.Login.Subscribe(x => value = x);
+
+            Observable.Return(Unit.Default).InvokeCommand(sut.Login);
+
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
+
+            value.ShouldBe(true);
+        }
+
+        /// <summary>
+        /// Checks to make sure the user cannot login with a incorrect password.
+        /// </summary>
+        [Fact]
+        public void User_CannotLogin_WithIncorrect_Password()
+        {
+            var scheduler = new TestScheduler();
+            LoginViewModel sut = new LoginViewModelBuilder()
+                .WithScheduler(scheduler)
+                .WithUserName("coolusername")
+                .WithPassword("incorrectpassword");
+
+            bool? value = null;
+            sut.Login.Subscribe(x => value = x);
+
+            Observable.Return(Unit.Default).InvokeCommand(sut.Login);
+
+            scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
+
+            value.ShouldBe(false);
         }
     }
 }

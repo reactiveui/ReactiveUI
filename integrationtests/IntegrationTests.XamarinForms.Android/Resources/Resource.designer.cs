@@ -63,7 +63,6 @@ namespace IntegrationTests.XamarinForms.Droid
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahText = global::IntegrationTests.XamarinForms.Droid.Resource.Styleable.ProgressWheel_ahText;
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahTextColor = global::IntegrationTests.XamarinForms.Droid.Resource.Styleable.ProgressWheel_ahTextColor;
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahTextSize = global::IntegrationTests.XamarinForms.Droid.Resource.Styleable.ProgressWheel_ahTextSize;
-			global::Splat.Resource.String.library_name = global::IntegrationTests.XamarinForms.Droid.Resource.String.library_name;
 			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::IntegrationTests.XamarinForms.Droid.Resource.Attribute.actionBarSize;
 		}
 		

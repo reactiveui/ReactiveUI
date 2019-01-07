@@ -95,12 +95,7 @@ namespace IntegrationTests.Android
                            .SelectMany(
                                result =>
                                {
-                                   if (!result.HasValue)
-                                   {
-                                       return Observable.Empty<Unit>();
-                                   }
-
-                                   if (result.Value)
+                                   if (result)
                                    {
                                        new AlertDialog.Builder(this)
                                            .SetTitle("Login Successful")
