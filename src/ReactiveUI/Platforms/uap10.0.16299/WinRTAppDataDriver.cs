@@ -31,7 +31,7 @@ namespace ReactiveUI
                 .SelectMany(x => FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8))
                 .SelectMany(x =>
                 {
-                    var line = x.IndexOf('\n');
+                    var line = x.IndexOf('\n', StringComparison.InvariantCulture);
                     var typeName = x.Substring(0, line - 1); // -1 for CR
                     var serializer = new DataContractSerializer(Type.GetType(typeName));
 
