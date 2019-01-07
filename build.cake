@@ -22,7 +22,6 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "nuget:?package=GitReleaseManager&version=0.7.1"
 #tool "nuget:?package=OpenCover&version=4.6.519"
 #tool "nuget:?package=ReportGenerator&version=4.0.4"
 #tool "nuget:?package=vswhere&version=2.5.2"
