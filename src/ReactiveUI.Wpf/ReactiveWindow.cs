@@ -20,11 +20,15 @@ namespace ReactiveUI
     /// <code>
     /// <![CDATA[
     /// <rxui:ReactiveWindow
-    ///         x:Class="views:YourView"
+    ///         x:Class="Foo.Bar.Views.YourView"
     ///         x:TypeArguments="vms:YourViewModel"
     ///         xmlns:rxui="http://reactiveui.net"
-    ///         xmlns:views="clr-namespace:Foo.Bar.Views"
-    ///         xmlns:vms="clr-namespace:Foo.Bar.ViewModels">
+    ///         xmlns:vms="clr-namespace:Foo.Bar.ViewModels"
+    ///         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    ///         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    ///         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    ///         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    ///         mc:Ignorable="d">
     ///     <!-- view XAML here -->
     /// </rxui:ReactiveWindow>
     /// ]]>
