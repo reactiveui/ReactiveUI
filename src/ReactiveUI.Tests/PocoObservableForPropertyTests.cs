@@ -66,6 +66,11 @@ namespace ReactiveUI.Tests
             {
                 LastMessages.Add(message);
             }
+
+            public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
+            {
+                LastMessages.Add(message);
+            }
         }
     }
 }
