@@ -1704,7 +1704,7 @@ namespace ReactiveUI.Tests.Legacy
 
                     var m = logger.Messages.Last();
                     var message = m.Item1;
-                    var level = m.Item2;
+                    var level = m.Item3;
 
                     Assert.Contains("INotifyCollectionChanged", message);
                     Assert.Equal(LogLevel.Warn, level);

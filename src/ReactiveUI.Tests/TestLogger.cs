@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,17 +16,22 @@ namespace ReactiveUI.Tests
     {
         public TestLogger()
         {
-            Messages = new List<Tuple<string, LogLevel>>();
+            Messages = new List<Tuple<string, Type, LogLevel>>();
             Level = LogLevel.Debug;
         }
 
-        public List<Tuple<string, LogLevel>> Messages { get; }
+        public List<Tuple<string, Type, LogLevel>> Messages { get; }
 
         public LogLevel Level { get; set; }
 
         public void Write(string message, LogLevel logLevel)
         {
-            Messages.Add(Tuple.Create(message, logLevel));
+            Messages.Add(Tuple.Create(message, typeof(TestLogger), logLevel));
+        }
+
+        public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
+        {
+            Messages.Add(Tuple.Create(message, type, logLevel));
         }
     }
 }
