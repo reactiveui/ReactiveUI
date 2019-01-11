@@ -1662,7 +1662,7 @@ namespace ReactiveUI.Tests.Legacy
 
                 using (resolver.WithResolver())
                 {
-                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger)), typeof(ILogManager));
 
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>(scheduler: CurrentThreadScheduler.Instance);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
@@ -1684,7 +1684,7 @@ namespace ReactiveUI.Tests.Legacy
 
                 using (resolver.WithResolver())
                 {
-                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger)), typeof(ILogManager));
 
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>(scheduler: CurrentThreadScheduler.Instance);
                     Assert.True(incc is INotifyCollectionChanged);
