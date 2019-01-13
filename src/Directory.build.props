@@ -8,23 +8,20 @@
     <NoWarn>$(NoWarn);1591;1701;1702;1705;VSX1000</NoWarn>
     <Platform>AnyCPU</Platform>
     <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
-	
-    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
- 
-    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl> 
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-
-    <!-- Optional: Include PDB in the built .nupkg -->
+    <!-- Include PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>  
   </PropertyGroup>
 
   <PropertyGroup Condition="!$(IsTestProject)">
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)reactiveui.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsTestProject)">
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)reactiveui.tests.ruleset</CodeAnalysisRuleSet>  	
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)analyzers.tests.ruleset</CodeAnalysisRuleSet>  	
     <IsPackable>false</IsPackable>	
   </PropertyGroup>
   
@@ -33,14 +30,14 @@
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.console" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageReference Include="Xunit.StaFact" Version="0.3.5" />
+    <PackageReference Include="Xunit.StaFact" Version="0.3.13" />
     <PackageReference Include="Shouldly" Version=" 3.0.2" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
-    <PackageReference Include="PublicApiGenerator" Version="8.0.1" />
+    <PackageReference Include="PublicApiGenerator" Version="8.1.0" />
   </ItemGroup>
   
   <ItemGroup Condition="$(IsTestProject)">
-	<Compile Include="$(MSBuildThisFileDirectory)ApiGeneratorGlobalSuppressions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ApiGeneratorGlobalSuppressions.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
@@ -61,7 +58,7 @@
 
   <ItemGroup>
     <PackageReference Include="stylecop.analyzers" Version="1.1.1-beta.61" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.3" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" Version="2.0.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
