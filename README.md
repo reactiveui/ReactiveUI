@@ -219,8 +219,8 @@ So here's to you, lovely person who wants to join us — this is how you can sup
 * [Making contributions to the code base](https://reactiveui.net/contribute/)
 * [Asking your employer to reciprocate and contribute to open-source](https://github.com/github/balanced-employee-ip-agreement)
 
-We're also looking for people to assist with code reviews of ReactiveUI contributions. If you're experienced with any of the below technologies, you can join the team and receive notifications:
-
+We're also looking for people to assist with code reviews of ReactiveUI contributions. Please join us on <a href="https://reactiveui.net/slack">Slack</a> to discuss how.
+<!--
  - [Android reviewers](https://github.com/orgs/reactiveui/teams/android-team)
  - [Apple TV reviewers](https://github.com/orgs/reactiveui/teams/tvos-team)
  - [Dot Net Core](https://github.com/orgs/reactiveui/teams/dotnetcore-team)
@@ -235,6 +235,7 @@ We're also looking for people to assist with code reviews of ReactiveUI contribu
  - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/winforms-team)
  - [WPF reviewers](https://github.com/orgs/reactiveui/teams/wpf-team) 
  - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/xamarin-forms-team)
+ -->
 
 <h2>.NET Foundation</h2>
 
@@ -291,23 +292,9 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
   </tbody>
 </table>
 
-<!--
-<h2 align="center">Core Team</h2>
-<h2 align="center">Learning Team</h2>
-<h2 align="center">Android Team</h2>
-<h2 align="center">Apple TV Team</h2>
-<h2 align="center">Dot Net Core Team</h2>
-<h2 align="center">Fody Team</h2>
-<h2 align="center">iOS Team</h2>
-<h2 align="center">Mac Team</h2>
-<h2 align="center">Tizen Team</h2>
-<h2 align="center">UWP Team</h2>
-<h2 align="center">Web Assembly Team</h2>
-<h2 align="center">WinForms Team</h2>
-<h2 align="center">WPF Team</h2>
-<h2 align="center">Xamarin Forms Team</h2>
-<h2 align="center">Alumni</h2>
--->
+<h2>Contributors</h2>
+This project exists thanks to all the people who have contributed to the code base.
+<a href="https://github.com/ReactiveUI/ReactiveUI/graphs/contributors"><img src="https://opencollective.com/ReactiveUI/contributors.svg?width=890&button=false" /></a>
 
 <h2>Sponsorship</h2>
 
