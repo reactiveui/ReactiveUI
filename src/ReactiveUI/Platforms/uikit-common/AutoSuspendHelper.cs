@@ -1,6 +1,7 @@
+// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -70,12 +71,12 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Gets or sets the launch options.
+        /// Gets the launch options.
         /// </summary>
         /// <value>
         /// The launch options.
         /// </value>
-        public IDictionary<string, string> LaunchOptions { get; protected set; }
+        public IDictionary<string, string> LaunchOptions { get; private set; }
 
         /// <summary>
         /// Advances the finished launching observable.
