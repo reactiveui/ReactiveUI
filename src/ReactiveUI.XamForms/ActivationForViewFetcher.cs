@@ -1,6 +1,7 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
 using System.ComponentModel;
@@ -89,25 +90,6 @@ namespace ReactiveUI.XamForms
             return Observable.Merge(
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => cell.Appearing += x, x => cell.Appearing -= x).Select(_ => true),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => cell.Disappearing += x, x => cell.Disappearing -= x).Select(_ => false));
-        }
-
-        private static Page GetPageFor(Element element)
-        {
-            Page page = null;
-
-            while (element != null)
-            {
-                page = element as Page;
-
-                if (page != null)
-                {
-                    return page;
-                }
-
-                element = element.ParentView;
-            }
-
-            return null;
         }
     }
 }
