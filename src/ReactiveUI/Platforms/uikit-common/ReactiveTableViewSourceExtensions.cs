@@ -22,7 +22,7 @@ namespace ReactiveUI
         /// <para>Extension method that binds an observable of a list of table
         /// sections as the source of a <see cref="UITableView"/>.</para>
         /// <para>If your <see cref="IReadOnlyList{T}"/> is also an instance of
-        /// <see cref="Legacy.IReactiveNotifyCollectionChanged{T}"/>, then this method
+        /// <see cref="INotifyCollectionChanged"/>, then this method
         /// will silently update the bindings whenever it changes as well.
         /// Otherwise, it will just log a message.</para>
         /// </summary>
