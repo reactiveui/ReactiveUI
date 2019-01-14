@@ -12,7 +12,7 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Akavache;
-using FFImageLoading.Forms.Droid;
+using FFImageLoading.Forms.Platform;
 
 namespace Cinephile.Droid
 {
@@ -29,7 +29,7 @@ namespace Cinephile.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
             BlobCache.ApplicationName = "Cinephile";
-            CachedImageRenderer.Init();
+            CachedImageRenderer.Init(true);
 
             LoadApplication(new App());
         }
