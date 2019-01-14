@@ -43,6 +43,16 @@ namespace EventBuilder
         WPF,
 
         /// <summary>
+        /// WPF for NetCoreApp 3.0 and above.
+        /// </summary>
+        NetCoreAppWPF,
+
+        /// <summary>
+        /// WinForms for NetCoreApp 3.0 and above.
+        /// </summary>
+        NetCoreAppWinforms,
+
+        /// <summary>
         /// Xamarin Forms platform.
         /// </summary>
         XamForms,

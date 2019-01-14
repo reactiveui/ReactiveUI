@@ -63,7 +63,8 @@ var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveu
 
 var vsWhereSettings = new VSWhereLatestSettings() { IncludePrerelease = includePrerelease };
 var vsLocation = string.IsNullOrWhiteSpace(vsLocationString) ? VSWhereLatest(vsWhereSettings) : new DirectoryPath(vsLocationString);
-var msBuildPath = string.IsNullOrWhiteSpace(msBuildPathString) ? vsLocation.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe") : new FilePath(msBuildPathString);
+var msBuildDirectory = includePrerelease ? "./MSBuild/Current/Bin/MSBuild.exe" : "./MSBuild/15.0/Bin/MSBuild.exe";
+var msBuildPath = string.IsNullOrWhiteSpace(msBuildPathString) ? vsLocation.CombineWithFilePath(msBuildDirectory) : new FilePath(msBuildPathString);
 
 var informationalVersion = EnvironmentVariable("GitAssemblyInformationalVersion");
 
@@ -116,6 +117,8 @@ var packageTestWhitelist = new[]
     ("winforms", "src/ReactiveUI.Events.Winforms/"),
     ("essentials", "src/ReactiveUI.Events.XamEssentials/"),
     ("tvos", "src/ReactiveUI.Events/"),
+    ("NetCoreAppWPF", "src/ReactiveUI.Events.WPF/"),
+    ("NetCoreAppWinforms", "src/ReactiveUI.Events.Winforms/"),
 };
 
 // Define global marcos.
@@ -230,7 +233,11 @@ Task("GenerateEvents")
         Information("The events have been written to '{0}'", output);
     };
 
-    Parallel.ForEach(eventGenerators, arg => generate(arg.targetName, arg.destination));
+    var options = new ParallelOptions {
+        MaxDegreeOfParallelism = 1,
+    };
+
+    Parallel.ForEach(eventGenerators, options, arg => generate(arg.targetName, arg.destination));
 
     CopyFiles(GetFiles("./src/ReactiveUI.**/Events_*.cs"), Directory(eventsArtifactDirectory));
 });
