@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);1591;1701;1702;1705;VSX1000</NoWarn>
+    <Platform>AnyCPU</Platform>
+  </PropertyGroup>
+
+   <PropertyGroup>
+    <SolutionDir Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)</SolutionDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\LICENSE" Pack="true" PackagePath="LICENSE" />
+  </ItemGroup>
+</Project>
