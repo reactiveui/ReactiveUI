@@ -12,6 +12,11 @@ pool:
   vmImage: vs2017-win2016
 
 steps:
+- task: DotNetCoreInstaller@0
+  displayName: Install .NET Core 3.0 preview
+  inputs:
+    version: '3.0.100-preview-009812'
+
 - task: BatchScript@1
   inputs:
     filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\Common7\\Tools\\VsDevCmd.bat"
