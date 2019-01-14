@@ -119,6 +119,14 @@ namespace EventBuilder
                                 _mustacheTemplate = "XamarinEssentialsTemplate.mustache";
                                 break;
 
+                            case AutoPlatform.NetCoreAppWPF:
+                                platform = new NetCoreAppWPF();
+                                break;
+
+                            case AutoPlatform.NetCoreAppWinforms:
+                                platform = new NetCoreAppWinforms();
+                                break;
+
                             default:
                                 throw new ArgumentException($"Platform not {options.Platform} supported");
                         }
