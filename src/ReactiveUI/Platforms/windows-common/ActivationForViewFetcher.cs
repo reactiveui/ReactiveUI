@@ -40,21 +40,28 @@ namespace ReactiveUI
 #if WINDOWS_UWP
             var viewLoaded = WindowsObservable.FromEventPattern<FrameworkElement, object>(
                 x => fe.Loading += x,
-                x => fe.Loading -= x).Select(_ => true);
+                x => fe.Loading -= x)
+                .Select(_ => true);
 #else
             var viewLoaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
                 x => fe.Loaded += x,
-                x => fe.Loaded -= x).Select(_ => true);
+                x => fe.Loaded -= x)
+                .Select(_ => true);
 #endif
 
             var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
                 x => fe.Unloaded += x,
-                x => fe.Unloaded -= x).Select(_ => false);
+                x => fe.Unloaded -= x)
+                .Select(_ => false);
+
+            var hitTestVisible = Observable.FromEventPattern<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
+                x => fe.IsHitTestVisibleChanged += x,
+                x => fe.IsHitTestVisibleChanged -= x)
+                .Select(x => (bool)x.EventArgs.NewValue);
 
             return viewLoaded
                 .Merge(viewUnloaded)
-                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).SkipWhile(x => !x) : Observables.False)
-                .Switch()
+                .Merge(hitTestVisible)
                 .DistinctUntilChanged();
         }
     }
