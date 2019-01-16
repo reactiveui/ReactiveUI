@@ -58,10 +58,10 @@ namespace ReactiveUI
             DefaultStyleKey = typeof(ViewModelViewHost);
 #endif
 
-            // NB: InUnitTestRunner also returns true in Design Mode
             if (ModeDetector.InUnitTestRunner())
             {
                 ViewContractObservable = Observable<string>.Never;
+                // NB: InUnitTestRunner also returns true in Design Mode
                 return;
             }
 
