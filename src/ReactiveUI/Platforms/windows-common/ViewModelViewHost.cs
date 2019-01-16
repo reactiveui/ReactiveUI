@@ -31,7 +31,7 @@ namespace ReactiveUI
         /// The default content dependency property.
         /// </summary>
         public static readonly DependencyProperty DefaultContentProperty =
-            DependencyProperty.Register("DefaultContent", typeof(UIElement), typeof(ViewModelViewHost), new PropertyMetadata(null));
+            DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
 
         /// <summary>
         /// The view model dependency property.
@@ -106,9 +106,9 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the content displayed by default when no content is set.
         /// </summary>
-        public UIElement DefaultContent
+        public object DefaultContent
         {
-            get => (UIElement)GetValue(DefaultContentProperty);
+            get => GetValue(DefaultContentProperty);
             set => SetValue(DefaultContentProperty, value);
         }
 
@@ -171,7 +171,6 @@ namespace ReactiveUI
             if (viewModel == null)
             {
                 Content = DefaultContent;
-
                 return;
             }
 
@@ -185,9 +184,7 @@ namespace ReactiveUI
 
             viewInstance.ViewModel = viewModel;
 
-            var view = viewInstance as UIElement;
-
-            Content = view ?? throw new Exception($"The view found for {viewModel.GetType()} is not a valid {nameof(UIElement)}.");
+            Content = viewInstance;
         }
     }
 }
