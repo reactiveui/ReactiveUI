@@ -42,22 +42,24 @@ namespace ReactiveUI
                 x => fe.Loading += x,
                 x => fe.Loading -= x)
                 .Select(_ => true);
+
+            var hitTestVisible = fe.WhenAnyValue(x => x.IsHitTestVisible);
 #else
             var viewLoaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
                 x => fe.Loaded += x,
                 x => fe.Loaded -= x)
                 .Select(_ => true);
+
+             var hitTestVisible = Observable.FromEventPattern<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
+                x => fe.IsHitTestVisibleChanged += x,
+                x => fe.IsHitTestVisibleChanged -= x)
+                .Select(x => (bool)x.EventArgs.NewValue);
 #endif
 
             var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
                 x => fe.Unloaded += x,
                 x => fe.Unloaded -= x)
                 .Select(_ => false);
-
-            var hitTestVisible = Observable.FromEventPattern<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
-                x => fe.IsHitTestVisibleChanged += x,
-                x => fe.IsHitTestVisibleChanged -= x)
-                .Select(x => (bool)x.EventArgs.NewValue);
 
             return viewLoaded
                 .Merge(viewUnloaded)
