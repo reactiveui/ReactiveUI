@@ -57,6 +57,7 @@ namespace ReactiveUI
 #if NETFX_CORE
             DefaultStyleKey = typeof(ViewModelViewHost);
 #endif
+
             // NB: InUnitTestRunner also returns true in Design Mode
             if (ModeDetector.InUnitTestRunner())
             {
