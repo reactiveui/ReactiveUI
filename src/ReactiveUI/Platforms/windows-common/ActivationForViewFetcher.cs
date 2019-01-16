@@ -50,7 +50,7 @@ namespace ReactiveUI
                 x => fe.Loaded -= x)
                 .Select(_ => true);
 
-             var hitTestVisible = Observable.FromEventPattern<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
+            var hitTestVisible = Observable.FromEventPattern<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
                 x => fe.IsHitTestVisibleChanged += x,
                 x => fe.IsHitTestVisibleChanged -= x)
                 .Select(x => (bool)x.EventArgs.NewValue);
