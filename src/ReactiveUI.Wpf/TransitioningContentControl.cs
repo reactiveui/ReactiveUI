@@ -250,20 +250,12 @@ namespace ReactiveUI
         {
             AbortTransition();
 
-            var handler = TransitionCompleted;
-            if (handler != null)
-            {
-                handler(this, new RoutedEventArgs());
-            }
+            TransitionCompleted?.Invoke(this, new RoutedEventArgs());
         }
 
         private void RaiseTransitionStarted()
         {
-            var handler = TransitionStarted;
-            if (handler != null)
-            {
-                handler(this, new RoutedEventArgs());
-            }
+            TransitionStarted?.Invoke(this, new RoutedEventArgs());
         }
 
         private void QueueTransition(object oldContent, object newContent)
@@ -282,8 +274,7 @@ namespace ReactiveUI
                     {
                         // Wire up the completion transition.
                         var transitionInName = Transition + "Transition_" + TransitionPartType.In;
-                        var transitionIn = GetTransitionStoryboardByName(transitionInName);
-                        CompletingTransition = transitionIn;
+                        CompletingTransition = GetTransitionStoryboardByName(transitionInName);
 
                         // Wire up the first transition to start the second transition when it's complete.
                         startingTransitionName = Transition + "Transition_" + TransitionPartType.Out;
@@ -294,8 +285,7 @@ namespace ReactiveUI
                     else
                     {
                         startingTransitionName = Transition + "Transition_" + TransitionPart;
-                        var transitionIn = GetTransitionStoryboardByName(startingTransitionName);
-                        CompletingTransition = transitionIn;
+                        CompletingTransition = GetTransitionStoryboardByName(startingTransitionName);
                     }
 
                     // Start the transition.
