@@ -132,15 +132,13 @@ namespace ReactiveUI
                 if (viewModelType.Name.StartsWith("I", StringComparison.InvariantCulture))
                 {
                     var toggledTypeName = DeinterfaceifyTypeName(viewModelTypeName);
-                    var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
-                    return toggledType;
+                    return Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
                 }
             }
             else
             {
                 var toggledTypeName = InterfaceifyTypeName(viewModelTypeName);
-                var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
-                return toggledType;
+                return Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
             }
 
             return null;
@@ -214,6 +212,8 @@ namespace ReactiveUI
                     this.Log().Debug("Resolve service type '{0}' does not implement '{1}'.", viewType.FullName, typeof(IViewFor).FullName);
                     return null;
                 }
+
+                this.Log().Debug("Resolved service type '{0}'", viewType.FullName);
 
                 return view;
             }
