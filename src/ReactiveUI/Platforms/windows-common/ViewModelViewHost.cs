@@ -5,6 +5,7 @@
 
 using System;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
@@ -27,22 +28,22 @@ namespace ReactiveUI
     public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger, IDisposable
     {
         /// <summary>
-        /// The view model dependency property.
-        /// </summary>
-        public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
-
-        /// <summary>
         /// The default content dependency property.
         /// </summary>
         public static readonly DependencyProperty DefaultContentProperty =
-            DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
+            DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
+
+        /// <summary>
+        /// The view model dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
 
         /// <summary>
         /// The view contract observable dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewContractObservableProperty =
-            DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
+            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, SomethingChanged));
 
         private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
         private string _viewContract;
@@ -57,16 +58,13 @@ namespace ReactiveUI
             DefaultStyleKey = typeof(ViewModelViewHost);
 #endif
 
-            if (ModeDetector.InUnitTestRunner()) // NB: InUnitTestRunner also returns true in Design Mode
+            if (ModeDetector.InUnitTestRunner())
             {
                 ViewContractObservable = Observable<string>.Never;
+
+                // NB: InUnitTestRunner also returns true in Design Mode
                 return;
             }
-
-            var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.ViewModel),
-                this.WhenAnyObservable(x => x.ViewContractObservable),
-                (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
             Func<string> platformGetter = () => default(string);
@@ -87,32 +85,15 @@ namespace ReactiveUI
                 .StartWith(platformGetter())
                 .DistinctUntilChanged();
 
-            this.WhenActivated(d =>
-            {
-                d(vmAndContract.Subscribe(x =>
-                {
-                    if (x.ViewModel == null)
-                    {
-                        Content = DefaultContent;
-                        return;
-                    }
+            var contractChanged = _updateViewModel.Select(_ => ViewContractObservable).Switch();
+            var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
 
-                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
+            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
 
-                    if (view == null)
-                    {
-                        throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
-                    }
-
-                    view.ViewModel = x.ViewModel;
-                    Content = view;
-                }));
-
-                d(this.WhenAnyObservable(x => x.ViewContractObservable)
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Subscribe(x => _viewContract = x));
-            });
+            vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
+            contractChanged
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => _viewContract = x);
         }
 
         /// <summary>
@@ -185,6 +166,27 @@ namespace ReactiveUI
         private static void SomethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             ((ViewModelViewHost)dependencyObject)._updateViewModel.OnNext(Unit.Default);
+        }
+
+        private void ResolveViewForViewModel(object viewModel, string contract)
+        {
+            if (viewModel == null)
+            {
+                Content = DefaultContent;
+                return;
+            }
+
+            var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+            var viewInstance = viewLocator.ResolveView(viewModel, contract) ?? viewLocator.ResolveView(viewModel, null);
+
+            if (viewInstance == null)
+            {
+                throw new Exception($"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");
+            }
+
+            viewInstance.ViewModel = viewModel;
+
+            Content = viewInstance;
         }
     }
 }

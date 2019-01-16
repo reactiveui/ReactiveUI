@@ -59,12 +59,12 @@ namespace ReactiveUI.Tests
 
             uc.RaiseEvent(loaded);
 
-            // IsHitTestVisible still false
-            Array.Empty<bool>().AssertAreEqual(activated);
+            // Loaded has happened.
+            new[] { true }.AssertAreEqual(activated);
 
             uc.IsHitTestVisible = true;
 
-            // IsHitTestVisible true
+            // IsHitTestVisible true, we don't want the event to repeat unnecessarily.
             new[] { true }.AssertAreEqual(activated);
 
             var unloaded = new RoutedEventArgs();
@@ -72,6 +72,7 @@ namespace ReactiveUI.Tests
 
             uc.RaiseEvent(unloaded);
 
+            // We had both a loaded/hit test visible change/unloaded happen.
             new[] { true, false }.AssertAreEqual(activated);
         }
 
