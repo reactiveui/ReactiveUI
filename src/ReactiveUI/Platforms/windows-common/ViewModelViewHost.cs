@@ -61,6 +61,7 @@ namespace ReactiveUI
             if (ModeDetector.InUnitTestRunner())
             {
                 ViewContractObservable = Observable<string>.Never;
+
                 // NB: InUnitTestRunner also returns true in Design Mode
                 return;
             }
