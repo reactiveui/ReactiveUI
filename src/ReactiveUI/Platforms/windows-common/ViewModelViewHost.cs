@@ -37,7 +37,7 @@ namespace ReactiveUI
         /// The view model dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
+            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
 
         /// <summary>
         /// The view contract observable dependency property.
