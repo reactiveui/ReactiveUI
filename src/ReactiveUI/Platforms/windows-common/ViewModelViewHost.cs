@@ -31,7 +31,7 @@ namespace ReactiveUI
         /// The default content dependency property.
         /// </summary>
         public static readonly DependencyProperty DefaultContentProperty =
-            DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
 
         /// <summary>
         /// The view model dependency property.
