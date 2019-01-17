@@ -1,6 +1,7 @@
 [![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build Status](https://dev.azure.com/dotnet/ReactiveUI/_apis/build/status/ReactiveUI-CI)](https://dev.azure.com/dotnet/ReactiveUI/_build/latest?definitionId=11)
- [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/master/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) <!--[![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui)--> [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI?ref=badge_shield)
-<br>
+ [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/master/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=reactiveui/ReactiveUI)](https://dependabot.com)
+
 <a href="https://www.nuget.org/packages/reactiveui">
         <img src="https://img.shields.io/nuget/dt/reactiveui.svg">
 </a>
@@ -18,6 +19,7 @@
 <a href="https://github.com/reactiveui/reactiveui">
   <img width="160" heigth="160" src="https://i.imgur.com/23kfbS9.png">
 </a>
+
 <br>
 <h1>What is ReactiveUI?</h1>
 
