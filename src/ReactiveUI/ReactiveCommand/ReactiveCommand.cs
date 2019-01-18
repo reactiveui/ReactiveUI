@@ -47,8 +47,8 @@ namespace ReactiveUI
     /// command.Execute(42).Subscribe();
     ///
     /// // A better approach is to invoke a command in response to an Observable<T>.
-    /// // InvokeCommand operator respects the command's executability. That is, if 
-    /// // the command's CanExecute method returns false, InvokeCommand will not 
+    /// // InvokeCommand operator respects the command's executability. That is, if
+    /// // the command's CanExecute method returns false, InvokeCommand will not
     /// // execute the command when the source observable ticks.
     /// Observable.Return(42).InvokeCommand(command);
     /// ]]>
