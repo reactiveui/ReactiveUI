@@ -43,8 +43,14 @@ namespace ReactiveUI
     /// // A synchronous command taking a parameter and returning nothing.
     /// var command = ReactiveCommand.Create<int, Unit>(x => Console.WriteLine(x));
     ///
-    /// // This outputs: 42
+    /// // This outputs 42 to console.
     /// command.Execute(42).Subscribe();
+    ///
+    /// // A better approach is to invoke a command in response to an Observable<T>.
+    /// // InvokeCommand operator respects the command's executability. That is, if 
+    /// // the command's CanExecute method returns false, InvokeCommand will not 
+    /// // execute the command when the source observable ticks.
+    /// Observable.Return(42).InvokeCommand(command);
     /// ]]>
     /// </code>
     /// </para>
@@ -58,7 +64,7 @@ namespace ReactiveUI
     /// );
     ///
     /// // Calling the asynchronous reactive command:
-    /// command.Execute(Unit.Default).Subscribe();
+    /// // Observable.Return(Unit.Default).InvokeCommand(command);
     ///
     /// // Subscribing to values emitted by the command:
     /// command.Subscribe(Console.WriteLine);
