@@ -62,40 +62,40 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
 [CoreEvents]: https://www.nuget.org/packages/ReactiveUI.Events/
-[CoreBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.svg
+[CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg
 [CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
 
 [Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
-[TestBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.Testing.svg
+[TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
 [TestDoc]: https://reactiveui.net/docs/handbook/testing/
 
 [UniDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
 
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
 [WpfEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WPF/
-[WpfBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.WPF.svg
+[WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
 [WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
 
 [Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
 [WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
-[WinBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.WinForms.svg
+[WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
 [WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
 
 [Xam]: https://www.nuget.org/packages/ReactiveUI.XamForms/
 [XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.XamForms/
-[XamBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.XamForms.svg
+[XamBadge]: https://img.shields.io/nuget/v/ReactiveUI.XamForms.svg
 [XamDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-forms
 [XamE]: https://www.nuget.org/packages/ReactiveUI.Events.XamEssentials/
 
 [Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
-[DroBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.AndroidSupport.svg
+[DroBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidSupport.svg
 [DroDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-android
 
 [MacDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-mac
 [IosDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-ios
 
 [Ava]: https://www.nuget.org/packages/Avalonia.ReactiveUI/
-[AvaBadge]: https://img.shields.io/nuget/vpre/Avalonia.ReactiveUI.svg
+[AvaBadge]: https://img.shields.io/nuget/v/Avalonia.ReactiveUI.svg
 [AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
 [EventsDocs]: https://reactiveui.net/docs/handbook/events/
 
