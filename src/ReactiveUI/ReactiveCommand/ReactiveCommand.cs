@@ -25,6 +25,46 @@ namespace ReactiveUI
     /// <para>
     /// This non-generic base class defines the creation behavior of the ReactiveCommand's.
     /// </para>
+    /// <para>
+    /// <see cref="ReactiveCommand{TInput, Output}"/> adds the concept of Input and Output generic types.
+    /// The Input is often passed in by the View and it's type is captured as TInput, and the Output is
+    /// the result of executing the command which type is captured as TOutput.
+    /// </para>
+    /// <para>
+    /// <see cref="ReactiveCommand{TInput, Output}"/> is <c>IObservable</c> which can be used like any other <c>IObservable</c>.
+    /// For example, you can Subscribe() to it like any other observable, and add the output to a List on your view model.
+    /// The Unit type is a functional programming construct analogous to void and can be used in cases where you don't
+    /// care about either the input and/or output value.
+    /// </para>
+    /// <para>
+    /// Creating synchronous reactive commands:
+    /// <code>
+    /// <![CDATA[
+    /// // A synchronous command taking a parameter and returning nothing.
+    /// var command = ReactiveCommand.Create<int, Unit>(x => Console.WriteLine(x));
+    ///
+    /// // This outputs: 42
+    /// command.Execute(42).Subscribe();
+    /// ]]>
+    /// </code>
+    /// </para>
+    /// <para>
+    /// Creating asynchronous reactive commands:
+    /// <code>
+    /// <![CDATA[
+    /// // An asynchronous command that waits 2 seconds and returns 42.
+    /// var command = ReactiveCommand.CreateFromObservable<Unit, int>(
+    ///      () => Observable.Return(42).Delay(TimeSpan.FromSeconds(2))
+    /// );
+    ///
+    /// // Calling the asynchronous reactive command:
+    /// command.Execute(Unit.Default).Subscribe();
+    ///
+    /// // Subscribing to values emitted by the command:
+    /// command.Subscribe(Console.WriteLine);
+    /// ]]>
+    /// </code>
+    /// </para>
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Same class just generic.")]
     public static class ReactiveCommand
