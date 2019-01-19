@@ -1,6 +1,7 @@
 [![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build Status](https://dev.azure.com/dotnet/ReactiveUI/_apis/build/status/ReactiveUI-CI)](https://dev.azure.com/dotnet/ReactiveUI/_build/latest?definitionId=11)
- [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/master/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) <!--[![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui)--> [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI?ref=badge_shield)
-<br>
+ [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/master/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=reactiveui/ReactiveUI)](https://dependabot.com)
+
 <a href="https://www.nuget.org/packages/reactiveui">
         <img src="https://img.shields.io/nuget/dt/reactiveui.svg">
 </a>
@@ -18,6 +19,7 @@
 <a href="https://github.com/reactiveui/reactiveui">
   <img width="160" heigth="160" src="https://i.imgur.com/23kfbS9.png">
 </a>
+
 <br>
 <h1>What is ReactiveUI?</h1>
 
@@ -60,40 +62,40 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
 [CoreEvents]: https://www.nuget.org/packages/ReactiveUI.Events/
-[CoreBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.svg
+[CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg
 [CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
 
 [Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
-[TestBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.Testing.svg
+[TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
 [TestDoc]: https://reactiveui.net/docs/handbook/testing/
 
 [UniDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
 
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
 [WpfEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WPF/
-[WpfBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.WPF.svg
+[WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
 [WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
 
 [Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
 [WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
-[WinBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.WinForms.svg
+[WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
 [WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
 
 [Xam]: https://www.nuget.org/packages/ReactiveUI.XamForms/
 [XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.XamForms/
-[XamBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.XamForms.svg
+[XamBadge]: https://img.shields.io/nuget/v/ReactiveUI.XamForms.svg
 [XamDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-forms
 [XamE]: https://www.nuget.org/packages/ReactiveUI.Events.XamEssentials/
 
 [Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
-[DroBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.AndroidSupport.svg
+[DroBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidSupport.svg
 [DroDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-android
 
 [MacDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-mac
 [IosDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-ios
 
 [Ava]: https://www.nuget.org/packages/Avalonia.ReactiveUI/
-[AvaBadge]: https://img.shields.io/nuget/vpre/Avalonia.ReactiveUI.svg
+[AvaBadge]: https://img.shields.io/nuget/v/Avalonia.ReactiveUI.svg
 [AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
 [EventsDocs]: https://reactiveui.net/docs/handbook/events/
 
