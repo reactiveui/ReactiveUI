@@ -22,11 +22,11 @@ namespace ReactiveUI.Tests.Wpf
         [Fact]
         public void CommandBindToExplicitEventWireup()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView { ViewModel = vm };
+            var vm = new CommandBindingViewModel();
+            var view = new CommandBindingView { ViewModel = vm };
 
             var invokeCount = 0;
-            vm.Command2.Subscribe(_ => invokeCount += 1);
+            vm.Command2.Subscribe(_ => invokeCount++);
 
             var disp = view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
 
