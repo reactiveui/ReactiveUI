@@ -22,7 +22,7 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "nuget:?package=OpenCover&version=4.6.519"
+#tool "nuget:?package=OpenCover&version=4.7.906-rc"
 #tool "nuget:?package=ReportGenerator&version=4.0.4"
 #tool "nuget:?package=vswhere&version=2.5.2"
 #tool "nuget:?package=xunit.runner.console&version=2.4.1"
@@ -102,6 +102,12 @@ var packageTestWhitelist = new[]
 {
     "ReactiveUI.Tests", 
     "ReactiveUI.Fody.Tests"
+};
+
+(string name, bool performCoverageTesting)[] testFrameworks = new[]
+{ 
+    ("net461", true),
+    ("netcoreapp2.0", false),
 };
 
 (string targetName, string destination)[] eventGenerators = new[]
@@ -279,6 +285,8 @@ Task("RunUnitTests")
         .WithFilter("-[*.Tests*]*")
         .WithFilter("-[ReactiveUI.Events]*")
         .WithFilter("-[Splat*]*")
+        .WithFilter("-[xunit*]*")
+        .WithFilter("-[DynamicData*]*")
         .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
         .ExcludeByFile("*/*Designer.cs")
         .ExcludeByFile("*/*.g.cs")
@@ -292,16 +300,36 @@ Task("RunUnitTests")
         NoAppDomain = true
     };
 
-    foreach (var projectName in packageTestWhitelist)
+    foreach (var packageName in packageTestWhitelist)
     {
-        OpenCover(tool => 
-        {
-            Build("./src/" + projectName + "/" + projectName + ".csproj", null, true, true);
+        var projectName = $"./src/{packageName}/{packageName}.csproj";
+        Build(projectName, null, true, true);
 
-            tool.XUnit2("./src/" + projectName + "/bin/" + "**/*.Tests.dll", xunitSettings);
-        },
-        testCoverageOutputFile,
-        openCoverSettings);
+        foreach (var testFramework in testFrameworks)
+        {
+            var testSettings = new DotNetCoreTestSettings {
+                NoBuild = true,
+                Framework = testFramework.name,
+                Configuration = "Release",
+                ResultsDirectory = testsArtifactDirectory,
+                Logger = $"trx;LogFileName=testresults-{packageName}-{testFramework.name}.trx",
+                // TestAdapterPath = GetDirectories("./tools/xunit.runner.console*/**/netcoreapp2.0").FirstOrDefault(),        
+            };
+
+            if (testFramework.performCoverageTesting)
+            {
+                OpenCover(tool => 
+                {
+                    tool.DotNetCoreTest(projectName, testSettings);
+                },
+                testCoverageOutputFile,
+                openCoverSettings);
+            }
+            else
+            {
+                DotNetCoreTest(projectName, testSettings);
+            }
+        }
     }
 
     ReportGenerator(testCoverageOutputFile, testsArtifactDirectory + "Report/");

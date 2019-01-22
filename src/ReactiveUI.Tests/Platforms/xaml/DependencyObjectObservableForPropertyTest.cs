@@ -9,39 +9,23 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Windows;
-using System.Windows.Controls;
+
 using DynamicData;
 using Xunit;
 
-namespace ReactiveUI.Tests
+#if NETFX_CORE
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+#else
+using FactAttribute = Xunit.WpfFactAttribute;
+using System.Windows.Controls;
+#endif
+
+namespace ReactiveUI.Tests.Xaml
 {
-    public class DepObjFixture : FrameworkElement
-    {
-        public static readonly DependencyProperty TestStringProperty =
-            DependencyProperty.Register("TestString", typeof(string), typeof(DepObjFixture), new PropertyMetadata(null));
-
-        public string TestString
-        {
-            get => (string)GetValue(TestStringProperty);
-            set => SetValue(TestStringProperty, value);
-        }
-    }
-
-    public class DerivedDepObjFixture : DepObjFixture
-    {
-        public static readonly DependencyProperty AnotherTestStringProperty =
-            DependencyProperty.Register("AnotherTestString", typeof(string), typeof(DerivedDepObjFixture), new PropertyMetadata(null));
-
-        public string AnotherTestString
-        {
-            get => (string)GetValue(AnotherTestStringProperty);
-            set => SetValue(AnotherTestStringProperty, value);
-        }
-    }
-
     public class DependencyObjectObservableForPropertyTest
     {
-        [WpfFact]
+        [Fact]
         public void DependencyObjectObservableForPropertySmokeTest()
         {
             var fixture = new DepObjFixture();
@@ -64,7 +48,7 @@ namespace ReactiveUI.Tests
             disp2.Dispose();
         }
 
-        [WpfFact]
+        [Fact]
         public void DerivedDependencyObjectObservableForPropertySmokeTest()
         {
             var fixture = new DerivedDepObjFixture();
@@ -87,7 +71,7 @@ namespace ReactiveUI.Tests
             disp2.Dispose();
         }
 
-        [WpfFact]
+        [Fact]
         public void WhenAnyWithDependencyObjectTest()
         {
             var inputs = new[] { "Foo", "Bar", "Baz" };
@@ -101,7 +85,7 @@ namespace ReactiveUI.Tests
             Assert.True(inputs.Zip(outputs.Skip(1), (expected, actual) => expected == actual).All(x => x));
         }
 
-        [WpfFact]
+        [Fact]
         public void ListBoxSelectedItemTest()
         {
             var input = new ListBox();

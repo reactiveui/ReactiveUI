@@ -15,12 +15,7 @@ namespace ReactiveUI
 
         public CollectionDebugView(ICollection<T> collection)
         {
-            if (collection == null)
-            {
-                throw new ArgumentNullException(nameof(collection), "collection is null.");
-            }
-
-            _collection = collection;
+            _collection = collection ?? throw new ArgumentNullException(nameof(collection), "collection is null.");
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
