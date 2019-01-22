@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,8 +22,8 @@ namespace ReactiveUI.Tests.Wpf
 
         public CommandBindingViewModel()
         {
-            Command1 = ReactiveCommand.Create<int, Unit>(_ => Unit.Default);
-            Command2 = ReactiveCommand.Create(() => { });
+            Command1 = ReactiveCommand.Create<int, Unit>(_ => Unit.Default, outputScheduler: ImmediateScheduler.Instance);
+            Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
         }
 
         public ReactiveCommand<int, Unit> Command1
