@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests.Wpf
         object IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (CommandBindViewModel)value;
+            set => ViewModel = (CommandBindingViewModel)value;
         }
 
         public CommandBindingViewModel ViewModel { get; set; }
