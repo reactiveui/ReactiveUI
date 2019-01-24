@@ -405,7 +405,7 @@ namespace ReactiveUI.Tests
         public void ExecuteTicksThroughTheResult()
         {
             int num = 0;
-            ReactiveCommand<Unit, int> fixture = ReactiveCommand.CreateFromObservable(() => Observable.Return(num));
+            ReactiveCommand<Unit, int> fixture = ReactiveCommand.CreateFromObservable(() => Observable.Return(num), outputScheduler: ImmediateScheduler.Instance);
             fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out ReadOnlyObservableCollection<int> results).Subscribe();
 
             num = 1;
@@ -424,7 +424,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
         {
-            ICommand fixture = ReactiveCommand.Create<int>(_ => { });
+            ICommand fixture = ReactiveCommand.Create<int>(_ => { }, outputScheduler: ImmediateScheduler.Instance);
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute("foo"));
             Assert.Equal("Command requires parameters of type System.Int32, but received parameter of type System.String.", ex.Message);
 
