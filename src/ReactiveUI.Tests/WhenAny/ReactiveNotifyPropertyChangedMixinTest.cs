@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Threading;
 using Microsoft.Reactive.Testing;
 
@@ -489,6 +491,70 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, output4.Count);
             Assert.Equal(null, output4[0]);
+        }
+
+        [Fact]
+        public void ChangedShouldHaveValidData()
+        {
+            var fixture = new TestFixture
+            {
+                IsNotNullString = "Foo",
+                IsOnlyOneWord = "Baz",
+                PocoProperty = "Bamf"
+            };
+
+            object sender = null;
+            string propertyName = null;
+            fixture.Changed.ObserveOn(ImmediateScheduler.Instance).Subscribe(
+                x =>
+                {
+                    sender = x.Sender;
+                    propertyName = x.PropertyName;
+                });
+
+            fixture.UsesExprRaiseSet = "abc";
+
+            Assert.Equal(fixture, sender);
+            Assert.Equal(nameof(fixture.UsesExprRaiseSet), propertyName);
+
+            sender = null;
+            propertyName = null;
+            fixture.PocoProperty = "abc";
+
+            Assert.Equal(null, sender);
+            Assert.Equal(null, propertyName);
+        }
+
+        [Fact]
+        public void ChangingShouldHaveValidData()
+        {
+            var fixture = new TestFixture
+            {
+                IsNotNullString = "Foo",
+                IsOnlyOneWord = "Baz",
+                PocoProperty = "Bamf"
+            };
+
+            object sender = null;
+            string propertyName = null;
+            fixture.Changing.ObserveOn(ImmediateScheduler.Instance).Subscribe(
+                x =>
+                {
+                    sender = x.Sender;
+                    propertyName = x.PropertyName;
+                });
+
+            fixture.UsesExprRaiseSet = "abc";
+
+            Assert.Equal(fixture, sender);
+            Assert.Equal(nameof(fixture.UsesExprRaiseSet), propertyName);
+
+            sender = null;
+            propertyName = null;
+            fixture.PocoProperty = "abc";
+
+            Assert.Equal(null, sender);
+            Assert.Equal(null, propertyName);
         }
 
         [Fact]

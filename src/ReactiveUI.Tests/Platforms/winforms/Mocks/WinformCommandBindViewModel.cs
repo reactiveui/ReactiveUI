@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive;
+using System.Reactive.Concurrency;
 
 namespace ReactiveUI.Tests.Winforms
 {
@@ -15,8 +16,8 @@ namespace ReactiveUI.Tests.Winforms
 
         public WinformCommandBindViewModel()
         {
-            Command1 = ReactiveCommand.Create(() => { });
-            Command2 = ReactiveCommand.Create(() => { });
+            Command1 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+            Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
         }
 
         public ReactiveCommand<Unit, Unit> Command1
