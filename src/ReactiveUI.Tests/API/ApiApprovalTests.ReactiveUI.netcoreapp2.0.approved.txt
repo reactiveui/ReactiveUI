@@ -929,7 +929,7 @@ namespace ReactiveUI.Legacy
         public static ReactiveUI.Legacy.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Nullable<System.TimeSpan> withDelay = null, System.Action<System.Exception> onError = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
     }
     [System.Diagnostics.DebuggerDisplayAttribute("Count = {Count}")]
-    [System.Diagnostics.DebuggerTypeProxyAttribute(typeof(ReactiveUI.CollectionDebugView<>))]
+    [System.Diagnostics.DebuggerTypeProxyAttribute(typeof(ReactiveUI.Legacy.CollectionDebugView<>))]
     [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
         "ps://github.com/rolandpheasant/dynamicdata")]
     public class ReactiveList<T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveCollection<T>, ReactiveUI.Legacy.IReactiveList<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.Legacy.IReadOnlyReactiveCollection<T>, ReactiveUI.Legacy.IReadOnlyReactiveList<T>, Splat.IEnableLogger, System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged

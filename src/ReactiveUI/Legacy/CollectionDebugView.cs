@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace ReactiveUI
+namespace ReactiveUI.Legacy
 {
     internal sealed class CollectionDebugView<T>
     {
