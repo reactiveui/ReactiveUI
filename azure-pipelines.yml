@@ -12,6 +12,11 @@ pool:
   vmImage: vs2017-win2016
 
 steps:
+- task: DotNetCoreInstaller@0
+  displayName: Install Dot Net Core v2.2.1
+  inputs:
+    version: '2.2.103'
+
 - task: BatchScript@1
   inputs:
     filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\Common7\\Tools\\VsDevCmd.bat"
