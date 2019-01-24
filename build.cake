@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #addin "nuget:?package=Cake.FileHelpers&version=3.1.0"
-#addin "nuget:?package=Cake.Coveralls&version=0.9.0"
+#addin "nuget:?package=Cake.Coverlet&version=2.2.1"
 #addin "nuget:?package=Cake.PinNuGetDependency&loaddependencies=true&version=3.2.3"
 #addin "nuget:?package=Cake.Powershell&version=0.4.7"
 #addin "nuget:?package=Cake.Codecov&version=0.5.0"
@@ -22,11 +22,11 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "nuget:?package=OpenCover&version=4.6.519"
 #tool "nuget:?package=ReportGenerator&version=4.0.4"
 #tool "nuget:?package=vswhere&version=2.5.2"
 #tool "nuget:?package=xunit.runner.console&version=2.4.1"
 #tool "nuget:?package=Codecov&version=1.1.0"
+#tool "nuget:?package=OpenCover&version=4.7.906-rc"
 
 //////////////////////////////////////////////////////////////////////
 // DOTNET TOOLS
@@ -43,6 +43,12 @@ var target = Argument("target", "Default");
 if (string.IsNullOrWhiteSpace(target))
 {
     target = "Default";
+}
+
+var configuration = Argument("configuration", "Release");
+if (string.IsNullOrWhiteSpace(configuration))
+{
+    configuration = "Release";
 }
 
 var includePrerelease = Argument("includePrerelease", false);
@@ -98,10 +104,16 @@ var packageWhitelist = new[]
     "ReactiveUI.LeakTests"
 };
 
-var packageTestWhitelist = new[]
+(string projectName, bool performCoverageTesting)[] packageTestWhitelist = new[]
 {
-    "ReactiveUI.Tests", 
-    "ReactiveUI.Fody.Tests"
+    ("ReactiveUI.Tests", true), 
+    ("ReactiveUI.Fody.Tests", true),
+};
+
+(string name, bool performCoverageTesting)[] testFrameworks = new[]
+{ 
+    ("net461", true),
+    ("netcoreapp2.0", false),
 };
 
 (string targetName, string destination)[] eventGenerators = new[]
@@ -152,9 +164,9 @@ Teardown(context =>
 //////////////////////////////////////////////////////////////////////
 // HELPER METHODS
 //////////////////////////////////////////////////////////////////////
-Action<string, string, bool, bool> Build = (solution, packageOutputPath, createPackage, forceUseFullDebugType) =>
+Action<string, string> Build = (solution, packageOutputPath) =>
 {
-    Information("Building {0} using {1}, createPackage = {2}, forceUseFullDebugType = {3}", solution, msBuildPath, createPackage, forceUseFullDebugType);
+    Information("Building {0} using {1}", solution, msBuildPath);
 
     var msBuildSettings = new MSBuildSettings() {
             ToolPath = msBuildPath,
@@ -163,26 +175,13 @@ Action<string, string, bool, bool> Build = (solution, packageOutputPath, createP
             Restore = true
         }
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-        .SetConfiguration("Release")                        
+        .SetConfiguration(configuration)     
+        .WithTarget("build;pack")                   
         .SetVerbosity(Verbosity.Minimal);
 
-    if (forceUseFullDebugType)
+    if (!string.IsNullOrWhiteSpace(packageOutputPath))
     {
-        msBuildSettings = msBuildSettings.WithProperty("DebugType",  "full");
-    }
-
-    if (createPackage)
-    {
-        if (!string.IsNullOrWhiteSpace(packageOutputPath))
-        {
-            msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(packageOutputPath)).ToString().Quote());
-        }
-        
-        msBuildSettings = msBuildSettings.WithTarget("build;pack");
-    }
-    else
-    {
-        msBuildSettings = msBuildSettings.WithTarget("build");
+        msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(packageOutputPath)).ToString().Quote());
     }
 
     MSBuild(solution, msBuildSettings);
@@ -195,7 +194,7 @@ Action<string, string, bool, bool> Build = (solution, packageOutputPath, createP
 Task("BuildEventBuilder")
     .Does(() =>
 {
-    Build("./src/EventBuilder.sln", artifactDirectory + "eventbuilder", false, false);
+    Build("./src/EventBuilder.sln", artifactDirectory + "eventbuilder");
 });
 
 Task("GenerateEvents")
@@ -243,9 +242,9 @@ Task("BuildReactiveUIPackages")
     CleanDirectories("./src/**/obj/Release");
     CleanDirectories("./src/**/bin/Release");
 
-    foreach(var package in packageWhitelist)
+    foreach(var packageName in packageWhitelist)
     {
-        Build("./src/" + package + "/" + package + ".csproj", packagesArtifactDirectory, true, false);
+        Build($"./src/{packageName}/{packageName}.csproj", packagesArtifactDirectory);
     }
 
     CopyFiles(GetFiles("./src/**/bin/Release/**/*"), Directory(binariesArtifactDirectory), true);
@@ -265,20 +264,21 @@ Task("RunUnitTests")
     CleanDirectories("./src/**/obj/Release");
     CleanDirectories("./src/**/bin/Release");
 
-    foreach (var package in fodyPackages)
+    foreach (var packageName in fodyPackages)
     {
-        Build("./src/" + package + "/" + package + ".csproj", null, true, true);
+        Build($"./src/{packageName}/{packageName}.csproj", null);
     }
 
     var openCoverSettings =  new OpenCoverSettings {
             ReturnTargetCodeOffset = 0,
             MergeOutput = true,
         }
-        .WithFilter("+[*]*")
+        .WithFilter("+[ReactiveUI*]*")
         .WithFilter("-[*.Testing]*")
         .WithFilter("-[*.Tests*]*")
-        .WithFilter("-[ReactiveUI.Events]*")
-        .WithFilter("-[Splat*]*")
+        .WithFilter("-[ReactiveUI.Events*]*")
+        .WithFilter("-[ReactiveUI*]ReactiveUI.*Legacy*")
+        .WithFilter("-[ReactiveUI*]ThisAssembly*")
         .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
         .ExcludeByFile("*/*Designer.cs")
         .ExcludeByFile("*/*.g.cs")
@@ -292,16 +292,37 @@ Task("RunUnitTests")
         NoAppDomain = true
     };
 
-    foreach (var projectName in packageTestWhitelist)
+    foreach (var packageDetails in packageTestWhitelist)
     {
-        OpenCover(tool => 
-        {
-            Build("./src/" + projectName + "/" + projectName + ".csproj", null, true, true);
+        var packageName = packageDetails.projectName;
+        var projectName = $"./src/{packageName}/{packageName}.csproj";
+        Build(projectName, null);
 
-            tool.XUnit2("./src/" + projectName + "/bin/" + "**/*.Tests.dll", xunitSettings);
-        },
-        testCoverageOutputFile,
-        openCoverSettings);
+        foreach (var testFramework in testFrameworks)
+        {
+            if (testFramework.performCoverageTesting && packageDetails.performCoverageTesting)
+            {
+                Information($"Generate OpenCover information for {packageName} {testFramework.name}");
+                OpenCover(
+                    tool => tool.XUnit2($"./src/{packageName}/bin/{configuration}/{testFramework.name}/**/*.Tests.dll", xunitSettings),
+                    testCoverageOutputFile,
+                    openCoverSettings);            
+            }
+            else
+            {
+                Information($"Running unit tests only for {packageName} {testFramework.name}");
+                var testSettings = new DotNetCoreTestSettings {
+                    NoBuild = true,
+                    Framework = testFramework.name,
+                    Configuration = configuration,
+                    ResultsDirectory = testsArtifactDirectory,
+                    Logger = $"trx;LogFileName=testresults-{packageName}-{testFramework.name}.trx",
+                    TestAdapterPath = GetDirectories("./tools/xunit.runner.console*/**/netcoreapp2.0").FirstOrDefault(),        
+                };
+
+                DotNetCoreTest(projectName, testSettings);
+            }
+        }
     }
 
     ReportGenerator(testCoverageOutputFile, testsArtifactDirectory + "Report/");

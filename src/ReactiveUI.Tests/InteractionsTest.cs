@@ -23,7 +23,7 @@ namespace ReactiveUI.Tests
             var interaction = new Interaction<Unit, Unit>();
 
             Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Action<InteractionContext<Unit, Unit>>)null));
-            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<InteractionContext<Unit, Unit>, Task>)null));
+            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler(null));
             Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<InteractionContext<Unit, Unit>, IObservable<Unit>>)null));
         }
 

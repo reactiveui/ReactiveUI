@@ -1,20 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>    
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Fody\ReactiveUI.Fody.csproj" ReferenceOutputAssembly="False" />
     <ProjectReference Include="..\ReactiveUI.Fody.Helpers\ReactiveUI.Fody.Helpers.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="UIAutomationTypes" />
   </ItemGroup>
 
   <ItemGroup>
