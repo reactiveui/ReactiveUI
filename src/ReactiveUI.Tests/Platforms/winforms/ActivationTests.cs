@@ -121,13 +121,5 @@ namespace ReactiveUI.Tests.Winforms
                 Assert.Equal(2, userControlDeActivateCount);
             }
         }
-
-        private class TestControl : Control, IActivatable
-        {
-        }
-
-        private class TestForm : Form, IActivatable
-        {
-        }
     }
 }

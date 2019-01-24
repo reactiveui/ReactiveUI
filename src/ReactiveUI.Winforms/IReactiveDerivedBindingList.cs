@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI.Legacy;
 
-namespace ReactiveUI.Winforms
+namespace ReactiveUI.Winforms.Legacy
 {
     /// <summary>
     /// IReactiveDerivedList represents a bindinglist whose contents will "follow" another
