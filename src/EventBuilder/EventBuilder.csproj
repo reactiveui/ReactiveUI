@@ -5,6 +5,7 @@
     <AssemblyName>EventBuilder</AssemblyName>
     <RootNamespace>EventBuilder</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>	
   </PropertyGroup>
   
   <ItemGroup>
