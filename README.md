@@ -1,5 +1,6 @@
-[![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build Status](https://dev.azure.com/dotnet/ReactiveUI/_apis/build/status/ReactiveUI-CI)](https://dev.azure.com/dotnet/ReactiveUI/_build/latest?definitionId=11)
- [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/master/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) <!--[![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui)--> [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Freactiveui%2FReactiveUI?ref=badge_shield)
+[![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![Build Status](https://dev.azure.com/dotnet/ReactiveUI/_apis/build/status/ReactiveUI-CI)](https://dev.azure.com/dotnet/ReactiveUI/_build/latest?definitionId=11) 
+ [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/master/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=reactiveui/ReactiveUI)](https://dependabot.com)
 <br>
 <a href="https://www.nuget.org/packages/reactiveui">
         <img src="https://img.shields.io/nuget/dt/reactiveui.svg">
@@ -16,7 +17,7 @@
 <br>
 <br>
 <a href="https://github.com/reactiveui/reactiveui">
-  <img width="160" heigth="160" src="https://i.imgur.com/23kfbS9.png">
+  <img width="160" heigth="160" src="https://github.com/reactiveui/styleguide/blob/master/logo/logo.svg">
 </a>
 <br>
 <h1>What is ReactiveUI?</h1>
@@ -46,6 +47,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Platform          | ReactiveUI Package                  | NuGet                | [Events][EventsDocs] Package            |
 | ----------------- | ----------------------------------- | -------------------- | --------------------------------------- |
 | .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] | None                                    |
+|                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody] | None                                    |
 | Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test] | None                                    |
 | Universal Windows | [ReactiveUI][UniDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]   | [ReactiveUI.Events.WPF][WpfEvents]      |
@@ -60,40 +62,44 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
 [CoreEvents]: https://www.nuget.org/packages/ReactiveUI.Events/
-[CoreBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.svg
+[CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg
 [CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
 
+[Fody]: https://www.nuget.org/packages/ReactiveUI.Fody/
+[FodyDoc]: https://reactiveui.net/docs/handbook/view-models/#managing-boilerplate-code
+[FodyBadge]: https://img.shields.io/nuget/v/ReactiveUI.Fody.svg
+
 [Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
-[TestBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.Testing.svg
+[TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
 [TestDoc]: https://reactiveui.net/docs/handbook/testing/
 
 [UniDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
 
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
 [WpfEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WPF/
-[WpfBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.WPF.svg
+[WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
 [WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
 
 [Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
 [WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
-[WinBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.WinForms.svg
+[WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
 [WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
 
 [Xam]: https://www.nuget.org/packages/ReactiveUI.XamForms/
 [XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.XamForms/
-[XamBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.XamForms.svg
+[XamBadge]: https://img.shields.io/nuget/v/ReactiveUI.XamForms.svg
 [XamDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-forms
 [XamE]: https://www.nuget.org/packages/ReactiveUI.Events.XamEssentials/
 
 [Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
-[DroBadge]: https://img.shields.io/nuget/vpre/ReactiveUI.AndroidSupport.svg
+[DroBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidSupport.svg
 [DroDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-android
 
 [MacDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-mac
 [IosDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-ios
 
 [Ava]: https://www.nuget.org/packages/Avalonia.ReactiveUI/
-[AvaBadge]: https://img.shields.io/nuget/vpre/Avalonia.ReactiveUI.svg
+[AvaBadge]: https://img.shields.io/nuget/v/Avalonia.ReactiveUI.svg
 [AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
 [EventsDocs]: https://reactiveui.net/docs/handbook/events/
 
@@ -309,72 +315,15 @@ This is how we use the donations:
 * Infrastructure cost
 * Fees for money handling
 
-<h2>Backers</h2>
-
-[Become a backer](https://opencollective.com/reactiveui#backer) and get your image on our README on Github with a link to your site.
-
-<a href="https://opencollective.com/reactiveui/backer/0/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/0/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/1/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/1/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/2/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/2/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/3/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/3/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/4/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/4/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/5/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/5/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/6/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/6/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/7/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/7/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/8/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/8/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/9/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/9/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/10/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/10/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/11/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/11/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/12/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/12/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/13/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/13/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/14/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/14/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/15/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/15/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/16/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/16/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/17/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/17/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/18/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/18/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/19/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/19/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/20/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/20/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/21/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/21/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/22/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/22/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/23/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/23/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/24/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/24/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/25/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/25/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/26/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/26/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/27/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/27/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/28/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/28/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/backer/29/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/29/avatar.svg"></a>
-
 <h2>Sponsors</h2>
 
 [Become a sponsor](https://opencollective.com/reactiveui#sponsor) and get your logo on our README on Github with a link to your site.
 
-<a href="https://opencollective.com/reactiveui/sponsor/0/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/1/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/2/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/3/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/4/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/5/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/6/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/7/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/8/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/9/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/9/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/10/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/10/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/11/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/11/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/12/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/12/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/13/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/13/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/14/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/14/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/15/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/15/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/16/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/16/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/17/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/17/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/18/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/18/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/19/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/19/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/20/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/20/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/21/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/21/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/22/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/22/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/23/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/23/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/24/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/24/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/25/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/25/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/26/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/26/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/27/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/27/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/28/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/28/avatar.svg"></a>
-<a href="https://opencollective.com/reactiveui/sponsor/29/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/29/avatar.svg"></a>
+<a href="https://opencollective.com/reactiveui#sponsor"><img src="https://opencollective.com/reactiveui/sponsor.svg?width=890&avatarHeight=50&button=false"></a>
+
+<h2>Backers</h2>
+
+[Become a backer](https://opencollective.com/reactiveui#backer) and get your image on our README on Github with a link to your site.
+
+<a href="https://opencollective.com/reactiveui#backer"><img src="https://opencollective.com/reactiveui/backer.svg?width=890&avatarHeight=50&button=false"></a>
+

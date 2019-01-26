@@ -13,49 +13,18 @@ using Xunit;
 namespace ReactiveUI.Tests.API
 {
     [ExcludeFromCodeCoverage]
-    public class ApiApprovalTests
+    public class ApiApprovalTests : ApiApprovalBase
     {
-        [Fact]
-        public void Blend()
-        {
-            var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(Blend.ObservableTrigger).Assembly));
-            publicApi.ShouldMatchApproved();
-        }
-
         [Fact]
         public void Testing()
         {
-            var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(Testing.TestUtils).Assembly));
-            publicApi.ShouldMatchApproved();
+            CheckApproval(typeof(Testing.TestUtils).Assembly);
         }
 
         [Fact]
         public void ReactiveUI()
         {
-            var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(RxApp).Assembly));
-            publicApi.ShouldMatchApproved();
-        }
-
-        [Fact]
-        public void Winforms()
-        {
-            var publicApi = Filter(ApiGenerator.GeneratePublicApi(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly));
-
-            publicApi.ShouldMatchApproved();
-        }
-
-        private static string Filter(string text)
-        {
-            return string.Join(Environment.NewLine, text.Split(
-                new[]
-                {
-                    Environment.NewLine
-                }, StringSplitOptions.RemoveEmptyEntries)
-                    .Where(l =>
-                    !l.StartsWith("[assembly: AssemblyVersion(") &&
-                    !l.StartsWith("[assembly: AssemblyFileVersion(") &&
-                    !l.StartsWith("[assembly: AssemblyInformationalVersion(") &&
-                    !string.IsNullOrWhiteSpace(l)));
+            CheckApproval(typeof(RxApp).Assembly);
         }
     }
 }
