@@ -193,9 +193,10 @@ namespace ReactiveUI
                 this.Log().Warn(CultureInfo.InvariantCulture, "[#{0}] SectionInfo {1} does not implement INotifyCollectionChanged - any added or removed sections will not be reflected in the UI.", sectionInfoId, sectionInfo);
             }
 
-            var sectionChanged = notifyCollectionChanged == null ?
+            var sectionChanged = (notifyCollectionChanged == null ?
                 Observable<Unit>.Never :
-                notifyCollectionChanged.ObserveCollectionChanges().Select(_ => Unit.Default);
+                notifyCollectionChanged.ObserveCollectionChanges().Select(_ => Unit.Default))
+                    .StartWith(Unit.Default);
 
             var disposables = new CompositeDisposable();
             disposables.Add(Disposable.Create(() => this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", sectionInfoId)));
