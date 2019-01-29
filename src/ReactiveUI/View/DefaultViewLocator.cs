@@ -190,26 +190,20 @@ namespace ReactiveUI
             try
             {
                 var viewType = Reflection.ReallyFindType(viewTypeName, throwOnFailure: false);
-
                 if (viewType == null)
                 {
-                    this.Log().Debug("Failed to find type named '{0}'.", viewTypeName);
                     return null;
                 }
 
                 var service = Locator.Current.GetService(viewType, contract);
-
                 if (service == null)
                 {
-                    this.Log().Debug("Failed to resolve service for type '{0}'.", viewType.FullName);
                     return null;
                 }
 
                 var view = service as IViewFor;
-
                 if (view == null)
                 {
-                    this.Log().Debug("Resolve service type '{0}' does not implement '{1}'.", viewType.FullName, typeof(IViewFor).FullName);
                     return null;
                 }
 
@@ -219,7 +213,7 @@ namespace ReactiveUI
             }
             catch (Exception ex)
             {
-                this.Log().ErrorException("Exception occurred whilst attempting to resolve type '" + viewTypeName + "' into a view.", ex);
+                this.Log().ErrorException($"Exception occurred whilst attempting to resolve type {viewTypeName} into a view.", ex);
                 throw;
             }
         }
