@@ -271,11 +271,11 @@ namespace ReactiveUI
     }
     public class static IReactiveObjectExtensions
     {
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj @this, ref TRet backingField, TRet newValue, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj reactiveObject, ref TRet backingField, TRet newValue, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
             where TObj : ReactiveUI.IReactiveObject { }
-        public static void RaisePropertyChanged<TSender>(this TSender @this, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
+        public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
             where TSender : ReactiveUI.IReactiveObject { }
-        public static void RaisePropertyChanging<TSender>(this TSender @this, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
+        public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
             where TSender : ReactiveUI.IReactiveObject { }
     }
     public interface IReactivePropertyChangedEventArgs<out TSender>
