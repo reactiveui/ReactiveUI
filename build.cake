@@ -282,10 +282,6 @@ Task("Build")
 Task("RunUnitTests")
     .Does(() =>
 {
-    // Clean the directories since we'll need to re-generate the debug type.
-    CleanDirectories($"./src/**/obj/{configuration}");
-    CleanDirectories($"./src/**/bin/{configuration}");
-
     foreach (var packageName in packageTestWhitelist)
     {
         var projectName = $"./src/{packageName}/{packageName}.csproj";
@@ -308,7 +304,6 @@ Task("RunUnitTests")
                     .AppendSwitch("--exclude", "[*]*ThisAssembly*")
                     .AppendSwitch("--exclude-by-file", "*ApprovalTests*")
                     .AppendSwitchQuoted("--output", testsArtifactDirectory + $"testcoverage-{packageName}-{testFramework}.xml")
-                    //.AppendSwitchQuoted("--merge-with", testCoverageOutputFile.ToString())
                     .AppendSwitch("--format", "cobertura")
                     .AppendSwitch("--target", "dotnet")
                     .AppendSwitchQuoted("--targetargs", $"test {projectName} --no-build -c {configuration} --logger:trx;LogFileName=testresults-{packageName}-{testFramework}.trx -r {MakeAbsolute(Directory(testsArtifactDirectory))}")

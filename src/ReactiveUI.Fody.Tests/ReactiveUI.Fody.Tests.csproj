@@ -27,7 +27,7 @@
     <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/" />
   </ItemGroup>
   
-  <Target Name="CopyWeavers" BeforeTargets="BeforeBuild">
+  <Target Name="CopyWeavers" BeforeTargets="Fody.WeavingTask">
     <!-- Fody expects to find weavers in referenced NuGet packages or the Tools directory at the solution level.
          Since this is for testing purposes before a NuGet package is created, we'll just use the Tools directory
          until the projects are setup as suggested here: https://github.com/Fody/BasicFodyAddin -->
