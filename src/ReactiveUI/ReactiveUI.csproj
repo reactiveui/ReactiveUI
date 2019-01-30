@@ -38,6 +38,10 @@
     <Compile Include="Platforms\uap10.0.16299\**\*.cs" />
   </ItemGroup>
 
+  <ItemGroup Label="Package" Condition=" $(TargetFramework.StartsWith('uap')) ">
+  	<None Include="Platforms\uap10.0.16299\ReactiveUI.rd.xml" PackagePath="lib\uap10.0.16299\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
+  </ItemGroup>
+
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
