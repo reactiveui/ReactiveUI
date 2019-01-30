@@ -194,7 +194,7 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(sched =>
             {
                 var input = new Subject<int>();
-                var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5);
+                var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: ImmediateScheduler.Instance);
 
                 Assert.Equal(-5, fixture.Value);
                 new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
