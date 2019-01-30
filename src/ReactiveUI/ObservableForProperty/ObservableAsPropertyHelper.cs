@@ -26,8 +26,9 @@ namespace ReactiveUI
     {
         private readonly Lazy<ISubject<Exception>> _thrownExceptions;
         private readonly IObservable<T> _source;
+        private readonly ISubject<T> _subject;
         private T _lastValue;
-        private IDisposable _inner;
+        private CompositeDisposable _disposable = new CompositeDisposable();
         private int _activated;
 
         /// <summary>
@@ -104,29 +105,24 @@ namespace ReactiveUI
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
             onChanging = onChanging ?? (_ => { });
 
-            var subj = new ScheduledSubject<T>(scheduler);
-            _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
-
-            subj.Subscribe(
+            _subject = new ScheduledSubject<T>(scheduler);
+            _subject.Subscribe(
                 x =>
                 {
                     onChanging(x);
                     _lastValue = x;
                     onChanged(x);
                 },
-                ex =>
-                {
-                    if (_thrownExceptions.IsValueCreated)
-                    {
-                        _thrownExceptions.Value.OnNext(ex);
-                    }
-                });
+                ex => _thrownExceptions.Value.OnNext(ex))
+                .DisposeWith(_disposable);
+
+            _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
 
             _lastValue = initialValue;
             _source = observable.StartWith(initialValue).DistinctUntilChanged();
             if (!deferSubscription)
             {
-                _inner = _source.Subscribe();
+                _source.Subscribe(_subject).DisposeWith(_disposable);
                 _activated = 1;
             }
         }
@@ -140,7 +136,7 @@ namespace ReactiveUI
             {
                 if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0)
                 {
-                    _inner = _source.Subscribe();
+                    _source.Subscribe(_subject).DisposeWith(_disposable);
                 }
 
                 return _lastValue;
@@ -182,8 +178,8 @@ namespace ReactiveUI
         /// </summary>
         public void Dispose()
         {
-            _inner?.Dispose();
-            _inner = null;
+            _disposable?.Dispose();
+            _disposable = null;
         }
     }
 }
