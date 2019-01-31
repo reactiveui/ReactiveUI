@@ -24,9 +24,11 @@ namespace ReactiveUI
     /// <typeparam name="T">The type.</typeparam>
     public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
     {
-        private readonly IConnectableObservable<T> _source;
+        private readonly Lazy<ISubject<Exception>> _thrownExceptions;
+        private readonly IObservable<T> _source;
+        private readonly ISubject<T> _subject;
         private T _lastValue;
-        private IDisposable _inner;
+        private CompositeDisposable _disposable = new CompositeDisposable();
         private int _activated;
 
         /// <summary>
@@ -103,25 +105,24 @@ namespace ReactiveUI
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
             onChanging = onChanging ?? (_ => { });
 
-            var subj = new ScheduledSubject<T>(scheduler);
-            var exSubject = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
-
-            subj.Subscribe(
+            _subject = new ScheduledSubject<T>(scheduler);
+            _subject.Subscribe(
                 x =>
                 {
                     onChanging(x);
                     _lastValue = x;
                     onChanged(x);
                 },
-                exSubject.OnNext);
+                ex => _thrownExceptions.Value.OnNext(ex))
+                .DisposeWith(_disposable);
 
-            ThrownExceptions = exSubject;
+            _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
 
             _lastValue = initialValue;
-            _source = observable.StartWith(initialValue).DistinctUntilChanged().Multicast(subj);
+            _source = observable.StartWith(initialValue).DistinctUntilChanged();
             if (!deferSubscription)
             {
-                _inner = _source.Connect();
+                _source.Subscribe(_subject).DisposeWith(_disposable);
                 _activated = 1;
             }
         }
@@ -135,7 +136,7 @@ namespace ReactiveUI
             {
                 if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0)
                 {
-                    _inner = _source.Connect();
+                    _source.Subscribe(_subject).DisposeWith(_disposable);
                 }
 
                 return _lastValue;
@@ -154,7 +155,7 @@ namespace ReactiveUI
         /// Gets an observable which signals whenever an exception would normally terminate ReactiveUI
         /// internal state.
         /// </summary>
-        public IObservable<Exception> ThrownExceptions { get; }
+        public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
         /// <summary>
         /// Constructs a "default" ObservableAsPropertyHelper object. This is
@@ -177,10 +178,8 @@ namespace ReactiveUI
         /// </summary>
         public void Dispose()
         {
-            (_inner ?? Disposable.Empty).Dispose();
-            _inner = null;
+            _disposable?.Dispose();
+            _disposable = null;
         }
     }
 }
-
-// vim: tw=120 ts=4 sw=4 et :
