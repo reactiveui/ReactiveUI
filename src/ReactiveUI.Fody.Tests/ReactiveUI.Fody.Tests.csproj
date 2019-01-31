@@ -1,6 +1,9 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>    
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461</TargetFrameworks>
+    <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
+    <FodyTargetFramework Condition=" $(TargetFramework.StartsWith('net4')) ">$(TargetFramework)</FodyTargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,18 +12,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
   <ItemGroup>
-    <WeaverFiles Include="..\ReactiveUI.Fody\bin\$(Configuration)\$(TargetFramework)\ReactiveUI.Fody.*" />
+    <WeaverFiles Include="..\ReactiveUI.Fody\bin\$(Configuration)\$(FodyTargetFramework)\ReactiveUI.Fody.*" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/" />
   </ItemGroup>
   
-  <Target Name="CopyWeavers" BeforeTargets="BeforeBuild">
+  <Target Name="CopyWeavers" BeforeTargets="Fody.WeavingTask">
     <!-- Fody expects to find weavers in referenced NuGet packages or the Tools directory at the solution level.
          Since this is for testing purposes before a NuGet package is created, we'll just use the Tools directory
          until the projects are setup as suggested here: https://github.com/Fody/BasicFodyAddin -->
