@@ -20,7 +20,7 @@ namespace ReactiveUI
         /// automatically provides the onChanged method to raise the property
         /// changed notification.
         /// </summary>
-        /// <typeparam name="TObj">The onject type.</typeparam>
+        /// <typeparam name="TObj">The object type.</typeparam>
         /// <typeparam name="TRet">The result type.</typeparam>
         /// <param name="target">
         /// The observable to convert to an ObservableAsPropertyHelper.
@@ -114,7 +114,7 @@ namespace ReactiveUI
         /// automatically provides the onChanged method to raise the property
         /// changed notification.
         /// </summary>
-        /// <typeparam name="TObj">The onject type.</typeparam>
+        /// <typeparam name="TObj">The object type.</typeparam>
         /// <typeparam name="TRet">The result type.</typeparam>
         /// <param name="target">
         /// The observable to convert to an ObservableAsPropertyHelper.
@@ -157,7 +157,7 @@ namespace ReactiveUI
         /// automatically provides the onChanged method to raise the property
         /// changed notification.
         /// </summary>
-        /// <typeparam name="TObj">The onject type.</typeparam>
+        /// <typeparam name="TObj">The object type.</typeparam>
         /// <typeparam name="TRet">The result type.</typeparam>
         /// <param name="target">
         /// The observable to convert to an ObservableAsPropertyHelper.
@@ -234,15 +234,13 @@ namespace ReactiveUI
                 name += "[]";
             }
 
-            var ret = new ObservableAsPropertyHelper<TRet>(
+            return new ObservableAsPropertyHelper<TRet>(
                 observable,
                 _ => target.RaisingPropertyChanged(name),
                 _ => target.RaisingPropertyChanging(name),
                 initialValue,
                 deferSubscription,
                 scheduler);
-
-            return ret;
         }
 
         private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
