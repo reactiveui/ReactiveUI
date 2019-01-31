@@ -1,7 +1,8 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>    
-    <TargetFrameworks>net461;netcoreapp2.0;uap10.0.16299</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
@@ -9,7 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
+   <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />  
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
@@ -22,6 +26,7 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4'))">
     <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
     <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
 
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -38,6 +43,8 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
+
     <PackageReference Include="xunit.runner.devices" Version="2.5.25" />
 
     <Compile Include="Platforms\common-gui\**\*.cs" />
@@ -47,10 +54,6 @@
     <Page Include="Platforms\uwp\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
     <None Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
     <Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

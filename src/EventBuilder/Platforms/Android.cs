@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace EventBuilder.Platforms
     /// <seealso cref="BasePlatform" />
     public class Android : BasePlatform
     {
+        private const string DesiredVersion = "v8.1";
+
         private readonly string _referenceAssembliesLocation;
 
         /// <summary>
@@ -34,36 +37,30 @@ namespace EventBuilder.Platforms
         /// <inheritdoc />
         public override Task Extract()
         {
+            var sdks = new List<string>();
             if (PlatformHelper.IsRunningOnMono())
             {
-                var sdks =
-                    Directory.GetFiles(
-                        @"/Library/Frameworks/Xamarin.Android.framework/Libraries/xbuild-frameworks/MonoAndroid",
-                        "Mono.Android.dll",
-                        SearchOption.AllDirectories);
-
-                var latestVersion = sdks.Last();
-                Assemblies.Add(latestVersion);
-
-                CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
                 CecilSearchDirectories.Add(
                     "/Library/Frameworks/Xamarin.Android.framework/Libraries/xbuild-frameworks/MonoAndroid/v1.0");
+
+                sdks.AddRange(Directory.GetFiles(
+                        "/Library/Frameworks/Xamarin.Android.framework/Libraries/xbuild-frameworks/MonoAndroid",
+                        "Mono.Android.dll",
+                        SearchOption.AllDirectories));
             }
             else
             {
-                var assemblies =
-                   Directory.GetFiles(
+                CecilSearchDirectories.Add(Path.Combine(_referenceAssembliesLocation, "MonoAndroid", "v1.0"));
+                sdks.AddRange(Directory.GetFiles(
                        Path.Combine(_referenceAssembliesLocation, "MonoAndroid"),
                        "Mono.Android.dll",
-                       SearchOption.AllDirectories);
-
-                // Pin to a particular framework version https://github.com/reactiveui/ReactiveUI/issues/1517
-                var latestVersion = assemblies.Last(x => x.Contains("v8.1", StringComparison.InvariantCulture));
-                Assemblies.Add(latestVersion);
-
-                CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
-                CecilSearchDirectories.Add(Path.Combine(_referenceAssembliesLocation, "MonoAndroid", "v1.0"));
+                       SearchOption.AllDirectories));
             }
+
+            // Pin to a particular framework version https://github.com/reactiveui/ReactiveUI/issues/1517
+            var latestVersion = sdks.Last(x => x.Contains(DesiredVersion, StringComparison.InvariantCulture));
+            Assemblies.Add(latestVersion);
+            CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
 
             return Task.CompletedTask;
         }

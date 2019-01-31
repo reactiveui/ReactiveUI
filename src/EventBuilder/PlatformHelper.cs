@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace EventBuilder
 {
@@ -12,7 +13,7 @@ namespace EventBuilder
     /// </summary>
     public static class PlatformHelper
     {
-        private static readonly Lazy<bool> _IsRunningOnMono = new Lazy<bool>(() => Type.GetType("Mono.Runtime") != null);
+        private static readonly Lazy<bool> _IsRunningOnMono = new Lazy<bool>(() => !RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
 
         /// <summary>
         /// Determines whether the platform is running on mono.
