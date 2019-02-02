@@ -36,7 +36,7 @@ namespace EventBuilder.Platforms
             if (PlatformHelper.IsRunningOnMono())
             {
                 var assembly =
-                    @"/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.TVOS10/Xamarin.TVOS10.dll";
+                    @"/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.TVOS/Xamarin.TVOS.dll";
                 Assemblies.Add(assembly);
 
                 CecilSearchDirectories.Add(Path.GetDirectoryName(assembly));

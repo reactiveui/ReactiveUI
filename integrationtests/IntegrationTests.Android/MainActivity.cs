@@ -38,6 +38,60 @@ namespace IntegrationTests.Android
         public Button Cancel { get; set; }
 
         /// <inheritdoc />
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+
+            SetContentView(Resource.Layout.activity_main);
+            SetActionBar(FindViewById<Toolbar>(Resource.Id.toolbar));
+
+            // WireUpControls looks through your layout file, finds all controls
+            // with an id defined, and binds them to the controls defined in this class.
+            // This is basically the same functionality as in
+            // http://jakewharton.github.io/butterknife/
+            this.WireUpControls();
+
+            ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);
+            this.WhenActivated(disposables =>
+            {
+                this.Bind(ViewModel, vm => vm.UserName, v => v.Username.Text)
+                    .DisposeWith(disposables);
+                this.Bind(ViewModel, vm => vm.Password, v => v.Password.Text)
+                    .DisposeWith(disposables);
+
+                this.BindCommand(ViewModel, vm => vm.Login, v => v.Login)
+                    .DisposeWith(disposables);
+                this.BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
+                    .DisposeWith(disposables);
+
+                ViewModel
+                    .Login
+                    .SelectMany(
+                        result =>
+                        {
+                            if (result)
+                            {
+                                new AlertDialog.Builder(this)
+                                    .SetTitle("Login Successful")
+                                    .SetMessage("Welcome!")
+                                    .Show();
+                            }
+                            else
+                            {
+                                new AlertDialog.Builder(this)
+                                    .SetTitle("Login Failed")
+                                    .SetMessage("Ah, ah, ah, you didn't say the magic word!")
+                                    .Show();
+                            }
+
+                            return Observable.Return(Unit.Default);
+                        })
+                    .Subscribe()
+                    .DisposeWith(disposables);
+            });
+        }
+
+        /// <inheritdoc />
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.menu_main, menu);
@@ -47,74 +101,7 @@ namespace IntegrationTests.Android
         /// <inheritdoc />
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            int id = item.ItemId;
-            if (id == Resource.Id.action_settings)
-            {
-                return true;
-            }
-
-            return base.OnOptionsItemSelected(item);
-        }
-
-        /// <inheritdoc />
-        protected override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-
-            SetContentView(Resource.Layout.activity_main);
-
-            Toolbar toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
-            SetActionBar(toolbar);
-
-            Username = FindViewById<EditText>(Resource.Id.Username);
-            Password = FindViewById<EditText>(Resource.Id.Password);
-            Login = FindViewById<Button>(Resource.Id.Login);
-            Cancel = FindViewById<Button>(Resource.Id.Cancel);
-
-            ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);
-
-            this
-               .WhenActivated(
-                   disposables =>
-                   {
-                       this
-                           .Bind(ViewModel, vm => vm.UserName, v => v.Username.Text)
-                           .DisposeWith(disposables);
-                       this
-                           .Bind(ViewModel, vm => vm.Password, v => v.Password.Text)
-                           .DisposeWith(disposables);
-                       this
-                           .BindCommand(ViewModel, vm => vm.Login, v => v.Login)
-                           .DisposeWith(disposables);
-                       this
-                           .BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
-                           .DisposeWith(disposables);
-
-                       ViewModel
-                           .Login
-                           .SelectMany(
-                               result =>
-                               {
-                                   if (result)
-                                   {
-                                       new AlertDialog.Builder(this)
-                                           .SetTitle("Login Successful")
-                                           .SetMessage("Welcome!")
-                                           .Show();
-                                   }
-                                   else
-                                   {
-                                       new AlertDialog.Builder(this)
-                                           .SetTitle("Login Failed")
-                                           .SetMessage("Ah, ah, ah, you didn't say the magic word!")
-                                           .Show();
-                                   }
-
-                                   return Observable.Return(Unit.Default);
-                               })
-                           .Subscribe()
-                           .DisposeWith(disposables);
-                   });
+            return item.ItemId == Resource.Id.action_settings || base.OnOptionsItemSelected(item);
         }
     }
 }

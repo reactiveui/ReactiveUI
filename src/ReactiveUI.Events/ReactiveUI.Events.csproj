@@ -1,6 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid81;tizen40</TargetFrameworks>
+    <TargetFrameworks>Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid81;tizen40</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299</TargetFrameworks>    
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>

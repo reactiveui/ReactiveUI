@@ -1,12 +1,16 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461;uap10.0.16299;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid81;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid81;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299</TargetFrameworks>
     <Description>Fody extension to generate RaisePropertyChange notifications for properties and ObservableAsPropertyHelper properties.</Description>
 
     <!-- Override FodyPackaging since project is named differently than expected -->
     <PackageId>ReactiveUI.Fody</PackageId>
     <WeaverDirPath>..\$(PackageId)\bin\$(Configuration)\</WeaverDirPath>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+
+    <!-- Due to fody insisting on having .net 4 classes, we can't pack on non-windows -->
+    <IsPackable Condition=" '$(OS)' != 'Windows_NT' ">false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
