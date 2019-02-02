@@ -37,7 +37,6 @@ namespace ReactiveUI
         public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
             this TSender This,
             Expression<Func<TSender, TRet>> property1)
-            where TSender : class
         {
             return This.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
         }
@@ -54,7 +53,6 @@ namespace ReactiveUI
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(this TSender This,
                             Expression<Func<TSender, T1>> property1,
                             Func<T1, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1,
                                 (c1) =>
@@ -71,7 +69,6 @@ namespace ReactiveUI
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(this TSender This,
                             Expression<Func<TSender, T1>> property1,
                             Func<IObservedChange<TSender, T1>, TRet> selector)
-            where TSender : class
         {
                             return This.ObservableForProperty(property1, false, false).Select(selector);
                     }
@@ -87,7 +84,6 @@ namespace ReactiveUI
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This,
                             Expression property1,
                             Func<IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                             return ReactiveNotifyPropertyChangedMixin
                     .SubscribeToExpressionChain<TSender,object>(This, property1, false, false).Select(selector);
@@ -105,7 +101,6 @@ namespace ReactiveUI
                         Expression<Func<TSender, T1>> property1,
                         Expression<Func<TSender, T2>> property2
             )
-            where TSender : class
         {
             return This.WhenAny(property1, property2,
                                 (c1, c2) =>
@@ -123,7 +118,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T1>> property1,
                             Expression<Func<TSender, T2>> property2,
                             Func<T1,T2, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2,
                                 (c1, c2) =>
@@ -141,7 +135,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T1>> property1,
                             Expression<Func<TSender, T2>> property2,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -162,7 +155,6 @@ namespace ReactiveUI
                             Expression property1,
                             Expression property2,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -186,7 +178,6 @@ namespace ReactiveUI
                         Expression<Func<TSender, T2>> property2,
                         Expression<Func<TSender, T3>> property3
             )
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3,
                                 (c1, c2, c3) =>
@@ -205,7 +196,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T2>> property2,
                             Expression<Func<TSender, T3>> property3,
                             Func<T1,T2,T3, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3,
                                 (c1, c2, c3) =>
@@ -224,7 +214,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T2>> property2,
                             Expression<Func<TSender, T3>> property3,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -247,7 +236,6 @@ namespace ReactiveUI
                             Expression property2,
                             Expression property3,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -274,7 +262,6 @@ namespace ReactiveUI
                         Expression<Func<TSender, T3>> property3,
                         Expression<Func<TSender, T4>> property4
             )
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4,
                                 (c1, c2, c3, c4) =>
@@ -294,7 +281,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T3>> property3,
                             Expression<Func<TSender, T4>> property4,
                             Func<T1,T2,T3,T4, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4,
                                 (c1, c2, c3, c4) =>
@@ -314,7 +300,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T3>> property3,
                             Expression<Func<TSender, T4>> property4,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -339,7 +324,6 @@ namespace ReactiveUI
                             Expression property3,
                             Expression property4,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -369,7 +353,6 @@ namespace ReactiveUI
                         Expression<Func<TSender, T4>> property4,
                         Expression<Func<TSender, T5>> property5
             )
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5,
                                 (c1, c2, c3, c4, c5) =>
@@ -390,7 +373,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T4>> property4,
                             Expression<Func<TSender, T5>> property5,
                             Func<T1,T2,T3,T4,T5, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5,
                                 (c1, c2, c3, c4, c5) =>
@@ -411,7 +393,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T4>> property4,
                             Expression<Func<TSender, T5>> property5,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -438,7 +419,6 @@ namespace ReactiveUI
                             Expression property4,
                             Expression property5,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -471,7 +451,6 @@ namespace ReactiveUI
                         Expression<Func<TSender, T5>> property5,
                         Expression<Func<TSender, T6>> property6
             )
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6,
                                 (c1, c2, c3, c4, c5, c6) =>
@@ -493,7 +472,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T5>> property5,
                             Expression<Func<TSender, T6>> property6,
                             Func<T1,T2,T3,T4,T5,T6, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6,
                                 (c1, c2, c3, c4, c5, c6) =>
@@ -515,7 +493,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T5>> property5,
                             Expression<Func<TSender, T6>> property6,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -544,7 +521,6 @@ namespace ReactiveUI
                             Expression property5,
                             Expression property6,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -580,7 +556,6 @@ namespace ReactiveUI
                         Expression<Func<TSender, T6>> property6,
                         Expression<Func<TSender, T7>> property7
             )
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6, property7,
                                 (c1, c2, c3, c4, c5, c6, c7) =>
@@ -603,7 +578,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T6>> property6,
                             Expression<Func<TSender, T7>> property7,
                             Func<T1,T2,T3,T4,T5,T6,T7, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6, property7,
                                 (c1, c2, c3, c4, c5, c6, c7) =>
@@ -626,7 +600,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T6>> property6,
                             Expression<Func<TSender, T7>> property7,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -657,7 +630,6 @@ namespace ReactiveUI
                             Expression property6,
                             Expression property7,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -696,7 +668,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T7>> property7,
                             Expression<Func<TSender, T8>> property8,
                             Func<T1,T2,T3,T4,T5,T6,T7,T8, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8,
                                 (c1, c2, c3, c4, c5, c6, c7, c8) =>
@@ -720,7 +691,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T7>> property7,
                             Expression<Func<TSender, T8>> property8,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -753,7 +723,6 @@ namespace ReactiveUI
                             Expression property7,
                             Expression property8,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -795,7 +764,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T8>> property8,
                             Expression<Func<TSender, T9>> property9,
                             Func<T1,T2,T3,T4,T5,T6,T7,T8,T9, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8, property9,
                                 (c1, c2, c3, c4, c5, c6, c7, c8, c9) =>
@@ -820,7 +788,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T8>> property8,
                             Expression<Func<TSender, T9>> property9,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -855,7 +822,6 @@ namespace ReactiveUI
                             Expression property8,
                             Expression property9,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -900,7 +866,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T9>> property9,
                             Expression<Func<TSender, T10>> property10,
                             Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8, property9, property10,
                                 (c1, c2, c3, c4, c5, c6, c7, c8, c9, c10) =>
@@ -926,7 +891,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T9>> property9,
                             Expression<Func<TSender, T10>> property10,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -963,7 +927,6 @@ namespace ReactiveUI
                             Expression property9,
                             Expression property10,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -1011,7 +974,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T10>> property10,
                             Expression<Func<TSender, T11>> property11,
                             Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11,
                                 (c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11) =>
@@ -1038,7 +1000,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T10>> property10,
                             Expression<Func<TSender, T11>> property11,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, IObservedChange<TSender, T11>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -1077,7 +1038,6 @@ namespace ReactiveUI
                             Expression property10,
                             Expression property11,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
@@ -1128,7 +1088,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T11>> property11,
                             Expression<Func<TSender, T12>> property12,
                             Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12, TRet> selector)
-            where TSender : class
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11, property12,
                                 (c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12) =>
@@ -1156,7 +1115,6 @@ namespace ReactiveUI
                             Expression<Func<TSender, T11>> property11,
                             Expression<Func<TSender, T12>> property12,
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, IObservedChange<TSender, T11>, IObservedChange<TSender, T12>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false),
@@ -1197,7 +1155,6 @@ namespace ReactiveUI
                             Expression property11,
                             Expression property12,
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
-            where TSender : class
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
