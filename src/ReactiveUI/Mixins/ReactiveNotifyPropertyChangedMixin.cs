@@ -59,7 +59,6 @@ namespace ReactiveUI
                 Expression<Func<TSender, TValue>> property,
                 bool beforeChange = false,
                 bool skipInitial = true)
-            where TSender : class
         {
             if (@this == null)
             {
