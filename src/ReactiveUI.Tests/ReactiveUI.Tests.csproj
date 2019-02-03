@@ -1,8 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>    
-    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461</TargetFrameworks>
+
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
@@ -19,8 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Platforms\**\*.cs" />
-    <None Include="Platforms\**\*.cs" />
+    <Compile Remove="Platforms\**\*.*" />
+    <EmbeddedResource Remove="Platforms\**\*.*" />
+    <None Include="Platforms\**\*.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4'))">
@@ -35,6 +39,16 @@
     <Reference Include="WindowsBase" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="UIAutomationProvider" />
+
+    <Compile Include="Platforms\common-gui\**\*.cs" />
+    <Compile Include="Platforms\wpf\**\*.cs" />
+    <Compile Include="Platforms\Winforms\**\*.cs" />
+    <Compile Include="Platforms\windows-xaml\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp'))">
+    <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
 
     <Compile Include="Platforms\common-gui\**\*.cs" />
     <Compile Include="Platforms\wpf\**\*.cs" />

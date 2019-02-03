@@ -16,31 +16,30 @@
     <PackageReference Include="System.Reactive" Version="4.2.0-preview.63" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
-    <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <Compile Include="Events_uwp.cs" Condition="Exists('Events_uwp.cs')" />    
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
-    <Compile Include="Events_IOS.cs" Condition="Exists('Events_IOS.cs')" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
-    <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid81' ">
-    <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'tizen40' ">
-    <Compile Include="Events_TIZEN.cs" Condition="Exists('Events_TIZEN.cs')" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+    <Compile Include="Events_ios.cs" Condition="Exists('Events_ios.cs')" />
     <Reference Include="netstandard" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.TVOS10' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
+    <Compile Include="Events_mac.cs" Condition="Exists('Events_mac.cs')" />
     <Reference Include="netstandard" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TV')) ">
+    <Compile Include="Events_tvos.cs" Condition="Exists('Events_tvos.cs')" />
+    <Reference Include="netstandard" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    <Compile Include="Events_android.cs" Condition="Exists('Events_android.cs')" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
+    <Compile Include="Events_tizen.cs" Condition="Exists('Events_tizen.cs')" />
   </ItemGroup>
 </Project>

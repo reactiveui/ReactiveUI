@@ -82,7 +82,7 @@ if (IsRunningOnWindows())
 
 var coverageTestFrameworks = new List<string>
 { 
-    "netcoreapp2.0"
+    "netcoreapp3.0"
 };
 
 if (IsRunningOnWindows())
@@ -108,6 +108,8 @@ if (IsRunningOnWindows())
         ("wpf", "src/ReactiveUI.Events.WPF/"),
         ("uwp", "src/ReactiveUI.Events/"),
         ("winforms", "src/ReactiveUI.Events.Winforms/"),
+        ("NetCoreAppWPF", "src/ReactiveUI.Events.WPF/"),
+        ("NetCoreAppWinforms", "src/ReactiveUI.Events.Winforms/"),        
     });
 }
 
@@ -127,7 +129,7 @@ if (string.IsNullOrWhiteSpace(configuration))
     configuration = "Release";
 }
 
-var includePrerelease = Argument("includePrerelease", false);
+var includePrerelease = Argument("includePrerelease", true);
 var vsLocationString = Argument("vsLocation", string.Empty);
 var msBuildPathString = Argument("msBuildPath", string.Empty);
 
@@ -149,7 +151,8 @@ if (IsRunningOnWindows())
 {
     var vsWhereSettings = new VSWhereLatestSettings() { IncludePrerelease = includePrerelease };
     var vsLocation = string.IsNullOrWhiteSpace(vsLocationString) ? VSWhereLatest(vsWhereSettings) : new DirectoryPath(vsLocationString);
-    msBuildPath = string.IsNullOrWhiteSpace(msBuildPathString) ? vsLocation.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe") : new FilePath(msBuildPathString);
+    msBuildPath = includePrerelease ? "./MSBuild/Current/Bin/MSBuild.exe" : "./MSBuild/15.0/Bin/MSBuild.exe";    
+    msBuildPath = string.IsNullOrWhiteSpace(msBuildPathString) ? vsLocation.CombineWithFilePath(msBuildPath) : new FilePath(msBuildPathString);
     referenceAssembliesPath = vsLocation.Combine("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 }
 else
@@ -232,7 +235,7 @@ Task("GenerateEvents")
     .IsDependentOn("BuildEventBuilder")
     .Does (() =>
 {
-    var workingDirectory = MakeAbsolute(Directory("./src/EventBuilder/bin/Release/netcoreapp2.1"));
+    var workingDirectory = MakeAbsolute(Directory("./src/EventBuilder/bin/Release/netcoreapp3.0"));
     var eventBuilder = workingDirectory + "/EventBuilder.dll";
 
     foreach (var eventGenerator in eventGenerators)

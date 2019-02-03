@@ -14,10 +14,10 @@ jobs:
     name: Default
 
   steps:
-- task: DotNetCoreInstaller@0
-  displayName: Install Dot Net Core v3.0-preview2
-  inputs:
-    version: '3.0.100-preview2'
+  - task: DotNetCoreInstaller@0
+    displayName: Install Dot Net Core v3.0-preview2
+    inputs:
+      version: '3.0.100-preview2'
 
   - task: BatchScript@1
     inputs:
