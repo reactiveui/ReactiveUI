@@ -42,12 +42,12 @@ namespace ReactiveUI
 
             var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
                 x => fe.Unloaded += x,
-                x => fe.Unloaded -= x)
-                .Select(_ => false);
+                x => fe.Unloaded -= x).Select(_ => false);
 
             return viewLoaded
                 .Merge(viewUnloaded)
-                .Merge(hitTestVisible)
+                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).SkipWhile(x => !x) : Observables.False)
+                .Switch()
                 .DistinctUntilChanged();
         }
     }
