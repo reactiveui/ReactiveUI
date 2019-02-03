@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="akavache" Version="6.2.3" />
+    <PackageReference Include="akavache" Version="6.3.2" />
     <PackageReference Include="reactiveui" Version="*" />
     <PackageReference Include="reactiveui.events.xamforms" Version="*" />
     <PackageReference Include="reactiveui.xamforms" Version="*" />
