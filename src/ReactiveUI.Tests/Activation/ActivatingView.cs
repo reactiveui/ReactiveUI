@@ -12,9 +12,6 @@ namespace ReactiveUI.Tests
 {
     public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>, IDisposable
     {
-        public Subject<Unit> Loaded = new Subject<Unit>();
-        public Subject<Unit> Unloaded = new Subject<Unit>();
-
         private ActivatingViewModel _viewModel;
 
         public ActivatingView()
@@ -25,6 +22,10 @@ namespace ReactiveUI.Tests
                 d(Disposable.Create(() => IsActiveCount--));
             });
         }
+
+        public Subject<Unit> Loaded { get; } = new Subject<Unit>();
+
+        public Subject<Unit> Unloaded { get; } = new Subject<Unit>();
 
         public ActivatingViewModel ViewModel
         {

@@ -23,7 +23,9 @@ namespace EventBuilder
     internal static class Program
     {
         private static string _mustacheTemplate = "DefaultTemplate.mustache";
-        private static string _referenceAssembliesLocation = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework";
+        private static string _referenceAssembliesLocation = PlatformHelper.IsRunningOnMono() ?
+            @"/Library⁩/Frameworks⁩/Libraries/⁨mono⁩" :
+            @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework";
 
         public static async Task Main(string[] args)
         {
@@ -34,7 +36,7 @@ namespace EventBuilder
             // allow app to be debugged in visual studio.
             if (Debugger.IsAttached)
             {
-                args = "--platform=essentials --output-path=test.txt".Split(' ');
+                args = "--platform=android --output-path=test.txt".Split(' ');
             }
 
             await new Parser(parserSettings => parserSettings.CaseInsensitiveEnumValues = true).ParseArguments<CommandLineOptions>(args).MapResult(

@@ -7,33 +7,109 @@
 //////////////////////////////////////////////////////////////////////
 
 #addin "nuget:?package=Cake.FileHelpers&version=3.1.0"
-#addin "nuget:?package=Cake.Coveralls&version=0.9.0"
-#addin "nuget:?package=Cake.PinNuGetDependency&loaddependencies=true&version=3.2.3"
-#addin "nuget:?package=Cake.Powershell&version=0.4.7"
 #addin "nuget:?package=Cake.Codecov&version=0.5.0"
+#addin "nuget:?package=Cake.Coverlet&version=2.2.1"
 
 //////////////////////////////////////////////////////////////////////
 // MODULES
 //////////////////////////////////////////////////////////////////////
 
-#module nuget:?package=Cake.DotNetTool.Module&version=0.1.0
+#module "nuget:?package=Cake.DotNetTool.Module&version=0.1.0"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool "nuget:?package=OpenCover&version=4.6.519"
-#tool "nuget:?package=ReportGenerator&version=4.0.4"
-#tool "nuget:?package=vswhere&version=2.5.2"
+#tool "nuget:?package=vswhere&version=2.5.9"
 #tool "nuget:?package=xunit.runner.console&version=2.4.1"
 #tool "nuget:?package=Codecov&version=1.1.0"
+#tool "nuget:?package=ReportGenerator&version=4.0.9"
 
 //////////////////////////////////////////////////////////////////////
 // DOTNET TOOLS
 //////////////////////////////////////////////////////////////////////
 
 #tool "dotnet:?package=SignClient&version=1.0.82"
+#tool "dotnet:?package=coverlet.console&version=1.4.1"
 #tool "dotnet:?package=nbgv&version=2.3.38"
+
+//////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////
+
+const string project = "ReactiveUI";
+
+// Whitelisted Packages
+var packageWhitelist = new List<string> 
+{ 
+    "ReactiveUI",
+    "ReactiveUI.Testing",
+    "ReactiveUI.Events",
+    "ReactiveUI.Events.XamEssentials",
+    "ReactiveUI.Events.XamForms",
+    "ReactiveUI.Fody",
+    "ReactiveUI.Fody.Helpers",
+    "ReactiveUI.AndroidSupport",
+    "ReactiveUI.XamForms",
+};
+
+if (IsRunningOnWindows())
+{
+    packageWhitelist.AddRange(new []
+    {
+        "ReactiveUI.Blend",
+        "ReactiveUI.WPF",
+        "ReactiveUI.Winforms",
+        "ReactiveUI.Events.WPF",
+        "ReactiveUI.Events.Winforms",
+        // TODO: seems the leak tests never worked as part of the CI, fix. For the moment just make sure it compiles.
+        "ReactiveUI.LeakTests"
+    });
+}
+
+var packageTestWhitelist = new List<string>
+{
+    "ReactiveUI.Tests",    
+};
+
+if (IsRunningOnWindows())
+{
+    packageTestWhitelist.AddRange(new[]
+    {     
+        "ReactiveUI.Fody.Tests"
+    });
+}
+
+var coverageTestFrameworks = new List<string>
+{ 
+    "netcoreapp2.0"
+};
+
+if (IsRunningOnWindows())
+{
+    coverageTestFrameworks.Add("net461");
+}
+
+var eventGenerators = new List<(string targetName, string destination)>
+{
+    ("android", "src/ReactiveUI.Events/"),
+    ("ios", "src/ReactiveUI.Events/"),
+    ("mac", "src/ReactiveUI.Events/"),
+    ("tizen4", "src/ReactiveUI.Events/"),
+    ("essentials", "src/ReactiveUI.Events.XamEssentials/"),
+    ("tvos", "src/ReactiveUI.Events/"),
+    ("xamforms", "src/ReactiveUI.Events.XamForms/"),
+};
+
+if (IsRunningOnWindows())
+{
+    eventGenerators.AddRange(new []
+    {
+        ("wpf", "src/ReactiveUI.Events.WPF/"),
+        ("uwp", "src/ReactiveUI.Events/"),
+        ("winforms", "src/ReactiveUI.Events.Winforms/"),
+    });
+}
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -43,6 +119,12 @@ var target = Argument("target", "Default");
 if (string.IsNullOrWhiteSpace(target))
 {
     target = "Default";
+}
+
+var configuration = Argument("configuration", "Release");
+if (string.IsNullOrWhiteSpace(configuration))
+{
+    configuration = "Release";
 }
 
 var includePrerelease = Argument("includePrerelease", false);
@@ -59,91 +141,45 @@ var treatWarningsAsErrors = false;
 // Build configuration
 var local = BuildSystem.IsLocalBuild;
 var isPullRequest = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"));
-var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", TFBuild.Environment.Repository.RepoName);
+var isRepository = StringComparer.OrdinalIgnoreCase.Equals($"reactiveui/{project}", TFBuild.Environment.Repository.RepoName);
 
-var vsWhereSettings = new VSWhereLatestSettings() { IncludePrerelease = includePrerelease };
-var vsLocation = string.IsNullOrWhiteSpace(vsLocationString) ? VSWhereLatest(vsWhereSettings) : new DirectoryPath(vsLocationString);
-var msBuildDirectory = includePrerelease ? "./MSBuild/Current/Bin/MSBuild.exe" : "./MSBuild/15.0/Bin/MSBuild.exe";
-var msBuildPath = string.IsNullOrWhiteSpace(msBuildPathString) ? vsLocation.CombineWithFilePath(msBuildDirectory) : new FilePath(msBuildPathString);
+FilePath msBuildPath = null;
+DirectoryPath referenceAssembliesPath = null;
+if (IsRunningOnWindows())
+{
+    var vsWhereSettings = new VSWhereLatestSettings() { IncludePrerelease = includePrerelease };
+    var vsLocation = string.IsNullOrWhiteSpace(vsLocationString) ? VSWhereLatest(vsWhereSettings) : new DirectoryPath(vsLocationString);
+    msBuildPath = string.IsNullOrWhiteSpace(msBuildPathString) ? vsLocation.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe") : new FilePath(msBuildPathString);
+    referenceAssembliesPath = vsLocation.Combine("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
+}
+else
+{
+    referenceAssembliesPath = Directory("⁨/Library⁩/Frameworks⁩/Libraries/⁨mono⁩");
+}
 
-var informationalVersion = EnvironmentVariable("GitAssemblyInformationalVersion");
+//////////////////////////////////////////////////////////////////////
+// FOLDERS
+//////////////////////////////////////////////////////////////////////
 
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testsArtifactDirectory = artifactDirectory + "tests/";
-var eventsArtifactDirectory = artifactDirectory + "Events/";
 var binariesArtifactDirectory = artifactDirectory + "binaries/";
 var packagesArtifactDirectory = artifactDirectory + "packages/";
-
-// OpenCover file location
-var testCoverageOutputFile = MakeAbsolute(File(testsArtifactDirectory + "OpenCover.xml"));
-
-// Whitelisted Packages
-var packageWhitelist = new[] 
-{ 
-    "ReactiveUI",
-    "ReactiveUI.Testing",
-    "ReactiveUI.Events",
-    "ReactiveUI.Events.WPF",
-    "ReactiveUI.Events.Winforms",
-    "ReactiveUI.Events.XamEssentials",
-    "ReactiveUI.Events.XamForms",
-    "ReactiveUI.Fody",
-    "ReactiveUI.Fody.Helpers",
-    "ReactiveUI.AndroidSupport",
-    "ReactiveUI.Blend",
-    "ReactiveUI.WPF",
-    "ReactiveUI.Winforms",
-    "ReactiveUI.XamForms",
-    // TODO: seems the leak tests never worked as part of the CI, fix. For the moment just make sure it compiles.
-    "ReactiveUI.LeakTests"
-};
-
-var packageTestWhitelist = new[]
-{
-    "ReactiveUI.Tests", 
-    "ReactiveUI.Fody.Tests"
-};
-
-(string targetName, string destination)[] eventGenerators = new[]
-{
-    ("android", "src/ReactiveUI.Events/"),
-    ("ios", "src/ReactiveUI.Events/"),
-    ("mac", "src/ReactiveUI.Events/"),
-    ("uwp", "src/ReactiveUI.Events/"),
-    ("tizen4", "src/ReactiveUI.Events/"),
-    ("wpf", "src/ReactiveUI.Events.WPF/"),
-    ("xamforms", "src/ReactiveUI.Events.XamForms/"),
-    ("winforms", "src/ReactiveUI.Events.Winforms/"),
-    ("essentials", "src/ReactiveUI.Events.XamEssentials/"),
-    ("tvos", "src/ReactiveUI.Events/"),
-    ("NetCoreAppWPF", "src/ReactiveUI.Events.WPF/"),
-    ("NetCoreAppWinforms", "src/ReactiveUI.Events.Winforms/"),
-};
-
-// Define global marcos.
-Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
+var eventsArtifactDirectory = artifactDirectory + "Events/";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
-    if (!IsRunningOnWindows())
-    {
-        throw new NotImplementedException("ReactiveUI will only build on Windows (w/Xamarin installed) because it's not possible to target UWP, WPF and Windows Forms from UNIX.");
-    }
+    StartProcess(Context.Tools.Resolve("nbgv*").ToString(), "cloud");
 
-    Information("Building version {0} of ReactiveUI.", informationalVersion);
-
-    CreateDirectory(artifactDirectory);
     CleanDirectories(artifactDirectory);
     CreateDirectory(testsArtifactDirectory);
-    CreateDirectory(eventsArtifactDirectory);
     CreateDirectory(binariesArtifactDirectory);
     CreateDirectory(packagesArtifactDirectory);
-
-    StartProcess(Context.Tools.Resolve("nbgv.*").ToString(), "cloud");
+    CreateDirectory(eventsArtifactDirectory);
 });
 
 Teardown(context =>
@@ -151,13 +187,12 @@ Teardown(context =>
     // Executed AFTER the last task.
 });
 
-
 //////////////////////////////////////////////////////////////////////
 // HELPER METHODS
 //////////////////////////////////////////////////////////////////////
-Action<string, string, bool, bool> Build = (solution, packageOutputPath, createPackage, forceUseFullDebugType) =>
+Action<string, string, bool> Build = (solution, packageOutputPath, doNotOptimise) =>
 {
-    Information("Building {0} using {1}, createPackage = {2}, forceUseFullDebugType = {3}", solution, msBuildPath, createPackage, forceUseFullDebugType);
+    Information("Building {0} using {1}", solution, msBuildPath);
 
     var msBuildSettings = new MSBuildSettings() {
             ToolPath = msBuildPath,
@@ -166,26 +201,18 @@ Action<string, string, bool, bool> Build = (solution, packageOutputPath, createP
             Restore = true
         }
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-        .SetConfiguration("Release")                        
+        .SetConfiguration(configuration)     
+        .WithTarget("build;pack")                   
         .SetVerbosity(Verbosity.Minimal);
 
-    if (forceUseFullDebugType)
+    if (!string.IsNullOrWhiteSpace(packageOutputPath))
     {
-        msBuildSettings = msBuildSettings.WithProperty("DebugType",  "full");
+        msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(packageOutputPath)).ToString().Quote());
     }
 
-    if (createPackage)
+    if (doNotOptimise)
     {
-        if (!string.IsNullOrWhiteSpace(packageOutputPath))
-        {
-            msBuildSettings = msBuildSettings.WithProperty("PackageOutputPath",  MakeAbsolute(Directory(packageOutputPath)).ToString().Quote());
-        }
-        
-        msBuildSettings = msBuildSettings.WithTarget("build;pack");
-    }
-    else
-    {
-        msBuildSettings = msBuildSettings.WithTarget("build");
+        msBuildSettings = msBuildSettings.WithProperty("Optimize",  "False");
     }
 
     MSBuild(solution, msBuildSettings);
@@ -198,7 +225,7 @@ Action<string, string, bool, bool> Build = (solution, packageOutputPath, createP
 Task("BuildEventBuilder")
     .Does(() =>
 {
-    Build("./src/EventBuilder.sln", artifactDirectory + "eventbuilder", false, false);
+    Build("./src/EventBuilder.sln", artifactDirectory + "eventbuilder", false);
 });
 
 Task("GenerateEvents")
@@ -207,12 +234,11 @@ Task("GenerateEvents")
 {
     var workingDirectory = MakeAbsolute(Directory("./src/EventBuilder/bin/Release/netcoreapp2.1"));
     var eventBuilder = workingDirectory + "/EventBuilder.dll";
-    var referenceAssembliesPath = vsLocation.CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
-    Information(referenceAssembliesPath.ToString());
-
-    Action<string, string> generate = (string platform, string directory) =>
+    foreach (var eventGenerator in eventGenerators)
     {
+        var (platform, directory) = eventGenerator;
+
         var settings = new DotNetCoreExecuteSettings
         {
             WorkingDirectory = workingDirectory,
@@ -231,88 +257,72 @@ Task("GenerateEvents")
                     settings);
 
         Information("The events have been written to '{0}'", output);
-    };
-
-    var options = new ParallelOptions {
-        MaxDegreeOfParallelism = 1,
-    };
-
-    Parallel.ForEach(eventGenerators, options, arg => generate(arg.targetName, arg.destination));
+    }
 
     CopyFiles(GetFiles("./src/ReactiveUI.**/Events_*.cs"), Directory(eventsArtifactDirectory));
 });
 
-Task("BuildReactiveUIPackages")
+Task("Build")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
-    // Clean the directories since we'll need to re-generate the debug type.
-    CleanDirectories("./src/**/obj/Release");
-    CleanDirectories("./src/**/bin/Release");
 
-    foreach(var package in packageWhitelist)
+    // Clean the directories since we'll need to re-generate the debug type.
+    CleanDirectories($"./src/**/obj/{configuration}");
+    CleanDirectories($"./src/**/bin/{configuration}");
+
+    foreach(var packageName in packageWhitelist)
     {
-        Build("./src/" + package + "/" + package + ".csproj", packagesArtifactDirectory, true, false);
+        Build($"./src/{packageName}/{packageName}.csproj", packagesArtifactDirectory, false);
     }
 
-    CopyFiles(GetFiles("./src/**/bin/Release/**/*"), Directory(binariesArtifactDirectory), true);
+    CopyFiles(GetFiles($"./src/**/bin/{configuration}/**/*"), Directory(binariesArtifactDirectory), true);
 });
 
 Task("RunUnitTests")
-    .IsDependentOn("GenerateEvents")
     .Does(() =>
 {
-    var fodyPackages = new string[]
+    foreach (var packageName in packageTestWhitelist)
     {
-        "ReactiveUI.Fody",
-        "ReactiveUI.Fody.Helpers",
-    };       
-
-    // Clean the directories since we'll need to re-generate the debug type.
-    CleanDirectories("./src/**/obj/Release");
-    CleanDirectories("./src/**/bin/Release");
-
-    foreach (var package in fodyPackages)
-    {
-        Build("./src/" + package + "/" + package + ".csproj", null, true, true);
-    }
-
-    var openCoverSettings =  new OpenCoverSettings {
-            ReturnTargetCodeOffset = 0,
-            MergeOutput = true,
-        }
-        .WithFilter("+[*]*")
-        .WithFilter("-[*.Testing]*")
-        .WithFilter("-[*.Tests*]*")
-        .WithFilter("-[ReactiveUI.Events]*")
-        .WithFilter("-[Splat*]*")
-        .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
-        .ExcludeByFile("*/*Designer.cs")
-        .ExcludeByFile("*/*.g.cs")
-        .ExcludeByFile("*/*.g.i.cs")
-        .ExcludeByFile("*splat/splat*")
-        .ExcludeByFile("*ApprovalTests*");
-
-    var xunitSettings = new XUnit2Settings {
-        HtmlReport = true,
-        OutputDirectory = testsArtifactDirectory,
-        NoAppDomain = true
-    };
-
-    foreach (var projectName in packageTestWhitelist)
-    {
-        OpenCover(tool => 
+        var projectName = $"./src/{packageName}/{packageName}.csproj";
+        Build(projectName, null, true);
+            
+        foreach (var testFramework in coverageTestFrameworks)
         {
-            Build("./src/" + projectName + "/" + projectName + ".csproj", null, true, true);
+            Information($"Performing coverage tests on {packageName} on framework {testFramework}");
 
-            tool.XUnit2("./src/" + projectName + "/bin/" + "**/*.Tests.dll", xunitSettings);
-        },
-        testCoverageOutputFile,
-        openCoverSettings);
+            var testFile = $"./src/{packageName}/bin/{configuration}/{testFramework}/{packageName}.dll";
+
+            StartProcess(Context.Tools.Resolve("coverlet*").ToString(), new ProcessSettings {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                Arguments = new ProcessArgumentBuilder()
+                    .AppendQuoted(testFile)
+                    .AppendSwitch("--include", $"[{project}*]*")
+                    .AppendSwitch("--exclude", "[*.Tests*]*")
+                    .AppendSwitch("--exclude", "[*]*Legacy*")
+                    .AppendSwitch("--exclude", "[*]*ThisAssembly*")
+                    .AppendSwitch("--exclude-by-file", "*ApprovalTests*")
+                    .AppendSwitchQuoted("--output", testsArtifactDirectory + $"testcoverage-{packageName}-{testFramework}.xml")
+                    .AppendSwitch("--format", "cobertura")
+                    .AppendSwitch("--target", "dotnet")
+                    .AppendSwitchQuoted("--targetargs", $"test {projectName} --no-build -c {configuration} --logger:trx;LogFileName=testresults-{packageName}-{testFramework}.trx -r {MakeAbsolute(Directory(testsArtifactDirectory))}")
+                });
+
+            Information($"Finished coverage testing {packageName}");
+        }
     }
 
-    ReportGenerator(testCoverageOutputFile, testsArtifactDirectory + "Report/");
-}).ReportError(exception =>
+    // Generate both a summary and a combined summary.
+    ReportGenerator(
+        GetFiles($"{testsArtifactDirectory}**/testcoverage-*.xml"),
+        testsArtifactDirectory + "report/",
+        new ReportGeneratorSettings 
+        {
+            ReportTypes = new[] { ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.Html },
+        });
+})
+.ReportError(exception =>
 {
     var apiApprovals = GetFiles("./**/ApiApprovalTests.*");
     CopyFiles(apiApprovals, artifactDirectory);
@@ -326,16 +336,25 @@ Task("UploadTestCoverage")
 {
     // Resolve the API key.
     var token = EnvironmentVariable("CODECOV_TOKEN");
+
+    if(EnvironmentVariable("CODECOV_TOKEN") == null)
+    {
+        throw new Exception("Codecov token not found, not sending code coverage data.");
+    }
+
     if (!string.IsNullOrEmpty(token))
     {
-        Information("Upload {0} to Codecov server", testCoverageOutputFile);
+        var testCoverageOutputFile = MakeAbsolute(File(testsArtifactDirectory + "Report/Cobertura.xml"));
 
+        Information("Upload {0} to Codecov server", testCoverageOutputFile);
+        
         // Upload a coverage report.
         Codecov(testCoverageOutputFile.ToString(), token);
     }
 });
 
 Task("SignPackages")
+    .IsDependentOn("Build")
     .WithCriteria(() => !local)
     .WithCriteria(() => !isPullRequest)
     .Does(() =>
@@ -351,7 +370,7 @@ Task("SignPackages")
         var packageName = nupkg.GetFilenameWithoutExtension();
         Information($"Submitting {packageName} for signing");
 
-        StartProcess(Context.Tools.Resolve("SignClient.*").ToString(), new ProcessSettings {
+        StartProcess(Context.Tools.Resolve("SignClient*").ToString(), new ProcessSettings {
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             Arguments = new ProcessArgumentBuilder()
@@ -372,29 +391,11 @@ Task("SignPackages")
 });
 
 Task("Package")
-    .IsDependentOn("BuildReactiveUIPackages")
-    .IsDependentOn("PinNuGetDependencies")
+    .IsDependentOn("Build")
     .IsDependentOn("SignPackages")
     .Does (() =>
 {
 });
-
-Task("PinNuGetDependencies")
-    .Does (() =>
-{
-    var packages = GetFiles(artifactDirectory + "*.nupkg");
-    foreach(var package in packages)
-    {
-        // only pin whitelisted packages.
-        if(packageWhitelist.Any(p => package.GetFilename().ToString().StartsWith(p, StringComparison.OrdinalIgnoreCase)))
-        {
-            // see https://github.com/cake-contrib/Cake.PinNuGetDependency
-            PinNuGetDependency(package, "ReactiveUI");
-        }
-    }
-});
-
-
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
@@ -402,6 +403,7 @@ Task("PinNuGetDependencies")
 
 Task("Default")
     .IsDependentOn("Package")
+    .IsDependentOn("RunUnitTests")
     .Does (() =>
 {
 });

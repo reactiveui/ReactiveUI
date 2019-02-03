@@ -14,22 +14,8 @@ namespace ReactiveUI.Fody.Tests.Issues
         [Fact]
         public void AllowObservableAsPropertyAttributeOnAccessor()
         {
-            var model = new TestModel("foo");
+            var model = new Issue11TestModel("foo");
             Assert.Equal("foo", model.MyProperty);
-        }
-
-        public class TestModel : ReactiveObject
-        {
-            public TestModel(string myProperty)
-            {
-                Observable.Return(myProperty).ToPropertyEx(this, x => x.MyProperty);
-            }
-
-            public extern string MyProperty
-            {
-                [ObservableAsProperty]
-                get;
-            }
         }
     }
 }

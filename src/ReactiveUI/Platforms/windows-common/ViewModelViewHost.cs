@@ -181,7 +181,9 @@ namespace ReactiveUI
 
             if (viewInstance == null)
             {
-                throw new Exception($"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");
+                Content = DefaultContent;
+                this.Log().Warn($"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");
+                return;
             }
 
             viewInstance.ViewModel = viewModel;

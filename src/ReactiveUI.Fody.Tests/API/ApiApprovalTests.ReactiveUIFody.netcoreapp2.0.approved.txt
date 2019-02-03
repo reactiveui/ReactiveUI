@@ -1,0 +1,31 @@
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.AndroidSupport")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Winforms")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Wpf")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.XamForms")]
+[assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETCoreApp,Version=v2.0", FrameworkDisplayName="")]
+namespace ReactiveUI.Fody.Helpers
+{
+    [System.AttributeUsageAttribute(System.AttributeTargets.Method | System.AttributeTargets.Property | System.AttributeTargets.All)]
+    public class ObservableAsPropertyAttribute : System.Attribute
+    {
+        public ObservableAsPropertyAttribute() { }
+    }
+    public class static ObservableAsPropertyExtensions
+    {
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(this System.IObservable<TRet> @this, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
+            where TObj : ReactiveUI.ReactiveObject { }
+    }
+    [System.AttributeUsageAttribute(System.AttributeTargets.Property | System.AttributeTargets.All)]
+    public class ReactiveAttribute : System.Attribute
+    {
+        public ReactiveAttribute() { }
+    }
+    [System.AttributeUsageAttribute(System.AttributeTargets.Property | System.AttributeTargets.All)]
+    public class ReactiveDependencyAttribute : System.Attribute
+    {
+        public ReactiveDependencyAttribute(string targetName) { }
+        public string Target { get; }
+        public string TargetProperty { get; set; }
+    }
+}

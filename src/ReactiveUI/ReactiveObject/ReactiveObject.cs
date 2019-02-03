@@ -6,6 +6,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace ReactiveUI
 {
@@ -17,6 +18,20 @@ namespace ReactiveUI
     [DataContract]
     public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
     {
+        private readonly Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> _changing;
+        private readonly Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> _changed;
+        private readonly Lazy<IObservable<Exception>> _thrownExceptions;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveObject"/> class.
+        /// </summary>
+        public ReactiveObject()
+        {
+            _changing = new Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>>(() => ((IReactiveObject)this).GetChangingObservable(), LazyThreadSafetyMode.PublicationOnly);
+            _changed = new Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>>(() => ((IReactiveObject)this).GetChangedObservable(), LazyThreadSafetyMode.PublicationOnly);
+            _thrownExceptions = new Lazy<IObservable<Exception>>(this.GetThrownExceptionsObservable, LazyThreadSafetyMode.PublicationOnly);
+        }
+
 #if NET_461
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging;
@@ -41,73 +56,44 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => ((IReactiveObject)this).GetChangingObservable();
+        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => _changing.Value;
 
         /// <inheritdoc />
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => ((IReactiveObject)this).GetChangedObservable();
+        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => _changed.Value;
 
         /// <inheritdoc/>
         [IgnoreDataMember]
-        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+        public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
 #if NET_461
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            var handler = PropertyChanging;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            var handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 #else
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChangingEventManager.DeliverEvent(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingEventManager.DeliverEvent(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChangedEventManager.DeliverEvent(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedEventManager.DeliverEvent(this, args);
 #endif
 
         /// <inheritdoc/>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <summary>
         /// Determines if change notifications are enabled or not.
         /// </summary>
         /// <returns>A value indicating whether change notifications are enabled.</returns>
-        public bool AreChangeNotificationsEnabled()
-        {
-            return IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
-        }
+        public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
         /// <summary>
         /// Delays notifications until the return IDisposable is disposed.
         /// </summary>
         /// <returns>A disposable which when disposed will send delayed notifications.</returns>
-        public IDisposable DelayChangeNotifications()
-        {
-            return IReactiveObjectExtensions.DelayChangeNotifications(this);
-        }
+        public IDisposable DelayChangeNotifications() => IReactiveObjectExtensions.DelayChangeNotifications(this);
     }
 }
 
