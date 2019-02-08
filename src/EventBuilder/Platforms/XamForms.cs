@@ -21,14 +21,14 @@ namespace EventBuilder.Platforms
     {
         private readonly PackageIdentity[] _packageNames = new[]
         {
-            new PackageIdentity("Xamarin.Forms", new NuGetVersion("3.4.0.1029999")),
+            new PackageIdentity("Xamarin.Forms", new NuGetVersion("3.4.*")),
         };
 
         /// <inheritdoc />
         public override AutoPlatform Platform => AutoPlatform.XamForms;
 
         /// <inheritdoc />
-        public async override Task Extract()
+        public override async Task Extract()
         {
             var packageUnzipPath = await NuGetPackageHelper.InstallPackages(_packageNames, Platform).ConfigureAwait(false);
 
