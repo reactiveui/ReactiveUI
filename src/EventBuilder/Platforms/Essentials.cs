@@ -29,7 +29,7 @@ namespace EventBuilder.Platforms
         public override AutoPlatform Platform => AutoPlatform.Essentials;
 
         /// <inheritdoc />
-        public async override Task Extract()
+        public override async Task Extract()
         {
             var packageUnzipPath = await NuGetPackageHelper.InstallPackages(_packageNames, Platform).ConfigureAwait(false);
 
