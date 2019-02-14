@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace EventBuilder.Platforms
         private readonly PackageIdentity[] _packageNames = new[]
         {
             new PackageIdentity("Xamarin.Forms", new NuGetVersion("3.4.0.1029999")),
+            new PackageIdentity("NetStandard.Library", new NuGetVersion("2.0.3")),
         };
 
         /// <inheritdoc />
@@ -34,24 +36,14 @@ namespace EventBuilder.Platforms
 
             Log.Debug($"Package unzip path is {packageUnzipPath}");
 
-            var xamarinForms =
-                Directory.GetFiles(
-                    packageUnzipPath,
-                    "Xamarin.Forms.Core.dll",
-                    SearchOption.AllDirectories);
+            var files = Directory.GetFiles(packageUnzipPath, "Xamarin.Forms.Core.dll", SearchOption.AllDirectories);
+            files = files.Concat(Directory.GetFiles(packageUnzipPath, "Xamarin.Forms.Xaml.dll", SearchOption.AllDirectories)).ToArray();
 
-            var latestVersion = xamarinForms.Last();
-            Assemblies.Add(latestVersion);
+            Assemblies.Add(files.First(x => x.Contains("netstandard2.0", StringComparison.InvariantCulture)));
 
-            if (PlatformHelper.IsRunningOnMono())
+            foreach (var directory in Directory.GetDirectories(packageUnzipPath, "*.*", SearchOption.AllDirectories))
             {
-                CecilSearchDirectories.Add(
-                    @"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/xbuild-frameworks/.NETPortable/v4.5/Profile/Profile111");
-                CecilSearchDirectories.Add(@"/Library/Frameworks/Mono.framework/External/xbuild-frameworks/MonoAndroid/v1.0/Facades");
-            }
-            else
-            {
-                CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\Facades");
+                SearchDirectories.Add(directory);
             }
         }
     }

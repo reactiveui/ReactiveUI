@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using Mono.Cecil;
 
 namespace EventBuilder.Entities
 {
@@ -19,19 +18,14 @@ namespace EventBuilder.Entities
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the full name.
+        /// </summary>
+        public string FullName { get; set; }
+
+        /// <summary>
         /// Gets or sets the abstract.
         /// </summary>
         public string Abstract { get; set; }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        public TypeDefinition Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent.
-        /// </summary>
-        public ParentInfo Parent { get; set; }
 
         /// <summary>
         /// Gets or sets the events.
@@ -41,7 +35,7 @@ namespace EventBuilder.Entities
         /// <summary>
         /// Gets or sets the zero parameter methods.
         /// </summary>
-        public IEnumerable<ParentInfo> ZeroParameterMethods { get; set; }
+        public IEnumerable<ZeroParameterMethod> ZeroParameterMethods { get; set; }
 
         /// <summary>
         /// Gets or sets the single parameter methods.

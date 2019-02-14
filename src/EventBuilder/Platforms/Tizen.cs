@@ -22,7 +22,7 @@ namespace EventBuilder.Platforms
         private readonly PackageIdentity[] _packageNames = new[]
         {
             new PackageIdentity("Tizen.Net", new NuGetVersion("5.0.0.14562")),
-            new PackageIdentity("NetStandard.Library", new NuGetVersion("2.0.0")),
+            new PackageIdentity("NetStandard.Library", new NuGetVersion("2.0.3")),
         };
 
         /// <inheritdoc />
@@ -37,11 +37,10 @@ namespace EventBuilder.Platforms
 
             Assemblies.AddRange(Directory.GetFiles(packageUnzipPath, "ElmSharp*.dll", SearchOption.AllDirectories));
             Assemblies.AddRange(Directory.GetFiles(packageUnzipPath, "Tizen*.dll", SearchOption.AllDirectories));
-            Assemblies.AddRange(Directory.GetFiles(packageUnzipPath, "netstandard.dll", SearchOption.AllDirectories));
 
             foreach (var directory in Directory.GetDirectories(packageUnzipPath, "*.*", SearchOption.AllDirectories))
             {
-                CecilSearchDirectories.Add(directory);
+                SearchDirectories.Add(directory);
             }
         }
     }

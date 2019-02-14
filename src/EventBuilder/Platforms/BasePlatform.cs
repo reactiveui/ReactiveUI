@@ -20,7 +20,7 @@ namespace EventBuilder.Platforms
         protected BasePlatform()
         {
             Assemblies = new List<string>();
-            CecilSearchDirectories = new List<string>();
+            SearchDirectories = new List<string>();
         }
 
         /// <inheritdoc />
@@ -30,7 +30,7 @@ namespace EventBuilder.Platforms
         public List<string> Assemblies { get; }
 
         /// <inheritdoc />
-        public List<string> CecilSearchDirectories { get; }
+        public List<string> SearchDirectories { get; }
 
         /// <inheritdoc />
         public abstract Task Extract();

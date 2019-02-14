@@ -1,0 +1,60 @@
+﻿{{#Namespaces}}
+
+namespace {{Name}}.Rx
+{
+{{#Types}}
+
+    /// <summary>
+    /// A Observable generated event facade for the <see cref="{{FullName}}" /> class.
+    /// </summary>
+    public {{Abstract}} partial class {{Name}}Rx : {{FullName}}
+    {
+{{#ZeroParameterMethods}}
+
+        private readonly ReactiveUI.Events.SingleAwaitSubject<Unit> _{{Name}} = new ReactiveUI.Events.SingleAwaitSubject<Unit>();
+
+        /// <summary>
+        /// An observable sequence of signals.
+        /// </summary>
+        public IObservable<Unit> {{Name}}Obs => _{{Name}};
+
+        /// <inheritdoc />
+        public override void {{Name}}()
+        {
+            _{{Name}}.OnNext(Unit.Default);
+        }
+{{/ZeroParameterMethods}}
+{{#SingleParameterMethods}}
+
+        private readonly ReactiveUI.Events.SingleAwaitSubject<{{ParameterType}}> _{{Name}} = new ReactiveUI.Events.SingleAwaitSubject<{{ParameterType}}>();
+
+        /// <summary>
+        /// An observable sequence of {{ParameterType}}.
+        /// </summary>
+        public IObservable<{{ParameterType}}> {{Name}}Obs => _{{Name}};
+
+        /// <inheritdoc />
+        public override void {{Name}}({{ParameterType}} {{ParameterName}})
+        {
+            _{{Name}}.OnNext({{ParameterName}});
+        }
+{{/SingleParameterMethods}}
+{{#MultiParameterMethods}}
+
+        private readonly ReactiveUI.Events.SingleAwaitSubject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new ReactiveUI.Events.SingleAwaitSubject<Tuple<{{ParameterTypeList}}>>();
+
+        /// <summary>
+        /// An observable sequence of elements.
+        /// </summary>
+        public IObservable<Tuple<{{ParameterTypeList}}>> {{Name}}Obs => _{{Name}};
+
+        /// <inheritdoc/>
+        public override void {{Name}}({{ParameterList}})
+        {
+            _{{Name}}.OnNext(Tuple.Create({{ParameterNameList}}));
+        }
+{{/MultiParameterMethods}}
+    }
+{{/Types}}
+}
+{{/Namespaces}}

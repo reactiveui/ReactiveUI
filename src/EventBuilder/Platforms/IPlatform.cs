@@ -27,7 +27,7 @@ namespace EventBuilder.Platforms
         /// Gets the cecil search directories.
         /// Cecil when run on Mono needs some direction as to the location of the platform specific MSCORLIB.
         /// </summary>
-        List<string> CecilSearchDirectories { get; }
+        List<string> SearchDirectories { get; }
 
         /// <summary>
         /// Extract details about the platform.

@@ -39,7 +39,7 @@ namespace EventBuilder.Platforms
                     @"/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/Xamarin.Mac/Xamarin.Mac.dll";
                 Assemblies.Add(assembly);
 
-                CecilSearchDirectories.Add(Path.GetDirectoryName(assembly));
+                SearchDirectories.Add(Path.GetDirectoryName(assembly));
             }
             else
             {
@@ -52,7 +52,7 @@ namespace EventBuilder.Platforms
                 var latestVersion = assemblies.Last();
                 Assemblies.Add(latestVersion);
 
-                CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
+                SearchDirectories.Add(Path.GetDirectoryName(latestVersion));
             }
 
             return Task.CompletedTask;

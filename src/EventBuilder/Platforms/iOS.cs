@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,11 +16,8 @@ namespace EventBuilder.Platforms
     /// </summary>
     /// <seealso cref="BasePlatform" />
     // ReSharper disable once InconsistentNaming
-#pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable SA1300 // Element should begin with upper-case letter
+    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:Element should begin with upper-case letter", Justification = "iOS special naming scheme.")]
     public class iOS : BasePlatform
-#pragma warning restore SA1300 // Element should begin with upper-case letter
-#pragma warning restore IDE1006 // Naming Styles
     {
         private readonly string _referenceAssembliesLocation;
 
@@ -44,7 +42,7 @@ namespace EventBuilder.Platforms
                     @"/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.iOS/Xamarin.iOS.dll";
                 Assemblies.Add(assembly);
 
-                CecilSearchDirectories.Add(Path.GetDirectoryName(assembly));
+                SearchDirectories.Add(Path.GetDirectoryName(assembly));
             }
             else
             {
@@ -57,7 +55,7 @@ namespace EventBuilder.Platforms
                 var latestVersion = assemblies.Last();
                 Assemblies.Add(latestVersion);
 
-                CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
+                SearchDirectories.Add(Path.GetDirectoryName(latestVersion));
             }
 
             return Task.CompletedTask;

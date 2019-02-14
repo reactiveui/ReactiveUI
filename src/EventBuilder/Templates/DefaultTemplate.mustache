@@ -1,0 +1,48 @@
+﻿{{#Namespaces}}
+namespace {{Name}}
+{
+    /// <summary>
+    /// Methods that expose events for the platform.
+    /// </summary>
+    public static class EventsMixin
+    {
+{{#Types}}
+        /// <summary>
+        /// This class emits <see cref="{{FullName}}" /> events as observables.
+        /// </summary>
+        /// <param name="item">This instance of {{Name}}.</param>
+        public static {{Name}}Events Events(this {{FullName}} item) => new {{Name}}Events(item);
+{{/Types}}
+    }
+
+{{#Types}}
+
+    /// <summary>
+    /// This class emits {{Name}} events as observables.
+    /// </summary>
+    public class {{Name}}Events
+    {
+        private {{FullName}} _data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="{{FullName}}" /> class.
+        /// </summary>
+        /// <param name="data">This instance of {{Name}}.</param>
+        public {{Name}}Events({{FullName}} data)
+        {
+            _data = data;
+        }
+{{#Events}}
+
+        /// <summary>
+        /// Returns an observable sequence of {{EventArgsType}}.
+        /// </summary>
+{{#ObsoleteEventInfo}}
+        [Obsolete{{#ObsoleteEventInfo.Message}}("{{ObsoleteEventInfo.Message}}"{{#ObsoleteEventInfo.IsError}}, true{{/ObsoleteEventInfo.IsError}}){{/ObsoleteEventInfo.Message}}]
+{{/ObsoleteEventInfo}}
+        public IObservable<{{EventArgsType}}> {{Name}} => Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => _data.{{Name}} += x, x => _data.{{Name}} -= x).Select(x => x.EventArgs);
+{{/Events}}
+    }
+{{/Types}}
+}
+{{/Namespaces}}

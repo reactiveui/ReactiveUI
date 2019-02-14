@@ -26,12 +26,6 @@ namespace EventBuilder
         public string OutputPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the template.
-        /// </summary>
-        [Option('t', "template", Required = false, HelpText = "Specify another mustache template other than the default.")]
-        public string Template { get; set; }
-
-        /// <summary>
         /// Gets or sets the reference assemblies.
         /// </summary>
         [Option('r', "reference", Required = false, HelpText = "Specify a Reference Assemblies location to override the default")]

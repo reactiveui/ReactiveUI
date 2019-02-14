@@ -5,27 +5,23 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CommandLine;
-using EventBuilder.Cecil;
 using EventBuilder.Platforms;
-using Mono.Cecil;
+using EventBuilder.Reflection;
+using EventBuilder.Reflection.Resolvers;
 using Serilog;
-using Stubble.Core.Builders;
 using Parser = CommandLine.Parser;
 
 namespace EventBuilder
 {
     internal static class Program
     {
-        private static string _mustacheTemplate = "DefaultTemplate.mustache";
         private static string _referenceAssembliesLocation = PlatformHelper.IsRunningOnMono() ?
             @"/Library⁩/Frameworks⁩/Libraries/⁨mono⁩" :
-            @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework";
+            @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework";
 
         public static async Task Main(string[] args)
         {
@@ -36,7 +32,7 @@ namespace EventBuilder
             // allow app to be debugged in visual studio.
             if (Debugger.IsAttached)
             {
-                args = "--platform=android --output-path=test.txt".Split(' ');
+                args = "--platform=essentials --output-path=test.txt".Split(' ');
             }
 
             await new Parser(parserSettings => parserSettings.CaseInsensitiveEnumValues = true).ParseArguments<CommandLineOptions>(args).MapResult(
@@ -44,13 +40,6 @@ namespace EventBuilder
                 {
                     try
                     {
-                        if (!string.IsNullOrWhiteSpace(options.Template))
-                        {
-                            _mustacheTemplate = options.Template;
-
-                            Log.Debug("Using {template} instead of the default template.", _mustacheTemplate);
-                        }
-
                         if (!string.IsNullOrWhiteSpace(options.ReferenceAssemblies))
                         {
                             _referenceAssembliesLocation = options.ReferenceAssemblies;
@@ -71,11 +60,11 @@ namespace EventBuilder
 
                                 if (PlatformHelper.IsRunningOnMono())
                                 {
-                                    platform.CecilSearchDirectories.AddRange(platform.Assemblies.Select(Path.GetDirectoryName).Distinct().ToList());
+                                    platform.SearchDirectories.AddRange(platform.Assemblies.Select(Path.GetDirectoryName).Distinct().ToList());
                                 }
                                 else
                                 {
-                                    platform.CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5");
+                                    platform.SearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5");
                                 }
 
                                 break;
@@ -118,14 +107,13 @@ namespace EventBuilder
 
                             case AutoPlatform.Essentials:
                                 platform = new Essentials();
-                                _mustacheTemplate = "XamarinEssentialsTemplate.mustache";
                                 break;
 
                             default:
                                 throw new ArgumentException($"Platform not {options.Platform} supported");
                         }
 
-                        await ExtractEventsFromAssemblies(options.OutputPath, platform).ConfigureAwait(false);
+                        await EventGenerator.ExtractEventsFromAssemblies(options.OutputPath, platform).ConfigureAwait(false);
 
                         Environment.Exit((int)ExitCode.Success);
                     }
@@ -142,56 +130,6 @@ namespace EventBuilder
                     Environment.Exit((int)ExitCode.Error);
                 },
                 _ => Task.CompletedTask).ConfigureAwait(false);
-        }
-
-        [SuppressMessage("Globalization", "CA1307: Specify StringComparison", Justification = "Replace overload is for .NET Standard only")]
-        private static async Task ExtractEventsFromAssemblies(string outputPath, IPlatform platform)
-        {
-            await platform.Extract().ConfigureAwait(false);
-
-            Log.Debug("Extracting events from the following assemblies: {assemblies}", platform.Assemblies);
-
-            Log.Debug("Using the following search directories: {assemblies}", platform.CecilSearchDirectories);
-            var targetAssemblyDirs = platform.CecilSearchDirectories;
-
-            var rp = new ReaderParameters
-            {
-                AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray())
-            };
-
-            var targetAssemblies = platform.Assemblies.Select(x => AssemblyDefinition.ReadAssembly(x, rp)).ToArray();
-
-            Log.Debug("Using {template} as the mustache template", _mustacheTemplate);
-
-            var namespaceData = Array.Empty<Entities.NamespaceInfo>();
-
-            switch (platform.Platform)
-            {
-                case AutoPlatform.Essentials:
-                    namespaceData = StaticEventTemplateInformation.Create(targetAssemblies);
-                    break;
-                default:
-                    namespaceData = EventTemplateInformation.Create(targetAssemblies);
-                    break;
-            }
-
-            var delegateData = DelegateTemplateInformation.Create(targetAssemblies);
-
-            using (var streamReader = new StreamReader(_mustacheTemplate, Encoding.UTF8))
-            {
-                var template = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-                var stubble = new StubbleBuilder().Build();
-                var result = (await stubble.RenderAsync(template, new { Namespaces = namespaceData, DelegateNamespaces = delegateData }).ConfigureAwait(false))
-                    .Replace("System.String", "string")
-                    .Replace("System.Object", "object")
-                    .Replace("&lt;", "<")
-                    .Replace("&gt;", ">")
-                    .Replace("`1", string.Empty)
-                    .Replace("`2", string.Empty)
-                    .Replace("`3", string.Empty);
-
-                await File.WriteAllTextAsync(outputPath, result).ConfigureAwait(false);
-            }
         }
     }
 }

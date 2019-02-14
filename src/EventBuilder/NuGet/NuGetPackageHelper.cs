@@ -49,6 +49,11 @@ namespace EventBuilder.NuGet
 
         private static async Task InstallPackage(PackageIdentity packageIdentity, string packageRoot, NuGetFramework framework)
         {
+            if (Directory.Exists(Path.Combine(packageRoot, packageIdentity.ToString())))
+            {
+                return;
+            }
+
             var packagesPath = Path.Combine(packageRoot, "packages");
             var settings = Settings.LoadDefaultSettings(packageRoot, null, new XPlatMachineWideSetting());
             var sourceRepositoryProvider = new SourceRepositoryProvider(settings);

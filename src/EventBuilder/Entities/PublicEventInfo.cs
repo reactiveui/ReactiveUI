@@ -29,5 +29,15 @@ namespace EventBuilder.Entities
         /// Gets or sets the obsolete event information.
         /// </summary>
         public ObsoleteEventInfo ObsoleteEventInfo { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the declaring type.
+        /// </summary>
+        public string DeclaringTypeName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the full name of the declaring type.
+        /// </summary>
+        public string DeclaringTypeFullName { get; set; }
     }
 }

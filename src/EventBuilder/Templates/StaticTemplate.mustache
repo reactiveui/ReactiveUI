@@ -1,0 +1,19 @@
+﻿
+{{#Namespaces}}
+namespace {{Name}}
+{
+    public static class Events
+    {
+{{#Types}}
+{{#Events}}
+        public static IObservable<{{EventArgsType}}> {{DeclaringTypeName}}{{Name}}() =>
+            Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(
+                x => {{DeclaringTypeFullName}}.{{Name}} += x,
+                x => {{DeclaringTypeFullName}}.{{Name}} -= x)
+                        .Select(x => x.EventArgs);
+
+{{/Events}}
+{{/Types}}
+    }
+}
+{{/Namespaces}}

@@ -40,7 +40,7 @@ namespace EventBuilder.Platforms
             var sdks = new List<string>();
             if (PlatformHelper.IsRunningOnMono())
             {
-                CecilSearchDirectories.Add(
+                SearchDirectories.Add(
                     "/Library/Frameworks/Xamarin.Android.framework/Libraries/xbuild-frameworks/MonoAndroid/v1.0");
 
                 sdks.AddRange(Directory.GetFiles(
@@ -50,7 +50,7 @@ namespace EventBuilder.Platforms
             }
             else
             {
-                CecilSearchDirectories.Add(Path.Combine(_referenceAssembliesLocation, "MonoAndroid", "v1.0"));
+                SearchDirectories.Add(Path.Combine(_referenceAssembliesLocation, "MonoAndroid", "v1.0"));
                 sdks.AddRange(Directory.GetFiles(
                        Path.Combine(_referenceAssembliesLocation, "MonoAndroid"),
                        "Mono.Android.dll",
@@ -60,7 +60,7 @@ namespace EventBuilder.Platforms
             // Pin to a particular framework version https://github.com/reactiveui/ReactiveUI/issues/1517
             var latestVersion = sdks.Last(x => x.Contains(DesiredVersion, StringComparison.InvariantCulture));
             Assemblies.Add(latestVersion);
-            CecilSearchDirectories.Add(Path.GetDirectoryName(latestVersion));
+            SearchDirectories.Add(Path.GetDirectoryName(latestVersion));
 
             return Task.CompletedTask;
         }
