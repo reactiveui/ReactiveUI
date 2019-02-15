@@ -8,5 +8,6 @@
     <PackageReference Include="Fusillade" Version="*" />
     <PackageReference Include="System.Reactive" Version="4.*" />
     <PackageReference Include="System.Reactive.Compatibility" Version="4.*" />
+    <PackageReference Include="DynamicData" Version="6.7.1.2534" />
   </ItemGroup>
 </Project>

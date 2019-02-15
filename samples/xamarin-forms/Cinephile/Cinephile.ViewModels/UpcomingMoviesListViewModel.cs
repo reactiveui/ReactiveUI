@@ -3,23 +3,24 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Cinephile.Core.Model;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using Cinephile.Core.Models;
+using DynamicData;
+using DynamicData.Binding;
 
 namespace Cinephile.ViewModels
 {
     public class UpcomingMoviesListViewModel : ViewModelBase
     {
-        public ObservableCollection<UpcomingMoviesCellViewModel> Movies { get; } = 
-            new ObservableCollection<UpcomingMoviesCellViewModel>();
+        ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> m_movies;
+        public ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> Movies => m_movies;
 
         UpcomingMoviesCellViewModel m_selectedItem;
         public UpcomingMoviesCellViewModel SelectedItem
@@ -28,6 +29,14 @@ namespace Cinephile.ViewModels
             set { this.RaiseAndSetIfChanged(ref m_selectedItem, value); }
         }
 
+        string m_searchText;
+        public string SearchText
+        {
+            get { return m_searchText; }
+            set { this.RaiseAndSetIfChanged(ref m_searchText, value); }
+        }
+
+
         UpcomingMoviesCellViewModel m_itemAppearing;
         public UpcomingMoviesCellViewModel ItemAppearing
         {
@@ -35,14 +44,13 @@ namespace Cinephile.ViewModels
             set { this.RaiseAndSetIfChanged(ref m_itemAppearing, value); }
         }
 
-        public ReactiveCommand<int, IEnumerable<Movie>> LoadMovies
+        public ReactiveCommand<int, Unit> LoadMovies
         {
-        	get;
+            get;
         }
 
         ObservableAsPropertyHelper<bool> m_isRefreshing;
         public bool IsRefreshing => m_isRefreshing.Value;
-
 
         private MovieService movieService;
         IScheduler mainThreadScheduler;
@@ -57,22 +65,35 @@ namespace Cinephile.ViewModels
 
             movieService = new MovieService();
 
-            LoadMovies = ReactiveCommand
-                .CreateFromObservable((int index) => 
-                    movieService.GetUpcomingMovies(index),
-                    outputScheduler: this.mainThreadScheduler);
+            LoadMovies = ReactiveCommand.Create<int, Unit>(offset =>
+                movieService.LoadUpcomingMovies(offset),
+                outputScheduler: this.mainThreadScheduler);
 
             this.WhenActivated((CompositeDisposable disposables) =>
             {
                 SelectedItem = null;
 
+                var search = this
+                    .WhenAnyValue(x => x.SearchText)
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Throttle(TimeSpan.FromMilliseconds(300)) // Wait 100 ms after last keyboard press before searching
+                    .StartWith(string.Empty)
+                    .Select(SearchPredicate);
+
+                movieService
+                    .UpcomingMovies
+                    .Connect()
+                    .DisposeMany()
+                    .Filter(search)
+                    .Sort(SortExpressionComparer<Movie>.Ascending(i => i.ReleaseDate))
+                    .Cast(movie => new UpcomingMoviesCellViewModel(movie))
+                    .ObserveOn(this.mainThreadScheduler)
+                    .Bind(out m_movies)
+                    .Subscribe()
+                    .DisposeWith(disposables);
+
                 LoadMovies
-                    .Where(movies => movies != null)
-                    .Select(movies => movies.Select(movie => new UpcomingMoviesCellViewModel(movie)))
-                    .SelectMany(movieCell => movieCell)
-                    .Where(movieCell => !Movies.Select(m => m.Title).Contains(movieCell.Title))
-                    .Do(_ => Debug.WriteLine($"Adding Movie Items"))
-                    .Subscribe(movieViewModel => Movies.Add(movieViewModel))
+                    .Subscribe()
                     .DisposeWith(disposables);
 
                 this
@@ -88,28 +109,39 @@ namespace Cinephile.ViewModels
                         Debug.WriteLine(obj.Message);
                     });
 
-                 m_isRefreshing =
+                m_isRefreshing =
                     LoadMovies
                         .IsExecuting
                         .Select(x => x)
+                        .Do(x => Debug.WriteLine($"Loading {x} == {DateTime.Now.ToString()}"))
                         .ToProperty(this, x => x.IsRefreshing, true)
                         .DisposeWith(disposables);
 
-
-                this.WhenAnyValue(x=> x.ItemAppearing)
-                    .Select(item =>
-                    {
-                        if (item == null)
-                            return -1; //causes initial load
-
-                        return Movies.IndexOf(item);
-                    })
-                    .Do(index => Debug.WriteLine($"==> index {index} >= {Movies.Count - 5} = {index >= Movies.Count - 5}"))
-                    .Where(index => index >= Movies.Count - 5)
+                WhenNeedToLoadMore()
                     .InvokeCommand(LoadMovies)
                     .DisposeWith(disposables);
-
             });
+        }
+
+        private IObservable<int> WhenNeedToLoadMore()
+        {
+            return this.WhenAnyValue(x => x.ItemAppearing)
+                .Select(item =>
+                {
+                    if (item == null)
+                        return -1; //causes initial load
+
+                    return Movies.IndexOf(item);
+                })
+                .Where(index => index >= Movies.Count - 5);
+        }
+        private Func<Movie, bool> SearchPredicate(string searchText)
+        {
+            if (searchText == null || searchText.Length < 3)
+                return s => true;
+
+            return s => string.IsNullOrEmpty(s.Title) ||
+                s.Title.ToLowerInvariant().Contains(searchText.ToLowerInvariant());
         }
 
         void LoadSelectedPage(UpcomingMoviesCellViewModel viewModel)

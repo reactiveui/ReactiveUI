@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Cinephile.Core.Model
+namespace Cinephile.Core.Models
 {
     public class Movie
     {

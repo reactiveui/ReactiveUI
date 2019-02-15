@@ -6,24 +6,25 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using Cinephile.Core.Rest;
 using Cinephile.Core.Rest.Dtos.Movies;
+using DynamicData;
 using Splat;
 
-namespace Cinephile.Core.Model
+namespace Cinephile.Core.Models
 {
     public class MovieService : IMovieService
     {
+        private readonly SourceCache<Movie, int> internalSourceCache;
+        public IObservableCache<Movie, int> UpcomingMovies => internalSourceCache;
+
         public const int PageSize = 20;
-        const string Language = "en-US";
-
-        const string BaseUrl = "http://image.tmdb.org/t/p/";
-        const string SmallPosterSize = "w185";
-        const string BigPosterSize = "w500";
-
 
         private const string apiKey = "1f54bd990f1cdfb230adb312546d765d";
+        private const string Language = "en-US";
+
         private IApiService movieApiService;
         private ICache movieCache;
 
@@ -31,14 +32,20 @@ namespace Cinephile.Core.Model
         {
             movieApiService = apiService ?? Locator.Current.GetService<IApiService>();
             movieCache = cache ?? Locator.Current.GetService<ICache>();
+            internalSourceCache = new SourceCache<Movie, int>(o => o.Id);
         }
 
-        public IObservable<IEnumerable<Movie>> GetUpcomingMovies(int index)
+        public Unit LoadUpcomingMovies(int index)
         {
-            return
-                movieCache
-                    .GetAndFetchLatest($"upcoming_movies_{index}", () => FetchUpcomingMovies(index));
+            movieCache
+                .GetAndFetchLatest($"upcoming_movies_{index}", () => FetchUpcomingMovies(index))
+                .SelectMany(x => x)
+                .Do(x => System.Diagnostics.Debug.WriteLine($"========> Movie {x.Id} - {x.Title}"))
+                .Subscribe(x => internalSourceCache.AddOrUpdate(x));
+
+            return Unit.Default;
         }
+
 
         IObservable<IEnumerable<Movie>> FetchUpcomingMovies(int index)
         {
@@ -55,29 +62,9 @@ namespace Cinephile.Core.Model
                     (movies, genres) =>
                     {
                         return movies
-                                .Results
-                                .Select(movieDto => MapDtoToModel(genres, movieDto));
+                            .Results
+                            .Select(movieDto => MovieMapper.ToModel(genres, movieDto, Language));
                     });
-        }
-
-        Movie MapDtoToModel(GenresDto genres, MovieResult movieDto)
-        {
-            return new Movie()
-            {
-                Id = movieDto.Id,
-                Title = movieDto.Title,
-                PosterSmall = string
-                                .Concat(BaseUrl,
-                                       SmallPosterSize,
-                                       movieDto.PosterPath),
-                PosterBig = string
-                                .Concat(BaseUrl,
-									   BigPosterSize,
-		                               movieDto.PosterPath),
-                Genres = genres.Genres.Where(g => movieDto.GenreIds.Contains(g.Id)).Select(j => j.Name).ToList(),
-                ReleaseDate = DateTime.Parse(movieDto.ReleaseDate, new CultureInfo(Language)),
-                Overview = movieDto.Overview
-            };
         }
     }
 }
