@@ -14,7 +14,7 @@
     <PackageReference Include="reactiveui.events.xamforms" Version="*" />
     <PackageReference Include="reactiveui.xamforms" Version="*" />
     <PackageReference Include="Xamarin.FFImageLoading.Forms" Version="2.4.4.859" />
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1009999" />
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1029999" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cinephile.Core\Cinephile.Core.csproj" />
