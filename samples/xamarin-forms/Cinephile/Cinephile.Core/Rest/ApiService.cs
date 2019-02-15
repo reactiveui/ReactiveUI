@@ -51,7 +51,7 @@ namespace Cinephile.Core.Rest
 #if DEBUG
                 return createClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.Background));
 #else
-                return createClient(new HttpClientHandler(new HttpClientHandler(), Priority.Background)));
+                return createClient(new RateLimitedHttpMessageHandler(new HttpClientHandler(), Priority.Background));
 #endif
             });
 
@@ -60,7 +60,7 @@ namespace Cinephile.Core.Rest
 #if DEBUG
                 return createClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.UserInitiated));
 #else
-                return createClient(new HttpClientHandler(new HttpClientHandler(), Priority.UserInitiated)));
+                return createClient(new RateLimitedHttpMessageHandler(new HttpClientHandler(), Priority.UserInitiated));
 #endif
             });
 
@@ -69,7 +69,7 @@ namespace Cinephile.Core.Rest
 #if DEBUG
                 return createClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.Speculative));
 #else
-                return createClient(new HttpClientHandler(new HttpClientHandler(), Priority.Speculative)));
+                return createClient(new RateLimitedHttpMessageHandler(new HttpClientHandler(), Priority.Speculative));
 #endif
             });
         }

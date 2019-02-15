@@ -14,34 +14,35 @@ using System.Collections.ObjectModel;
 using Cinephile.Core.Models;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.PLinq;
 
 namespace Cinephile.ViewModels
 {
     public class UpcomingMoviesListViewModel : ViewModelBase
     {
-        ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> m_movies;
-        public ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> Movies => m_movies;
+        ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> _movies;
+        public ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> Movies => _movies;
 
-        UpcomingMoviesCellViewModel m_selectedItem;
+        private UpcomingMoviesCellViewModel _selectedItem;
         public UpcomingMoviesCellViewModel SelectedItem
         {
-            get { return m_selectedItem; }
-            set { this.RaiseAndSetIfChanged(ref m_selectedItem, value); }
+            get { return _selectedItem; }
+            set { this.RaiseAndSetIfChanged(ref _selectedItem, value); }
         }
 
-        string m_searchText;
+        string _searchText;
         public string SearchText
         {
-            get { return m_searchText; }
-            set { this.RaiseAndSetIfChanged(ref m_searchText, value); }
+            get { return _searchText; }
+            set { this.RaiseAndSetIfChanged(ref _searchText, value); }
         }
 
 
-        UpcomingMoviesCellViewModel m_itemAppearing;
+        UpcomingMoviesCellViewModel _itemAppearing;
         public UpcomingMoviesCellViewModel ItemAppearing
         {
-            get { return m_itemAppearing; }
-            set { this.RaiseAndSetIfChanged(ref m_itemAppearing, value); }
+            get { return _itemAppearing; }
+            set { this.RaiseAndSetIfChanged(ref _itemAppearing, value); }
         }
 
         public ReactiveCommand<int, Unit> LoadMovies
@@ -49,91 +50,90 @@ namespace Cinephile.ViewModels
             get;
         }
 
-        ObservableAsPropertyHelper<bool> m_isRefreshing;
-        public bool IsRefreshing => m_isRefreshing.Value;
+        ObservableAsPropertyHelper<bool> _isRefreshing;
+        public bool IsRefreshing => _isRefreshing.Value;
 
-        private MovieService movieService;
-        IScheduler mainThreadScheduler;
-        IScheduler taskPoolScheduler;
+        private MovieService _movieService;
+        private readonly IScheduler _mainThreadScheduler;
+        private readonly IScheduler _taskPoolScheduler;
 
         public UpcomingMoviesListViewModel(IScheduler mainThreadScheduler = null, IScheduler taskPoolScheduler = null, IScreen hostScreen = null) : base(hostScreen)
         {
-            this.mainThreadScheduler = mainThreadScheduler ?? RxApp.MainThreadScheduler;
-            this.taskPoolScheduler = taskPoolScheduler ?? RxApp.TaskpoolScheduler;
+            _mainThreadScheduler = mainThreadScheduler ?? RxApp.MainThreadScheduler;
+            _taskPoolScheduler = taskPoolScheduler ?? RxApp.TaskpoolScheduler;
 
             UrlPathSegment = "Upcoming Movies";
 
-            movieService = new MovieService();
+            _movieService = new MovieService();
 
-            LoadMovies = ReactiveCommand.Create<int, Unit>(offset =>
-                movieService.LoadUpcomingMovies(offset),
-                outputScheduler: this.mainThreadScheduler);
+            LoadMovies = ReactiveCommand.Create<int, Unit>(_movieService.LoadUpcomingMovies,
+                outputScheduler: _mainThreadScheduler);
 
-            this.WhenActivated((CompositeDisposable disposables) =>
-            {
-                SelectedItem = null;
+            var search = this
+                .WhenAnyValue(x => x.SearchText)
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Throttle(TimeSpan.FromMilliseconds(300)) // Wait 100 ms after last keyboard press before searching
+                .StartWith(string.Empty)
+                .Select(SearchPredicate);
 
-                var search = this
-                    .WhenAnyValue(x => x.SearchText)
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .Throttle(TimeSpan.FromMilliseconds(300)) // Wait 100 ms after last keyboard press before searching
-                    .StartWith(string.Empty)
-                    .Select(SearchPredicate);
+            _movieService
+                .UpcomingMovies
+                .Connect()
+                .DisposeMany()
+                .Filter(search)
+                .Sort(SortExpressionComparer<Movie>.Ascending(i => i.ReleaseDate))
+                .Transform(movie => new UpcomingMoviesCellViewModel(movie))
+                .SubscribeOn(_taskPoolScheduler)
+                .ObserveOn(_mainThreadScheduler)
+                .Bind(out _movies)
+                .Subscribe();
 
-                movieService
-                    .UpcomingMovies
-                    .Connect()
-                    .DisposeMany()
-                    .Filter(search)
-                    .Sort(SortExpressionComparer<Movie>.Ascending(i => i.ReleaseDate))
-                    .Cast(movie => new UpcomingMoviesCellViewModel(movie))
-                    .ObserveOn(this.mainThreadScheduler)
-                    .Bind(out m_movies)
-                    .Subscribe()
-                    .DisposeWith(disposables);
+            SelectedItem = null;
 
+            LoadMovies
+                .Subscribe();
+
+            this
+                .WhenAnyValue(x => x.SelectedItem)
+                .Where(x => x != null)
+                .Subscribe(LoadSelectedPage);
+
+            LoadMovies
+                .ThrownExceptions
+                .Subscribe((obj) =>
+                {
+                    Debug.WriteLine(obj.Message);
+                });
+
+            _isRefreshing =
                 LoadMovies
-                    .Subscribe()
-                    .DisposeWith(disposables);
+                    .IsExecuting
+                    .Select(x => x)
+                    .Do(x => Debug.WriteLine($"Loading {x} == {DateTime.Now.ToString()}"))
+                    .ToProperty(this, x => x.IsRefreshing, true);
 
-                this
-                    .WhenAnyValue(x => x.SelectedItem)
-                    .Where(x => x != null)
-                    .Subscribe(x => LoadSelectedPage(x))
-                    .DisposeWith(disposables);
-
-                LoadMovies
-                    .ThrownExceptions
-                    .Subscribe((obj) =>
-                    {
-                        Debug.WriteLine(obj.Message);
-                    });
-
-                m_isRefreshing =
-                    LoadMovies
-                        .IsExecuting
-                        .Select(x => x)
-                        .Do(x => Debug.WriteLine($"Loading {x} == {DateTime.Now.ToString()}"))
-                        .ToProperty(this, x => x.IsRefreshing, true)
-                        .DisposeWith(disposables);
-
-                WhenNeedToLoadMore()
-                    .InvokeCommand(LoadMovies)
-                    .DisposeWith(disposables);
-            });
+            WhenNeedToLoadMore()
+                .InvokeCommand(LoadMovies);
         }
 
         private IObservable<int> WhenNeedToLoadMore()
         {
-            return this.WhenAnyValue(x => x.ItemAppearing)
+            return this
+                .WhenAnyValue(x => x.ItemAppearing)
                 .Select(item =>
                 {
-                    if (item == null)
-                        return -1; //causes initial load
+                    int offset = -1;
+                    var itemIndex = Movies.IndexOf(item);
+                    var loadedItemsCount = Movies.Count();
 
-                    return Movies.IndexOf(item);
+                    if (loadedItemsCount % MovieService.PageSize == 0 && itemIndex == loadedItemsCount - 8)
+                    {
+                        offset = loadedItemsCount;
+                    }
+
+                    return offset;
                 })
-                .Where(index => index >= Movies.Count - 5);
+                .Where(index => index > 0);
         }
         private Func<Movie, bool> SearchPredicate(string searchText)
         {

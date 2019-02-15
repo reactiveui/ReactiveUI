@@ -35,6 +35,14 @@ namespace Cinephile.Views
                     .BindTo(this, x => x.ViewModel.ItemAppearing)
                     .DisposeWith(disposables);
 
+                this.WhenAnyValue(x => x.ViewModel)
+                    .Where(vm => vm != null)
+                    .SubscribeOn(RxApp.TaskpoolScheduler)
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Select(_ => 0)
+                    .InvokeCommand(ViewModel.LoadMovies)
+                    .DisposeWith(disposables);
+
             });
         }
     }

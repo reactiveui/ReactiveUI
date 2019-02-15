@@ -2,6 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Http;
+using FFImageLoading;
+using FFImageLoading.Config;
+using Fusillade;
 using Xamarin.Forms;
 
 namespace Cinephile
@@ -11,6 +15,11 @@ namespace Cinephile
         public App()
         {
             InitializeComponent();
+
+            ImageService.Instance.Initialize(new Configuration
+            {
+                HttpClient = new HttpClient(new RateLimitedHttpMessageHandler(new HttpClientHandler(), Priority.Background))
+            });
 
             var bootstrapper = new AppBootstrapper();
             MainPage = bootstrapper.CreateMainPage();
