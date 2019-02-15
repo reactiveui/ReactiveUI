@@ -4,11 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using Cinephile.Core.Model;
+using Cinephile.Core.Models;
 using Cinephile.Core.Rest;
 using Cinephile.Core.Rest.Dtos.Movies;
+using DynamicData;
 using Moq;
 using NUnit.Framework;
 
@@ -76,6 +78,7 @@ namespace Cinephile.UnitTests.Model
         [Test]
         public void GetUpcomingMovies_Zero_20Movies()
         {
+            ReadOnlyObservableCollection<Movie> actual;
             var cacheMock = new Mock<ICache>();
             cacheMock
                 .Setup(cache => cache.GetAndFetchLatest(It.IsAny<string>(), It.IsAny<Func<IObservable<IEnumerable<Movie>>>>()))
@@ -92,11 +95,13 @@ namespace Cinephile.UnitTests.Model
 
             var sut = new MovieService(apiServiceMock.Object, cacheMock.Object);
 
-            IEnumerable<Movie> actual = null;
-
             sut
-                .GetUpcomingMovies(0)
-                .Subscribe(movies => actual = movies);
+                .UpcomingMovies
+                .Connect()
+                .Bind(out actual)
+                .Subscribe();
+
+            sut.LoadUpcomingMovies(0);
 
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual.Count(), Is.EqualTo(20));
