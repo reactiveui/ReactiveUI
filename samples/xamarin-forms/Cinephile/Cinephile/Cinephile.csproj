@@ -9,14 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="akavache" Version="6.3.2" />
-    <PackageReference Include="reactiveui" Version="*" />
-    <PackageReference Include="reactiveui.events.xamforms" Version="*" />
-    <PackageReference Include="reactiveui.xamforms" Version="*" />
     <PackageReference Include="Xamarin.FFImageLoading.Forms" Version="2.4.4.859" />
     <PackageReference Include="Xamarin.Forms" Version="3.4.0.1029999" />
+    <PackageReference Include="ReactiveUI.XamForms" Version="9.10.1" />
+    <PackageReference Include="ReactiveUI.Events.XamForms" Version="9.10.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cinephile.Core\Cinephile.Core.csproj" />
+    <ProjectReference Include="..\Cinephile.ViewModels\Cinephile.ViewModels.csproj" />
   </ItemGroup>
 </Project>

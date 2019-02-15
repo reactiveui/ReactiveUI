@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinephile.UnitTests", "Cine
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F7F1F417-87A0-41F7-9F14-F46A772BDAF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinephile.ViewModels", "Cinephile.ViewModels\Cinephile.ViewModels.csproj", "{42AFC9D3-D010-44B3-85FC-E1AE52F70511}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,18 @@ Global
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|iPhone.Build.0 = Release|Any CPU
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Release|iPhone.Build.0 = Release|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
