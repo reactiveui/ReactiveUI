@@ -1,0 +1,46 @@
+// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.IO;
+using System.Threading.Tasks;
+using EventBuilder.Core.NuGet;
+using NuGet.Frameworks;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
+using Serilog;
+
+namespace EventBuilder.Core.PlatformExtractors
+{
+    /// <summary>
+    /// Tizen platform assemblies and events.
+    /// </summary>
+    public class Tizen : BasePlatform
+    {
+        private readonly PackageIdentity[] _packageNames = new[]
+        {
+            new PackageIdentity("Tizen.Net", new NuGetVersion("5.0.0.14562")),
+            new PackageIdentity("NetStandard.Library", new NuGetVersion("2.0.3")),
+        };
+
+        /// <inheritdoc />
+        public override AutoPlatform Platform => AutoPlatform.Tizen4;
+
+        /// <inheritdoc />
+        public override async Task Extract(string referenceAssembliesLocation)
+        {
+            var packageUnzipPath = await NuGetPackageHelper.InstallPackages(_packageNames, Platform, FrameworkConstants.CommonFrameworks.Tizen4).ConfigureAwait(false);
+
+            Log.Debug($"Package unzip path is {packageUnzipPath}");
+
+            Assemblies.AddRange(Directory.GetFiles(packageUnzipPath, "ElmSharp*.dll", SearchOption.AllDirectories));
+            Assemblies.AddRange(Directory.GetFiles(packageUnzipPath, "Tizen*.dll", SearchOption.AllDirectories));
+
+            foreach (var directory in Directory.GetDirectories(packageUnzipPath, "*.*", SearchOption.AllDirectories))
+            {
+                SearchDirectories.Add(directory);
+            }
+        }
+    }
+}
