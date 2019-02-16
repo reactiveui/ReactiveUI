@@ -12,11 +12,12 @@ jobs:
 - job: Windows
   pool:
     vmImage: vs2017-win2016
+
   steps:
   - task: DotNetCoreInstaller@0
     displayName: Install Dot Net Core v2.2.1
     inputs:
-      version: '2.2.103'
+        version: '2.2.103'
 
   - task: BatchScript@1
     inputs:
@@ -28,34 +29,61 @@ jobs:
   - powershell: .\build.ps1
     displayName: Build 
     env:
-      SIGNCLIENT_SECRET: $(SignClientSecret)
-      SIGNCLIENT_USER: $(SignClientUser)
-      ArtifactDirectory: $(System.DefaultWorkingDirectory)\artifacts
+       SIGNCLIENT_SECRET: $(SignClientSecret)
+       SIGNCLIENT_USER: $(SignClientUser)
+       CODECOV_TOKEN: $(CODECOV_TOKEN)
+       ArtifactDirectory: $(System.DefaultWorkingDirectory)\Artifacts
+
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    inputs:
+       testResultsFormat: 'VSTest'
+       testResultsFiles: '**\testresults.trx' 
+       searchFolder: '$(System.DefaultWorkingDirectory)\artifacts\tests'
+
+  - task: PublishCodeCoverageResults@1
+    displayName: Publish Coverage Results
+    inputs:
+       codeCoverageTool: 'cobertura'
+       summaryFileLocation: 'artifacts\tests\Report\Cobertura.xml'
+       reportDirectory: 'artifacts\tests\Report'
 
   - task: CopyFiles@2
     inputs:
-      Contents: 'artifacts/packages/*.nupkg'
-      TargetFolder: '$(build.artifactstagingdirectory)\packages'
-      flattenFolders: true
+       Contents: 'artifacts/packages/*.nupkg'
+       TargetFolder: '$(build.artifactstagingdirectory)\packages'
+       flattenFolders: true
 
   - task: PublishBuildArtifacts@1
-    displayName: Publish Package Artifacts
+    displayName: Publish Package Build Artifacts
     inputs:
-      pathToPublish: '$(build.artifactstagingdirectory)\packages'
-      artifactType: container
-      artifactName: Packages
+       pathToPublish: '$(build.artifactstagingdirectory)\packages'
+       artifactType: container
+       artifactName: Packages
 
   - task: CopyFiles@2
     inputs:
-      Contents: 'artifacts/binaries/**/*'
-      TargetFolder: '$(build.artifactstagingdirectory)\binaries'
+       Contents: 'artifacts/binaries/**/*'
+       TargetFolder: '$(build.artifactstagingdirectory)\binaries'
 
   - task: PublishBuildArtifacts@1
-    displayName: Publish Binaries
+    displayName: Publish Binaries Build Artifacts
     inputs:
-      pathToPublish: '$(build.artifactstagingdirectory)\binaries'
-      artifactType: container
-      artifactName: Binaries
+       pathToPublish: '$(build.artifactstagingdirectory)\binaries'
+       artifactType: container
+       artifactName: Binaries
+
+  - task: CopyFiles@2
+    inputs:
+       Contents: 'artifacts/tests/**/*'
+       TargetFolder: '$(build.artifactstagingdirectory)\tests'
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Test Results Build Artifacts
+    inputs:
+       pathToPublish: '$(build.artifactstagingdirectory)\tests'
+       artifactType: container
+       artifactName: Tests
 
   - task: CopyFiles@2
     inputs:
@@ -74,7 +102,7 @@ jobs:
     vmImage: 'macOS-10.13'
   steps:
   - task: DotNetCoreInstaller@0
-    displayName: Install Dot Net Core v2.2.1
+    displayName: Install Dot Net Core v2.2.103
     inputs:
         version: '2.2.103'
 
