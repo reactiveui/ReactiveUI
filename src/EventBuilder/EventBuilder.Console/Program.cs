@@ -73,23 +73,11 @@ namespace EventBuilder.Console
                 },
                 _ =>
                 {
-                    System.Console.WriteLine(HelpOutput(parserResult));
+                    System.Console.WriteLine(HelpText.AutoBuild(parserResult));
                     return Task.FromResult(ExitCode.Error);
                 }).ConfigureAwait(false);
 
             return (int)result;
-        }
-
-        private static string HelpOutput(ParserResult<object> args)
-        {
-            var result = new StringBuilder();
-
-            result.AppendLine("Welcome to the event builder.")
-                .AppendLine("This application takes will generate IObservable event wrappers for assemblies")
-                .AppendLine("Valid options are:")
-                .AppendLine(HelpText.AutoBuild(args));
-
-            return result.ToString();
         }
     }
 }
