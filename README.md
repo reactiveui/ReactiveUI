@@ -265,6 +265,41 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
         <p>Adelaide, Australia</p>
       </td>
       <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/glennawatson.png?s=150">
+        <br>
+        <a href="https://github.com/glennawatson">Glenn Watson</a>
+        <p>Washington, USA</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/rlittlesii.png?s=150">
+        <br>
+        <a href="https://github.com/rlittlesii">Rodney Littles II</a>
+        <p>Texas, USA</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/worldbeater.png?s=150">
+        <br>
+        <a href="https://github.com/worldbeater">Artyom Gorchakov</a>
+        <p>Moscow, Russia</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/cabauman.png?s=150">
+        <br>
+        <a href="https://github.com/cabauman">Colt Bauman</a>
+        <p>Moscow, Russia</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Alumni Core Team</h2>
+
+The following have been core team members in the past.
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/olevett.png?s=150">
         <br>
         <a href="https://github.com/olevett">Olly Levett</a>
@@ -287,12 +322,6 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
         <br>
         <a href="https://github.com/onovotny">Oren Novotny</a>
         <p>New York, USA</p>
-      </td>
-      <td align="center" valign="top">
-        <img width="100" height="100" src="https://github.com/glennawatson.png?s=150">
-        <br>
-        <a href="https://github.com/glennawatson">Glenn Watson</a>
-        <p>Washington, USA</p>
       </td>
      </tr>
   </tbody>
