@@ -204,7 +204,7 @@ public class ReactiveViewModel : ReactiveObject
 
 <h2>Support</h2>
 
-If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
+If you have a question, please see if any discussions in our [GitHub issues](https://github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
 
 If you want to discuss something or just need help, here is our [Slack room](https://reactiveui.net/slack) where there are always individuals looking to help out!
 
