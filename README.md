@@ -286,7 +286,7 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
         <img width="100" height="100" src="https://github.com/cabauman.png?s=150">
         <br>
         <a href="https://github.com/cabauman">Colt Bauman</a>
-        <p>Moscow, Russia</p>
+        <p>South Korea</p>
       </td>
     </tr>
   </tbody>
