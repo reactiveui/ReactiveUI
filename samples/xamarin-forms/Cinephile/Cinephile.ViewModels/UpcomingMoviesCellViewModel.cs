@@ -9,7 +9,7 @@ using ReactiveUI;
 
 namespace Cinephile.ViewModels
 {
-    public class UpcomingMoviesCellViewModel : ViewModelBase, IEquatable<UpcomingMoviesCellViewModel>
+    public class UpcomingMoviesCellViewModel : ViewModelBase
     {
         public Movie Movie { get; }
 
@@ -48,39 +48,6 @@ namespace Cinephile.ViewModels
         public UpcomingMoviesCellViewModel(Movie movie, IScreen hostScreen = null) : base(hostScreen)
         {
             Movie = movie;
-        }
-
-        public bool Equals(UpcomingMoviesCellViewModel other)
-        {
-            if (ReferenceEquals(null, other))
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return Movie == other.Movie;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-
-            return Equals((UpcomingMoviesCellViewModel)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = -275155498;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Movie>.Default.GetHashCode(Movie);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Title);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(PosterPath);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Genres);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(ReleaseDate);
-            return hashCode;
         }
     }
 }

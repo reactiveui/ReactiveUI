@@ -22,11 +22,10 @@ namespace Cinephile.Views
             {
                 ViewModel.SelectedItem = null;
 
-                this.OneWayBind(ViewModel, x => x.Movies, x => x.UpcomingMoviesList.ItemsSource)
-                    .DisposeWith(disposables);
-
-                this.Bind(ViewModel, x => x.SelectedItem, x => x.UpcomingMoviesList.SelectedItem)
-                    .DisposeWith(disposables);
+                this.OneWayBind(ViewModel, x => x.Movies, x => x.UpcomingMoviesList.ItemsSource).DisposeWith(disposables);
+                this.Bind(ViewModel, x => x.SelectedItem, x => x.UpcomingMoviesList.SelectedItem).DisposeWith(disposables);
+                this.BindCommand(ViewModel, x => x.LoadMovies, x => x.UpcomingMoviesList.RefreshCommand, x => 0).DisposeWith(disposables);
+                //this.OneWayBind(ViewModel, x => x.IsRefreshing, x => x.UpcomingMoviesList.IsRefreshing).DisposeWith(disposables);
 
                 UpcomingMoviesList
                     .Events()
@@ -34,16 +33,14 @@ namespace Cinephile.Views
                     .Select((e) => e.Item as UpcomingMoviesCellViewModel)
                     .BindTo(this, x => x.ViewModel.ItemAppearing)
                     .DisposeWith(disposables);
-
-                this.WhenAnyValue(x => x.ViewModel)
-                    .Where(vm => vm != null)
-                    .SubscribeOn(RxApp.TaskpoolScheduler)
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Select(_ => 0)
-                    .InvokeCommand(ViewModel.LoadMovies)
-                    .DisposeWith(disposables);
-
             });
+
+            this.WhenAnyValue(x => x.ViewModel)
+                .Where(vm => vm != null)
+                .SubscribeOn(RxApp.TaskpoolScheduler)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select(_ => 0)
+                .InvokeCommand(ViewModel.LoadMovies);
         }
     }
 }

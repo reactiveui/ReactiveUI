@@ -14,8 +14,6 @@ namespace Cinephile.Core.Rest
     /// </summary>
     public sealed class Cache : ICache
     {
-        const double CacheValidityInMinutes = 5d;
-
         /// <summary>
         /// Initialize the specified name.
         /// </summary>
@@ -36,11 +34,7 @@ namespace Cinephile.Core.Rest
         {
             return BlobCache
                 .LocalMachine
-                .GetAndFetchLatest(cacheKey, fetchFunction, offset =>
-                {
-                    var elapsed = DateTimeOffset.Now - offset;
-                    return elapsed > TimeSpan.FromMinutes(CacheValidityInMinutes);
-                });
+                .GetAndFetchLatest(cacheKey, fetchFunction);
         }
 
         /// <summary>

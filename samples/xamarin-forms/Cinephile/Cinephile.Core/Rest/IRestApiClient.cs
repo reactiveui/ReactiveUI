@@ -12,7 +12,7 @@ namespace Cinephile.Core.Rest
     [Headers("Content-Type: application/json")]
     public interface IRestApiClient
     {
-        [Get("/movie/upcoming?api_key={apiKey}&language={language}&page={page}")]
+        [Get("/movie/upcoming?api_key={apiKey}&language={language}&page={page}&sort_by=release_date")]
         IObservable<MovieDto> FetchUpcomingMovies(string apiKey, int page, string language);
 
         [Get("/configuration?api_key={apiKey}")]
