@@ -4,12 +4,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using Cinephile.Core.Infrastructure;
 using Cinephile.Core.Rest;
-using Cinephile.Core.Rest.Dtos.Movies;
 using DynamicData;
 using Splat;
 
@@ -35,15 +34,21 @@ namespace Cinephile.Core.Models
             internalSourceCache = new SourceCache<Movie, int>(o => o.Id);
         }
 
-        public Unit LoadUpcomingMovies(int index)
+        public IObservable<Unit> LoadUpcomingMovies(int index)
         {
-            movieCache
+            return movieCache
                 .GetAndFetchLatest($"upcoming_movies_{index}", () => FetchUpcomingMovies(index))
-                .SelectMany(x => x)
-                .Do(x => System.Diagnostics.Debug.WriteLine($"========> Movie {x.Id} - {x.Title}"))
-                .Subscribe(x => internalSourceCache.AddOrUpdate(x));
+                .Select(x =>
+                {
+                    if (index == 0)
+                        internalSourceCache.Clear();
 
-            return Unit.Default;
+                    internalSourceCache.Edit(innerCache => innerCache.AddOrUpdate(x));
+
+                    //internalSourceCache.EditDiff(x, PageSize);
+
+                    return Unit.Default;
+                });
         }
 
 

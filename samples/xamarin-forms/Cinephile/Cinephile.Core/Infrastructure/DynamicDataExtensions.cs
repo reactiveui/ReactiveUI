@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cinephile.Core.Models;
+using DynamicData;
+using DynamicData.Kernel;
+
+namespace Cinephile.Core.Infrastructure
+{
+    public static class DynamicDataExtensions
+    {
+        public static void EditDiff<TDomainEntity, TKey>(this SourceCache<TDomainEntity, TKey> sourceCache, IEnumerable<TDomainEntity> items, int? offset = null, int pageSize = 25) where TDomainEntity : Movie
+        {
+            var keyComparer = new KeyComparer<TDomainEntity, TKey>();
+            Func<TDomainEntity, TDomainEntity, bool> areEqual = EqualityComparer<TDomainEntity>.Default.Equals;
+
+            sourceCache.Edit(innerCache =>
+            {
+                var originalItems = offset == null
+                    ? innerCache.KeyValues.AsArray()
+                    : innerCache.KeyValues.Skip((int)offset).Take(pageSize).AsArray();
+                var newItems = innerCache.GetKeyValues(items).AsArray();
+
+                var removes = originalItems.Except(newItems, keyComparer).ToArray();
+                var adds = newItems.Except(originalItems, keyComparer).ToArray();
+                var intersect = newItems
+                    .Select(kvp => new
+                    {
+                        Original = originalItems
+                            .Where(x => keyComparer.Equals(kvp, x))
+                            .Select(found => new { found.Key, found.Value })
+                            .FirstOrDefault(),
+                        NewItem = kvp
+                    })
+                    .Where(x => x.Original != null && !areEqual(x.Original.Value, x.NewItem.Value))
+                    .Select(x => new KeyValuePair<TKey, TDomainEntity>(x.NewItem.Key, x.NewItem.Value))
+                    .ToArray();
+
+                //Now we are invalidating the cache if there are items to be removed and the sum of intersections is greater
+                //than or equal to the page size on the first page.
+                //This fixes a problem on the search and potentially in other places too
+                if (offset == 0 && removes.Any() && removes.Count() + intersect.Count() >= pageSize)
+                {
+                    innerCache.Clear();
+                }
+
+                innerCache.Remove(removes.Select(kvp => kvp.Key));
+                innerCache.AddOrUpdate(adds.Union(intersect));
+            });
+        }
+    }
+
+    internal class KeyComparer<TObject, TKey> : IEqualityComparer<KeyValuePair<TKey, TObject>>
+    {
+        public bool Equals(KeyValuePair<TKey, TObject> x, KeyValuePair<TKey, TObject> y)
+        {
+            return x.Key.Equals(y.Key);
+        }
+
+        public int GetHashCode(KeyValuePair<TKey, TObject> obj)
+        {
+            return obj.Key.GetHashCode();
+        }
+    }
+}

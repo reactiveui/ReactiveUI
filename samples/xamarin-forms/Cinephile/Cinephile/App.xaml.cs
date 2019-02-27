@@ -23,7 +23,6 @@ namespace Cinephile
 
             var bootstrapper = new AppBootstrapper();
             MainPage = bootstrapper.CreateMainPage();
-
         }
 
         protected override void OnStart()
