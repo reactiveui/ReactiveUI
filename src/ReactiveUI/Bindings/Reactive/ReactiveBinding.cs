@@ -12,7 +12,7 @@ namespace ReactiveUI
         where TViewModel : class
         where TView : IViewFor
     {
-        private IDisposable _bindingDisposable;
+        private readonly IDisposable _bindingDisposable;
 
         public ReactiveBinding(
             TView view,
@@ -34,22 +34,22 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
-        public TViewModel ViewModel { get; private set; }
+        public TViewModel ViewModel { get; }
 
         /// <inheritdoc />
-        public Expression ViewModelExpression { get; private set; }
+        public Expression ViewModelExpression { get; }
 
         /// <inheritdoc />
-        public TView View { get; private set; }
+        public TView View { get; }
 
         /// <inheritdoc />
-        public Expression ViewExpression { get; private set; }
+        public Expression ViewExpression { get; }
 
         /// <inheritdoc />
-        public IObservable<TValue> Changed { get; private set; }
+        public IObservable<TValue> Changed { get; }
 
         /// <inheritdoc />
-        public BindingDirection Direction { get; private set; }
+        public BindingDirection Direction { get; }
 
         /// <inheritdoc />
         public void Dispose()
