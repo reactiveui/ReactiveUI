@@ -8,75 +8,12 @@ pr:
 - rel/*
 - preview/*
 
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: ReactiveUI/ReactiveUI.Cake.Recipe
+      endpoint: reactiveui
+
 jobs:
-- job: Windows
-  pool:
-    vmImage: vs2017-win2016
-  steps:
-  - task: DotNetCoreInstaller@0
-    displayName: Install Dot Net Core v3.0.100-preview2
-    inputs:
-      version: '3.0.100-preview2'
-
-  - task: BatchScript@1
-    inputs:
-      filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\Common7\\Tools\\VsDevCmd.bat"
-      arguments: -no_logo
-      modifyEnvironment: true
-    displayName: Setup Environment Variables
-
-  - powershell: .\build.ps1
-    displayName: Build 
-    env:
-      SIGNCLIENT_SECRET: $(SignClientSecret)
-      SIGNCLIENT_USER: $(SignClientUser)
-      ArtifactDirectory: $(System.DefaultWorkingDirectory)\artifacts
-
-  - task: CopyFiles@2
-    inputs:
-      Contents: 'artifacts/packages/*.nupkg'
-      TargetFolder: '$(build.artifactstagingdirectory)\packages'
-      flattenFolders: true
-
-  - task: PublishBuildArtifacts@1
-    displayName: Publish Package Artifacts
-    inputs:
-      pathToPublish: '$(build.artifactstagingdirectory)\packages'
-      artifactType: container
-      artifactName: Packages
-
-  - task: CopyFiles@2
-    inputs:
-      Contents: 'artifacts/binaries/**/*'
-      TargetFolder: '$(build.artifactstagingdirectory)\binaries'
-
-  - task: PublishBuildArtifacts@1
-    displayName: Publish Binaries
-    inputs:
-      pathToPublish: '$(build.artifactstagingdirectory)\binaries'
-      artifactType: container
-      artifactName: Binaries
-
-  - task: CopyFiles@2
-    inputs:
-      Contents: 'artifacts/Events/*.cs'
-      TargetFolder: '$(build.artifactstagingdirectory)\Events'
-
-  - task: PublishBuildArtifacts@1
-    displayName: Publish Generated Events
-    inputs:
-      pathToPublish: '$(build.artifactstagingdirectory)\Events'
-      artifactType: container
-      artifactName: Events
-
-- job: Mac
-  pool:
-    vmImage: 'macOS-10.13'
-  steps:
-  - task: DotNetCoreInstaller@0
-    displayName: Install Dot Net Core v3.0.100-preview2
-    inputs:
-        version: '3.0.100-preview2'
-
-  - bash: ./build.sh --target=Build
-    displayName: Build
+- template: Azure/azure-pipelines-2019.yml@templates  # Template reference
