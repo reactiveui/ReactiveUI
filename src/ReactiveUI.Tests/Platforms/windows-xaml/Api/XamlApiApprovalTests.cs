@@ -18,10 +18,11 @@ namespace ReactiveUI.Tests.Xaml
     [ExcludeFromCodeCoverage]
     public class XamlApiApprovalTests : ApiApprovalBase
     {
-        [Fact]
+#if !NETCOREAPP
         public void Blend()
         {
             CheckApproval(typeof(Blend.FollowObservableStateBehavior).Assembly);
         }
+#endif
     }
 }

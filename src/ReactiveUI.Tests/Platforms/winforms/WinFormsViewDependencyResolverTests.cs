@@ -17,7 +17,7 @@ namespace ReactiveUI.Tests.Winforms
 {
     public sealed class WinFormsViewDependencyResolverTests : IDisposable
     {
-        private readonly IMutableDependencyResolver _resolver;
+        private readonly IDependencyResolver _resolver;
 
         public WinFormsViewDependencyResolverTests()
         {

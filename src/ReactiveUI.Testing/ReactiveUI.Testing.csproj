@@ -9,7 +9,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0-preview.63" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0-preview.102" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 

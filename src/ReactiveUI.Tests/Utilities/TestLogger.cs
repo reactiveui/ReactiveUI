@@ -34,5 +34,15 @@ namespace ReactiveUI.Tests
         {
             Messages.Add(Tuple.Create(message, type, logLevel));
         }
+
+        public void Write(Exception exception, [Localizable(false)] string message, LogLevel logLevel)
+        {
+            Messages.Add(Tuple.Create(message + ": " + exception.ToString(), typeof(TestLogger), logLevel));
+        }
+
+        public void Write(Exception exception, [Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
+        {
+            Messages.Add(Tuple.Create(message + ": " + exception.ToString(), type, logLevel));
+        }
     }
 }

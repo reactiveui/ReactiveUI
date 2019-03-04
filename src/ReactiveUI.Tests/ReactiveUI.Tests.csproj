@@ -3,7 +3,6 @@
   <PropertyGroup>    
     <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461</TargetFrameworks>
-
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
@@ -13,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-   <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />  
+   <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
   </ItemGroup>
   
   <ItemGroup>

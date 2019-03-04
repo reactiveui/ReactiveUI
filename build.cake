@@ -4,6 +4,8 @@
 
 #load nuget:https://www.myget.org/F/reactiveui/api/v2?package=ReactiveUI.Cake.Recipe&prerelease
 
+Environment.SetVariableNames();
+
 const string project = "ReactiveUI";
 
 //////////////////////////////////////////////////////////////////////
@@ -70,26 +72,9 @@ if (IsRunningOnWindows())
         ("uwp", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
         ("winforms", MakeAbsolute(Directory("src/ReactiveUI.Events.Winforms/"))),
         ("NetCoreAppWPF", MakeAbsolute(Directory("src/ReactiveUI.Events.WPF/"))),
-        ("NetCoreAppWinforms", MakeAbsolute(Directory("src/ReactiveUI.Events.Winforms/"))),        
-
+        ("NetCoreAppWinforms", MakeAbsolute(Directory("src/ReactiveUI.Events.Winforms/"))),
     });
 }
-
-//////////////////////////////////////////////////////////////////////
-// SETUP
-//////////////////////////////////////////////////////////////////////
-
-Environment.SetVariableNames();
-
-BuildParameters.SetParameters(context: Context, 
-                            buildSystem: BuildSystem,
-                            title: project,
-                            whitelistPackages: packageWhitelist,
-                            whitelistTestPackages: packageTestWhitelist,
-                            artifactsDirectory: "./artifacts",
-                            sourceDirectory: "./src");
-
-ToolSettings.SetToolSettings(context: Context);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -108,7 +93,7 @@ Task("GenerateEvents")
     var eventsArtifactDirectory = BuildParameters.ArtifactsDirectory.Combine("Events");
     EnsureDirectoryExists(eventsArtifactDirectory);
 
-    var workingDirectory = MakeAbsolute(Directory("./src/EventBuilder/bin/Release/netcoreapp2.1"));
+    var workingDirectory = MakeAbsolute(Directory("./src/EventBuilder/bin/Release/netcoreapp3.0"));
     var eventBuilder = workingDirectory.CombineWithFilePath("EventBuilder.dll");
 
     DirectoryPath referenceAssembliesPath = null;
@@ -148,7 +133,21 @@ Task("GenerateEvents")
     CopyFiles(GetFiles("./src/ReactiveUI.**/Events_*.cs"), eventsArtifactDirectory);
 });
 
+//////////////////////////////////////////////////////////////////////
+// SETUP
+//////////////////////////////////////////////////////////////////////
+
+BuildParameters.SetParameters(context: Context, 
+                            buildSystem: BuildSystem,
+                            title: project,
+                            whitelistPackages: packageWhitelist,
+                            whitelistTestPackages: packageTestWhitelist,
+                            artifactsDirectory: "./artifacts",
+                            sourceDirectory: "./src");
+
 BuildParameters.Tasks.BuildTask.IsDependentOn("GenerateEvents");
+
+ToolSettings.SetToolSettings(context: Context, usePrereleaseMsBuild: true);
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

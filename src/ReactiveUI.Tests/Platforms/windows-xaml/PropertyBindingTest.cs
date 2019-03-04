@@ -77,6 +77,8 @@ namespace ReactiveUI.Tests.Xaml
             var view = new PropertyBindView { ViewModel = vm };
             var fixture = new PropertyBinderImplementation();
 
+            RxApp.EnsureInitialized();
+
             vm.Property2 = 17;
             Assert.NotEqual(vm.Property2.ToString(), view.SomeTextBox.Text);
 

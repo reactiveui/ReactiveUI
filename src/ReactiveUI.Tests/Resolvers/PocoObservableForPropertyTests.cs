@@ -76,6 +76,16 @@ namespace ReactiveUI.Tests
             {
                 LastMessages.Add(message);
             }
+
+            public void Write(Exception exception, [Localizable(false)] string message, LogLevel logLevel)
+            {
+                LastMessages.Add(message + ": " + exception.ToString());
+            }
+
+            public void Write(Exception exception, [Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
+            {
+                LastMessages.Add(message + ": " + exception.ToString());
+            }
         }
     }
 }
