@@ -38,12 +38,15 @@ namespace Cinephile.Core.Models
         {
             return movieCache
                 .GetAndFetchLatest($"upcoming_movies_{index}", () => FetchUpcomingMovies(index))
+                .SelectMany(x => x)
                 .Select(x =>
                 {
-                    if (index == 0)
-                        internalSourceCache.Clear();
+                    //if (index == 0)
+                        //internalSourceCache.Clear();
 
-                    internalSourceCache.Edit(innerCache => innerCache.AddOrUpdate(x));
+                    internalSourceCache.AddOrUpdate(x, EqualityComparer<Movie>.Default);
+
+                    //internalSourceCache.Edit(innerCache => innerCache.AddOrUpdate(x));//, EqualityComparer<Movie>.Default));
 
                     //internalSourceCache.EditDiff(x, PageSize);
 

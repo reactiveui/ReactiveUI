@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using Cinephile.Core.Models;
 using DynamicData;
 using DynamicData.Kernel;
@@ -48,7 +49,53 @@ namespace Cinephile.Core.Infrastructure
                 innerCache.AddOrUpdate(adds.Union(intersect));
             });
         }
-    }
+
+        public static IObservable<IChangeSet<TDestination, TKey>> MyCustomTransform<TObject, TKey, TDestination>(
+        this IObservable<IChangeSet<TObject, TKey>> source,
+        Func<TObject, TDestination> factory,
+        Action<TDestination, TObject> updateAction)
+        {
+            return source.Scan(new ChangeAwareCache<TDestination, TKey>(), (cache, changes) =>
+            {
+                foreach (var change in changes)
+                {
+                    switch (change.Reason)
+                    {
+                        case ChangeReason.Add:
+                            cache.AddOrUpdate(factory(change.Current), change.Key);
+                            break;
+                        case ChangeReason.Update:
+
+                            //get the transformed item: 
+                            var previousTransform = cache.Lookup(change.Key)
+                                .ValueOrThrow(() => new MissingKeyException($"There is no key matching {change.Key} in the cache"));
+
+                            //apply the update action
+                            updateAction(previousTransform, change.Current);
+
+                            //send a refresh so sort or filter on this item can work on the inline change [this is an optional step]
+                            cache.Refresh(change.Key);
+                            break;
+                        case ChangeReason.Remove:
+                            cache.Remove(change.Key);
+                            break;
+                        case ChangeReason.Refresh:
+                            cache.Refresh(change.Key);
+                            break;
+                        case ChangeReason.Moved:
+                            //Do nothing !
+                            break;
+                    }
+                }
+                return cache;
+            })
+                .Select(cache => cache.CaptureChanges()) //convert the change aware cache to a changeset
+                .NotEmpty();                            // suppress changeset.count==0 results
+        }
+
+}
+
+
 
     internal class KeyComparer<TObject, TKey> : IEqualityComparer<KeyValuePair<TKey, TObject>>
     {

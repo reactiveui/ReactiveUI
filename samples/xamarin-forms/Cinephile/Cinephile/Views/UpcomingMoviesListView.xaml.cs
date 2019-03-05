@@ -25,7 +25,6 @@ namespace Cinephile.Views
                 this.OneWayBind(ViewModel, x => x.Movies, x => x.UpcomingMoviesList.ItemsSource).DisposeWith(disposables);
                 this.Bind(ViewModel, x => x.SelectedItem, x => x.UpcomingMoviesList.SelectedItem).DisposeWith(disposables);
                 this.BindCommand(ViewModel, x => x.LoadMovies, x => x.UpcomingMoviesList.RefreshCommand, x => 0).DisposeWith(disposables);
-                //this.OneWayBind(ViewModel, x => x.IsRefreshing, x => x.UpcomingMoviesList.IsRefreshing).DisposeWith(disposables);
 
                 UpcomingMoviesList
                     .Events()
@@ -40,7 +39,7 @@ namespace Cinephile.Views
                 .SubscribeOn(RxApp.TaskpoolScheduler)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Select(_ => 0)
-                .InvokeCommand(ViewModel.LoadMovies);
+                .InvokeCommand(this, x => x.ViewModel.LoadMovies);
         }
     }
 }

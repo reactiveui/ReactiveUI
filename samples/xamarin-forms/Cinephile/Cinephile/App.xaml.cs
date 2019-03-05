@@ -7,7 +7,9 @@ using FFImageLoading;
 using FFImageLoading.Config;
 using Fusillade;
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
+[assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace Cinephile
 {
     public partial class App : Application
@@ -23,6 +25,9 @@ namespace Cinephile
 
             var bootstrapper = new AppBootstrapper();
             MainPage = bootstrapper.CreateMainPage();
+
+            // I hate to do this, but honestly dont know a better way to styke the navbar
+            (Current.MainPage as NavigationPage).Style = Current.Resources["DefaultNavigationPageStyle"] as Style;
         }
 
         protected override void OnStart()
