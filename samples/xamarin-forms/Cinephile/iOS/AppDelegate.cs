@@ -17,12 +17,14 @@ namespace Cinephile.iOS
     {
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
+
             global::Xamarin.Forms.Forms.Init();
 
             LoadApplication(new App());
 
             BlobCache.ApplicationName = "Cinephile";
-            CachedImageRenderer.Init();
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init();
 
             return base.FinishedLaunching(app, options);
         }

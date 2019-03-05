@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+  x:Class="Cinephile.Styles.Colors"
+  xmlns="http://xamarin.com/schemas/2014/forms"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+  <!--
+    Dear Developer,
+    
+    Below colors like Accent & Primary should be in sync with those defined in Android's colors.xml. This way, we assure
+    their semantic keep consistent between both sides.
+    
+    Thanks!
+    
+    —A Developer
+  -->
+
+  <Color x:Key="AccentColor">#4e7279</Color>
+  <Color x:Key="AccentColorDark">#265b64</Color>
+    
+  <Color x:Key="AccentColor2">#a7374a</Color>
+  <Color x:Key="AccentColor2Dark">#953141</Color>
+
+  <Color x:Key="PrimaryColor">#ebe6ca</Color>
+  <Color x:Key="PrimaryColorDark">#cecbb5</Color>
+
+</ResourceDictionary>

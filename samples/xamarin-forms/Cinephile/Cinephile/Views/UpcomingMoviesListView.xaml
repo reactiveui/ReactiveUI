@@ -10,7 +10,6 @@
     <ListView x:Name="UpcomingMoviesList"
               RowHeight="100"
               SeparatorVisibility="None"
-              IsPullToRefreshEnabled="True"              
               CachingStrategy="RecycleElementAndDataTemplate">
         <ListView.ItemTemplate>
             <DataTemplate>
