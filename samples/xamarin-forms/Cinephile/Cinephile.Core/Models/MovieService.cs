@@ -20,22 +20,22 @@ namespace Cinephile.Core.Models
 
         public const int PageSize = 20;
 
-        private const string apiKey = "1f54bd990f1cdfb230adb312546d765d";
-        private const string Language = "en-US";
+        private const string ApiKey = "1f54bd990f1cdfb230adb312546d765d";
+        protected const string Language = "en-US";
 
-        private IApiService movieApiService;
-        private ICache movieCache;
+        private IApiService _movieApiService;
+        private ICache _movieCache;
 
         public MovieService(IApiService apiService = null, ICache cache = null)
         {
-            movieApiService = apiService ?? Locator.Current.GetService<IApiService>();
-            movieCache = cache ?? Locator.Current.GetService<ICache>();
+            _movieApiService = apiService ?? Locator.Current.GetService<IApiService>();
+            _movieCache = cache ?? Locator.Current.GetService<ICache>();
             _internalSourceCache = new SourceCache<Movie, int>(o => o.Id);
         }
 
         public IObservable<Unit> LoadUpcomingMovies(int index)
         {
-            return movieCache
+            return _movieCache
                 .GetAndFetchLatest($"upcoming_movies_{index}", () => FetchUpcomingMovies(index))
                 .Select(x =>
                 {
@@ -43,7 +43,6 @@ namespace Cinephile.Core.Models
                     return Unit.Default;
                 });
         }
-
 
         IObservable<IEnumerable<Movie>> FetchUpcomingMovies(int index)
         {
@@ -56,12 +55,12 @@ namespace Cinephile.Core.Models
 
             return Observable
                 .CombineLatest(
-                    movieApiService
+                    _movieApiService
                         .UserInitiated
-                        .FetchUpcomingMovies(apiKey, page, Language),
-                    movieApiService
+                        .FetchUpcomingMovies(ApiKey, page, Language),
+                    _movieApiService
                         .UserInitiated
-                        .FetchGenres(apiKey, Language),
+                        .FetchGenres(ApiKey, Language),
                     (movies, genres) =>
                     {
                         return movies
