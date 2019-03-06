@@ -55,40 +55,41 @@ namespace Cinephile.Core.Infrastructure
             Func<TObject, TDestination> factory,
             Action<TDestination, TObject> updateAction)
         {
-            return source.Scan(new ChangeAwareCache<TDestination, TKey>(), (cache, changes) =>
-            {
-                foreach (var change in changes)
+            return source
+                .Scan(new ChangeAwareCache<TDestination, TKey>(), (cache, changes) =>
                 {
-                    switch (change.Reason)
+                    foreach (var change in changes)
                     {
-                        case ChangeReason.Add:
-                            cache.AddOrUpdate(factory(change.Current), change.Key);
-                            break;
-                        case ChangeReason.Update:
+                        switch (change.Reason)
+                        {
+                            case ChangeReason.Add:
+                                cache.AddOrUpdate(factory(change.Current), change.Key);
+                                break;
+                            case ChangeReason.Update:
 
-                            //get the transformed item: 
-                            var previousTransform = cache.Lookup(change.Key)
-                                .ValueOrThrow(() => new MissingKeyException($"There is no key matching {change.Key} in the cache"));
+                                //get the transformed item: 
+                                var previousTransform = cache.Lookup(change.Key)
+                                    .ValueOrThrow(() => new MissingKeyException($"There is no key matching {change.Key} in the cache"));
 
-                            //apply the update action
-                            updateAction(previousTransform, change.Current);
+                                //apply the update action
+                                updateAction(previousTransform, change.Current);
 
-                            //send a refresh so sort or filter on this item can work on the inline change [this is an optional step]
-                            cache.Refresh(change.Key);
-                            break;
-                        case ChangeReason.Remove:
-                            cache.Remove(change.Key);
-                            break;
-                        case ChangeReason.Refresh:
-                            cache.Refresh(change.Key);
-                            break;
-                        case ChangeReason.Moved:
-                            //Do nothing !
-                            break;
+                                //send a refresh so sort or filter on this item can work on the inline change [this is an optional step]
+                                cache.Refresh(change.Key);
+                                break;
+                            case ChangeReason.Remove:
+                                cache.Remove(change.Key);
+                                break;
+                            case ChangeReason.Refresh:
+                                cache.Refresh(change.Key);
+                                break;
+                            case ChangeReason.Moved:
+                                //Do nothing !
+                                break;
+                        }
                     }
-                }
-                return cache;
-            })
+                    return cache;
+                })
                 .Select(cache => cache.CaptureChanges()) //convert the change aware cache to a changeset
                 .NotEmpty();                            // suppress changeset.count==0 results
         }
