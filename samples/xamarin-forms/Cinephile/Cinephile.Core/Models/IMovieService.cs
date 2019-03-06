@@ -4,11 +4,13 @@
 
 using System;
 using System.Reactive;
+using DynamicData;
 
 namespace Cinephile.Core.Models
 {
     public interface IMovieService
     {
+        IObservableCache<Movie, int> UpcomingMovies { get; }
         IObservable<Unit> LoadUpcomingMovies(int index);
     }
 }

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -14,6 +13,7 @@ using Cinephile.Core.Models;
 using DynamicData;
 using DynamicData.PLinq;
 using Cinephile.Core.Infrastructure;
+using Splat;
 
 namespace Cinephile.ViewModels
 {
@@ -45,13 +45,16 @@ namespace Cinephile.ViewModels
         ObservableAsPropertyHelper<bool> _isRefreshing;
         public bool IsRefreshing => _isRefreshing.Value;
 
-        private MovieService _movieService;
+        private IMovieService _movieService;
 
-        public UpcomingMoviesListViewModel(IScheduler mainThreadScheduler = null, IScheduler taskPoolScheduler = null, IScreen hostScreen = null)
+        public UpcomingMoviesListViewModel( IScheduler mainThreadScheduler = null, 
+                                            IScheduler taskPoolScheduler = null,
+                                            IMovieService movieService = null,
+                                            IScreen hostScreen = null)
             : base("Upcoming Movies", mainThreadScheduler, taskPoolScheduler, hostScreen)
         {
 
-            _movieService = new MovieService();
+            _movieService = movieService ?? Locator.Current.GetService<IMovieService>();
 
             LoadMovies = ReactiveCommand.CreateFromObservable<int, Unit>(count => _movieService.LoadUpcomingMovies(count));
 
