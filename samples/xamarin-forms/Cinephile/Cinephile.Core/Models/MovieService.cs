@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using Cinephile.Core.Infrastructure;
 using Cinephile.Core.Rest;
 using DynamicData;
 using Splat;
@@ -16,8 +15,8 @@ namespace Cinephile.Core.Models
 {
     public class MovieService : IMovieService
     {
-        private readonly SourceCache<Movie, int> internalSourceCache;
-        public IObservableCache<Movie, int> UpcomingMovies => internalSourceCache;
+        private readonly SourceCache<Movie, int> _internalSourceCache;
+        public IObservableCache<Movie, int> UpcomingMovies => _internalSourceCache;
 
         public const int PageSize = 20;
 
@@ -31,25 +30,16 @@ namespace Cinephile.Core.Models
         {
             movieApiService = apiService ?? Locator.Current.GetService<IApiService>();
             movieCache = cache ?? Locator.Current.GetService<ICache>();
-            internalSourceCache = new SourceCache<Movie, int>(o => o.Id);
+            _internalSourceCache = new SourceCache<Movie, int>(o => o.Id);
         }
 
         public IObservable<Unit> LoadUpcomingMovies(int index)
         {
             return movieCache
                 .GetAndFetchLatest($"upcoming_movies_{index}", () => FetchUpcomingMovies(index))
-                .SelectMany(x => x)
                 .Select(x =>
                 {
-                    //if (index == 0)
-                        //internalSourceCache.Clear();
-
-                    internalSourceCache.AddOrUpdate(x, EqualityComparer<Movie>.Default);
-
-                    //internalSourceCache.Edit(innerCache => innerCache.AddOrUpdate(x));//, EqualityComparer<Movie>.Default));
-
-                    //internalSourceCache.EditDiff(x, PageSize);
-
+                    _internalSourceCache.Edit(innerCache => innerCache.AddOrUpdate(x));
                     return Unit.Default;
                 });
         }

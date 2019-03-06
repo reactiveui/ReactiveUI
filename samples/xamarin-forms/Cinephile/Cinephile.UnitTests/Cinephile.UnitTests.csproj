@@ -24,4 +24,7 @@
       <HintPath>$(UserProfile)\.nuget\packages\system.threading.tasks.extensions\4.4.0\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
   </ItemGroup>  
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
+  </ItemGroup>
 </Project>
