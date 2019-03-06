@@ -29,14 +29,6 @@ namespace Cinephile.ViewModels
             set { this.RaiseAndSetIfChanged(ref _selectedItem, value); }
         }
 
-        string _searchText;
-        public string SearchText
-        {
-            get { return _searchText; }
-            set { this.RaiseAndSetIfChanged(ref _searchText, value); }
-        }
-
-
         UpcomingMoviesCellViewModel _itemAppearing;
         public UpcomingMoviesCellViewModel ItemAppearing
         {
@@ -80,9 +72,9 @@ namespace Cinephile.ViewModels
                 .WhenAnyValue(x => x.SelectedItem)
                 .Where(x => x != null)
                 .SelectMany(x => HostScreen
-                .Router
-                .Navigate
-                .Execute(new MovieDetailViewModel(x.Movie)))
+                    .Router
+                    .Navigate
+                    .Execute(new MovieDetailViewModel(x.Movie)))
                 .Subscribe();
 
             LoadMovies

@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cinephile.Core\Cinephile.Core.csproj" />
+    <ProjectReference Include="..\Cinephile.ViewModels\Cinephile.ViewModels.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Threading.Tasks.Extensions">
