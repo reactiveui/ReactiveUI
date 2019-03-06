@@ -20,8 +20,7 @@ namespace Cinephile.Views
                 this
                     .ViewModel
                     .ShowAlert
-                    .RegisterHandler(
-                        interaction =>
+                    .RegisterHandler(interaction =>
                         {
                             AlertViewModel input = interaction.Input;
                             DisplayAlert(input.Title, input.Description, input.ButtonText);
