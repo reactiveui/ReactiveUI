@@ -54,15 +54,10 @@ namespace Cinephile.ViewModels
         public bool IsRefreshing => _isRefreshing.Value;
 
         private MovieService _movieService;
-        private readonly IScheduler _mainThreadScheduler;
-        private readonly IScheduler _taskPoolScheduler;
 
-        public UpcomingMoviesListViewModel(IScheduler mainThreadScheduler = null, IScheduler taskPoolScheduler = null, IScreen hostScreen = null) : base(hostScreen)
+        public UpcomingMoviesListViewModel(IScheduler mainThreadScheduler = null, IScheduler taskPoolScheduler = null, IScreen hostScreen = null)
+            : base("Upcoming Movies", mainThreadScheduler, taskPoolScheduler, hostScreen)
         {
-            _mainThreadScheduler = mainThreadScheduler ?? RxApp.MainThreadScheduler;
-            _taskPoolScheduler = taskPoolScheduler ?? RxApp.TaskpoolScheduler;
-
-            UrlPathSegment = "Upcoming Movies";
 
             _movieService = new MovieService();
 
@@ -79,63 +74,43 @@ namespace Cinephile.ViewModels
                 .Bind(out _movies)
                 .Subscribe();
 
-            SelectedItem = null;
-
-            LoadMovies
-                .Subscribe();
+            LoadMovies.Subscribe();
 
             this
                 .WhenAnyValue(x => x.SelectedItem)
                 .Where(x => x != null)
-                .Subscribe(LoadSelectedPage);
+                .SelectMany(x => HostScreen
+                .Router
+                .Navigate
+                .Execute(new MovieDetailViewModel(x.Movie)))
+                .Subscribe();
 
             LoadMovies
                 .ThrownExceptions
-                .Subscribe((obj) =>
-                {
-                    Debug.WriteLine(obj.Message);
-                });
+                .SelectMany(ex => ShowAlert.Handle(new AlertViewModel("Oops", ex.Message, "Ok")))
+                .Subscribe();
 
             _isRefreshing =
                 LoadMovies
                     .IsExecuting
-                    .Select(x =>
-                    {
-                        return x;
-                    })
                     .ToProperty(this, x => x.IsRefreshing, true);
 
-            WhenNeedToLoadMore()
-                .InvokeCommand(LoadMovies);
-        }
-
-        private IObservable<int> WhenNeedToLoadMore()
-        {
-            return this
+            this
                 .WhenAnyValue(x => x.ItemAppearing)
                 .Select(item =>
                 {
                     int offset = -1;
-                    var itemIndex = Movies.IndexOf(item);
-                    var loadedItemsCount = Movies.Count();
 
-                    if (loadedItemsCount % MovieService.PageSize == 0 && itemIndex == loadedItemsCount - 8)
+                    var itemIndex = Movies.IndexOf(item);
+                    if (itemIndex == Movies.Count - 8)
                     {
-                        offset = loadedItemsCount;
+                        offset = Movies.Count;
                     }
 
                     return offset;
                 })
-                .Where(index => index > 0);
-        }
-
-        void LoadSelectedPage(UpcomingMoviesCellViewModel viewModel)
-        {
-            HostScreen
-                .Router
-                .Navigate
-                .Execute(new MovieDetailViewModel(viewModel.Movie))
-                .Subscribe();
+                .Where(index => index > 0)
+                .InvokeCommand(LoadMovies);
         }
     }
 }

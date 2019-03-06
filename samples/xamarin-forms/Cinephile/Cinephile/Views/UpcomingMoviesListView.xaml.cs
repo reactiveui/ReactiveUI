@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Cinephile.ViewModels;
@@ -24,7 +22,6 @@ namespace Cinephile.Views
 
                 this.OneWayBind(ViewModel, x => x.Movies, x => x.UpcomingMoviesList.ItemsSource).DisposeWith(disposables);
                 this.Bind(ViewModel, x => x.SelectedItem, x => x.UpcomingMoviesList.SelectedItem).DisposeWith(disposables);
-                this.BindCommand(ViewModel, x => x.LoadMovies, x => x.UpcomingMoviesList.RefreshCommand, x => 0).DisposeWith(disposables);
 
                 UpcomingMoviesList
                     .Events()

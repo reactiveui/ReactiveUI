@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reactive.Concurrency;
 using Cinephile.Core.Models;
 using ReactiveUI;
 
@@ -11,60 +12,24 @@ namespace Cinephile.ViewModels
 {
     public class MovieDetailViewModel : ViewModelBase
     {
-        public string Title
-        {
-            get
-            {
-                return this.movie.Title;
-            }
-        }
+        public string Title => _movie.Title;
 
-        public string PosterSmall
-        {
-            get
-            {
-                return this.movie.PosterSmall;
-            }
-        }
+        public string PosterSmall => _movie.PosterSmall;
 
-        public string PosterBig
-        {
-            get
-            {
-                return this.movie.PosterBig;
-            }
-        }
+        public string PosterBig => _movie.PosterBig;
 
-        public string Genres
-        {
-            get
-            {
-                return string.Join(", ", this.movie.Genres);
-            }
-        }
+        public string Genres => string.Join(", ", this._movie.Genres);
 
-        public string ReleaseDate
-        {
-            get
-            {
-                return this.movie.ReleaseDate.ToString("D");
-            }
-        }
+        public string ReleaseDate => _movie.ReleaseDate.ToString("D");
 
-        public string Overview
-        {
-            get
-            {
-                return this.movie.Overview;
-            }
-        }
+        public string Overview => _movie.Overview;
 
-        private Movie movie;
+        private readonly Movie _movie;
 
-        public MovieDetailViewModel(Movie movie, IScreen hostScreen = null) : base(hostScreen)
+        public MovieDetailViewModel(Movie movie, IScheduler mainThreadScheduler = null, IScheduler taskPoolScheduler = null, IScreen hostScreen = null) 
+        : base(movie.Title, mainThreadScheduler, taskPoolScheduler, hostScreen)
         {
-            this.movie = movie;
-            UrlPathSegment = this.Title;
+            _movie = movie;
         }
     }
 }

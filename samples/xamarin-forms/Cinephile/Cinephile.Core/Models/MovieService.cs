@@ -47,6 +47,11 @@ namespace Cinephile.Core.Models
 
         IObservable<IEnumerable<Movie>> FetchUpcomingMovies(int index)
         {
+            // Uncomment this if you want to see the dialog 
+            //var randomNumer = new Random(DateTime.Now.Millisecond).Next(0, 3);
+            //if (randomNumer == 1)
+                //throw new Exception("This is a generic fake exception to show how the dialog works.");
+
             int page = (int)Math.Ceiling(index / (double)PageSize) + 1;
 
             return Observable

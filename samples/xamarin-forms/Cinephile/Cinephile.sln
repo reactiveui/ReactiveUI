@@ -47,7 +47,6 @@ Global
 		{B9144220-0AEF-44C9-B0A0-C4FFF74AE441}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
 		{B9144220-0AEF-44C9-B0A0-C4FFF74AE441}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
 		{B9144220-0AEF-44C9-B0A0-C4FFF74AE441}.Release|Any CPU.ActiveCfg = Release|iPhone
-		{B9144220-0AEF-44C9-B0A0-C4FFF74AE441}.Release|Any CPU.Build.0 = Release|iPhone
 		{B9144220-0AEF-44C9-B0A0-C4FFF74AE441}.Release|iPhone.ActiveCfg = Release|iPhone
 		{B9144220-0AEF-44C9-B0A0-C4FFF74AE441}.Release|iPhone.Build.0 = Release|iPhone
 		{B9144220-0AEF-44C9-B0A0-C4FFF74AE441}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
@@ -62,7 +61,6 @@ Global
 		{46576CC2-AEA8-4A41-89C2-7E035413AA8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46576CC2-AEA8-4A41-89C2-7E035413AA8C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{46576CC2-AEA8-4A41-89C2-7E035413AA8C}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{46576CC2-AEA8-4A41-89C2-7E035413AA8C}.Release|iPhone.Build.0 = Release|Any CPU
 		{46576CC2-AEA8-4A41-89C2-7E035413AA8C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{46576CC2-AEA8-4A41-89C2-7E035413AA8C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{3D518760-8A47-4578-9C19-EBA09BCEC6F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -84,9 +82,7 @@ Global
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|iPhone.Build.0 = Release|Any CPU
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{65DFE289-C949-48A5-AD74-6B93E3ECCCE6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{42AFC9D3-D010-44B3-85FC-E1AE52F70511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
