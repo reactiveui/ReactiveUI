@@ -50,10 +50,10 @@ namespace Cinephile.Core.Infrastructure
             });
         }
 
-        public static IObservable<IChangeSet<TDestination, TKey>> MyCustomTransform<TObject, TKey, TDestination>(
-        this IObservable<IChangeSet<TObject, TKey>> source,
-        Func<TObject, TDestination> factory,
-        Action<TDestination, TObject> updateAction)
+        public static IObservable<IChangeSet<TDestination, TKey>> Transform<TObject, TKey, TDestination>(
+            this IObservable<IChangeSet<TObject, TKey>> source,
+            Func<TObject, TDestination> factory,
+            Action<TDestination, TObject> updateAction)
         {
             return source.Scan(new ChangeAwareCache<TDestination, TKey>(), (cache, changes) =>
             {

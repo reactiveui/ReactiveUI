@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using Cinephile.Core.Models;
 using DynamicData;
 using DynamicData.PLinq;
+using Cinephile.Core.Infrastructure;
 
 namespace Cinephile.ViewModels
 {
@@ -72,7 +73,7 @@ namespace Cinephile.ViewModels
                 .Connect()
                 .SubscribeOn(_taskPoolScheduler)
                 .ObserveOn(_taskPoolScheduler)
-                .Transform(movie => new UpcomingMoviesCellViewModel(movie), new ParallelisationOptions(ParallelType.Ordered, 5))
+                .Transform(movie => new UpcomingMoviesCellViewModel(movie), (o, n) => o = new UpcomingMoviesCellViewModel(n))
                 .DisposeMany()
                 .ObserveOn(_mainThreadScheduler)
                 .Bind(out _movies)
