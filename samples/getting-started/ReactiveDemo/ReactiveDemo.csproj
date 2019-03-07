@@ -14,7 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <CodeAnalysisRuleSet>..\..\src\reactiveui.tests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\..\src\analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -73,7 +73,7 @@
   <ItemGroup>
     <PackageReference Include="NuGet.Client" Version="4.2.0" />
     <PackageReference Include="NuGet.Protocol.Core.v3" Version="4.2.0" />
-    <PackageReference Include="ReactiveUI.WPF" Version="*" />
+    <PackageReference Include="ReactiveUI.WPF" Version="9.11.3" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
