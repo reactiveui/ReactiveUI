@@ -433,6 +433,11 @@ namespace ReactiveUI
 
         private static Func<object, object, object[], object> GetSetConverter(Type fromType, Type targetType)
         {
+            if (fromType == null)
+            {
+                return null;
+            }
+
             lock (_setMethodCache)
             {
                 var setter = _setMethodCache.Get((fromType, targetType));
@@ -456,7 +461,7 @@ namespace ReactiveUI
             var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
             object SetThenGet(object paramTarget, object paramValue, object[] paramParams)
             {
-                Func<object, object, object[], object> converter = GetSetConverter(paramValue.GetType(), viewExpression.Type);
+                Func<object, object, object[], object> converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
 
                 if (converter == null)
                 {
