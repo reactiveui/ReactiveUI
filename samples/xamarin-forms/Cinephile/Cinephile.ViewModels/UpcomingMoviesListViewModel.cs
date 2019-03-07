@@ -82,6 +82,7 @@ namespace Cinephile.ViewModels
 
             LoadMovies
                 .ThrownExceptions
+                .ObserveOn(_mainThreadScheduler)
                 .SelectMany(ex => ShowAlert.Handle(new AlertViewModel("Oops", ex.Message, "Ok")))
                 .Subscribe();
 

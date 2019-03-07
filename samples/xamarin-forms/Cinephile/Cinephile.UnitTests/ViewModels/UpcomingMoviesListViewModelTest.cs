@@ -3,8 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using Cinephile.Core.Models;
 using Cinephile.ViewModels;
+using DynamicData;
 using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
@@ -19,14 +24,37 @@ namespace Cinephile.UnitTests.ViewModels
         private TestScheduler _scheculer;
         private Mock<IScreen> _screen;
         private Mock<IMovieService> _movieService;
+        private SourceCache<Movie, int> _moviesSourceCache;
 
         [SetUp]
         public void Setup()
         {
             _scheculer = new TestScheduler();
             _screen = new Mock<IScreen>() { DefaultValue = DefaultValue.Mock };
-            _screen.Setup(x => x.Router.Navigate.Execute(It.IsAny<IRoutableViewModel>()));
+            var routingState = new RoutingState();
+            _screen.SetupGet(x => x.Router).Returns(routingState);
+            //_screen.Setup(x => x.Router.Navigate.Execute(It.IsAny<IRoutableViewModel>()));
+
             _movieService = new Mock<IMovieService>() { DefaultValue = DefaultValue.Mock };
+            _movieService.Setup(x => x.LoadUpcomingMovies(It.IsAny<int>())).Returns(() => Observable.Return(Unit.Default));
+
+            var movies = new List<Movie>();
+            for (int i = 0; i < 20; i++)
+            {
+                movies.Add(new Movie
+                {
+                    Id = i,
+                    Overview = $"Overview {i}",
+                    PosterBig = "PosterPath/",
+                    PosterSmall = "PosterPath/",
+                    ReleaseDate = DateTime.Now,
+                    Title = $"Title {i}"
+                });
+            }
+
+            _moviesSourceCache = new SourceCache<Movie, int>(x => x.Id);
+            _moviesSourceCache.AddOrUpdate(movies);
+            _movieService.Setup(x => x.UpcomingMovies).Returns(_moviesSourceCache);
 
             _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
 
@@ -38,7 +66,7 @@ namespace Cinephile.UnitTests.ViewModels
         public void SelectedItem_null_NothingHappens()
         {
             _target.SelectedItem = null;
-            _screen.Verify(x => x.Router.Navigate.Execute(It.IsAny<IRoutableViewModel>()), Times.Once);
+            _screen.Verify(x => x.Router.Navigate.Execute(It.IsAny<IRoutableViewModel>()), Times.Never);
         }
 
         [Test]
@@ -46,20 +74,48 @@ namespace Cinephile.UnitTests.ViewModels
         { }
 
         [Test]
-        public void ItemAppearing_LowerThanThreshold_NothingHappens()
-        { }
+        public void ItemAppearing_Items_OnlyLoadMoreWhenAboveThreshold()
+        {
+            Observable.Return(0).InvokeCommand(_target.LoadMovies);
+            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
-        [Test]
-        public void ItemAppearing_GreaterOrEnqualsThanThreshold_LoadMovies()
-        { }
+            _target.ItemAppearing = _target.Movies.ElementAt(0);
+            _target.ItemAppearing = _target.Movies.ElementAt(5);
+            _target.ItemAppearing = _target.Movies.ElementAt(11);
+            _target.ItemAppearing = _target.Movies.ElementAt(15);
+
+            _movieService.Verify(x => x.LoadUpcomingMovies(It.IsAny<int>()), Times.Once);
+        }
 
 
         [Test]
         public void LoadMovies_Zero_LoadUpcomingMoviesInvokedWithZeroAndIsRefreshingUpdates()
-        { }
+        {
+            Observable.Return(0).InvokeCommand(_target.LoadMovies);
+            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+
+            _movieService.Verify(x => x.LoadUpcomingMovies(It.Is<int>(y => y == 0)), Times.Once);
+        }
 
         [Test]
         public void LoadMovies_ExceptionHappens_ShowAlertHandle()
-        { }
+        {
+            AlertViewModel actual = null;
+            _target.ShowAlert.RegisterHandler(handler =>
+            {
+                actual = handler.Input;
+                handler.SetOutput(Unit.Default);
+            });
+
+            _movieService.Setup(x => x.LoadUpcomingMovies(It.IsAny<int>())).Returns(() => throw new Exception("Boom!"));
+
+
+
+            Observable.Return(0).InvokeCommand(_target.LoadMovies);
+            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+
+
+            Assert.AreEqual("Boom!", actual.Description);
+        }
     }
 }
