@@ -106,14 +106,10 @@ namespace Cinephile.UnitTests.ViewModels
                 actual = handler.Input;
                 handler.SetOutput(Unit.Default);
             });
-
             _movieService.Setup(x => x.LoadUpcomingMovies(It.IsAny<int>())).Returns(() => throw new Exception("Boom!"));
-
-
 
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
             _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-
 
             Assert.AreEqual("Boom!", actual.Description);
         }
