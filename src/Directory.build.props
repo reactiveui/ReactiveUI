@@ -48,7 +48,11 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\LICENSE" Pack="true" PackagePath="LICENSE" />
   </ItemGroup>
-   
+
+  <ItemGroup>
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="stylecop.analyzers" Version="1.1.1-rc.94" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.3" PrivateAssets="all" />
