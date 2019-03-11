@@ -30,4 +30,14 @@ See the LICENSE file in the project root for more information.
 	<style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
 		<item name="colorAccent">#FF4081</item>
 	</style>
+  
+  <style name="Theme.Splash" parent="Theme.AppCompat.NoActionBar">
+    <item name="android:windowBackground">
+      @drawable/splashscreen
+    </item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowIsTranslucent">false</item>
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:backgroundDimEnabled">true</item>
+  </style>
 </resources>
