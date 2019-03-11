@@ -31,9 +31,9 @@ namespace Cinephile.UnitTests.ViewModels
         {
             _scheculer = new TestScheduler();
             _screen = new Mock<IScreen>() { DefaultValue = DefaultValue.Mock };
+
             var routingState = new RoutingState();
             _screen.SetupGet(x => x.Router).Returns(routingState);
-            //_screen.Setup(x => x.Router.Navigate.Execute(It.IsAny<IRoutableViewModel>()));
 
             _movieService = new Mock<IMovieService>() { DefaultValue = DefaultValue.Mock };
             _movieService.Setup(x => x.LoadUpcomingMovies(It.IsAny<int>())).Returns(() => Observable.Return(Unit.Default));
@@ -55,27 +55,38 @@ namespace Cinephile.UnitTests.ViewModels
             _moviesSourceCache = new SourceCache<Movie, int>(x => x.Id);
             _moviesSourceCache.AddOrUpdate(movies);
             _movieService.Setup(x => x.UpcomingMovies).Returns(_moviesSourceCache);
-
-            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
-
-            _target.Activator.Activate();
-            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
         }
 
         [Test]
         public void SelectedItem_null_NothingHappens()
         {
+            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
+            _screen.Object.Router.NavigateAndReset.Execute(_target);
+
             _target.SelectedItem = null;
-            _screen.Verify(x => x.Router.Navigate.Execute(It.IsAny<IRoutableViewModel>()), Times.Never);
+
+            Assert.AreEqual(_screen.Object.Router.GetCurrentViewModel().GetType(), typeof(UpcomingMoviesListViewModel));
         }
 
         [Test]
         public void SelectedItem_ValidCell_Navigate()
-        { }
+        {
+            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
+            _screen.Object.Router.NavigateAndReset.Execute(_target);
+            Observable.Return(0).InvokeCommand(_target.LoadMovies);
+            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+
+            _target.SelectedItem = _target.Movies.First();
+
+            Assert.AreEqual(_screen.Object.Router.GetCurrentViewModel().GetType(), typeof(MovieDetailViewModel));
+        }
 
         [Test]
         public void ItemAppearing_Items_OnlyLoadMoreWhenAboveThreshold()
         {
+            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
+            _screen.Object.Router.NavigateAndReset.Execute(_target);
+
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
             _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
@@ -91,6 +102,9 @@ namespace Cinephile.UnitTests.ViewModels
         [Test]
         public void LoadMovies_Zero_LoadUpcomingMoviesInvokedWithZeroAndIsRefreshingUpdates()
         {
+            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
+            _screen.Object.Router.NavigateAndReset.Execute(_target);
+
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
             _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
@@ -100,6 +114,8 @@ namespace Cinephile.UnitTests.ViewModels
         [Test]
         public void LoadMovies_ExceptionHappens_ShowAlertHandle()
         {
+            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
+
             AlertViewModel actual = null;
             _target.ShowAlert.RegisterHandler(handler =>
             {
@@ -107,6 +123,9 @@ namespace Cinephile.UnitTests.ViewModels
                 handler.SetOutput(Unit.Default);
             });
             _movieService.Setup(x => x.LoadUpcomingMovies(It.IsAny<int>())).Returns(() => throw new Exception("Boom!"));
+
+            _screen.Object.Router.NavigateAndReset.Execute(_target);
+            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
             _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
