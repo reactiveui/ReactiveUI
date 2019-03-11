@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using Cinephile.Core.Models;
 using Cinephile.Core.Rest;
 using Cinephile.ViewModels;
 using Cinephile.Views;
@@ -27,6 +28,7 @@ namespace Cinephile
 
             Locator.CurrentMutable.Register(() => new Cache(), typeof(ICache));
             Locator.CurrentMutable.Register(() => new ApiService(), typeof(IApiService));
+            Locator.CurrentMutable.Register(() => new MovieService(), typeof(IMovieService));
 
 
             this
