@@ -22,21 +22,24 @@ namespace Cinephile.UnitTests.ViewModels
     {
         private UpcomingMoviesListViewModel _target;
         private TestScheduler _scheculer;
-        private Mock<IScreen> _screen;
+        private IScreen _screen;
         private Mock<IMovieService> _movieService;
         private SourceCache<Movie, int> _moviesSourceCache;
+        private AlertViewModel _alertOutput;
 
         [SetUp]
         public void Setup()
         {
             _scheculer = new TestScheduler();
-            _screen = new Mock<IScreen>() { DefaultValue = DefaultValue.Mock };
 
             var routingState = new RoutingState();
-            _screen.SetupGet(x => x.Router).Returns(routingState);
+            var screenMock= new Mock<IScreen>() { DefaultValue = DefaultValue.Mock };
+            screenMock.SetupGet(x => x.Router).Returns(routingState);
+            _screen = screenMock.Object;
 
             _movieService = new Mock<IMovieService>() { DefaultValue = DefaultValue.Mock };
-            _movieService.Setup(x => x.LoadUpcomingMovies(It.IsAny<int>())).Returns(() => Observable.Return(Unit.Default));
+            _movieService.Setup(x => x.LoadUpcomingMovies(It.Is<int>(y => y >= 0 && y < 100))).Returns(() => Observable.Return(Unit.Default));
+            _movieService.Setup(x => x.LoadUpcomingMovies(It.Is<int>(y => y >= 100))).Returns(() => throw new Exception("Boom!"));
 
             var movies = new List<Movie>();
             for (int i = 0; i < 20; i++)
@@ -55,38 +58,42 @@ namespace Cinephile.UnitTests.ViewModels
             _moviesSourceCache = new SourceCache<Movie, int>(x => x.Id);
             _moviesSourceCache.AddOrUpdate(movies);
             _movieService.Setup(x => x.UpcomingMovies).Returns(_moviesSourceCache);
+
+            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen);
+
+            _alertOutput = null;
+            _target.ShowAlert.RegisterHandler(handler =>
+            {
+                _alertOutput = handler.Input;
+                handler.SetOutput(Unit.Default);
+            });
+
+            _screen.Router.NavigateAndReset.Execute(_target);
         }
 
         [Test]
         public void SelectedItem_null_NothingHappens()
         {
-            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
-            _screen.Object.Router.NavigateAndReset.Execute(_target);
-
             _target.SelectedItem = null;
 
-            Assert.AreEqual(_screen.Object.Router.GetCurrentViewModel().GetType(), typeof(UpcomingMoviesListViewModel));
+            Assert.AreEqual(_screen.Router.GetCurrentViewModel().GetType(), typeof(UpcomingMoviesListViewModel));
         }
 
         [Test]
         public void SelectedItem_ValidCell_Navigate()
         {
-            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
-            _screen.Object.Router.NavigateAndReset.Execute(_target);
+
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
             _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
             _target.SelectedItem = _target.Movies.First();
 
-            Assert.AreEqual(_screen.Object.Router.GetCurrentViewModel().GetType(), typeof(MovieDetailViewModel));
+            Assert.AreEqual(_screen.Router.GetCurrentViewModel().GetType(), typeof(MovieDetailViewModel));
         }
 
         [Test]
         public void ItemAppearing_Items_OnlyLoadMoreWhenAboveThreshold()
         {
-            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
-            _screen.Object.Router.NavigateAndReset.Execute(_target);
-
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
             _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
@@ -102,9 +109,6 @@ namespace Cinephile.UnitTests.ViewModels
         [Test]
         public void LoadMovies_Zero_LoadUpcomingMoviesInvokedWithZeroAndIsRefreshingUpdates()
         {
-            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
-            _screen.Object.Router.NavigateAndReset.Execute(_target);
-
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
             _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
@@ -114,23 +118,10 @@ namespace Cinephile.UnitTests.ViewModels
         [Test]
         public void LoadMovies_ExceptionHappens_ShowAlertHandle()
         {
-            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen.Object);
-
-            AlertViewModel actual = null;
-            _target.ShowAlert.RegisterHandler(handler =>
-            {
-                actual = handler.Input;
-                handler.SetOutput(Unit.Default);
-            });
-            _movieService.Setup(x => x.LoadUpcomingMovies(It.IsAny<int>())).Returns(() => throw new Exception("Boom!"));
-
-            _screen.Object.Router.NavigateAndReset.Execute(_target);
+            Observable.Return(101).ObserveOn(_scheculer).InvokeCommand(_target.LoadMovies);
             _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
-            Observable.Return(0).InvokeCommand(_target.LoadMovies);
-            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-
-            Assert.AreEqual("Boom!", actual.Description);
+            Assert.AreEqual("Boom!", _alertOutput.Description);
         }
     }
 }
