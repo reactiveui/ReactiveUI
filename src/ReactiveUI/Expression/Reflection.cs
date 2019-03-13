@@ -30,7 +30,7 @@ namespace ReactiveUI
                                     type,
                                     assemblyName =>
                                     {
-                                        var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(z => z.FullName == assemblyName.FullName).FirstOrDefault();
+                                        var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(z => z.FullName == assemblyName.FullName);
                                         if (assembly != null)
                                         {
                                             return assembly;
