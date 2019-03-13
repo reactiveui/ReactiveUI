@@ -304,6 +304,11 @@ namespace ReactiveUI
     {
         ReactiveUI.RoutingState Router { get; }
     }
+    public interface ISetMethodBindingConverter : Splat.IEnableLogger
+    {
+        int GetAffinityForObjects(System.Type fromType, System.Type toType);
+        object PerformSet(object toTarget, object newValue, object[] arguments);
+    }
     public interface ISupportsActivation
     {
         ReactiveUI.ViewModelActivator Activator { get; }
