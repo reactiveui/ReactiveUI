@@ -14,13 +14,11 @@ namespace Cinephile.ViewModels
         public string UrlPathSegment
         {
             get;
-            private set;
         }
 
         public IScreen HostScreen
         {
             get;
-            private set;
         }
 
         protected readonly ViewModelActivator viewModelActivator = new ViewModelActivator();
