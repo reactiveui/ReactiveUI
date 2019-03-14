@@ -7,12 +7,18 @@ namespace Cinephile.ViewModels
 {
     public class AboutViewModel : ViewModelBase
     {
+        public ReactiveCommand<string, Unit> ShowIconCredits
+        {
+            get;
+        }
+
         public AboutViewModel(  IScheduler mainThreadScheduler = null, 
                                 IScheduler taskPoolScheduler = null, 
                                 IScreen hostScreen = null)
             : base("About", mainThreadScheduler, taskPoolScheduler, hostScreen)
         {
-            //OpenBrowser = ReactiveCommand.CreateFromObservable<string, Unit>(count => _movieService.LoadUpcomingMovies(count));
+            ShowIconCredits = ReactiveCommand.CreateFromObservable<string, Unit>(url => OpenBrowser.Handle(url));
+            ShowIconCredits.Subscribe();
         }
     }
 }

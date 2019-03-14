@@ -26,11 +26,11 @@ namespace Cinephile.ViewModels
         protected readonly ViewModelActivator viewModelActivator = new ViewModelActivator();
         public ViewModelActivator Activator => viewModelActivator;
 
-        protected readonly Interaction<AlertViewModel, Unit> m_showAlert;
-        public Interaction<AlertViewModel, Unit> ShowAlert => m_showAlert;
+        protected readonly Interaction<AlertViewModel, Unit> _showAlert;
+        public Interaction<AlertViewModel, Unit> ShowAlert => _showAlert;
 
-        protected readonly Interaction<string, Unit> m_openBrowser;
-        public Interaction<string, Unit> OpenBrowser => m_openBrowser;
+        protected readonly Interaction<string, Unit> _openBrowser;
+        public Interaction<string, Unit> OpenBrowser => _openBrowser;
 
 
         protected readonly IScheduler _mainThreadScheduler;
@@ -45,8 +45,8 @@ namespace Cinephile.ViewModels
             _mainThreadScheduler = mainThreadScheduler ?? RxApp.MainThreadScheduler;
             _taskPoolScheduler = taskPoolScheduler ?? RxApp.TaskpoolScheduler;
 
-            m_showAlert = new Interaction<AlertViewModel, Unit>(_mainThreadScheduler);
-            m_openBrowser = new Interaction<string, Unit>(_mainThreadScheduler);
+            _showAlert = new Interaction<AlertViewModel, Unit>(_mainThreadScheduler);
+            _openBrowser = new Interaction<string, Unit>(_mainThreadScheduler);
         }
     }
 }

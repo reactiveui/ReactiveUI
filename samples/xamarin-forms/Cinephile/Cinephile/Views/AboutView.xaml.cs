@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Windows.Input;
 using Cinephile.ViewModels;
+using ReactiveUI;
 using Xamarin.Forms;
 
 namespace Cinephile.Views
@@ -11,6 +13,10 @@ namespace Cinephile.Views
         public AboutView()
         {
             InitializeComponent();
+            this.WhenActivated(disposables =>
+            {
+                this.OneWayBind(ViewModel, x => x.ShowIconCredits, x => x.OpenBrowser.Command).DisposeWith(disposables);
+            });
         }
 
         void OpenBrowserWithUrl(string url)
