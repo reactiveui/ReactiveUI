@@ -37,7 +37,6 @@ namespace EventBuilder.Platforms
 
             Assemblies.AddRange(Directory.GetFiles(packageUnzipPath, "ElmSharp*.dll", SearchOption.AllDirectories));
             Assemblies.AddRange(Directory.GetFiles(packageUnzipPath, "Tizen*.dll", SearchOption.AllDirectories));
-            Assemblies.AddRange(Directory.GetFiles(packageUnzipPath, "netstandard.dll", SearchOption.AllDirectories));
 
             foreach (var directory in Directory.GetDirectories(packageUnzipPath, "*.*", SearchOption.AllDirectories))
             {

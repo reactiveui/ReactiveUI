@@ -59,6 +59,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   | None                                    |
+| Any               | [ReactiveUI.Validation][ValidationsDocs]    | [![ValidationsBadge]][ValidationsCore] | None
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
 [CoreEvents]: https://www.nuget.org/packages/ReactiveUI.Events/
@@ -102,6 +103,10 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [AvaBadge]: https://img.shields.io/nuget/v/Avalonia.ReactiveUI.svg
 [AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
 [EventsDocs]: https://reactiveui.net/docs/handbook/events/
+
+[ValidationsCore]: https://www.nuget.org/packages/ReactiveUI.Validation/
+[ValidationsBadge]: https://img.shields.io/nuget/v/ReactiveUI.Validation.svg
+[ValidationsDocs]: https://reactiveui.net/docs/handbook/user-input-validation/
 
 <h2>A Compelling Example</h2>
 
@@ -202,9 +207,96 @@ public class ReactiveViewModel : ReactiveObject
 }
 ```
 
+<h2>Reactive Validations</h2>
+ReactiveUI.Validations provides a subset of functions to create reactive validations, functioning in a reactive way.
+
+<h3>How to use</h3>
+
+* For those ViewModels which need validation, implement `ISupportsValidation`
+* Add validation rules to the ViewModel
+* Bind to the validation rules in the View
+
+<h3>Example</h3>
+
+Decorate existing ViewModel with `ISupportsValidation`, which has a single member, `ValidationContext`. The ValidationContext contains all of the functionality surrounding the validation of the ViewModel. Most access to the specification of validation rules is performed through extension methods on the ISupportsValidation interface. Then, add validation to the ViewModel.
+
+```csharp
+public class SampleViewModel : ReactiveObject, ISupportsValidation
+{
+    public ValidationContext ValidationContext => new ValidationContext();
+
+    private string _name;
+    public string Name
+    {
+        get => _name;
+        set => this.RaiseAndSetIfChanged(ref _name, value);
+    }
+
+    public SampleViewModel()
+    {
+        // Name must be at least 3 chars. The selector is the property 
+        // name and the line below is a single property validator.
+        this.ValidationRule(
+            vm => vm.Name,
+            name => !string.IsNullOrWhiteSpace(name),
+            "You must specify a name");
+    }
+}
+```
+
+You can also use `ValidationHelper` to create reusable rules:
+```csharp
+public class SampleViewModel : ReactiveObject, ISupportsValidation
+{
+    [...]
+
+    private int _age;
+    public int Age
+    {
+        get => _age;
+        set => this.RaiseAndSetIfChanged(ref _age, value);
+    }
+
+    public ValidationHelper AgeRule { get; set; }
+
+    public SampleViewModel()
+    {
+        // Age must be between 13 and 100, message includes the silly 
+        // length being passed in, stored in a property of the ViewModel.
+        AgeRule = this.ValidationRule(
+            vm => vm.Age,
+            age => age >= 13 && age <= 100,
+            age => $"{age} is a silly age");
+
+        [...]
+    }
+}
+```
+
+Finally, you bind to these validations from the View controls like below:
+
+```csharp
+public class SampleView : IViewFor<SampleViewModel>
+{
+    public SampleView()
+    {
+        // Bind any validations which reference the name property to the text of the nameValidation control
+        this.BindValidation(ViewModel, vm => vm.Name, view => view.NameLabel.Text);
+
+        // Bind the validation specified by the AgeRule to the text of the ageValidation control
+        this.BindValidation(ViewModel, vm => vm.AgeRule, view => view.AgeLabel.Text);
+    }
+}
+```
+
+<h3>NuGet Packages</h3>
+Install the following package into you class library and platform-specific project. ReactiveUI.Validation package supports all platforms, including .NET Framework, .NET Standard, MonoAndroid, Tizen, UAP, Xamarin.iOS, Xamarin.Mac, Xamarin.TVOS.
+
+This package was created based on [jcmm33's Vistian.Reactive.Validation](https://github.com/jcmm33/ReactiveUI.Validation) and maintained by [alexmartinezm](https://github.com/alexmartinezm).
+
 <h2>Support</h2>
 
-If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
+If you have a question, please see if any discussions in our [GitHub issues](https://github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
 
 If you want to discuss something or just need help, here is our [Slack room](https://reactiveui.net/slack) where there are always individuals looking to help out!
 
@@ -265,6 +357,41 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
         <p>Adelaide, Australia</p>
       </td>
       <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/glennawatson.png?s=150">
+        <br>
+        <a href="https://github.com/glennawatson">Glenn Watson</a>
+        <p>Washington, USA</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/rlittlesii.png?s=150">
+        <br>
+        <a href="https://github.com/rlittlesii">Rodney Littles II</a>
+        <p>Texas, USA</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/worldbeater.png?s=150">
+        <br>
+        <a href="https://github.com/worldbeater">Artyom Gorchakov</a>
+        <p>Moscow, Russia</p>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/cabauman.png?s=150">
+        <br>
+        <a href="https://github.com/cabauman">Colt Bauman</a>
+        <p>South Korea</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Alumni Core Team</h2>
+
+The following have been core team members in the past.
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/olevett.png?s=150">
         <br>
         <a href="https://github.com/olevett">Olly Levett</a>
@@ -287,12 +414,6 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
         <br>
         <a href="https://github.com/onovotny">Oren Novotny</a>
         <p>New York, USA</p>
-      </td>
-      <td align="center" valign="top">
-        <img width="100" height="100" src="https://github.com/glennawatson.png?s=150">
-        <br>
-        <a href="https://github.com/glennawatson">Glenn Watson</a>
-        <p>Washington, USA</p>
       </td>
      </tr>
   </tbody>
