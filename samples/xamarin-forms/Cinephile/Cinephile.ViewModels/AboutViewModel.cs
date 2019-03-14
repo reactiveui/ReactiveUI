@@ -10,7 +10,7 @@ namespace Cinephile.ViewModels
         public AboutViewModel(IScheduler mainThreadScheduler = null, IScheduler taskPoolScheduler = null, IScreen hostScreen = null)
             : base("About", mainThreadScheduler, taskPoolScheduler, hostScreen)
         {
-            OpenBrowser = ReactiveCommand.CreateFromObservable<string, Unit>(count => _movieService.LoadUpcomingMovies(count));
+            //OpenBrowser = ReactiveCommand.CreateFromObservable<string, Unit>(count => _movieService.LoadUpcomingMovies(count));
         }
     }
 }
