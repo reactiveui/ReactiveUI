@@ -29,6 +29,10 @@ namespace Cinephile.ViewModels
         protected readonly Interaction<AlertViewModel, Unit> m_showAlert;
         public Interaction<AlertViewModel, Unit> ShowAlert => m_showAlert;
 
+        protected readonly Interaction<string, Unit> m_openBrowser;
+        public Interaction<string, Unit> OpenBrowser => m_openBrowser;
+
+
         protected readonly IScheduler _mainThreadScheduler;
         protected readonly IScheduler _taskPoolScheduler;
 
@@ -42,6 +46,7 @@ namespace Cinephile.ViewModels
             _taskPoolScheduler = taskPoolScheduler ?? RxApp.TaskpoolScheduler;
 
             m_showAlert = new Interaction<AlertViewModel, Unit>(_mainThreadScheduler);
+            m_openBrowser = new Interaction<string, Unit>(_mainThreadScheduler);
         }
     }
 }

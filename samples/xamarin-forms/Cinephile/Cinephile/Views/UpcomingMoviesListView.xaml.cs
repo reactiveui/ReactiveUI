@@ -22,6 +22,7 @@ namespace Cinephile.Views
 
                 this.OneWayBind(ViewModel, x => x.Movies, x => x.UpcomingMoviesList.ItemsSource).DisposeWith(disposables);
                 this.Bind(ViewModel, x => x.SelectedItem, x => x.UpcomingMoviesList.SelectedItem).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, vm => vm.OpenAboutView, view => view.About.Command).DisposeWith(disposables);
 
                 UpcomingMoviesList
                     .Events()
