@@ -8,6 +8,7 @@ using System.Reactive.Disposables;
 using Cinephile.ViewModels;
 using ReactiveUI;
 using ReactiveUI.XamForms;
+using Xamarin.Forms;
 
 namespace Cinephile.Views
 {
@@ -33,7 +34,7 @@ namespace Cinephile.Views
                     .OpenBrowser
                     .RegisterHandler(interaction =>
                     {
-                        Device.OpenUri(new Uri(interaction));
+                        Device.OpenUri(new Uri(interaction.Input));
                         interaction.SetOutput(new Unit());
                     })
                     .DisposeWith(disposables);
