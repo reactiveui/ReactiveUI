@@ -39,13 +39,11 @@ namespace Cinephile.ViewModels
         public ReactiveCommand<int, Unit> LoadMovies 
         {
             get;
-            set;
         }
 
         public ReactiveCommand<Unit, IRoutableViewModel> OpenAboutView
         {
             get;
-            set;
         }
 
 
