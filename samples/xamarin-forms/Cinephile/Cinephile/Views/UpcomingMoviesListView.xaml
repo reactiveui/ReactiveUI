@@ -6,7 +6,11 @@
                     xmlns:ui="clr-namespace:Cinephile.Views"
                     xmlns:vms="clr-namespace:Cinephile.ViewModels"
                     x:TypeArguments="vms:UpcomingMoviesListViewModel">
-
+                    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="About" Text="About" />
+    </ContentPage.ToolbarItems>
+    
     <ListView x:Name="UpcomingMoviesList"
               RowHeight="100"
               SeparatorVisibility="None"

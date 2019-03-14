@@ -27,7 +27,7 @@ namespace Cinephile.ViewModels
         private readonly Movie _movie;
 
         public MovieDetailViewModel(Movie movie, IScheduler mainThreadScheduler = null, IScheduler taskPoolScheduler = null, IScreen hostScreen = null) 
-        : base(movie.Title, mainThreadScheduler, taskPoolScheduler, hostScreen)
+            : base(movie.Title, mainThreadScheduler, taskPoolScheduler, hostScreen)
         {
             _movie = movie;
         }

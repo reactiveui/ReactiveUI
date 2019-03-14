@@ -27,6 +27,16 @@ namespace Cinephile.Views
                             interaction.SetOutput(new Unit());
                         })
                     .DisposeWith(disposables);
+
+                this
+                    .ViewModel
+                    .OpenBrowser
+                    .RegisterHandler(interaction =>
+                    {
+                        Device.OpenUri(new Uri(interaction));
+                        interaction.SetOutput(new Unit());
+                    })
+                    .DisposeWith(disposables);
             });
         }
     }

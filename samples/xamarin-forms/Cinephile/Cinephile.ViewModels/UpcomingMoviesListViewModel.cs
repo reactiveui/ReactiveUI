@@ -42,6 +42,13 @@ namespace Cinephile.ViewModels
             set;
         }
 
+        public ReactiveCommand<Unit, IRoutableViewModel> OpenAboutView
+        {
+            get;
+            set;
+        }
+
+
         ObservableAsPropertyHelper<bool> _isRefreshing;
         public bool IsRefreshing => _isRefreshing.Value;
 
@@ -57,6 +64,10 @@ namespace Cinephile.ViewModels
             _movieService = movieService ?? Locator.Current.GetService<IMovieService>();
 
             LoadMovies = ReactiveCommand.CreateFromObservable<int, Unit>(count => _movieService.LoadUpcomingMovies(count));
+            OpenAboutView = ReactiveCommand.CreateFromObservable<Unit, IRoutableViewModel>(_ => HostScreen
+                    .Router
+                    .Navigate
+                    .Execute(new AboutViewModel(mainThreadScheduler, taskPoolScheduler, hostScreen)));
 
             _movieService
                 .UpcomingMovies
@@ -70,6 +81,7 @@ namespace Cinephile.ViewModels
                 .Subscribe();
 
             LoadMovies.Subscribe();
+            OpenAboutView.Subscribe();
 
             this
                 .WhenAnyValue(x => x.SelectedItem)
