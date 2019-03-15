@@ -100,14 +100,11 @@ namespace Cinephile.Core.Models
 
             int page = (int)Math.Ceiling(index / (double)PageSize) + 1;
 
-            return Observable
+            return _movieApiService
+                .UserInitiated
+                .FetchUpcomingMovies(ApiKey, page, Language)
                 .CombineLatest(
-                    _movieApiService
-                        .UserInitiated
-                        .FetchUpcomingMovies(ApiKey, page, Language),
-                    _movieApiService
-                        .UserInitiated
-                        .FetchGenres(ApiKey, Language),
+                    _movieApiService.UserInitiated.FetchGenres(ApiKey, Language),
                     (movies, genres) =>
                     {
                         return movies
