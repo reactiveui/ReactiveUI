@@ -3,7 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
                     x:Class="Cinephile.Views.AboutView"
                     xmlns:ui="clr-namespace:Cinephile.Views"
-                    xmlns:vms="clr-namespace:Cinephile.ViewModels"
+                    xmlns:vms="clr-namespace:Cinephile.ViewModels;assembly=Cinephile.ViewModels"
                     x:TypeArguments="vms:AboutViewModel">
     <ContentPage.Content>
         <StackLayout Margin="10">

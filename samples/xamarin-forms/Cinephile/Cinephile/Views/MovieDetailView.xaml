@@ -5,7 +5,7 @@
                     xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
                     xmlns:rxui="clr-namespace:ReactiveUI.XamForms;assembly=ReactiveUI.XamForms"
                     xmlns:ui="clr-namespace:Cinephile.Views"
-                    xmlns:vms="clr-namespace:Cinephile.ViewModels"
+                    xmlns:vms="clr-namespace:Cinephile.ViewModels;assembly=Cinephile.ViewModels"
                     x:TypeArguments="vms:MovieDetailViewModel">
     <ScrollView>
         <StackLayout>
