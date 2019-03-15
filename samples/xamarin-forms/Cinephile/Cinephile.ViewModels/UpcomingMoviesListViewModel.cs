@@ -1,80 +1,61 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using ReactiveUI;
-using System.Collections.ObjectModel;
+using Cinephile.Core.Infrastructure;
 using Cinephile.Core.Models;
 using DynamicData;
-using DynamicData.PLinq;
-using Cinephile.Core.Infrastructure;
+using ReactiveUI;
 using Splat;
 
 namespace Cinephile.ViewModels
 {
+    /// <summary>
+    /// A view model that contains a list of movies.
+    /// </summary>
     public class UpcomingMoviesListViewModel : ViewModelBase
     {
-        readonly ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> _movies;
-        public ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> Movies => _movies;
-
+        private readonly ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> _movies;
+        private readonly ObservableAsPropertyHelper<bool> _isRefreshing;
         private UpcomingMoviesCellViewModel _selectedItem;
-        public UpcomingMoviesCellViewModel SelectedItem
-        {
-            get { return _selectedItem; }
-            set { this.RaiseAndSetIfChanged(ref _selectedItem, value); }
-        }
+        private UpcomingMoviesCellViewModel _itemAppearing;
 
-        UpcomingMoviesCellViewModel _itemAppearing;
-        public UpcomingMoviesCellViewModel ItemAppearing
-        {
-            get { return _itemAppearing; }
-            set { this.RaiseAndSetIfChanged(ref _itemAppearing, value); }
-        }
-
-        public ReactiveCommand<int, Unit> LoadMovies 
-        {
-            get;
-        }
-
-        public ReactiveCommand<Unit, IRoutableViewModel> OpenAboutView
-        {
-            get;
-        }
-
-
-        ObservableAsPropertyHelper<bool> _isRefreshing;
-        public bool IsRefreshing => _isRefreshing.Value;
-
-        private IMovieService _movieService;
-
-        public UpcomingMoviesListViewModel( IScheduler mainThreadScheduler = null, 
-                                            IScheduler taskPoolScheduler = null,
-                                            IMovieService movieService = null,
-                                            IScreen hostScreen = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpcomingMoviesListViewModel"/> class.
+        /// </summary>
+        /// <param name="mainThreadScheduler">The scheduler to use for main thread operations.</param>
+        /// <param name="taskPoolScheduler">The scheduler to use for task pool operations.</param>
+        /// <param name="movieService">The service to use to retrieve movie information.</param>
+        /// <param name="hostScreen">The screen to use for routing operations.</param>
+        public UpcomingMoviesListViewModel(
+                IScheduler mainThreadScheduler = null,
+                IScheduler taskPoolScheduler = null,
+                IMovieService movieService = null,
+                IScreen hostScreen = null)
             : base("Upcoming Movies", mainThreadScheduler, taskPoolScheduler, hostScreen)
         {
+            IMovieService movieService1 = movieService ?? Locator.Current.GetService<IMovieService>();
 
-            _movieService = movieService ?? Locator.Current.GetService<IMovieService>();
-
-            LoadMovies = ReactiveCommand.CreateFromObservable<int, Unit>(count => _movieService.LoadUpcomingMovies(count));
+            LoadMovies = ReactiveCommand.CreateFromObservable<int, Unit>(count => movieService1.LoadUpcomingMovies(count));
             OpenAboutView = ReactiveCommand.CreateFromObservable<Unit, IRoutableViewModel>(_ => HostScreen
                     .Router
                     .Navigate
                     .Execute(new AboutViewModel(mainThreadScheduler, taskPoolScheduler, hostScreen)));
 
-            _movieService
+            movieService1
                 .UpcomingMovies
                 .Connect()
-                .SubscribeOn(_taskPoolScheduler)
-                .ObserveOn(_taskPoolScheduler)
+                .SubscribeOn(TaskPoolScheduler)
+                .ObserveOn(TaskPoolScheduler)
                 .Transform(movie => new UpcomingMoviesCellViewModel(movie), (o, n) => o = new UpcomingMoviesCellViewModel(n))
                 .DisposeMany()
-                .ObserveOn(_mainThreadScheduler)
+                .ObserveOn(MainThreadScheduler)
                 .Bind(out _movies)
                 .Subscribe();
 
@@ -92,7 +73,7 @@ namespace Cinephile.ViewModels
 
             LoadMovies
                 .ThrownExceptions
-                .ObserveOn(_mainThreadScheduler)
+                .ObserveOn(MainThreadScheduler)
                 .SelectMany(ex => ShowAlert.Handle(new AlertViewModel("Oops", ex.Message, "Ok")))
                 .Subscribe();
 
@@ -118,5 +99,49 @@ namespace Cinephile.ViewModels
                 .Where(index => index > 0)
                 .InvokeCommand(LoadMovies);
         }
+
+        /// <summary>
+        /// Gets a collection of movies.
+        /// </summary>
+        public ReadOnlyObservableCollection<UpcomingMoviesCellViewModel> Movies => _movies;
+
+        /// <summary>
+        /// Gets or sets the currently selected item.
+        /// </summary>
+        public UpcomingMoviesCellViewModel SelectedItem
+        {
+            get { return _selectedItem; }
+            set { this.RaiseAndSetIfChanged(ref _selectedItem, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets items that are appearing.
+        /// </summary>
+        public UpcomingMoviesCellViewModel ItemAppearing
+        {
+            get { return _itemAppearing; }
+            set { this.RaiseAndSetIfChanged(ref _itemAppearing, value); }
+        }
+
+        /// <summary>
+        /// Gets a command which will load the movies at the specified page index.
+        /// </summary>
+        public ReactiveCommand<int, Unit> LoadMovies
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets a command which will open the about box.
+        /// </summary>
+        public ReactiveCommand<Unit, IRoutableViewModel> OpenAboutView
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether we are refreshing the display.
+        /// </summary>
+        public bool IsRefreshing => _isRefreshing.Value;
     }
 }

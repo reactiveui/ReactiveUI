@@ -19,7 +19,7 @@ namespace Cinephile.iOS
         {
             UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
 
-            global::Xamarin.Forms.Forms.Init();
+            Xamarin.Forms.Forms.Init();
 
             LoadApplication(new App());
 

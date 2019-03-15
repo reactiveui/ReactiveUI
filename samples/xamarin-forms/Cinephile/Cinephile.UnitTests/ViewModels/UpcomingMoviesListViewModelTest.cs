@@ -1,6 +1,7 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -17,23 +18,29 @@ using ReactiveUI;
 
 namespace Cinephile.UnitTests.ViewModels
 {
+    /// <summary>
+    /// Tests the upcoming movies list view model.
+    /// </summary>
     [TestFixture]
     public class UpcomingMoviesListViewModelTest
     {
         private UpcomingMoviesListViewModel _target;
-        private TestScheduler _scheculer;
+        private TestScheduler _scheduler;
         private IScreen _screen;
         private Mock<IMovieService> _movieService;
         private SourceCache<Movie, int> _moviesSourceCache;
         private AlertViewModel _alertOutput;
 
+        /// <summary>
+        /// Sets up the test conditions.
+        /// </summary>
         [SetUp]
         public void Setup()
         {
-            _scheculer = new TestScheduler();
+            _scheduler = new TestScheduler();
 
             var routingState = new RoutingState();
-            var screenMock= new Mock<IScreen>() { DefaultValue = DefaultValue.Mock };
+            var screenMock = new Mock<IScreen>() { DefaultValue = DefaultValue.Mock };
             screenMock.SetupGet(x => x.Router).Returns(routingState);
             _screen = screenMock.Object;
 
@@ -59,7 +66,7 @@ namespace Cinephile.UnitTests.ViewModels
             _moviesSourceCache.AddOrUpdate(movies);
             _movieService.Setup(x => x.UpcomingMovies).Returns(_moviesSourceCache);
 
-            _target = new UpcomingMoviesListViewModel(_scheculer, _scheculer, _movieService.Object, _screen);
+            _target = new UpcomingMoviesListViewModel(_scheduler, _scheduler, _movieService.Object, _screen);
 
             _alertOutput = null;
             _target.ShowAlert.RegisterHandler(handler =>
@@ -71,6 +78,9 @@ namespace Cinephile.UnitTests.ViewModels
             _screen.Router.NavigateAndReset.Execute(_target);
         }
 
+        /// <summary>
+        /// Test to make sure when the selected item is null that the current view model is also null.
+        /// </summary>
         [Test]
         public void SelectedItem_null_NothingHappens()
         {
@@ -79,23 +89,28 @@ namespace Cinephile.UnitTests.ViewModels
             Assert.AreEqual(_screen.Router.GetCurrentViewModel().GetType(), typeof(UpcomingMoviesListViewModel));
         }
 
+        /// <summary>
+        /// Test to make sure that when there is a valid value the navigate happens.
+        /// </summary>
         [Test]
         public void SelectedItem_ValidCell_Navigate()
         {
-
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
-            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
             _target.SelectedItem = _target.Movies.First();
 
             Assert.AreEqual(_screen.Router.GetCurrentViewModel().GetType(), typeof(MovieDetailViewModel));
         }
 
+        /// <summary>
+        /// Test to make sure we load more when we hit the defined threshold.
+        /// </summary>
         [Test]
         public void ItemAppearing_Items_OnlyLoadMoreWhenAboveThreshold()
         {
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
-            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
             _target.ItemAppearing = _target.Movies.ElementAt(0);
             _target.ItemAppearing = _target.Movies.ElementAt(5);
@@ -105,21 +120,26 @@ namespace Cinephile.UnitTests.ViewModels
             _movieService.Verify(x => x.LoadUpcomingMovies(It.IsAny<int>()), Times.Once);
         }
 
-
+        /// <summary>
+        /// Test to make sure we load upcoming movies.
+        /// </summary>
         [Test]
         public void LoadMovies_Zero_LoadUpcomingMoviesInvokedWithZeroAndIsRefreshingUpdates()
         {
             Observable.Return(0).InvokeCommand(_target.LoadMovies);
-            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
             _movieService.Verify(x => x.LoadUpcomingMovies(It.Is<int>(y => y == 0)), Times.Once);
         }
 
+        /// <summary>
+        /// Test to make sure that we show an alert interaction if a exception is thrown.
+        /// </summary>
         [Test]
         public void LoadMovies_ExceptionHappens_ShowAlertHandle()
         {
-            Observable.Return(101).ObserveOn(_scheculer).InvokeCommand(_target.LoadMovies);
-            _scheculer.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            Observable.Return(101).ObserveOn(_scheduler).InvokeCommand(_target.LoadMovies);
+            _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
 
             Assert.AreEqual("Boom!", _alertOutput.Description);
         }

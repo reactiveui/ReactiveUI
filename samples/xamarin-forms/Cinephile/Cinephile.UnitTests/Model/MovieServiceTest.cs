@@ -1,10 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
 using Cinephile.Core.Models;
@@ -16,6 +18,9 @@ using NUnit.Framework;
 
 namespace Cinephile.UnitTests.Model
 {
+    /// <summary>
+    /// Tests associated with the movie service.
+    /// </summary>
     [TestFixture]
     public class MovieServiceTest
     {
@@ -23,6 +28,9 @@ namespace Cinephile.UnitTests.Model
         private GenresDto _genresDto;
         private DateTime _dateTimeNow;
 
+        /// <summary>
+        /// Sets up details for the tests.
+        /// </summary>
         [SetUp]
         public void Setup()
         {
@@ -32,8 +40,8 @@ namespace Cinephile.UnitTests.Model
             {
                 Dates = new MovieDates()
                 {
-                    Maximum = _dateTimeNow.ToString(),
-                    Minimum = _dateTimeNow.ToString()
+                    Maximum = _dateTimeNow.ToString(CultureInfo.InvariantCulture),
+                    Minimum = _dateTimeNow.ToString(CultureInfo.InvariantCulture)
                 },
                 Page = 1,
                 TotalPages = 1,
@@ -49,7 +57,7 @@ namespace Cinephile.UnitTests.Model
                     GenreIds = new List<int>() { 1, 2 },
                     Overview = $"Overview {i}",
                     PosterPath = "PosterPath/",
-                    ReleaseDate = _dateTimeNow.ToString(),
+                    ReleaseDate = _dateTimeNow.ToString(CultureInfo.InvariantCulture),
                     Title = "Title"
                 });
             }
@@ -75,6 +83,9 @@ namespace Cinephile.UnitTests.Model
             };
         }
 
+        /// <summary>
+        /// Makes sure that upcoming movies returns movies appropriately.
+        /// </summary>
         [Test]
         public void GetUpcomingMovies_Zero_20Movies()
         {
@@ -82,7 +93,7 @@ namespace Cinephile.UnitTests.Model
 
             cacheMock
                 .Setup(cache => cache.GetAndFetchLatest(It.IsAny<string>(), It.IsAny<Func<IObservable<IEnumerable<Movie>>>>()))
-                .Returns((string arg1, Func<IObservable<IEnumerable<Movie>>> arg2) => arg2());
+                .Returns((string _, Func<IObservable<IEnumerable<Movie>>> arg2) => arg2());
 
             var apiServiceMock = new Mock<IApiService>();
             apiServiceMock
