@@ -6,6 +6,7 @@
     <OutputType>Library</OutputType>
     <StartupObject />
     <DebugType>Full</DebugType>
+    <NoWarn>$(NoWarn);CA1001;CA1707</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
