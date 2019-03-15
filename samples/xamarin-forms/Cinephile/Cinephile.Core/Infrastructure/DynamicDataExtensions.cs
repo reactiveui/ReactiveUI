@@ -27,7 +27,11 @@ namespace Cinephile.Core.Infrastructure
         /// <param name="items">The items to add.</param>
         /// <param name="offset">The offset for paging.</param>
         /// <param name="pageSize">The number of items to page.</param>
-        public static void EditDiff<TDomainEntity, TKey>(this SourceCache<TDomainEntity, TKey> sourceCache, IEnumerable<TDomainEntity> items, int? offset = null, int pageSize = 25)
+        public static void EditDiff<TDomainEntity, TKey>(
+                this SourceCache<TDomainEntity, TKey> sourceCache,
+                IEnumerable<TDomainEntity> items,
+                int? offset = null,
+                int pageSize = 25)
             where TDomainEntity : Movie
         {
             var keyComparer = new KeyComparer<TDomainEntity, TKey>();
@@ -79,9 +83,9 @@ namespace Cinephile.Core.Infrastructure
         /// <param name="updateAction">The action to perform when there is a update.</param>
         /// <returns>An observable of a change set of items.</returns>
         public static IObservable<IChangeSet<TDestination, TKey>> Transform<TObject, TKey, TDestination>(
-            this IObservable<IChangeSet<TObject, TKey>> source,
-            Func<TObject, TDestination> factory,
-            Action<TDestination, TObject> updateAction)
+                this IObservable<IChangeSet<TObject, TKey>> source,
+                Func<TObject, TDestination> factory,
+                Action<TDestination, TObject> updateAction)
         {
             return source
                 .Scan(new ChangeAwareCache<TDestination, TKey>(), (cache, changes) =>
