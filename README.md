@@ -207,92 +207,43 @@ public class ReactiveViewModel : ReactiveObject
 }
 ```
 
-<h2>Reactive Validations</h2>
-ReactiveUI.Validations provides a subset of functions to create reactive validations, functioning in a reactive way.
+<h3>Validate user input on the fly</h3>
 
-<h3>How to use</h3>
-
-* For those ViewModels which need validation, implement `ISupportsValidation`
-* Add validation rules to the ViewModel
-* Bind to the validation rules in the View
-
-<h3>Example</h3>
-
-Decorate existing ViewModel with `ISupportsValidation`, which has a single member, `ValidationContext`. The ValidationContext contains all of the functionality surrounding the validation of the ViewModel. Most access to the specification of validation rules is performed through extension methods on the ISupportsValidation interface. Then, add validation to the ViewModel.
+[ReactiveUI.Validation](https://github.com/reactiveui/ReactiveUI.Validation) provides a subset of functions to create validations, functioning in a reactive way. For those ViewModels which need validation, implement `ISupportsValidation`, then add validation rules to the ViewModel and finally bind to the validation rules in the View! See [documentation](https://reactiveui.net/docs/handbook/user-input-validation/) for more info. This package was created based on [jcmm33 work](https://github.com/jcmm33/ReactiveUI.Validation) and maintained by [alexmartinezm](https://github.com/alexmartinezm).
 
 ```csharp
-public class SampleViewModel : ReactiveObject, ISupportsValidation
-{
-    public ValidationContext ValidationContext => new ValidationContext();
+// # ViewModel
+// Search query must not be empty. The selector is the property 
+// name and the line below is a single property validator.
+this.ValidationRule(
+    vm => vm.SearchQuery,
+    query => !string.IsNullOrWhiteSpace(query),
+    "Please, provide a non-empty search query!");
 
-    private string _name;
-    public string Name
-    {
-        get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
-    }
-
-    public SampleViewModel()
-    {
-        // Name must be at least 3 chars. The selector is the property 
-        // name and the line below is a single property validator.
-        this.ValidationRule(
-            vm => vm.Name,
-            name => !string.IsNullOrWhiteSpace(name),
-            "You must specify a name");
-    }
-}
+// # View
+// Bind any validations which reference the SearchQuery property 
+// to the text of the QueryValidation UI control!
+this.BindValidation(ViewModel, vm => vm.SearchQuery, view => view.QueryValidation.Text);
 ```
 
-You can also use `ValidationHelper` to create reusable rules:
-```csharp
-public class SampleViewModel : ReactiveObject, ISupportsValidation
-{
-    [...]
+<h3>Add view model-based routing to your XAML views</h3>
 
-    private int _age;
-    public int Age
-    {
-        get => _age;
-        set => this.RaiseAndSetIfChanged(ref _age, value);
-    }
+View model-based routing is supported for Xamarin.Forms, WinRT, UWP, Windows Forms, WPF and Avalonia Desktop applications. Create an [`IScreen`](https://reactiveui.net/api/reactiveui/iscreen/), register views for view models and navigate to your [`IRoutableViewModel`](https://reactiveui.net/api/reactiveui/iroutableviewmodel/)s by calling `Router.Navigate`. Then, bind the [`RoutingState`](https://reactiveui.net/api/reactiveui/routingstate/) to the platform-specific routed view host. See [routing documentation](https://reactiveui.net/docs/handbook/routing/) for a getting started guide.
 
-    public ValidationHelper AgeRule { get; set; }
-
-    public SampleViewModel()
-    {
-        // Age must be between 13 and 100, message includes the silly 
-        // length being passed in, stored in a property of the ViewModel.
-        AgeRule = this.ValidationRule(
-            vm => vm.Age,
-            age => age >= 13 && age <= 100,
-            age => $"{age} is a silly age");
-
-        [...]
-    }
-}
+```xml
+<rxui:ReactiveWindow
+    xmlns:rxui="http://reactiveui.net" 
+    x:Class="ReactiveRouting.MainWindow"
+    x:TypeArguments="vm:MainViewModel"
+    xmlns:vm="clr-namespace:ReactiveRouting"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <rxui:RoutedViewHost
+        Router="{Binding Router}"
+        HorizontalContentAlignment="Stretch"
+        VerticalContentAlignment="Stretch" />
+</rxui:ReactiveWindow>
 ```
-
-Finally, you bind to these validations from the View controls like below:
-
-```csharp
-public class SampleView : IViewFor<SampleViewModel>
-{
-    public SampleView()
-    {
-        // Bind any validations which reference the name property to the text of the nameValidation control
-        this.BindValidation(ViewModel, vm => vm.Name, view => view.NameLabel.Text);
-
-        // Bind the validation specified by the AgeRule to the text of the ageValidation control
-        this.BindValidation(ViewModel, vm => vm.AgeRule, view => view.AgeLabel.Text);
-    }
-}
-```
-
-<h3>NuGet Packages</h3>
-Install the following package into you class library and platform-specific project. ReactiveUI.Validation package supports all platforms, including .NET Framework, .NET Standard, MonoAndroid, Tizen, UAP, Xamarin.iOS, Xamarin.Mac, Xamarin.TVOS.
-
-This package was created based on [jcmm33's Vistian.Reactive.Validation](https://github.com/jcmm33/ReactiveUI.Validation) and maintained by [alexmartinezm](https://github.com/alexmartinezm).
 
 <h2>Support</h2>
 
