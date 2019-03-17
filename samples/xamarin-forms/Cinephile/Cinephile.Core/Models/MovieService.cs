@@ -1,83 +1,116 @@
+// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using Cinephile.Core.Rest;
-using Cinephile.Core.Rest.Dtos.Movies;
+using DynamicData;
 using Splat;
 
-namespace Cinephile.Core.Model
+namespace Cinephile.Core.Models
 {
-    public class MovieService : IMovieService
+    /// <summary>
+    /// This is a service that will retrieve Movie data from a website.
+    /// </summary>
+    public class MovieService : IMovieService, IDisposable
     {
-        public const int PageSize = 20;
-        const string Language = "en-US";
+        private const string ApiKey = "1f54bd990f1cdfb230adb312546d765d";
+        private readonly IApiService _movieApiService;
+        private readonly ICache _movieCache;
+        private readonly SourceCache<Movie, int> _internalSourceCache;
 
-        const string BaseUrl = "http://image.tmdb.org/t/p/";
-        const string SmallPosterSize = "w185";
-        const string BigPosterSize = "w500";
-
-
-        private const string apiKey = "1f54bd990f1cdfb230adb312546d765d";
-        private IApiService movieApiService;
-        private ICache movieCache;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MovieService"/> class.
+        /// </summary>
+        /// <param name="apiService">The service which will communicate with the API.</param>
+        /// <param name="cache">The cache where to store our retrieved instances.</param>
         public MovieService(IApiService apiService = null, ICache cache = null)
         {
-            movieApiService = apiService ?? Locator.Current.GetService<IApiService>();
-            movieCache = cache ?? Locator.Current.GetService<ICache>();
+            _movieApiService = apiService ?? Locator.Current.GetService<IApiService>();
+            _movieCache = cache ?? Locator.Current.GetService<ICache>();
+            _internalSourceCache = new SourceCache<Movie, int>(o => o.Id);
         }
 
-        public IObservable<IEnumerable<Movie>> GetUpcomingMovies(int index)
+        /// <summary>
+        /// Gets the size of the pages.
+        /// </summary>
+        public int PageSize { get; } = 20;
+
+        /// <summary>
+        /// Gets a observable cache of upcoming movies.
+        /// </summary>
+        public IObservableCache<Movie, int> UpcomingMovies => _internalSourceCache;
+
+        /// <summary>
+        /// Gets the language we want to movie data to be in.
+        /// </summary>
+        protected string Language { get; } = "en-US";
+
+        /// <summary>
+        /// Loads the upcoming movies.
+        /// </summary>
+        /// <param name="index">The page index.</param>
+        /// <returns>An observable that signals when the movie loading is complete.</returns>
+        public IObservable<Unit> LoadUpcomingMovies(int index)
         {
-            return
-                movieCache
-                    .GetAndFetchLatest($"upcoming_movies_{index}", () => FetchUpcomingMovies(index));
+            return _movieCache
+                .GetAndFetchLatest($"upcoming_movies_{index}", () => FetchUpcomingMovies(index))
+                .Select(x =>
+                {
+                    _internalSourceCache.Edit(innerCache => innerCache.AddOrUpdate(x));
+                    return Unit.Default;
+                });
         }
 
-        IObservable<IEnumerable<Movie>> FetchUpcomingMovies(int index)
+        /// <inheritdoc/>
+        public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes all disposable objects contained on the object.
+        /// </summary>
+        /// <param name="disposing">If we are getting called from the dispose method.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _internalSourceCache?.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Fetch upcoming movies from the service.
+        /// </summary>
+        /// <param name="index">The page index.</param>
+        /// <returns>An observable which signals the upcoming movies.</returns>
+        private IObservable<IEnumerable<Movie>> FetchUpcomingMovies(int index)
+        {
+            // Uncomment this if you want to see the dialog
+            //// var randomNumber = new Random(DateTime.Now.Millisecond).Next(0, 3);
+            //// if (randomNumber == 1)
+            ////    throw new Exception("This is a generic fake exception to show how the dialog works.");
+
             int page = (int)Math.Ceiling(index / (double)PageSize) + 1;
 
-            return Observable
+            return _movieApiService
+                .UserInitiated
+                .FetchUpcomingMovies(ApiKey, page, Language)
                 .CombineLatest(
-                    movieApiService
-                        .UserInitiated
-                        .FetchUpcomingMovies(apiKey, page, Language),
-                    movieApiService
-                        .UserInitiated
-                        .FetchGenres(apiKey, Language),
+                    _movieApiService.UserInitiated.FetchGenres(ApiKey, Language),
                     (movies, genres) =>
                     {
                         return movies
-                                .Results
-                                .Select(movieDto => MapDtoToModel(genres, movieDto));
+                            .Results
+                            .Select(movieDto => MovieMapper.ToModel(genres, movieDto, Language));
                     });
-        }
-
-        Movie MapDtoToModel(GenresDto genres, MovieResult movieDto)
-        {
-            return new Movie()
-            {
-                Id = movieDto.Id,
-                Title = movieDto.Title,
-                PosterSmall = string
-                                .Concat(BaseUrl,
-                                       SmallPosterSize,
-                                       movieDto.PosterPath),
-                PosterBig = string
-                                .Concat(BaseUrl,
-									   BigPosterSize,
-		                               movieDto.PosterPath),
-                Genres = genres.Genres.Where(g => movieDto.GenreIds.Contains(g.Id)).Select(j => j.Name).ToList(),
-                ReleaseDate = DateTime.Parse(movieDto.ReleaseDate, new CultureInfo(Language)),
-                Overview = movieDto.Overview
-            };
         }
     }
 }

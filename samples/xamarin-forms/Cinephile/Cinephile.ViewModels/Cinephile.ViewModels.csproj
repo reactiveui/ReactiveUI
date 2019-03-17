@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="reactiveui" Version="9.11.1" />
+  </ItemGroup>
+
+    <ItemGroup>
+    <ProjectReference Include="..\Cinephile.Core\Cinephile.Core.csproj" />
+  </ItemGroup>
+
+
+</Project>

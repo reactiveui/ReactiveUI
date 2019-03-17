@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- background with solid color -->
+    <item android:drawable="@android:color/white"/>
+
+    <!-- logo -->
+    <item
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:drawable="@drawable/SplashScreenLogo" />
+
+</layer-list>
