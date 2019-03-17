@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+  x:Class="Cinephile.Styles.GlobalStyles"
+  xmlns="http://xamarin.com/schemas/2014/forms"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:local="clr-namespace:Cinephile.Styles">
+  <ResourceDictionary.MergedDictionaries>
+    <local:Colors />
+  </ResourceDictionary.MergedDictionaries>
+     
+  <Style x:Key="DefaultNavigationPageStyle" TargetType="NavigationPage">
+        <Setter Property="BarBackgroundColor" Value="{StaticResource AccentColor}"/>
+        <Setter Property="BarTextColor" Value="{StaticResource PrimaryColor}"/>
+        <Setter Property="Tint" Value="{StaticResource PrimaryColor}" />
+  </Style>
+
+  <Style TargetType="Frame">
+    <Setter Property="HasShadow" Value="false" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style TargetType="Grid">
+    <Setter Property="ColumnSpacing" Value="0" />
+    <Setter Property="RowSpacing" Value="0" />
+  </Style>
+
+  <Style TargetType="StackLayout">
+    <Setter Property="Spacing" Value="0" />
+  </Style>
+
+</ResourceDictionary>
+
+

@@ -1,37 +1,47 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
-using Cinephile.Core.Model;
+using Cinephile.Core.Models;
 using Cinephile.Core.Rest;
 using Cinephile.Core.Rest.Dtos.Movies;
+using DynamicData;
 using Moq;
 using NUnit.Framework;
 
 namespace Cinephile.UnitTests.Model
 {
+    /// <summary>
+    /// Tests associated with the movie service.
+    /// </summary>
     [TestFixture]
     public class MovieServiceTest
     {
-        MovieDto movieDto;
-        GenresDto genresDto;
-        DateTime dateTimeNow;
+        private MovieDto _movieDto;
+        private GenresDto _genresDto;
+        private DateTime _dateTimeNow;
 
+        /// <summary>
+        /// Sets up details for the tests.
+        /// </summary>
         [SetUp]
         public void Setup()
         {
-            dateTimeNow = DateTime.Now;
+            _dateTimeNow = DateTime.Now;
 
-            movieDto = new MovieDto()
+            _movieDto = new MovieDto()
             {
                 Dates = new MovieDates()
                 {
-                    Maximum = dateTimeNow.ToString(),
-                    Minimum = dateTimeNow.ToString()
+                    Maximum = _dateTimeNow.ToString(CultureInfo.InvariantCulture),
+                    Minimum = _dateTimeNow.ToString(CultureInfo.InvariantCulture)
                 },
                 Page = 1,
                 TotalPages = 1,
@@ -47,14 +57,14 @@ namespace Cinephile.UnitTests.Model
                     GenreIds = new List<int>() { 1, 2 },
                     Overview = $"Overview {i}",
                     PosterPath = "PosterPath/",
-                    ReleaseDate = dateTimeNow.ToString(),
+                    ReleaseDate = _dateTimeNow.ToString(CultureInfo.InvariantCulture),
                     Title = "Title"
                 });
             }
 
-            movieDto.Results = movies;
+            _movieDto.Results = movies;
 
-            genresDto = new GenresDto()
+            _genresDto = new GenresDto()
             {
                 Genres = new List<GenreDto>()
                 {
@@ -73,30 +83,36 @@ namespace Cinephile.UnitTests.Model
             };
         }
 
+        /// <summary>
+        /// Makes sure that upcoming movies returns movies appropriately.
+        /// </summary>
         [Test]
         public void GetUpcomingMovies_Zero_20Movies()
         {
             var cacheMock = new Mock<ICache>();
+
             cacheMock
                 .Setup(cache => cache.GetAndFetchLatest(It.IsAny<string>(), It.IsAny<Func<IObservable<IEnumerable<Movie>>>>()))
-                .Returns((string arg1, Func<IObservable<IEnumerable<Movie>>> arg2) => arg2());
+                .Returns((string _, Func<IObservable<IEnumerable<Movie>>> arg2) => arg2());
 
             var apiServiceMock = new Mock<IApiService>();
             apiServiceMock
                 .Setup(api => api.UserInitiated.FetchUpcomingMovies(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Returns(Observable.Return(movieDto));
+                .Returns(Observable.Return(_movieDto));
 
             apiServiceMock
                 .Setup(api => api.UserInitiated.FetchGenres(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Observable.Return(genresDto));
+                .Returns(Observable.Return(_genresDto));
 
-            var sut = new MovieService(apiServiceMock.Object, cacheMock.Object);
+            var target = new MovieService(apiServiceMock.Object, cacheMock.Object);
 
-            IEnumerable<Movie> actual = null;
+            target
+                .UpcomingMovies
+                .Connect()
+                .Bind(out ReadOnlyObservableCollection<Movie> actual)
+                .Subscribe();
 
-            sut
-                .GetUpcomingMovies(0)
-                .Subscribe(movies => actual = movies);
+            target.LoadUpcomingMovies(0).Subscribe();
 
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual.Count(), Is.EqualTo(20));

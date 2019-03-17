@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:ContentPageBase xmlns="http://xamarin.com/schemas/2014/forms" 
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+                    x:Class="Cinephile.Views.AboutView"
+                    xmlns:ui="clr-namespace:Cinephile.Views"
+                    xmlns:vms="clr-namespace:Cinephile.ViewModels;assembly=Cinephile.ViewModels"
+                    x:TypeArguments="vms:AboutViewModel">
+    <ContentPage.Content>
+        <StackLayout Margin="10">
+            <Label Text="This a simple sample app used to show and teach the basics of ReactiveUI + Xamarin.Forms." />
+       
+            <Label Text="Design vector created by freepik - www.freepik.com" TextColor="Blue" TextDecorations="Underline">
+                <Span.GestureRecognizers>
+                    <TapGestureRecognizer x:Name="OpenBrowser" CommandParameter="https://www.freepik.com/free-photos-vectors/design" />
+                </Span.GestureRecognizers>
+            </Label>
+        </StackLayout>
+        
+    </ContentPage.Content>
+</ui:ContentPageBase>
+

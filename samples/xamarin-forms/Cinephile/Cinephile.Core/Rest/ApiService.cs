@@ -1,42 +1,32 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
 using System.Net.Http;
-using Refit;
-using Fusillade;
 using Cinephile.Core.Infrastructure.HttpTools;
+using Fusillade;
+using Refit;
 
 namespace Cinephile.Core.Rest
 {
+    /// <summary>
+    /// Gets a service which will communicate with a API.
+    /// </summary>
     public class ApiService : IApiService
     {
-        public const string ApiBaseAddress = "https://api.themoviedb.org/3";
+        private readonly Lazy<IRestApiClient> _background;
+        private readonly Lazy<IRestApiClient> _userInitiated;
+        private readonly Lazy<IRestApiClient> _speculative;
 
-        public IRestApiClient Background
-        {
-            get { return background.Value; }
-        }
-
-        public IRestApiClient UserInitiated
-        {
-            get { return userInitiated.Value; }
-        }
-
-        public IRestApiClient Speculative
-        {
-            get { return speculative.Value; }
-        }
-
-        private readonly Lazy<IRestApiClient> background;
-        private readonly Lazy<IRestApiClient> userInitiated;
-        private readonly Lazy<IRestApiClient> speculative;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiService"/> class.
+        /// </summary>
+        /// <param name="apiBaseAddress">The URI to the api.</param>
         public ApiService(string apiBaseAddress = null)
         {
-
-            Func<HttpMessageHandler, IRestApiClient> createClient = messageHandler =>
+            IRestApiClient CreateClient(HttpMessageHandler messageHandler)
             {
                 var client = new HttpClient(messageHandler)
                 {
@@ -44,34 +34,54 @@ namespace Cinephile.Core.Rest
                 };
 
                 return RestService.For<IRestApiClient>(client);
-            };
+            }
 
-            background = new Lazy<IRestApiClient>(() =>
+            _background = new Lazy<IRestApiClient>(() =>
             {
 #if DEBUG
-                return createClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.Background));
+                return CreateClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.Background));
 #else
-                return createClient(new HttpClientHandler(new HttpClientHandler(), Priority.Background)));
+                return CreateClient(new RateLimitedHttpMessageHandler(new HttpClientHandler(), Priority.Background));
 #endif
             });
 
-            userInitiated = new Lazy<IRestApiClient>(() =>
+            _userInitiated = new Lazy<IRestApiClient>(() =>
             {
 #if DEBUG
-                return createClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.UserInitiated));
+                return CreateClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.UserInitiated));
 #else
-                return createClient(new HttpClientHandler(new HttpClientHandler(), Priority.UserInitiated)));
+                return CreateClient(new RateLimitedHttpMessageHandler(new HttpClientHandler(), Priority.UserInitiated));
 #endif
             });
 
-            speculative = new Lazy<IRestApiClient>(() =>
+            _speculative = new Lazy<IRestApiClient>(() =>
             {
 #if DEBUG
-                return createClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.Speculative));
+                return CreateClient(new RateLimitedHttpMessageHandler(new HttpLoggingHandler(), Priority.Speculative));
 #else
-                return createClient(new HttpClientHandler(new HttpClientHandler(), Priority.Speculative)));
+                return CreateClient(new RateLimitedHttpMessageHandler(new HttpClientHandler(), Priority.Speculative));
 #endif
             });
         }
+
+        /// <summary>
+        /// Gets the rest API client in the background.
+        /// </summary>
+        public IRestApiClient Background => _background.Value;
+
+        /// <summary>
+        /// Gets the rest API client which is user initiated.
+        /// </summary>
+        public IRestApiClient UserInitiated => _userInitiated.Value;
+
+        /// <summary>
+        /// Gets the rest API which is speculative.
+        /// </summary>
+        public IRestApiClient Speculative => _speculative.Value;
+
+        /// <summary>
+        /// Gets the API base address and used if no address is passed in.
+        /// </summary>
+        public string ApiBaseAddress { get; } = "https://api.themoviedb.org/3";
     }
 }

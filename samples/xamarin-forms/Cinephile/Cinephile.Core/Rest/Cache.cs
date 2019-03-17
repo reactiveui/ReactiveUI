@@ -1,6 +1,7 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 using System;
 using System.Runtime.CompilerServices;
@@ -10,11 +11,25 @@ using Akavache;
 namespace Cinephile.Core.Rest
 {
     /// <summary>
-    /// Cache.
+    /// A cache where we store entries until we need them.
     /// </summary>
     public sealed class Cache : ICache
     {
-        const double CacheValidityInMinutes = 5d;
+        /// <summary>
+        /// Gets the method signature.
+        /// </summary>
+        /// <returns>The method signature.</returns>
+        /// <param name="filePath">File path.</param>
+        /// <param name="memberName">Member name.</param>
+        /// <param name="parameters">Parameters.</param>
+        public static string GetMethodSignature([CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "", params object[] parameters)
+        {
+            var fileName = filePath.Substring(filePath.LastIndexOf("/", StringComparison.CurrentCulture) + 1);
+            var className = fileName.Replace(".cs", string.Empty);
+            var methodParameters = string.Join(",", parameters);
+
+            return $"{className}.{memberName}({methodParameters})";
+        }
 
         /// <summary>
         /// Initialize the specified name.
@@ -36,11 +51,7 @@ namespace Cinephile.Core.Rest
         {
             return BlobCache
                 .LocalMachine
-                .GetAndFetchLatest(cacheKey, fetchFunction, offset =>
-                {
-                    var elapsed = DateTimeOffset.Now - offset;
-                    return elapsed > TimeSpan.FromMinutes(CacheValidityInMinutes);
-                });
+                .GetAndFetchLatest(cacheKey, fetchFunction);
         }
 
         /// <summary>
@@ -55,7 +66,8 @@ namespace Cinephile.Core.Rest
         /// Invalidates all objects.
         /// </summary>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public void InvalidateAllObjects<T>() where T : class
+        public void InvalidateAllObjects<T>()
+            where T : class
         {
             BlobCache.LocalMachine.InvalidateAllObjects<T>();
         }
@@ -63,26 +75,10 @@ namespace Cinephile.Core.Rest
         /// <summary>
         /// Invalidates all.
         /// </summary>
+        /// <param name="key">The key to invalidate.</param>
         public void Invalidate(string key)
         {
             BlobCache.LocalMachine.Invalidate(key);
-        }
-
-
-        /// <summary>
-        /// Gets the method signature.
-        /// </summary>
-        /// <returns>The method signature.</returns>
-        /// <param name="filePath">File path.</param>
-        /// <param name="memberName">Member name.</param>
-        /// <param name="parameters">Parameters.</param>
-        public static string GetMethodSignature([CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "", params object[] parameters)
-        {
-            var fileName = filePath.Substring(filePath.LastIndexOf("/", StringComparison.CurrentCulture) + 1);
-            var className = fileName.Replace(".cs", "");
-            var methodParameters = string.Join(",", parameters);
-
-            return $"{className}.{memberName}({methodParameters})";
         }
     }
 }

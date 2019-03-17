@@ -3,10 +3,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="akavache" Version="*" />
-    <PackageReference Include="Refit" Version="*" />
-    <PackageReference Include="Fusillade" Version="*" />
+    <PackageReference Include="akavache" Version="6.4.1" />
+    <PackageReference Include="Refit" Version="4.6.90" />
+    <PackageReference Include="Fusillade" Version="2.0.2" />
     <PackageReference Include="System.Reactive" Version="4.*" />
     <PackageReference Include="System.Reactive.Compatibility" Version="4.*" />
+    <PackageReference Include="DynamicData" Version="6.8.0.2561" />
   </ItemGroup>
 </Project>
