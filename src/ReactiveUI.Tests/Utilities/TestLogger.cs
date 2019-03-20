@@ -25,7 +25,17 @@ namespace ReactiveUI.Tests
 
         public LogLevel Level { get; set; }
 
+        public void Write(Exception exception, string message, Type type, LogLevel logLevel)
+        {
+            Messages.Add(Tuple.Create(message, typeof(TestLogger), logLevel));
+        }
+
         public void Write(string message, LogLevel logLevel)
+        {
+            Messages.Add(Tuple.Create(message, typeof(TestLogger), logLevel));
+        }
+
+        public void Write(Exception exception, string message, LogLevel logLevel)
         {
             Messages.Add(Tuple.Create(message, typeof(TestLogger), logLevel));
         }

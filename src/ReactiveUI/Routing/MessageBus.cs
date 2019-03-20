@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -68,7 +69,7 @@ namespace ReactiveUI
         /// message bus.</returns>
         public IObservable<T> Listen<T>(string contract = null)
         {
-            this.Log().Info("Listening to {0}:{1}", typeof(T), contract);
+            this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
             return SetupSubjectIfNecessary<T>(contract).Skip(1);
         }
@@ -85,7 +86,7 @@ namespace ReactiveUI
         /// message bus.</returns>
         public IObservable<T> ListenIncludeLatest<T>(string contract = null)
         {
-            this.Log().Info("Listening to {0}:{1}", typeof(T), contract);
+            this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
             return SetupSubjectIfNecessary<T>(contract);
         }

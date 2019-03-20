@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Reflection;
 using Splat;
 
@@ -119,7 +120,7 @@ namespace ReactiveUI
                 return view;
             }
 
-            this.Log().Warn("Failed to resolve view for view model type '{0}'.", typeof(T).FullName);
+            this.Log().Warn(CultureInfo.InvariantCulture, "Failed to resolve view for view model type '{0}'.", typeof(T).FullName);
             return null;
         }
 
@@ -207,13 +208,13 @@ namespace ReactiveUI
                     return null;
                 }
 
-                this.Log().Debug("Resolved service type '{0}'", viewType.FullName);
+                this.Log().Debug(CultureInfo.InvariantCulture, "Resolved service type '{0}'", viewType.FullName);
 
                 return view;
             }
             catch (Exception ex)
             {
-                this.Log().ErrorException($"Exception occurred whilst attempting to resolve type {viewTypeName} into a view.", ex);
+                this.Log().Error(ex, $"Exception occurred whilst attempting to resolve type {viewTypeName} into a view.");
                 throw;
             }
         }

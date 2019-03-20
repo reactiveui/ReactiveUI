@@ -117,7 +117,7 @@ namespace ReactiveUI
             }
             catch (Exception ex)
             {
-                this.Log().WarnException("Couldn't convert object to type: " + toType, ex);
+                this.Log().Warn(ex, "Couldn't convert object to type: " + toType);
                 result = null;
                 return false;
             }

@@ -55,14 +55,14 @@ namespace ReactiveUI
                     skipInitial: true)
                 .Subscribe(
                     _ => SectionInfoChanging(),
-                    ex => this.Log().ErrorException("Error occurred whilst SectionInfo changing.", ex)));
+                    ex => this.Log().Error(ex, "Error occurred whilst SectionInfo changing.")));
 
             _mainDisposables.Add(
                 this
                 .WhenAnyValue(x => x.SectionInfo)
                 .Subscribe(
                     SectionInfoChanged,
-                    ex => this.Log().ErrorException("Error occurred when SectionInfo changed.", ex)));
+                    ex => this.Log().Error(ex, "Error occurred when SectionInfo changed.")));
         }
 
         public IReadOnlyList<TSectionInfo> SectionInfo
@@ -295,7 +295,7 @@ namespace ReactiveUI
                                 // this ensures that if application code itself calls BeginUpdates/EndUpdates on the view before the changes have been applied, those inconsistencies
                                 // between what's in the data source versus what the view believes is in the data source won't trigger any errors because of the outstanding
                                 // BeginUpdates call (calls to BeginUpdates/EndUpdates can be nested)
-                                this.Log().Debug("[#{0}] BeginUpdates", sectionInfoId);
+                                this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] BeginUpdates", sectionInfoId);
                                 _adapter.BeginUpdates();
 
                                 applyPendingChangesDisposable.Disposable = RxApp.MainThreadScheduler.Schedule(
@@ -311,7 +311,7 @@ namespace ReactiveUI
 
                             _pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change.EventArgs)));
                         },
-                            ex => this.Log().Error("[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
+                            ex => this.Log().Error(CultureInfo.InvariantCulture, "[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
 
                     sectionDisposables.Add(isReloading.Connect());
                     sectionDisposables.Add(anySectionChanged.Connect());
@@ -322,7 +322,7 @@ namespace ReactiveUI
         {
             Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
             Debug.Assert(_isCollectingChanges, "Currently there are no changes to collect");
-            this.Log().Debug("[#{0}] Applying pending changes", sectionInfoId);
+            this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Applying pending changes", sectionInfoId);
 
             try
             {
@@ -331,7 +331,7 @@ namespace ReactiveUI
                     {
                         if (IsDebugEnabled)
                         {
-                            this.Log().Debug("[#{0}] The pending changes (in order received) are:", sectionInfoId);
+                            this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] The pending changes (in order received) are:", sectionInfoId);
 
                             foreach (var pendingChange in _pendingChanges)
                             {
@@ -360,7 +360,7 @@ namespace ReactiveUI
 
                             if (allSectionChanges.Any(x => x.Action == NotifyCollectionChangedAction.Reset))
                             {
-                                this.Log().Debug("[#{0}] Section {1} included a reset notification, so reloading that section.", sectionInfoId, section);
+                                this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Section {1} included a reset notification, so reloading that section.", sectionInfoId, section);
                                 _adapter.ReloadSections(new NSIndexSet((nuint)section));
                                 continue;
                             }

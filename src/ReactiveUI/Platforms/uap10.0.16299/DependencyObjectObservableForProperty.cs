@@ -5,9 +5,11 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
+using System.Windows;
 using Splat;
 using Windows.UI.Xaml;
 
@@ -44,6 +46,7 @@ namespace ReactiveUI
             if (depSender == null)
             {
                 this.Log().Warn(
+                    CultureInfo.InvariantCulture,
                     "Tried to bind DP on a non-DependencyObject. Binding as POCO object",
                     type.FullName,
                     propertyName);
@@ -55,6 +58,7 @@ namespace ReactiveUI
             if (beforeChanged == true)
             {
                 this.Log().Warn(
+                    CultureInfo.InvariantCulture,
                     "Tried to bind DO {0}.{1}, but DPs can't do beforeChanged. Binding as POCO object",
                     type.FullName,
                     propertyName);
@@ -67,6 +71,7 @@ namespace ReactiveUI
             if (dpFetcher == null)
             {
                 this.Log().Warn(
+                    CultureInfo.InvariantCulture,
                     "Tried to bind DO {0}.{1}, but DP doesn't exist. Binding as POCO object",
                     type.FullName,
                     propertyName);

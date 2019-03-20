@@ -387,7 +387,7 @@ namespace ReactiveUI
                 }
                 catch (Exception ex)
                 {
-                    rxObj.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
+                    rxObj.Log().Error(ex, "ReactiveObject Subscriber threw exception");
                     if (_thrownExceptions.IsValueCreated)
                     {
                         _thrownExceptions.Value.OnNext(ex);
