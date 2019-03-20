@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -878,7 +879,7 @@ namespace ReactiveUI.Legacy
                 goto isSetup;
             }
 
-            this.Log().Warn("Property change notifications are enabled and type {0} isn't INotifyPropertyChanged or IReactiveObject", typeof(T));
+            this.Log().Warn(CultureInfo.InvariantCulture, "Property change notifications are enabled and type {0} isn't INotifyPropertyChanged or IReactiveObject", typeof(T));
 
             isSetup:
             var toDispose = new[]

@@ -65,9 +65,19 @@ namespace ReactiveUI.Tests
         {
             public List<string> LastMessages { get; } = new List<string>();
 
-            public LogLevel Level { get; set; }
+            public LogLevel Level => LogLevel.Debug;
+
+            public void Write(Exception exception, string message, Type type, LogLevel logLevel)
+            {
+                LastMessages.Add(message);
+            }
 
             public void Write(string message, LogLevel logLevel)
+            {
+                LastMessages.Add(message);
+            }
+
+            public void Write(Exception exception, string message, LogLevel logLevel)
             {
                 LastMessages.Add(message);
             }

@@ -117,12 +117,14 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <inheritdoc/>
-        [SuppressMessage("Design", "CS0108: member hides inherited member", Justification = "Different type.")]
+#pragma warning disable CS0108 // member hides inherited member
         public IObservable<Unit> Activated => _activated.AsObservable();
+#pragma warning restore CS0108
 
         /// <inheritdoc/>
-        [SuppressMessage("Design", "CS0108: member hides inherited member", Justification = "Different type.")]
+#pragma warning disable CS0108 // member hides inherited member
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+#pragma warning restore CS0108
 
         /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changing => this.GetChangingObservable();

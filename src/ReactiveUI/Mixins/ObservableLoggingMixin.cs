@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Globalization;
 using System.Reactive.Linq;
 using Splat;
 
@@ -36,15 +37,15 @@ namespace ReactiveUI
             if (stringifier != null)
             {
                 return @this.Do(
-                    x => klass.Log().Info("{0} OnNext: {1}", message, stringifier(x)),
-                    ex => klass.Log().WarnException(message + " " + "OnError", ex),
-                    () => klass.Log().Info("{0} OnCompleted", message));
+                    x => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, stringifier(x)),
+                    ex => klass.Log().Warn(ex, message + " " + "OnError"),
+                    () => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
             }
 
             return @this.Do(
-                x => klass.Log().Info("{0} OnNext: {1}", message, x),
-                ex => klass.Log().WarnException(message + " " + "OnError", ex),
-                () => klass.Log().Info("{0} OnCompleted", message));
+                x => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, x),
+                ex => klass.Log().Warn(ex, message + " " + "OnError"),
+                () => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace ReactiveUI
             next = next ?? Observable<T>.Default;
             return @this.Catch<T, Exception>(ex =>
             {
-                klass.Log().WarnException(message ?? string.Empty, ex);
+                klass.Log().Warn(ex, message ?? string.Empty);
                 return next;
             });
         }
@@ -86,7 +87,7 @@ namespace ReactiveUI
         {
             return @this.Catch<T, TException>(ex =>
             {
-                klass.Log().WarnException(message ?? string.Empty, ex);
+                klass.Log().Warn(ex, message ?? string.Empty);
                 return next(ex);
             });
         }

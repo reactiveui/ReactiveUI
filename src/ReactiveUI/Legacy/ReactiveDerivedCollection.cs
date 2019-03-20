@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -111,8 +112,8 @@ namespace ReactiveUI.Legacy
                     if (!hasWarned.ContainsKey(type))
                     {
                         this.Log().Warn(
-                            "{0} doesn't implement INotifyCollectionChanged, derived collection will only update " +
-                            "when the Reset() method is invoked manually or the reset observable is signalled.",
+                            CultureInfo.InvariantCulture,
+                            "{0} doesn't implement INotifyCollectionChanged, derived collection will only update when the Reset() method is invoked manually or the reset observable is signalled.",
                             type.FullName);
                         hasWarned.Add(type, true);
                     }
