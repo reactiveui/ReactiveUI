@@ -22,7 +22,7 @@ namespace EventBuilder.Platforms
     {
         private readonly PackageIdentity[] _packageNames = new[]
         {
-            new PackageIdentity("Xamarin.Essentials", new NuGetVersion("1.0.1")),
+            new PackageIdentity("Xamarin.Essentials", new NuGetVersion("1.1.0")),
             new PackageIdentity("NetStandard.Library", new NuGetVersion("2.0.0")),
         };
 
