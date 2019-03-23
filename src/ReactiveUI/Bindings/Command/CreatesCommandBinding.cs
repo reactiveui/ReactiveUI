@@ -42,10 +42,9 @@ namespace ReactiveUI
 
         public static IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
-            var binder = default(ICreatesCommandBinding);
             var type = target.GetType();
 
-            binder = bindCommandCache.Get(type);
+            var binder = bindCommandCache.Get(type);
 
             if (binder == null)
             {
