@@ -45,10 +45,7 @@ namespace ReactiveUI
             var binder = default(ICreatesCommandBinding);
             var type = target.GetType();
 
-            lock (bindCommandCache)
-            {
-                binder = bindCommandCache.Get(type);
-            }
+            binder = bindCommandCache.Get(type);
 
             if (binder == null)
             {

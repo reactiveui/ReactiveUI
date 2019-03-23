@@ -105,11 +105,7 @@ namespace ReactiveUI
         {
             Contract.Requires(toType != null);
 
-            var mi = default(MethodInfo);
-            lock (_referenceCastCache)
-            {
-                mi = _referenceCastCache.Get(toType);
-            }
+            var mi = _referenceCastCache.Get(toType);
 
             try
             {

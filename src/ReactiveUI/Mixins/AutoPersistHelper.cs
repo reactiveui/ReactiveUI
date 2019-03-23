@@ -93,19 +93,12 @@ namespace ReactiveUI
         {
             interval = interval ?? TimeSpan.FromSeconds(3.0);
 
-            lock (dataContractCheckCache)
+            if (!dataContractCheckCache.Get(@this.GetType()))
             {
-                if (!dataContractCheckCache.Get(@this.GetType()))
-                {
-                    throw new ArgumentException("AutoPersist can only be applied to objects with [DataContract]");
-                }
+                throw new ArgumentException("AutoPersist can only be applied to objects with [DataContract]");
             }
 
-            Dictionary<string, bool> persistableProperties;
-            lock (persistablePropertiesCache)
-            {
-                persistableProperties = persistablePropertiesCache.Get(@this.GetType());
-            }
+            Dictionary<string, bool> persistableProperties = persistablePropertiesCache.Get(@this.GetType());
 
             var saveHint = Observable.Merge(
                 @this.GetChangedObservable().Where(x => persistableProperties.ContainsKey(x.PropertyName)).Select(_ => Unit.Default),

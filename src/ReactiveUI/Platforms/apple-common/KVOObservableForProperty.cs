@@ -63,10 +63,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            lock (declaredInNSObject)
-            {
-                return declaredInNSObject.Get(Tuple.Create(type, propertyName)) ? 15 : 0;
-            }
+            return declaredInNSObject.Get(Tuple.Create(type, propertyName)) ? 15 : 0;
         }
 
         /// <inheritdoc/>
