@@ -17,7 +17,7 @@ namespace ReactiveUI.Tests.Wpf
 {
     public sealed class WpfViewDependencyResolverTests : IDisposable
     {
-        private readonly IMutableDependencyResolver _resolver;
+        private readonly IDependencyResolver _resolver;
 
         public WpfViewDependencyResolverTests()
         {

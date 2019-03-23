@@ -26,7 +26,7 @@ namespace ReactiveUI.Tests.Xaml
     /// </summary>
     public sealed class XamlViewDependencyResolverTests : IDisposable
     {
-        private readonly IMutableDependencyResolver _resolver;
+        private readonly IDependencyResolver _resolver;
 
         public XamlViewDependencyResolverTests()
         {

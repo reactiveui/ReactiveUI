@@ -102,14 +102,16 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a observable when the control is activated.
         /// </summary>
-        [SuppressMessage("Design", "CS0108: member hides inherited member", Justification = "Different type.")]
+#pragma warning disable CS0108 // member hides inherited member
         public IObservable<Unit> Activated => _activated.AsObservable();
+#pragma warning restore CS0108
 
         /// <summary>
-        /// Gets a observable that occurrs when the control is deactivated.
+        /// Gets a observable that occurs when the control is deactivated.
         /// </summary>
-        [SuppressMessage("Design", "CS0108: member hides inherited member", Justification = "Different type.")]
+#pragma warning disable CS0108 // member hides inherited member
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+#pragma warning restore CS0108
 
 #if UIKIT
         /// <inheritdoc/>

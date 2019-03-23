@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
@@ -488,7 +489,7 @@ namespace ReactiveUI
                     .Select(x => (TValue)SetThenGet(x.host, x.val, viewExpression.GetArgumentsArray()));
             }
 
-            return (setObservable.Subscribe(_ => { }, ex => this.Log().ErrorException($"{viewExpression} Binding received an Exception!", ex)), setObservable);
+            return (setObservable.Subscribe(_ => { }, ex => this.Log().Error(ex, $"{viewExpression} Binding received an Exception!")), setObservable);
         }
 
         private bool EvalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
@@ -526,7 +527,7 @@ namespace ReactiveUI
             {
                 var vmString = $"{typeof(TViewModel).Name}.{string.Join(".", vmExpression)}";
                 var vString = $"{typeof(TView).Name}.{string.Join(".", viewExpression)}";
-                this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
+                this.Log().Warn(CultureInfo.InvariantCulture, "Binding hook asked to disable binding {0} => {1}", vmString, vString);
             }
 
             return shouldBind;

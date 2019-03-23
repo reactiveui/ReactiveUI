@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests
 {
     public sealed class DependencyResolverTests : IDisposable
     {
-        private readonly IMutableDependencyResolver _resolver;
+        private readonly IDependencyResolver _resolver;
 
         public DependencyResolverTests()
         {
