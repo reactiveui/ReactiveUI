@@ -426,10 +426,7 @@ namespace ReactiveUI
 
         internal static IBindingTypeConverter GetConverterForTypes(Type lhs, Type rhs)
         {
-            lock (_typeConverterCache)
-            {
-                return _typeConverterCache.Get((lhs, rhs));
-            }
+            return _typeConverterCache.Get((lhs, rhs));
         }
 
         private static Func<object, object, object[], object> GetSetConverter(Type fromType, Type targetType)
@@ -439,17 +436,14 @@ namespace ReactiveUI
                 return null;
             }
 
-            lock (_setMethodCache)
+            var setter = _setMethodCache.Get((fromType, targetType));
+
+            if (setter == null)
             {
-                var setter = _setMethodCache.Get((fromType, targetType));
-
-                if (setter == null)
-                {
-                    return null;
-                }
-
-                return setter.PerformSet;
+                return null;
             }
+
+            return setter.PerformSet;
         }
 
         private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(

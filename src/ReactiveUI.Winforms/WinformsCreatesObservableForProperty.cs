@@ -38,22 +38,14 @@ namespace ReactiveUI.Winforms
                 return 0;
             }
 
-            lock (eventInfoCache)
-            {
-                var ei = eventInfoCache.Get(Tuple.Create(type, propertyName));
-                return beforeChanged == false && ei != null ? 8 : 0;
-            }
+            var ei = eventInfoCache.Get(Tuple.Create(type, propertyName));
+            return beforeChanged == false && ei != null ? 8 : 0;
         }
 
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
         {
-            var ei = default(EventInfo);
-
-            lock (eventInfoCache)
-            {
-                ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), propertyName));
-            }
+            var ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), propertyName));
 
             return Observable.Create<IObservedChange<object, object>>(subj =>
             {

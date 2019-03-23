@@ -199,11 +199,7 @@ namespace ReactiveUI
         private static IObservable<IObservedChange<object, object>> NotifyForProperty(object sender, Expression expression, bool beforeChange)
         {
             var propertyName = expression.GetMemberInfo().Name;
-            var result = default(ICreatesObservableForProperty);
-            lock (notifyFactoryCache)
-            {
-                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), propertyName, beforeChange));
-            }
+            var result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), propertyName, beforeChange));
 
             if (result == null)
             {

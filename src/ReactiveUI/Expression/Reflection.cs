@@ -334,16 +334,13 @@ namespace ReactiveUI
         /// <exception cref="TypeLoadException">If we were unable to find the type.</exception>
         public static Type ReallyFindType(string type, bool throwOnFailure)
         {
-            lock (typeCache)
+            Type ret = typeCache.Get(type);
+            if (ret != null || !throwOnFailure)
             {
-                Type ret = typeCache.Get(type);
-                if (ret != null || !throwOnFailure)
-                {
-                    return ret;
-                }
-
-                throw new TypeLoadException();
+                return ret;
             }
+
+            throw new TypeLoadException();
         }
 
         /// <summary>
