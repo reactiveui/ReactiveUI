@@ -10,9 +10,9 @@
 
   <ItemGroup>
     <PackageReference Include="Xamarin.FFImageLoading.Forms" Version="2.4.4.859" />
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1029999" />
-    <PackageReference Include="ReactiveUI.XamForms" Version="9.11.1" />
-    <PackageReference Include="ReactiveUI.Events.XamForms" Version="9.11.1" />
+    <PackageReference Include="Xamarin.Forms" Version="3.5.*" />
+    <PackageReference Include="ReactiveUI.XamForms" Version="9.*" />
+    <PackageReference Include="ReactiveUI.Events.XamForms" Version="9.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cinephile.Core\Cinephile.Core.csproj" />
