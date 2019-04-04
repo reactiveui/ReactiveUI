@@ -40,7 +40,8 @@ if (IsRunningOnWindows())
 
 var packageTestWhitelist = new List<FilePath>
 {
-    MakeAbsolute(File("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj")),    
+    MakeAbsolute(File("./src/ReactiveUI.Tests/ReactiveUI.Tests.csproj")),
+    MakeAbsolute(File("./src/ReactiveUI.Splat.Tests/ReactiveUI.Splat.Tests.csproj"))
 };
 
 if (IsRunningOnWindows())
