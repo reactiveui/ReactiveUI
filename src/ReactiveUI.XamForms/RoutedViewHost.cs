@@ -105,6 +105,7 @@ namespace ReactiveUI.XamForms
                         {
                             animated = false;
                         }
+
                         if (popToRootPending && Navigation.NavigationStack.Count > 0)
                         {
                             Navigation.InsertPageBefore(page, Navigation.NavigationStack[0]);
