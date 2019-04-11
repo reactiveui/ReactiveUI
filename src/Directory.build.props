@@ -33,7 +33,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="Xunit.StaFact" Version="0.3.13" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0-preview.102" />
     <PackageReference Include="PublicApiGenerator" Version="8.1.0" />
   </ItemGroup>
   
@@ -52,7 +52,7 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\LICENSE" Pack="true" PackagePath="LICENSE" />
   </ItemGroup>
-   
+
   <ItemGroup>	
     <PackageReference Include="Nerdbank.GitVersioning" Version="2.3.38" PrivateAssets="all" />	
   </ItemGroup>

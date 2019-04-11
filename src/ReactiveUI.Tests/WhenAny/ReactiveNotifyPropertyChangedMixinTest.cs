@@ -11,9 +11,11 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
+
+using DynamicData;
+
 using Microsoft.Reactive.Testing;
 
-using ReactiveUI.Legacy;
 using ReactiveUI.Testing;
 
 using Xunit;
@@ -99,320 +101,339 @@ namespace ReactiveUI.Tests
         [Fact]
         public void OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new HostTestFixture
-                                         {
-                                             Child = new TestFixture()
-                                         };
-                                         var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new HostTestFixture
+                {
+                    Child = new TestFixture()
+                };
+                fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         fixture.Child.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.Child.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         fixture.Child = new TestFixture
-                                         {
-                                             IsOnlyOneWord = "Bar"
-                                         };
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
-                                     });
+                fixture.Child = new TestFixture
+                {
+                    IsOnlyOneWord = "Bar"
+                };
+                sched.Start();
+                Assert.Equal(2, changes.Count);
+            });
         }
 
         [Fact]
         public void OFPNamedPropertyTest()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new TestFixture();
-                                         var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new TestFixture();
+                fixture.ObservableForProperty(x => x.IsOnlyOneWord)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         fixture.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Baz";
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                fixture.IsOnlyOneWord = "Baz";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Baz";
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                fixture.IsOnlyOneWord = "Baz";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         Assert.True(changes.All(x => x.Sender == fixture));
-                                         Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
-                                         changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
-                                     });
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
+            });
         }
 
         [Fact]
         public void OFPNamedPropertyTestBeforeChange()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new TestFixture
-                                         {
-                                             IsOnlyOneWord = "Pre"
-                                         };
-                                         var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord, beforeChange: true).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new TestFixture
+                {
+                    IsOnlyOneWord = "Pre"
+                };
+                fixture.ObservableForProperty(x => x.IsOnlyOneWord, beforeChange: true)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         sched.Start();
-                                         Assert.Equal(0, changes.Count);
+                sched.Start();
+                Assert.Equal(0, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         Assert.True(changes.All(x => x.Sender == fixture));
-                                         Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
-                                         changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
-                                     });
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
+            });
         }
 
         [Fact]
         public void OFPNamedPropertyTestNoSkipInitial()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new TestFixture
-                                         {
-                                             IsOnlyOneWord = "Pre"
-                                         };
-                                         var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord, skipInitial: false).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new TestFixture
+                {
+                    IsOnlyOneWord = "Pre"
+                };
+                fixture.ObservableForProperty(x => x.IsOnlyOneWord, skipInitial: false)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         Assert.True(changes.All(x => x.Sender == fixture));
-                                         Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
-                                         changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
-                                     });
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
+            });
         }
 
         [Fact]
         public void OFPNamedPropertyTestRepeats()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new TestFixture();
-                                         var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new TestFixture();
+                fixture.ObservableForProperty(x => x.IsOnlyOneWord)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         fixture.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         Assert.True(changes.All(x => x.Sender == fixture));
-                                         Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
-                                         changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Foo" });
-                                     });
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Foo" });
+            });
         }
 
         [Fact]
         public void OFPReplacingTheHostShouldResubscribeTheObservable()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new HostTestFixture
-                                         {
-                                             Child = new TestFixture()
-                                         };
-                                         var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new HostTestFixture
+                {
+                    Child = new TestFixture()
+                };
+                fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         fixture.Child.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.Child.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         // Tricky! This is a change too, because from the perspective
-                                         // of the binding, we've went from "Bar" to null
-                                         fixture.Child = new TestFixture();
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                // Tricky! This is a change too, because from the perspective
+                // of the binding, we've went from "Bar" to null
+                fixture.Child = new TestFixture();
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         // Here we've set the value but it shouldn't change
-                                         fixture.Child.IsOnlyOneWord = null;
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                // Here we've set the value but it shouldn't change
+                fixture.Child.IsOnlyOneWord = null;
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         fixture.Child.IsOnlyOneWord = "Baz";
-                                         sched.Start();
-                                         Assert.Equal(4, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Baz";
+                sched.Start();
+                Assert.Equal(4, changes.Count);
 
-                                         fixture.Child.IsOnlyOneWord = "Baz";
-                                         sched.Start();
-                                         Assert.Equal(4, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Baz";
+                sched.Start();
+                Assert.Equal(4, changes.Count);
 
-                                         Assert.True(changes.All(x => x.Sender == fixture));
-                                         Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
-                                         changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", null, "Baz" });
-                                     });
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", null, "Baz" });
+            });
         }
 
         [Fact]
         public void OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new HostTestFixture
-                                         {
-                                             Child = new TestFixture()
-                                         };
-                                         var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new HostTestFixture
+                {
+                    Child = new TestFixture()
+                };
+                fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         fixture.Child.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.Child.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         // Oops, now the child is Null, we may now blow up
-                                         fixture.Child = null;
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                // Oops, now the child is Null, we may now blow up
+                fixture.Child = null;
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         // Tricky! This is a change too, because from the perspective
-                                         // of the binding, we've went from "Bar" to null
-                                         fixture.Child = new TestFixture();
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                // Tricky! This is a change too, because from the perspective
+                // of the binding, we've went from "Bar" to null
+                fixture.Child = new TestFixture();
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         Assert.True(changes.All(x => x.Sender == fixture));
-                                         Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
-                                         changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", null });
-                                     });
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", null });
+            });
         }
 
         [Fact]
         public void OFPShouldWorkWithINPCObjectsToo()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new NonReactiveINPCObject
-                                         {
-                                             InpcProperty = null
-                                         };
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new NonReactiveINPCObject
+                {
+                    InpcProperty = null
+                };
+                fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         var changes = fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord).CreateCollection(scheduler: ImmediateScheduler.Instance);
+                fixture.InpcProperty = new TestFixture();
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.InpcProperty = new TestFixture();
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.InpcProperty.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         fixture.InpcProperty.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
-
-                                         fixture.InpcProperty.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
-                                     });
+                fixture.InpcProperty.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
+            });
         }
 
         [Fact]
         public void OFPSimpleChildPropertyTest()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new HostTestFixture
-                                         {
-                                             Child = new TestFixture()
-                                         };
-                                         var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new HostTestFixture
+                {
+                    Child = new TestFixture()
+                };
+                fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         fixture.Child.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.Child.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         fixture.Child.IsOnlyOneWord = "Baz";
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Baz";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         fixture.Child.IsOnlyOneWord = "Baz";
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                fixture.Child.IsOnlyOneWord = "Baz";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         Assert.True(changes.All(x => x.Sender == fixture));
-                                         Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
-                                         changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
-                                     });
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
+            });
         }
 
         [Fact]
         public void OFPSimplePropertyTest()
         {
-            new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var fixture = new TestFixture();
-                                         var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).CreateCollection(scheduler: ImmediateScheduler.Instance);
+            new TestScheduler().With(sched =>
+            {
+                var fixture = new TestFixture();
+                fixture.ObservableForProperty(x => x.IsOnlyOneWord)
+                    .ToObservableChangeSet(ImmediateScheduler.Instance)
+                    .Bind(out var changes)
+                    .Subscribe();
 
-                                         fixture.IsOnlyOneWord = "Foo";
-                                         sched.Start();
-                                         Assert.Equal(1, changes.Count);
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Bar";
-                                         sched.Start();
-                                         Assert.Equal(2, changes.Count);
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Baz";
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                fixture.IsOnlyOneWord = "Baz";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         fixture.IsOnlyOneWord = "Baz";
-                                         sched.Start();
-                                         Assert.Equal(3, changes.Count);
+                fixture.IsOnlyOneWord = "Baz";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
 
-                                         Assert.True(changes.All(x => x.Sender == fixture));
-                                         Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
-                                         changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
-                                     });
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
+            });
         }
 
         [Fact]

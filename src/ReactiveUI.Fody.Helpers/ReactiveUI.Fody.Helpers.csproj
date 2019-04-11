@@ -16,7 +16,7 @@
   <ItemGroup>
     <PackageReference Include="Fody" Version="4.2.1" PrivateAssets="None" />
     <PackageReference Include="FodyPackaging" Version="4.2.1" PrivateAssets="All" />
-    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">

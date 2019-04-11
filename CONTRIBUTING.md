@@ -142,12 +142,12 @@ from the main (upstream) repository:
 ## Coding
 
 ### Developer Environment
-- Visual Studio 2017 (with latest patches/updates), with the following workloads/components
+- Visual Studio 2019 (with latest patches/updates), with the following workloads/components
     - Windows Universal Platform Development workload
     - .NET desktop development workload
     - Mobile development with .NET workload
     - .NET Core cross-platform development
-    - Windows 10 SDK 10.0.16299 (individual component)
+    - Windows 10 SDK 10.0.17763.0 (individual component)
 - PowerShell
 - Android SDK Platform 26 (install through Visual Studio)
 

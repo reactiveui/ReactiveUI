@@ -1,11 +1,12 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for Winforms UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>ReactiveUI.Events.Winforms</PackageId>
-    <ExtrasEnableWinFormsProjectSetup>true</ExtrasEnableWinFormsProjectSetup >
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>  
 
@@ -13,11 +14,14 @@
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="Events_Winforms.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
+    <Compile Include="Events_NetCoreAppWinforms.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
@@ -26,5 +30,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.ServiceProcess" />
+    <Compile Include="Events_Winforms.cs" />
   </ItemGroup>
 </Project>

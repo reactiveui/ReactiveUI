@@ -1,7 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid81;netcoreapp2.0;tizen40</TargetFrameworks>
+<<<<<<< HEAD
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.17763</TargetFrameworks>
+=======
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.17763;netcoreapp3.0</TargetFrameworks>
+>>>>>>> 863b7af9... Integrate .NET Core v3 Preview 3 changes
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <Description>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8.1, Windows Store and Universal Windows Platform (UWP).</Description>
@@ -11,7 +15,7 @@
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
-    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
     <PackageReference Include="Splat" Version="7.*" />
     <PackageReference Include="DynamicData" Version="6.*" />
   </ItemGroup>
@@ -25,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
-    <Compile Include="Platforms\net461\**\*.cs" />
+    <Compile Include="Platforms\net4\**\*.cs" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
@@ -73,7 +77,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp')) ">
-    <Compile Include="Platforms\netcoreapp2.0\**\*.cs" />
+    <Compile Include="Platforms\netcoreapp\**\*.cs" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
 

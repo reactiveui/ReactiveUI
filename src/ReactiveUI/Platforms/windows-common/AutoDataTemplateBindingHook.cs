@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 #if NETFX_CORE
@@ -28,6 +29,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the default item template.
         /// </summary>
+        [SuppressMessage("Design", "CA1307: Use the currency locale settings", Justification = "Not available on all platforms.")]
         public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new Lazy<DataTemplate>(() =>
         {
 #if NETFX_CORE
@@ -53,12 +55,8 @@ namespace ReactiveUI
         {
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
-            if (lastViewProperty == null)
-            {
-                return true;
-            }
 
-            var itemsControl = lastViewProperty.Sender as ItemsControl;
+            var itemsControl = lastViewProperty?.Sender as ItemsControl;
             if (itemsControl == null)
             {
                 return true;

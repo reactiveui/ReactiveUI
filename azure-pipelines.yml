@@ -16,6 +16,7 @@ resources:
       endpoint: reactiveui
 
 jobs:
-- template: Azure/azure-pipelines.yml@templates  # Template reference
+- template: Azure/azure-pipelines-2019.yml@templates  # Template reference
   parameters:
     eventsGenerated: true
+    
