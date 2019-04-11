@@ -1,10 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for WPF UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>ReactiveUI.Events.WPF</PackageId>
-    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>  
 
@@ -12,15 +13,19 @@
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.63" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="Events_WPF.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
+    <Compile Include="Events_NetCoreAppWPF.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
     <Reference Include="System.Xaml" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="WindowsBase" />
+    <Compile Include="Events_WPF.cs" />
   </ItemGroup>
 </Project>

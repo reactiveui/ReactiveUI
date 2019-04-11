@@ -70,6 +70,8 @@ if (IsRunningOnWindows())
         ("wpf", MakeAbsolute(Directory("src/ReactiveUI.Events.WPF/"))),
         ("uwp", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
         ("winforms", MakeAbsolute(Directory("src/ReactiveUI.Events.Winforms/"))),
+        ("NetCoreAppWPF", MakeAbsolute(Directory("src/ReactiveUI.Events.WPF/"))),
+        ("NetCoreAppWinforms", MakeAbsolute(Directory("src/ReactiveUI.Events.Winforms/"))),
     });
 }
 
