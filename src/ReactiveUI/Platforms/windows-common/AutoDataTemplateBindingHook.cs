@@ -53,12 +53,8 @@ namespace ReactiveUI
         {
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
-            if (lastViewProperty == null)
-            {
-                return true;
-            }
 
-            var itemsControl = lastViewProperty.Sender as ItemsControl;
+            var itemsControl = lastViewProperty?.Sender as ItemsControl;
             if (itemsControl == null)
             {
                 return true;

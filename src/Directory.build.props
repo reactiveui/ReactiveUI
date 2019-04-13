@@ -53,6 +53,10 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\LICENSE" Pack="true" PackagePath="LICENSE" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
+  </ItemGroup>
    
   <ItemGroup>	
     <PackageReference Include="Nerdbank.GitVersioning" Version="2.3.38" PrivateAssets="all" />	
