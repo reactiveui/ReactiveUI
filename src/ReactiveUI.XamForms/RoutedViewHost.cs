@@ -99,20 +99,20 @@ namespace ReactiveUI.XamForms
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
                     .SelectMany(async page =>
                     {
+                        bool animated = true;
+                        var attribute = page.GetType().GetCustomAttribute<DisableAnimationAttribute>();
+                        if (attribute != null)
+                        {
+                            animated = false;
+                        }
+
                         if (popToRootPending && Navigation.NavigationStack.Count > 0)
                         {
                             Navigation.InsertPageBefore(page, Navigation.NavigationStack[0]);
-                            await PopToRootAsync();
+                            await PopToRootAsync(animated);
                         }
                         else
                         {
-                            bool animated = true;
-                            var attribute = page.GetType().GetCustomAttribute<DisableAnimationAttribute>();
-                            if (attribute != null)
-                            {
-                                animated = false;
-                            }
-
                             await PushAsync(page, animated);
                         }
 
