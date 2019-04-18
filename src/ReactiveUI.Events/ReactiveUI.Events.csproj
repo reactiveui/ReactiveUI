@@ -16,7 +16,7 @@
     <PackageReference Include="System.Reactive" Version="4.0.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
+  <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">
     <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
     <SDKReference Include="WindowsDesktop, Version=10.0.16299.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
@@ -26,27 +26,27 @@
     </SDKReference> 
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
     <Compile Include="Events_IOS.cs" Condition="Exists('Events_IOS.cs')" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
     <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid81' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
     <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'tizen40' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
     <Compile Include="Events_TIZEN.cs" Condition="Exists('Events_TIZEN.cs')" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
     <Reference Include="netstandard" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.TVOS10' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
     <Reference Include="netstandard" />
   </ItemGroup>
 </Project>
