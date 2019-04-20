@@ -97,6 +97,8 @@ namespace ReactiveUI
                 {
                     disposable.Dispose();
                 }
+
+                _defaultObserverSub?.Dispose();
             }
         }
     }

@@ -135,6 +135,7 @@ namespace ReactiveUI
             {
                 _isResuming?.Dispose();
                 _isUnpausing?.Dispose();
+                _shouldPersistState?.Dispose();
             }
 
             _isDisposed = true;

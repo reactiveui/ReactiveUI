@@ -159,6 +159,18 @@ namespace ReactiveUI
         {
             return IReactiveObjectExtensions.SuppressChangeNotifications(this);
         }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _activated?.Dispose();
+                _deactivated?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 
     /// <summary>
