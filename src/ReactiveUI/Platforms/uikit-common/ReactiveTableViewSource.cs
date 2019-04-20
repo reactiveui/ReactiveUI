@@ -306,7 +306,9 @@ namespace ReactiveUI
         {
             if (disposing)
             {
-                _commonSource.Dispose();
+                _commonSource?.Dispose();
+                _elementSelected?.Dispose();
+                _adapter?.Dispose();
             }
 
             base.Dispose(disposing);
