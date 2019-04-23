@@ -141,7 +141,24 @@ namespace EventBuilder
 
                     Environment.Exit((int)ExitCode.Error);
                 },
-                _ => Task.CompletedTask).ConfigureAwait(false);
+                errors =>
+                {
+                    Log.Fatal("Had these errors parsing the command line:");
+                    foreach (var error in errors)
+                    {
+                        switch (error)
+                        {
+                            case MissingRequiredOptionError opt:
+                                Log.Fatal($"Missing required parameter: {opt.NameInfo.NameText}");
+                                break;
+                            default:
+                                Log.Fatal(error.ToString());
+                                break;
+                        }
+                    }
+
+                    return Task.CompletedTask;
+                }).ConfigureAwait(false);
         }
 
         [SuppressMessage("Globalization", "CA1307: Specify StringComparison", Justification = "Replace overload is for .NET Standard only")]
