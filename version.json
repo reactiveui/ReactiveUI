@@ -1,8 +1,8 @@
 {
-  "version": "10.0.1-xamarin-forms4-preview.{height}",
+  "version": "9.13",
   "publicReleaseRefSpec": [
     "^refs/heads/master$", // we release out of master
-    "^refs/heads/preview/.*", // we release previews
+    "^refs/heads/develop$", // we release out of develop
     "^refs/heads/rel/\\d+\\.\\d+\\.\\d+" // we also release branches starting with rel/N.N.N
   ],
   "nugetPackageVersion":{
