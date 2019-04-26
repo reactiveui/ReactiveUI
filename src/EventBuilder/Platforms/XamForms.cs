@@ -21,7 +21,7 @@ namespace EventBuilder.Platforms
     {
         private readonly PackageIdentity[] _packageNames = new[]
         {
-            new PackageIdentity("Xamarin.Forms", new NuGetVersion("3.5.0.129452")),
+            new PackageIdentity("Xamarin.Forms", new NuGetVersion("4.0.0.346134-pre9")),
         };
 
         /// <inheritdoc />
