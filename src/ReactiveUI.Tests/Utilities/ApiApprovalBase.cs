@@ -71,6 +71,7 @@ namespace ReactiveUI.Tests
 #endif
                     process.Start();
                     string output = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
 
                     throw new Exception("Invalid API configuration: " + Environment.NewLine + output);
                 }
