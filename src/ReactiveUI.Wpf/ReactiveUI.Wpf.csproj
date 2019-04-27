@@ -3,7 +3,7 @@
     <TargetFrameworks>net461</TargetFrameworks>        
     <Description>WPF specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WPF</PackageId>
-    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+    <UseWpf>true</UseWpf>
   </PropertyGroup>
 
   <ItemGroup>

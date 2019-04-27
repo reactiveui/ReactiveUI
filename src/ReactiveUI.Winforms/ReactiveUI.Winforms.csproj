@@ -6,7 +6,7 @@
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
     <Description>Windows Forms specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WinForms</PackageId>
-    <ExtrasEnableWinFormsProjectSetup>true</ExtrasEnableWinFormsProjectSetup>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
