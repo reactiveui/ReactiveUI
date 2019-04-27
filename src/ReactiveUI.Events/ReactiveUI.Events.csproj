@@ -18,12 +18,6 @@
 
   <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">
     <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
-    <SDKReference Include="WindowsDesktop, Version=10.0.17763.0">
-      <Name>Windows Desktop Extensions for the UWP</Name>
-    </SDKReference>
-    <SDKReference Include="WindowsMobile, Version=10.0.17763.0"> 
-      <Name>Windows Mobile Extensions for the UWP</Name> 
-    </SDKReference> 
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
