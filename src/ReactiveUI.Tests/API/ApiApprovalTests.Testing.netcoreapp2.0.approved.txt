@@ -1,7 +1,28 @@
 [assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETCoreApp,Version=v2.0", FrameworkDisplayName="")]
 namespace ReactiveUI.Testing
 {
-    public class static TestUtils
+    public interface IBuilder { }
+    public class static IBuilderExtensions
+    {
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref TField field, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<> field, System.Collections.Generic.IEnumerable<TField> values)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<> field, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<, > dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<, > dictionary, TKey key, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<, > dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair) { }
+    }
+    public class static MessageBusExtensions
+    {
+        public static TRet With<TRet>(this ReactiveUI.IMessageBus messageBus, System.Func<TRet> block) { }
+        public static void With(this ReactiveUI.IMessageBus messageBus, System.Action block) { }
+        public static System.IDisposable WithMessageBus(this ReactiveUI.IMessageBus messageBus) { }
+    }
+    public class static SchedulerExtensions
     {
         public static void AdvanceByMs(this Microsoft.Reactive.Testing.TestScheduler sched, double milliseconds) { }
         public static void AdvanceToMs(this Microsoft.Reactive.Testing.TestScheduler sched, double milliseconds) { }
@@ -13,13 +34,10 @@ namespace ReactiveUI.Testing
             where T : System.Reactive.Concurrency.IScheduler { }
         public static void With<T>(this T sched, System.Action<T> block)
             where T : System.Reactive.Concurrency.IScheduler { }
-        public static TRet With<TRet>(this ReactiveUI.IMessageBus messageBus, System.Func<TRet> block) { }
-        public static void With(this ReactiveUI.IMessageBus messageBus, System.Action block) { }
         public static System.Threading.Tasks.Task<TRet> WithAsync<T, TRet>(this T sched, System.Func<T, System.Threading.Tasks.Task<TRet>> block)
             where T : System.Reactive.Concurrency.IScheduler { }
         public static System.Threading.Tasks.Task WithAsync<T>(this T sched, System.Func<T, System.Threading.Tasks.Task> block)
             where T : System.Reactive.Concurrency.IScheduler { }
-        public static System.IDisposable WithMessageBus(this ReactiveUI.IMessageBus messageBus) { }
         public static System.IDisposable WithScheduler(System.Reactive.Concurrency.IScheduler sched) { }
     }
 }
