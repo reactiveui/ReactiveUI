@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace ReactiveUI.Testing
 {
-#pragma warning disable SA1402, SA1649
+#pragma warning disable SA1402, SA1649, CA1040
     /// <summary>
     /// An interface for building.
     /// </summary>
@@ -140,5 +140,5 @@ namespace ReactiveUI.Testing
             return builder;
         }
     }
-#pragma warning restore SA1402, SA1649
+#pragma warning restore SA1402, SA1649, CA1040
 }
