@@ -18,7 +18,7 @@ namespace ReactiveUI.Tests.API
         [Fact]
         public void Testing()
         {
-            CheckApproval(typeof(Testing.TestUtils).Assembly);
+            CheckApproval(typeof(Testing.SchedulerExtensions).Assembly);
         }
 
         [Fact]
