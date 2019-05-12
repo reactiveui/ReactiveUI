@@ -4,6 +4,7 @@
     <Description>WPF specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
+    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
   </PropertyGroup>
 
   <ItemGroup>

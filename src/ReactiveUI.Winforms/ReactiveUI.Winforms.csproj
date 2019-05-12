@@ -7,6 +7,7 @@
     <Description>Windows Forms specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
+    <ExtrasEnableWinFormsProjectSetup>true</ExtrasEnableWinFormsProjectSetup>
   </PropertyGroup>
 
   <ItemGroup>
