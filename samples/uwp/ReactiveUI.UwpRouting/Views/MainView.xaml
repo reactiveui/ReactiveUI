@@ -1,0 +1,19 @@
+﻿<Page x:Class="ReactiveUI.UwpRouting.Views.MainView"
+      Background="{ThemeResource SystemControlChromeLowAcrylicWindowBrush}"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:reactiveUi="using:ReactiveUI">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <reactiveUi:RoutedViewHost Router="{x:Bind ViewModel.Router, Mode=OneWay}" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="15">
+            <Button Content="Go next" Command="{x:Bind ViewModel.GoNext, Mode=OneWay}" />
+            <Button Content="Go back" Command="{x:Bind ViewModel.GoBack, Mode=OneWay}" Margin="5 0" />
+            <TextBlock Text="{x:Bind ViewModel.Router.NavigationStack.Count, Mode=OneWay}"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</Page>

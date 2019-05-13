@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="ReactiveUI.UwpRouting.Views.FirstView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Transitions>
+        <TransitionCollection>
+            <AddDeleteThemeTransition />
+        </TransitionCollection>
+    </UserControl.Transitions>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <TextBlock Text="Hello, I'm first view!" />
+            <TextBlock Text="{x:Bind ViewModel.UrlPathSegment, Mode=OneWay}" />
+        </StackPanel>
+    </Grid>
+</UserControl>
