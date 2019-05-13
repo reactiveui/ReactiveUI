@@ -5,11 +5,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -46,7 +48,33 @@ namespace ReactiveUI.Tests
             if (!string.Equals(receivedPublicApi, approvedPublicApi, StringComparison.InvariantCulture))
             {
                 File.WriteAllText(receivedFileName, receivedPublicApi);
-                ShouldlyConfiguration.DiffTools.GetDiffTool().Open(receivedFileName, approvedFileName, true);
+                try
+                {
+                    ShouldlyConfiguration.DiffTools.GetDiffTool().Open(receivedFileName, approvedFileName, true);
+                }
+                catch (ShouldAssertException)
+                {
+                    var process = new Process
+                    {
+                      StartInfo = new ProcessStartInfo
+                      {
+                          Arguments = $"\"{approvedFileName}\" \"{receivedFileName}\"",
+                          UseShellExecute = false,
+                          RedirectStandardOutput = true,
+                          CreateNoWindow = true
+                      }
+                    };
+#if NET_461
+                    process.StartInfo.FileName = "FC";
+#else
+                    process.StartInfo.FileName = "diff";
+#endif
+                    process.Start();
+                    string output = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
+
+                    throw new Exception("Invalid API configuration: " + Environment.NewLine + output);
+                }
             }
 
             Assert.Equal(approvedPublicApi, receivedPublicApi);
