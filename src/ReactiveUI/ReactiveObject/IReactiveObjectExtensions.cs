@@ -392,6 +392,8 @@ namespace ReactiveUI
                     {
                         _thrownExceptions.Value.OnNext(ex);
                     }
+
+                    throw;
                 }
             }
         }
