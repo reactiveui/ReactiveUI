@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Shouldly;
 using Splat;
 using Xunit;
 
@@ -43,6 +44,24 @@ namespace ReactiveUI.Tests
 
             Assert.True(testLogger.LastMessages.Count > 0);
             Assert.Equal(testLogger.LastMessages[0], $"{nameof(POCOObservableForProperty)}: The class {typeof(PocoType).FullName} property {nameof(PocoType.Property1)} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
+        }
+
+        [Fact]
+        public void NotificationPocoSuppressErrorOnBind()
+        {
+            var instance = new POCOObservableForProperty();
+
+            var testLogger = new TestLogger();
+            Locator.CurrentMutable.RegisterConstant<ILogger>(testLogger);
+
+            var testClass = new PocoType();
+
+            Expression<Func<PocoType, string>> expr = x => x.Property1;
+            var exp = Reflection.Rewrite(expr.Body);
+
+            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false, true).Subscribe(_ => { });
+
+            testLogger.LastMessages.ShouldNotContain(m => m.Contains(nameof(POCOObservableForProperty)));
         }
 
         private class PocoType
