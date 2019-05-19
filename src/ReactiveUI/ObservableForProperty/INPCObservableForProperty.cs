@@ -26,7 +26,7 @@ namespace ReactiveUI
 
         /// <inheritdoc/>
         [SuppressMessage("Roslynator", "RCS1211", Justification = "Neater with else clause.")]
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = false)
         {
             var before = sender as INotifyPropertyChanging;
             var after = sender as INotifyPropertyChanged;

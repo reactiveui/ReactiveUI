@@ -26,6 +26,8 @@ namespace ReactiveUI.Wpf
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
 
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+
+            RxApp.SuppressViewCommandBindingMessage = true;
         }
     }
 }
