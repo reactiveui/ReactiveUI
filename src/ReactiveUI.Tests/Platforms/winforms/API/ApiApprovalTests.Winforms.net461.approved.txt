@@ -104,7 +104,7 @@ namespace ReactiveUI.Winforms
     {
         public WinformsCreatesObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
 }
 namespace ReactiveUI.Winforms.Legacy
