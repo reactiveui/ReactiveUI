@@ -190,6 +190,11 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether log messages should be suppressed for command bindings in the view.
+        /// </summary>
+        public static bool SuppressViewCommandBindingMessage { get; set; }
+
+        /// <summary>
         /// Gets or sets the Observer which signalled whenever an object that has a
         /// ThrownExceptions property doesn't Subscribe to that Observable. Use
         /// Observer.Create to set up what will happen - the default is to crash
