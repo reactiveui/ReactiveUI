@@ -28,10 +28,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             var type = sender.GetType();
-            if (!hasWarned.ContainsKey((type, propertyName)))
+            if (!hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)
             {
                 this.Log().Warn($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
                 hasWarned[(type, propertyName)] = true;
