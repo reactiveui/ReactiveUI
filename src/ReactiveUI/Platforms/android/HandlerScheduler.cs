@@ -51,11 +51,6 @@ namespace ReactiveUI
             bool isCancelled = false;
             var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
 
-            if (_looperId > 0 && _looperId == Java.Lang.Thread.CurrentThread().Id)
-            {
-                return action(this, state);
-            }
-
             _handler.Post(() =>
             {
                 if (isCancelled)
