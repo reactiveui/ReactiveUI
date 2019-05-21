@@ -391,6 +391,7 @@ namespace ReactiveUI
                     if (_thrownExceptions.IsValueCreated)
                     {
                         _thrownExceptions.Value.OnNext(ex);
+                        return;
                     }
 
                     throw;
