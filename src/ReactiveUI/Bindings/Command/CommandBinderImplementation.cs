@@ -138,7 +138,7 @@ namespace ReactiveUI
 
             var bindInfo = Observable.CombineLatest(
                 @this,
-                view.WhenAnyDynamic(controlExpression, x => x.Value),
+                view.SubscribeToExpressionChain<TView, object>(controlExpression, false, false, RxApp.SuppressViewCommandBindingMessage).Select(x => x.Value),
                 (val, host) => new { val, host });
 
             var propSub = bindInfo

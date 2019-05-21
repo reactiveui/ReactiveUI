@@ -34,14 +34,18 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             var type = sender.GetType();
             var dpd = DependencyPropertyDescriptor.FromProperty(GetDependencyProperty(type, propertyName), type);
 
             if (dpd == null)
             {
-                this.Log().Error("Couldn't find dependency property " + propertyName + " on " + type.Name);
+                if (!suppressWarnings)
+                {
+                    this.Log().Error("Couldn't find dependency property " + propertyName + " on " + type.Name);
+                }
+
                 throw new NullReferenceException("Couldn't find dependency property " + propertyName + " on " + type.Name);
             }
 
