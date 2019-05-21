@@ -165,7 +165,7 @@ namespace ReactiveUI
     public interface ICreatesObservableForProperty : Splat.IEnableLogger
     {
         int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False);
-        System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False);
+        System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False);
     }
     public interface IHandleObservableErrors
     {
@@ -188,7 +188,7 @@ namespace ReactiveUI
     {
         public INPCObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = False) { }
     }
     public class Interaction<TInput, TOutput>
     {
@@ -283,7 +283,7 @@ namespace ReactiveUI
     {
         public IROObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
     public interface IRoutableViewModel : ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
     {
@@ -409,7 +409,7 @@ namespace ReactiveUI
     {
         public POCOObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
     public class PropertyBinderImplementation : ReactiveUI.IPropertyBinderImplementation, Splat.IEnableLogger
     {
@@ -515,7 +515,7 @@ namespace ReactiveUI
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender @this, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, bool beforeChange = False, bool skipInitial = True) { }
         public static System.IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender @this, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, System.Func<TValue, TRet> selector, bool beforeChange = False)
             where TSender :  class { }
-        public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender source, System.Linq.Expressions.Expression expression, bool beforeChange = False, bool skipInitial = True) { }
+        public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender source, System.Linq.Expressions.Expression expression, bool beforeChange = False, bool skipInitial = True, bool suppressWarnings = False) { }
     }
     [System.Runtime.Serialization.DataContractAttribute()]
     public class ReactiveObject : ReactiveUI.IHandleObservableErrors, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
@@ -603,6 +603,7 @@ namespace ReactiveUI
         public static System.IObserver<System.Exception> DefaultExceptionHandler { get; set; }
         public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
         public static bool SupportsRangeNotifications { get; set; }
+        public static bool SuppressViewCommandBindingMessage { get; set; }
         public static ReactiveUI.ISuspensionHost SuspensionHost { get; set; }
         public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
     }

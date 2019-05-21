@@ -349,9 +349,9 @@ The following have been core team members in the past.
         <p>London, United Kingdom</p>
       </td>
       <td align="center" valign="top">
-        <img width="100" height="100" src="https://github.com/paulcbetts.png?s=150">
+        <img width="100" height="100" src="https://github.com/anaisbetts.png?s=150">
         <br>
-        <a href="https://github.com/paulcbetts">Paul Betts</a>
+        <a href="https://github.com/anaisbetts">Anaïs Betts</a>
         <p>San Francisco, USA</p>
       </td>
       <td align="center" valign="top">

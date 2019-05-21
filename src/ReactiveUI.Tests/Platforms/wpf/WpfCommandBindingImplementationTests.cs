@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using ReactiveUI.Tests.Xaml;
+using Shouldly;
+using Splat;
 using Xunit;
 
 using FactAttribute = Xunit.WpfFactAttribute;
@@ -36,6 +38,18 @@ namespace ReactiveUI.Tests.Wpf
 
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
             Assert.Equal(1, invokeCount);
+        }
+
+        [Fact]
+        public void BindCommandShouldNotWarnWhenBindingToFieldDeclaredInXaml()
+        {
+            var testLogger = new TestLogger();
+            Locator.CurrentMutable.RegisterConstant<ILogger>(testLogger);
+
+            var vm = new CommandBindingViewModel();
+            var view = new FakeXamlCommandBindingView { ViewModel = vm };
+
+            testLogger.Messages.ShouldNotContain(t => t.Item1.Contains(nameof(POCOObservableForProperty)) && t.Item1.Contains(view.NameOfButtonDeclaredInXaml) && t.Item3 == LogLevel.Warn);
         }
     }
 }

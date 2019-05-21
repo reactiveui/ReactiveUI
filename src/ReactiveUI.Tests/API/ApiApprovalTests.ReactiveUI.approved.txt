@@ -1,4 +1,4 @@
-﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.AndroidSupport")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.AndroidSupport")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Wpf")]
@@ -171,7 +171,7 @@ namespace ReactiveUI
     public interface ICreatesObservableForProperty : Splat.IEnableLogger
     {
         int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False);
-        System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False);
+        System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False);
     }
     public interface IHandleObservableErrors
     {
@@ -194,7 +194,7 @@ namespace ReactiveUI
     {
         public INPCObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = False) { }
     }
     public class Interaction<TInput, TOutput>
     {
@@ -289,7 +289,7 @@ namespace ReactiveUI
     {
         public IROObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
     public interface IRoutableViewModel : ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
     {
@@ -410,7 +410,7 @@ namespace ReactiveUI
     {
         public POCOObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
     public class PropertyBinderImplementation : ReactiveUI.IPropertyBinderImplementation, Splat.IEnableLogger
     {
@@ -605,6 +605,7 @@ namespace ReactiveUI
         public static System.IObserver<System.Exception> DefaultExceptionHandler { get; set; }
         public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
         public static bool SupportsRangeNotifications { get; set; }
+        public static bool SuppressViewCommandBindingMessage { get; set; }
         public static ReactiveUI.ISuspensionHost SuspensionHost { get; set; }
         public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
     }

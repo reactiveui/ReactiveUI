@@ -125,6 +125,7 @@ namespace ReactiveUI
         /// <param name="expression">A expression which will point towards the property.</param>
         /// <param name="beforeChange">If we are interested in notifications before the property value is changed.</param>
         /// <param name="skipInitial">If we don't want to get a notification about the default value of the property.</param>
+        /// <param name="suppressWarnings">If true, no warnings should be logged.</param>
         /// <typeparam name="TSender">The type of the origin of the expression chain.</typeparam>
         /// <typeparam name="TValue">The end value we want to subscribe to.</typeparam>
         /// <returns>A observable which notifies about observed changes.</returns>
@@ -133,14 +134,15 @@ namespace ReactiveUI
             this TSender source,
             Expression expression,
             bool beforeChange = false,
-            bool skipInitial = true)
+            bool skipInitial = true,
+            bool suppressWarnings = false)
         {
             IObservable<IObservedChange<object, object>> notifier =
                 Observable.Return(new ObservedChange<object, object>(null, null, source));
 
             IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n
-                .Select(y => NestedObservedChanges(expr, y, beforeChange))
+                .Select(y => NestedObservedChanges(expr, y, beforeChange, suppressWarnings))
                 .Switch());
 
             if (skipInitial)
@@ -179,7 +181,7 @@ namespace ReactiveUI
             return new ObservedChange<object, object>(sourceChange.Value, expression, value);
         }
 
-        private static IObservable<IObservedChange<object, object>> NestedObservedChanges(Expression expression, IObservedChange<object, object> sourceChange, bool beforeChange)
+        private static IObservable<IObservedChange<object, object>> NestedObservedChanges(Expression expression, IObservedChange<object, object> sourceChange, bool beforeChange, bool suppressWarnings)
         {
             // Make sure a change at a root node propogates events down
             var kicker = ObservedChangeFor(expression, sourceChange);
@@ -191,12 +193,12 @@ namespace ReactiveUI
             }
 
             // Handle non null values in the chain
-            return NotifyForProperty(sourceChange.Value, expression, beforeChange)
+            return NotifyForProperty(sourceChange.Value, expression, beforeChange, suppressWarnings)
                 .Select(x => new ObservedChange<object, object>(x.Sender, expression, x.GetValue()))
                 .StartWith(kicker);
         }
 
-        private static IObservable<IObservedChange<object, object>> NotifyForProperty(object sender, Expression expression, bool beforeChange)
+        private static IObservable<IObservedChange<object, object>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
         {
             var propertyName = expression.GetMemberInfo().Name;
             var result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), propertyName, beforeChange));
@@ -206,7 +208,7 @@ namespace ReactiveUI
                 throw new Exception($"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation/nuget-packages for guidance.");
             }
 
-            return result.GetNotificationForProperty(sender, expression, propertyName, beforeChange);
+            return result.GetNotificationForProperty(sender, expression, propertyName, beforeChange, suppressWarnings);
         }
     }
 }

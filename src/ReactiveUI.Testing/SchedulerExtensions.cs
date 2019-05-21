@@ -15,11 +15,10 @@ using ReactiveUI;
 namespace ReactiveUI.Testing
 {
 #pragma warning disable SA1600 // Elements should be documented
-    public static class TestUtils
+    public static class SchedulerExtensions
 #pragma warning restore SA1600 // Elements should be documented
     {
         private static readonly AutoResetEvent schedGate = new AutoResetEvent(true);
-        private static readonly object mbGate = 42;
 
         /// <summary>
         /// WithScheduler overrides the default Deferred and Taskpool schedulers
@@ -44,28 +43,6 @@ namespace ReactiveUI.Testing
                 RxApp.MainThreadScheduler = prevDef;
                 RxApp.TaskpoolScheduler = prevTask;
                 schedGate.Set();
-            });
-        }
-
-        /// <summary>
-        /// WithMessageBus allows you to override the default Message Bus
-        /// implementation until the object returned is disposed. If a
-        /// message bus is not specified, a default empty one is created.
-        /// </summary>
-        /// <param name="messageBus">The message bus to use, or null to create
-        /// a new one using the default implementation.</param>
-        /// <returns>An object that when disposed, restores the original
-        /// message bus.</returns>
-        public static IDisposable WithMessageBus(this IMessageBus messageBus)
-        {
-            var origMessageBus = MessageBus.Current;
-
-            Monitor.Enter(mbGate);
-            MessageBus.Current = messageBus ?? new MessageBus();
-            return Disposable.Create(() =>
-            {
-                MessageBus.Current = origMessageBus;
-                Monitor.Exit(mbGate);
             });
         }
 
@@ -148,34 +125,6 @@ namespace ReactiveUI.Testing
                 await block(x).ConfigureAwait(false);
                 return 0;
             });
-        }
-
-        /// <summary>
-        /// Override the default Message Bus during the specified block.
-        /// </summary>
-        /// <typeparam name="TRet">The return type.</typeparam>
-        /// <param name="messageBus">The message bus to use for the block.</param>
-        /// <param name="block">The function to execute.</param>
-        /// <returns>The return value of the function.</returns>
-        public static TRet With<TRet>(this IMessageBus messageBus, Func<TRet> block)
-        {
-            using (messageBus.WithMessageBus())
-            {
-                return block();
-            }
-        }
-
-        /// <summary>
-        /// Override the default Message Bus during the specified block.
-        /// </summary>
-        /// <param name="messageBus">The message bus to use for the block.</param>
-        /// <param name="block">The action to execute.</param>
-        public static void With(this IMessageBus messageBus, Action block)
-        {
-            using (messageBus.WithMessageBus())
-            {
-                block();
-            }
         }
 
         /// <summary>
