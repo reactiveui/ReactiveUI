@@ -4,14 +4,15 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using Android.App;
+
 using Android.Support.V7.App;
 using Android.Views;
+
 using Java.Interop;
 using static ReactiveUI.ControlFetcherMixin;
 
@@ -24,59 +25,52 @@ namespace ReactiveUI.AndroidSupport
     /// </summary>
     public static class ControlFetcherMixin
     {
-        private static readonly Dictionary<string, int> controlIds;
+        private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds
+            = new ConcurrentDictionary<Assembly, Dictionary<string, int>>();
 
-        private static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache =
+        private static readonly ConditionalWeakTable<object, Dictionary<string, View>> _viewCache =
             new ConditionalWeakTable<object, Dictionary<string, View>>();
 
-        private static readonly MethodInfo getControlActivity;
-        private static readonly MethodInfo getControlView;
+        private static readonly MethodInfo _getControlActivity;
+        private static readonly MethodInfo _getControlView;
 
         static ControlFetcherMixin()
         {
-            var assemblyName = Assembly.GetCallingAssembly().GetName().Name;
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(i => i.GetName().Name == assemblyName);
-            var resources = assembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
-
-            controlIds = resources.GetNestedType("Id").GetFields()
-                .Where(x => x.FieldType == typeof(int))
-                .ToDictionary(k => k.Name.ToLowerInvariant(), v => (int)v.GetRawConstantValue());
-
             var type = typeof(ControlFetcherMixin);
-            getControlActivity = type.GetMethod("GetControl", new[] { typeof(AppCompatActivity), typeof(string) });
-            getControlView = type.GetMethod("GetControl", new[] { typeof(View), typeof(string) });
+            _getControlActivity = type.GetMethod("GetControl", new[] { typeof(AppCompatActivity), typeof(string) });
+            _getControlView = type.GetMethod("GetControl", new[] { typeof(View), typeof(string) });
         }
 
         /// <summary>
-        /// Gets the control from an activiy.
+        /// Gets the control from an activity.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
-        /// <param name="this">The activity.</param>
+        /// <param name="activity">The activity.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>Returns a view.</returns>
-        public static T GetControl<T>(this AppCompatActivity @this, [CallerMemberName]string propertyName = null)
-            where T : View => (T)GetCachedControl(propertyName, @this, () => @this.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
+        public static T GetControl<T>(this AppCompatActivity activity, [CallerMemberName]string propertyName = null)
+            where T : View => (T)GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)).JavaCast<T>());
 
         /// <summary>
         /// Gets the control from a view.
         /// </summary>
         /// <typeparam name="T">The control type.</typeparam>
-        /// <param name="this">The view.</param>
+        /// <param name="view">The view.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>A <see cref="View"/>.</returns>
-        public static T GetControl<T>(this View @this, [CallerMemberName]string propertyName = null)
-            where T : View => (T)GetCachedControl(propertyName, @this, () => @this.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
+        public static T GetControl<T>(this View view, [CallerMemberName]string propertyName = null)
+            where T : View => (T)GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(view.GetType().Assembly, propertyName)).JavaCast<T>());
 
         /// <summary>
         /// A helper method to automatically resolve properties in an <see cref="Android.Support.V4.App.Fragment"/> to their respective elements in the layout.
-        /// This should be called in the Fragement's OnCreateView, with the newly inflated layout.
+        /// This should be called in the Fragment's OnCreateView, with the newly inflated layout.
         /// </summary>
-        /// <param name="this">The fragment.</param>
+        /// <param name="fragment">The fragment.</param>
         /// <param name="inflatedView">The newly inflated <see cref="View"/> returned from Inflate.</param>
         /// <param name="resolveMembers">The strategy used to resolve properties that either subclass <see cref="View"/>, have a <see cref="WireUpResourceAttribute"/> or have a <see cref="IgnoreResourceAttribute"/>.</param>
-        public static void WireUpControls(this Android.Support.V4.App.Fragment @this, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this Android.Support.V4.App.Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
-            var members = @this.GetWireUpMembers(resolveMembers);
+            var members = fragment.GetWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m =>
             {
@@ -86,21 +80,22 @@ namespace ReactiveUI.AndroidSupport
                     var view = inflatedView.GetControlInternal(m.PropertyType, m.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
-                    m.SetValue(@this, view);
+                    m.SetValue(fragment, view);
                 }
                 catch (Exception ex)
                 {
                     throw new MissingFieldException(
                         "Failed to wire up the Property "
-                        + m.Name + " to a View in your layout with a corresponding identifier", ex);
+                        + m.Name + " to a View in your layout with a corresponding identifier",
+                        ex);
                 }
             });
         }
 
         // Copied from ReactiveUI/Platforms/android/ControlFetcherMixins.cs
-        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
+        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object wireUpObject, ResolveStrategy resolveStrategy)
         {
-            var members = @this.GetType().GetRuntimeProperties();
+            var members = wireUpObject.GetType().GetRuntimeProperties();
 
             switch (resolveStrategy)
             {
@@ -126,20 +121,20 @@ namespace ReactiveUI.AndroidSupport
 
         private static View GetControlInternal(this View parent, Type viewType, string name)
         {
-            var mi = getControlView.MakeGenericMethod(new[] { viewType });
+            var mi = _getControlView.MakeGenericMethod(new[] { viewType });
             return (View)mi.Invoke(null, new object[] { parent, name });
         }
 
         private static View GetControlInternal(this AppCompatActivity parent, Type viewType, string name)
         {
-            var mi = getControlActivity.MakeGenericMethod(new[] { viewType });
+            var mi = _getControlActivity.MakeGenericMethod(new[] { viewType });
             return (View)mi.Invoke(null, new object[] { parent, name });
         }
 
         private static View GetCachedControl(string propertyName, object rootView, Func<View> fetchControlFromView)
         {
             var ret = default(View);
-            var ourViewCache = viewCache.GetOrCreateValue(rootView);
+            var ourViewCache = _viewCache.GetOrCreateValue(rootView);
 
             if (ourViewCache.TryGetValue(propertyName, out ret))
             {
@@ -150,6 +145,22 @@ namespace ReactiveUI.AndroidSupport
 
             ourViewCache.Add(propertyName, ret);
             return ret;
+        }
+
+        private static int GetControlIdByName(Assembly assembly, string name)
+        {
+            var ids = _controlIds.GetOrAdd(
+                assembly,
+                currentAssembly =>
+                {
+                    var resources = currentAssembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
+
+                    return resources.GetNestedType("Id").GetFields()
+                        .Where(x => x.FieldType == typeof(int))
+                        .ToDictionary(k => k.Name.ToLowerInvariant(), v => (int)v.GetRawConstantValue(), StringComparer.InvariantCultureIgnoreCase);
+                });
+
+            return ids[name];
         }
     }
 }
