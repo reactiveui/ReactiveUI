@@ -33,10 +33,9 @@ namespace ReactiveUI
         [SuppressMessage("Design", "CA1065: Not not throw exceptions in static constructor", Justification = "TODO: Future fix")]
         static ControlFetcherMixin()
         {
-            // NB: This is some hacky shit, but on Xamarin.Android at the moment,
-            // this is always the entry assembly.
-            var assm = AppDomain.CurrentDomain.GetAssemblies()[1];
-            var resources = assm.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
+            var assemblyName = Assembly.GetCallingAssembly().GetName().Name;
+            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(i => i.GetName().Name == assemblyName);
+            var resources = assembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
 
             try
             {
