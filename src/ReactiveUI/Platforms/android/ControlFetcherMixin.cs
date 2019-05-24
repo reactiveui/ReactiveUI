@@ -19,13 +19,19 @@ namespace ReactiveUI
     /// Fragments via property names, similar to Butter Knife, as well as allows
     /// you to fetch controls manually.
     /// </summary>
-    public static partial class ControlFetcherMixin
+   public static partial class ControlFetcherMixin
     {
         private static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache =
             new ConditionalWeakTable<object, Dictionary<string, View>>();
 
+        private static readonly MethodInfo getControlActivity;
+        private static readonly MethodInfo getControlView;
+
         static ControlFetcherMixin()
         {
+            var type = typeof(ControlFetcherMixin);
+            getControlActivity = type.GetMethod("GetControl", new[] { typeof(Activity), typeof(string) });
+            getControlView = type.GetMethod("GetControl", new[] { typeof(View), typeof(string) });
         }
 
         /// <summary>
@@ -37,8 +43,8 @@ namespace ReactiveUI
         /// <returns>The return view.</returns>
         public static T GetControl<T>(this Activity activity, [CallerMemberName] string propertyName = null)
             where T : View => (T)GetCachedControl(propertyName, activity, () => activity
-                                                                      .FindViewById(GetResourceId(activity, propertyName))
-                                                                      .JavaCast<T>());
+                                                                                .FindViewById(GetResourceId(activity, propertyName))
+                                                                                .JavaCast<T>());
 
         /// <summary>
         /// Gets the control from an activity.
@@ -49,8 +55,8 @@ namespace ReactiveUI
         /// <returns>The return view.</returns>
         public static T GetControl<T>(this View view, [CallerMemberName] string propertyName = null)
             where T : View => (T)GetCachedControl(propertyName, view, () => view
-                                                                      .FindViewById(GetResourceId(view, propertyName))
-                                                                      .JavaCast<T>());
+                                                                            .FindViewById(GetResourceId(view, propertyName))
+                                                                            .JavaCast<T>());
 
         /// <summary>
         /// Gets the control from an activity.
@@ -67,14 +73,14 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="layoutHost">The layout view host.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this ILayoutViewHost layoutHost, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = layoutHost.GetWireUpMembers(resolveMembers).ToList();
             members.ForEach(m =>
             {
                 try
                 {
-                    var view = layoutHost.View.GetControlInternal(m.GetResourceName());
+                    var view = layoutHost.View.GetControlInternal(m.PropertyType, m.GetResourceName());
                     m.SetValue(layoutHost, view);
                 }
                 catch (Exception ex)
@@ -90,7 +96,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="view">The view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this View view, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = view.GetWireUpMembers(resolveMembers);
 
@@ -99,7 +105,7 @@ namespace ReactiveUI
                 try
                 {
                     // Find the android control with the same name
-                    var currentView = view.GetControlInternal(m.GetResourceName());
+                    var currentView = view.GetControlInternal(m.PropertyType, m.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(view, currentView);
@@ -119,7 +125,7 @@ namespace ReactiveUI
         /// <param name="fragment">The fragment.</param>
         /// <param name="inflatedView">The inflated view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers =
+        public static void WireUpControls(this Fragment fragment, View inflatedView, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers =
                                               ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = fragment.GetWireUpMembers(resolveMembers);
@@ -129,7 +135,7 @@ namespace ReactiveUI
                 try
                 {
                     // Find the android control with the same name from the view
-                    var view = inflatedView.GetControlInternal(m.GetResourceName());
+                    var view = inflatedView.GetControlInternal(m.PropertyType, m.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(fragment, view);
@@ -147,7 +153,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="activity">The Activity.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this Activity activity, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = activity.GetWireUpMembers(resolveMembers);
 
@@ -156,7 +162,7 @@ namespace ReactiveUI
                 try
                 {
                     // Find the android control with the same name
-                    var view = activity.GetControlInternal(m.GetResourceName());
+                    var view = activity.GetControlInternal(m.PropertyType, m.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(activity, view);
@@ -169,17 +175,16 @@ namespace ReactiveUI
             });
         }
 
-        private static View GetControlInternal(this View parent, string resourceName)
+        private static View GetControlInternal(this View parent, Type viewType, string name)
         {
-            var context = parent.Context;
-            var res = context.Resources;
-            var id = res.GetIdentifier(resourceName, "id", context.PackageName);
-            return parent.FindViewById(id);
+            var mi = getControlView.MakeGenericMethod(new[] { viewType });
+            return (View)mi.Invoke(null, new object[] { parent, name });
         }
 
-        private static View GetControlInternal(this Activity parent, string resourceName)
+        private static View GetControlInternal(this Activity parent, Type viewType, string name)
         {
-            return parent.FindViewById(GetResourceId(parent, resourceName));
+            var mi = getControlActivity.MakeGenericMethod(new[] { viewType });
+            return (View)mi.Invoke(null, new object[] { parent, name });
         }
 
         private static int GetResourceId(Activity activity, string resourceName)
@@ -216,7 +221,7 @@ namespace ReactiveUI
             return resourceNameOverride ?? member.Name;
         }
 
-        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy
+        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ReactiveUI.ControlFetcherMixin.ResolveStrategy
                                                                       resolveStrategy)
         {
             var members = @this.GetType().GetRuntimeProperties();

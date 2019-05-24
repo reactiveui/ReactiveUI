@@ -11,7 +11,6 @@ using System.Runtime.CompilerServices;
 using Android.App;
 using Android.Views;
 using Java.Interop;
-using static ReactiveUI.ControlFetcherMixin;
 
 namespace ReactiveUI.AndroidSupport
 {
@@ -68,7 +67,7 @@ namespace ReactiveUI.AndroidSupport
         /// </summary>
         /// <param name="layoutHost">The layout view host.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this ILayoutViewHost layoutHost, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = layoutHost.GetWireUpMembers(resolveMembers).ToList();
             members.ForEach(m =>
@@ -91,7 +90,7 @@ namespace ReactiveUI.AndroidSupport
         /// </summary>
         /// <param name="view">The view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this View view, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = view.GetWireUpMembers(resolveMembers);
 
@@ -120,7 +119,7 @@ namespace ReactiveUI.AndroidSupport
         /// <param name="fragment">The fragment.</param>
         /// <param name="inflatedView">The inflated view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers =
+        public static void WireUpControls(this Fragment fragment, View inflatedView, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers =
                                               ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = fragment.GetWireUpMembers(resolveMembers);
@@ -148,7 +147,7 @@ namespace ReactiveUI.AndroidSupport
         /// </summary>
         /// <param name="activity">The Activity.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this Activity activity, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = activity.GetWireUpMembers(resolveMembers);
 
@@ -217,7 +216,7 @@ namespace ReactiveUI.AndroidSupport
             return resourceNameOverride ?? member.Name;
         }
 
-        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy
+        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ReactiveUI.ControlFetcherMixin.ResolveStrategy
                                                                       resolveStrategy)
         {
             var members = @this.GetType().GetRuntimeProperties();
