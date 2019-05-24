@@ -41,6 +41,4 @@ namespace ReactiveUI.Tests
             base.OnCreate(bundle);
         }
     }
-    
-    
 }
