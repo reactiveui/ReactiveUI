@@ -36,10 +36,9 @@ namespace ReactiveUI
         /// <param name="propertyName">The property name.</param>
         /// <returns>The return view.</returns>
         public static T GetControl<T>(this Activity activity, [CallerMemberName] string propertyName = null)
-            where T : View => (T)GetCachedControl(propertyName,
-                                                  () => activity
-                                                        .FindViewById(GetResourceId(activity, propertyName))
-                                                        .JavaCast<T>());
+            where T : View => (T)GetCachedControl(propertyName, () => activity
+                                                                      .FindViewById(GetResourceId(activity, propertyName))
+                                                                      .JavaCast<T>());
 
         /// <summary>
         /// Gets the control from an activity.
@@ -49,9 +48,9 @@ namespace ReactiveUI
         /// <param name="propertyName">The property.</param>
         /// <returns>The return view.</returns>
         public static T GetControl<T>(this View view, [CallerMemberName] string propertyName = null)
-            where T : View => (T)GetCachedControl(propertyName,
-                                                  () => view.FindViewById(GetResourceId(view, propertyName))
-                                                            .JavaCast<T>());
+            where T : View => (T)GetCachedControl(propertyName, () => view
+                                                                      .FindViewById(GetResourceId(view, propertyName))
+                                                                      .JavaCast<T>());
 
         /// <summary>
         /// Gets the control from an activity.
@@ -68,9 +67,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="layoutHost">The layout view host.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this ILayoutViewHost layoutHost,
-                                          ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers =
-                                              ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
+        public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = layoutHost.GetWireUpMembers(resolveMembers).ToList();
             members.ForEach(m =>
@@ -83,8 +80,7 @@ namespace ReactiveUI
                 catch (Exception ex)
                 {
                     throw new
-                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier",
-                                              ex);
+                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
             });
         }
@@ -94,9 +90,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="view">The view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this View view,
-                                          ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers =
-                                              ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
+        public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = view.GetWireUpMembers(resolveMembers);
 
@@ -113,8 +107,7 @@ namespace ReactiveUI
                 catch (Exception ex)
                 {
                     throw new
-                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier",
-                                              ex);
+                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
             });
         }
@@ -126,8 +119,7 @@ namespace ReactiveUI
         /// <param name="fragment">The fragment.</param>
         /// <param name="inflatedView">The inflated view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Fragment fragment, View inflatedView,
-                                          ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers =
+        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers =
                                               ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = fragment.GetWireUpMembers(resolveMembers);
@@ -145,8 +137,7 @@ namespace ReactiveUI
                 catch (Exception ex)
                 {
                     throw new
-                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier",
-                                              ex);
+                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
             });
         }
@@ -156,9 +147,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="activity">The Activity.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Activity activity,
-                                          ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers =
-                                              ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
+        public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = activity.GetWireUpMembers(resolveMembers);
 
@@ -175,8 +164,7 @@ namespace ReactiveUI
                 catch (Exception ex)
                 {
                     throw new
-                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier",
-                                              ex);
+                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
             });
         }
@@ -226,8 +214,7 @@ namespace ReactiveUI
             return resourceNameOverride ?? member.Name;
         }
 
-        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this,
-                                                                  ReactiveUI.ControlFetcherMixin.ResolveStrategy
+        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy
                                                                       resolveStrategy)
         {
             var members = @this.GetType().GetRuntimeProperties();
