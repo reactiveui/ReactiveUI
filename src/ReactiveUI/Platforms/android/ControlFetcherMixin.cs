@@ -21,8 +21,8 @@ namespace ReactiveUI
     /// </summary>
     public static partial class ControlFetcherMixin
     {
-        private static readonly ConditionalWeakTable<string, View> _viewCache =
-            new ConditionalWeakTable<string, View>();
+        private static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache =
+            new ConditionalWeakTable<object, Dictionary<string, View>>();
 
         static ControlFetcherMixin()
         {
@@ -36,7 +36,7 @@ namespace ReactiveUI
         /// <param name="propertyName">The property name.</param>
         /// <returns>The return view.</returns>
         public static T GetControl<T>(this Activity activity, [CallerMemberName] string propertyName = null)
-            where T : View => (T)GetCachedControl(propertyName, () => activity
+            where T : View => (T)GetCachedControl(propertyName, activity, () => activity
                                                                       .FindViewById(GetResourceId(activity, propertyName))
                                                                       .JavaCast<T>());
 
@@ -48,7 +48,7 @@ namespace ReactiveUI
         /// <param name="propertyName">The property.</param>
         /// <returns>The return view.</returns>
         public static T GetControl<T>(this View view, [CallerMemberName] string propertyName = null)
-            where T : View => (T)GetCachedControl(propertyName, () => view
+            where T : View => (T)GetCachedControl(propertyName, view, () => view
                                                                       .FindViewById(GetResourceId(view, propertyName))
                                                                       .JavaCast<T>());
 
@@ -194,18 +194,20 @@ namespace ReactiveUI
             return res.GetIdentifier(resourceName, "id", view.Context.PackageName);
         }
 
-        private static View GetCachedControl(string propertyName, Func<View> fetchControlFromView)
+        private static View GetCachedControl(string propertyName, object rootView, Func<View> fetchControlFromView)
         {
-            var ourViewCache = _viewCache.GetOrCreateValue(propertyName);
+            View ret;
+            var ourViewCache = viewCache.GetOrCreateValue(rootView);
 
-            if (ourViewCache != null)
+            if (ourViewCache.TryGetValue(propertyName, out ret))
             {
-                return ourViewCache;
+                return ret;
             }
 
-            var view = fetchControlFromView();
-            _viewCache.Add(propertyName, view);
-            return view;
+            ret = fetchControlFromView();
+
+            ourViewCache.Add(propertyName, ret);
+            return ret;
         }
 
         private static string GetResourceName(this PropertyInfo member)
