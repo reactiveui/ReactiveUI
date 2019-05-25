@@ -8,8 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using Android.App;
 using Android.Views;
+
 using Java.Interop;
 
 namespace ReactiveUI.AndroidSupport
@@ -70,19 +72,19 @@ namespace ReactiveUI.AndroidSupport
         public static void WireUpControls(this ILayoutViewHost layoutHost, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = layoutHost.GetWireUpMembers(resolveMembers).ToList();
-            members.ForEach(m =>
+            foreach (var member in members)
             {
                 try
                 {
-                    var view = layoutHost.View.GetControlInternal(m.GetResourceName());
-                    m.SetValue(layoutHost, view);
+                    var view = layoutHost.View.GetControlInternal(member.GetResourceName());
+                    member.SetValue(layoutHost, view);
                 }
                 catch (Exception ex)
                 {
                     throw new
-                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier", ex);
+                        MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
-            });
+            }
         }
 
         /// <summary>
@@ -94,22 +96,22 @@ namespace ReactiveUI.AndroidSupport
         {
             var members = view.GetWireUpMembers(resolveMembers);
 
-            members.ToList().ForEach(m =>
+            foreach (var member in members)
             {
                 try
                 {
                     // Find the android control with the same name
-                    var currentView = view.GetControlInternal(m.GetResourceName());
+                    var currentView = view.GetControlInternal(member.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
-                    m.SetValue(view, currentView);
+                    member.SetValue(view, currentView);
                 }
                 catch (Exception ex)
                 {
                     throw new
-                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier", ex);
+                        MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
-            });
+            }
         }
 
         /// <summary>
@@ -124,22 +126,22 @@ namespace ReactiveUI.AndroidSupport
         {
             var members = fragment.GetWireUpMembers(resolveMembers);
 
-            members.ToList().ForEach(m =>
+            foreach (var member in members)
             {
                 try
                 {
                     // Find the android control with the same name from the view
-                    var view = inflatedView.GetControlInternal(m.GetResourceName());
+                    var view = inflatedView.GetControlInternal(member.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
-                    m.SetValue(fragment, view);
+                    member.SetValue(fragment, view);
                 }
                 catch (Exception ex)
                 {
                     throw new
-                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier", ex);
+                        MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
-            });
+            }
         }
 
         /// <summary>
@@ -151,22 +153,22 @@ namespace ReactiveUI.AndroidSupport
         {
             var members = activity.GetWireUpMembers(resolveMembers);
 
-            members.ToList().ForEach(m =>
+            foreach (var member in members)
             {
                 try
                 {
                     // Find the android control with the same name
-                    var view = activity.GetControlInternal(m.GetResourceName());
+                    var view = activity.GetControlInternal(member.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
-                    m.SetValue(activity, view);
+                    member.SetValue(activity, view);
                 }
                 catch (Exception ex)
                 {
                     throw new
-                        MissingFieldException("Failed to wire up the Property " + m.Name + " to a View in your layout with a corresponding identifier", ex);
+                        MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
-            });
+            }
         }
 
         private static View GetControlInternal(this View parent, string resourceName)
@@ -224,15 +226,15 @@ namespace ReactiveUI.AndroidSupport
             switch (resolveStrategy)
             {
                 default: // Implicit matches the Default.
-                    return members.Where(m => m.PropertyType.IsSubclassOf(typeof(View))
-                                              || m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
+                    return members.Where(member => member.PropertyType.IsSubclassOf(typeof(View))
+                                              || member.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 
                 case ReactiveUI.ControlFetcherMixin.ResolveStrategy.ExplicitOptIn:
-                    return members.Where(m => m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
+                    return members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 
                 case ReactiveUI.ControlFetcherMixin.ResolveStrategy.ExplicitOptOut:
-                    return members.Where(m => typeof(View).IsAssignableFrom(m.PropertyType)
-                                              && m.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
+                    return members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType)
+                                              && member.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
             }
         }
     }
