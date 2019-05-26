@@ -53,9 +53,27 @@ namespace ReactiveUI.AndroidSupport
         public override int ItemCount => _list.Count;
 
         /// <inheritdoc/>
+        public override int GetItemViewType(int position)
+        {
+            return GetItemViewType(position, GetViewModelByPosition(position));
+        }
+
+        /// <summary>
+        /// Determine the View that will be used/re-used in lists where
+        /// the list contains different cell designs.
+        /// </summary>
+        /// <param name="position">The position of the current view in the list.</param>
+        /// <param name="viewModel">The ViewModel associated with the current View.</param>
+        /// <returns>An ID to be used in OnCreateViewHolder.</returns>
+        public int GetItemViewType(int position, TViewModel viewModel)
+        {
+            return base.GetItemViewType(position);
+        }
+
+        /// <inheritdoc/>
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            ((IViewFor)holder).ViewModel = _list.Items.ElementAt(position);
+            ((IViewFor)holder).ViewModel = GetViewModelByPosition(position);
         }
 
         /// <inheritdoc/>
@@ -68,6 +86,11 @@ namespace ReactiveUI.AndroidSupport
             }
 
             base.Dispose(disposing);
+        }
+
+        private TViewModel GetViewModelByPosition(int position)
+        {
+            return position > _list.Count ? null : _list.Items.ElementAt(position);
         }
 
         private void UpdateBindings(Change<TViewModel> change)
