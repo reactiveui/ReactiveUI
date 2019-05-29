@@ -8,11 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Android.App;
+using Android.Support.V4.App;
+using Android.Support.V7.App;
 using Android.Views;
-
 using Java.Interop;
-using Fragment = Android.Support.V4.App.Fragment;
 
 namespace ReactiveUI.AndroidSupport
 {
@@ -37,7 +36,7 @@ namespace ReactiveUI.AndroidSupport
         /// <param name="activity">The activity.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>The return view.</returns>
-        public static T GetControl<T>(this Activity activity, [CallerMemberName] string propertyName = null)
+        public static T GetControl<T>(this AppCompatActivity activity, [CallerMemberName] string propertyName = null)
             where T : View => (T)GetCachedControl(propertyName, activity, () => activity
                                                                                 .FindViewById(GetResourceId(activity, propertyName))
                                                                                 .JavaCast<T>());
@@ -149,7 +148,7 @@ namespace ReactiveUI.AndroidSupport
         /// </summary>
         /// <param name="activity">The Activity.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Activity activity, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
+        public static void WireUpControls(this AppCompatActivity activity, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
         {
             var members = activity.GetWireUpMembers(resolveMembers);
 
@@ -179,12 +178,12 @@ namespace ReactiveUI.AndroidSupport
             return parent.FindViewById(id);
         }
 
-        private static View GetControlInternal(this Activity parent, string resourceName)
+        private static View GetControlInternal(this AppCompatActivity parent, string resourceName)
         {
             return parent.FindViewById(GetResourceId(parent, resourceName));
         }
 
-        private static int GetResourceId(Activity activity, string resourceName)
+        private static int GetResourceId(AppCompatActivity activity, string resourceName)
         {
             var res = activity.Resources;
             return res.GetIdentifier(resourceName, "id", activity.PackageName);
