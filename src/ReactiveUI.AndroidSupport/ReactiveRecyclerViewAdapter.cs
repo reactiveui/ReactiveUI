@@ -90,7 +90,7 @@ namespace ReactiveUI.AndroidSupport
 
         private TViewModel GetViewModelByPosition(int position)
         {
-            return position > _list.Count ? null : _list.Items.ElementAt(position);
+            return position >= _list.Count ? null : _list.Items.ElementAt(position);
         }
 
         private void UpdateBindings(Change<TViewModel> change)
