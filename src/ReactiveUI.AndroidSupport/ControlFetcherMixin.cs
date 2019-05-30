@@ -8,11 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-
 using Android.App;
 using Android.Views;
-
 using Java.Interop;
+using Fragment = Android.Support.V4.App.Fragment;
 
 namespace ReactiveUI.AndroidSupport
 {
