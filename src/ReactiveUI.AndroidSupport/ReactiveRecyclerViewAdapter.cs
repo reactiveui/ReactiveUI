@@ -65,7 +65,7 @@ namespace ReactiveUI.AndroidSupport
         /// <param name="position">The position of the current view in the list.</param>
         /// <param name="viewModel">The ViewModel associated with the current View.</param>
         /// <returns>An ID to be used in OnCreateViewHolder.</returns>
-        public int GetItemViewType(int position, TViewModel viewModel)
+        public virtual int GetItemViewType(int position, TViewModel viewModel)
         {
             return base.GetItemViewType(position);
         }
