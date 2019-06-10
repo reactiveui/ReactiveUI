@@ -57,10 +57,7 @@ var eventGenerators = new List<(string targetName, DirectoryPath destination)>
     ("android", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
     ("ios", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
     ("mac", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-    ("tizen4", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-    ("essentials", MakeAbsolute(Directory("src/ReactiveUI.Events.XamEssentials/"))),
     ("tvos", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-    ("xamforms", MakeAbsolute(Directory("src/ReactiveUI.Events.XamForms/"))),
 };
 
 if (IsRunningOnWindows())
