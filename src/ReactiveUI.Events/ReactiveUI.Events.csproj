@@ -39,7 +39,8 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
-    <Compile Include="Events_TIZEN.cs" Condition="Exists('Events_TIZEN.cs')" />
+    <PackageReference Include="Tizen.NET.API4" Version="4.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
