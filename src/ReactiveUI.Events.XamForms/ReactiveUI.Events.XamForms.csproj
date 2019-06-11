@@ -9,14 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="*.cs" />
-    <None Include="*.cs" />
-    <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.1.5" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="3.6.*" />
-    <Compile Include="Events_XAMFORMS.cs" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" />
   </ItemGroup>
 </Project>
