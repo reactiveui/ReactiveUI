@@ -47,6 +47,10 @@ namespace ReactiveUI.Uno
 
         private static void OnViewModelChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
+            if (dependencyObject is IDataContextProvider dcp)
+            {
+                dcp.DataContext = args.NewValue;
+            }
         }
     }
 }
