@@ -6,7 +6,7 @@
 
 const string project = "ReactiveUI";
 
-private const string PharmacistTool = "#tool dotnet:?package=Pharmacist";
+private const string PharmacistTool = "#tool dotnet:?package=Pharmacist&prerelease";
 
 //////////////////////////////////////////////////////////////////////
 // PROJECTS

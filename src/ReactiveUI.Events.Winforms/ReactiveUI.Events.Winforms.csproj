@@ -13,7 +13,6 @@
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
-    <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
     <PackageReference Include="Pharmacist.Common" Version="1.*" />
 </ItemGroup>
 
