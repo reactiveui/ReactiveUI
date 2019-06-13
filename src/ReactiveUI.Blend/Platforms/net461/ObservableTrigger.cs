@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Interactivity;
+using Microsoft.Xaml.Behaviors;
 
 namespace ReactiveUI.Blend
 {
