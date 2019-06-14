@@ -12,8 +12,7 @@
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
-    <Compile Include="SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="Pharmacist.Common" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">
@@ -23,7 +22,7 @@
     <SDKReference Include="WindowsMobile, Version=10.0.17763.0"> 
       <Name>Windows Mobile Extensions for the UWP</Name> 
     </SDKReference> 
-    <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
+    <Compile Include="Events_uwp.cs" Condition="Exists('Events_uwp.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
@@ -31,11 +30,12 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
+    <Reference Include="netstandard" />
+    <Compile Include="Events_mac.cs" Condition="Exists('Events_mac.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
+    <Compile Include="Events_android.cs" Condition="Exists('Events_android.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
@@ -43,11 +43,8 @@
     <PackageReference Include="Pharmacist.MsBuild" Version="1.*" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Reference Include="netstandard" />
-  </ItemGroup>
-
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
     <Reference Include="netstandard" />
+    <Compile Include="Events_tvos.cs" Condition="Exists('Events_tvos.cs')" />
   </ItemGroup>
 </Project>
