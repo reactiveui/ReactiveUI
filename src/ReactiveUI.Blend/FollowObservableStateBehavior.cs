@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Controls;
 #else
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interactivity;
+using Microsoft.Xaml.Behaviors;
 #endif
 
 #pragma warning disable SA1201 // A field should not follow a property - macro if statements make this hard

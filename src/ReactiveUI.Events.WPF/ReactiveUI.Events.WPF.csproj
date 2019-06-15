@@ -12,8 +12,7 @@
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
-    <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="Pharmacist.Common" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup>
