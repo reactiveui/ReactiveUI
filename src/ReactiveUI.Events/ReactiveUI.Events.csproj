@@ -40,7 +40,7 @@
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
     <PackageReference Include="Tizen.NET.API4" Version="4.*" />
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
