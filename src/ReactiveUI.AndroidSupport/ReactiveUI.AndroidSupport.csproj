@@ -5,6 +5,10 @@
     <Description>ReactiveUI extensions for the Android Support Library</Description>
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);RXUI_ANDROID_SUPPORT</DefineConstants>
+  </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="27.0.*" />
