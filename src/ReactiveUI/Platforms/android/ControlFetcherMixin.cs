@@ -4,13 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Android.App;
 using Android.Views;
-using Java.Interop;
 
 namespace ReactiveUI
 {
@@ -21,66 +21,56 @@ namespace ReactiveUI
     /// </summary>
    public static partial class ControlFetcherMixin
     {
-        private static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache =
-            new ConditionalWeakTable<object, Dictionary<string, View>>();
+        private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds
+            = new ConcurrentDictionary<Assembly, Dictionary<string, int>>();
 
-        private static readonly MethodInfo getControlActivity;
-        private static readonly MethodInfo getControlView;
+        private static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache
+            = new ConditionalWeakTable<object, Dictionary<string, View>>();
 
         static ControlFetcherMixin()
         {
-            var type = typeof(ControlFetcherMixin);
-            getControlActivity = type.GetMethod("GetControl", new[] { typeof(Activity), typeof(string) });
-            getControlView = type.GetMethod("GetControl", new[] { typeof(View), typeof(string) });
         }
 
         /// <summary>
         /// Gets the control from an activity.
         /// </summary>
-        /// <typeparam name="T">The control type.</typeparam>
         /// <param name="activity">The activity.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>The return view.</returns>
-        public static T GetControl<T>(this Activity activity, [CallerMemberName] string propertyName = null)
-            where T : View => (T)GetCachedControl(propertyName, activity, () => activity
-                                                                                .FindViewById(GetResourceId(activity, propertyName))
-                                                                                .JavaCast<T>());
+        public static View GetControl(this Activity activity, [CallerMemberName] string propertyName = null)
+            => GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)));
 
         /// <summary>
-        /// Gets the control from an activity.
+        /// Gets the control from a view.
         /// </summary>
-        /// <typeparam name="T">The control type.</typeparam>
         /// <param name="view">The view.</param>
         /// <param name="propertyName">The property.</param>
         /// <returns>The return view.</returns>
-        public static T GetControl<T>(this View view, [CallerMemberName] string propertyName = null)
-            where T : View => (T)GetCachedControl(propertyName, view, () => view
-                                                                            .FindViewById(GetResourceId(view, propertyName))
-                                                                            .JavaCast<T>());
+        public static View GetControl(this View view, [CallerMemberName] string propertyName = null)
+            => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(view.GetType().Assembly, propertyName)));
 
         /// <summary>
-        /// Gets the control from an activity.
+        /// Gets the control from a fragment.
         /// </summary>
-        /// <typeparam name="T">The control type.</typeparam>
         /// <param name="fragment">The fragment.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>The return view.</returns>
-        public static T GetControl<T>(this Fragment fragment, [CallerMemberName] string propertyName = null)
-            where T : View => GetControl<T>(fragment.View, propertyName);
+        public static View GetControl(this Fragment fragment, [CallerMemberName] string propertyName = null)
+            => GetControl(fragment.View, propertyName);
 
         /// <summary>
         /// Wires a control to a property.
         /// </summary>
         /// <param name="layoutHost">The layout view host.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this ILayoutViewHost layoutHost, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
+        public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = layoutHost.GetWireUpMembers(resolveMembers).ToList();
             foreach (var member in members)
             {
                 try
                 {
-                    var view = layoutHost.View.GetControlInternal(member.PropertyType, member.GetResourceName());
+                    var view = layoutHost.View.GetControl(member.GetResourceName());
                     member.SetValue(layoutHost, view);
                 }
                 catch (Exception ex)
@@ -96,7 +86,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="view">The view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this View view, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
+        public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = view.GetWireUpMembers(resolveMembers);
 
@@ -105,7 +95,7 @@ namespace ReactiveUI
                 try
                 {
                     // Find the android control with the same name
-                    var currentView = view.GetControlInternal(member.PropertyType, member.GetResourceName());
+                    var currentView = view.GetControl(member.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     member.SetValue(view, currentView);
@@ -118,6 +108,7 @@ namespace ReactiveUI
             }
         }
 
+#if RXUI_ANDROID_SUPPORT
         /// <summary>
         /// Wires a control to a property.
         /// This should be called in the Fragment's OnCreateView, with the newly inflated layout.
@@ -125,8 +116,7 @@ namespace ReactiveUI
         /// <param name="fragment">The fragment.</param>
         /// <param name="inflatedView">The inflated view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Fragment fragment, View inflatedView, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers =
-                                              ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
+        public static void WireUpControls(this Android.Support.V4.App.Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = fragment.GetWireUpMembers(resolveMembers);
 
@@ -135,7 +125,7 @@ namespace ReactiveUI
                 try
                 {
                     // Find the android control with the same name from the view
-                    var view = inflatedView.GetControlInternal(member.PropertyType, member.GetResourceName());
+                    var view = inflatedView.GetControl(member.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     member.SetValue(fragment, view);
@@ -147,13 +137,43 @@ namespace ReactiveUI
                 }
             }
         }
+#else
+        /// <summary>
+        /// Wires a control to a property.
+        /// This should be called in the Fragment's OnCreateView, with the newly inflated layout.
+        /// </summary>
+        /// <param name="fragment">The fragment.</param>
+        /// <param name="inflatedView">The inflated view.</param>
+        /// <param name="resolveMembers">The resolve members.</param>
+        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        {
+            var members = fragment.GetWireUpMembers(resolveMembers);
+
+            foreach (var member in members)
+            {
+                try
+                {
+                    // Find the android control with the same name from the view
+                    var view = inflatedView.GetControl(member.GetResourceName());
+
+                    // Set the activity field's value to the view with that identifier
+                    member.SetValue(fragment, view);
+                }
+                catch (Exception ex)
+                {
+                    throw new
+                        MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
+                }
+            }
+        }
+#endif
 
         /// <summary>
         /// Wires a control to a property.
         /// </summary>
         /// <param name="activity">The Activity.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Activity activity, ReactiveUI.ControlFetcherMixin.ResolveStrategy resolveMembers = ReactiveUI.ControlFetcherMixin.ResolveStrategy.Implicit)
+        public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = activity.GetWireUpMembers(resolveMembers);
 
@@ -162,7 +182,7 @@ namespace ReactiveUI
                 try
                 {
                     // Find the android control with the same name
-                    var view = activity.GetControlInternal(member.PropertyType, member.GetResourceName());
+                    var view = activity.GetControl(member.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     member.SetValue(activity, view);
@@ -173,30 +193,6 @@ namespace ReactiveUI
                         MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
             }
-        }
-
-        private static View GetControlInternal(this View parent, Type viewType, string name)
-        {
-            var memberInfo = getControlView.MakeGenericMethod(new[] { viewType });
-            return (View)memberInfo.Invoke(null, new object[] { parent, name });
-        }
-
-        private static View GetControlInternal(this Activity parent, Type viewType, string name)
-        {
-            var memberInfo = getControlActivity.MakeGenericMethod(new[] { viewType });
-            return (View)memberInfo.Invoke(null, new object[] { parent, name });
-        }
-
-        private static int GetResourceId(Activity activity, string resourceName)
-        {
-            var res = activity.Resources;
-            return res.GetIdentifier(resourceName, "id", activity.PackageName);
-        }
-
-        private static int GetResourceId(View view, string resourceName)
-        {
-            var res = view.Context.Resources;
-            return res.GetIdentifier(resourceName, "id", view.Context.PackageName);
         }
 
         private static View GetCachedControl(string propertyName, object rootView, Func<View> fetchControlFromView)
@@ -221,8 +217,7 @@ namespace ReactiveUI
             return resourceNameOverride ?? member.Name;
         }
 
-        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ReactiveUI.ControlFetcherMixin.ResolveStrategy
-                                                                      resolveStrategy)
+        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
         {
             var members = @this.GetType().GetRuntimeProperties();
 
@@ -232,13 +227,29 @@ namespace ReactiveUI
                     return members.Where(member => member.PropertyType.IsSubclassOf(typeof(View))
                                               || member.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 
-                case ReactiveUI.ControlFetcherMixin.ResolveStrategy.ExplicitOptIn:
+                case ResolveStrategy.ExplicitOptIn:
                     return members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 
-                case ReactiveUI.ControlFetcherMixin.ResolveStrategy.ExplicitOptOut:
+                case ResolveStrategy.ExplicitOptOut:
                     return members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType)
                                               && member.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
             }
+        }
+
+        private static int GetControlIdByName(Assembly assembly, string name)
+        {
+            var ids = _controlIds.GetOrAdd(
+                assembly,
+                currentAssembly =>
+                {
+                    var resources = currentAssembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
+
+                    return resources.GetNestedType("Id").GetFields()
+                        .Where(x => x.FieldType == typeof(int))
+                        .ToDictionary(k => k.Name, v => (int)v.GetRawConstantValue(), StringComparer.InvariantCultureIgnoreCase);
+                });
+
+            return ids[name];
         }
     }
 }
