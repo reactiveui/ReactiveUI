@@ -11,16 +11,11 @@
     <DefineConstants>HAS_UNO</DefineConstants>
   </PropertyGroup>  
   <ItemGroup>
+    <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
+
     <Compile Include="..\ReactiveUI\Interfaces\IPlatformOperations.cs" Link="IPlatformOperations.cs" />
     <Compile Include="..\ReactiveUI\Observable.cs" Link="Observable.cs" />
     <Compile Include="..\ReactiveUI\Platforms\uap\TransitioningContentControl.Empty.cs" Link="TransitioningContentControl.Empty.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\AutoDataTemplateBindingHook.cs" Link="AutoDataTemplateBindingHook.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\BooleanToVisibilityHint.cs" Link="BooleanToVisibilityHint.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\BooleanToVisibilityTypeConverter.cs" Link="BooleanToVisibilityTypeConverter.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\PlatformOperations.cs" Link="PlatformOperations.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\ReactiveUserControl.cs" Link="ReactiveUserControl.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\RoutedViewHost.cs" Link="RoutedViewHost.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\ViewModelViewHost.cs" Link="ViewModelViewHost.cs" />
   </ItemGroup>
 
   <ItemGroup>
