@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -25,6 +26,7 @@ namespace ReactiveUI
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
+    [SuppressMessage("Design", "CA1010", Justification = "Not required")]
     public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 #if !HAS_UNO
 #pragma warning disable SA1001 // Commas should be spaced correctly
