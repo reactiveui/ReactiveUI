@@ -149,5 +149,17 @@ namespace ReactiveUI
 
             _activated.OnNext(Unit.Default);
         }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _activated?.Dispose();
+                _deactivated?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

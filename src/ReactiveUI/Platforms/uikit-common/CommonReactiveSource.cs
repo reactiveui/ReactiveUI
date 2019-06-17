@@ -128,7 +128,8 @@ namespace ReactiveUI
 
         public void Dispose()
         {
-            _mainDisposables.Dispose();
+            _mainDisposables?.Dispose();
+            _sectionInfoDisposable?.Dispose();
         }
 
         private static IEnumerable<Update> GetUpdatesForEvent(PendingChange pendingChange)

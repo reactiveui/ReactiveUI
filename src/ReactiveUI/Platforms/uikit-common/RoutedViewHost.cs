@@ -157,6 +157,17 @@ namespace ReactiveUI
             return base.PopViewController(animated);
         }
 
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _titleUpdater?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
         private NSViewController ResolveView(IRoutableViewModel viewModel, string contract)
         {
             if (viewModel == null)

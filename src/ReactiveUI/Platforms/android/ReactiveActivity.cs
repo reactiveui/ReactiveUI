@@ -217,5 +217,18 @@ namespace ReactiveUI
             base.OnActivityResult(requestCode, resultCode, data);
             _activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
         }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _activated?.Dispose();
+                _deactivated?.Dispose();
+                _activityResult?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

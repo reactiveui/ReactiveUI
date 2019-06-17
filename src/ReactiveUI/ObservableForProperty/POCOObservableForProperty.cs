@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
@@ -18,7 +19,7 @@ namespace ReactiveUI
     /// </summary>
     public class POCOObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly Dictionary<(Type, string), bool> hasWarned = new Dictionary<(Type, string), bool>();
+        private static readonly IDictionary<(Type, string), bool> hasWarned = new ConcurrentDictionary<(Type, string), bool>();
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
@@ -27,10 +28,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             var type = sender.GetType();
-            if (!hasWarned.ContainsKey((type, propertyName)))
+            if (!hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)
             {
                 this.Log().Warn($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
                 hasWarned[(type, propertyName)] = true;

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid81;tizen40</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299</TargetFrameworks>    
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.17763</TargetFrameworks>    
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
@@ -12,18 +12,17 @@
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
-    <Compile Include="SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="Pharmacist.Common" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">
-    <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
-    <SDKReference Include="WindowsDesktop, Version=10.0.16299.0">
+    <SDKReference Include="WindowsDesktop, Version=10.0.17763.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>
-    <SDKReference Include="WindowsMobile, Version=10.0.16299.0"> 
+    <SDKReference Include="WindowsMobile, Version=10.0.17763.0"> 
       <Name>Windows Mobile Extensions for the UWP</Name> 
     </SDKReference> 
+    <Compile Include="Events_uwp.cs" Condition="Exists('Events_uwp.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
@@ -31,22 +30,21 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
+    <Reference Include="netstandard" />
+    <Compile Include="Events_mac.cs" Condition="Exists('Events_mac.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
+    <Compile Include="Events_android.cs" Condition="Exists('Events_android.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
-    <Compile Include="Events_TIZEN.cs" Condition="Exists('Events_TIZEN.cs')" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Reference Include="netstandard" />
+    <PackageReference Include="Tizen.NET.API4" Version="4.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
     <Reference Include="netstandard" />
+    <Compile Include="Events_tvos.cs" Condition="Exists('Events_tvos.cs')" />
   </ItemGroup>
 </Project>

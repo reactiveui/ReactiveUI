@@ -26,6 +26,9 @@
 
 <a href="https://reactiveui.net/docs/getting-started/">🔨 Get Started</a> <a href="https://reactiveui.net/docs/getting-started/installation/">🛍 Install Packages</a> <a href="https://reactiveui.net/docs/resources/videos">🎞 Watch Videos</a> <a href="https://reactiveui.net/docs/resources/samples/">🎓 View Samples</a> <a href="https://reactiveui.net/slack">🎤 Discuss ReactiveUI</a>
 
+<h2>Book</h2>
+There has been an excellent <a href="https://kent-boogaart.com/you-i-and-reactiveui/">book</a> written by our Alumni maintainer Kent Boogart.
+ 
 <h2>Introduction to Reactive Programming</h2>
 
 Long ago, when computer programming first came to be, machines had to be programmed quite manually. If the technician entered the correct sequence of machine codes in the correct order, then the resulting program behavior would satisfy the business requirements. Instead of telling a computer how to do its job, which error-prone and relies too heavily on the infallibility of the programmer, why don't we just tell it what it's job is and let it figure the rest out?
@@ -302,12 +305,6 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
         <p>Sydney, Australia</p>
       </td>
       <td align="center" valign="top">
-        <img width="100" height="100" src="https://github.com/kentcb.png?s=150">
-        <br>
-        <a href="https://github.com/kentcb">Kent Boogaart</a>
-        <p>Adelaide, Australia</p>
-      </td>
-      <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/glennawatson.png?s=150">
         <br>
         <a href="https://github.com/glennawatson">Glenn Watson</a>
@@ -343,15 +340,21 @@ The following have been core team members in the past.
   <tbody>
     <tr>
       <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/kentcb.png?s=150">
+        <br>
+        <a href="https://github.com/kentcb">Kent Boogaart</a>
+        <p>Brisbane, Australia</p>
+      </td>
+      <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/olevett.png?s=150">
         <br>
         <a href="https://github.com/olevett">Olly Levett</a>
         <p>London, United Kingdom</p>
       </td>
       <td align="center" valign="top">
-        <img width="100" height="100" src="https://github.com/paulcbetts.png?s=150">
+        <img width="100" height="100" src="https://github.com/anaisbetts.png?s=150">
         <br>
-        <a href="https://github.com/paulcbetts">Paul Betts</a>
+        <a href="https://github.com/anaisbetts">Anaïs Betts</a>
         <p>San Francisco, USA</p>
       </td>
       <td align="center" valign="top">

@@ -147,6 +147,18 @@ namespace ReactiveUI
             _deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
         }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _activated?.Dispose();
+                _deactivated?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 
     /// <summary>

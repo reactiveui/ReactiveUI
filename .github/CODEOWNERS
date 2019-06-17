@@ -25,7 +25,7 @@ src/ReactiveUI/Platforms/ios/*             @reactiveui/ios-team
 src/ReactiveUI/Platforms/mac/*             @reactiveui/mac-team
 src/ReactiveUI/Platforms/net461/*          @reactiveui/wpf-team @reactiveui/winforms-team
 src/ReactiveUI/Platforms/netcoreapp2.0/*   @reactiveui/dotnetcore-team @reactiveui/webassembly-team
-src/ReactiveUI/Platforms/uap10.0.16299/*   @reactiveui/uwp-team
+src/ReactiveUI/Platforms/uap/*   @reactiveui/uwp-team
 src/ReactiveUI/Platforms/tizen/*           @reactiveui/tizen-team
 src/ReactiveUI/Platforms/tvos/*            @reactiveui/tvos-team
 src/ReactiveUI/Platforms/windows-common/*  @reactiveui/wpf-team @reactiveui/winforms-team @reactiveui/uwp-team
