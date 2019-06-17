@@ -11,7 +11,7 @@ namespace ReactiveUI
     /// <summary>
     /// A control with a single transition.
     /// </summary>
-    [SuppressMessage("Design", "CA1010", Justification = "Not required")]
+    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
     public class TransitioningContentControl : ContentControl
     {
     }
