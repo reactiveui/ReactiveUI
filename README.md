@@ -27,7 +27,7 @@
 <a href="https://reactiveui.net/docs/getting-started/">🔨 Get Started</a> <a href="https://reactiveui.net/docs/getting-started/installation/">🛍 Install Packages</a> <a href="https://reactiveui.net/docs/resources/videos">🎞 Watch Videos</a> <a href="https://reactiveui.net/docs/resources/samples/">🎓 View Samples</a> <a href="https://reactiveui.net/slack">🎤 Discuss ReactiveUI</a>
 
 <h2>Book</h2>
-There has been a excellent <a href="https://kent-boogaart.com/you-i-and-reactiveui/">book</a> written by our Alumni maintainer Kent Boogart.
+There has been an excellent <a href="https://kent-boogaart.com/you-i-and-reactiveui/">book</a> written by our Alumni maintainer Kent Boogart.
  
 <h2>Introduction to Reactive Programming</h2>
 
@@ -343,7 +343,7 @@ The following have been core team members in the past.
         <img width="100" height="100" src="https://github.com/kentcb.png?s=150">
         <br>
         <a href="https://github.com/kentcb">Kent Boogaart</a>
-        <p>Adelaide, Australia</p>
+        <p>Brisbane, Australia</p>
       </td>
       <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/olevett.png?s=150">
