@@ -19,7 +19,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public string GetOrientation()
         {
-#if NETFX_CORE
+#if !NETFX_CORE
             return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
 #else
             return null;
