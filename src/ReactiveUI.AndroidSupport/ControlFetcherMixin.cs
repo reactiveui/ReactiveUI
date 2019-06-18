@@ -17,10 +17,6 @@ namespace ReactiveUI.AndroidSupport
     /// </summary>
    public static class ControlFetcherMixin
     {
-        static ControlFetcherMixin()
-        {
-        }
-
         /// <summary>
         /// Wires a control to a property.
         /// This should be called in the Fragment's OnCreateView, with the newly inflated layout.

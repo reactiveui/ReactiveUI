@@ -27,10 +27,6 @@ namespace ReactiveUI
         private static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache
             = new ConditionalWeakTable<object, Dictionary<string, View>>();
 
-        static ControlFetcherMixin()
-        {
-        }
-
         /// <summary>
         /// Gets the control from an activity.
         /// </summary>
