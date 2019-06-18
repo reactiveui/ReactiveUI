@@ -44,19 +44,11 @@ namespace ReactiveUI
         /// Gets the control from a view.
         /// </summary>
         /// <param name="view">The view.</param>
+        /// <param name="assembly">The assembly containing the user-defined view.</param>
         /// <param name="propertyName">The property.</param>
         /// <returns>The return view.</returns>
-        public static View GetControl(this View view, [CallerMemberName] string propertyName = null)
-            => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(view.GetType().Assembly, propertyName)));
-
-        /// <summary>
-        /// Gets the control from a fragment.
-        /// </summary>
-        /// <param name="fragment">The fragment.</param>
-        /// <param name="propertyName">The property name.</param>
-        /// <returns>The return view.</returns>
-        public static View GetControl(this Fragment fragment, [CallerMemberName] string propertyName = null)
-            => GetControl(fragment.View, propertyName);
+        public static View GetControl(this View view, Assembly assembly, [CallerMemberName] string propertyName = null)
+            => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(assembly, propertyName)));
 
         /// <summary>
         /// Wires a control to a property.
@@ -70,7 +62,7 @@ namespace ReactiveUI
             {
                 try
                 {
-                    var view = layoutHost.View.GetControl(member.GetResourceName());
+                    var view = layoutHost.View.GetControl(layoutHost.GetType().Assembly, member.GetResourceName());
                     member.SetValue(layoutHost, view);
                 }
                 catch (Exception ex)
@@ -95,7 +87,7 @@ namespace ReactiveUI
                 try
                 {
                     // Find the android control with the same name
-                    var currentView = view.GetControl(member.GetResourceName());
+                    var currentView = view.GetControl(view.GetType().Assembly, member.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     member.SetValue(view, currentView);
@@ -108,36 +100,6 @@ namespace ReactiveUI
             }
         }
 
-#if RXUI_ANDROID_SUPPORT
-        /// <summary>
-        /// Wires a control to a property.
-        /// This should be called in the Fragment's OnCreateView, with the newly inflated layout.
-        /// </summary>
-        /// <param name="fragment">The fragment.</param>
-        /// <param name="inflatedView">The inflated view.</param>
-        /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Android.Support.V4.App.Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
-        {
-            var members = fragment.GetWireUpMembers(resolveMembers);
-
-            foreach (var member in members)
-            {
-                try
-                {
-                    // Find the android control with the same name from the view
-                    var view = inflatedView.GetControl(member.GetResourceName());
-
-                    // Set the activity field's value to the view with that identifier
-                    member.SetValue(fragment, view);
-                }
-                catch (Exception ex)
-                {
-                    throw new
-                        MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
-                }
-            }
-        }
-#else
         /// <summary>
         /// Wires a control to a property.
         /// This should be called in the Fragment's OnCreateView, with the newly inflated layout.
@@ -154,7 +116,7 @@ namespace ReactiveUI
                 try
                 {
                     // Find the android control with the same name from the view
-                    var view = inflatedView.GetControl(member.GetResourceName());
+                    var view = inflatedView.GetControl(fragment.GetType().Assembly, member.GetResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     member.SetValue(fragment, view);
@@ -166,7 +128,6 @@ namespace ReactiveUI
                 }
             }
         }
-#endif
 
         /// <summary>
         /// Wires a control to a property.
@@ -195,29 +156,7 @@ namespace ReactiveUI
             }
         }
 
-        private static View GetCachedControl(string propertyName, object rootView, Func<View> fetchControlFromView)
-        {
-            View ret;
-            var ourViewCache = viewCache.GetOrCreateValue(rootView);
-
-            if (ourViewCache.TryGetValue(propertyName, out ret))
-            {
-                return ret;
-            }
-
-            ret = fetchControlFromView();
-
-            ourViewCache.Add(propertyName, ret);
-            return ret;
-        }
-
-        private static string GetResourceName(this PropertyInfo member)
-        {
-            var resourceNameOverride = member.GetCustomAttribute<WireUpResourceAttribute>()?.ResourceNameOverride;
-            return resourceNameOverride ?? member.Name;
-        }
-
-        private static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
+        internal static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
         {
             var members = @this.GetType().GetRuntimeProperties();
 
@@ -234,6 +173,28 @@ namespace ReactiveUI
                     return members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType)
                                               && member.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
             }
+        }
+
+        internal static string GetResourceName(this PropertyInfo member)
+        {
+            var resourceNameOverride = member.GetCustomAttribute<WireUpResourceAttribute>()?.ResourceNameOverride;
+            return resourceNameOverride ?? member.Name;
+        }
+
+        private static View GetCachedControl(string propertyName, object rootView, Func<View> fetchControlFromView)
+        {
+            View ret;
+            var ourViewCache = viewCache.GetOrCreateValue(rootView);
+
+            if (ourViewCache.TryGetValue(propertyName, out ret))
+            {
+                return ret;
+            }
+
+            ret = fetchControlFromView();
+
+            ourViewCache.Add(propertyName, ret);
+            return ret;
         }
 
         private static int GetControlIdByName(Assembly assembly, string name)
