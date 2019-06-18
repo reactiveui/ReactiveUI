@@ -5,6 +5,7 @@
 
 namespace ReactiveUI
 {
+    using System.Diagnostics.CodeAnalysis;
 #if NETFX_CORE || HAS_UNO
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
@@ -76,6 +77,7 @@ namespace ReactiveUI
     /// <typeparam name="TViewModel">
     /// The type of the view model backing the view.
     /// </typeparam>
+    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
     public abstract class ReactiveUserControl<TViewModel> :
         UserControl, IViewFor<TViewModel>
         where TViewModel : class

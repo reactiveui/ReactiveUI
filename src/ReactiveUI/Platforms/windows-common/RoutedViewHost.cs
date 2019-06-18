@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
@@ -25,6 +26,7 @@ namespace ReactiveUI
     /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
+    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
     public class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
     {
         /// <summary>

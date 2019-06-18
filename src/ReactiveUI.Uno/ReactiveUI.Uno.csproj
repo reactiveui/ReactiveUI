@@ -2,9 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
-    <Description>Uno-Platform specific extensions to ReactiveUI</Description>
-  </PropertyGroup>  
-  <PropertyGroup>
+    <Description>Uno Platform specific extensions for ReactiveUI</Description>
     <DefineConstants>HAS_UNO</DefineConstants>
   </PropertyGroup>  
   <ItemGroup>

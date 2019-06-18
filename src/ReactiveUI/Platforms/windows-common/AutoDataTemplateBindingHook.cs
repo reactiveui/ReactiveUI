@@ -31,9 +31,10 @@ namespace ReactiveUI
         public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new Lazy<DataTemplate>(() =>
         {
 #if NETFX_CORE || HAS_UNO
-            const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>" +
-                "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
-            "</DataTemplate>";
+            const string template =
+@"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>
+    <xaml:ViewModelViewHost ViewModel=""{Binding}"" VerticalContentAlignment=""Stretch"" HorizontalContentAlignment=""Stretch"" IsTabStop=""False"" />
+</DataTemplate>";
             return (DataTemplate)XamlReader.Load(template);
 #else
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
