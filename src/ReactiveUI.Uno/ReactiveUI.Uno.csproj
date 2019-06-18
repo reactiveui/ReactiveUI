@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageReference Include="Rx.Uno.Wasm" Version="0.1.0" />
+    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.3" />
   </ItemGroup>                 
   
 </Project>
