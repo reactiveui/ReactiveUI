@@ -4,7 +4,7 @@
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.17763</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <Title></Title>
-    <Description>Uno-Platform specific extensions for ReactiveUI</Description>
+    <Description>Uno Platform specific extensions for ReactiveUI</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
