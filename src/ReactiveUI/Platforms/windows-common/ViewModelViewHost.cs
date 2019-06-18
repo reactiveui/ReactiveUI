@@ -11,7 +11,7 @@ using System.Reactive.Subjects;
 using System.Windows;
 using Splat;
 
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
@@ -25,7 +25,12 @@ namespace ReactiveUI
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger, IDisposable
+    public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
+#if !HAS_UNO
+#pragma warning disable SA1001 // Commas should be spaced correctly
+        , IDisposable
+#pragma warning restore SA1001 // Commas should be spaced correctly
+#endif
     {
         /// <summary>
         /// The default content dependency property.

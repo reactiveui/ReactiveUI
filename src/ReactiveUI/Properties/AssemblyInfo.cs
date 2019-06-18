@@ -10,3 +10,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: InternalsVisibleTo("ReactiveUI.XamForms")]
 [assembly: InternalsVisibleTo("ReactiveUI.AndroidSupport")]
+[assembly: InternalsVisibleTo("ReactiveUI.Uno")]

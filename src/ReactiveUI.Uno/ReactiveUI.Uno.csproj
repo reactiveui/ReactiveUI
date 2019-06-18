@@ -3,7 +3,12 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <Description>Uno-Platform specific extensions to ReactiveUI</Description>
-  </PropertyGroup>
+  </PropertyGroup>  
+  <PropertyGroup>
+    <DefineConstants>HAS_UNO</DefineConstants>
+  </PropertyGroup>  
+  <ItemGroup>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Uno.UI" Version="1.44.1" />
@@ -11,7 +16,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.3" />  
   </ItemGroup>
 
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.3" />  
+    <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
+    <Compile Include="..\ReactiveUI\Platforms\uap\TransitioningContentControl.Empty.cs" Link="TransitioningContentControl.Empty.cs" />
+  </ItemGroup>
 </Project>

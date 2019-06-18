@@ -11,7 +11,7 @@ using System.Windows;
 using ReactiveUI;
 using Splat;
 
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
