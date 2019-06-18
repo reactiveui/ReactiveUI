@@ -6,8 +6,8 @@
     <Title></Title>
     <Description>Uno-Platform specific extensions for ReactiveUI</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-  </PropertyGroup>  
-  <PropertyGroup>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <DefineConstants>HAS_UNO</DefineConstants>
   </PropertyGroup>  
   <ItemGroup>
