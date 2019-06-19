@@ -62,6 +62,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   | None                                    |
+| Uno               | [ReactiveUI.Uno][UnoDoc]            |                      | None                                    |
 | Any               | [ReactiveUI.Validation][ValidationsDocs]    | [![ValidationsBadge]][ValidationsCore] | None
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
