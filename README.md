@@ -79,6 +79,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [TestDoc]: https://reactiveui.net/docs/handbook/testing/
 
 [UniDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
+[UnoDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
 
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
 [WpfEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WPF/
