@@ -17,7 +17,7 @@
 <br>
 <br>
 <a href="https://github.com/reactiveui/reactiveui">
-  <img width="160" heigth="160" src="https://github.com/reactiveui/styleguide/blob/master/logo/logo.svg">
+  <img width="160" heigth="160" src="https://raw.githubusercontent.com/reactiveui/styleguide/master/logo/main.png">
 </a>
 <br>
 <h1>What is ReactiveUI?</h1>
