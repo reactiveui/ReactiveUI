@@ -10,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />    
     <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
+    <PackageReference Include="System.Reactive" Version=" 4.2.0-preview.566" />
   </ItemGroup>
 
   <ItemGroup>

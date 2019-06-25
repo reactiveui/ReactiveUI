@@ -5,7 +5,6 @@
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for Winforms UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>ReactiveUI.Events.Winforms</PackageId>
-    <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>  
@@ -13,15 +12,16 @@
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
-    <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
+    <PackageReference Include="Pharmacist.Common" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
-    <Compile Include="Events_NetCoreAppWinforms.cs" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" />
+    <PackageReference Include="Microsoft.WindowsDesktop.App" Version="3.0.0-preview.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
+    <Compile Include="Events_Winforms.cs" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
@@ -30,6 +30,5 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.ServiceProcess" />
-    <Compile Include="Events_Winforms.cs" />
   </ItemGroup>
 </Project>

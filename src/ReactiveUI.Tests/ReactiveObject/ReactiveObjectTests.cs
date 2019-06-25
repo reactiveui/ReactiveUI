@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using DynamicData;
 using Xunit;
 
@@ -195,6 +196,19 @@ namespace ReactiveUI.Tests
 
             output.AssertAreEqual(output_changing);
             results.AssertAreEqual(output);
+        }
+
+        [Fact]
+        public void ReactiveObjectShouldRethrowException()
+        {
+            var fixture = new TestFixture();
+            var observable = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Skip(1);
+            observable.Subscribe(x => throw new Exception("This is a test."));
+
+            var result = Record.Exception(() => fixture.IsOnlyOneWord = "Two Words");
+
+            Assert.IsType<Exception>(result);
+            Assert.Equal("This is a test.", result.Message);
         }
     }
 }

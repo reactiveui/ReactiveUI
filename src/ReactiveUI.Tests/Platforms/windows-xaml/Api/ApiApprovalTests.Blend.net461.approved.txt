@@ -1,7 +1,7 @@
 [assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
 namespace ReactiveUI.Blend
 {
-    public class FollowObservableStateBehavior : System.Windows.Interactivity.Behavior<System.Windows.FrameworkElement>
+    public class FollowObservableStateBehavior : Microsoft.Xaml.Behaviors.Behavior<System.Windows.FrameworkElement>
     {
         public static readonly System.Windows.DependencyProperty StateObservableProperty;
         public static readonly System.Windows.DependencyProperty TargetObjectProperty;
@@ -12,7 +12,7 @@ namespace ReactiveUI.Blend
         protected override void OnDetaching() { }
         protected static void OnStateObservableChanged(System.Windows.DependencyObject sender, System.Windows.DependencyPropertyChangedEventArgs e) { }
     }
-    public class ObservableTrigger : System.Windows.Interactivity.TriggerBase<System.Windows.FrameworkElement>
+    public class ObservableTrigger : Microsoft.Xaml.Behaviors.TriggerBase<System.Windows.FrameworkElement>
     {
         public static readonly System.Windows.DependencyProperty ObservableProperty;
         public ObservableTrigger() { }

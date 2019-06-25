@@ -4,28 +4,27 @@
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <Description>Provides Observable-based events API for WPF UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>ReactiveUI.Events.WPF</PackageId>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWpf>true</UseWpf>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>  
 
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
-    <Compile Include="../ReactiveUI.Events/SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
+    <PackageReference Include="Pharmacist.Common" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
-    <Compile Include="Events_NetCoreAppWPF.cs" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" />
+    <PackageReference Include="Microsoft.WindowsDesktop.App" Version="3.0.0-preview*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
+    <Compile Include="Events_WPF.cs" />
     <Reference Include="System.Xaml" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="WindowsBase" />
-    <Compile Include="Events_WPF.cs" />
   </ItemGroup>
 </Project>

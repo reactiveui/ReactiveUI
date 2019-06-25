@@ -6,6 +6,8 @@
 
 const string project = "ReactiveUI";
 
+private const string PharmacistTool = "#tool dotnet:?package=Pharmacist&prerelease";
+
 //////////////////////////////////////////////////////////////////////
 // PROJECTS
 //////////////////////////////////////////////////////////////////////
@@ -52,26 +54,18 @@ if (IsRunningOnWindows())
     });
 }
 
-var eventGenerators = new List<(string targetName, DirectoryPath destination)>
+var eventGenerators = new List<(string[] targetNames, DirectoryPath destination)>
 {
-    ("android", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-    ("ios", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-    ("mac", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-    ("tizen4", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-    ("essentials", MakeAbsolute(Directory("src/ReactiveUI.Events.XamEssentials/"))),
-    ("tvos", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-    ("xamforms", MakeAbsolute(Directory("src/ReactiveUI.Events.XamForms/"))),
+    (new[] { "android", "ios", "mac", "tvos" }, MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
+    (new[] { "wpf" }, MakeAbsolute(Directory("src/ReactiveUI.Events.WPF/"))),
+    (new[] { "winforms" }, MakeAbsolute(Directory("src/ReactiveUI.Events.Winforms/"))),
 };
 
 if (IsRunningOnWindows())
 {
     eventGenerators.AddRange(new []
     {
-        ("wpf", MakeAbsolute(Directory("src/ReactiveUI.Events.WPF/"))),
-        ("uwp", MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
-        ("winforms", MakeAbsolute(Directory("src/ReactiveUI.Events.Winforms/"))),
-        ("NetCoreAppWPF", MakeAbsolute(Directory("src/ReactiveUI.Events.WPF/"))),
-        ("NetCoreAppWinforms", MakeAbsolute(Directory("src/ReactiveUI.Events.Winforms/"))),
+        (new[] { "uwp" }, MakeAbsolute(Directory("src/ReactiveUI.Events/"))),
     });
 }
 
@@ -95,58 +89,30 @@ ToolSettings.SetToolSettings(context: Context);
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
-Task("BuildEventBuilder")
-    .Does(() =>
-{
-    BuildProject("./src/EventBuilder.sln", false);
-});
-
 Task("GenerateEvents")
-    .IsDependentOn("BuildEventBuilder")
-    .Does (() =>
+    .Does(() => RequireGlobalTool(PharmacistTool, () =>
 {
     var eventsArtifactDirectory = BuildParameters.ArtifactsDirectory.Combine("Events");
     EnsureDirectoryExists(eventsArtifactDirectory);
 
-    var workingDirectory = MakeAbsolute(Directory("./src/EventBuilder/bin/Release/netcoreapp2.1"));
-    var eventBuilder = workingDirectory.CombineWithFilePath("EventBuilder.dll");
-
-    DirectoryPath referenceAssembliesPath = null;
-    if (IsRunningOnWindows())
-    {
-        referenceAssembliesPath = ToolSettings.VsLocation.Combine("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
-    }
-    else
-    {
-        referenceAssembliesPath = Directory("⁨/Library⁩/Frameworks⁩/Libraries/⁨mono⁩");
-    }
-
     foreach (var eventGenerator in eventGenerators)
     {
-        var (platform, directory) = eventGenerator;
+        var (platforms, directory) = eventGenerator;
 
-        var settings = new DotNetCoreExecuteSettings
-        {
-            WorkingDirectory = workingDirectory,
-        };
+        Information("Generating events for '{0}'", string.Join(", ", platforms));
+        StartProcess(Context.Tools.Resolve("Pharmacist*").ToString(), new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder()
+                        .Append("generate-platform")
+                        .AppendSwitch("-p", string.Join(",", platforms))
+                        .AppendSwitch("-o", directory.ToString())
+                        .AppendSwitch("--output-prefix", "Events_")
+        });
 
-        var filename = String.Format("Events_{0}.cs", platform);
-        var output = directory.CombineWithFilePath(filename);
-
-        Information("Generating events for '{0}'", platform);
-        DotNetCoreExecute(
-                    eventBuilder,
-                    new ProcessArgumentBuilder()
-                        .AppendSwitch("--platform","=", platform)
-                        .AppendSwitchQuoted("--reference","=", referenceAssembliesPath.ToString())
-                        .AppendSwitchQuoted("--output-path", "=", output.ToString()),
-                    settings);
-
-        Information("The events have been written to '{0}'", output);
+        Information("The events have been written to '{0}'", directory);
     }
 
     CopyFiles(GetFiles("./src/ReactiveUI.**/Events_*.cs"), eventsArtifactDirectory);
-});
+}));
 
 BuildParameters.Tasks.BuildTask.IsDependentOn("GenerateEvents");
 

@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />  
+    <PackageReference Include="System.Reactive" Version=" 4.2.0-preview.566" />  
   </ItemGroup>
   
   <ItemGroup>
