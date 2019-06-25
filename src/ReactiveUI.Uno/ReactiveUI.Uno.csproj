@@ -1,24 +1,40 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;MonoAndroid81</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <Description>Uno Platform specific extensions for ReactiveUI</Description>
     <DefineConstants>HAS_UNO</DefineConstants>
+    <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114</NoWarn>
   </PropertyGroup>  
-  <ItemGroup>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Uno.UI" Version="1.44.1" />
+    <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="Splat" Version="7.*" />
+    <PackageReference Include="DynamicData" Version="6.*" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+    <!-- Include all the files under RxUI, due to the way Uno works we need to duplicate -->
+    <Compile Include="..\ReactiveUI\**\*.cs" LinkBase="ReactiveUI" />
+
+    <!-- Remove all the directories from compile, we will readd some of them based on the platform. -->
+    <Compile Remove=".\Platforms\**\*.cs" />
+    <Compile Remove=".\system.reactive\**\*.cs" />
+    <Compile Remove=".\Platforms\**\*.cs" />
+    <Compile Remove="..\ReactiveUI\Platforms\**\*.cs" />
+    <Compile Remove="..\ReactiveUI\**\bin\**\*.*" />
+    <Compile Remove="..\ReactiveUI\**\obj\**\*.*" />
+
+    <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" LinkBase="ReactiveUI\Platforms\windows-common" />
+    <Compile Include="..\ReactiveUI\Platforms\uap\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI\Platforms\uap" />
+    <Compile Include="..\ReactiveUI\Platforms\uap\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI\Platforms\uap" />
+  	<None Include="..\ReactiveUI\Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.3" />  
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
-    <Compile Include="..\ReactiveUI\Platforms\uap\TransitioningContentControl.Empty.cs" Link="TransitioningContentControl.Empty.cs" />
+    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.3" />
+    <Compile Include=".\Platforms\netstandard\**\*.cs" />
   </ItemGroup>
+
 </Project>
