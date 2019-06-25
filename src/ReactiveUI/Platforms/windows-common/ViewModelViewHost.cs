@@ -73,7 +73,7 @@ namespace ReactiveUI
             {
                 // NB: This used to be an error but WPF design mode can't read
                 // good or do other stuff good.
-                this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation/nuget-packages for guidance.");
+                this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
             }
             else
             {

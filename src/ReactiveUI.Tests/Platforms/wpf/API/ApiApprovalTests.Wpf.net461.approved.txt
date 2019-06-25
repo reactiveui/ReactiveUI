@@ -44,6 +44,14 @@ namespace ReactiveUI
         public PlatformOperations() { }
         public string GetOrientation() { }
     }
+    public abstract class ReactivePage<TViewModel> : System.Windows.Controls.Page, ReactiveUI.IActivatable, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+        where TViewModel :  class
+    {
+        public static readonly System.Windows.DependencyProperty ViewModelProperty;
+        protected ReactivePage() { }
+        public TViewModel BindingRoot { get; }
+        public TViewModel ViewModel { get; set; }
+    }
     public abstract class ReactiveUserControl<TViewModel> : System.Windows.Controls.UserControl, ReactiveUI.IActivatable, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {

@@ -12,12 +12,12 @@
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
-    <Compile Include="SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.102" />
+    <PackageReference Include="Pharmacist.Common" Version="1.*" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
   </ItemGroup>
 
   <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">
-    <Compile Include="Events_UWP.cs" Condition="Exists('Events_UWP.cs')" />
+    <Compile Include="Events_uwp.cs" Condition="Exists('Events_uwp.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
@@ -25,22 +25,21 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Compile Include="Events_MAC.cs" Condition="Exists('Events_MAC.cs')" />
+    <Reference Include="netstandard" />
+    <Compile Include="Events_mac.cs" Condition="Exists('Events_mac.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
+    <Compile Include="Events_android.cs" Condition="Exists('Events_android.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
-    <Compile Include="Events_TIZEN.cs" Condition="Exists('Events_TIZEN.cs')" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Reference Include="netstandard" />
+    <PackageReference Include="Tizen.NET.API4" Version="4.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
     <Reference Include="netstandard" />
+    <Compile Include="Events_tvos.cs" Condition="Exists('Events_tvos.cs')" />
   </ItemGroup>
 </Project>
