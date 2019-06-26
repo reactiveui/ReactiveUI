@@ -78,9 +78,13 @@ namespace ReactiveUI
     /// The type of the view model backing the view.
     /// </typeparam>
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
-    public abstract class ReactivePage<TViewModel> :
-        Page, IViewFor<TViewModel>
-        where TViewModel : class
+    public abstract
+#if HAS_UNO
+        partial
+#endif
+        class ReactivePage<TViewModel> :
+            Page, IViewFor<TViewModel>
+            where TViewModel : class
     {
         /// <summary>
         /// The view model dependency property.

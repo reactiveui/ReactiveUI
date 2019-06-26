@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 #else
 using System.Windows;
@@ -44,7 +44,7 @@ namespace ReactiveUI
             if (toType == typeof(Visibility))
             {
                 var fromAsBool = hint.HasFlag(BooleanToVisibilityHint.Inverse) ? !(bool)@from : (bool)from;
-#if !NETFX_CORE
+#if !NETFX_CORE && !HAS_UNO
                 var notVisible = hint.HasFlag(BooleanToVisibilityHint.UseHidden) ? Visibility.Hidden : Visibility.Collapsed;
 #else
                 var notVisible = Visibility.Collapsed;
