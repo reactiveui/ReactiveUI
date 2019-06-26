@@ -39,13 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Fody.Tests", "Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Splat.Tests", "ReactiveUI.Splat.Tests\ReactiveUI.Splat.Tests.csproj", "{7ED6D69F-138F-40BD-9F37-3E4050E4D19B}"
 EndProject
-<<<<<<< HEAD
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing.Tests", "ReactiveUI.Testing.Tests\ReactiveUI.Testing.Tests.csproj", "{CD8B19A9-316E-4FBC-8F0C-87ADC6AAD684}"
-=======
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Testing.Tests", "ReactiveUI.Testing.Tests\ReactiveUI.Testing.Tests.csproj", "{CD8B19A9-316E-4FBC-8F0C-87ADC6AAD684}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Uno", "ReactiveUI.Uno\ReactiveUI.Uno.csproj", "{36FC3269-B7D0-4D79-A54A-B26B6190E8A2}"
->>>>>>> master
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
