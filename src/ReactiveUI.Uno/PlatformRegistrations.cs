@@ -23,6 +23,7 @@ namespace ReactiveUI
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 
 #if NETSTANDARD
             if (WasmPlatformEnlightenmentProvider.IsWasm)
@@ -36,8 +37,6 @@ namespace ReactiveUI
                 RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
                 RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
             }
-
-            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
         }
     }
 }
