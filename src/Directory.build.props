@@ -46,7 +46,11 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="Xunit.StaFact" Version="0.3.18" />
     <PackageReference Include="Shouldly" Version="4.0.0-beta0002" />
+<<<<<<< HEAD
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0-preview.566" />
+=======
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.5" />
+>>>>>>> master
     <PackageReference Include="PublicApiGenerator" Version="9.0.0" />
   </ItemGroup>
   
@@ -67,7 +71,7 @@
   </ItemGroup>
 
   <ItemGroup>	
-    <PackageReference Include="Nerdbank.GitVersioning" Version="2.3.38" PrivateAssets="all" />	
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.3.183" PrivateAssets="all" />	
   </ItemGroup>
 
   <ItemGroup>

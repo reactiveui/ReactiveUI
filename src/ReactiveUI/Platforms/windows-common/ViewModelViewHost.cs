@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -11,7 +12,7 @@ using System.Reactive.Subjects;
 using System.Windows;
 using Splat;
 
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
@@ -25,7 +26,17 @@ namespace ReactiveUI
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger, IDisposable
+    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
+    public
+#if HAS_UNO
+        partial
+#endif
+        class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
+#if !HAS_UNO
+#pragma warning disable SA1001 // Commas should be spaced correctly
+        , IDisposable
+#pragma warning restore SA1001 // Commas should be spaced correctly
+#endif
     {
         /// <summary>
         /// The default content dependency property.
