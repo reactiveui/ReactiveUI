@@ -5,6 +5,7 @@
 
 using System;
 using System.Reactive.Concurrency;
+using System.Reactive.PlatformServices;
 
 namespace ReactiveUI
 {
@@ -22,8 +23,20 @@ namespace ReactiveUI
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-            RxApp.TaskpoolScheduler = WasmScheduler.Default;
-            RxApp.MainThreadScheduler = WasmScheduler.Default;
+
+#if NETSTANDARD
+            if (WasmPlatformEnlightenmentProvider.IsWasm)
+            {
+                RxApp.TaskpoolScheduler = WasmScheduler.Default;
+                RxApp.MainThreadScheduler = WasmScheduler.Default;
+            }
+            else
+#endif
+            {
+                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
+            }
+
             registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
         }
     }

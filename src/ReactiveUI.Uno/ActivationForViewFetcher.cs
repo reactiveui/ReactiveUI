@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if HAS_UNO
 using System;
 using System.Linq;
 using System.Reactive;
@@ -38,12 +37,13 @@ namespace ReactiveUI
                 return Observable<bool>.Empty;
             }
 
+#pragma warning disable SA1114 // Parameter list after.
+#if NETSTANDARD || MAC
             var viewLoaded = Observable.FromEvent<RoutedEventHandler, bool>(
-                eventHandler =>
-                {
-                    void Handler(object sender, RoutedEventArgs e) => eventHandler(true);
-                    return Handler;
-                },
+#else
+            var viewLoaded = Observable.FromEvent<TypedEventHandler<DependencyObject, object>, bool>(
+#endif
+                eventHandler => (_, __) => eventHandler(true),
                 x => fe.Loading += x,
                 x => fe.Loading -= x);
 
@@ -64,4 +64,3 @@ namespace ReactiveUI
         }
     }
 }
-#endif

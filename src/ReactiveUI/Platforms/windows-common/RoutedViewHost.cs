@@ -27,7 +27,11 @@ namespace ReactiveUI
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
-    public class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
+    public
+#if HAS_UNO
+        partial
+#endif
+        class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
     {
         /// <summary>
         /// The router dependency property.

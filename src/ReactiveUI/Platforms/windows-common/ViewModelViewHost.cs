@@ -27,7 +27,11 @@ namespace ReactiveUI
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
-    public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
+    public
+#if HAS_UNO
+        partial
+#endif
+        class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 #if !HAS_UNO
 #pragma warning disable SA1001 // Commas should be spaced correctly
         , IDisposable
