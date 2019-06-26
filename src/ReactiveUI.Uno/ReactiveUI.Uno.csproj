@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Uno.UI" Version="1.44.1" />
-    <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
     <PackageReference Include="Splat" Version="7.*" />
     <PackageReference Include="DynamicData" Version="6.*" />
   </ItemGroup>
