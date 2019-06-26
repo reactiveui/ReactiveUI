@@ -6,7 +6,7 @@
 using System;
 using System.Linq;
 
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
@@ -30,10 +30,11 @@ namespace ReactiveUI
         /// </summary>
         public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new Lazy<DataTemplate>(() =>
         {
-#if NETFX_CORE
-            const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>" +
-                "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
-            "</DataTemplate>";
+#if NETFX_CORE || HAS_UNO
+            const string template =
+@"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>
+    <xaml:ViewModelViewHost ViewModel=""{Binding}"" VerticalContentAlignment=""Stretch"" HorizontalContentAlignment=""Stretch"" IsTabStop=""False"" />
+</DataTemplate>";
             return (DataTemplate)XamlReader.Load(template);
 #else
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
