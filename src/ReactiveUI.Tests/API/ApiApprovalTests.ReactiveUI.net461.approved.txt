@@ -186,6 +186,12 @@ namespace ReactiveUI
         void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string contract = null);
         void SendMessage<T>(T message, string contract = null);
     }
+    public class INPCObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
+    {
+        public INPCObservableForProperty() { }
+        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = False) { }
+    }
     public interface INotifyCollectionChanging
     {
         public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanging;
@@ -193,28 +199,6 @@ namespace ReactiveUI
     public interface INotifyPropertyChanging
     {
         public event ReactiveUI.PropertyChangingEventHandler PropertyChanging;
-    }
-    public class INPCObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
-    {
-        public INPCObservableForProperty() { }
-        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = False) { }
-    }
-    public class Interaction<TInput, TOutput>
-    {
-        public Interaction(System.Reactive.Concurrency.IScheduler handlerScheduler = null) { }
-        protected System.Func<, >[] GetHandlers() { }
-        public virtual System.IObservable<TOutput> Handle(TInput input) { }
-        public System.IDisposable RegisterHandler(System.Action<ReactiveUI.InteractionContext<TInput, TOutput>> handler) { }
-        public System.IDisposable RegisterHandler(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
-        public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
-    }
-    public sealed class InteractionContext<TInput, TOutput>
-    {
-        public TInput Input { get; }
-        public bool IsHandled { get; }
-        public TOutput GetOutput() { }
-        public void SetOutput(TOutput output) { }
     }
     public interface IObservedChange<out TSender, out TValue>
     {
@@ -247,6 +231,12 @@ namespace ReactiveUI
     public interface IPropertyBindingHook
     {
         bool ExecuteHook(object source, object target, System.Func<ReactiveUI.IObservedChange<, >[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<, >[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction);
+    }
+    public class IROObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
+    {
+        public IROObservableForProperty() { }
+        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
     public interface IReactiveBinding<out TView, out TViewModel, out TValue> : System.IDisposable
         where out TView : ReactiveUI.IViewFor
@@ -288,12 +278,6 @@ namespace ReactiveUI
     {
         string PropertyName { get; }
         TSender Sender { get; }
-    }
-    public class IROObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
-    {
-        public IROObservableForProperty() { }
-        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
     public interface IRoutableViewModel : ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
     {
@@ -342,6 +326,22 @@ namespace ReactiveUI
     {
         ReactiveUI.IViewFor ResolveView<T>(T viewModel, string contract = null)
             where T :  class;
+    }
+    public sealed class InteractionContext<TInput, TOutput>
+    {
+        public TInput Input { get; }
+        public bool IsHandled { get; }
+        public TOutput GetOutput() { }
+        public void SetOutput(TOutput output) { }
+    }
+    public class Interaction<TInput, TOutput>
+    {
+        public Interaction(System.Reactive.Concurrency.IScheduler handlerScheduler = null) { }
+        protected System.Func<, >[] GetHandlers() { }
+        public virtual System.IObservable<TOutput> Handle(TInput input) { }
+        public System.IDisposable RegisterHandler(System.Action<ReactiveUI.InteractionContext<TInput, TOutput>> handler) { }
+        public System.IDisposable RegisterHandler(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
+        public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
     }
     public class MessageBus : ReactiveUI.IMessageBus, Splat.IEnableLogger
     {
@@ -410,16 +410,16 @@ namespace ReactiveUI
         public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector) { }
         public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
     }
-    public class PlatformRegistrations
-    {
-        public PlatformRegistrations() { }
-        public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
-    }
     public class POCOObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
         public POCOObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
         public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
+    }
+    public class PlatformRegistrations
+    {
+        public PlatformRegistrations() { }
+        public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
     public class PropertyBinderImplementation : ReactiveUI.IPropertyBinderImplementation, Splat.IEnableLogger
     {
@@ -486,16 +486,6 @@ namespace ReactiveUI
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.Tasks.Task> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
     }
-    public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
-    {
-        protected internal ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler outputScheduler) { }
-        public override System.IObservable<bool> CanExecute { get; }
-        public override System.IObservable<bool> IsExecuting { get; }
-        public override System.IObservable<System.Exception> ThrownExceptions { get; }
-        protected override void Dispose(bool disposing) { }
-        public override System.IObservable<TResult> Execute(TParam parameter = null) { }
-        public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
-    }
     public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
     {
         protected ReactiveCommandBase() { }
@@ -519,6 +509,16 @@ namespace ReactiveUI
             where TTarget :  class { }
         public static System.IDisposable InvokeCommand<T, TResult, TTarget>(this System.IObservable<T> @this, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, ReactiveUI.ReactiveCommandBase<T, TResult>>> commandProperty)
             where TTarget :  class { }
+    }
+    public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
+    {
+        protected internal ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler outputScheduler) { }
+        public override System.IObservable<bool> CanExecute { get; }
+        public override System.IObservable<bool> IsExecuting { get; }
+        public override System.IObservable<System.Exception> ThrownExceptions { get; }
+        protected override void Dispose(bool disposing) { }
+        public override System.IObservable<TResult> Execute(TParam parameter = null) { }
+        public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
     }
     public class static ReactiveNotifyPropertyChangedMixin
     {
@@ -908,8 +908,8 @@ namespace ReactiveUI.Legacy
         public System.IObservable<T> BeforeItemsAdded { get; }
         public System.IObservable<ReactiveUI.Legacy.IMoveInfo<T>> BeforeItemsMoved { get; }
         public System.IObservable<T> BeforeItemsRemoved { get; }
-        public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changed { get; }
         public bool ChangeTrackingEnabled { get; set; }
+        public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changed { get; }
         public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changing { get; }
         public int Count { get; }
         public System.IObservable<int> CountChanged { get; }
