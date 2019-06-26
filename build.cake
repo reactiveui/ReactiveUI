@@ -20,7 +20,6 @@ var packageWhitelist = new List<FilePath>
     MakeAbsolute(File("./src/ReactiveUI.Events/ReactiveUI.Events.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Events.XamEssentials/ReactiveUI.Events.XamEssentials.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Events.XamForms/ReactiveUI.Events.XamForms.csproj")),
-    MakeAbsolute(File("./src/ReactiveUI.Events.Uno/ReactiveUI.Events.Uno.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Fody/ReactiveUI.Fody.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Fody.Helpers/ReactiveUI.Fody.Helpers.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.AndroidSupport/ReactiveUI.AndroidSupport.csproj")),
