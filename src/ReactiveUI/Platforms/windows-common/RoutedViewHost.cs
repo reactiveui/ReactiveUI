@@ -5,13 +5,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using ReactiveUI;
 using Splat;
 
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
@@ -25,7 +26,12 @@ namespace ReactiveUI
     /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
-    public class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
+    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
+    public
+#if HAS_UNO
+        partial
+#endif
+        class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
     {
         /// <summary>
         /// The router dependency property.

@@ -1,0 +1,43 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard20;MonoAndroid81;MonoAndroid90;Xamarin.iOS10;Xamarin.Mac20</TargetFrameworks>
+    <PackageId>ReactiveUI.Uno</PackageId>
+    <Description>Uno Platform specific extensions for ReactiveUI</Description>
+    <DefineConstants>HAS_UNO</DefineConstants>
+    <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <DefineConstants>HAS_UNO;WASM</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Uno.UI" Version="1.44.1" />
+    <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="Splat" Version="7.*" />
+    <PackageReference Include="DynamicData" Version="6.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include all the files under RxUI, due to the way Uno works we need to duplicate -->
+    <Compile Include="..\ReactiveUI\**\*.cs" LinkBase="ReactiveUI" />
+
+    <Compile Remove="..\ReactiveUI\Platforms\**\*.*" />
+    <Compile Remove="..\ReactiveUI\**\bin\**\*.*" />
+    <Compile Remove="..\ReactiveUI\**\obj\**\*.*" />
+
+    <Compile Remove=".\Platforms\**\*.*" />
+
+    <Compile Include="..\ReactiveUI\Platforms\uap\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI\Platforms\uap" />
+    <Compile Include="..\ReactiveUI\Platforms\uap\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI\Platforms\uap" />
+    <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" LinkBase="ReactiveUI\Platforms\windows-common" />
+
+  	<None Include="..\ReactiveUI\Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.8" />
+    <Compile Include=".\Platforms\netstandard\**\*.cs" />
+  </ItemGroup>
+
+</Project>
