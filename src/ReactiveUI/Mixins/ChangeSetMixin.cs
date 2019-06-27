@@ -21,6 +21,11 @@ namespace ReactiveUI
         /// <returns>If the change set is caused by the count being changed.</returns>
         public static bool HasCountChanged(this IChangeSet changeSet)
         {
+            if (changeSet == null)
+            {
+                throw new ArgumentNullException(nameof(changeSet));
+            }
+
             return changeSet.Adds > 0 || changeSet.Removes > 0;
         }
 

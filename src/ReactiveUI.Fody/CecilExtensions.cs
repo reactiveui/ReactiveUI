@@ -23,6 +23,16 @@ namespace ReactiveUI.Fody
         /// <param name="il">The il.</param>
         public static void Emit(this MethodBody body, Action<ILProcessor> il)
         {
+            if (body == null)
+            {
+                throw new ArgumentNullException(nameof(body));
+            }
+
+            if (il == null)
+            {
+                throw new ArgumentNullException(nameof(il));
+            }
+
             il(body.GetILProcessor());
         }
 
@@ -34,6 +44,11 @@ namespace ReactiveUI.Fody
         /// <returns>A generic method with generic typed arguments.</returns>
         public static GenericInstanceMethod MakeGenericMethod(this MethodReference method, params TypeReference[] genericArguments)
         {
+            if (genericArguments == null)
+            {
+                throw new ArgumentNullException(nameof(genericArguments));
+            }
+
             var result = new GenericInstanceMethod(method);
             foreach (var argument in genericArguments)
             {
@@ -54,6 +69,16 @@ namespace ReactiveUI.Fody
         /// </returns>
         public static bool IsAssignableFrom(this TypeReference baseType, TypeReference type, Action<string> logger = null)
         {
+            if (baseType == null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
+            }
+
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             return baseType.Resolve().IsAssignableFrom(type.Resolve(), logger);
         }
 
@@ -107,6 +132,11 @@ namespace ReactiveUI.Fody
         /// </returns>
         public static bool IsDefined(this IMemberDefinition member, TypeReference attributeType)
         {
+            if (member == null)
+            {
+                throw new ArgumentNullException(nameof(member));
+            }
+
             return member.HasCustomAttributes && member.CustomAttributes.Any(x => x.AttributeType.FullName == attributeType.FullName);
         }
 
@@ -118,10 +148,17 @@ namespace ReactiveUI.Fody
         /// <returns>The method bound to the generic type.</returns>
         public static MethodReference Bind(this MethodReference method, GenericInstanceType genericType)
         {
-            var reference = new MethodReference(method.Name, method.ReturnType, genericType);
-            reference.HasThis = method.HasThis;
-            reference.ExplicitThis = method.ExplicitThis;
-            reference.CallingConvention = method.CallingConvention;
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+
+            var reference = new MethodReference(method.Name, method.ReturnType, genericType)
+                            {
+                                HasThis = method.HasThis,
+                                ExplicitThis = method.ExplicitThis,
+                                CallingConvention = method.CallingConvention
+                            };
 
             foreach (var parameter in method.Parameters)
             {
@@ -130,29 +167,6 @@ namespace ReactiveUI.Fody
 
             return reference;
         }
-
-        /*
-        public static MethodReference BindDefinition(this MethodReference method, TypeReference genericTypeDefinition)
-        {
-            if (!genericTypeDefinition.HasGenericParameters)
-                return method;
-
-            var genericDeclaration = new GenericInstanceType(genericTypeDefinition);
-            foreach (var parameter in genericTypeDefinition.GenericParameters)
-            {
-                genericDeclaration.GenericArguments.Add(parameter);
-            }
-            var reference = new MethodReference(method.Name, method.ReturnType, genericDeclaration);
-            reference.HasThis = method.HasThis;
-            reference.ExplicitThis = method.ExplicitThis;
-            reference.CallingConvention = method.CallingConvention;
-
-            foreach (var parameter in method.Parameters)
-                reference.Parameters.Add(new ParameterDefinition(parameter.ParameterType));
-
-            return reference;
-        }
-        */
 
         /// <summary>
         /// Binds the generic type definition to a field.
@@ -162,6 +176,16 @@ namespace ReactiveUI.Fody
         /// <returns>The field bound to the generic type.</returns>
         public static FieldReference BindDefinition(this FieldReference field, TypeReference genericTypeDefinition)
         {
+            if (field == null)
+            {
+                throw new ArgumentNullException(nameof(field));
+            }
+
+            if (genericTypeDefinition == null)
+            {
+                throw new ArgumentNullException(nameof(genericTypeDefinition));
+            }
+
             if (!genericTypeDefinition.HasGenericParameters)
             {
                 return field;
@@ -185,6 +209,11 @@ namespace ReactiveUI.Fody
         /// <returns>The assembly if found, null if not.</returns>
         public static AssemblyNameReference FindAssembly(this ModuleDefinition currentModule, string assemblyName)
         {
+            if (currentModule == null)
+            {
+                throw new ArgumentNullException(nameof(currentModule));
+            }
+
             return currentModule.AssemblyReferences.SingleOrDefault(x => x.Name == assemblyName);
         }
 
@@ -199,6 +228,11 @@ namespace ReactiveUI.Fody
         /// <returns>The type reference.</returns>
         public static TypeReference FindType(this ModuleDefinition currentModule, string @namespace, string typeName, IMetadataScope scope = null, params string[] typeParameters)
         {
+            if (typeParameters == null)
+            {
+                throw new ArgumentNullException(nameof(typeParameters));
+            }
+
             var result = new TypeReference(@namespace, typeName, currentModule, scope);
             foreach (var typeParameter in typeParameters)
             {
@@ -216,28 +250,17 @@ namespace ReactiveUI.Fody
         /// <returns>A value indicating the result of the comparison.</returns>
         public static bool CompareTo(this TypeReference type, TypeReference compareTo)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (compareTo == null)
+            {
+                throw new ArgumentNullException(nameof(compareTo));
+            }
+
             return type.FullName == compareTo.FullName;
         }
-
-/*
-        public static IEnumerable<TypeDefinition> GetAllTypes(this ModuleDefinition module)
-        {
-            var stack = new Stack<TypeDefinition>();
-            foreach (var type in module.Types)
-            {
-                stack.Push(type);
-            }
-            while (stack.Any())
-            {
-                var current = stack.Pop();
-                yield return current;
-
-                foreach (var nestedType in current.NestedTypes)
-                {
-                    stack.Push(nestedType);
-                }
-            }
-        }
-*/
     }
 }

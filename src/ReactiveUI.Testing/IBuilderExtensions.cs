@@ -51,6 +51,11 @@ namespace ReactiveUI.Testing
             IEnumerable<TField> values)
             where TBuilder : IBuilder
         {
+            if (field == null)
+            {
+                throw new System.ArgumentNullException(nameof(field));
+            }
+
             if (values == null)
             {
                 field = null;
@@ -75,6 +80,11 @@ namespace ReactiveUI.Testing
         public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField> field, TField value)
             where TBuilder : IBuilder
         {
+            if (field == null)
+            {
+                throw new System.ArgumentNullException(nameof(field));
+            }
+
             field.Add(value);
             return builder;
         }
@@ -95,6 +105,11 @@ namespace ReactiveUI.Testing
             KeyValuePair<TKey, TField> keyValuePair)
             where TBuilder : IBuilder
         {
+            if (dictionary == null)
+            {
+                throw new System.ArgumentNullException(nameof(dictionary));
+            }
+
             dictionary.Add(keyValuePair.Key, keyValuePair.Value);
             return builder;
         }
@@ -117,6 +132,11 @@ namespace ReactiveUI.Testing
             TField value)
             where TBuilder : IBuilder
         {
+            if (dictionary == null)
+            {
+                throw new System.ArgumentNullException(nameof(dictionary));
+            }
+
             dictionary.Add(key, value);
             return builder;
         }
@@ -136,6 +156,11 @@ namespace ReactiveUI.Testing
             ref Dictionary<TKey, TField> dictionary,
             IDictionary<TKey, TField> keyValuePair)
         {
+            if (dictionary == null)
+            {
+                throw new System.ArgumentNullException(nameof(dictionary));
+            }
+
             dictionary = (Dictionary<TKey, TField>)keyValuePair;
             return builder;
         }

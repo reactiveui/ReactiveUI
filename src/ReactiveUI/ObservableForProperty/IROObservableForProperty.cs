@@ -27,6 +27,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             var iro = sender as IReactiveObject;
             if (iro == null)
             {

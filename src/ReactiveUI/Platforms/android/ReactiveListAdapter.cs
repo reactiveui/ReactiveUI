@@ -11,10 +11,12 @@ using Android.Views;
 using Android.Widget;
 using Splat;
 
+#pragma warning disable CA1062 // null check -- legacy.
+#pragma warning disable SA1600 // Elements should be documented
+
 namespace ReactiveUI.Legacy
 {
     [Obsolete("ReactiveList is no longer supported. We suggest replacing it with DynamicData https://github.com/rolandpheasant/dynamicdata")]
-#pragma warning disable SA1600 // Elements should be documented
     public class ReactiveListAdapter<TViewModel> : BaseAdapter<TViewModel>, IEnableLogger
         where TViewModel : class
     {
