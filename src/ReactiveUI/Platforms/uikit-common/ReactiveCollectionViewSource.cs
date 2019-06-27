@@ -122,6 +122,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
         {
+            if (indexPath == null)
+            {
+                throw new ArgumentNullException(nameof(indexPath));
+            }
+
             return _commonSource.GetCell(indexPath);
         }
 
@@ -140,6 +145,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
+            if (indexPath == null)
+            {
+                throw new ArgumentNullException(nameof(indexPath));
+            }
+
             _elementSelected.OnNext(_commonSource.ItemAt(indexPath));
         }
 
@@ -150,6 +160,11 @@ namespace ReactiveUI
         /// <returns>The object at the specified index.</returns>
         public object ItemAt(NSIndexPath indexPath)
         {
+            if (indexPath == null)
+            {
+                throw new ArgumentNullException(nameof(indexPath));
+            }
+
             return _commonSource.ItemAt(indexPath);
         }
 

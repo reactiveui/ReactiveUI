@@ -3,6 +3,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Xamarin Forms specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.XamForms</PackageId>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

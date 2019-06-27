@@ -47,7 +47,11 @@ namespace ReactiveUI.Blend
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            ObservableTrigger triggerItem = (ObservableTrigger)sender;
+            if (!(sender is ObservableTrigger triggerItem))
+            {
+                throw new ArgumentException("Sender must be of type " + nameof(ObservableTrigger), nameof(sender));
+            }
+
             if (triggerItem._watcher != null)
             {
                 triggerItem._watcher.Dispose();

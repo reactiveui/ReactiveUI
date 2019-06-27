@@ -43,6 +43,11 @@ namespace ReactiveUI
         /// <param name="hostApplication">The host application.</param>
         public AutoSuspendHelper(Application hostApplication)
         {
+            if (hostApplication == null)
+            {
+                throw new ArgumentNullException(nameof(hostApplication));
+            }
+
             hostApplication.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
 
             Observable.Merge(_onCreate, _onSaveInstanceState).Subscribe(x => LatestBundle = x);

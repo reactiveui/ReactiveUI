@@ -45,7 +45,7 @@ namespace ReactiveUI
         /// </summary>
         /// <typeparam name="TSender">The sender type.</typeparam>
         /// <typeparam name="TValue">The value type.</typeparam>
-        /// <param name="this">The source object to observe properties of.</param>
+        /// <param name="item">The source object to observe properties of.</param>
         /// <param name="property">An Expression representing the property (i.e.
         /// 'x => x.SomeProperty.SomeOtherProperty'.</param>
         /// <param name="beforeChange">If True, the Observable will notify
@@ -55,14 +55,19 @@ namespace ReactiveUI
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
-                this TSender @this,
+                this TSender item,
                 Expression<Func<TSender, TValue>> property,
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
-            if (@this == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(@this));
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
             }
 
             /* x => x.Foo.Bar.Baz;
@@ -81,7 +86,7 @@ namespace ReactiveUI
              */
 
             return SubscribeToExpressionChain<TSender, TValue>(
-                @this,
+                item,
                 property.Body,
                 beforeChange,
                 skipInitial);
@@ -96,7 +101,7 @@ namespace ReactiveUI
         /// <typeparam name="TSender">The sender type.</typeparam>
         /// <typeparam name="TValue">The value type.</typeparam>
         /// <typeparam name="TRet">The return value type.</typeparam>
-        /// <param name="this">The source object to observe properties of.</param>
+        /// <param name="item">The source object to observe properties of.</param>
         /// <param name="property">An Expression representing the property (i.e.
         /// 'x => x.SomeProperty'.</param>
         /// <param name="selector">A Select function that will be run on each
@@ -106,14 +111,18 @@ namespace ReactiveUI
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
-                this TSender @this,
+                this TSender item,
                 Expression<Func<TSender, TValue>> property,
                 Func<TValue, TRet> selector,
                 bool beforeChange = false)
             where TSender : class
         {
-            Contract.Requires(selector != null);
-            return @this.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
+            if (selector == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            return item.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
         }
 
         /// <summary>

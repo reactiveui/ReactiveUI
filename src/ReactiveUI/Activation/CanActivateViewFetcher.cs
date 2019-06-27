@@ -5,6 +5,7 @@
 
 using System;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 
@@ -34,8 +35,14 @@ namespace ReactiveUI
         /// <returns>An observable tracking whether the view is active.</returns>
         public IObservable<bool> GetActivationForView(IActivatable view)
         {
-            var ca = view as ICanActivate;
-            return ca.Activated.Select(_ => true).Merge(ca.Deactivated.Select(_ => false));
+            var canActivate = view as ICanActivate;
+
+            if (canActivate == null)
+            {
+                return Observable.Empty(false);
+            }
+
+            return canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
         }
     }
 }

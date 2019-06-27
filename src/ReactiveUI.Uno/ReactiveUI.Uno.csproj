@@ -5,6 +5,7 @@
     <Description>Uno Platform specific extensions for ReactiveUI</Description>
     <DefineConstants>HAS_UNO</DefineConstants>
     <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">

@@ -7,10 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Foundation;
 using ReactiveUI.Legacy;
@@ -175,6 +171,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
         {
+            if (indexPath == null)
+            {
+                throw new ArgumentNullException(nameof(indexPath));
+            }
+
             return _commonSource.GetCell(indexPath);
         }
 
@@ -206,11 +207,24 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
         {
+            if (indexPath == null)
+            {
+                throw new ArgumentNullException(nameof(indexPath));
+            }
+
             _elementSelected.OnNext(_commonSource.ItemAt(indexPath));
         }
 
         /// <inheritdoc/>
-        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => _commonSource.SectionInfo[indexPath.Section].SizeHint;
+        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
+        {
+            if (indexPath == null)
+            {
+                throw new ArgumentNullException(nameof(indexPath));
+            }
+
+            return _commonSource.SectionInfo[indexPath.Section].SizeHint;
+        }
 
         /// <inheritdoc/>
         public override nfloat GetHeightForHeader(UITableView tableView, nint section)
@@ -239,35 +253,35 @@ namespace ReactiveUI
             }
 
             var footer = _commonSource.SectionInfo[(int)section].Footer;
-            return footer == null || footer.View == null ? -1 : footer.Height;
+            return footer?.View == null ? -1 : footer.Height;
         }
 
         /// <inheritdoc/>
         public override string TitleForHeader(UITableView tableView, nint section)
         {
             var header = _commonSource.SectionInfo[(int)section].Header;
-            return header == null || header.Title == null ? null : header.Title;
+            return header?.Title;
         }
 
         /// <inheritdoc/>
         public override string TitleForFooter(UITableView tableView, nint section)
         {
             var footer = _commonSource.SectionInfo[(int)section].Footer;
-            return footer == null || footer.Title == null ? null : footer.Title;
+            return footer?.Title;
         }
 
         /// <inheritdoc/>
         public override UIView GetViewForHeader(UITableView tableView, nint section)
         {
             var header = _commonSource.SectionInfo[(int)section].Header;
-            return header == null || header.View == null ? null : header.View.Invoke();
+            return header?.View?.Invoke();
         }
 
         /// <inheritdoc/>
         public override UIView GetViewForFooter(UITableView tableView, nint section)
         {
             var footer = _commonSource.SectionInfo[(int)section].Footer;
-            return footer == null || footer.View == null ? null : footer.View.Invoke();
+            return footer?.View?.Invoke();
         }
 
         /// <summary>
@@ -275,7 +289,15 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="indexPath">The index path.</param>
         /// <returns>The item.</returns>
-        public object ItemAt(NSIndexPath indexPath) => _commonSource.ItemAt(indexPath);
+        public object ItemAt(NSIndexPath indexPath)
+        {
+            if (indexPath == null)
+            {
+                throw new ArgumentNullException(nameof(indexPath));
+            }
+
+            return _commonSource.ItemAt(indexPath);
+        }
 
         /// <summary>
         /// When this method is called, an object will not fire change

@@ -24,21 +24,26 @@ namespace ReactiveUI
         /// while the ViewModel has focus, and cleans up when the ViewModel
         /// loses focus.
         /// </summary>
-        /// <param name="this">The ViewModel to watch for focus changes.</param>
+        /// <param name="item">The ViewModel to watch for focus changes.</param>
         /// <param name="onNavigatedTo">Called when the ViewModel is navigated
         /// to - return an IDisposable that cleans up all of the things that are
         /// configured in the method.</param>
         /// <returns>An IDisposable that lets you disconnect the entire process
         /// earlier than normal.</returns>
-        public static IDisposable WhenNavigatedTo(this IRoutableViewModel @this, Func<IDisposable> onNavigatedTo)
+        public static IDisposable WhenNavigatedTo(this IRoutableViewModel item, Func<IDisposable> onNavigatedTo)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
             IDisposable inner = null;
 
-            var router = @this.HostScreen.Router;
+            var router = item.HostScreen.Router;
             var navigationStackChanged = router.NavigationChanged.CountChanged();
             return navigationStackChanged.Subscribe(_ =>
             {
-                if (router.GetCurrentViewModel() == @this)
+                if (router.GetCurrentViewModel() == item)
                 {
                     inner?.Dispose();
 
@@ -62,21 +67,26 @@ namespace ReactiveUI
         /// the navigation stack and then reused later, you must call this method
         /// and resubscribe each time it is reused.
         /// </summary>
-        /// <param name="this">The viewmodel to watch for navigation changes.</param>
+        /// <param name="item">The viewmodel to watch for navigation changes.</param>
         /// <returns>An IObservable{Unit} that signals when the ViewModel has
         /// been added or brought to the top of the navigation stack. The
         /// observable completes when the ViewModel is no longer a part of the
         /// navigation stack.</returns>
-        public static IObservable<Unit> WhenNavigatedToObservable(this IRoutableViewModel @this)
+        public static IObservable<Unit> WhenNavigatedToObservable(this IRoutableViewModel item)
         {
-            var router = @this.HostScreen.Router;
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var router = item.HostScreen.Router;
             var navigationStackChanged = router.NavigationChanged.CountChanged();
 
             var itemRemoved = navigationStackChanged
-                .Where(x => x.Any(change => change.Reason == ListChangeReason.Remove && change.Item.Current == @this));
+                .Where(x => x.Any(change => change.Reason == ListChangeReason.Remove && change.Item.Current == item));
 
             return navigationStackChanged
-                .Where(_ => router.GetCurrentViewModel() == @this)
+                .Where(_ => router.GetCurrentViewModel() == item)
                 .Select(_ => Unit.Default)
                 .TakeUntil(itemRemoved);
         }
@@ -91,21 +101,26 @@ namespace ReactiveUI
         /// the navigation stack and then reused later, you must call this method
         /// and resubscribe each time it is reused.
         /// </summary>
-        /// /// <param name="this">The viewmodel to watch for navigation changes.</param>
+        /// /// <param name="item">The viewmodel to watch for navigation changes.</param>
         /// <returns>An IObservable{Unit} that signals when the ViewModel is no
         /// longer the topmost ViewModel in the navigation stack. The observable
         /// completes when the ViewModel is no longer a part of the navigation
         /// stack.</returns>
-        public static IObservable<Unit> WhenNavigatingFromObservable(this IRoutableViewModel @this)
+        public static IObservable<Unit> WhenNavigatingFromObservable(this IRoutableViewModel item)
         {
-            var router = @this.HostScreen.Router;
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var router = item.HostScreen.Router;
             var navigationStackChanged = router.NavigationChanged.CountChanged();
             bool StackIsCleared(Change<IRoutableViewModel> change) => change.Reason == ListChangeReason.Clear;
-            bool ThisViewModelIsRemoved(Change<IRoutableViewModel> change) => NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == @this;
+            bool ThisViewModelIsRemoved(Change<IRoutableViewModel> change) => NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item;
             var itemRemoved = navigationStackChanged.Where(x => x.Any(change => StackIsCleared(change) || ThisViewModelIsRemoved(change)));
             var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel[2], (previous, current) => new[] { previous[1], router.GetCurrentViewModel() });
             return viewModelsChanged
-                .Where(x => x[0] == @this)
+                .Where(x => x[0] == item)
                 .Select(_ => Unit.Default)
                 .TakeUntil(itemRemoved);
         }

@@ -20,6 +20,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+            if (registerFunction == null)
+            {
+                throw new ArgumentNullException(nameof(registerFunction));
+            }
+
             registerFunction(() => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new IROObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));
