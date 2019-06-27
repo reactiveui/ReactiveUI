@@ -22,18 +22,18 @@ namespace ReactiveUI
         /// the command can be executed, Execute() will be called).
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
-        /// <param name="this">The source observable to pipe into the command.</param>
+        /// <param name="item">The source observable to pipe into the command.</param>
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T>(this IObservable<T> @this, ICommand command)
+        public static IDisposable InvokeCommand<T>(this IObservable<T> item, ICommand command)
         {
             var canExecuteChanged = Observable
                 .FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
                 .Select(_ => Unit.Default)
                 .StartWith(Unit.Default);
 
-            return WithLatestFromFixed(@this, canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
+            return WithLatestFromFixed(item, canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => command.Execute(ii.Value))
                 .Subscribe();
@@ -46,13 +46,18 @@ namespace ReactiveUI
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
         /// <typeparam name="TResult">The result type.</typeparam>
-        /// <param name="this">The source observable to pipe into the command.</param>
+        /// <param name="item">The source observable to pipe into the command.</param>
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> @this, ReactiveCommandBase<T, TResult> command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult> command)
         {
-            return WithLatestFromFixed(@this, command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            return WithLatestFromFixed(item, command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
                 .Where(ii => ii.CanExecute)
                 .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
@@ -65,12 +70,12 @@ namespace ReactiveUI
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
         /// <typeparam name="TTarget">The target type.</typeparam>
-        /// <param name="this">The source observable to pipe into the command.</param>
+        /// <param name="item">The source observable to pipe into the command.</param>
         /// <param name="target">The root object which has the Command.</param>
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
+        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> item, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
             where TTarget : class
         {
             var command = target.WhenAnyValue(commandProperty);
@@ -81,7 +86,7 @@ namespace ReactiveUI
                     .StartWith(c))
                 .Switch();
 
-            return WithLatestFromFixed(@this, commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
+            return WithLatestFromFixed(item, commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => ii.Command.Execute(ii.Value))
                 .Subscribe();
@@ -95,12 +100,12 @@ namespace ReactiveUI
         /// <typeparam name="T">The type.</typeparam>
         /// <typeparam name="TResult">The result type.</typeparam>
         /// <typeparam name="TTarget">The target type.</typeparam>
-        /// <param name="this">The source observable to pipe into the command.</param>
+        /// <param name="item">The source observable to pipe into the command.</param>
         /// <param name="target">The root object which has the Command.</param>
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> @this, TTarget target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> item, TTarget target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>>> commandProperty)
             where TTarget : class
         {
             var command = target.WhenAnyValue(commandProperty);
@@ -110,7 +115,7 @@ namespace ReactiveUI
                     .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T))))
                 .Switch();
 
-            return WithLatestFromFixed(@this, invocationInfo, (value, ii) => ii.WithValue(value))
+            return WithLatestFromFixed(item, invocationInfo, (value, ii) => ii.WithValue(value))
                 .Where(ii => ii.CanExecute)
                 .SelectMany(ii => ii.Command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
@@ -118,10 +123,10 @@ namespace ReactiveUI
 
         // See https://github.com/Reactive-Extensions/Rx.NET/issues/444
         private static IObservable<TResult> WithLatestFromFixed<TLeft, TRight, TResult>(
-            IObservable<TLeft> @this,
+            IObservable<TLeft> item,
             IObservable<TRight> other,
             Func<TLeft, TRight, TResult> resultSelector) =>
-            @this
+            item
                 .Publish(
                     os =>
                             other
@@ -133,30 +138,21 @@ namespace ReactiveUI
 
         private struct InvokeCommandInfo<TCommand, TValue>
         {
-            private readonly TCommand _command;
-            private readonly bool _canExecute;
-            private readonly TValue _value;
-
-            public InvokeCommandInfo(TCommand command, bool canExecute)
-                : this(command, canExecute, default(TValue))
+            public InvokeCommandInfo(TCommand command, bool canExecute, TValue value = default)
             {
+                Command = command;
+                CanExecute = canExecute;
+                Value = value;
             }
 
-            public InvokeCommandInfo(TCommand command, bool canExecute, TValue value)
-            {
-                _command = command;
-                _canExecute = canExecute;
-                _value = value;
-            }
+            public TCommand Command { get; }
 
-            public TCommand Command => _command;
+            public bool CanExecute { get; }
 
-            public bool CanExecute => _canExecute;
-
-            public TValue Value => _value;
+            public TValue Value { get; }
 
             public InvokeCommandInfo<TCommand, TValue> WithValue(TValue value) =>
-                new InvokeCommandInfo<TCommand, TValue>(_command, _canExecute, value);
+                new InvokeCommandInfo<TCommand, TValue>(Command, CanExecute, value);
         }
 
         private static class InvokeCommandInfo

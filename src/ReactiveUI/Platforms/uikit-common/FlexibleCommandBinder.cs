@@ -51,6 +51,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
             var type = target.GetType();
 
             var match = _config.Keys
@@ -86,6 +91,11 @@ namespace ReactiveUI
         /// <param name="enabledProperty">Enabled Property.</param>
         protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, PropertyInfo enabledProperty)
         {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
             commandParameter = commandParameter ?? Observable.Return(target);
 
             object latestParam = null;
@@ -126,6 +136,11 @@ namespace ReactiveUI
         /// <returns>Returns a disposable.</returns>
         protected static IDisposable ForTargetAction(ICommand command, object target, IObservable<object> commandParameter, PropertyInfo enabledProperty)
         {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
             commandParameter = commandParameter ?? Observable.Return(target);
 
             object latestParam = null;

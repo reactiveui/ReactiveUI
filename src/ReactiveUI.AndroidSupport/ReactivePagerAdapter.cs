@@ -81,9 +81,23 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        public override void DestroyItem(ViewGroup container, int position, Object @object)
+        public override void DestroyItem(ViewGroup container, int position, Object item)
         {
-            var view = (View)@object;
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (!(item is View view))
+            {
+                throw new ArgumentException("Item must be of type View", nameof(item));
+            }
+
             container.RemoveView(view);
         }
 

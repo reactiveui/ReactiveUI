@@ -123,6 +123,16 @@ namespace ReactiveUI
 
         private static bool IsInstanceOfType(object from, Type targetType)
         {
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (targetType == null)
+            {
+                throw new ArgumentNullException(nameof(targetType));
+            }
+
 #if NETFX_CORE || PORTABLE
             return targetType.GetTypeInfo().IsAssignableFrom(from.GetType().GetTypeInfo());
 #else

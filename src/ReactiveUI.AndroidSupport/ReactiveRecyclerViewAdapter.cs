@@ -73,7 +73,17 @@ namespace ReactiveUI.AndroidSupport
         /// <inheritdoc/>
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            ((IViewFor)holder).ViewModel = GetViewModelByPosition(position);
+            if (holder == null)
+            {
+                throw new ArgumentNullException(nameof(holder));
+            }
+
+            if (!(holder is IViewFor viewForHolder))
+            {
+                throw new ArgumentException("Holder must be derived from IViewFor", nameof(holder));
+            }
+
+            viewForHolder.ViewModel = GetViewModelByPosition(position);
         }
 
         /// <inheritdoc/>

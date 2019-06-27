@@ -56,15 +56,15 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
-            var viewProperties = getCurrentViewProperties();
-            var lastViewProperty = viewProperties.LastOrDefault();
-            if (lastViewProperty == null)
+            if (getCurrentViewProperties == null)
             {
-                return true;
+                throw new ArgumentNullException(nameof(getCurrentViewProperties));
             }
 
-            var itemsControl = lastViewProperty.Sender as ItemsControl;
-            if (itemsControl == null)
+            var viewProperties = getCurrentViewProperties();
+            var lastViewProperty = viewProperties.LastOrDefault();
+
+            if (!(lastViewProperty?.Sender is ItemsControl itemsControl))
             {
                 return true;
             }

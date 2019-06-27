@@ -26,7 +26,7 @@ namespace ReactiveUI.Winforms
                 return 0;
             }
 
-            if (fromType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments().First().IsSubclassOf(typeof(Control))))
+            if (fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments().First().IsSubclassOf(typeof(Control))) ?? false)
             {
                 return 10;
             }
@@ -37,6 +37,11 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc />
         public object PerformSet(object toTarget, object newValue, object[] arguments)
         {
+            if (toTarget == null)
+            {
+                throw new ArgumentNullException(nameof(toTarget));
+            }
+
             IEnumerable<Control> newValueEnumerable = (IEnumerable<Control>)newValue;
             Control.ControlCollection targetCollection = (Control.ControlCollection)toTarget;
 

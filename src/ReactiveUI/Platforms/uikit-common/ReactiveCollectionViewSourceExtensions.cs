@@ -103,6 +103,11 @@ namespace ReactiveUI
             Func<ReactiveCollectionViewSource<TSource>, IDisposable> initSource = null)
             where TCell : UICollectionViewCell
         {
+            if (collectionView == null)
+            {
+                throw new ArgumentNullException(nameof(collectionView));
+            }
+
             var type = typeof(TCell);
             var cellKey = new NSString(type.ToString());
             collectionView.RegisterClassForCell(type, new NSString(cellKey));

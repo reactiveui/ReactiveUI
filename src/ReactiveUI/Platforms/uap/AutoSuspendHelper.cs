@@ -36,6 +36,11 @@ namespace ReactiveUI
         /// <param name="app">The application.</param>
         public AutoSuspendHelper(Application app)
         {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
             Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", app, "OnLaunched");
 
             var launchNew = new[] { ApplicationExecutionState.ClosedByUser, ApplicationExecutionState.NotRunning, };

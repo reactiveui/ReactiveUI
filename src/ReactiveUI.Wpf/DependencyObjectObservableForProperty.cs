@@ -36,6 +36,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
+            if (sender == null)
+            {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
             var type = sender.GetType();
             var dpd = DependencyPropertyDescriptor.FromProperty(GetDependencyProperty(type, propertyName), type);
 

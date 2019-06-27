@@ -67,16 +67,27 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
             commandParameter = commandParameter ?? Observable.Return(target);
 
             object latestParam = null;
-            var ctlDelegate = new ControlDelegate(x =>
-            {
-                if (command.CanExecute(latestParam))
+            var ctlDelegate = new ControlDelegate(
+                x =>
                 {
-                    command.Execute(latestParam);
-                }
-            }) { IsEnabled = command.CanExecute(latestParam) };
+                    if (command.CanExecute(latestParam))
+                    {
+                        command.Execute(latestParam);
+                    }
+                }) { IsEnabled = command.CanExecute(latestParam) };
 
             var sel = new Selector("theAction:");
 

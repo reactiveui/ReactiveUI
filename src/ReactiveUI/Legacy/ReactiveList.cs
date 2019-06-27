@@ -26,6 +26,7 @@ using Splat;
 #pragma warning disable SA1124 // Do not use regions -- not used for legacy
 #pragma warning disable RCS1165 // Unconstrained null check -- not used for legacy
 #pragma warning disable CA1001 // Undisposed type -- not used for legacy
+#pragma warning disable CA1062 // null check
 
 namespace ReactiveUI.Legacy
 {
