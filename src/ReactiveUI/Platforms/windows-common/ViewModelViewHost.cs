@@ -19,7 +19,11 @@ using Windows.UI.Xaml.Controls;
 using System.Windows.Controls;
 #endif
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// This content control will automatically load the View associated with
