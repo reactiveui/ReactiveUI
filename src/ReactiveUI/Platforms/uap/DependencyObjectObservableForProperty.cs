@@ -13,7 +13,11 @@ using System.Windows;
 using Splat;
 using Windows.UI.Xaml;
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// Creates a observable for a property if available that is based on a DependencyProperty.

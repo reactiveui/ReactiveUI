@@ -11,7 +11,11 @@ using Windows.UI.Xaml;
 using System.Windows;
 #endif
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// Enum that hints at the visibility of a ui element.

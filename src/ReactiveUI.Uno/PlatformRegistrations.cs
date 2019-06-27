@@ -7,7 +7,7 @@ using System;
 using System.Reactive.Concurrency;
 using System.Reactive.PlatformServices;
 
-namespace ReactiveUI
+namespace ReactiveUI.Uno
 {
     /// <summary>
     /// UWP platform registrations.
@@ -23,7 +23,9 @@ namespace ReactiveUI
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+
+            // Re-enable once the obsolete code in Uno has been worked out.
+            ////registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 
 #if NETSTANDARD
             if (WasmPlatformEnlightenmentProvider.IsWasm)

@@ -12,7 +12,7 @@ using System.Reflection;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 
-namespace ReactiveUI
+namespace ReactiveUI.Uno
 {
     /// <summary>
     /// ActiveationForViewFetcher is how ReactiveUI determine when a
