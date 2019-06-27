@@ -10,7 +10,11 @@ using Windows.UI.Xaml;
 using System.Windows;
 #endif
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// This type convert converts between Boolean and XAML Visibility - the

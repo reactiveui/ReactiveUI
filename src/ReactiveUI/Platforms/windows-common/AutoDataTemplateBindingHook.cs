@@ -16,7 +16,11 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 #endif
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
