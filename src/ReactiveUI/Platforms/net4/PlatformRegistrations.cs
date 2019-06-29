@@ -17,6 +17,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+            if (registerFunction == null)
+            {
+                throw new ArgumentNullException(nameof(registerFunction));
+            }
+
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             RxApp.MainThreadScheduler = DefaultScheduler.Instance;

@@ -22,7 +22,14 @@ namespace ReactiveUI.Testing.Tests
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The test fixture.</returns>
-        public static implicit operator TestFixture(TestFixtureBuilder builder) => builder.Build();
+        public static implicit operator TestFixture(TestFixtureBuilder builder) => ToTestFixture(builder);
+
+        /// <summary>
+        /// Performs conversion from <see cref="TestFixtureBuilder"/> to <see cref="TestFixture"/>.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The test fixture.</returns>
+        public static TestFixture ToTestFixture(TestFixtureBuilder builder) => builder.Build();
 
         /// <summary>
         /// Adds the count to the builder.

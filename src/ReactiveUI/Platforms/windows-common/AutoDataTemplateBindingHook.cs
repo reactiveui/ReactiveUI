@@ -17,7 +17,11 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 #endif
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
@@ -54,11 +58,15 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
+            if (getCurrentViewProperties == null)
+            {
+                throw new ArgumentNullException(nameof(getCurrentViewProperties));
+            }
+
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
 
-            var itemsControl = lastViewProperty?.Sender as ItemsControl;
-            if (itemsControl == null)
+            if (!(lastViewProperty?.Sender is ItemsControl itemsControl))
             {
                 return true;
             }

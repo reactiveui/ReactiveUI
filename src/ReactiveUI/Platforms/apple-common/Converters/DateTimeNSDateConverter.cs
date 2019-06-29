@@ -27,13 +27,13 @@ namespace ReactiveUI
         {
             result = null;
 
-            if (val.GetType() == typeof(DateTime) && toType == typeof(NSDate))
+            if (val?.GetType() == typeof(DateTime) && toType == typeof(NSDate))
             {
                 var dt = (DateTime)val;
                 result = (NSDate)dt;
                 return true;
             }
-            else if (val.GetType() == typeof(NSDate) && toType == typeof(DateTime))
+            else if (val?.GetType() == typeof(NSDate) && toType == typeof(DateTime))
             {
                 var dt = (NSDate)val;
                 result = (DateTime)dt;

@@ -55,10 +55,19 @@ namespace ReactiveUI
         /// <param name="assembly">The assembly to search using reflection for IViewFor classes.</param>
         public static void RegisterViewsForViewModels(this IMutableDependencyResolver resolver, Assembly assembly)
         {
+            if (resolver == null)
+            {
+                throw new ArgumentNullException(nameof(resolver));
+            }
+
+            if (assembly == null)
+            {
+                throw new ArgumentNullException(nameof(assembly));
+            }
+
             // for each type that implements IViewFor
             foreach (var ti in assembly.DefinedTypes
-                .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)))
-                .Where(ti => !ti.IsAbstract))
+                .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)) && !ti.IsAbstract))
             {
                 // grab the first _implemented_ interface that also implements IViewFor, this should be the expected IViewFor<>
                 var ivf = ti.ImplementedInterfaces.FirstOrDefault(t => t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));

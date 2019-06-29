@@ -5,6 +5,7 @@
     <Description>Uno Platform specific extensions for ReactiveUI</Description>
     <DefineConstants>HAS_UNO</DefineConstants>
     <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
@@ -12,22 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Uno.UI" Version="1.44.1" />
-    <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
-    <PackageReference Include="Splat" Version="7.*" />
-    <PackageReference Include="DynamicData" Version="6.*" />
+    <PackageReference Include="Uno.UI" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Include all the files under RxUI, due to the way Uno works we need to duplicate -->
-    <Compile Include="..\ReactiveUI\**\*.cs" LinkBase="ReactiveUI" />
-
-    <Compile Remove="..\ReactiveUI\Platforms\**\*.*" />
-    <Compile Remove="..\ReactiveUI\**\bin\**\*.*" />
-    <Compile Remove="..\ReactiveUI\**\obj\**\*.*" />
-
-    <Compile Remove=".\Platforms\**\*.*" />
-
     <Compile Include="..\ReactiveUI\Platforms\uap\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI\Platforms\uap" />
     <Compile Include="..\ReactiveUI\Platforms\uap\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI\Platforms\uap" />
     <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" LinkBase="ReactiveUI\Platforms\windows-common" />
@@ -40,4 +29,7 @@
     <Compile Include=".\Platforms\netstandard\**\*.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
 </Project>

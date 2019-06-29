@@ -13,7 +13,7 @@ namespace ReactiveUI.Fody.Helpers
     }
     public class static ObservableAsPropertyExtensions
     {
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(this System.IObservable<TRet> @this, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(this System.IObservable<TRet> item, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
             where TObj : ReactiveUI.ReactiveObject { }
     }
     [System.AttributeUsageAttribute(System.AttributeTargets.Property | System.AttributeTargets.All)]

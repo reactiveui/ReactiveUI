@@ -4,9 +4,10 @@
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461</TargetFrameworks>
     <Description>Fody Weavers for ReactiveUI.Fody.</Description>
     <IsPackable>False</IsPackable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="5.1.0" />
+    <PackageReference Include="FodyHelpers" Version="5.1.1" />
   </ItemGroup>
 </Project>

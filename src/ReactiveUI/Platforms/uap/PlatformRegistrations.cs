@@ -17,6 +17,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+            if (registerFunction == null)
+            {
+                throw new ArgumentNullException(nameof(registerFunction));
+            }
+
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
