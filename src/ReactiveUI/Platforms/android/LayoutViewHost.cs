@@ -58,15 +58,15 @@ namespace ReactiveUI
                 }
 
                 _view = value;
-                _view.SetTag(ViewMixins.ViewHostTag, this.ToJavaObject());
+                _view?.SetTag(ViewMixins.ViewHostTag, this.ToJavaObject());
             }
         }
 
         /// <summary>
         /// Casts the LayoutViewHost to a View.
         /// </summary>
-        /// <param name="this">The LayoutViewHost to cast.</param>
+        /// <param name="layoutViewHost">The LayoutViewHost to cast.</param>
         [SuppressMessage("Usage", "CA2225: Provide a method named ToView", Justification = "A property is already provided.")]
-        public static implicit operator View(LayoutViewHost @this) => @this.View;
+        public static implicit operator View(LayoutViewHost layoutViewHost) => layoutViewHost?.View;
     }
 }

@@ -133,6 +133,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override void PushViewController(NSViewController viewController, bool animated)
         {
+            if (viewController == null)
+            {
+                throw new ArgumentNullException(nameof(viewController));
+            }
+
             base.PushViewController(viewController, animated);
 
             if (!_routerInstigated)

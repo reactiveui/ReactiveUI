@@ -21,35 +21,44 @@ namespace ReactiveUI
         /// <summary>
         /// Binds the command to target view control.
         /// </summary>
-        /// <param name="this">The this.</param>
+        /// <param name="command">The command.</param>
         /// <param name="control">The control.</param>
         /// <returns>A disposable.</returns>
-        public static IDisposable BindToTarget(this ICommand @this, View control)
+        public static IDisposable BindToTarget(this ICommand command, View control)
         {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            if (control == null)
+            {
+                throw new ArgumentNullException(nameof(control));
+            }
+
             var ev = new EventHandler((o, e) =>
             {
-                if (!@this.CanExecute(null))
+                if (!command.CanExecute(null))
                 {
                     return;
                 }
 
-                @this.Execute(null);
+                command.Execute(null);
             });
 
             var cech = new EventHandler((o, e) =>
             {
-                var canExecute = @this.CanExecute(null);
-                control.Enabled = canExecute;
+                control.Enabled = command.CanExecute(null);
             });
 
-            @this.CanExecuteChanged += cech;
+            command.CanExecuteChanged += cech;
             control.Click += ev;
 
-            control.Enabled = @this.CanExecute(null);
+            control.Enabled = command.CanExecute(null);
 
             return Disposable.Create(() =>
             {
-                @this.CanExecuteChanged -= cech;
+                command.CanExecuteChanged -= cech;
                 control.Click -= ev;
             });
         }

@@ -129,6 +129,16 @@ namespace ReactiveUI.Fody
         /// <param name="type">The type.</param>
         public void EmitDefaultValue(MethodBody methodBody, ILProcessor il, TypeReference type)
         {
+            if (methodBody == null)
+            {
+                throw new ArgumentNullException(nameof(methodBody));
+            }
+
+            if (il == null)
+            {
+                throw new ArgumentNullException(nameof(il));
+            }
+
             if (type.CompareTo(ModuleDefinition.TypeSystem.Boolean) || type.CompareTo(ModuleDefinition.TypeSystem.Byte) ||
                 type.CompareTo(ModuleDefinition.TypeSystem.Int16) || type.CompareTo(ModuleDefinition.TypeSystem.Int32))
             {

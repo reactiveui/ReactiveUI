@@ -19,6 +19,11 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc/>
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
+            if (getCurrentViewProperties == null)
+            {
+                throw new ArgumentNullException(nameof(getCurrentViewProperties));
+            }
+
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
 

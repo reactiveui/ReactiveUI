@@ -3,8 +3,8 @@
     <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>        
     <Description>WPF specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WPF</PackageId>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWpf>true</UseWpf>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

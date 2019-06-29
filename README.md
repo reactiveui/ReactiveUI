@@ -299,16 +299,10 @@ ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). 
   <tbody>
     <tr>
       <td align="center" valign="top">
-        <img width="100" height="100" src="https://github.com/ghuntley.png?s=150">
-        <br>
-        <a href="https://github.com/ghuntley">Geoffrey Huntley</a>
-        <p>Sydney, Australia</p>
-      </td>
-      <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/glennawatson.png?s=150">
         <br>
         <a href="https://github.com/glennawatson">Glenn Watson</a>
-        <p>Washington, USA</p>
+        <p>Melbourne, Australia</p>
       </td>
       <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/rlittlesii.png?s=150">
@@ -339,6 +333,12 @@ The following have been core team members in the past.
 <table>
   <tbody>
     <tr>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/ghuntley.png?s=150">
+        <br>
+        <a href="https://github.com/ghuntley">Geoffrey Huntley</a>
+        <p>Sydney, Australia</p>
+      </td>
       <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/kentcb.png?s=150">
         <br>
@@ -401,4 +401,3 @@ This is how we use the donations:
 [Become a backer](https://opencollective.com/reactiveui#backer) and get your image on our README on Github with a link to your site.
 
 <a href="https://opencollective.com/reactiveui#backer"><img src="https://opencollective.com/reactiveui/backer.svg?width=890&avatarHeight=50&button=false"></a>
-

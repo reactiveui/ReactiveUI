@@ -19,7 +19,11 @@ using Windows.UI.Xaml.Controls;
 using System.Windows.Controls;
 #endif
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// This control hosts the View associated with a Router, and will display

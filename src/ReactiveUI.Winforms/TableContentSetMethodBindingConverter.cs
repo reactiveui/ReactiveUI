@@ -25,7 +25,7 @@ namespace ReactiveUI.Winforms
                 return 0;
             }
 
-            if (fromType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments().First().IsSubclassOf(typeof(Control))))
+            if (fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments().First().IsSubclassOf(typeof(Control))) ?? false)
             {
                 return 15;
             }
@@ -36,8 +36,17 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc />
         public object PerformSet(object toTarget, object newValue, object[] arguments)
         {
+            if (toTarget == null)
+            {
+                throw new ArgumentNullException(nameof(toTarget));
+            }
+
+            if (!(toTarget is TableLayoutControlCollection targetCollection))
+            {
+                throw new ArgumentException($"{nameof(toTarget)} must be of type {nameof(TableLayoutControlCollection)}");
+            }
+
             IEnumerable<Control> newValueEnumerable = (IEnumerable<Control>)newValue;
-            TableLayoutControlCollection targetCollection = (TableLayoutControlCollection)toTarget;
 
             targetCollection.Container.SuspendLayout();
 

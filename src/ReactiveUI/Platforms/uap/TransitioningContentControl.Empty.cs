@@ -6,7 +6,11 @@
 using System.Diagnostics.CodeAnalysis;
 using Windows.UI.Xaml.Controls;
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// A control with a single transition.

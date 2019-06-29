@@ -6,6 +6,7 @@
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <Description>Blend behaviors for ReactiveUI</Description>
     <PackageId>ReactiveUI.Blend</PackageId>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

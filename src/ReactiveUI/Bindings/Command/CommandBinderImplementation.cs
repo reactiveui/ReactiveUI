@@ -51,6 +51,16 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
+            if (vmProperty == null)
+            {
+                throw new ArgumentNullException(nameof(vmProperty));
+            }
+
+            if (controlProperty == null)
+            {
+                throw new ArgumentNullException(nameof(controlProperty));
+            }
+
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
@@ -108,6 +118,16 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
+            if (vmProperty == null)
+            {
+                throw new ArgumentNullException(nameof(vmProperty));
+            }
+
+            if (controlProperty == null)
+            {
+                throw new ArgumentNullException(nameof(controlProperty));
+            }
+
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();

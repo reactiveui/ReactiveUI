@@ -89,17 +89,26 @@ namespace ReactiveUI.Blend
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         protected static void OnStateObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var @this = (FollowObservableStateBehavior)sender;
-            if (@this._watcher != null)
+            if (e == null)
             {
-                @this._watcher.Dispose();
-                @this._watcher = null;
+                throw new ArgumentNullException(nameof(e));
             }
 
-            @this._watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+            if (!(sender is FollowObservableStateBehavior item))
+            {
+                throw new ArgumentException("Sender must be of type " + nameof(FollowObservableStateBehavior), nameof(sender));
+            }
+
+            if (item._watcher != null)
+            {
+                item._watcher.Dispose();
+                item._watcher = null;
+            }
+
+            item._watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
                 x =>
                 {
-                    var target = @this.TargetObject ?? @this.AssociatedObject;
+                    var target = item.TargetObject ?? item.AssociatedObject;
 #if NETFX_CORE
                     VisualStateManager.GoToState(target, x, true);
 #else
@@ -115,12 +124,12 @@ namespace ReactiveUI.Blend
                 },
                 ex =>
                 {
-                    if (!@this.AutoResubscribeOnError)
+                    if (!item.AutoResubscribeOnError)
                     {
                         return;
                     }
 
-                    OnStateObservableChanged(@this, e);
+                    OnStateObservableChanged(item, e);
                 });
         }
 

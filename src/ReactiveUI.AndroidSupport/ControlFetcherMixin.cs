@@ -26,6 +26,11 @@ namespace ReactiveUI.AndroidSupport
         /// <param name="resolveMembers">The resolve members.</param>
         public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
+            if (fragment == null)
+            {
+                throw new ArgumentNullException(nameof(fragment));
+            }
+
             var members = fragment.GetWireUpMembers(resolveMembers);
 
             foreach (var member in members)

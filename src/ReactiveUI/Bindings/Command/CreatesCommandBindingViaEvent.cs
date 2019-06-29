@@ -51,6 +51,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
             var type = target.GetType();
             var eventInfo = defaultEventsToBind
                 .Select(x => new { EventInfo = type.GetRuntimeEvent(x.Item1), Args = x.Item2 })

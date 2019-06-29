@@ -19,6 +19,11 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+            if (registerFunction == null)
+            {
+                throw new ArgumentNullException(nameof(registerFunction));
+            }
+
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
             registerFunction(() => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));

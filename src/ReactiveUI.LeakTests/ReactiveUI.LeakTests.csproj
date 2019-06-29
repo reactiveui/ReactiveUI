@@ -1,6 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.DotMemoryUnit" Version="3.0.20171219.105559" />
