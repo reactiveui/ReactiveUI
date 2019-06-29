@@ -13,7 +13,11 @@ using System.Windows;
 using Splat;
 using Windows.UI.Xaml;
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// Creates a observable for a property if available that is based on a DependencyProperty.
@@ -39,26 +43,21 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            Contract.Requires(sender != null && sender is DependencyObject);
-            var type = sender.GetType();
+            if (sender == null)
+            {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
             var depSender = sender as DependencyObject;
 
             if (depSender == null)
             {
-                if (!suppressWarnings)
-                {
-                    this.Log().Warn(
-                                    CultureInfo.InvariantCulture,
-                                    "Tried to bind DP on a non-DependencyObject. Binding as POCO object",
-                                    type.FullName,
-                                    propertyName);
-                }
-
-                var ret = new POCOObservableForProperty();
-                return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
+                throw new ArgumentException("The sender must be a DependencyObject", nameof(sender));
             }
 
-            if (beforeChanged == true)
+            var type = sender.GetType();
+
+            if (beforeChanged)
             {
                 this.Log().Warn(
                     CultureInfo.InvariantCulture,

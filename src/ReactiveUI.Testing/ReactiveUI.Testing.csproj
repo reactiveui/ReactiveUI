@@ -6,6 +6,7 @@
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <Description>A library to aid in writing unit tests for ReactiveUI projects</Description>
     <PackageId>ReactiveUI.Testing</PackageId>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
   <ItemGroup>

@@ -25,27 +25,21 @@ namespace ReactiveUI
     /// </summary>
     public class MessageBus : IMessageBus
     {
-        private static IMessageBus current = new MessageBus();
+        private readonly Dictionary<(Type type, string contract), NotAWeakReference> _messageBus =
+            new Dictionary<(Type type, string contract), NotAWeakReference>();
 
-        private readonly Dictionary<Tuple<Type, string>, NotAWeakReference> _messageBus =
-            new Dictionary<Tuple<Type, string>, NotAWeakReference>();
-
-        private readonly IDictionary<Tuple<Type, string>, IScheduler> _schedulerMappings =
-            new Dictionary<Tuple<Type, string>, IScheduler>();
+        private readonly IDictionary<(Type type, string contract), IScheduler> _schedulerMappings =
+            new Dictionary<(Type type, string contract), IScheduler>();
 
         /// <summary>
         /// Gets or sets the Current MessageBus.
         /// </summary>
-        public static IMessageBus Current
-        {
-            get => current;
-            set => current = value;
-        }
+        public static IMessageBus Current { get; set; } = new MessageBus();
 
         /// <summary>
         /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
         /// </summary>
-        /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overrwrite the existing registration.</remarks>
+        /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overwrite the existing registration.</remarks>
         /// <typeparam name="T">The type of the message to listen to.</typeparam>
         /// <param name="scheduler">The scheduler on which to post the
         /// notifications for the specified type and contract. CurrentThreadScheduler by default.</param>
@@ -54,7 +48,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         public void RegisterScheduler<T>(IScheduler scheduler, string contract = null)
         {
-            _schedulerMappings[new Tuple<Type, string>(typeof(T), contract)] = scheduler;
+            _schedulerMappings[(typeof(T), contract)] = scheduler;
         }
 
         /// <summary>
@@ -121,7 +115,15 @@ namespace ReactiveUI
         /// <returns>a Disposable.</returns>
         public IDisposable RegisterMessageSource<T>(
             IObservable<T> source,
-            string contract = null) => source.Subscribe(SetupSubjectIfNecessary<T>(contract));
+            string contract = null)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
+        }
 
         /// <summary>
         /// Sends a single message using the specified Type and contract.
@@ -145,8 +147,7 @@ namespace ReactiveUI
 
             WithMessageBus(typeof(T), contract, (mb, tuple) =>
             {
-                NotAWeakReference subjRef;
-                if (mb.TryGetValue(tuple, out subjRef) && subjRef.IsAlive)
+                if (mb.TryGetValue(tuple, out NotAWeakReference subjRef) && subjRef.IsAlive)
                 {
                     ret = (ISubject<T>)subjRef.Target;
                     return;
@@ -162,11 +163,11 @@ namespace ReactiveUI
         private void WithMessageBus(
             Type type,
             string contract,
-            Action<Dictionary<Tuple<Type, string>, NotAWeakReference>, Tuple<Type, string>> block)
+            Action<Dictionary<(Type type, string contract), NotAWeakReference>, (Type type, string contract)> block)
         {
             lock (_messageBus)
             {
-                var tuple = new Tuple<Type, string>(type, contract);
+                var tuple = (type, contract);
                 block(_messageBus, tuple);
                 if (_messageBus.ContainsKey(tuple) && !_messageBus[tuple].IsAlive)
                 {
@@ -175,10 +176,9 @@ namespace ReactiveUI
             }
         }
 
-        private IScheduler GetScheduler(Tuple<Type, string> tuple)
+        private IScheduler GetScheduler((Type type, string contract) tuple)
         {
-            IScheduler scheduler;
-            _schedulerMappings.TryGetValue(tuple, out scheduler);
+            _schedulerMappings.TryGetValue(tuple, out IScheduler scheduler);
             return scheduler ?? CurrentThreadScheduler.Instance;
         }
     }

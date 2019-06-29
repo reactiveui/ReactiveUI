@@ -45,6 +45,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<Unit> SaveState(object state)
         {
+            if (state == null)
+            {
+                throw new ArgumentNullException(nameof(state));
+            }
+
             try
             {
                 var ms = new MemoryStream();

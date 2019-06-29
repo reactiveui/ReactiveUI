@@ -18,7 +18,7 @@ using System.Xml.Serialization;
 using Windows.Storage;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
-namespace ReactiveUI
+namespace ReactiveUI.Uno
 {
     /// <summary>
     /// Loads and saves state to persistent storage.
@@ -32,7 +32,7 @@ namespace ReactiveUI
                 .SelectMany(x => FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8).AsTask())
                 .SelectMany(x =>
                 {
-                    var line = x.IndexOf('\n');
+                    var line = x.IndexOf("\n", StringComparison.InvariantCulture);
                     var typeName = x.Substring(0, line - 1); // -1 for CR
                     var serializer = new DataContractSerializer(Type.GetType(typeName));
 
@@ -45,6 +45,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<Unit> SaveState(object state)
         {
+            if (state == null)
+            {
+                throw new ArgumentNullException(nameof(state));
+            }
+
             try
             {
                 var ms = new MemoryStream();
