@@ -20,8 +20,12 @@ namespace ReactiveUI.Blazor
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+            if (registerFunction is null)
+            {
+                throw new ArgumentNullException(nameof(registerFunction));
+            }
+
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-            registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
 
 #if NETSTANDARD
             if (WasmPlatformEnlightenmentProvider.IsWasm)
