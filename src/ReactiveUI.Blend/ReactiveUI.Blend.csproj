@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;uap10.0.17763</TargetFrameworks>
+    <TargetFrameworks>net461;uap10.0.16299</TargetFrameworks>
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <Description>Blend behaviors for ReactiveUI</Description>
