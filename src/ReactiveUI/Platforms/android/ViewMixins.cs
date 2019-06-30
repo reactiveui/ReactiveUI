@@ -19,35 +19,29 @@ namespace ReactiveUI
         /// Tag of the View.
         /// </summary>
         /// <typeparam name="T">The layout view host type.</typeparam>
-        /// <param name="this">The view.</param>
+        /// <param name="item">The view.</param>
         /// <returns>The view host.</returns>
-        public static T GetViewHost<T>(this View @this)
+        public static T GetViewHost<T>(this View item)
             where T : ILayoutViewHost
         {
-            var tagData = @this.GetTag(ViewHostTag);
+            var tagData = item?.GetTag(ViewHostTag);
             if (tagData != null)
             {
                 return tagData.ToNetObject<T>();
             }
 
-            return default(T);
+            return default;
         }
 
         /// <summary>
         /// Gets the ViewHost associated with a given View by accessing the
         /// Tag of the View.
         /// </summary>
-        /// <param name="this">The view.</param>
+        /// <param name="item">The view.</param>
         /// <returns>The view host.</returns>
-        public static ILayoutViewHost GetViewHost(this View @this)
+        public static ILayoutViewHost GetViewHost(this View item)
         {
-            var tagData = @this.GetTag(ViewHostTag);
-            if (tagData != null)
-            {
-                return tagData.ToNetObject<ILayoutViewHost>();
-            }
-
-            return null;
+            return item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
         }
     }
 }

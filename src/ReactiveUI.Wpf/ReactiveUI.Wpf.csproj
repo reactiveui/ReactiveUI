@@ -5,6 +5,7 @@
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
     <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI.Testing.Tests
 {
@@ -30,6 +31,7 @@ namespace ReactiveUI.Testing.Tests
         /// <summary>
         /// Gets or sets the variables.
         /// </summary>
+        [SuppressMessage("Design", "CA2227: Read only dictionary", Justification = "Used in mock.")]
         public Dictionary<string, string> Variables { get; set; }
     }
 }

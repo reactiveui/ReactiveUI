@@ -4,6 +4,7 @@
     <TargetFrameworks>MonoAndroid81</TargetFrameworks>
     <Description>ReactiveUI extensions for the Android Support Library</Description>
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
   <ItemGroup>

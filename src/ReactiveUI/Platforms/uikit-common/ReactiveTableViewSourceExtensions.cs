@@ -109,6 +109,11 @@ namespace ReactiveUI
             Func<ReactiveTableViewSource<TSource>, IDisposable> initSource = null)
             where TCell : UITableViewCell
         {
+            if (tableView == null)
+            {
+                throw new ArgumentNullException(nameof(tableView));
+            }
+
             var type = typeof(TCell);
             var cellKey = new NSString(type.ToString());
             tableView.RegisterClassForCellReuse(type, new NSString(cellKey));

@@ -8,8 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Reactive.Windows.Foundation;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ using System.Xml.Serialization;
 using Windows.Storage;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
-namespace ReactiveUI
+namespace ReactiveUI.Uno
 {
     /// <summary>
     /// Loads and saves state to persistent storage.
@@ -28,11 +28,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<object> LoadState()
         {
-            return ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").ToObservable()
-                .SelectMany(x => FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8))
+            return Observable.FromAsync(() => ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").AsTask())
+                .SelectMany(x => FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8).AsTask())
                 .SelectMany(x =>
                 {
-                    var line = x.IndexOf('\n');
+                    var line = x.IndexOf("\n", StringComparison.InvariantCulture);
                     var typeName = x.Substring(0, line - 1); // -1 for CR
                     var serializer = new DataContractSerializer(Type.GetType(typeName));
 
@@ -60,8 +60,8 @@ namespace ReactiveUI
 
                 serializer.WriteObject(ms, state);
 
-                return ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.xmlish", CreationCollisionOption.ReplaceExisting).ToObservable()
-                    .SelectMany(x => FileIO.WriteBytesAsync(x, ms.ToArray()).ToObservable());
+                return Observable.FromAsync(() => ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.xmlish", CreationCollisionOption.ReplaceExisting).AsTask())
+                    .SelectMany(x => Observable.FromAsync(() => FileIO.WriteBytesAsync(x, ms.ToArray()).AsTask()));
             }
             catch (Exception ex)
             {
@@ -72,8 +72,8 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<Unit> InvalidateState()
         {
-            return ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").ToObservable()
-                .SelectMany(x => x.DeleteAsync().ToObservable());
+            return Observable.FromAsync(() => ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").AsTask())
+                .SelectMany(x => Observable.FromAsync(() => x.DeleteAsync().AsTask()));
         }
     }
 }

@@ -20,7 +20,7 @@ namespace ReactiveUI.Fody.Helpers
         /// </summary>
         /// <typeparam name="TObj">The type of the object.</typeparam>
         /// <typeparam name="TRet">The type of the ret.</typeparam>
-        /// <param name="this">The this.</param>
+        /// <param name="item">The observable with the return value.</param>
         /// <param name="source">The source.</param>
         /// <param name="property">The property.</param>
         /// <param name="initialValue">The initial value.</param>
@@ -32,10 +32,20 @@ namespace ReactiveUI.Fody.Helpers
         /// or
         /// Backing field not found for " + propertyInfo.
         /// </exception>
-        public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(this IObservable<TRet> @this, TObj source, Expression<Func<TObj, TRet>> property, TRet initialValue = default(TRet), bool deferSubscription = false, IScheduler scheduler = null)
+        public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(this IObservable<TRet> item, TObj source, Expression<Func<TObj, TRet>> property, TRet initialValue = default, bool deferSubscription = false, IScheduler scheduler = null)
             where TObj : ReactiveObject
         {
-            var result = @this.ToProperty(source, property, initialValue, deferSubscription, scheduler);
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            var result = item.ToProperty(source, property, initialValue, deferSubscription, scheduler);
 
             // Now assign the field via reflection.
             var propertyInfo = property.GetPropertyInfo();

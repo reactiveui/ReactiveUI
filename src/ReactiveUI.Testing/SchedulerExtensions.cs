@@ -60,6 +60,11 @@ namespace ReactiveUI.Testing
         public static TRet With<T, TRet>(this T sched, Func<T, TRet> block)
             where T : IScheduler
         {
+            if (block == null)
+            {
+                throw new ArgumentNullException(nameof(block));
+            }
+
             TRet ret;
             using (WithScheduler(sched))
             {
@@ -83,6 +88,11 @@ namespace ReactiveUI.Testing
         public static async Task<TRet> WithAsync<T, TRet>(this T sched, Func<T, Task<TRet>> block)
             where T : IScheduler
         {
+            if (block == null)
+            {
+                throw new ArgumentNullException(nameof(block));
+            }
+
             TRet ret;
             using (WithScheduler(sched))
             {
@@ -137,6 +147,11 @@ namespace ReactiveUI.Testing
         /// incremental, it sets the time.</param>
         public static void AdvanceToMs(this TestScheduler sched, double milliseconds)
         {
+            if (sched == null)
+            {
+                throw new ArgumentNullException(nameof(sched));
+            }
+
             sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
         }
 
@@ -149,6 +164,11 @@ namespace ReactiveUI.Testing
         /// by, in milliseconds.</param>
         public static void AdvanceByMs(this TestScheduler sched, double milliseconds)
         {
+            if (sched == null)
+            {
+                throw new ArgumentNullException(nameof(sched));
+            }
+
             sched.AdvanceBy(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
         }
 

@@ -16,22 +16,32 @@ namespace ReactiveUI
         /// Locate the first ViewModel in the stack that matches a certain Type.
         /// </summary>
         /// <typeparam name="T">The view model type.</typeparam>
-        /// <param name="this">The routing state.</param>
+        /// <param name="item">The routing state.</param>
         /// <returns>The matching ViewModel or null if none exists.</returns>
-        public static T FindViewModelInStack<T>(this RoutingState @this)
+        public static T FindViewModelInStack<T>(this RoutingState item)
             where T : IRoutableViewModel
         {
-            return @this.NavigationStack.Reverse().OfType<T>().FirstOrDefault();
+            if (item == null)
+            {
+                throw new System.ArgumentNullException(nameof(item));
+            }
+
+            return item.NavigationStack.Reverse().OfType<T>().FirstOrDefault();
         }
 
         /// <summary>
         /// Returns the currently visible ViewModel.
         /// </summary>
-        /// <param name="this">The routing state.</param>
+        /// <param name="item">The routing state.</param>
         /// <returns>The matching ViewModel or null if none exists.</returns>
-        public static IRoutableViewModel GetCurrentViewModel(this RoutingState @this)
+        public static IRoutableViewModel GetCurrentViewModel(this RoutingState item)
         {
-            return @this.NavigationStack.LastOrDefault();
+            if (item == null)
+            {
+                throw new System.ArgumentNullException(nameof(item));
+            }
+
+            return item.NavigationStack.LastOrDefault();
         }
     }
 }

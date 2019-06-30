@@ -5,13 +5,17 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 #else
 using System.Windows;
 #endif
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// Enum that hints at the visibility of a ui element.
@@ -30,7 +34,7 @@ namespace ReactiveUI
         /// </summary>
         Inverse = 1 << 1,
 
-#if !NETFX_CORE
+#if !NETFX_CORE && !HAS_UNO
         /// <summary>
         /// Use the hidden version rather than the Collapsed.
         /// </summary>

@@ -74,10 +74,15 @@ namespace ReactiveUI
         /// going through the Conversion Expressions.
         /// </summary>
         /// <param name="expression">The expression.</param>
-        /// <returns>The member info from the epxression.</returns>
+        /// <returns>The member info from the expression.</returns>
         public static MemberInfo GetMemberInfo(this Expression expression)
         {
-            MemberInfo info = null;
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            MemberInfo info;
             switch (expression.NodeType)
             {
             case ExpressionType.Index:
@@ -103,6 +108,11 @@ namespace ReactiveUI
         /// <returns>The parent expression.</returns>
         public static Expression GetParent(this Expression expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             switch (expression.NodeType)
             {
             case ExpressionType.Index:
@@ -122,6 +132,11 @@ namespace ReactiveUI
         /// <returns>An array of arguments.</returns>
         public static object[] GetArgumentsArray(this Expression expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             if (expression.NodeType == ExpressionType.Index)
             {
                 return ((IndexExpression)expression).Arguments.Cast<ConstantExpression>().Select(c => c.Value).ToArray();

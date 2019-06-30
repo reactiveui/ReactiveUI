@@ -18,37 +18,46 @@ namespace ReactiveUI
         /// <summary>
         /// Binds the <see cref="ICommand"/> to target <see cref="UIControl"/>.
         /// </summary>
-        /// <param name="this">The this.</param>
+        /// <param name="item">The command to bind to.</param>
         /// <param name="control">The control.</param>
         /// <param name="events">The events.</param>
         /// <returns>A disposable.</returns>
-        public static IDisposable BindToTarget(this ICommand @this, UIControl control, UIControlEvent events)
+        public static IDisposable BindToTarget(this ICommand item, UIControl control, UIControlEvent events)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (control == null)
+            {
+                throw new ArgumentNullException(nameof(control));
+            }
+
             var ev = new EventHandler((o, e) =>
             {
-                if (!@this.CanExecute(null))
+                if (!item.CanExecute(null))
                 {
                     return;
                 }
 
-                @this.Execute(null);
+                item.Execute(null);
             });
 
             var cech = new EventHandler((o, e) =>
             {
-                var canExecute = @this.CanExecute(null);
-                control.Enabled = canExecute;
+                control.Enabled = item.CanExecute(null);
             });
 
-            @this.CanExecuteChanged += cech;
+            item.CanExecuteChanged += cech;
             control.AddTarget(ev, events);
 
-            control.Enabled = @this.CanExecute(null);
+            control.Enabled = item.CanExecute(null);
 
             return Disposable.Create(() =>
             {
                 control.RemoveTarget(ev, events);
-                @this.CanExecuteChanged -= cech;
+                item.CanExecuteChanged -= cech;
             });
         }
     }

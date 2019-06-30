@@ -9,7 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// Returns the current orientation of the device on Windows.
@@ -19,7 +23,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public string GetOrientation()
         {
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
             return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
 #else
             return null;

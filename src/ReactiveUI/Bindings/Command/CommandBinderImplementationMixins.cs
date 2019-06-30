@@ -45,6 +45,11 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
+            if (withParameter == null)
+            {
+                throw new ArgumentNullException(nameof(withParameter));
+            }
+
             var paramExpression = Reflection.Rewrite(withParameter.Body);
             var param = Reflection.ViewModelWhenAnyValue(viewModel, view, paramExpression);
 

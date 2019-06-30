@@ -31,7 +31,8 @@ namespace ReactiveUI
             {
                 "ReactiveUI.XamForms",
                 "ReactiveUI.Winforms",
-                "ReactiveUI.Wpf"
+                "ReactiveUI.Wpf",
+                "ReactiveUI.Uno"
             };
 
             // Set up the built-in registration
@@ -54,10 +55,19 @@ namespace ReactiveUI
         /// <param name="assembly">The assembly to search using reflection for IViewFor classes.</param>
         public static void RegisterViewsForViewModels(this IMutableDependencyResolver resolver, Assembly assembly)
         {
+            if (resolver == null)
+            {
+                throw new ArgumentNullException(nameof(resolver));
+            }
+
+            if (assembly == null)
+            {
+                throw new ArgumentNullException(nameof(assembly));
+            }
+
             // for each type that implements IViewFor
             foreach (var ti in assembly.DefinedTypes
-                .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)))
-                .Where(ti => !ti.IsAbstract))
+                .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)) && !ti.IsAbstract))
             {
                 // grab the first _implemented_ interface that also implements IViewFor, this should be the expected IViewFor<>
                 var ivf = ti.ImplementedInterfaces.FirstOrDefault(t => t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));
@@ -90,7 +100,7 @@ namespace ReactiveUI
         [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Used on some platforms")]
         private static Func<object> TypeFactory(TypeInfo typeInfo)
         {
-#if PORTABLE
+#if PORTABLE && !WASM
             throw new Exception("You are referencing the Portable version of ReactiveUI in an App. Reference the platform-specific version.");
 #else
             return Expression.Lambda<Func<object>>(Expression.New(

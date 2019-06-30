@@ -5,8 +5,9 @@
 
 using System;
 using System.Reactive.Concurrency;
+using System.Reactive.PlatformServices;
 
-namespace ReactiveUI
+namespace ReactiveUI.Uno
 {
     /// <summary>
     /// UWP platform registrations.
@@ -27,9 +28,22 @@ namespace ReactiveUI
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = new SingleWindowDispatcherScheduler();
-            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+
+            // Re-enable once the obsolete code in Uno has been worked out.
+            ////registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+
+#if NETSTANDARD
+            if (WasmPlatformEnlightenmentProvider.IsWasm)
+            {
+                RxApp.TaskpoolScheduler = WasmScheduler.Default;
+                RxApp.MainThreadScheduler = WasmScheduler.Default;
+            }
+            else
+#endif
+            {
+                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
+            }
         }
     }
 }

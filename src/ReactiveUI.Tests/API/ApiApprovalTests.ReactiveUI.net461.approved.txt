@@ -1,5 +1,6 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.AndroidSupport")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Uno")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("ReactiveUI.XamForms")]
@@ -186,6 +187,12 @@ namespace ReactiveUI
         void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string contract = null);
         void SendMessage<T>(T message, string contract = null);
     }
+    public class INPCObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
+    {
+        public INPCObservableForProperty() { }
+        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = False) { }
+    }
     public interface INotifyCollectionChanging
     {
         public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanging;
@@ -193,28 +200,6 @@ namespace ReactiveUI
     public interface INotifyPropertyChanging
     {
         public event ReactiveUI.PropertyChangingEventHandler PropertyChanging;
-    }
-    public class INPCObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
-    {
-        public INPCObservableForProperty() { }
-        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = False) { }
-    }
-    public class Interaction<TInput, TOutput>
-    {
-        public Interaction(System.Reactive.Concurrency.IScheduler handlerScheduler = null) { }
-        protected System.Func<, >[] GetHandlers() { }
-        public virtual System.IObservable<TOutput> Handle(TInput input) { }
-        public System.IDisposable RegisterHandler(System.Action<ReactiveUI.InteractionContext<TInput, TOutput>> handler) { }
-        public System.IDisposable RegisterHandler(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
-        public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
-    }
-    public sealed class InteractionContext<TInput, TOutput>
-    {
-        public TInput Input { get; }
-        public bool IsHandled { get; }
-        public TOutput GetOutput() { }
-        public void SetOutput(TOutput output) { }
     }
     public interface IObservedChange<out TSender, out TValue>
     {
@@ -247,6 +232,12 @@ namespace ReactiveUI
     public interface IPropertyBindingHook
     {
         bool ExecuteHook(object source, object target, System.Func<ReactiveUI.IObservedChange<, >[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<, >[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction);
+    }
+    public class IROObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
+    {
+        public IROObservableForProperty() { }
+        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
     public interface IReactiveBinding<out TView, out TViewModel, out TValue> : System.IDisposable
         where out TView : ReactiveUI.IViewFor
@@ -288,12 +279,6 @@ namespace ReactiveUI
     {
         string PropertyName { get; }
         TSender Sender { get; }
-    }
-    public class IROObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
-    {
-        public IROObservableForProperty() { }
-        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
     }
     public interface IRoutableViewModel : ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
     {
@@ -342,6 +327,22 @@ namespace ReactiveUI
     {
         ReactiveUI.IViewFor ResolveView<T>(T viewModel, string contract = null)
             where T :  class;
+    }
+    public sealed class InteractionContext<TInput, TOutput>
+    {
+        public TInput Input { get; }
+        public bool IsHandled { get; }
+        public TOutput GetOutput() { }
+        public void SetOutput(TOutput output) { }
+    }
+    public class Interaction<TInput, TOutput>
+    {
+        public Interaction(System.Reactive.Concurrency.IScheduler handlerScheduler = null) { }
+        protected System.Func<, >[] GetHandlers() { }
+        public virtual System.IObservable<TOutput> Handle(TInput input) { }
+        public System.IDisposable RegisterHandler(System.Action<ReactiveUI.InteractionContext<TInput, TOutput>> handler) { }
+        public System.IDisposable RegisterHandler(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
+        public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
     }
     public class MessageBus : ReactiveUI.IMessageBus, Splat.IEnableLogger
     {
@@ -394,9 +395,9 @@ namespace ReactiveUI
     }
     public class static ObservedChangedMixin
     {
-        public static string GetPropertyName<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> @this) { }
-        public static TValue GetValue<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> @this) { }
-        public static System.IObservable<TValue> Value<TSender, TValue>(this System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> @this) { }
+        public static string GetPropertyName<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
+        public static TValue GetValue<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
+        public static System.IObservable<TValue> Value<TSender, TValue>(this System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> item) { }
     }
     public class static OrderedComparer
     {
@@ -410,16 +411,16 @@ namespace ReactiveUI
         public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector) { }
         public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
     }
-    public class PlatformRegistrations
-    {
-        public PlatformRegistrations() { }
-        public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
-    }
     public class POCOObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
         public POCOObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
         public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
+    }
+    public class PlatformRegistrations
+    {
+        public PlatformRegistrations() { }
+        public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
     public class PropertyBinderImplementation : ReactiveUI.IPropertyBinderImplementation, Splat.IEnableLogger
     {
@@ -486,16 +487,6 @@ namespace ReactiveUI
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.Tasks.Task> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
     }
-    public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
-    {
-        protected internal ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler outputScheduler) { }
-        public override System.IObservable<bool> CanExecute { get; }
-        public override System.IObservable<bool> IsExecuting { get; }
-        public override System.IObservable<System.Exception> ThrownExceptions { get; }
-        protected override void Dispose(bool disposing) { }
-        public override System.IObservable<TResult> Execute(TParam parameter = null) { }
-        public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
-    }
     public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
     {
         protected ReactiveCommandBase() { }
@@ -513,17 +504,27 @@ namespace ReactiveUI
     }
     public class static ReactiveCommandMixins
     {
-        public static System.IDisposable InvokeCommand<T>(this System.IObservable<T> @this, System.Windows.Input.ICommand command) { }
-        public static System.IDisposable InvokeCommand<T, TResult>(this System.IObservable<T> @this, ReactiveUI.ReactiveCommandBase<T, TResult> command) { }
-        public static System.IDisposable InvokeCommand<T, TTarget>(this System.IObservable<T> @this, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, System.Windows.Input.ICommand>> commandProperty)
+        public static System.IDisposable InvokeCommand<T>(this System.IObservable<T> item, System.Windows.Input.ICommand command) { }
+        public static System.IDisposable InvokeCommand<T, TResult>(this System.IObservable<T> item, ReactiveUI.ReactiveCommandBase<T, TResult> command) { }
+        public static System.IDisposable InvokeCommand<T, TTarget>(this System.IObservable<T> item, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, System.Windows.Input.ICommand>> commandProperty)
             where TTarget :  class { }
-        public static System.IDisposable InvokeCommand<T, TResult, TTarget>(this System.IObservable<T> @this, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, ReactiveUI.ReactiveCommandBase<T, TResult>>> commandProperty)
+        public static System.IDisposable InvokeCommand<T, TResult, TTarget>(this System.IObservable<T> item, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, ReactiveUI.ReactiveCommandBase<T, TResult>>> commandProperty)
             where TTarget :  class { }
+    }
+    public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
+    {
+        protected internal ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler outputScheduler) { }
+        public override System.IObservable<bool> CanExecute { get; }
+        public override System.IObservable<bool> IsExecuting { get; }
+        public override System.IObservable<System.Exception> ThrownExceptions { get; }
+        protected override void Dispose(bool disposing) { }
+        public override System.IObservable<TResult> Execute(TParam parameter = null) { }
+        public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
     }
     public class static ReactiveNotifyPropertyChangedMixin
     {
-        public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender @this, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, bool beforeChange = False, bool skipInitial = True) { }
-        public static System.IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender @this, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, System.Func<TValue, TRet> selector, bool beforeChange = False)
+        public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, bool beforeChange = False, bool skipInitial = True) { }
+        public static System.IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, System.Func<TValue, TRet> selector, bool beforeChange = False)
             where TSender :  class { }
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender source, System.Linq.Expressions.Expression expression, bool beforeChange = False, bool skipInitial = True, bool suppressWarnings = False) { }
     }
@@ -561,7 +562,7 @@ namespace ReactiveUI
         public static System.Func<object, object[], object> GetValueFetcherOrThrow(System.Reflection.MemberInfo member) { }
         public static System.Action<object, object, object[]> GetValueSetterForProperty(System.Reflection.MemberInfo member) { }
         public static System.Action<object, object, object[]> GetValueSetterOrThrow(System.Reflection.MemberInfo member) { }
-        public static bool IsStatic(this System.Reflection.PropertyInfo @this) { }
+        public static bool IsStatic(this System.Reflection.PropertyInfo item) { }
         public static System.Type ReallyFindType(string type, bool throwOnFailure) { }
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression expression) { }
         public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) { }
@@ -576,9 +577,9 @@ namespace ReactiveUI
     }
     public class static RoutableViewModelMixin
     {
-        public static System.IDisposable WhenNavigatedTo(this ReactiveUI.IRoutableViewModel @this, System.Func<System.IDisposable> onNavigatedTo) { }
-        public static System.IObservable<System.Reactive.Unit> WhenNavigatedToObservable(this ReactiveUI.IRoutableViewModel @this) { }
-        public static System.IObservable<System.Reactive.Unit> WhenNavigatingFromObservable(this ReactiveUI.IRoutableViewModel @this) { }
+        public static System.IDisposable WhenNavigatedTo(this ReactiveUI.IRoutableViewModel item, System.Func<System.IDisposable> onNavigatedTo) { }
+        public static System.IObservable<System.Reactive.Unit> WhenNavigatedToObservable(this ReactiveUI.IRoutableViewModel item) { }
+        public static System.IObservable<System.Reactive.Unit> WhenNavigatingFromObservable(this ReactiveUI.IRoutableViewModel item) { }
     }
     [System.Runtime.Serialization.DataContractAttribute()]
     public class RoutingState : ReactiveUI.ReactiveObject
@@ -602,9 +603,9 @@ namespace ReactiveUI
     }
     public class static RoutingStateMixins
     {
-        public static T FindViewModelInStack<T>(this ReactiveUI.RoutingState @this)
+        public static T FindViewModelInStack<T>(this ReactiveUI.RoutingState item)
             where T : ReactiveUI.IRoutableViewModel { }
-        public static ReactiveUI.IRoutableViewModel GetCurrentViewModel(this ReactiveUI.RoutingState @this) { }
+        public static ReactiveUI.IRoutableViewModel GetCurrentViewModel(this ReactiveUI.RoutingState item) { }
     }
     public class static RxApp
     {
@@ -640,10 +641,10 @@ namespace ReactiveUI
     }
     public class static SuspensionHostExtensions
     {
-        public static T GetAppState<T>(this ReactiveUI.ISuspensionHost @this) { }
-        public static System.IObservable<T> ObserveAppState<T>(this ReactiveUI.ISuspensionHost @this)
+        public static T GetAppState<T>(this ReactiveUI.ISuspensionHost item) { }
+        public static System.IObservable<T> ObserveAppState<T>(this ReactiveUI.ISuspensionHost item)
             where T :  class { }
-        public static System.IDisposable SetupDefaultSuspendResume(this ReactiveUI.ISuspensionHost @this, ReactiveUI.ISuspensionDriver driver = null) { }
+        public static System.IDisposable SetupDefaultSuspendResume(this ReactiveUI.ISuspensionHost item, ReactiveUI.ISuspensionDriver driver = null) { }
     }
     public class UnhandledErrorException : System.Exception
     {
@@ -671,14 +672,14 @@ namespace ReactiveUI
     }
     public class static ViewForMixins
     {
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation @this, System.Action<System.Action<System.IDisposable>> block) { }
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation @this, System.Action<System.Reactive.Disposables.CompositeDisposable> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Action<System.Action<System.IDisposable>> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor view = null) { }
+        public static void WhenActivated(this ReactiveUI.ISupportsActivation item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        public static void WhenActivated(this ReactiveUI.ISupportsActivation item, System.Action<System.Action<System.IDisposable>> block) { }
+        public static void WhenActivated(this ReactiveUI.ISupportsActivation item, System.Action<System.Reactive.Disposables.CompositeDisposable> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Action<System.Action<System.IDisposable>> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor view = null) { }
     }
     public class static ViewLocator
     {
@@ -908,8 +909,8 @@ namespace ReactiveUI.Legacy
         public System.IObservable<T> BeforeItemsAdded { get; }
         public System.IObservable<ReactiveUI.Legacy.IMoveInfo<T>> BeforeItemsMoved { get; }
         public System.IObservable<T> BeforeItemsRemoved { get; }
-        public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changed { get; }
         public bool ChangeTrackingEnabled { get; set; }
+        public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changed { get; }
         public System.IObservable<System.Collections.Specialized.NotifyCollectionChangedEventArgs> Changing { get; }
         public int Count { get; }
         public System.IObservable<int> CountChanged { get; }

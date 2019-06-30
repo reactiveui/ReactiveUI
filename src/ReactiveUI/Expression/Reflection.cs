@@ -352,6 +352,11 @@ namespace ReactiveUI
         /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
         public static Type GetEventArgsTypeForEvent(Type type, string eventName)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             Type ti = type;
             EventInfo ei = ti.GetRuntimeEvent(eventName);
             if (ei == null)
@@ -390,11 +395,16 @@ namespace ReactiveUI
         /// <summary>
         /// Determines if the specified property is static or not.
         /// </summary>
-        /// <param name="this">The property information to check.</param>
+        /// <param name="item">The property information to check.</param>
         /// <returns>If the property is static or not.</returns>
-        public static bool IsStatic(this PropertyInfo @this)
+        public static bool IsStatic(this PropertyInfo item)
         {
-            return (@this.GetMethod ?? @this.SetMethod).IsStatic;
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            return (item.GetMethod ?? item.SetMethod).IsStatic;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "TViewModel used to help generic calling.")]

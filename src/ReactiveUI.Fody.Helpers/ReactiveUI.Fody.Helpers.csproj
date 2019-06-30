@@ -11,11 +11,12 @@
 
     <!-- Due to fody insisting on having .net 4 classes, we can't pack on non-windows -->
     <IsPackable Condition=" '$(OS)' != 'Windows_NT' ">false</IsPackable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fody" Version="5.0.6" PrivateAssets="None" />
-    <PackageReference Include="FodyPackaging" Version="5.0.6" PrivateAssets="All" />
+    <PackageReference Include="Fody" Version="5.1.1" PrivateAssets="None" />
+    <PackageReference Include="FodyPackaging" Version="5.1.1" PrivateAssets="All" />
     <PackageReference Include="System.Reactive" Version="4.1.5" />
   </ItemGroup>
 

@@ -45,6 +45,11 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
+            if (sender == null)
+            {
+                throw new ArgumentNullException(nameof(sender));
+            }
+
             var ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), propertyName));
 
             return Observable.Create<IObservedChange<object, object>>(subj =>

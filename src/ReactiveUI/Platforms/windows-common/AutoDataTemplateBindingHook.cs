@@ -6,7 +6,7 @@
 using System;
 using System.Linq;
 
-#if NETFX_CORE
+#if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
@@ -16,7 +16,11 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 #endif
 
+#if HAS_UNO
+namespace ReactiveUI.Uno
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
@@ -30,10 +34,11 @@ namespace ReactiveUI
         /// </summary>
         public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new Lazy<DataTemplate>(() =>
         {
-#if NETFX_CORE
-            const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>" +
-                "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
-            "</DataTemplate>";
+#if NETFX_CORE || HAS_UNO
+            const string template =
+@"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>
+    <xaml:ViewModelViewHost ViewModel=""{Binding}"" VerticalContentAlignment=""Stretch"" HorizontalContentAlignment=""Stretch"" IsTabStop=""False"" />
+</DataTemplate>";
             return (DataTemplate)XamlReader.Load(template);
 #else
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
@@ -51,15 +56,15 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
-            var viewProperties = getCurrentViewProperties();
-            var lastViewProperty = viewProperties.LastOrDefault();
-            if (lastViewProperty == null)
+            if (getCurrentViewProperties == null)
             {
-                return true;
+                throw new ArgumentNullException(nameof(getCurrentViewProperties));
             }
 
-            var itemsControl = lastViewProperty.Sender as ItemsControl;
-            if (itemsControl == null)
+            var viewProperties = getCurrentViewProperties();
+            var lastViewProperty = viewProperties.LastOrDefault();
+
+            if (!(lastViewProperty?.Sender is ItemsControl itemsControl))
             {
                 return true;
             }

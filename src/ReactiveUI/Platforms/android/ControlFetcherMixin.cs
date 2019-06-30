@@ -53,6 +53,11 @@ namespace ReactiveUI
         /// <param name="resolveMembers">The resolve members.</param>
         public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
+            if (layoutHost == null)
+            {
+                throw new ArgumentNullException(nameof(layoutHost));
+            }
+
             var members = layoutHost.GetWireUpMembers(resolveMembers).ToList();
             foreach (var member in members)
             {
@@ -76,6 +81,11 @@ namespace ReactiveUI
         /// <param name="resolveMembers">The resolve members.</param>
         public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
+            if (view == null)
+            {
+                throw new ArgumentNullException(nameof(view));
+            }
+
             var members = view.GetWireUpMembers(resolveMembers);
 
             foreach (var member in members)
@@ -105,6 +115,11 @@ namespace ReactiveUI
         /// <param name="resolveMembers">The resolve members.</param>
         public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
+            if (fragment == null)
+            {
+                throw new ArgumentNullException(nameof(fragment));
+            }
+
             var members = fragment.GetWireUpMembers(resolveMembers);
 
             foreach (var member in members)
@@ -132,6 +147,11 @@ namespace ReactiveUI
         /// <param name="resolveMembers">The resolve members.</param>
         public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+
             var members = activity.GetWireUpMembers(resolveMembers);
 
             foreach (var member in members)
@@ -179,10 +199,9 @@ namespace ReactiveUI
 
         private static View GetCachedControl(string propertyName, object rootView, Func<View> fetchControlFromView)
         {
-            View ret;
             var ourViewCache = viewCache.GetOrCreateValue(rootView);
 
-            if (ourViewCache.TryGetValue(propertyName, out ret))
+            if (ourViewCache.TryGetValue(propertyName, out View ret))
             {
                 return ret;
             }

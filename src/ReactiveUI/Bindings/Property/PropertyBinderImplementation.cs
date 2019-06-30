@@ -188,6 +188,16 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewFor
         {
+            if (vmProperty == null)
+            {
+                throw new ArgumentNullException(nameof(vmProperty));
+            }
+
+            if (viewProperty == null)
+            {
+                throw new ArgumentNullException(nameof(viewProperty));
+            }
+
             if (vmToViewConverter == null)
             {
                 throw new ArgumentNullException(nameof(vmToViewConverter));
@@ -266,6 +276,16 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewFor
         {
+            if (vmProperty == null)
+            {
+                throw new ArgumentNullException(nameof(vmProperty));
+            }
+
+            if (viewProperty == null)
+            {
+                throw new ArgumentNullException(nameof(viewProperty));
+            }
+
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
             var viewType = viewExpression.Type;
@@ -342,6 +362,16 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewFor
         {
+            if (vmProperty == null)
+            {
+                throw new ArgumentNullException(nameof(vmProperty));
+            }
+
+            if (viewProperty == null)
+            {
+                throw new ArgumentNullException(nameof(viewProperty));
+            }
+
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
@@ -392,6 +422,11 @@ namespace ReactiveUI
             if (target == null)
             {
                 throw new ArgumentNullException(nameof(target));
+            }
+
+            if (propertyExpression == null)
+            {
+                throw new ArgumentNullException(nameof(propertyExpression));
             }
 
             var viewExpression = Reflection.Rewrite(propertyExpression.Body);
@@ -538,6 +573,16 @@ namespace ReactiveUI
             where TView : class, IViewFor
             where TViewModel : class
         {
+            if (vmProperty == null)
+            {
+                throw new ArgumentNullException(nameof(vmProperty));
+            }
+
+            if (viewProperty == null)
+            {
+                throw new ArgumentNullException(nameof(viewProperty));
+            }
+
             var signalInitialUpdate = new Subject<bool>();
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
