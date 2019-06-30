@@ -2,7 +2,7 @@
 
   <PropertyGroup>    
     <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;netcoreapp3.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Reactive" Version="4.1.5" />  
   </ItemGroup>
   
   <ItemGroup>
@@ -20,9 +19,32 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 
+  <Choose>
+    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) ">
+      <ItemGroup>
+          <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0-preview.566" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+          <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.5" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3'))">
+    <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+    <Compile Include="Platforms\common-gui\**\*.cs" />
+    <Compile Include="Platforms\wpf\**\*.cs" />
+    <Compile Include="Platforms\Winforms\**\*.cs" />
+    <Compile Include="Platforms\windows-xaml\**\*.cs" />
+    <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4'))">
