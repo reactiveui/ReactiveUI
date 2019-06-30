@@ -186,6 +186,13 @@ namespace ReactiveUI
         public INPCObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
         public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = False) { }
+<<<<<<< HEAD
+=======
+    }
+    public interface INotifyCollectionChanging
+    {
+        public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanging;
+>>>>>>> master
     }
     public interface INotifyPropertyChanging
     {

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard20;MonoAndroid81;MonoAndroid90;Xamarin.iOS10;Xamarin.Mac20</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.17763</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <Description>Uno Platform specific extensions for ReactiveUI</Description>
     <DefineConstants>HAS_UNO</DefineConstants>
@@ -12,8 +13,17 @@
     <DefineConstants>HAS_UNO;WASM</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" !$(TargetFramework.StartsWith('uap')) ">
     <PackageReference Include="Uno.UI" Version="1.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.8" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <!-- UAP is just here for convenience with namespaces, don't need to duplicate up the scheduler/registrations -->
+    <Compile Remove=".\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,11 +32,6 @@
     <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" LinkBase="ReactiveUI\Platforms\windows-common" />
 
   	<None Include="..\ReactiveUI\Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.8" />
-    <Compile Include=".\Platforms\netstandard\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
