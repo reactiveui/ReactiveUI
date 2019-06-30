@@ -11,9 +11,20 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />    
     <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
-    <PackageReference Include="System.Reactive" Version=" 4.2.0-preview.566" />
   </ItemGroup>
 
+  <Choose>
+    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) ">
+      <ItemGroup>
+          <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+          <PackageReference Include="System.Reactive" Version="4.1.5" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <ItemGroup>
     <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />
   </ItemGroup>

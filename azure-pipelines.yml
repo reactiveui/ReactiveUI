@@ -19,4 +19,5 @@ jobs:
 - template: Azure/azure-pipelines-2019.yml@templates  # Template reference
   parameters:
     eventsGenerated: true
+    dotNetVersion: '3.0.100-preview6-012264'
     

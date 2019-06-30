@@ -12,10 +12,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Reactive" Version=" 4.2.0-preview.566" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 
+  <Choose>
+    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) ">
+      <ItemGroup>
+          <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+          <PackageReference Include="System.Reactive" Version="4.1.5" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>

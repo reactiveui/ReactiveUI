@@ -5,6 +5,7 @@
     <Description>Provides Observable-based events API for WPF UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>ReactiveUI.Events.WPF</PackageId>
     <UseWpf>true</UseWpf>
+    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>  
 
@@ -13,6 +14,19 @@
     <None Include="*.cs" />
     <PackageReference Include="Pharmacist.Common" Version="1.*" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) ">
+      <ItemGroup>
+          <PackageReference Include="System.Reactive" Version="4.2.0-preview.566" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+          <PackageReference Include="System.Reactive" Version="4.1.5" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
     <PackageReference Include="Pharmacist.MsBuild" Version="1.*" />
