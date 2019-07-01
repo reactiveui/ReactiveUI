@@ -48,7 +48,7 @@
     <PackageReference Include="Xunit.StaFact" Version="0.3.18" />
     <PackageReference Include="Shouldly" Version="4.0.0-beta0002" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.5" />
-    <PackageReference Include="PublicApiGenerator" Version="9.0.0" />
+    <PackageReference Include="PublicApiGenerator" Version="9.1.0" />
   </ItemGroup>
   
   <ItemGroup Condition="$(IsTestProject)">
