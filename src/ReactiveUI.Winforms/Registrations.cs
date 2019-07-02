@@ -6,6 +6,8 @@
 using System;
 using System.Reactive.Concurrency;
 using System.Windows.Forms;
+
+using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI.Winforms
@@ -31,6 +33,7 @@ namespace ReactiveUI.Winforms
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new PanelSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
             registerFunction(() => new TableContentSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
+            registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 
             if (!ModeDetector.InUnitTestRunner())
             {
