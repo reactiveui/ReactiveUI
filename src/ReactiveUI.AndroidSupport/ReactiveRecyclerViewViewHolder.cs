@@ -42,15 +42,23 @@ namespace ReactiveUI.AndroidSupport
         {
             SetupRxObj();
 
-            Selected = Observable.FromEventPattern(
+            Selected = Observable.FromEvent<EventHandler, int>(
+                eventHandler =>
+                {
+                    void Handler(object sender, EventArgs e) => eventHandler(AdapterPosition);
+                    return Handler;
+                },
                 h => view.Click += h,
-                h => view.Click -= h)
-                    .Select(_ => AdapterPosition);
+                h => view.Click -= h);
 
-            LongClicked = Observable.FromEventPattern<View.LongClickEventArgs>(
+            LongClicked = Observable.FromEvent<EventHandler<View.LongClickEventArgs>, int>(
+                eventHandler =>
+                {
+                    void Handler(object sender, EventArgs e) => eventHandler(AdapterPosition);
+                    return Handler;
+                },
                 h => view.LongClick += h,
-                h => view.LongClick -= h)
-                    .Select(_ => AdapterPosition);
+                h => view.LongClick -= h);
         }
 
         /// <inheritdoc/>

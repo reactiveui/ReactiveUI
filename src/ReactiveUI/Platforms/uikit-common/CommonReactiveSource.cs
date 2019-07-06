@@ -29,7 +29,7 @@ namespace ReactiveUI
         private readonly int _mainThreadId;
         private readonly CompositeDisposable _mainDisposables;
         private readonly SerialDisposable _sectionInfoDisposable;
-        private readonly IList<Tuple<int, PendingChange>> _pendingChanges;
+        private readonly IList<(int section, PendingChange pendingChange)> _pendingChanges;
         private bool _isCollectingChanges;
         private IReadOnlyList<TSectionInfo> _sectionInfo;
 
@@ -44,7 +44,7 @@ namespace ReactiveUI
             _mainDisposables = new CompositeDisposable();
             _sectionInfoDisposable = new SerialDisposable();
             _mainDisposables.Add(_sectionInfoDisposable);
-            _pendingChanges = new List<Tuple<int, PendingChange>>();
+            _pendingChanges = new List<(int section, PendingChange pendingChange)>();
             _sectionInfo = Array.Empty<TSectionInfo>();
 
             _mainDisposables.Add(
@@ -310,7 +310,7 @@ namespace ReactiveUI
                                         });
                             }
 
-                            _pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change.EventArgs)));
+                            _pendingChanges.Add((y.Section, new PendingChange(y.Change.EventArgs)));
                         },
                             ex => this.Log().Error(CultureInfo.InvariantCulture, "[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
 
@@ -334,29 +334,29 @@ namespace ReactiveUI
                         {
                             this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] The pending changes (in order received) are:", sectionInfoId);
 
-                            foreach (var pendingChange in _pendingChanges)
+                            foreach (var pendingSectionChange in _pendingChanges)
                             {
                                 this.Log().Debug(
                                     CultureInfo.InvariantCulture,
                                     "[#{0}] Section {1}: Action = {2}, OldStartingIndex = {3}, NewStartingIndex = {4}, OldItems.Count = {5}, NewItems.Count = {6}",
                                     sectionInfoId,
-                                    pendingChange.Item1,
-                                    pendingChange.Item2.Action,
-                                    pendingChange.Item2.OldStartingIndex,
-                                    pendingChange.Item2.NewStartingIndex,
-                                    pendingChange.Item2.OldItems == null ? "null" : pendingChange.Item2.OldItems.Count.ToString(CultureInfo.InvariantCulture),
-                                    pendingChange.Item2.NewItems == null ? "null" : pendingChange.Item2.NewItems.Count.ToString(CultureInfo.InvariantCulture));
+                                    pendingSectionChange.section,
+                                    pendingSectionChange.pendingChange.Action,
+                                    pendingSectionChange.pendingChange.OldStartingIndex,
+                                    pendingSectionChange.pendingChange.NewStartingIndex,
+                                    pendingSectionChange.pendingChange.OldItems == null ? "null" : pendingSectionChange.pendingChange.OldItems.Count.ToString(CultureInfo.InvariantCulture),
+                                    pendingSectionChange.pendingChange.NewItems == null ? "null" : pendingSectionChange.pendingChange.NewItems.Count.ToString(CultureInfo.InvariantCulture));
                             }
                         }
 
-                        foreach (var sectionedUpdates in _pendingChanges.GroupBy(x => x.Item1))
+                        foreach (var sectionedUpdates in _pendingChanges.GroupBy(x => x.section))
                         {
-                            var section = sectionedUpdates.First().Item1;
+                            var section = sectionedUpdates.First().section;
 
                             this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Processing updates for section {1}", sectionInfoId, section);
 
                             var allSectionChanges = sectionedUpdates
-                                .Select(x => x.Item2)
+                                .Select(x => x.pendingChange)
                                 .ToList();
 
                             if (allSectionChanges.Any(x => x.Action == NotifyCollectionChangedAction.Reset))

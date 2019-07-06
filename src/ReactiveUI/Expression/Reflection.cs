@@ -382,13 +382,13 @@ namespace ReactiveUI
                 .Select(x =>
                 {
                     IEnumerable<MethodInfo> methods = targetObject.GetType().GetTypeInfo().DeclaredMethods;
-                    return Tuple.Create(x, methods.FirstOrDefault(y => y.Name == x));
+                    return (methodName: x, methodImplementation: methods.FirstOrDefault(y => y.Name == x));
                 })
-                .FirstOrDefault(x => x.Item2 == null);
+                .FirstOrDefault(x => x.methodImplementation == null);
 
-            if (missingMethod != null)
+            if (missingMethod.methodImplementation == default)
             {
-                throw new Exception($"Your class must implement {missingMethod.Item1} and call {callingTypeName}.{missingMethod.Item1}");
+                throw new Exception($"Your class must implement {missingMethod.methodName} and call {callingTypeName}.{missingMethod.methodName}");
             }
         }
 

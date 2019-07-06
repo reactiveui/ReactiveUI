@@ -20,7 +20,7 @@ namespace ReactiveUI
             // NB: String is a Magical Type(tm) to TypeConverters. If we are
             // converting from string => int, we need the Int converter, not
             // the string converter :-/
-            if (types.Item1 == typeof(string))
+            if (types.fromType == typeof(string))
             {
                 types = (types.toType, types.fromType);
             }

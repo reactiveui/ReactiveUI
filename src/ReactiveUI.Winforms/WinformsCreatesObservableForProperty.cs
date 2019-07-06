@@ -22,11 +22,11 @@ namespace ReactiveUI.Winforms
     /// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
     public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<Tuple<Type, string>, EventInfo> eventInfoCache = new MemoizingMRUCache<Tuple<Type, string>, EventInfo>(
+        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo> eventInfoCache = new MemoizingMRUCache<(Type type, string name), EventInfo>(
             (pair, _) =>
         {
-            return pair.Item1.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
-                .FirstOrDefault(x => x.Name == pair.Item2 + "Changed");
+            return pair.type.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
+                .FirstOrDefault(x => x.Name == pair.name + "Changed");
         }, RxApp.SmallCacheLimit);
 
         /// <inheritdoc/>
@@ -38,7 +38,7 @@ namespace ReactiveUI.Winforms
                 return 0;
             }
 
-            var ei = eventInfoCache.Get(Tuple.Create(type, propertyName));
+            var ei = eventInfoCache.Get((type, propertyName));
             return beforeChanged == false && ei != null ? 8 : 0;
         }
 
@@ -50,7 +50,7 @@ namespace ReactiveUI.Winforms
                 throw new ArgumentNullException(nameof(sender));
             }
 
-            var ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), propertyName));
+            var ei = eventInfoCache.Get((sender.GetType(), propertyName));
 
             return Observable.Create<IObservedChange<object, object>>(subj =>
             {

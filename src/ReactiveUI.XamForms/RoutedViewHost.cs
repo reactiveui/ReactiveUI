@@ -121,7 +121,14 @@ namespace ReactiveUI.XamForms
                     })
                     .Subscribe());
 
-                var poppingEvent = Observable.FromEventPattern<NavigationEventArgs>(x => Popped += x, x => Popped -= x);
+                var poppingEvent = Observable.FromEvent<EventHandler<NavigationEventArgs>, Unit>(
+                        eventHandler =>
+                        {
+                            void Handler(object sender, NavigationEventArgs e) => eventHandler(Unit.Default);
+                            return Handler;
+                        },
+                        x => Popped += x,
+                        x => Popped -= x);
 
                 // NB: Catch when the user hit back as opposed to the application
                 // requesting Back via NavigateBack

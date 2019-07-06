@@ -43,34 +43,46 @@ namespace ReactiveUI
 
             if (beforeChanged)
             {
-                var obs = Observable.FromEventPattern<PropertyChangingEventHandler, PropertyChangingEventArgs>(
-                    x => before.PropertyChanging += x, x => before.PropertyChanging -= x);
+                var obs = Observable.FromEvent<PropertyChangingEventHandler, string>(
+                    eventHandler =>
+                    {
+                        void Handler(object eventSender, PropertyChangingEventArgs e) => eventHandler(e.PropertyName);
+                        return Handler;
+                    },
+                    x => before.PropertyChanging += x,
+                    x => before.PropertyChanging -= x);
 
                 if (expression.NodeType == ExpressionType.Index)
                 {
-                    return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
-                        || x.EventArgs.PropertyName.Equals(propertyName + "[]", StringComparison.InvariantCulture))
+                    return obs.Where(x => string.IsNullOrEmpty(x)
+                        || x.Equals(propertyName + "[]", StringComparison.InvariantCulture))
                         .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
 
-                return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
-                    || x.EventArgs.PropertyName.Equals(propertyName, StringComparison.InvariantCulture))
+                return obs.Where(x => string.IsNullOrEmpty(x)
+                    || x.Equals(propertyName, StringComparison.InvariantCulture))
                 .Select(x => new ObservedChange<object, object>(sender, expression));
             }
             else
             {
-                var obs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
-                    x => after.PropertyChanged += x, x => after.PropertyChanged -= x);
+                var obs = Observable.FromEvent<PropertyChangedEventHandler, string>(
+                    eventHandler =>
+                    {
+                        void Handler(object eventSender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
+                        return Handler;
+                    },
+                    x => after.PropertyChanged += x,
+                    x => after.PropertyChanged -= x);
 
                 if (expression.NodeType == ExpressionType.Index)
                 {
-                    return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
-                        || x.EventArgs.PropertyName.Equals(propertyName + "[]", StringComparison.InvariantCulture))
+                    return obs.Where(x => string.IsNullOrEmpty(x)
+                        || x.Equals(propertyName + "[]", StringComparison.InvariantCulture))
                     .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
 
-                return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
-                    || x.EventArgs.PropertyName.Equals(propertyName, StringComparison.InvariantCulture))
+                return obs.Where(x => string.IsNullOrEmpty(x)
+                    || x.Equals(propertyName, StringComparison.InvariantCulture))
                 .Select(x => new ObservedChange<object, object>(sender, expression));
             }
         }

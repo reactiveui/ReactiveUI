@@ -25,16 +25,16 @@ namespace ReactiveUI
     /// </summary>
     public class KVOObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<Tuple<Type, string>, bool> declaredInNSObject;
+        private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> declaredInNSObject;
 
         static KVOObservableForProperty()
         {
             var monotouchAssemblyName = typeof(NSObject).Assembly.FullName;
 
-            declaredInNSObject = new MemoizingMRUCache<Tuple<Type, string>, bool>(
+            declaredInNSObject = new MemoizingMRUCache<(Type type, string propertyName), bool>(
                 (pair, _) =>
             {
-                var thisType = pair.Item1;
+                var thisType = pair.type;
 
                 // Types that aren't NSObjects at all are uninteresting to us
                 if (typeof(NSObject).IsAssignableFrom(thisType) == false)
@@ -44,7 +44,7 @@ namespace ReactiveUI
 
                 while (thisType != null)
                 {
-                    if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.Item2))
+                    if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.propertyName))
                     {
                         // NB: This is a not-completely correct way to detect if
                         // an object is defined in an Obj-C class (it will fail if
@@ -63,7 +63,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            return declaredInNSObject.Get(Tuple.Create(type, propertyName)) ? 15 : 0;
+            return declaredInNSObject.Get((type, propertyName)) ? 15 : 0;
         }
 
         /// <inheritdoc/>

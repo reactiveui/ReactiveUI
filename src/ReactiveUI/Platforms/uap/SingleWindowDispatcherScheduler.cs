@@ -29,8 +29,8 @@ namespace ReactiveUI
     /// <seealso cref="System.Reactive.Concurrency.IScheduler" />
     public class SingleWindowDispatcherScheduler : IScheduler
     {
+        private const CoreDispatcherPriority Priority = default;
         private static CoreDispatcher _dispatcher;
-        private readonly CoreDispatcherPriority _priority;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleWindowDispatcherScheduler"/> class.
@@ -127,10 +127,13 @@ namespace ReactiveUI
         /// previous XAML stacks using Rx.
         /// </summary>
         /// <param name="ex">The exception.</param>
-        private void RaiseUnhandledException(Exception ex)
+        private static void RaiseUnhandledException(Exception ex)
         {
-            var timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.Zero;
+            var timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.Zero
+            };
+
             timer.Tick += RaiseToDispatcher;
 
             timer.Start();
@@ -156,7 +159,7 @@ namespace ReactiveUI
             var d = new SingleAssignmentDisposable();
 
             var dispatchResult = _dispatcher.RunAsync(
-                _priority,
+                Priority,
                 () =>
                 {
                     if (!d.IsDisposed)

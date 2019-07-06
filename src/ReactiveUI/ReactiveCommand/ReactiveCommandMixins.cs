@@ -28,9 +28,14 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> item, ICommand command)
         {
-            var canExecuteChanged = Observable
-                .FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
-                .Select(_ => Unit.Default)
+            var canExecuteChanged = Observable.FromEvent<EventHandler, Unit>(
+                eventHandler =>
+                {
+                    void Handler(object sender, EventArgs e) => eventHandler(Unit.Default);
+                    return Handler;
+                },
+                h => command.CanExecuteChanged += h,
+                h => command.CanExecuteChanged -= h)
                 .StartWith(Unit.Default);
 
             return WithLatestFromFixed(item, canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
@@ -78,12 +83,18 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> item, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
             where TTarget : class
         {
-            var command = target.WhenAnyValue(commandProperty);
-            var commandCanExecuteChanged = command
-                .Select(c => c == null ? Observable<ICommand>.Empty : Observable
-                    .FromEventPattern(h => c.CanExecuteChanged += h, h => c.CanExecuteChanged -= h)
-                    .Select(_ => c)
-                    .StartWith(c))
+            var commandObs = target.WhenAnyValue(commandProperty);
+            var commandCanExecuteChanged = commandObs
+                .Select(command => command == null ? Observable<ICommand>.Empty : Observable
+                    .FromEvent<EventHandler, ICommand>(
+                        eventHandler =>
+                        {
+                            void Handler(object sender, EventArgs e) => eventHandler(command);
+                            return Handler;
+                        },
+                        h => command.CanExecuteChanged += h,
+                        h => command.CanExecuteChanged -= h)
+                    .StartWith(command))
                 .Switch();
 
             return WithLatestFromFixed(item, commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))

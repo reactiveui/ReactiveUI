@@ -95,8 +95,14 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            ViewContractObservable = Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
-                .Select(_ => platformGetter())
+            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
+                eventHandler =>
+                {
+                    void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
+                    return Handler;
+                },
+                x => SizeChanged += x,
+                x => SizeChanged -= x)
                 .StartWith(platformGetter())
                 .DistinctUntilChanged();
 

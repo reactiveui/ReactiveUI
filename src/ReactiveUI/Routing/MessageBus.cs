@@ -96,7 +96,7 @@ namespace ReactiveUI
         public bool IsRegistered(Type type, string contract = null)
         {
             bool ret = false;
-            WithMessageBus(type, contract, (mb, tuple) => { ret = mb.ContainsKey(tuple) && mb[tuple].IsAlive; });
+            WithMessageBus(type, contract, (mb, item) => { ret = mb.ContainsKey(item) && mb[item].IsAlive; });
 
             return ret;
         }
@@ -145,16 +145,16 @@ namespace ReactiveUI
         {
             ISubject<T> ret = null;
 
-            WithMessageBus(typeof(T), contract, (mb, tuple) =>
+            WithMessageBus(typeof(T), contract, (mb, item) =>
             {
-                if (mb.TryGetValue(tuple, out NotAWeakReference subjRef) && subjRef.IsAlive)
+                if (mb.TryGetValue(item, out NotAWeakReference subjRef) && subjRef.IsAlive)
                 {
                     ret = (ISubject<T>)subjRef.Target;
                     return;
                 }
 
-                ret = new ScheduledSubject<T>(GetScheduler(tuple), null, new BehaviorSubject<T>(default(T)));
-                mb[tuple] = new NotAWeakReference(ret);
+                ret = new ScheduledSubject<T>(GetScheduler(item), null, new BehaviorSubject<T>(default(T)));
+                mb[item] = new NotAWeakReference(ret);
             });
 
             return ret;
@@ -167,18 +167,18 @@ namespace ReactiveUI
         {
             lock (_messageBus)
             {
-                var tuple = (type, contract);
-                block(_messageBus, tuple);
-                if (_messageBus.ContainsKey(tuple) && !_messageBus[tuple].IsAlive)
+                var item = (type, contract);
+                block(_messageBus, item);
+                if (_messageBus.ContainsKey(item) && !_messageBus[item].IsAlive)
                 {
-                    _messageBus.Remove(tuple);
+                    _messageBus.Remove(item);
                 }
             }
         }
 
-        private IScheduler GetScheduler((Type type, string contract) tuple)
+        private IScheduler GetScheduler((Type type, string contract) item)
         {
-            _schedulerMappings.TryGetValue(tuple, out IScheduler scheduler);
+            _schedulerMappings.TryGetValue(item, out IScheduler scheduler);
             return scheduler ?? CurrentThreadScheduler.Instance;
         }
     }
