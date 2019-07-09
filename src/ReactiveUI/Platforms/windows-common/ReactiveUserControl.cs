@@ -82,7 +82,7 @@ namespace ReactiveUI
     /// <typeparam name="TViewModel">
     /// The type of the view model backing the view.
     /// </typeparam>
-#if __IOS__
+#if HAS_UNO && IOS
     [global::Foundation.Register]
 #endif
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
@@ -104,7 +104,8 @@ namespace ReactiveUI
                 typeof(ReactiveUserControl<TViewModel>),
                 new PropertyMetadata(null));
 
-#if __ANDROID__
+#if HAS_UNO
+#if ANDROID
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
         /// Native constructor, do not use explicitly.
@@ -120,7 +121,7 @@ namespace ReactiveUI
         {
         }
 #endif
-#if __IOS__
+#if IOS
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
         /// Native constructor, do not use explicitly.
@@ -134,6 +135,7 @@ namespace ReactiveUI
             : base(handle)
         {
         }
+#endif
 #endif
 
         /// <summary>
