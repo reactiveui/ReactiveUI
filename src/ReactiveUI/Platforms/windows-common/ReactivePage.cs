@@ -105,6 +105,14 @@ namespace ReactiveUI
                 new PropertyMetadata(null));
 
 #if HAS_UNO
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePage{TViewModel}"/> class.
+        /// </summary>
+        protected ReactivePage()
+        {
+            // needed so the others are optional.
+        }
+
 #if ANDROID
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactivePage{TViewModel}"/> class.
