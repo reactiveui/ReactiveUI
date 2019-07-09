@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 #if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
@@ -81,6 +82,9 @@ namespace ReactiveUI
     /// <typeparam name="TViewModel">
     /// The type of the view model backing the view.
     /// </typeparam>
+#if __IOS__
+    [global::Foundation.Register]
+#endif
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
     public abstract
 #if HAS_UNO
@@ -99,6 +103,38 @@ namespace ReactiveUI
                 typeof(TViewModel),
                 typeof(ReactivePage<TViewModel>),
                 new PropertyMetadata(null));
+
+#if __ANDROID__
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePage{TViewModel}"/> class.
+        /// Native constructor, do not use explicitly.
+        /// </summary>
+        /// <remarks>
+        /// Used by the Xamarin Runtime to materialize native
+        /// objects that may have been collected in the managed world.
+        /// </remarks>
+        /// <param name="javaReference">javaReference.</param>
+        /// <param name="transfer">transfer.</param>
+        protected ReactivePage(IntPtr javaReference, global::Android.Runtime.JniHandleOwnership transfer)
+            : base(javaReference, transfer)
+        {
+        }
+#endif
+#if __IOS__
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePage{TViewModel}"/> class.
+        /// Native constructor, do not use explicitly.
+        /// </summary>
+        /// <param name="handle">handle.</param>
+        /// <remarks>
+        /// Used by the Xamarin Runtime to materialize native.
+        /// objects that may have been collected in the managed world.
+        /// </remarks>
+        protected ReactivePage(IntPtr handle)
+            : base(handle)
+        {
+        }
+#endif
 
         /// <summary>
         /// Gets the binding root view model.
