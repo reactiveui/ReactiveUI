@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 #if NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
