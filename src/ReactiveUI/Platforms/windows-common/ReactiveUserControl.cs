@@ -82,9 +82,6 @@ namespace ReactiveUI
     /// <typeparam name="TViewModel">
     /// The type of the view model backing the view.
     /// </typeparam>
-#if HAS_UNO && IOS
-    [global::Foundation.Register]
-#endif
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
     public abstract
 #if HAS_UNO
@@ -103,40 +100,6 @@ namespace ReactiveUI
                 typeof(TViewModel),
                 typeof(ReactiveUserControl<TViewModel>),
                 new PropertyMetadata(null));
-
-#if HAS_UNO
-#if ANDROID
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
-        /// Native constructor, do not use explicitly.
-        /// </summary>
-        /// <remarks>
-        /// Used by the Xamarin Runtime to materialize native
-        /// objects that may have been collected in the managed world.
-        /// </remarks>
-        /// <param name="javaReference">javaReference.</param>
-        /// <param name="transfer">transfer.</param>
-        protected ReactiveUserControl(IntPtr javaReference, global::Android.Runtime.JniHandleOwnership transfer)
-            : base(javaReference, transfer)
-        {
-        }
-#endif
-#if IOS
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
-        /// Native constructor, do not use explicitly.
-        /// </summary>
-        /// <param name="handle">handle.</param>
-        /// <remarks>
-        /// Used by the Xamarin Runtime to materialize native.
-        /// objects that may have been collected in the managed world.
-        /// </remarks>
-        protected ReactiveUserControl(IntPtr handle)
-            : base(handle)
-        {
-        }
-#endif
-#endif
 
         /// <summary>
         /// Gets the binding root view model.
