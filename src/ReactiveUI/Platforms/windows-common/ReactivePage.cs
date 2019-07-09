@@ -114,8 +114,8 @@ namespace ReactiveUI
         /// Used by the Xamarin Runtime to materialize native
         /// objects that may have been collected in the managed world.
         /// </remarks>
-        /// <param name="javaReference">javaReference.</param>
-        /// <param name="transfer">transfer.</param>
+        /// <param name="javaReference">A <see cref="IntPtr"/> containing a Java Native Interface (JNI) object reference.</param>
+        /// <param name="transfer">A <see cref="JniHandleOwnership"/> indicating how to handle handle.</param>
         protected ReactivePage(IntPtr javaReference, global::Android.Runtime.JniHandleOwnership transfer)
             : base(javaReference, transfer)
         {
@@ -126,7 +126,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactivePage{TViewModel}"/> class.
         /// Native constructor, do not use explicitly.
         /// </summary>
-        /// <param name="handle">handle.</param>
+        /// <param name="handle">Handle to the native control.</param>
         /// <remarks>
         /// Used by the Xamarin Runtime to materialize native.
         /// objects that may have been collected in the managed world.
