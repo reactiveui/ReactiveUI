@@ -32,7 +32,8 @@ namespace ReactiveUI
                 "ReactiveUI.XamForms",
                 "ReactiveUI.Winforms",
                 "ReactiveUI.Wpf",
-                "ReactiveUI.Uno"
+                "ReactiveUI.Uno",
+                "ReactiveUI.Blazor"
             };
 
             // Set up the built-in registration
