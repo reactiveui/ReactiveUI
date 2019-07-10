@@ -8,7 +8,7 @@ using System;
 namespace ReactiveUI.Fody.Helpers
 {
     /// <summary>
-    /// Attribute that marks property for INotifyPropergyChanged weaving.
+    /// Attribute that marks property for INotifyPropertyChanged weaving.
     /// </summary>
     /// <seealso cref="System.Attribute" />
     [AttributeUsage(AttributeTargets.Property)]
