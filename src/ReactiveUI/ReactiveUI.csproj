@@ -12,7 +12,7 @@
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
-    <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="System.Reactive" Version="4.1.6" />
     <PackageReference Include="Splat" Version="8.*" />
     <PackageReference Include="DynamicData" Version="6.*" />
   </ItemGroup>
