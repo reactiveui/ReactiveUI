@@ -15,7 +15,7 @@ namespace ReactiveUI
             where TItem : ReactiveUI.IReactiveObject { }
         public static System.IDisposable ActOnEveryObject<TItem, TCollection>(this TCollection @this, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
             where TItem : ReactiveUI.IReactiveObject
-            where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<> { }
+            where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<TItem> { }
         public static System.IDisposable ActOnEveryObject<TItem>(this System.IObservable<DynamicData.IChangeSet<TItem>> @this, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
             where TItem : ReactiveUI.IReactiveObject { }
         public static System.IDisposable AutoPersist<T>(this T @this, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.Nullable<System.TimeSpan> interval = null)
@@ -30,7 +30,7 @@ namespace ReactiveUI
             where TItem : ReactiveUI.IReactiveObject { }
         public static System.IDisposable AutoPersistCollection<TItem, TCollection, TDontCare>(this TCollection @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.Nullable<System.TimeSpan> interval = null)
             where TItem : ReactiveUI.IReactiveObject
-            where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<> { }
+            where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<TItem> { }
     }
     public enum BindingDirection
     {
@@ -52,7 +52,7 @@ namespace ReactiveUI
     }
     public class CombinedReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, System.Collections.Generic.IList<TResult>>
     {
-        protected internal CombinedReactiveCommand(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler outputScheduler) { }
+        protected CombinedReactiveCommand(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler outputScheduler) { }
         public override System.IObservable<bool> CanExecute { get; }
         public override System.IObservable<bool> IsExecuting { get; }
         public override System.IObservable<System.Exception> ThrownExceptions { get; }
@@ -63,15 +63,15 @@ namespace ReactiveUI
     public class static CommandBinder
     {
         public static ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.IObservable<TParam> withParameter, string toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor<>
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
         public static ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, string toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor<>
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
         public static ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam>> withParameter, string toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor<>
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
     }
@@ -79,11 +79,11 @@ namespace ReactiveUI
     {
         public CommandBinderImplementation() { }
         public ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Func<TParam> withParameter, string toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor<>
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
         public ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam> withParameter, string toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor<>
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
     }
@@ -353,11 +353,11 @@ namespace ReactiveUI
     {
         public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<> result, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
         public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<> result, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
     }
     public sealed class ObservableAsPropertyHelper<T> : ReactiveUI.IHandleObservableErrors, Splat.IEnableLogger, System.IDisposable
@@ -507,7 +507,7 @@ namespace ReactiveUI
     }
     public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
     {
-        protected internal ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler outputScheduler) { }
+        protected ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler outputScheduler) { }
         public override System.IObservable<bool> CanExecute { get; }
         public override System.IObservable<bool> IsExecuting { get; }
         public override System.IObservable<System.Exception> ThrownExceptions { get; }
@@ -560,7 +560,7 @@ namespace ReactiveUI
         public static System.Type ReallyFindType(string type, bool throwOnFailure) { }
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression expression) { }
         public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) { }
-        public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<, > changeValues, object current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
+        public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<, >[] changeValues, object current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TrySetValueToPropertyChain<TValue>(object target, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain, TValue value, bool shouldThrow = True) { }
     }
@@ -892,7 +892,7 @@ namespace ReactiveUI.Legacy
         public static ReactiveUI.Legacy.IReactiveDerivedList<T> CreateCollection<T>(this System.IObservable<T> fromObservable, System.Nullable<System.TimeSpan> withDelay = null, System.Action<System.Exception> onError = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
     }
     [System.Diagnostics.DebuggerDisplayAttribute("Count = {Count}")]
-    [System.Diagnostics.DebuggerTypeProxyAttribute(typeof(ReactiveUI.Legacy.CollectionDebugView<>))]
+    [System.Diagnostics.DebuggerTypeProxyAttribute(typeof(ReactiveUI.Legacy.CollectionDebugView<T>))]
     [System.ObsoleteAttribute("ReactiveList is no longer supported. We suggest replacing it with DynamicData htt" +
         "ps://github.com/rolandpheasant/dynamicdata")]
     public class ReactiveList<T> : ReactiveUI.INotifyCollectionChanging, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.Legacy.IReactiveCollection<T>, ReactiveUI.Legacy.IReactiveList<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionChanged<T>, ReactiveUI.Legacy.IReactiveNotifyCollectionItemChanged<T>, ReactiveUI.Legacy.IReadOnlyReactiveCollection<T>, ReactiveUI.Legacy.IReadOnlyReactiveList<T>, Splat.IEnableLogger, System.Collections.Generic.ICollection<T>, System.Collections.Generic.IEnumerable<T>, System.Collections.Generic.IList<T>, System.Collections.Generic.IReadOnlyCollection<T>, System.Collections.Generic.IReadOnlyList<T>, System.Collections.ICollection, System.Collections.IEnumerable, System.Collections.IList, System.Collections.Specialized.INotifyCollectionChanged, System.ComponentModel.INotifyPropertyChanged
