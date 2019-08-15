@@ -51,6 +51,16 @@ namespace ReactiveUI.AndroidSupport
                 h => view.LongClick += h,
                 h => view.LongClick -= h)
                     .Select(_ => AdapterPosition);
+
+            SelectedWithViewModel = Observable.FromEventPattern(
+                h => view.Click += h,
+                h => view.Click -= h)
+                                 .Select(_ => ViewModel);
+
+            LongClickedWithViewModel = Observable.FromEventPattern<View.LongClickEventArgs>(
+                h => view.LongClick += h,
+                h => view.LongClick -= h)
+                                    .Select(_ => ViewModel);
         }
 
         /// <inheritdoc/>
@@ -76,12 +86,26 @@ namespace ReactiveUI.AndroidSupport
         public IObservable<int> Selected { get; }
 
         /// <summary>
+        /// Gets an observable that signals that this ViewHolder has been selected.
+        ///
+        /// The <see cref="TViewModel"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
+        /// </summary>
+        public IObservable<TViewModel> SelectedWithViewModel { get; }
+
+        /// <summary>
         /// Gets an observable that signals that this ViewHolder has been long-clicked.
         ///
         /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
         /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
         /// </summary>
         public IObservable<int> LongClicked { get; }
+
+        /// <summary>
+        /// Gets an observable that signals that this ViewHolder has been long-clicked.
+        ///
+        /// The <see cref="TViewModel"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
+        /// </summary>
+        public IObservable<TViewModel> LongClickedWithViewModel { get; }
 
         /// <summary>
         /// Gets the current view being shown.
