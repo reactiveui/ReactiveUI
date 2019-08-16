@@ -42,25 +42,25 @@ namespace ReactiveUI.AndroidSupport
         {
             SetupRxObj();
 
-            Selected = Observable.FromEventPattern(
-                h => view.Click += h,
-                h => view.Click -= h)
-                    .Select(_ => AdapterPosition);
+            Selected = Observable.FromEvent<EventHandler, TViewModel>(
+                                                                      h => view.Click += h,
+                                                                      h => view.Click -= h)
+                                 .Select(_ => AdapterPosition);
 
-            LongClicked = Observable.FromEventPattern<View.LongClickEventArgs>(
-                h => view.LongClick += h,
-                h => view.LongClick -= h)
-                    .Select(_ => AdapterPosition);
+            LongClicked = Observable.FromEvent<EventHandler<View.LongClickEventArgs>, TViewModel>(
+                                                                         h => view.LongClick += h,
+                                                                         h => view.LongClick -= h)
+                                    .Select(_ => AdapterPosition);
 
-            SelectedWithViewModel = Observable.FromEventPattern(
-                h => view.Click += h,
-                h => view.Click -= h)
-                                 .Select(_ => ViewModel);
+            SelectedWithViewModel = Observable.FromEvent<EventHandler, TViewModel>(
+                                                                                   h => view.Click += h,
+                                                                                   h => view.Click -= h)
+                                              .Select(_ => ViewModel);
 
-            LongClickedWithViewModel = Observable.FromEventPattern<View.LongClickEventArgs>(
-                h => view.LongClick += h,
-                h => view.LongClick -= h)
-                                    .Select(_ => ViewModel);
+            LongClickedWithViewModel = Observable.FromEvent<EventHandler<View.LongClickEventArgs>, TViewModel>(
+                                                                                      h => view.LongClick += h,
+                                                                                      h => view.LongClick -= h)
+                                                 .Select(_ => ViewModel);
         }
 
         /// <inheritdoc/>
