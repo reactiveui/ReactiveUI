@@ -13,7 +13,11 @@
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.6" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
-
+  <Target Name="_RemoveNonExistingResgenFile" BeforeTargets="CoreCompile" Condition="'$(_SdkSetAndroidResgenFile)' == 'true' And '$(AndroidResgenFile)' != '' And !Exists('$(AndroidResgenFile)')">
+    <ItemGroup>
+      <Compile Remove="$(AndroidResgenFile)"/>
+    </ItemGroup>
+  </Target>
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
     <Reference Include="netstandard" />
   </ItemGroup>
