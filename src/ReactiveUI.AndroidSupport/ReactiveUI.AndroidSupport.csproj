@@ -6,7 +6,13 @@
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  
+
+  <Target Name="_RemoveNonExistingResgenFile" BeforeTargets="CoreCompile" Condition="'$(_SdkSetAndroidResgenFile)' == 'true' And '$(AndroidResgenFile)' != '' And !Exists('$(AndroidResgenFile)')">
+    <ItemGroup>
+      <Compile Remove="$(AndroidResgenFile)"/>
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="27.0.*" />
     <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.*" />
