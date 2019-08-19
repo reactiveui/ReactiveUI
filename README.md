@@ -61,6 +61,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
+| Platform Uno      | [ReactiveUI.Uno][UnoDoc]            | [![UnoBadge]][Uno]  | None                                     |
 | Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   | None                                    |
 | Any               | [ReactiveUI.Validation][ValidationsDocs]    | [![ValidationsBadge]][ValidationsCore] | None
 
@@ -101,6 +102,11 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 
 [MacDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-mac
 [IosDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-ios
+
+[Uno]: https://www.nuget.org/packages/ReactiveUI.Uno/
+[UnoBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.svg
+[UnoDoc]: https://reactiveui.net/docs/getting-started/installation/uno-platform
+
 
 [Ava]: https://www.nuget.org/packages/Avalonia.ReactiveUI/
 [AvaBadge]: https://img.shields.io/nuget/v/Avalonia.ReactiveUI.svg
