@@ -63,7 +63,7 @@ namespace ReactiveUI.AndroidSupport
             SelectedWithViewModel = Observable.FromEvent<EventHandler, TViewModel>(
                                 eventHandler =>
                                 {
-                                    void Handler(object sender, View.LongClickEventArgs e) => eventHandler(ViewModel);
+                                    void Handler(object sender, EventArgs e) => eventHandler(ViewModel);
                                     return Handler;
                                 },
                                 h => view.Click += h,
