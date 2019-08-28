@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -20,7 +25,7 @@ namespace ReactiveUI.Benchmarks
         private RoutingState _router;
 
         /// <summary>
-        /// Initializes static members of the NavigationStackBenchmark class.
+        /// Initializes static members of the <see cref="NavigationStackBenchmark"/> class.
         /// </summary>
         static NavigationStackBenchmark()
         {
