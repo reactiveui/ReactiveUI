@@ -30,7 +30,7 @@
   </Choose>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="Microsoft.WindowsDesktop.App" Version="3.0.0-preview.*" />
   </ItemGroup>
 
