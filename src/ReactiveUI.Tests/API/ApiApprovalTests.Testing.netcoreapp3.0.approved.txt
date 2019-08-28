@@ -6,15 +6,15 @@ namespace ReactiveUI.Testing
     {
         public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref TField field, TField value)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<> field, System.Collections.Generic.IEnumerable<TField> values)
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField> field, System.Collections.Generic.IEnumerable<TField> values)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<> field, TField value)
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField> field, TField value)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<, > dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<, > dictionary, TKey key, TField value)
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, TKey key, TField value)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<, > dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair) { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair) { }
     }
     public class static MessageBusExtensions
     {

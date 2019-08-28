@@ -47,7 +47,7 @@ namespace ReactiveUI.Winforms
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
     [System.ComponentModel.DefaultPropertyAttribute("ViewModel")]
-    public class RoutedControlHost : System.Windows.Forms.UserControl, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
+    public class RoutedControlHost : System.Windows.Forms.UserControl, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         public RoutedControlHost() { }
         [System.ComponentModel.CategoryAttribute("ReactiveUI")]
@@ -61,7 +61,7 @@ namespace ReactiveUI.Winforms
         [System.ComponentModel.BrowsableAttribute(false)]
         public ReactiveUI.IViewLocator ViewLocator { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        public event ReactiveUI.PropertyChangingEventHandler PropertyChanging;
+        public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
         protected override void Dispose(bool disposing) { }
     }
     public class TableContentSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger
@@ -71,7 +71,7 @@ namespace ReactiveUI.Winforms
         public object PerformSet(object toTarget, object newValue, object[] arguments) { }
     }
     [System.ComponentModel.DefaultPropertyAttribute("ViewModel")]
-    public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
+    public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         public ViewModelControlHost() { }
         [System.ComponentModel.BindableAttribute(true)]
@@ -97,7 +97,7 @@ namespace ReactiveUI.Winforms
         [System.ComponentModel.DescriptionAttribute("The viewmodel to host.")]
         public object ViewModel { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        public event ReactiveUI.PropertyChangingEventHandler PropertyChanging;
+        public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
         protected override void Dispose(bool disposing) { }
     }
     public class WinformsCreatesObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
