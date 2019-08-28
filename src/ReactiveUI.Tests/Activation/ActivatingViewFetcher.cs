@@ -16,7 +16,7 @@ namespace ReactiveUI.Tests
             return view == typeof(ActivatingView) ? 100 : 0;
         }
 
-        public IObservable<bool> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             var av = view as ActivatingView;
             return av.Loaded.Select(_ => true).Merge(av.Unloaded.Select(_ => false));

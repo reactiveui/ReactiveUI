@@ -26,7 +26,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             var fe = view as FrameworkElement;
 

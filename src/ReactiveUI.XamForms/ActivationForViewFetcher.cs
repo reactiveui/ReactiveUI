@@ -28,7 +28,7 @@ namespace ReactiveUI.XamForms
         }
 
         /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             var activation =
                 GetActivationFor(view as ICanActivate) ??

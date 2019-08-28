@@ -29,7 +29,7 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             // Startup: Control.HandleCreated > Control.BindingContextChanged > Form.Load > Control.VisibleChanged > Form.Activated > Form.Shown
             // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate

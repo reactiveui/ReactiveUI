@@ -19,8 +19,8 @@ namespace ReactiveUI.XamForms
     /// This is a <see cref="NavigationPage"/> that serves as a router.
     /// </summary>
     /// <seealso cref="Xamarin.Forms.NavigationPage" />
-    /// <seealso cref="ReactiveUI.IActivatable" />
-    public class RoutedViewHost : NavigationPage, IActivatable
+    /// <seealso cref="ReactiveUI.IActivatableView" />
+    public class RoutedViewHost : NavigationPage, IActivatableView
     {
         /// <summary>
         /// The router bindable property.

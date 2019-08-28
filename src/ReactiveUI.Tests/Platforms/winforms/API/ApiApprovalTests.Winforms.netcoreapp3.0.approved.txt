@@ -4,7 +4,7 @@ namespace ReactiveUI.Winforms
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher, Splat.IEnableLogger
     {
         public ActivationForViewFetcher() { }
-        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatable view) { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
     public class ContentControlBindingHook : ReactiveUI.IPropertyBindingHook
@@ -30,7 +30,7 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string GetOrientation() { }
     }
-    public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatable, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+    public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
         public ReactiveUserControl() { }
@@ -71,7 +71,7 @@ namespace ReactiveUI.Winforms
         public object PerformSet(object toTarget, object newValue, object[] arguments) { }
     }
     [System.ComponentModel.DefaultPropertyAttribute("ViewModel")]
-    public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatable, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
+    public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
     {
         public ViewModelControlHost() { }
         [System.ComponentModel.BindableAttribute(true)]

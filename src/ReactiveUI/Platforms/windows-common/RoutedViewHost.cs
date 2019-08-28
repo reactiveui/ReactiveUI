@@ -35,7 +35,7 @@ namespace ReactiveUI
 #if HAS_UNO
         partial
 #endif
-        class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
+        class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
     {
         /// <summary>
         /// The router dependency property.

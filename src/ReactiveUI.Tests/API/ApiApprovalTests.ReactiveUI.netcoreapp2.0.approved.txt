@@ -42,7 +42,7 @@ namespace ReactiveUI
     public class CanActivateViewFetcher : ReactiveUI.IActivationForViewFetcher
     {
         public CanActivateViewFetcher() { }
-        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatable view) { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
     public class static ChangeSetMixin
@@ -135,10 +135,14 @@ namespace ReactiveUI
         public static System.Reflection.MemberInfo GetMemberInfo(this System.Linq.Expressions.Expression expression) { }
         public static System.Linq.Expressions.Expression GetParent(this System.Linq.Expressions.Expression expression) { }
     }
-    public interface IActivatable { }
+    public interface IActivatableView { }
+    public interface IActivatableViewModel
+    {
+        ReactiveUI.ViewModelActivator Activator { get; }
+    }
     public interface IActivationForViewFetcher
     {
-        System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatable view);
+        System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view);
         int GetAffinityForView(System.Type view);
     }
     public interface IBindingTypeConverter : Splat.IEnableLogger
@@ -187,10 +191,6 @@ namespace ReactiveUI
         public INPCObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
         public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = False) { }
-    }
-    public interface INotifyPropertyChanging
-    {
-        public event ReactiveUI.PropertyChangingEventHandler PropertyChanging;
     }
     public interface IObservedChange<out TSender, out TValue>
     {
@@ -258,10 +258,10 @@ namespace ReactiveUI
         System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
         System.IDisposable SuppressChangeNotifications();
     }
-    public interface IReactiveObject : ReactiveUI.INotifyPropertyChanging, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
+    public interface IReactiveObject : Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         void RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args);
-        void RaisePropertyChanging(ReactiveUI.PropertyChangingEventArgs args);
+        void RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args);
     }
     public class static IReactiveObjectExtensions
     {
@@ -277,7 +277,7 @@ namespace ReactiveUI
         string PropertyName { get; }
         TSender Sender { get; }
     }
-    public interface IRoutableViewModel : ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
+    public interface IRoutableViewModel : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         ReactiveUI.IScreen HostScreen { get; }
         string UrlPathSegment { get; }
@@ -291,17 +291,13 @@ namespace ReactiveUI
         int GetAffinityForObjects(System.Type fromType, System.Type toType);
         object PerformSet(object toTarget, object newValue, object[] arguments);
     }
-    public interface ISupportsActivation
-    {
-        ReactiveUI.ViewModelActivator Activator { get; }
-    }
     public interface ISuspensionDriver
     {
         System.IObservable<System.Reactive.Unit> InvalidateState();
         System.IObservable<object> LoadState();
         System.IObservable<System.Reactive.Unit> SaveState(object state);
     }
-    public interface ISuspensionHost : ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
+    public interface ISuspensionHost : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         object AppState { get; set; }
         System.Func<object> CreateNewAppState { get; set; }
@@ -311,11 +307,11 @@ namespace ReactiveUI
         System.IObservable<System.Reactive.Unit> ShouldInvalidateState { get; set; }
         System.IObservable<System.IDisposable> ShouldPersistState { get; set; }
     }
-    public interface IViewFor : ReactiveUI.IActivatable
+    public interface IViewFor : ReactiveUI.IActivatableView
     {
         object ViewModel { get; set; }
     }
-    public interface IViewFor<T> : ReactiveUI.IActivatable, ReactiveUI.IViewFor
+    public interface IViewFor<T> : ReactiveUI.IActivatableView, ReactiveUI.IViewFor
         where T :  class
     {
         T ViewModel { get; set; }
@@ -478,12 +474,6 @@ namespace ReactiveUI
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
-    public class PropertyChangingEventArgs : System.EventArgs
-    {
-        public PropertyChangingEventArgs(string propertyName) { }
-        public string PropertyName { get; set; }
-    }
-    public delegate void PropertyChangingEventHandler(object sender, ReactiveUI.PropertyChangingEventArgs e);
     public class static ReactiveCommand
     {
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> Create(System.Action execute, System.IObservable<bool> canExecute = null, System.Reactive.Concurrency.IScheduler outputScheduler = null) { }
@@ -544,7 +534,7 @@ namespace ReactiveUI
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender source, System.Linq.Expressions.Expression expression, bool beforeChange = False, bool skipInitial = True, bool suppressWarnings = False) { }
     }
     [System.Runtime.Serialization.DataContractAttribute()]
-    public class ReactiveObject : ReactiveUI.IHandleObservableErrors, ReactiveUI.INotifyPropertyChanging, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged
+    public class ReactiveObject : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         public ReactiveObject() { }
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
@@ -554,7 +544,7 @@ namespace ReactiveUI
         [System.Runtime.Serialization.IgnoreDataMemberAttribute()]
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        public event ReactiveUI.PropertyChangingEventHandler PropertyChanging;
+        public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
         public bool AreChangeNotificationsEnabled() { }
         public System.IDisposable DelayChangeNotifications() { }
         public System.IDisposable SuppressChangeNotifications() { }
@@ -564,7 +554,7 @@ namespace ReactiveUI
         public ReactivePropertyChangedEventArgs(TSender sender, string propertyName) { }
         public TSender Sender { get; }
     }
-    public class ReactivePropertyChangingEventArgs<TSender> : ReactiveUI.PropertyChangingEventArgs, ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
+    public class ReactivePropertyChangingEventArgs<TSender> : System.ComponentModel.PropertyChangingEventArgs, ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
     {
         public ReactivePropertyChangingEventArgs(TSender sender, string propertyName) { }
         public TSender Sender { get; }
@@ -687,14 +677,14 @@ namespace ReactiveUI
     }
     public class static ViewForMixins
     {
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation item, System.Action<System.Action<System.IDisposable>> block) { }
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation item, System.Action<System.Reactive.Disposables.CompositeDisposable> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Action<System.Action<System.IDisposable>> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable item, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor view = null) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Action<System.Action<System.IDisposable>> block) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Action<System.Reactive.Disposables.CompositeDisposable> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Action<System.IDisposable>> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor view = null) { }
     }
     public class static ViewLocator
     {
@@ -833,5 +823,9 @@ namespace ReactiveUI
 }
 namespace System.Reactive.Disposables
 {
-    public class static DisposableMixins { }
+    public class static DisposableMixins
+    {
+        public static T DisposeWith<T>(this T item, System.Reactive.Disposables.CompositeDisposable compositeDisposable)
+            where T : System.IDisposable { }
+    }
 }

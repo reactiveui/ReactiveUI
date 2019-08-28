@@ -40,7 +40,7 @@ namespace ReactiveUI
     public class CanActivateViewFetcher : ReactiveUI.IActivationForViewFetcher
     {
         public CanActivateViewFetcher() { }
-        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatable view) { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
     public class static ChangeSetMixin
@@ -139,10 +139,10 @@ namespace ReactiveUI
         public static System.Reflection.MemberInfo GetMemberInfo(this System.Linq.Expressions.Expression expression) { }
         public static System.Linq.Expressions.Expression GetParent(this System.Linq.Expressions.Expression expression) { }
     }
-    public interface IActivatable { }
+    public interface IActivatableView { }
     public interface IActivationForViewFetcher
     {
-        System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatable view);
+        System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view);
         int GetAffinityForView(System.Type view);
     }
     public interface IBindingTypeConverter : Splat.IEnableLogger
@@ -300,7 +300,7 @@ namespace ReactiveUI
     {
         ReactiveUI.RoutingState Router { get; }
     }
-    public interface ISupportsActivation
+    public interface IActivatableViewModel
     {
         ReactiveUI.ViewModelActivator Activator { get; }
     }
@@ -320,11 +320,11 @@ namespace ReactiveUI
         System.IObservable<System.Reactive.Unit> ShouldInvalidateState { get; set; }
         System.IObservable<System.IDisposable> ShouldPersistState { get; set; }
     }
-    public interface IViewFor : ReactiveUI.IActivatable
+    public interface IViewFor : ReactiveUI.IActivatableView
     {
         object ViewModel { get; set; }
     }
-    public interface IViewFor<T> : ReactiveUI.IActivatable, ReactiveUI.IViewFor
+    public interface IViewFor<T> : ReactiveUI.IActivatableView, ReactiveUI.IViewFor
         where T :  class
     {
         T ViewModel { get; set; }
@@ -663,14 +663,14 @@ namespace ReactiveUI
     }
     public class static ViewForMixins
     {
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation @this, System.Action<System.Action<System.IDisposable>> block) { }
-        public static void WhenActivated(this ReactiveUI.ISupportsActivation @this, System.Action<System.Reactive.Disposables.CompositeDisposable> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Action<System.Action<System.IDisposable>> block) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
-        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatable @this, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor view = null) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel @this, System.Action<System.Action<System.IDisposable>> block) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel @this, System.Action<System.Reactive.Disposables.CompositeDisposable> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView @this, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView @this, System.Action<System.Action<System.IDisposable>> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView @this, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView @this, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor view = null) { }
     }
     public class static ViewLocator
     {

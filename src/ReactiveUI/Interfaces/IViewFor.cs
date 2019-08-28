@@ -9,7 +9,7 @@ namespace ReactiveUI
     /// This base class is mostly used by the Framework. Implement <see cref="IViewFor{T}"/>
     /// instead.
     /// </summary>
-    public interface IViewFor : IActivatable
+    public interface IViewFor : IActivatableView
     {
         /// <summary>
         /// Gets or sets the View Model associated with the View.

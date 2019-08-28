@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace ReactiveUI.Tests.Winforms
 {
-    public class TestForm : Form, IActivatable
+    public class TestForm : Form, IActivatableView
     {
     }
 }
