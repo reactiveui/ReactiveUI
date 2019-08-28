@@ -12,12 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ReactiveUI.Benchmarks\**" />
-    <EmbeddedResource Remove="ReactiveUI.Benchmarks\**" />
-    <None Remove="ReactiveUI.Benchmarks\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="DynamicData" Version="*" />
     <PackageReference Include="BenchmarkDotNet" Version="*" />
   </ItemGroup>

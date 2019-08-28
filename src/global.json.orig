@@ -1,0 +1,12 @@
+{
+    "sdk": {
+        "version": "3.0.100-preview"
+    },
+    "msbuild-sdks": {
+<<<<<<< HEAD
+        "MSBuild.Sdk.Extras": "2.0.29"
+=======
+        "MSBuild.Sdk.Extras": "2.0.31"
+>>>>>>> master
+    }
+}
