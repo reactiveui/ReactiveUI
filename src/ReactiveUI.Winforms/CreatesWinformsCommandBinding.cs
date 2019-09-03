@@ -122,7 +122,7 @@ namespace ReactiveUI.Winforms
                     ret.Add(Observable.FromEvent<EventHandler, bool>(
                             eventHandler =>
                             {
-                                void Handler(object sender, EventArgs e) => command.CanExecute(latestParam);
+                                void Handler(object sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
                                 return Handler;
                             },
                             x => command.CanExecuteChanged += x,

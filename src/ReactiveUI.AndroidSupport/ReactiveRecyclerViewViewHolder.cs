@@ -104,7 +104,7 @@ namespace ReactiveUI.AndroidSupport
         /// <summary>
         /// Gets an observable that signals that this ViewHolder has been selected.
         ///
-        /// The <see cref="TViewModel"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
+        /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
         /// </summary>
         public IObservable<TViewModel> SelectedWithViewModel { get; }
 
@@ -119,7 +119,7 @@ namespace ReactiveUI.AndroidSupport
         /// <summary>
         /// Gets an observable that signals that this ViewHolder has been long-clicked.
         ///
-        /// The <see cref="TViewModel"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
+        /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
         /// </summary>
         public IObservable<TViewModel> LongClickedWithViewModel { get; }
 

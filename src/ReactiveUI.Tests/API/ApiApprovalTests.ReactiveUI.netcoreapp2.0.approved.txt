@@ -504,7 +504,7 @@ namespace ReactiveUI
         public abstract System.IObservable<TResult> Execute(TParam parameter = null);
         protected virtual bool ICommandCanExecute(object parameter) { }
         protected virtual void ICommandExecute(object parameter) { }
-        protected void OnCanExecuteChanged() { }
+        protected void OnCanExecuteChanged(bool newValue) { }
         public abstract System.IDisposable Subscribe(System.IObserver<TResult> observer);
     }
     public class static ReactiveCommandMixins

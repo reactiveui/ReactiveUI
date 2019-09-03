@@ -144,6 +144,11 @@ namespace ReactiveUI
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
         public static Func<object, object[], object> GetValueFetcherOrThrow(MemberInfo member)
         {
+            if (member is null)
+            {
+                throw new ArgumentNullException(nameof(member));
+            }
+
             var ret = GetValueFetcherForProperty(member);
 
             if (ret == null)
@@ -191,6 +196,11 @@ namespace ReactiveUI
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
         public static Action<object, object, object[]> GetValueSetterOrThrow(MemberInfo member)
         {
+            if (member is null)
+            {
+                throw new ArgumentNullException(nameof(member));
+            }
+
             var ret = GetValueSetterForProperty(member);
 
             if (ret == null)
