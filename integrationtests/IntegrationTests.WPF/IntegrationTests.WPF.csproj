@@ -30,8 +30,8 @@
     <PackageReference Include="ReactiveUI.Events.WPF" Version="*" />
     <PackageReference Include="ReactiveUI.WPF" Version="*" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />  
+    <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />
   </ItemGroup>
 </Project>
