@@ -407,4 +407,3 @@ This is how we use the donations:
 [Become a backer](https://opencollective.com/reactiveui#backer) and get your image on our README on Github with a link to your site.
 
 <a href="https://opencollective.com/reactiveui#backer"><img src="https://opencollective.com/reactiveui/backer.svg?width=890&avatarHeight=50&button=false"></a>
-

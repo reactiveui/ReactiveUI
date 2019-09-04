@@ -19,8 +19,8 @@ namespace ReactiveUI.XamForms
     /// This is a <see cref="NavigationPage"/> that serves as a router.
     /// </summary>
     /// <seealso cref="Xamarin.Forms.NavigationPage" />
-    /// <seealso cref="ReactiveUI.IActivatable" />
-    public class RoutedViewHost : NavigationPage, IActivatable
+    /// <seealso cref="ReactiveUI.IActivatableView" />
+    public class RoutedViewHost : NavigationPage, IActivatableView
     {
         /// <summary>
         /// The router bindable property.
@@ -121,7 +121,14 @@ namespace ReactiveUI.XamForms
                     })
                     .Subscribe());
 
-                var poppingEvent = Observable.FromEventPattern<NavigationEventArgs>(x => Popped += x, x => Popped -= x);
+                var poppingEvent = Observable.FromEvent<EventHandler<NavigationEventArgs>, Unit>(
+                        eventHandler =>
+                        {
+                            void Handler(object sender, NavigationEventArgs e) => eventHandler(Unit.Default);
+                            return Handler;
+                        },
+                        x => Popped += x,
+                        x => Popped -= x);
 
                 // NB: Catch when the user hit back as opposed to the application
                 // requesting Back via NavigateBack

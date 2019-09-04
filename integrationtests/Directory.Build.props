@@ -32,5 +32,5 @@
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
   </ItemGroup>
-  <Import Project="..\directory.build.props" />
+  <Import Project="..\src\directory.build.props" />
 </Project>

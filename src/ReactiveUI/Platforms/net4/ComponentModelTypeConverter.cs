@@ -14,25 +14,25 @@ namespace ReactiveUI
     /// </summary>
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
-        private readonly MemoizingMRUCache<Tuple<Type, Type>, TypeConverter> _typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, TypeConverter>(
+        private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter> _typeConverterCache = new MemoizingMRUCache<(Type fromType, Type toType), TypeConverter>(
             (types, _) =>
         {
             // NB: String is a Magical Type(tm) to TypeConverters. If we are
             // converting from string => int, we need the Int converter, not
             // the string converter :-/
-            if (types.Item1 == typeof(string))
+            if (types.fromType == typeof(string))
             {
-                types = Tuple.Create(types.Item2, types.Item1);
+                types = (types.toType, types.fromType);
             }
 
-            var converter = TypeDescriptor.GetConverter(types.Item1);
-            return converter.CanConvertTo(types.Item2) ? converter : null;
+            var converter = TypeDescriptor.GetConverter(types.fromType);
+            return converter.CanConvertTo(types.toType) ? converter : null;
         }, RxApp.SmallCacheLimit);
 
         /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType)
         {
-            var converter = _typeConverterCache.Get(Tuple.Create(fromType, toType));
+            var converter = _typeConverterCache.Get((fromType, toType));
             return converter != null ? 10 : 0;
         }
 
@@ -46,7 +46,7 @@ namespace ReactiveUI
             }
 
             var fromType = from.GetType();
-            var converter = _typeConverterCache.Get(Tuple.Create(fromType, toType));
+            var converter = _typeConverterCache.Get((fromType, toType));
 
             if (converter == null)
             {

@@ -28,7 +28,7 @@ namespace ReactiveUI.XamForms
         }
 
         /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             var activation =
                 GetActivationFor(view as ICanActivate) ??
@@ -59,9 +59,25 @@ namespace ReactiveUI.XamForms
                 return null;
             }
 
-            return Observable.Merge(
-                Observable.FromEventPattern<EventHandler, EventArgs>(x => page.Appearing += x, x => page.Appearing -= x).Select(_ => true),
-                Observable.FromEventPattern<EventHandler, EventArgs>(x => page.Disappearing += x, x => page.Disappearing -= x).Select(_ => false));
+            var appearing = Observable.FromEvent<EventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object sender, EventArgs e) => eventHandler(true);
+                    return Handler;
+                },
+                x => page.Appearing += x,
+                x => page.Appearing -= x);
+
+            var disappearing = Observable.FromEvent<EventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object sender, EventArgs e) => eventHandler(false);
+                    return Handler;
+                },
+                x => page.Disappearing += x,
+                x => page.Disappearing -= x);
+
+            return Observable.Merge(appearing, disappearing);
         }
 
         private static IObservable<bool> GetActivationFor(View view)
@@ -71,11 +87,17 @@ namespace ReactiveUI.XamForms
                 return null;
             }
 
-            var propertyChanged = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+            var propertyChanged = Observable.FromEvent<PropertyChangedEventHandler, string>(
+                eventHandler =>
+                {
+                    void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
+                    return Handler;
+                },
                 x => view.PropertyChanged += x,
                 x => view.PropertyChanged -= x);
+
             return propertyChanged
-                .Where(x => x.EventArgs.PropertyName == "IsVisible")
+                .Where(x => x == "IsVisible")
                 .Select(_ => view.IsVisible)
                 .StartWith(view.IsVisible);
         }
@@ -87,9 +109,25 @@ namespace ReactiveUI.XamForms
                 return null;
             }
 
-            return Observable.Merge(
-                Observable.FromEventPattern<EventHandler, EventArgs>(x => cell.Appearing += x, x => cell.Appearing -= x).Select(_ => true),
-                Observable.FromEventPattern<EventHandler, EventArgs>(x => cell.Disappearing += x, x => cell.Disappearing -= x).Select(_ => false));
+            var appearing = Observable.FromEvent<EventHandler, bool>(
+                    eventHandler =>
+                    {
+                        void Handler(object sender, EventArgs e) => eventHandler(true);
+                        return Handler;
+                    },
+                    x => cell.Appearing += x,
+                    x => cell.Appearing -= x);
+
+            var disappearing = Observable.FromEvent<EventHandler, bool>(
+                    eventHandler =>
+                    {
+                        void Handler(object sender, EventArgs e) => eventHandler(false);
+                        return Handler;
+                    },
+                    x => cell.Disappearing += x,
+                    x => cell.Disappearing -= x);
+
+            return Observable.Merge(appearing, disappearing);
         }
     }
 }

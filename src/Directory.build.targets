@@ -4,7 +4,7 @@
   <PropertyGroup>  
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <DefineConstants>$(DefineConstants);NETSTANDARD;PORTABLE</DefineConstants>
   </PropertyGroup>

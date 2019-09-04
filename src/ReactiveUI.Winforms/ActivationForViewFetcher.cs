@@ -29,7 +29,7 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             // Startup: Control.HandleCreated > Control.BindingContextChanged > Form.Load > Control.VisibleChanged > Form.Activated > Form.Shown
             // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate
@@ -41,16 +41,46 @@ namespace ReactiveUI.Winforms
                     return Observable<bool>.Empty;
                 }
 
-                var handleDestroyed = Observable.FromEventPattern(control, "HandleDestroyed").Select(_ => false);
-                var handleCreated = Observable.FromEventPattern(control, "HandleCreated").Select(_ => true);
-                var visibleChanged = Observable.FromEventPattern(control, "VisibleChanged").Select(_ => control.Visible);
+                var handleDestroyed = Observable.FromEvent<EventHandler, bool>(
+                    eventHandler =>
+                    {
+                        void Handler(object sender, EventArgs e) => eventHandler(false);
+                        return Handler;
+                    },
+                    h => control.HandleDestroyed += h,
+                    h => control.HandleDestroyed -= h);
+
+                var handleCreated = Observable.FromEvent<EventHandler, bool>(
+                    eventHandler =>
+                    {
+                        void Handler(object sender, EventArgs e) => eventHandler(true);
+                        return Handler;
+                    },
+                    h => control.HandleCreated += h,
+                    h => control.HandleCreated -= h);
+
+                var visibleChanged = Observable.FromEvent<EventHandler, bool>(
+                    eventHandler =>
+                    {
+                        void Handler(object sender, EventArgs e) => eventHandler(control.Visible);
+                        return Handler;
+                    },
+                    h => control.VisibleChanged += h,
+                    h => control.VisibleChanged -= h);
 
                 var controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged)
                     .DistinctUntilChanged();
 
                 if (view is Form form)
                 {
-                    var formClosed = Observable.FromEventPattern(form, "FormClosed").Select(_ => false);
+                    var formClosed = Observable.FromEvent<FormClosedEventHandler, bool>(
+                        eventHandler =>
+                        {
+                            void Handler(object sender, FormClosedEventArgs e) => eventHandler(control.Visible);
+                            return Handler;
+                        },
+                        h => form.FormClosed += h,
+                        h => form.FormClosed -= h);
                     controlActivation = controlActivation.Merge(formClosed)
                         .DistinctUntilChanged();
                 }

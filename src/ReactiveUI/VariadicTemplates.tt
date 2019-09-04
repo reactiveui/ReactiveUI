@@ -69,7 +69,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<<#= String.Join(",", templParams) #>>> WhenAnyValue<TSender, <#= String.Join(",", templParams) #>>(
+        public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParams) #>>(
             this TSender This,
             <# for(int i=1; i <= length; i++) { #>
             Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
@@ -78,7 +78,7 @@ namespace ReactiveUI
         {
             return This.WhenAny(<#= valuePropertyParams #>,
                                 (<#= valueSelectorParams #>) =>
-                                    Tuple.Create(<#= valueSelectorArgs #>));
+                                    (<#= valueSelectorArgs #>));
         }
         <# } #>
 

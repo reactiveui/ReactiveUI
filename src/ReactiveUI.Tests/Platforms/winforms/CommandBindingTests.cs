@@ -100,7 +100,7 @@ namespace ReactiveUI.Tests.Winforms
             canExecute.OnNext(true);
 
             var cmd = ReactiveCommand.Create(() => { }, canExecute);
-            var input = new Button { };
+            var input = new Button();
 
             using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {
@@ -120,7 +120,7 @@ namespace ReactiveUI.Tests.Winforms
             canExecute.OnNext(true);
 
             var cmd = ReactiveCommand.Create(() => { }, canExecute);
-            var input = new ToolStripButton { }; // ToolStripButton is a Component, not a Control
+            var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
 
             using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {

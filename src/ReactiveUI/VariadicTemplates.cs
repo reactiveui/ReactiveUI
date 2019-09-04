@@ -96,7 +96,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<T1,T2>> WhenAnyValue<TSender, T1,T2>(
+        public static IObservable<(T1,T2)> WhenAnyValue<TSender, T1,T2>(
             this TSender This,
                         Expression<Func<TSender, T1>> property1,
                         Expression<Func<TSender, T2>> property2
@@ -104,7 +104,7 @@ namespace ReactiveUI
         {
             return This.WhenAny(property1, property2,
                                 (c1, c2) =>
-                                    Tuple.Create(c1.Value, c2.Value));
+                                    (c1.Value, c2.Value));
         }
         
         /// <summary>
@@ -172,7 +172,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<T1,T2,T3>> WhenAnyValue<TSender, T1,T2,T3>(
+        public static IObservable<(T1,T2,T3)> WhenAnyValue<TSender, T1,T2,T3>(
             this TSender This,
                         Expression<Func<TSender, T1>> property1,
                         Expression<Func<TSender, T2>> property2,
@@ -181,7 +181,7 @@ namespace ReactiveUI
         {
             return This.WhenAny(property1, property2, property3,
                                 (c1, c2, c3) =>
-                                    Tuple.Create(c1.Value, c2.Value, c3.Value));
+                                    (c1.Value, c2.Value, c3.Value));
         }
         
         /// <summary>
@@ -255,7 +255,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<T1,T2,T3,T4>> WhenAnyValue<TSender, T1,T2,T3,T4>(
+        public static IObservable<(T1,T2,T3,T4)> WhenAnyValue<TSender, T1,T2,T3,T4>(
             this TSender This,
                         Expression<Func<TSender, T1>> property1,
                         Expression<Func<TSender, T2>> property2,
@@ -265,7 +265,7 @@ namespace ReactiveUI
         {
             return This.WhenAny(property1, property2, property3, property4,
                                 (c1, c2, c3, c4) =>
-                                    Tuple.Create(c1.Value, c2.Value, c3.Value, c4.Value));
+                                    (c1.Value, c2.Value, c3.Value, c4.Value));
         }
         
         /// <summary>
@@ -345,7 +345,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<T1,T2,T3,T4,T5>> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(
+        public static IObservable<(T1,T2,T3,T4,T5)> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(
             this TSender This,
                         Expression<Func<TSender, T1>> property1,
                         Expression<Func<TSender, T2>> property2,
@@ -356,7 +356,7 @@ namespace ReactiveUI
         {
             return This.WhenAny(property1, property2, property3, property4, property5,
                                 (c1, c2, c3, c4, c5) =>
-                                    Tuple.Create(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value));
+                                    (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value));
         }
         
         /// <summary>
@@ -442,7 +442,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<T1,T2,T3,T4,T5,T6>> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(
+        public static IObservable<(T1,T2,T3,T4,T5,T6)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(
             this TSender This,
                         Expression<Func<TSender, T1>> property1,
                         Expression<Func<TSender, T2>> property2,
@@ -454,7 +454,7 @@ namespace ReactiveUI
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6,
                                 (c1, c2, c3, c4, c5, c6) =>
-                                    Tuple.Create(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value));
+                                    (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value));
         }
         
         /// <summary>
@@ -546,7 +546,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<T1,T2,T3,T4,T5,T6,T7>> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(
+        public static IObservable<(T1,T2,T3,T4,T5,T6,T7)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(
             this TSender This,
                         Expression<Func<TSender, T1>> property1,
                         Expression<Func<TSender, T2>> property2,
@@ -559,7 +559,7 @@ namespace ReactiveUI
         {
             return This.WhenAny(property1, property2, property3, property4, property5, property6, property7,
                                 (c1, c2, c3, c4, c5, c6, c7) =>
-                                    Tuple.Create(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value));
+                                    (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value));
         }
         
         /// <summary>

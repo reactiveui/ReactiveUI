@@ -44,7 +44,7 @@ namespace ReactiveUI
         /// View is activated. It returns a list of Disposables that will be
         /// cleaned up when the View is deactivated.
         /// </param>
-        public static void WhenActivated(this ISupportsActivation item, Func<IEnumerable<IDisposable>> block)
+        public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block)
         {
             if (item == null)
             {
@@ -65,7 +65,7 @@ namespace ReactiveUI
         /// you to register Disposables to be cleaned up when the View is
         /// deactivated (i.e. "d(someObservable.Subscribe());").
         /// </param>
-        public static void WhenActivated(this ISupportsActivation item, Action<Action<IDisposable>> block)
+        public static void WhenActivated(this IActivatableViewModel item, Action<Action<IDisposable>> block)
         {
             if (item == null)
             {
@@ -90,7 +90,7 @@ namespace ReactiveUI
         /// View is activated. The Action parameter (usually called 'disposables') allows
         /// you to collate all the disposables to be cleaned up during deactivation.
         /// </param>
-        public static void WhenActivated(this ISupportsActivation item, Action<CompositeDisposable> block)
+        public static void WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block)
         {
             if (item == null)
             {
@@ -116,7 +116,7 @@ namespace ReactiveUI
         /// cleaned up when the View is deactivated.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable item, Func<IEnumerable<IDisposable>> block)
+        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block)
         {
             if (item == null)
             {
@@ -137,12 +137,12 @@ namespace ReactiveUI
         /// cleaned up when the View is deactivated.
         /// </param>
         /// <param name="view">
-        /// The IActivatable will ordinarily also host the View
+        /// The IActivatableView will ordinarily also host the View
         /// Model, but in the event it is not, a class implementing <see cref="IViewFor" />
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable item, Func<IEnumerable<IDisposable>> block, IViewFor view)
+        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor view)
         {
             if (item == null)
             {
@@ -180,7 +180,7 @@ namespace ReactiveUI
         /// deactivated (i.e. "d(someObservable.Subscribe());").
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable item, Action<Action<IDisposable>> block)
+        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block)
         {
             return item.WhenActivated(block, null);
         }
@@ -197,12 +197,12 @@ namespace ReactiveUI
         /// deactivated (i.e. "d(someObservable.Subscribe());").
         /// </param>
         /// <param name="view">
-        /// The IActivatable will ordinarily also host the View
+        /// The IActivatableView will ordinarily also host the View
         /// Model, but in the event it is not, a class implementing <see cref="IViewFor" />
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable item, Action<Action<IDisposable>> block, IViewFor view)
+        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view)
         {
             return item.WhenActivated(
                 () =>
@@ -224,12 +224,12 @@ namespace ReactiveUI
         /// you to collate all disposables that should be cleaned up during deactivation.
         /// </param>
         /// <param name="view">
-        /// The IActivatable will ordinarily also host the View
+        /// The IActivatableView will ordinarily also host the View
         /// Model, but in the event it is not, a class implementing <see cref="IViewFor" />
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable item, Action<CompositeDisposable> block, IViewFor view = null)
+        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor view = null)
         {
             return item.WhenActivated(
                 () =>
@@ -269,7 +269,7 @@ namespace ReactiveUI
                     if (activated)
                     {
                         viewVmDisposable.Disposable = view.WhenAnyValue(x => x.ViewModel)
-                            .Select(x => x as ISupportsActivation)
+                            .Select(x => x as IActivatableViewModel)
                             .Subscribe(x =>
                             {
                                 // NB: We need to make sure to respect ordering so that the cleanup

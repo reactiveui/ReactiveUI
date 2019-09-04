@@ -13,7 +13,7 @@ namespace ReactiveUI.Uno
     /// UWP platform registrations.
     /// </summary>
     /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
-    public class PlatformRegistrations : IWantsToRegisterStuff
+    public class Registrations : IWantsToRegisterStuff
     {
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)

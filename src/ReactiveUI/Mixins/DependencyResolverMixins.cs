@@ -32,7 +32,8 @@ namespace ReactiveUI
                 "ReactiveUI.XamForms",
                 "ReactiveUI.Winforms",
                 "ReactiveUI.Wpf",
-                "ReactiveUI.Uno"
+                "ReactiveUI.Uno",
+                "ReactiveUI.Blazor"
             };
 
             // Set up the built-in registration
@@ -100,12 +101,8 @@ namespace ReactiveUI
         [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Used on some platforms")]
         private static Func<object> TypeFactory(TypeInfo typeInfo)
         {
-#if PORTABLE && !WASM
-            throw new Exception("You are referencing the Portable version of ReactiveUI in an App. Reference the platform-specific version.");
-#else
             return Expression.Lambda<Func<object>>(Expression.New(
                 typeInfo.DeclaredConstructors.First(ci => ci.IsPublic && !ci.GetParameters().Any()))).Compile();
-#endif
         }
 
         [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]

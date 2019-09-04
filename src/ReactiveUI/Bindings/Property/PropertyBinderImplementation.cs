@@ -28,7 +28,7 @@ namespace ReactiveUI
                     {
                         var score = x.GetAffinityForObjects(types.fromType, types.toType);
                         return score > acc.currentAffinity && score > 0 ? (score, x) : acc;
-                    }).Item2;
+                    }).currentBinding;
             }, RxApp.SmallCacheLimit);
 
         private static readonly MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter> _setMethodCache = new MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter>(
@@ -39,7 +39,7 @@ namespace ReactiveUI
                     {
                         var score = x.GetAffinityForObjects(type.fromType, type.toType);
                         return score > acc.currentAffinity && score > 0 ? (score, x) : acc;
-                    }).Item2;
+                    }).currentBinding;
             }, RxApp.SmallCacheLimit);
 
         private delegate bool OutFunc<in T1, T2>(T1 t1, out T2 t2);
@@ -97,7 +97,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel, Tuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -177,7 +177,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel, Tuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -562,7 +562,7 @@ namespace ReactiveUI
             return shouldBind;
         }
 
-        private IReactiveBinding<TView, TViewModel, Tuple<object, bool>> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        private IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             TViewModel viewModel,
             TView view,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -628,17 +628,17 @@ namespace ReactiveUI
                 return null;
             }
 
-            IObservable<Tuple<object, bool>> changes = changeWithValues.Where(tuple => tuple != null).Publish().RefCount();
+            IObservable<(object view, bool isViewModel)> changes = changeWithValues.Where(value => value != null).Select(value => (value.Item1, value.Item2)).Publish().RefCount();
 
             IDisposable disposable = changes.Subscribe(isVmWithLatestValue =>
             {
-                if (isVmWithLatestValue.Item2)
+                if (isVmWithLatestValue.isViewModel)
                 {
-                    Reflection.TrySetValueToPropertyChain(view, viewExpression.GetExpressionChain(), isVmWithLatestValue.Item1, false);
+                    Reflection.TrySetValueToPropertyChain(view, viewExpression.GetExpressionChain(), isVmWithLatestValue.view, false);
                 }
                 else
                 {
-                    Reflection.TrySetValueToPropertyChain(view.ViewModel, vmExpression.GetExpressionChain(), isVmWithLatestValue.Item1, false);
+                    Reflection.TrySetValueToPropertyChain(view.ViewModel, vmExpression.GetExpressionChain(), isVmWithLatestValue.view, false);
                 }
             });
 
@@ -646,7 +646,7 @@ namespace ReactiveUI
             // want the ViewModel to win at first.
             signalInitialUpdate.OnNext(true);
 
-            return new ReactiveBinding<TView, TViewModel, Tuple<object, bool>>(
+            return new ReactiveBinding<TView, TViewModel, (object view, bool isViewModel)>(
                    view,
                    viewModel,
                    viewExpression,

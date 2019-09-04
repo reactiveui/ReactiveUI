@@ -21,11 +21,11 @@ namespace ReactiveUI
                 (t, _) =>
             {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
-                    .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) =>
+                    .Aggregate((score: 0, binding: (ICreatesCommandBinding)null), (acc, x) =>
                     {
                         int score = x.GetAffinityForObject(t, false);
-                        return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
-                    }).Item2;
+                        return (score > acc.score) ? (score, x) : acc;
+                    }).binding;
             }, RxApp.SmallCacheLimit);
 
         private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandEventCache =
@@ -33,11 +33,11 @@ namespace ReactiveUI
                 (t, _) =>
             {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
-                    .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) =>
+                    .Aggregate((score: 0, binding: (ICreatesCommandBinding)null), (acc, x) =>
                     {
                         int score = x.GetAffinityForObject(t, true);
-                        return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
-                    }).Item2;
+                        return (score > acc.score) ? (score, x) : acc;
+                    }).binding;
             }, RxApp.SmallCacheLimit);
 
         public static IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)

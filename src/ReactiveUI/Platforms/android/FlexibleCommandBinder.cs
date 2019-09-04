@@ -100,7 +100,7 @@ namespace ReactiveUI
             object latestParam = null;
             var ctl = target;
 
-            var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe((e) =>
+            var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe(_ =>
             {
                 if (command.CanExecute(latestParam))
                 {
@@ -120,8 +120,14 @@ namespace ReactiveUI
             var compDisp = new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
-                Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
-                    .Select(_ => command.CanExecute(latestParam))
+                Observable.FromEvent<EventHandler, bool>(
+                        eventHandler =>
+                        {
+                            void Handler(object sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
+                            return Handler;
+                        },
+                        x => command.CanExecuteChanged += x,
+                        x => command.CanExecuteChanged -= x)
                     .Subscribe(x => enabledSetter(target, x, null)));
 
             return compDisp;

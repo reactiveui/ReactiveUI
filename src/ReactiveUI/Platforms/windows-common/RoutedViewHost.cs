@@ -35,7 +35,7 @@ namespace ReactiveUI
 #if HAS_UNO
         partial
 #endif
-        class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
+        class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
     {
         /// <summary>
         /// The router dependency property.
@@ -86,16 +86,22 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            ViewContractObservable = Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
-                .Select(_ => platformGetter())
+            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
+                    eventHandler =>
+                    {
+                        void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
+                        return Handler;
+                    },
+                    x => SizeChanged += x,
+                    x => SizeChanged -= x)
                 .DistinctUntilChanged()
                 .StartWith(platformGetter())
-                .Select(x => x != null ? x : default(string));
+                .Select(x => x);
 
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyObservable(x => x.Router.CurrentViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
-                Tuple.Create);
+                (viewModel, contract) => (viewModel, contract));
 
             this.WhenActivated(d =>
             {
@@ -105,21 +111,21 @@ namespace ReactiveUI
                 d(vmAndContract.DistinctUntilChanged().Subscribe(
                     x =>
                     {
-                        if (x.Item1 == null)
+                        if (x.viewModel == null)
                         {
                             Content = DefaultContent;
                             return;
                         }
 
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                        var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
+                        var view = viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel, null);
 
                         if (view == null)
                         {
-                            throw new Exception($"Couldn't find view for '{x.Item1}'.");
+                            throw new Exception($"Couldn't find view for '{x.viewModel}'.");
                         }
 
-                        view.ViewModel = x.Item1;
+                        view.ViewModel = x.viewModel;
                         Content = view;
                     }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
             });

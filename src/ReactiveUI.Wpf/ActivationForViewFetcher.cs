@@ -25,7 +25,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             var fe = view as FrameworkElement;
 
@@ -34,20 +34,32 @@ namespace ReactiveUI
                 return Observable<bool>.Empty;
             }
 
-            var viewLoaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+            var viewLoaded = Observable.FromEvent<RoutedEventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object sender, RoutedEventArgs e) => eventHandler(true);
+                    return Handler;
+                },
                 x => fe.Loaded += x,
-                x => fe.Loaded -= x)
-                .Select(_ => true);
+                x => fe.Loaded -= x);
 
-            var hitTestVisible = Observable.FromEventPattern<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
+            var hitTestVisible = Observable.FromEvent<DependencyPropertyChangedEventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object sender, DependencyPropertyChangedEventArgs e) => eventHandler((bool)e.NewValue);
+                    return Handler;
+                },
                 x => fe.IsHitTestVisibleChanged += x,
-                x => fe.IsHitTestVisibleChanged -= x)
-                .Select(x => (bool)x.EventArgs.NewValue);
+                x => fe.IsHitTestVisibleChanged -= x);
 
-            var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+            var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object sender, RoutedEventArgs e) => eventHandler(false);
+                    return Handler;
+                },
                 x => fe.Unloaded += x,
-                x => fe.Unloaded -= x)
-                .Select(_ => false);
+                x => fe.Unloaded -= x);
 
             return viewLoaded
                 .Merge(viewUnloaded)

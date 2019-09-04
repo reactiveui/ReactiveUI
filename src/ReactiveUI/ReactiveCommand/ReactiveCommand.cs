@@ -667,8 +667,7 @@ namespace ReactiveUI
 
             _exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
 
-            _canExecuteSubscription = _canExecute
-                .Subscribe(_ => OnCanExecuteChanged());
+            _canExecuteSubscription = _canExecute.Subscribe(OnCanExecuteChanged);
         }
 
         private enum ExecutionDemarcation

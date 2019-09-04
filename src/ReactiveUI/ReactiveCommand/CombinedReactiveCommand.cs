@@ -113,8 +113,7 @@ namespace ReactiveUI
 
             _exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
 
-            CanExecute
-                .Subscribe(_ => OnCanExecuteChanged());
+            CanExecute.Subscribe(OnCanExecuteChanged);
         }
 
         /// <inheritdoc/>

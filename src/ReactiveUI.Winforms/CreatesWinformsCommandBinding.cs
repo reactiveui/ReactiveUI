@@ -23,10 +23,10 @@ namespace ReactiveUI.Winforms
     public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     {
         // NB: These are in priority order
-        private static readonly List<Tuple<string, Type>> defaultEventsToBind = new List<Tuple<string, Type>>
+        private static readonly List<(string name, Type type)> defaultEventsToBind = new List<(string name, Type type)>
         {
-            Tuple.Create("Click", typeof(EventArgs)),
-            Tuple.Create("MouseUp", typeof(System.Windows.Forms.MouseEventArgs)),
+            ("Click", typeof(EventArgs)),
+            ("MouseUp", typeof(System.Windows.Forms.MouseEventArgs)),
         };
 
         /// <inheritdoc/>
@@ -46,7 +46,7 @@ namespace ReactiveUI.Winforms
 
             return defaultEventsToBind.Any(x =>
             {
-                var ei = type.GetEvent(x.Item1, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
+                var ei = type.GetEvent(x.name, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
                 return ei != null;
             }) ? 4 : 0;
         }
@@ -63,7 +63,7 @@ namespace ReactiveUI.Winforms
 
             var type = target.GetType();
             var eventInfo = defaultEventsToBind
-                .Select(x => new { EventInfo = type.GetEvent(x.Item1, bf), Args = x.Item2 })
+                .Select(x => new { EventInfo = type.GetEvent(x.name, bf), Args = x.type })
                 .FirstOrDefault(x => x.EventInfo != null);
 
             if (eventInfo == null)
@@ -119,8 +119,14 @@ namespace ReactiveUI.Winforms
                     object latestParam = null;
                     ret.Add(commandParameter.Subscribe(x => latestParam = x));
 
-                    ret.Add(Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
-                        .Select(_ => command.CanExecute(latestParam))
+                    ret.Add(Observable.FromEvent<EventHandler, bool>(
+                            eventHandler =>
+                            {
+                                void Handler(object sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
+                                return Handler;
+                            },
+                            x => command.CanExecuteChanged += x,
+                            x => command.CanExecuteChanged -= x)
                         .StartWith(command.CanExecute(latestParam))
                         .Subscribe(x =>
                         {

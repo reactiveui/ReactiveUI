@@ -49,7 +49,7 @@ namespace ReactiveUI.Tests.Wpf
             var vm = new CommandBindingViewModel();
             var view = new FakeXamlCommandBindingView { ViewModel = vm };
 
-            testLogger.Messages.ShouldNotContain(t => t.Item1.Contains(nameof(POCOObservableForProperty)) && t.Item1.Contains(view.NameOfButtonDeclaredInXaml) && t.Item3 == LogLevel.Warn);
+            testLogger.Messages.ShouldNotContain(t => t.message.Contains(nameof(POCOObservableForProperty)) && t.message.Contains(view.NameOfButtonDeclaredInXaml) && t.logLevel == LogLevel.Warn);
         }
     }
 }

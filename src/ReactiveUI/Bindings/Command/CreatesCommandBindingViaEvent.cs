@@ -22,14 +22,14 @@ namespace ReactiveUI
     public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     {
         // NB: These are in priority order
-        private static readonly List<Tuple<string, Type>> defaultEventsToBind = new List<Tuple<string, Type>>
+        private static readonly List<(string name, Type type)> defaultEventsToBind = new List<(string name, Type type)>
         {
-            Tuple.Create("Click", typeof(EventArgs)),
-            Tuple.Create("TouchUpInside", typeof(EventArgs)),
-            Tuple.Create("MouseUp", typeof(EventArgs)),
+            ("Click", typeof(EventArgs)),
+            ("TouchUpInside", typeof(EventArgs)),
+            ("MouseUp", typeof(EventArgs)),
 #if NETFX_CORE
-            Tuple.Create("PointerReleased", typeof(PointerRoutedEventArgs)),
-            Tuple.Create("Tapped", typeof(TappedRoutedEventArgs)),
+            ("PointerReleased", typeof(PointerRoutedEventArgs)),
+            ("Tapped", typeof(TappedRoutedEventArgs)),
 #endif
         };
 
@@ -43,7 +43,7 @@ namespace ReactiveUI
 
             return defaultEventsToBind.Any(x =>
             {
-                var ei = type.GetRuntimeEvent(x.Item1);
+                var ei = type.GetRuntimeEvent(x.name);
                 return ei != null;
             }) ? 3 : 0;
         }
@@ -58,7 +58,7 @@ namespace ReactiveUI
 
             var type = target.GetType();
             var eventInfo = defaultEventsToBind
-                .Select(x => new { EventInfo = type.GetRuntimeEvent(x.Item1), Args = x.Item2 })
+                .Select(x => new { EventInfo = type.GetRuntimeEvent(x.name), Args = x.type })
                 .FirstOrDefault(x => x.EventInfo != null);
 
             if (eventInfo == null)

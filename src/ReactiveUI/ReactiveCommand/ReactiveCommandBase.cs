@@ -74,6 +74,7 @@ namespace ReactiveUI
     public abstract class ReactiveCommandBase<TParam, TResult> : IObservable<TResult>, ICommand, IReactiveCommand
     {
         private EventHandler _canExecuteChanged;
+        private bool _canExecuteValue;
 
         /// <inheritdoc/>
         event EventHandler ICommand.CanExecuteChanged
@@ -189,8 +190,10 @@ namespace ReactiveUI
         /// <summary>
         /// Will trigger a event when the CanExecute condition has changed.
         /// </summary>
-        protected void OnCanExecuteChanged()
+        /// <param name="newValue">The new value of the execute.</param>
+        protected void OnCanExecuteChanged(bool newValue)
         {
+            _canExecuteValue = newValue;
             _canExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -202,7 +205,7 @@ namespace ReactiveUI
         /// <returns>If the command can be executed.</returns>
         protected virtual bool ICommandCanExecute(object parameter)
         {
-            return CanExecute.FirstAsync().Wait();
+            return _canExecuteValue;
         }
 
         /// <summary>

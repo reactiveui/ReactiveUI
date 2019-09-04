@@ -7,7 +7,7 @@ using System.Reactive.Disposables;
 
 namespace ReactiveUI.Tests
 {
-    public class ActivatingViewModel : ReactiveObject, ISupportsActivation
+    public class ActivatingViewModel : ReactiveObject, IActivatableViewModel
     {
         public ActivatingViewModel()
         {

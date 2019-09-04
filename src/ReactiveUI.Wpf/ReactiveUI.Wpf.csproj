@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>        
+    <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>        
     <Description>WPF specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
@@ -13,6 +13,18 @@
     <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
   </ItemGroup>
 
+  <Choose>
+    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) ">
+      <ItemGroup>
+          <PackageReference Include="System.Reactive" Version="4.2.0-preview.625" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+          <PackageReference Include="System.Reactive" Version="4.1.6" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <ItemGroup>
     <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />
   </ItemGroup>

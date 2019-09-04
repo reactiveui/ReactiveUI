@@ -17,30 +17,30 @@ namespace ReactiveUI.Tests
         public CountingTestScheduler(IScheduler innerScheduler)
         {
             InnerScheduler = innerScheduler;
-            ScheduledItems = new List<Tuple<Action, TimeSpan?>>();
+            ScheduledItems = new List<(Action action, TimeSpan? dueTime)>();
         }
 
         public IScheduler InnerScheduler { get; }
 
-        public List<Tuple<Action, TimeSpan?>> ScheduledItems { get; }
+        public List<(Action action, TimeSpan? dueTime)> ScheduledItems { get; }
 
         public DateTimeOffset Now => InnerScheduler.Now;
 
         public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            ScheduledItems.Add(new Tuple<Action, TimeSpan?>(() => action(this, state), null));
+            ScheduledItems.Add((() => action(this, state), null));
             return InnerScheduler.Schedule(state, dueTime, action);
         }
 
         public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            ScheduledItems.Add(new Tuple<Action, TimeSpan?>(() => action(this, state), dueTime));
+            ScheduledItems.Add((() => action(this, state), dueTime));
             return InnerScheduler.Schedule(state, dueTime, action);
         }
 
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            ScheduledItems.Add(new Tuple<Action, TimeSpan?>(() => action(this, state), null));
+            ScheduledItems.Add((() => action(this, state), null));
             return InnerScheduler.Schedule(state, action);
         }
     }

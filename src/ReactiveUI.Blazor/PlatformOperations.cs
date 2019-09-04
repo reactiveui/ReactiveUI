@@ -3,13 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Collections.Specialized;
-
-namespace ReactiveUI
+namespace ReactiveUI.Blazor
 {
-#if !NET_461
-    internal class CollectionChangingEventManager : WeakEventManager<INotifyCollectionChanging, NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>
+    /// <summary>
+    /// Returns the current orientation of the device on Windows.
+    /// </summary>
+    public class PlatformOperations : IPlatformOperations
     {
+        /// <inheritdoc/>
+        public string GetOrientation()
+        {
+            return null;
+        }
     }
-#endif
 }

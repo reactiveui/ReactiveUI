@@ -6,6 +6,8 @@
 using System;
 using System.Reactive.Concurrency;
 
+using ReactiveUI;
+
 namespace ReactiveUI.Wpf
 {
     /// <summary>
@@ -27,6 +29,7 @@ namespace ReactiveUI.Wpf
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+            registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
 

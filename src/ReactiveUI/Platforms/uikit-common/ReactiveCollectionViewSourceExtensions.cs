@@ -10,7 +10,6 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Foundation;
-using ReactiveUI.Legacy;
 using UIKit;
 
 namespace ReactiveUI
@@ -24,7 +23,7 @@ namespace ReactiveUI
         /// <para>Extension method that binds an observable of a list of collection
         /// sections as the source of a <see cref="UICollectionView"/>.</para>
         /// <para>If your <see cref="IReadOnlyList{T}"/> is also an instance of
-        /// <see cref="IReactiveNotifyCollectionChanged{T}"/>, then this method
+        /// <see cref="INotifyCollectionChanged"/>, then this method
         /// will silently update the bindings whenever it changes as well.
         /// Otherwise, it will just log a message.</para>
         /// </summary>

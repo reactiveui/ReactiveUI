@@ -32,6 +32,6 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="view">The view to get the activation observable for.</param>
         /// <returns>A Observable which will returns if Activation was successful.</returns>
-        IObservable<bool> GetActivationForView(IActivatable view);
+        IObservable<bool> GetActivationForView(IActivatableView view);
     }
 }

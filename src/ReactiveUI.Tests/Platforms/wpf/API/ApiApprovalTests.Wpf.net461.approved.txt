@@ -6,7 +6,7 @@ namespace ReactiveUI
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher
     {
         public ActivationForViewFetcher() { }
-        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatable view) { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
     public class AutoDataTemplateBindingHook : ReactiveUI.IPropertyBindingHook
@@ -44,7 +44,7 @@ namespace ReactiveUI
         public PlatformOperations() { }
         public string GetOrientation() { }
     }
-    public abstract class ReactivePage<TViewModel> : System.Windows.Controls.Page, ReactiveUI.IActivatable, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+    public abstract class ReactivePage<TViewModel> : System.Windows.Controls.Page, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
@@ -52,7 +52,7 @@ namespace ReactiveUI
         public TViewModel BindingRoot { get; }
         public TViewModel ViewModel { get; set; }
     }
-    public abstract class ReactiveUserControl<TViewModel> : System.Windows.Controls.UserControl, ReactiveUI.IActivatable, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+    public abstract class ReactiveUserControl<TViewModel> : System.Windows.Controls.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
@@ -60,7 +60,7 @@ namespace ReactiveUI
         public TViewModel BindingRoot { get; }
         public TViewModel ViewModel { get; set; }
     }
-    public abstract class ReactiveWindow<TViewModel> : System.Windows.Window, ReactiveUI.IActivatable, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+    public abstract class ReactiveWindow<TViewModel> : System.Windows.Window, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
@@ -68,7 +68,7 @@ namespace ReactiveUI
         public TViewModel BindingRoot { get; }
         public TViewModel ViewModel { get; set; }
     }
-    public class RoutedViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatable, Splat.IEnableLogger
+    public class RoutedViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView, Splat.IEnableLogger
     {
         public static readonly System.Windows.DependencyProperty DefaultContentProperty;
         public static readonly System.Windows.DependencyProperty RouterProperty;
@@ -107,7 +107,7 @@ namespace ReactiveUI
             SlideLeft = 2,
         }
     }
-    public class ViewModelViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatable, ReactiveUI.IViewFor, Splat.IEnableLogger, System.IDisposable
+    public class ViewModelViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, Splat.IEnableLogger, System.IDisposable
     {
         public static readonly System.Windows.DependencyProperty DefaultContentProperty;
         public static readonly System.Windows.DependencyProperty ViewContractObservableProperty;

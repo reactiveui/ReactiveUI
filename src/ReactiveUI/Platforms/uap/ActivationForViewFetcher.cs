@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 
 namespace ReactiveUI
@@ -25,7 +26,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             var fe = view as FrameworkElement;
 
@@ -34,13 +35,23 @@ namespace ReactiveUI
                 return Observable<bool>.Empty;
             }
 
-            var viewLoaded = WindowsObservable.FromEventPattern<FrameworkElement, object>(
+            var viewLoaded = Observable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
+                eventHandler =>
+                {
+                    void Handler(FrameworkElement sender, object e) => eventHandler(true);
+                    return Handler;
+                },
                 x => fe.Loading += x,
-                x => fe.Loading -= x).Select(_ => true);
+                x => fe.Loading -= x);
 
-            var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+            var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object sender, RoutedEventArgs e) => eventHandler(false);
+                    return Handler;
+                },
                 x => fe.Unloaded += x,
-                x => fe.Unloaded -= x).Select(_ => false);
+                x => fe.Unloaded -= x);
 
             return viewLoaded
                 .Merge(viewUnloaded)

@@ -9,7 +9,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 using Foundation;
-using ReactiveUI.Legacy;
 using Splat;
 using UIKit;
 
@@ -79,8 +78,6 @@ namespace ReactiveUI
         /// Gets or sets the data that should be displayed by this
         /// <see cref="ReactiveTableViewSource{TSource}"/>.  You should
         /// probably bind your view model to this property.
-        /// If the list implements <see cref="IReactiveNotifyCollectionChanged{T}"/>,
-        /// then the source will react to changes to the contents of the list as well.
         /// </summary>
         /// <value>The data.</value>
         public IReadOnlyList<TableSectionInformation<TSource>> Data

@@ -22,7 +22,7 @@ namespace ReactiveUI
     /// </summary>
     public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
-        private static readonly IDictionary<Tuple<Type, string>, Func<object, Expression, IObservable<IObservedChange<object, object>>>> dispatchTable;
+        private static readonly IDictionary<(Type viewType, string propertyName), Func<object, Expression, IObservable<IObservedChange<object, object>>>> dispatchTable;
 
         static AndroidObservableForWidgets()
         {
@@ -37,7 +37,7 @@ namespace ReactiveUI
                 CreateTimePickerHourFromWidget(),
                 CreateTimePickerMinuteFromWidget(),
                 CreateFromAdapterView(),
-            }.ToDictionary(k => Tuple.Create(k.Type, k.Property), v => v.Func);
+            }.ToDictionary(k => (viewType: k.Type, propertyName: k.Property), v => v.Func);
         }
 
         /// <inheritdoc/>
@@ -48,7 +48,7 @@ namespace ReactiveUI
                 return 0;
             }
 
-            return dispatchTable.Keys.Any(x => x.Item1.IsAssignableFrom(type) && x.Item2 == propertyName) ? 5 : 0;
+            return dispatchTable.Keys.Any(x => x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName) ? 5 : 0;
         }
 
         /// <inheritdoc/>
@@ -60,35 +60,49 @@ namespace ReactiveUI
             }
 
             var type = sender.GetType();
-            var tableItem = dispatchTable.Keys.First(x => x.Item1.IsAssignableFrom(type) && x.Item2 == propertyName);
+            var tableItem = dispatchTable.Keys.First(x => x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName);
 
             return dispatchTable[tableItem](sender, expression);
         }
 
-        private static DispatchTuple CreateFromAdapterView()
+        private static DispatchItem CreateFromAdapterView()
         {
             // AdapterView is more complicated because there are two events - one for select and one for deselect
             // respond to both
             const string propName = "SelectedItem";
 
-            return new DispatchTuple
+            return new DispatchItem
             {
                 Type = typeof(AdapterView),
                 Property = propName,
                 Func = (x, ex) =>
                 {
-                    var v = (AdapterView)x;
+                    var adapterView = (AdapterView)x;
 
-                    return Observable.Merge(
-                        Observable.FromEventPattern<AdapterView.ItemSelectedEventArgs>(h => v.ItemSelected += h, h => v.ItemSelected -= h)
-                            .Select(_ => new ObservedChange<object, object>(v, ex)),
-                        Observable.FromEventPattern<AdapterView.NothingSelectedEventArgs>(h => v.NothingSelected += h, h => v.NothingSelected -= h)
-                            .Select(_ => new ObservedChange<object, object>(v, ex)));
+                    var itemSelected = Observable.FromEvent<EventHandler<AdapterView.ItemSelectedEventArgs>, ObservedChange<object, object>>(
+                        eventHandler =>
+                        {
+                            void Handler(object sender, AdapterView.ItemSelectedEventArgs e) => eventHandler(new ObservedChange<object, object>(adapterView, ex));
+                            return Handler;
+                        },
+                        h => adapterView.ItemSelected += h,
+                        h => adapterView.ItemSelected -= h);
+
+                    var nothingSelected = Observable.FromEvent<EventHandler<AdapterView.NothingSelectedEventArgs>, ObservedChange<object, object>>(
+                        eventHandler =>
+                        {
+                            void Handler(object sender, AdapterView.NothingSelectedEventArgs e) => eventHandler(new ObservedChange<object, object>(adapterView, ex));
+                            return Handler;
+                        },
+                        h => adapterView.NothingSelected += h,
+                        h => adapterView.NothingSelected -= h);
+
+                    return Observable.Merge(itemSelected, nothingSelected);
                 }
             };
         }
 
-        private static DispatchTuple CreateTimePickerHourFromWidget()
+        private static DispatchItem CreateTimePickerHourFromWidget()
         {
             if ((int)Build.VERSION.SdkInt >= 23)
             {
@@ -100,7 +114,7 @@ namespace ReactiveUI
 #pragma warning restore 618
         }
 
-        private static DispatchTuple CreateTimePickerMinuteFromWidget()
+        private static DispatchItem CreateTimePickerMinuteFromWidget()
         {
             if ((int)Build.VERSION.SdkInt >= 23)
             {
@@ -112,7 +126,7 @@ namespace ReactiveUI
 #pragma warning restore 618
         }
 
-        private static DispatchTuple CreateFromWidget<TView, TEventArgs>(Expression<Func<TView, object>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)
+        private static DispatchItem CreateFromWidget<TView, TEventArgs>(Expression<Func<TView, object>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)
             where TView : View
             where TEventArgs : EventArgs
         {
@@ -120,21 +134,23 @@ namespace ReactiveUI
             // occur due to our use of object
             var propName = property.Body.GetMemberInfo().Name;
 
-            return new DispatchTuple
+            return new DispatchItem
             {
                 Type = typeof(TView),
                 Property = propName,
                 Func = (x, ex) =>
                 {
-                    var v = (TView)x;
+                    var view = (TView)x;
 
-                    return Observable.FromEventPattern<TEventArgs>(h => addHandler(v, h), h => removeHandler(v, h))
-                        .Select(_ => new ObservedChange<object, object>(v, ex));
+                    return Observable.FromEvent<EventHandler<TEventArgs>, TEventArgs>(
+                        h => addHandler(view, h),
+                        h => removeHandler(view, h))
+                                     .Select(_ => new ObservedChange<object, object>(view, ex));
                 }
             };
         }
 
-        private class DispatchTuple
+        private class DispatchItem
         {
             public Type Type { get; set; }
 
