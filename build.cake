@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#load nuget:https://www.myget.org/F/reactiveui/?package=ReactiveUI.Cake.Recipe&prerelease
+#load nuget:https://pkgs.dev.azure.com/dotnet/ReactiveUI/_packaging/ReactiveUI/nuget/v3/index.json?package=ReactiveUI.Cake.Recipe&prerelease
 
 const string project = "ReactiveUI";
 
