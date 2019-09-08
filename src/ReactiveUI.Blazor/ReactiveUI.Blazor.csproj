@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview6.19307.2"  />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview9.19424.4" />
   </ItemGroup>
 
   <ItemGroup>
