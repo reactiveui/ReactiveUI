@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Runtime;
-using Android.Support.V7.App;
+using AndroidX.AppCompat.App;
 
 namespace ReactiveUI.AndroidSupport
 {

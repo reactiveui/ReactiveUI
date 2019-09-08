@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>MonoAndroid81</TargetFrameworks>
+    <TargetFrameworks>MonoAndroid90</TargetFrameworks>
     <Description>ReactiveUI extensions for the Android Support Library</Description>
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
     <LangVersion>latest</LangVersion>
@@ -9,17 +9,15 @@
 
   <Target Name="_RemoveNonExistingResgenFile" BeforeTargets="CoreCompile" Condition="'$(_SdkSetAndroidResgenFile)' == 'true' And '$(AndroidResgenFile)' != '' And !Exists('$(AndroidResgenFile)')">
     <ItemGroup>
-      <Compile Remove="$(AndroidResgenFile)"/>
+      <Compile Remove="$(AndroidResgenFile)" />
     </ItemGroup>
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="27.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" Version="27.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.Vector.Drawable" Version="27.0.*" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.0.2-preview02" />
+    <PackageReference Include="Xamarin.AndroidX.Fragment" Version="1.0.0-preview02" />
+    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.0.0-preview02" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   

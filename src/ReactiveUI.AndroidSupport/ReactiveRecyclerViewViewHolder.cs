@@ -10,8 +10,8 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using Android.Support.V7.Widget;
 using Android.Views;
+using AndroidX.RecyclerView.Widget;
 
 namespace ReactiveUI.AndroidSupport
 {

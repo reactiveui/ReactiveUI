@@ -6,7 +6,7 @@
 using System;
 using Android.Views;
 using static ReactiveUI.ControlFetcherMixin;
-using Fragment = Android.Support.V4.App.Fragment;
+using Fragment = AndroidX.Fragment.App.Fragment;
 
 namespace ReactiveUI.AndroidSupport
 {

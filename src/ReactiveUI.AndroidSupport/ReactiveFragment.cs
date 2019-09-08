@@ -68,7 +68,7 @@ namespace ReactiveUI.AndroidSupport
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-    public class ReactiveFragment : Android.Support.V4.App.Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
+    public class ReactiveFragment : AndroidX.Fragment.App.Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
