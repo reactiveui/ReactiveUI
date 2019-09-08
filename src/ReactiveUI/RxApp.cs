@@ -25,7 +25,7 @@ namespace ReactiveUI
     /// test runner or not), none of the items queued to it will ever be executed
     /// during the unit test.
     /// Initially, I tried to plumb the ability to set the scheduler throughout the
-    /// lasses, but when you start building applications on top of that, having to
+    /// classes, but when you start building applications on top of that, having to
     /// have *every single * class have a default Scheduler property is really
     /// irritating, with either default making life difficult.
     /// This class also initializes a whole bunch of other stuff, including the IoC container,
