@@ -93,10 +93,10 @@ namespace ReactiveUI.Blazor
         }
 
         /// <inheritdoc />
-        protected override void OnInit()
+        protected override void OnInitialized()
         {
             _initSubject.OnNext(Unit.Default);
-            base.OnInit();
+            base.OnInitialized();
         }
 
         /// <summary>

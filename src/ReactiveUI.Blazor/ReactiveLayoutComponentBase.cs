@@ -11,7 +11,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Components.Layouts;
+using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor
 {
@@ -89,10 +89,10 @@ namespace ReactiveUI.Blazor
         }
 
         /// <inheritdoc />
-        protected override void OnInit()
+        protected override void OnInitialized()
         {
             _initSubject.OnNext(Unit.Default);
-            base.OnInit();
+            base.OnInitialized();
         }
 
         /// <summary>
