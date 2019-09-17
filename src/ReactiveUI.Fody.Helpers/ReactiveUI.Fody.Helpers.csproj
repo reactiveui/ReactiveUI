@@ -14,12 +14,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
-  <Target Name="_RemoveNonExistingResgenFile" BeforeTargets="CoreCompile" Condition="'$(_SdkSetAndroidResgenFile)' == 'true' And '$(AndroidResgenFile)' != '' And !Exists('$(AndroidResgenFile)')">
-    <ItemGroup>
-      <Compile Remove="$(AndroidResgenFile)"/>
-    </ItemGroup>
-  </Target>
-
   <ItemGroup>
     <PackageReference Include="Fody" Version="6.0.0" PrivateAssets="None" />
     <PackageReference Include="FodyPackaging" Version="6.0.0" PrivateAssets="All" />
