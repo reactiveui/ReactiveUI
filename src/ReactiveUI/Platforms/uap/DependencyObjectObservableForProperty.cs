@@ -37,13 +37,7 @@ namespace ReactiveUI
                 return 0;
             }
 
-#if HAS_UNO
-            // DependencyObject must be prioritized compared to INotifyPropertyChanged (score == 5)
-            // until https://github.com/unoplatform/uno/issues/1551 is resolved.
-            return 6; 
-#else
-            return 4;
-#endif
+            return 6;
         }
 
         /// <inheritdoc/>
