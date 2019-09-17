@@ -13,12 +13,6 @@
     <DefineConstants>HAS_UNO;WASM</DefineConstants>
   </PropertyGroup>
 
-  <Target Name="_RemoveNonExistingResgenFile" BeforeTargets="CoreCompile" Condition="'$(_SdkSetAndroidResgenFile)' == 'true' And '$(AndroidResgenFile)' != '' And !Exists('$(AndroidResgenFile)')">
-    <ItemGroup>
-      <Compile Remove="$(AndroidResgenFile)"/>
-    </ItemGroup>
-  </Target>
-
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('uap')) ">
     <PackageReference Include="Uno.UI" Version="1.*" />
   </ItemGroup>

@@ -9,12 +9,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
-  <Target Name="_RemoveNonExistingResgenFile" BeforeTargets="CoreCompile" Condition="'$(_SdkSetAndroidResgenFile)' == 'true' And '$(AndroidResgenFile)' != '' And !Exists('$(AndroidResgenFile)')">
-    <ItemGroup>
-      <Compile Remove="$(AndroidResgenFile)"/>
-    </ItemGroup>
-  </Target>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.6" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
