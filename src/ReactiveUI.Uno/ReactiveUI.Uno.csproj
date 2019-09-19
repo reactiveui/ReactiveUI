@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.8" />
+    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.12" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
