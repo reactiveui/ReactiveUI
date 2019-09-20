@@ -3,7 +3,7 @@
     <TargetFrameworks>net471</TargetFrameworks>        
     <Description>WPF specific example of IntegrationTests</Description>
     <PackageId>IntegrationTests.WPF</PackageId>
-    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+    <UseWpf>true</ExtrasEnableWpfProjectSetup>
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
 

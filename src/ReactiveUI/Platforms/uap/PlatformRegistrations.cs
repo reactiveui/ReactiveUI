@@ -5,6 +5,7 @@
 
 using System;
 using System.Reactive.Concurrency;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -30,6 +31,7 @@ namespace ReactiveUI
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             RxApp.MainThreadScheduler = new SingleWindowDispatcherScheduler();
             registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
         }
     }
 }

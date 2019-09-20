@@ -5,6 +5,7 @@
 
 using System;
 using System.Reactive.Concurrency;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -24,6 +25,7 @@ namespace ReactiveUI
 
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             RxApp.MainThreadScheduler = EcoreMainloopScheduler.MainThreadScheduler;
         }

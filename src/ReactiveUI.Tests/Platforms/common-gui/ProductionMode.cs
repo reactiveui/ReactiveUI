@@ -9,12 +9,19 @@ using Splat;
 
 namespace ReactiveUI.Tests
 {
-    internal class ProductionMode : IModeDetector
+    internal class ProductionMode : IModeDetector, IPlatformModeDetector
     {
+        private static ProductionMode Instance = new ProductionMode();
+
         public static IDisposable Set()
         {
-            ModeDetector.OverrideModeDetector(new ProductionMode());
-            return Disposable.Create(() => ModeDetector.OverrideModeDetector(new PlatformModeDetector()));
+            PlatformModeDetector.OverrideModeDetector(Instance);
+            ModeDetector.OverrideModeDetector(Instance);
+            return Disposable.Create(() =>
+            {
+                PlatformModeDetector.OverrideModeDetector(new DefaultPlatformModeDetector());
+                ModeDetector.OverrideModeDetector(new DefaultModeDetector());
+            });
         }
 
         public bool? InUnitTestRunner()

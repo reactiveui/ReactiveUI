@@ -3,7 +3,7 @@
     <TargetFrameworks>net471</TargetFrameworks>        
     <Description>Winforms specific example of IntegrationTests</Description>
     <PackageId>IntegrationTests.WinForms</PackageId>
-    <ExtrasEnableWinFormsProjectSetup>true</ExtrasEnableWinFormsProjectSetup>
+    <UseWindowsForms>true</UseWindowsForms>
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
 
