@@ -3,12 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reactive.Disposables;
+using System.Threading;
+using AndroidX.RecyclerView.Widget;
+using DynamicData;
+using DynamicData.Binding;
+
 namespace ReactiveUI.AndroidX
 {
     /// <summary>
     /// An adapter for the Android <see cref="RecyclerView"/>.
-    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method
-    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
     /// </summary>
     /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
@@ -117,8 +126,6 @@ namespace ReactiveUI.AndroidX
 
     /// <summary>
     /// An adapter for the Android <see cref="RecyclerView"/>.
-    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method
-    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
     /// </summary>
     /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
     /// <typeparam name="TCollection">The type of collection.</typeparam>
