@@ -12,7 +12,7 @@
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
-    <PackageReference Include="Splat" Version="8.*" />
+    <PackageReference Include="Splat" Version="9.*" />
     <PackageReference Include="DynamicData" Version="6.*" />
     <PackageReference Include="System.Reactive" Version="4.1.6" />
   </ItemGroup>
@@ -28,6 +28,7 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
     <Compile Include="Platforms\net4\**\*.cs" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard2')) ">
@@ -37,6 +38,7 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
     <Compile Include="Platforms\windows-common\**\*.cs" />
     <Compile Include="Platforms\uap\**\*.cs" />
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup Label="Package" Condition=" $(TargetFramework.StartsWith('uap')) ">
@@ -49,6 +51,7 @@
     <Compile Include="Platforms\uikit-common\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
@@ -57,6 +60,7 @@
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="netstandard" />
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
@@ -65,12 +69,14 @@
     <Compile Include="Platforms\uikit-common\**\*.cs" />	
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
     <Compile Include="Platforms\android\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp2')) ">
@@ -96,6 +102,7 @@
     <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
     <PackageReference Include="System.Threading" Version="4.3.0" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup>

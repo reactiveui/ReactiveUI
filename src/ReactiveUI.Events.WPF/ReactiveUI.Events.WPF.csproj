@@ -5,7 +5,7 @@
     <Description>Provides Observable-based events API for WPF UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
     <PackageId>ReactiveUI.Events.WPF</PackageId>
     <UseWpf>true</UseWpf>
-    <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
+    <UseWindowsForms>true</UseWindowsForms>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>  
 
@@ -28,13 +28,11 @@
     </Otherwise>
   </Choose>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.WindowsDesktop.App" Version="3.0.0-preview*" />
+  <ItemGroup>
+    <Compile Include="Events_WPF.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
-    <Compile Include="Events_WPF.cs" />
     <Reference Include="System.Xaml" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
