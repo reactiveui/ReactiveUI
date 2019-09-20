@@ -65,9 +65,6 @@ namespace ReactiveUI
         [ThreadStatic]
         private static ISuspensionHost _unitTestSuspensionHost;
         private static ISuspensionHost _suspensionHost;
-        [ThreadStatic]
-        private static bool? _unitTestSupportsRangeNotifications;
-        private static bool _supportsRangeNotifications;
 
         /// <summary>
         /// Initializes static members of the <see cref="RxApp"/> class.
@@ -77,14 +74,6 @@ namespace ReactiveUI
         {
 #if !PORTABLE
             _taskpoolScheduler = TaskPoolScheduler.Default;
-#endif
-
-            // Initialize this to false as most platforms do not support
-            // range notification for INotifyCollectionChanged
-#if WP8 || NETFX_CORE
-            SupportsRangeNotifications = false;
-#else
-            SupportsRangeNotifications = true;
 #endif
 
             Locator.RegisterResolverCallbackChanged(() =>
@@ -229,32 +218,6 @@ namespace ReactiveUI
                 else
                 {
                     _suspensionHost = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether your UI framework is brain-dead or not and will blow
-        /// up if a INotifyCollectionChanged object returns a ranged Add.
-        /// </summary>
-        public static bool SupportsRangeNotifications
-        {
-            get => _unitTestSupportsRangeNotifications ?? _supportsRangeNotifications;
-            set
-            {
-                // N.B. The ThreadStatic dance here is for the unit test case -
-                // often, each test will override MainThreadScheduler with their
-                // own TestScheduler, and if this wasn't ThreadStatic, they would
-                // stomp on each other, causing test cases to randomly fail,
-                // then pass when you rerun them.
-                if (ModeDetector.InUnitTestRunner())
-                {
-                    _unitTestSupportsRangeNotifications = value;
-                    _supportsRangeNotifications = value;
-                }
-                else
-                {
-                    _supportsRangeNotifications = value;
                 }
             }
         }

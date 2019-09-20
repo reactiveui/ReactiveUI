@@ -7,12 +7,15 @@
     <Description>Windows Forms specific extensions to ReactiveUI</Description>
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
-    <ExtrasEnableWinFormsProjectSetup>true</ExtrasEnableWinFormsProjectSetup>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <Choose>

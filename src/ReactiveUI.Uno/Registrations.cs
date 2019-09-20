@@ -6,6 +6,7 @@
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.PlatformServices;
+using Splat;
 
 namespace ReactiveUI.Uno
 {
@@ -28,6 +29,9 @@ namespace ReactiveUI.Uno
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+#if !NETSTANDARD
+            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
+#endif
 
             // Re-enable once the obsolete code in Uno has been worked out.
             ////registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));

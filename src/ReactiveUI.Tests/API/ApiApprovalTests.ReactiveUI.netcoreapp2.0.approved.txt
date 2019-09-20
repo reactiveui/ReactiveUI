@@ -618,7 +618,6 @@ namespace ReactiveUI
         public const int SmallCacheLimit = 64;
         public static System.IObserver<System.Exception> DefaultExceptionHandler { get; set; }
         public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
-        public static bool SupportsRangeNotifications { get; set; }
         public static bool SuppressViewCommandBindingMessage { get; set; }
         public static ReactiveUI.ISuspensionHost SuspensionHost { get; set; }
         public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
