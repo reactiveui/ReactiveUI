@@ -37,7 +37,7 @@ namespace ReactiveUI
                 return 0;
             }
 
-            return 4;
+            return 6;
         }
 
         /// <inheritdoc/>

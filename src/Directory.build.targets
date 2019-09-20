@@ -3,6 +3,7 @@
   
   <PropertyGroup>  
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <AndroidUseIntermediateDesignerFile>False</AndroidUseIntermediateDesignerFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
