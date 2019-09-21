@@ -4,6 +4,7 @@
   <PropertyGroup>  
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <AndroidUseIntermediateDesignerFile>False</AndroidUseIntermediateDesignerFile>
+    <EnableVSTestReferences>false</EnableVSTestReferences>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
