@@ -4,14 +4,7 @@
     <TargetFrameworks>net471</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <CodeAnalysisRuleSet>..\..\src\reactiveui.tests.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net471|AnyCPU'">
-    <NoWarn>1701;1702;CA1716</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net471|AnyCPU'">
-    <NoWarn>1701;1702;CA1716</NoWarn>
+    <NoWarn>$(NoWarn);1701;1702;CA1716;CA1707</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
