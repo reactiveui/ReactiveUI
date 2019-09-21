@@ -1,9 +1,9 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net471</TargetFrameworks>        
+    <TargetFrameworks>net472</TargetFrameworks>        
     <Description>WPF specific example of IntegrationTests</Description>
     <PackageId>IntegrationTests.WPF</PackageId>
-    <UseWpf>true</ExtrasEnableWpfProjectSetup>
+    <UseWpf>true</UseWpf>
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
 

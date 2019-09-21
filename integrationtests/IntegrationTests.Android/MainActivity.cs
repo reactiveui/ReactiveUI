@@ -38,6 +38,19 @@ namespace IntegrationTests.Android
         public Button Cancel { get; set; }
 
         /// <inheritdoc />
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.menu_main, menu);
+            return true;
+        }
+
+        /// <inheritdoc />
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            return item.ItemId == Resource.Id.action_settings || base.OnOptionsItemSelected(item);
+        }
+
+        /// <inheritdoc />
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -89,19 +102,6 @@ namespace IntegrationTests.Android
                     .Subscribe()
                     .DisposeWith(disposables);
             });
-        }
-
-        /// <inheritdoc />
-        public override bool OnCreateOptionsMenu(IMenu menu)
-        {
-            MenuInflater.Inflate(Resource.Menu.menu_main, menu);
-            return true;
-        }
-
-        /// <inheritdoc />
-        public override bool OnOptionsItemSelected(IMenuItem item)
-        {
-            return item.ItemId == Resource.Id.action_settings || base.OnOptionsItemSelected(item);
         }
     }
 }
