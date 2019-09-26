@@ -39,7 +39,7 @@ namespace ReactiveUI
     /// <typeparam name="TViewModel">
     /// The type of the view model backing the view.
     /// </typeparam>
-    public abstract class ReactiveWindow<TViewModel> :
+    public class ReactiveWindow<TViewModel> :
         Window, IViewFor<TViewModel>
         where TViewModel : class
     {

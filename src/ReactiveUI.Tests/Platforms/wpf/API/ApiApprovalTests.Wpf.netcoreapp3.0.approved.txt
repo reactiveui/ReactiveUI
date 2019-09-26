@@ -44,27 +44,27 @@ namespace ReactiveUI
         public PlatformOperations() { }
         public string GetOrientation() { }
     }
-    public abstract class ReactivePage<TViewModel> : System.Windows.Controls.Page, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+    public class ReactivePage<TViewModel> : System.Windows.Controls.Page, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
-        protected ReactivePage() { }
+        public ReactivePage() { }
         public TViewModel BindingRoot { get; }
         public TViewModel ViewModel { get; set; }
     }
-    public abstract class ReactiveUserControl<TViewModel> : System.Windows.Controls.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+    public class ReactiveUserControl<TViewModel> : System.Windows.Controls.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
-        protected ReactiveUserControl() { }
+        public ReactiveUserControl() { }
         public TViewModel BindingRoot { get; }
         public TViewModel ViewModel { get; set; }
     }
-    public abstract class ReactiveWindow<TViewModel> : System.Windows.Window, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
+    public class ReactiveWindow<TViewModel> : System.Windows.Window, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
-        protected ReactiveWindow() { }
+        public ReactiveWindow() { }
         public TViewModel BindingRoot { get; }
         public TViewModel ViewModel { get; set; }
     }
