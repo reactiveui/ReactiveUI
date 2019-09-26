@@ -86,7 +86,7 @@ namespace ReactiveUI
     [global::Foundation.Register]
 #endif
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
-    public abstract
+    public
 #if HAS_UNO
         partial
 #endif
