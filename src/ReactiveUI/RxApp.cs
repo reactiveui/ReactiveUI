@@ -107,6 +107,7 @@ namespace ReactiveUI
                 });
             });
 
+            _suspensionHost = new SuspensionHost();
             if (ModeDetector.InUnitTestRunner())
             {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
@@ -124,8 +125,6 @@ namespace ReactiveUI
             {
                 _mainThreadScheduler = DefaultScheduler.Instance;
             }
-
-            _suspensionHost = new SuspensionHost();
         }
 
         /// <summary>
