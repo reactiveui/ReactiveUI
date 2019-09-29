@@ -125,7 +125,7 @@ namespace ReactiveUI
                 _mainThreadScheduler = DefaultScheduler.Instance;
             }
 
-            SuspensionHost = new SuspensionHost();
+            _suspensionHost = new SuspensionHost();
         }
 
         /// <summary>
@@ -202,12 +202,7 @@ namespace ReactiveUI
         /// </summary>
         public static ISuspensionHost SuspensionHost
         {
-            get
-            {
-                var host = _unitTestSuspensionHost ?? _suspensionHost;
-                return host;
-            }
-
+            get => _unitTestSuspensionHost ?? _suspensionHost;
             set
             {
                 if (ModeDetector.InUnitTestRunner())
