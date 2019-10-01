@@ -149,7 +149,7 @@ namespace ReactiveUI
                     _hasSchedulerBeenChecked = true;
                     LogHost.Default.Warn("It seems you are running .NET Standard, but there is no host package installed!\n");
                     LogHost.Default.Warn("You will need to install the specific host package for your platform (ReactiveUI.WPF, ReactiveUI.Blazor, ...)\n");
-                    LogHost.Default.Warn("You can install the needed package via NuGet");
+                    LogHost.Default.Warn("You can install the needed package via NuGet, see https://reactiveui.net/docs/getting-started/installation/");
                 }
 
                 return _mainThreadScheduler;
