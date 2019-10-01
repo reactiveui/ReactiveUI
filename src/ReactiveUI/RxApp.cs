@@ -65,6 +65,7 @@ namespace ReactiveUI
         [ThreadStatic]
         private static ISuspensionHost _unitTestSuspensionHost;
         private static ISuspensionHost _suspensionHost;
+        private static bool _hasSchedulerBeenChecked;
 
         /// <summary>
         /// Initializes static members of the <see cref="RxApp"/> class.
@@ -135,7 +136,25 @@ namespace ReactiveUI
         /// </summary>
         public static IScheduler MainThreadScheduler
         {
-            get => _unitTestMainThreadScheduler ?? _mainThreadScheduler;
+            get
+            {
+                if (_unitTestMainThreadScheduler != null)
+                {
+                    return _unitTestMainThreadScheduler;
+                }
+
+                // If Scheduler is DefaultScheduler, user is likely using .NET Standard
+                if (!_hasSchedulerBeenChecked && _mainThreadScheduler == Scheduler.Default)
+                {
+                    _hasSchedulerBeenChecked = true;
+                    LogHost.Default.Warn("It seems you are running .NET Standard, but there is no host package installed!\n");
+                    LogHost.Default.Warn("You will need to install the specific host package for your platform (ReactiveUI.WPF, ReactiveUI.Blazor, ...)\n");
+                    LogHost.Default.Warn("You can install the needed package via NuGet, see https://reactiveui.net/docs/getting-started/installation/");
+                }
+
+                return _mainThreadScheduler;
+            }
+
             set
             {
                 // N.B. The ThreadStatic dance here is for the unit test case -
