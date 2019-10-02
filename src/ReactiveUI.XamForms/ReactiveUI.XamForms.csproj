@@ -1,9 +1,10 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <Description>Xamarin Forms specific extensions to ReactiveUI</Description>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Xamarin Forms</PackageDescription>
     <PackageId>ReactiveUI.XamForms</PackageId>
     <LangVersion>latest</LangVersion>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.forms;net</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

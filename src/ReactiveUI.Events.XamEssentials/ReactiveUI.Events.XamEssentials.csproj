@@ -3,7 +3,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events.XamEssentials</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
-    <Description>Provides Observable-based events API for Xamarin Essentials UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
+    <PackageDescription>Provides a wrapper aroung XamarinEssentials, allowing you to use Observables instead of events</PackageDescription>
     <PackageId>ReactiveUI.Events.XamEssentials</PackageId>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>
