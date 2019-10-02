@@ -3,10 +3,11 @@
     <TargetFrameworks>netstandard20;MonoAndroid90;Xamarin.iOS10;Xamarin.Mac20</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.16299</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
-    <Description>Uno Platform specific extensions for ReactiveUI</Description>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno</PackageDescription>
     <DefineConstants>HAS_UNO</DefineConstants>
     <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
     <LangVersion>latest</LangVersion>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;net;unoplatform</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">

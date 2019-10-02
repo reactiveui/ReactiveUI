@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid90</TargetFrameworks>
-    <Description>ReactiveUI extensions for the Android Support Library</Description>
+    <PackageDescription>Provides ReactiveUI extensions for the Android Support Library</PackageDescription>
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
     <LangVersion>latest</LangVersion>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;forms;monodroid;monotouch;xamarin.android;net;</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

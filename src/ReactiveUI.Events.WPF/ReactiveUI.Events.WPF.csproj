@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
-    <Description>Provides Observable-based events API for WPF UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</Description>
+    <PackageDescription>Provides Observable-based events API for WPF UI controls &amp; event handlers</PackageDescription>
     <PackageId>ReactiveUI.Events.WPF</PackageId>
     <UseWpf>true</UseWpf>
     <UseWindowsForms>true</UseWindowsForms>
