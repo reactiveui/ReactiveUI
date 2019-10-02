@@ -4,10 +4,11 @@
     <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>   
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
-    <Description>Windows Forms specific extensions to ReactiveUI</Description>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Forms</PackageDescription>
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>latest</LangVersion>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net461;</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

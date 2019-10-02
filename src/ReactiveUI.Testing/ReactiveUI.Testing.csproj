@@ -4,9 +4,10 @@
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
-    <Description>A library to aid in writing unit tests for ReactiveUI projects</Description>
+    <PackageDescription>Provides extensions for testing ReactiveUI based applications</PackageDescription>
     <PackageId>ReactiveUI.Testing</PackageId>
     <LangVersion>latest</LangVersion>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;</PackageTags>
   </PropertyGroup>
   
   <ItemGroup>

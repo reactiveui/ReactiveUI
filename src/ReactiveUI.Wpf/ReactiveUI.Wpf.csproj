@@ -1,10 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>        
-    <Description>WPF specific extensions to ReactiveUI</Description>
+    <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Presentation Foundation (WPF)</PackageDescription>
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
     <LangVersion>latest</LangVersion>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;net461</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
