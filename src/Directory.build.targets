@@ -39,7 +39,7 @@
     <DefineConstants>$(DefineConstants);TIZEN</DefineConstants>
   </PropertyGroup>
 
-  <Target Name="ValidateNugetProperties" BeforeTargets="Build">
+  <Target Name="ValidateNugetProperties" Condition="(!$(IsTestProject) or $(IsTestProject) == '') and (!$(IsTestHelperProject) or $(IsTestHelperProject) == '')" BeforeTargets="Compile">
       <Error Condition="$(PackageDescription) == '' or $(PackageDescription) == $(DefaultPackageDescription)" Text="The Nuget PackageDescription property needs to be set for the project. Currently : '$(PackageDescription)'" />
   </Target>
 </Project>
