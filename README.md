@@ -5,6 +5,9 @@
 <a href="https://www.nuget.org/packages/reactiveui">
         <img src="https://img.shields.io/nuget/dt/reactiveui.svg">
 </a>
+<a>
+  Added something here
+</a>
 <a href="#backers">
         <img src="https://opencollective.com/reactiveui/backers/badge.svg">
 </a>
