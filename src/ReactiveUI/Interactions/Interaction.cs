@@ -185,7 +185,7 @@ namespace ReactiveUI
                 .Reverse()
                 .ToObservable()
                 .ObserveOn(_handlerScheduler)
-                .Select(handler => Observable.Defer(() => handler(context)))
+                .Select(handler => Observable.Defer(() => handler(context)).SubscribeOn(_handlerScheduler))
                 .Concat()
                 .TakeWhile(_ => !context.IsHandled)
                 .IgnoreElements()
