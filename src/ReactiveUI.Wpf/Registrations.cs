@@ -34,7 +34,11 @@ namespace ReactiveUI.Wpf
 
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
 
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+            if (!ModeDetector.InUnitTestRunner())
+            {
+                // NB: On .NET Core, trying to touch DispatcherScheduler blows up :cry:
+                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+            }
 
             RxApp.SuppressViewCommandBindingMessage = true;
         }
