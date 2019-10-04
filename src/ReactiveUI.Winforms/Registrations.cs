@@ -41,6 +41,8 @@ namespace ReactiveUI.Winforms
                 WindowsFormsSynchronizationContext.AutoInstall = true;
                 RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
             }
+
+            Interaction.DefaultInteractionScheduler = RxApp.MainThreadScheduler;
         }
     }
 }

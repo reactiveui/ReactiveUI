@@ -40,6 +40,7 @@ namespace ReactiveUI.Wpf
                 RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
             }
 
+            Interaction.DefaultInteractionScheduler = RxApp.MainThreadScheduler;
             RxApp.SuppressViewCommandBindingMessage = true;
         }
     }

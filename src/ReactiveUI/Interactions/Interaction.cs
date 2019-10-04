@@ -64,8 +64,18 @@ namespace ReactiveUI
         {
             _handlers = new List<Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>>();
             _sync = new object();
-            _handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
+
+            _handlerScheduler = handlerScheduler ?? DefaultInteractionScheduler ?? CurrentThreadScheduler.Instance;
         }
+
+        /// <summary>
+        /// Gets or Sets the default scheduler for handler Interactions. For most
+        /// platforms this should be CurrentThreadScheduler but platforms
+        /// that have synchronous dialog methods such as WPF or WinForms do
+        /// better to use MainThreadScheduler, which is configured
+        /// automatically.
+        /// </summary>
+        public static IScheduler DefaultInteractionScheduler { get; set; }
 
         /// <summary>
         /// Registers a synchronous interaction handler.
