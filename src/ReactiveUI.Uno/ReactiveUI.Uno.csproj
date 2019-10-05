@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Splat.Drawing" Version="9.0.5" />
+    <PackageReference Include="Splat.Drawing" Version="9.1.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('uap')) ">
