@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Windows.Forms;
 
@@ -42,7 +43,7 @@ namespace ReactiveUI.Winforms
                 RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
             }
 
-            Interaction.DefaultInteractionScheduler = RxApp.MainThreadScheduler;
+            Interaction<Unit, Unit>.DefaultInteractionScheduler = RxApp.MainThreadScheduler;
         }
     }
 }

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using ReactiveUI;
 using Splat;
@@ -40,7 +41,7 @@ namespace ReactiveUI.Wpf
                 RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
             }
 
-            Interaction.DefaultInteractionScheduler = RxApp.MainThreadScheduler;
+            Interaction<Unit, Unit>.DefaultInteractionScheduler = RxApp.MainThreadScheduler;
             RxApp.SuppressViewCommandBindingMessage = true;
         }
     }
