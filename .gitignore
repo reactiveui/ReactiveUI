@@ -360,3 +360,6 @@ src/*.Tests/**/ApiApprovalTests*.received.txt
 
 # Fody Weavers (for tests)
 src/Tools/
+
+# Android auto-generated Resource file
+src/ReactiveUI.Android.Tests/Resources/Resource.[Dd]esigner.cs
