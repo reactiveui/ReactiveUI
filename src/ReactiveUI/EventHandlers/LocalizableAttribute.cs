@@ -6,7 +6,7 @@
 using System;
 using System.Collections.Specialized;
 
-#if PORTABLE || NETFX_CORE
+#if PORTABLE || NETFX_CORE || ANDROID
 namespace ReactiveUI
 {
     /// <summary>
