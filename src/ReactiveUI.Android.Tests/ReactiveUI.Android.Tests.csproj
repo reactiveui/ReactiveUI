@@ -56,9 +56,6 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\ApiGeneratorGlobalSuppressions.cs">
-      <Link>ApiGeneratorGlobalSuppressions.cs</Link>
-    </Compile>
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
