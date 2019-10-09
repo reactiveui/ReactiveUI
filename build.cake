@@ -21,6 +21,7 @@ var packageWhitelist = new List<FilePath>
     MakeAbsolute(File("./src/ReactiveUI.Events.XamEssentials/ReactiveUI.Events.XamEssentials.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Events.XamForms/ReactiveUI.Events.XamForms.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Fody/ReactiveUI.Fody.csproj")),
+    MakeAbsolute(File("./src/ReactiveUI.Fody.Analyzer/ReactiveUI.Fody.Analyzer.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Fody.Helpers/ReactiveUI.Fody.Helpers.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.AndroidSupport/ReactiveUI.AndroidSupport.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.AndroidX/ReactiveUI.AndroidX.csproj")),
@@ -53,7 +54,8 @@ if (IsRunningOnWindows())
 {
     packageTestWhitelist.AddRange(new[]
     {     
-        MakeAbsolute(File("./src/ReactiveUI.Fody.Tests/ReactiveUI.Fody.Tests.csproj"))
+        MakeAbsolute(File("./src/ReactiveUI.Fody.Tests/ReactiveUI.Fody.Tests.csproj")),
+        MakeAbsolute(File("./src/ReactiveUI.Fody.Analyzer.Test/ReactiveUI.Fody.Analyzer.Test.csproj"))
     });
 }
 
