@@ -17,16 +17,10 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
-        #region Fields
-
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private RoutingState _router;
         private Control _defaultContent;
         private IObservable<string> _viewContractObservable;
-
-        #endregion
-
-        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
@@ -87,10 +81,6 @@ namespace ReactiveUI.Winforms
             }, RxApp.DefaultExceptionHandler.OnNext));
         }
 
-        #endregion
-
-        #region Events
-
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging
         {
@@ -104,10 +94,6 @@ namespace ReactiveUI.Winforms
             add => PropertyChangedEventManager.AddHandler(this, value);
             remove => PropertyChangedEventManager.RemoveHandler(this, value);
         }
-
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// Gets or sets the default content.
@@ -150,10 +136,6 @@ namespace ReactiveUI.Winforms
         [Browsable(false)]
         public IViewLocator ViewLocator { get; set; }
 
-        #endregion
-
-        #region Methods
-
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
@@ -186,7 +168,5 @@ namespace ReactiveUI.Winforms
             view.Dock = DockStyle.Fill;
             return view;
         }
-
-        #endregion
     }
 }
