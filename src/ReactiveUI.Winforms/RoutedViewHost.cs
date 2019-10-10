@@ -51,6 +51,7 @@ namespace ReactiveUI.Winforms
                 x =>
             {
                 // clear all hosted controls (view or default content)
+                SuspendLayout();
                 Controls.Clear();
 
                 if (viewLastAdded != null)
@@ -66,6 +67,7 @@ namespace ReactiveUI.Winforms
                         Controls.Add(DefaultContent);
                     }
 
+                    ResumeLayout();
                     return;
                 }
 
@@ -75,6 +77,7 @@ namespace ReactiveUI.Winforms
 
                 viewLastAdded = InitView((Control)view);
                 Controls.Add(viewLastAdded);
+                ResumeLayout();
             }, RxApp.DefaultExceptionHandler.OnNext));
         }
 
