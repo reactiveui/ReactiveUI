@@ -18,12 +18,12 @@
   <Choose>
     <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) ">
       <ItemGroup>
-          <PackageReference Include="System.Reactive" Version="4.2.0-preview.625" />
+          <PackageReference Include="System.Reactive" Version="4.2.0" />
       </ItemGroup>
     </When>
     <Otherwise>
       <ItemGroup>
-          <PackageReference Include="System.Reactive" Version="4.1.6" />
+          <PackageReference Include="System.Reactive" Version="4.2.0" />
       </ItemGroup>
     </Otherwise>
   </Choose>
