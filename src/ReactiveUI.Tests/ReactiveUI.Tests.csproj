@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0" />
   </ItemGroup>
   
   <ItemGroup>
@@ -27,7 +28,6 @@
           <UseWindowsForms>true</UseWindowsForms>
       </PropertyGroup>
       <ItemGroup>
-          <PackageReference Include="Microsoft.Reactive.Testing" Version="4.2.0-preview.625" />
           <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
           <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
           <Compile Include="Platforms\common-gui\**\*.cs" />
@@ -39,8 +39,6 @@
     </When>
     <When Condition=" $(TargetFramework.StartsWith('net4'))">
       <ItemGroup>
-        <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.6" />
-
         <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
         <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
         <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
@@ -59,10 +57,5 @@
         <Compile Include="Platforms\windows-xaml\**\*.cs" />
       </ItemGroup>
     </When>
-    <Otherwise>
-      <ItemGroup>
-        <PackageReference Include="Microsoft.Reactive.Testing" Version="4.1.6" />
-      </ItemGroup>
-    </Otherwise>
   </Choose>
 </Project>
