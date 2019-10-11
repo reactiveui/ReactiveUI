@@ -17,18 +17,9 @@
     <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
-  <Choose>
-    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) ">
-      <ItemGroup>
-          <PackageReference Include="System.Reactive" Version="4.2.0-preview.625" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-          <PackageReference Include="System.Reactive" Version="4.1.6" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+  <ItemGroup>
+      <PackageReference Include="System.Reactive" Version="4.2.0" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />
   </ItemGroup>
