@@ -18,6 +18,8 @@ namespace ReactiveUI.Tests
 {
     public class PocoObservableForPropertyTests
     {
+        private static TestLogger _testLoggerForNotificationPocoErrorOnBind;
+
         [Fact]
         public void CheckGetAffinityForObjectValues()
         {
@@ -30,38 +32,60 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NotificationPocoErrorOnBind()
         {
-            var instance = new POCOObservableForProperty();
+            // Use same logger, when the test is executed multiple times in the same AndroidRunner/AppDomain/AssemblyLoadContext
+            if (_testLoggerForNotificationPocoErrorOnBind == null)
+            {
+                _testLoggerForNotificationPocoErrorOnBind = new TestLogger();
+            }
 
-            var testLogger = new TestLogger();
-            Locator.CurrentMutable.RegisterConstant<ILogger>(testLogger);
+            // Run test twice and verify that POCO message is logged only once.
+            for (int i = 0; i < 2; i++)
+            {
+                using (var testLoggerRegistration = new TestLoggerRegistration(_testLoggerForNotificationPocoErrorOnBind))
+                {
+                    var instance = new POCOObservableForProperty();
 
-            var testClass = new PocoType();
+                    var testLogger = testLoggerRegistration.Logger;
 
-            Expression<Func<PocoType, string>> expr = x => x.Property1;
-            var exp = Reflection.Rewrite(expr.Body);
+                    var testClass = new PocoType();
 
-            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false).Subscribe(_ => { });
+                    Expression<Func<PocoType, string>> expr = x => x.Property1;
+                    var exp = Reflection.Rewrite(expr.Body);
 
-            Assert.True(testLogger.LastMessages.Count > 0);
-            Assert.Equal(testLogger.LastMessages[0], $"{nameof(POCOObservableForProperty)}: The class {typeof(PocoType).FullName} property {nameof(PocoType.Property1)} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
+                    instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false).Subscribe(_ => { });
+
+                    Assert.True(testLogger.LastMessages.Count > 0);
+
+                    var expectedMessage = $"{nameof(POCOObservableForProperty)}: The class {typeof(PocoType).FullName} property {nameof(PocoType.Property1)} is a POCO type and won't send change notifications, WhenAny will only return a single value!";
+                    Assert.Equal(expectedMessage, testLogger.LastMessages[0]);
+
+                    // Verify that the message is logged only once
+                    foreach (var logMessage in testLogger.LastMessages.Skip(1))
+                    {
+                        Assert.NotEqual(expectedMessage, logMessage);
+                    }
+                }
+            }
         }
 
         [Fact]
         public void NotificationPocoSuppressErrorOnBind()
         {
-            var instance = new POCOObservableForProperty();
+            using (var testLoggerRegistration = new TestLoggerRegistration())
+            {
+                var instance = new POCOObservableForProperty();
 
-            var testLogger = new TestLogger();
-            Locator.CurrentMutable.RegisterConstant<ILogger>(testLogger);
+                var testLogger = testLoggerRegistration.Logger;
 
-            var testClass = new PocoType();
+                var testClass = new PocoType();
 
-            Expression<Func<PocoType, string>> expr = x => x.Property1;
-            var exp = Reflection.Rewrite(expr.Body);
+                Expression<Func<PocoType, string>> expr = x => x.Property1;
+                var exp = Reflection.Rewrite(expr.Body);
 
-            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false, true).Subscribe(_ => { });
+                instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false, true).Subscribe(_ => { });
 
-            testLogger.LastMessages.ShouldNotContain(m => m.Contains(nameof(POCOObservableForProperty)));
+                testLogger.LastMessages.ShouldNotContain(m => m.Contains(nameof(POCOObservableForProperty)));
+            }
         }
 
         private class PocoType
@@ -104,6 +128,38 @@ namespace ReactiveUI.Tests
             public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
             {
                 LastMessages.Add(message);
+            }
+        }
+
+        private sealed class TestLoggerRegistration : IDisposable
+        {
+            private List<ILogger> _originalLoggers;
+
+            public TestLoggerRegistration()
+                : this(null)
+            {
+            }
+
+            public TestLoggerRegistration(TestLogger testLogger)
+            {
+                _originalLoggers = Locator.Current.GetServices<ILogger>().ToList();
+
+                Logger = testLogger ?? new TestLogger();
+                Locator.CurrentMutable.RegisterConstant<ILogger>(Logger);
+            }
+
+            public TestLogger Logger { get; }
+
+            public void Dispose()
+            {
+                // It's not possible to unregister specific logger,
+                // so all are unregistered and originals are re-registered.
+                Locator.CurrentMutable.UnregisterAll<ILogger>();
+
+                foreach (var logger in _originalLoggers)
+                {
+                    Locator.CurrentMutable.RegisterConstant<ILogger>(logger);
+                }
             }
         }
     }

@@ -220,7 +220,7 @@ namespace ReactiveUI.Tests
             using (resolver.WithResolver())
             {
                 var fixture = new DefaultViewLocator();
-                fixture.ViewModelToViewFunc = viewModelName => "DoesNotExist";
+                fixture.ViewModelToViewFunc = viewModelName => "DoesNotExist, " + typeof(DefaultViewLocatorTests).Assembly.FullName;
                 var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
