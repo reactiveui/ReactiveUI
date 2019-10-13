@@ -84,7 +84,7 @@ namespace ReactiveUI.AndroidX
         {
             if (disposing)
             {
-                Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
+                _inner?.Dispose();
                 _list?.Dispose();
             }
 
