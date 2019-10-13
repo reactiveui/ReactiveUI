@@ -24,7 +24,14 @@ namespace ReactiveUI
         public string GetOrientation()
         {
 #if NETFX_CORE || HAS_UNO
-            return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
+            try
+            {
+                return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 #else
             return null;
 #endif
