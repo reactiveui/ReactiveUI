@@ -8,7 +8,7 @@ namespace ReactiveUI
     /// <summary>
     /// Additional details implemented by the different ReactiveUI platform projects.
     /// </summary>
-    internal interface IPlatformOperations
+    public interface IPlatformOperations
     {
         /// <summary>
         /// Gets a descriptor that describes (if applicable) the orientation
