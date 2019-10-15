@@ -149,7 +149,21 @@ namespace ReactiveUI
 
         private IDisposable ScheduleOnDispatcherNow<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views[0].Dispatcher, null);
+            // Bugfix for issue 2188
+            // Check _dispatcher has been initialized to prevent always calling CoreApplication.Views[0].Dispatcher
+            if (Volatile.Read(ref _dispatcher) is null)
+            {
+                try
+                {
+                    Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views[0].Dispatcher, null);
+                }
+                catch (Exception ex)
+                {
+                    // Catching exception "Element not found" on getting dispatcher
+                    RaiseUnhandledException(ex);
+                    return Disposable.Empty;
+                }
+            }
 
             if (_dispatcher.HasThreadAccess)
             {
