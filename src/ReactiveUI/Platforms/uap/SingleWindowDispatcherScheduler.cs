@@ -160,7 +160,6 @@ namespace ReactiveUI
                 catch (Exception ex)
                 {
                     // Catching exception "Element not found" on getting dispatcher
-                    RaiseUnhandledException(ex);
                     return Disposable.Empty;
                 }
             }
