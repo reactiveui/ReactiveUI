@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.PlatformServices;
@@ -149,9 +150,9 @@ namespace ReactiveUI
 
         private IDisposable ScheduleOnDispatcherNow<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views[0].Dispatcher, null);
+            Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views.FirstOrDefault()?.Dispatcher, null);
 
-            if (_dispatcher.HasThreadAccess)
+            if (_dispatcher == null || _dispatcher.HasThreadAccess)
             {
                 return action(this, state);
             }
