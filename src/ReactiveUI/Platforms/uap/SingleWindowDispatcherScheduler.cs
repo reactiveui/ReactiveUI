@@ -150,7 +150,14 @@ namespace ReactiveUI
 
         private IDisposable ScheduleOnDispatcherNow<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views.FirstOrDefault()?.Dispatcher, null);
+            try
+            {
+                Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views.FirstOrDefault()?.Dispatcher, null);
+            }
+            catch (Exception ex)
+            {
+                // Ignore
+            }
 
             if (_dispatcher == null || _dispatcher.HasThreadAccess)
             {
