@@ -644,7 +644,7 @@ namespace ReactiveUI
 
             var connectDisposable = changes.Connect();
             var disposable = new CompositeDisposable(changesDisposable, connectDisposable);
-            
+
             // NB: Even though it's technically a two-way bind, most people
             // want the ViewModel to win at first.
             signalInitialUpdate.OnNext(true);
