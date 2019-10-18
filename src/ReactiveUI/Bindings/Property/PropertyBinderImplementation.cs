@@ -628,7 +628,7 @@ namespace ReactiveUI
                 return null;
             }
 
-            IObservable<(object view, bool isViewModel)> changes = changeWithValues.Where(value => value != null).Select(value => (value.Item1, value.Item2)).Publish().RefCount();
+            IObservable<(object view, bool isViewModel)> changes = changeWithValues.Where(value => value != null).Select(value => (value.Item1, value.Item2)).Publish();
 
             IDisposable disposable = changes.Subscribe(isVmWithLatestValue =>
             {
