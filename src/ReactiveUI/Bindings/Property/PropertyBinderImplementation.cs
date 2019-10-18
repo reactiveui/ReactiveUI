@@ -601,25 +601,25 @@ namespace ReactiveUI
                 if (!Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
                     !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain()))
                 {
-                    return null;
+                    return default;
                 }
 
                 if (isVm)
                 {
                     if (!vmToViewConverter(vmValue, out TVProp vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView))
                     {
-                        return null;
+                        return default;
                     }
 
-                    return Tuple.Create((object)vmAsView, isVm);
+                    return ((object)vmAsView, isVm);
                 }
 
                 if (!viewToVmConverter(vValue, out TVMProp vAsViewModel) || EqualityComparer<TVMProp>.Default.Equals(vmValue, vAsViewModel))
                 {
-                    return null;
+                    return default;
                 }
 
-                return Tuple.Create((object)vAsViewModel, isVm);
+                return ((object)vAsViewModel, isVm);
             });
 
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
@@ -628,7 +628,7 @@ namespace ReactiveUI
                 return null;
             }
 
-            var changes = changeWithValues.Where(value => value != null).Select(value => (view: value.Item1, isViewModel: value.Item2));
+            var changes = changeWithValues.Where(value => value != default).Select(value => new { view = value.Item1, isViewModel = value.Item2});
 
             var disposable = changes.Subscribe(isVmWithLatestValue =>
             {
