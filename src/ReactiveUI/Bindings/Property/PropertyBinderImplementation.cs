@@ -628,7 +628,7 @@ namespace ReactiveUI
                 return null;
             }
 
-            var changes = changeWithValues.Where(value => value != default).Select(value => new { view = value.Item1, isViewModel = value.Item2});
+            var changes = changeWithValues.Where(value => value != default).Select(value => (view: value.Item1, isViewModel: value.Item2));
 
             var disposable = changes.Subscribe(isVmWithLatestValue =>
             {
