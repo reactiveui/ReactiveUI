@@ -628,9 +628,9 @@ namespace ReactiveUI
                 return null;
             }
 
-            IObservable<(object view, bool isViewModel)> changes = changeWithValues.Where(value => value != null).Select(value => (value.Item1, value.Item2)).Publish();
+            var changes = changeWithValues.Where(value => value != null).Select(value => (view: value.Item1, isViewModel: value.Item2)).Publish();
 
-            IDisposable disposable = changes.Subscribe(isVmWithLatestValue =>
+            var changesDisposable = changes.Subscribe(isVmWithLatestValue =>
             {
                 if (isVmWithLatestValue.isViewModel)
                 {
@@ -642,6 +642,9 @@ namespace ReactiveUI
                 }
             });
 
+            var connectDisposable = changes.Connect();
+            var disposable = new CompositeDisposable(changesDisposable, connectDisposable);
+            
             // NB: Even though it's technically a two-way bind, most people
             // want the ViewModel to win at first.
             signalInitialUpdate.OnNext(true);
