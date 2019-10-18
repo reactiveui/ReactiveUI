@@ -628,9 +628,9 @@ namespace ReactiveUI
                 return null;
             }
 
-            var changes = changeWithValues.Where(value => value != null).Select(value => (view: value.Item1, isViewModel: value.Item2)).Publish();
+            var changes = changeWithValues.Where(value => value != null).Select(value => (view: value.Item1, isViewModel: value.Item2));
 
-            var changesDisposable = changes.Subscribe(isVmWithLatestValue =>
+            var disposable = changes.Subscribe(isVmWithLatestValue =>
             {
                 if (isVmWithLatestValue.isViewModel)
                 {
@@ -641,9 +641,6 @@ namespace ReactiveUI
                     Reflection.TrySetValueToPropertyChain(view.ViewModel, vmExpression.GetExpressionChain(), isVmWithLatestValue.view, false);
                 }
             });
-
-            var connectDisposable = changes.Connect();
-            var disposable = new CompositeDisposable(changesDisposable, connectDisposable);
 
             // NB: Even though it's technically a two-way bind, most people
             // want the ViewModel to win at first.
