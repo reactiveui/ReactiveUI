@@ -392,11 +392,11 @@ namespace ReactiveUI
                 .Select(x =>
                 {
                     IEnumerable<MethodInfo> methods = targetObject.GetType().GetTypeInfo().DeclaredMethods;
-                    return (methodName: x, methodImplementation: methods.FirstOrDefault(y => y.Name == x));
+                    return new { methodName = x, methodImplementation = methods.FirstOrDefault(y => y.Name == x) };
                 })
                 .FirstOrDefault(x => x.methodImplementation == null);
 
-            if (missingMethod.methodImplementation == default)
+            if (missingMethod != null)
             {
                 throw new Exception($"Your class must implement {missingMethod.methodName} and call {callingTypeName}.{missingMethod.methodName}");
             }
