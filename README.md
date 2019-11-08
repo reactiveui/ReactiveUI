@@ -71,7 +71,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
 
 [Fody]: https://www.nuget.org/packages/ReactiveUI.Fody/
-[FodyDoc]: https://reactiveui.net/docs/handbook/view-models/#managing-boilerplate-code
+[FodyDoc]: https://reactiveui.net/docs/handbook/view-models/boilerplate-code
 [FodyBadge]: https://img.shields.io/nuget/v/ReactiveUI.Fody.svg
 
 [Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
