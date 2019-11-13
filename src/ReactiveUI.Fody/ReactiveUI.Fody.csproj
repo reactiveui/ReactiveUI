@@ -9,6 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="6.0.4" />
+    <PackageReference Include="FodyHelpers" Version="6.0.5" />
   </ItemGroup>
 </Project>
