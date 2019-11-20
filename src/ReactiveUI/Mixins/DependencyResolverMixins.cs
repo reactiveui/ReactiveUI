@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -44,7 +45,9 @@ namespace ReactiveUI
 
             var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", string.Empty));
 
-            extraNs.ForEach(ns => ProcessRegistrationForNamespace(ns, assemblyName, resolver));
+            extraNs
+                .Where(GetNamespaceExists)
+                .ForEach(ns => ProcessRegistrationForNamespace(ns, assemblyName, resolver));
         }
 
         /// <summary>
@@ -117,6 +120,13 @@ namespace ReactiveUI
                 var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
                 registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
             }
+        }
+
+        private static bool GetNamespaceExists(string namespaceName)
+        {
+            string folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string assemblyPath = Path.Combine(folderPath, new AssemblyName(namespaceName).Name + ".dll");
+            return File.Exists(assemblyPath);
         }
     }
 }
