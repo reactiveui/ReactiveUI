@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -44,7 +45,9 @@ namespace ReactiveUI
 
             var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", string.Empty));
 
-            extraNs.ForEach(ns => ProcessRegistrationForNamespace(ns, assemblyName, resolver));
+            extraNs
+                .Where(x => File.Exists(x + ".dll"))
+                .ForEach(ns => ProcessRegistrationForNamespace(ns, assemblyName, resolver));
         }
 
         /// <summary>
