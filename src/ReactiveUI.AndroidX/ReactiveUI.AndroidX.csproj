@@ -12,7 +12,7 @@
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.0.2-preview02" />
     <PackageReference Include="Xamarin.AndroidX.Fragment" Version="1.0.0-preview02" />
-    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.0.0-preview02" />
+    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.0.0-preview03" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   
