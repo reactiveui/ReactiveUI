@@ -38,10 +38,24 @@ namespace ReactiveUI
         /// </summary>
         public SingleWindowDispatcherScheduler()
         {
-            if (CoreApplication.Views.Count > 0)
+            if (CoreApplication.Views.Count == 0)
             {
-                Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views[0].Dispatcher, null);
+                return;
             }
+
+            CoreDispatcher coreDispatcher;
+
+            try
+            {
+                coreDispatcher = CoreApplication.Views[0].Dispatcher;
+            }
+            catch
+            {
+                // in the XamlIsland case, accessing Views throws. Thus, falling back to the old way. This HAS to be initialized on the MainThread.
+                coreDispatcher = Window.Current.Dispatcher;
+            }
+
+            Interlocked.CompareExchange(ref _dispatcher, coreDispatcher, null);
         }
 
         /// <summary>
@@ -152,9 +166,13 @@ namespace ReactiveUI
         {
             try
             {
-                Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views.FirstOrDefault()?.Dispatcher, null);
+                // if _dispatcher is still null (and only then) CompareExchange it with the dispatcher from the first view found
+                if (_dispatcher == null)
+                {
+                    Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views.FirstOrDefault()?.Dispatcher, null);
+                }
             }
-            catch (Exception ex)
+            catch
             {
                 // Ignore
             }
