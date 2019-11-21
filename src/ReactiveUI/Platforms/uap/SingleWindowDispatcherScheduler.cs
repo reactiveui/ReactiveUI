@@ -43,17 +43,7 @@ namespace ReactiveUI
                 return;
             }
 
-            CoreDispatcher coreDispatcher;
-
-            try
-            {
-                coreDispatcher = CoreApplication.Views[0].Dispatcher;
-            }
-            catch
-            {
-                // in the XamlIsland case, accessing Views throws. Thus, falling back to the old way. This HAS to be initialized on the MainThread.
-                coreDispatcher = Window.Current.Dispatcher;
-            }
+            CoreDispatcher coreDispatcher = TryGetDispatcher();
 
             Interlocked.CompareExchange(ref _dispatcher, coreDispatcher, null);
         }
@@ -162,6 +152,23 @@ namespace ReactiveUI
             }
         }
 
+        private CoreDispatcher TryGetDispatcher()
+        {
+            CoreDispatcher coreDispatcher;
+
+            try
+            {
+                coreDispatcher = CoreApplication.Views.FirstOrDefault()?.Dispatcher;
+            }
+            catch
+            {
+                // in the XamlIsland case, accessing Views throws. Thus, falling back to the old way. This HAS to be initialized on the MainThread.
+                coreDispatcher = Window.Current?.Dispatcher;
+            }
+
+            return coreDispatcher;
+        }
+
         private IDisposable ScheduleOnDispatcherNow<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
             try
@@ -169,7 +176,8 @@ namespace ReactiveUI
                 // if _dispatcher is still null (and only then) CompareExchange it with the dispatcher from the first view found
                 if (_dispatcher == null)
                 {
-                    Interlocked.CompareExchange(ref _dispatcher, CoreApplication.Views.FirstOrDefault()?.Dispatcher, null);
+                    var dispatcher = TryGetDispatcher();
+                    Interlocked.CompareExchange(ref _dispatcher, dispatcher, null);
                 }
             }
             catch
