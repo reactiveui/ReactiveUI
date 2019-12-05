@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="System.Reactive" Version="4.2.0" />
+      <PackageReference Include="System.Reactive" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />
