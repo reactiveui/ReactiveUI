@@ -46,7 +46,6 @@ namespace ReactiveUI
             var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", string.Empty));
 
             extraNs
-                .Where(GetNamespaceExists)
                 .ForEach(ns => ProcessRegistrationForNamespace(ns, assemblyName, resolver));
         }
 
@@ -109,10 +108,10 @@ namespace ReactiveUI
         }
 
         [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
-        private static void ProcessRegistrationForNamespace(string ns, AssemblyName assemblyName, IMutableDependencyResolver resolver)
+        private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)
         {
-            var targetType = ns + ".Registrations";
-            var fullName = targetType + ", " + assemblyName.FullName.Replace(assemblyName.Name, ns);
+            var targetType = namespaceName + ".Registrations";
+            var fullName = targetType + ", " + assemblyName.FullName.Replace(assemblyName.Name, namespaceName);
 
             var registerTypeClass = Reflection.ReallyFindType(fullName, false);
             if (registerTypeClass != null)
@@ -120,13 +119,6 @@ namespace ReactiveUI
                 var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
                 registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
             }
-        }
-
-        private static bool GetNamespaceExists(string namespaceName)
-        {
-            string folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string assemblyPath = Path.Combine(folderPath, new AssemblyName(namespaceName).Name + ".dll");
-            return File.Exists(assemblyPath);
         }
     }
 }
