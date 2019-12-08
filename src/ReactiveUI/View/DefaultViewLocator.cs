@@ -11,14 +11,18 @@ using Splat;
 
 namespace ReactiveUI
 {
-    internal sealed class DefaultViewLocator : IViewLocator, IEnableLogger
+    /// <summary>
+    /// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
+    /// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
+    /// </summary>
+    public sealed class DefaultViewLocator : IViewLocator, IEnableLogger
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
         /// </summary>
         /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
         [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
-        public DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
+        internal DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
         {
             ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
         }
