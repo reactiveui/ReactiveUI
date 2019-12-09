@@ -63,18 +63,10 @@ namespace ReactiveUI.AndroidX
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
+        public event PropertyChangingEventHandler PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
