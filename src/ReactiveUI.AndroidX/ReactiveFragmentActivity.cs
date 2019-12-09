@@ -102,13 +102,13 @@ namespace ReactiveUI.AndroidX
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            PropertyChangingEventManager.DeliverEvent(this, args);
+            PropertyChanging?.Invoke(this, args);
         }
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
-            PropertyChangedEventManager.DeliverEvent(this, args);
+            PropertyChanged?.Invoke(this, args);
         }
 
         /// <inheritdoc />

@@ -77,18 +77,10 @@ namespace ReactiveUI.AndroidSupport
         private readonly Subject<(int requestCode, Result result, Intent intent)> _activityResult = new Subject<(int requestCode, Result result, Intent intent)>();
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
+        public event PropertyChangingEventHandler PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragmentActivity>> Changing => this.GetChangingObservable();
@@ -117,13 +109,13 @@ namespace ReactiveUI.AndroidSupport
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            PropertyChangingEventManager.DeliverEvent(this, args);
+            PropertyChanging?.Invoke(this, args);
         }
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
-            PropertyChangedEventManager.DeliverEvent(this, args);
+            PropertyChanged?.Invoke(this, args);
         }
 
         /// <inheritdoc />
