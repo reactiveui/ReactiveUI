@@ -43,6 +43,11 @@ namespace TestHelper
         /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location.</returns>
         protected static Diagnostic[] GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, Document[] documents)
         {
+            if (documents is null)
+            {
+                throw new ArgumentNullException(nameof(documents));
+            }
+
             var projects = new HashSet<Project>();
             foreach (var document in documents)
             {

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
+using System.Globalization;
 
 namespace TestHelper
 {
@@ -89,7 +90,7 @@ namespace TestHelper
         /// <param name="expectedResults">Diagnostic Results that should have appeared in the code.</param>
         private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
         {
-            int expectedCount = expectedResults.Count();
+            int expectedCount = expectedResults.Length;
             int actualCount = actualResults.Count();
 
             if (expectedCount != actualCount)
@@ -219,7 +220,7 @@ namespace TestHelper
                         var location = diagnostics[i].Location;
                         if (location == Location.None)
                         {
-                            builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
+                            builder.AppendFormat(CultureInfo.InvariantCulture, "GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
                         }
                         else
                         {
@@ -255,7 +256,7 @@ namespace TestHelper
         /// <param name="language">The language of the classes represented by the source strings.</param>
         /// <param name="analyzer">The analyzer to be run on the source code.</param>
         /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources.</param>
-        private void VerifyDiagnostics(string[] sources, string language, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
+        private static void VerifyDiagnostics(string[] sources, string language, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
         {
             var diagnostics = GetSortedDiagnostics(sources, language, analyzer);
             VerifyDiagnosticResults(diagnostics, analyzer, expected);
