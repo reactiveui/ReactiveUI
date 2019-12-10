@@ -32,27 +32,11 @@ namespace ReactiveUI
             _thrownExceptions = new Lazy<IObservable<Exception>>(this.GetThrownExceptionsObservable, LazyThreadSafetyMode.PublicationOnly);
         }
 
-#if NET_461
         /// <inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging;
 
         /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged;
-#else
-        /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
-
-        /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
-#endif
 
         /// <inheritdoc />
         [IgnoreDataMember]
@@ -66,19 +50,11 @@ namespace ReactiveUI
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
-#if NET_461
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
-#else
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingEventManager.DeliverEvent(this, args);
-
-        /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedEventManager.DeliverEvent(this, args);
-#endif
 
         /// <inheritdoc/>
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
