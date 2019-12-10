@@ -720,17 +720,6 @@ namespace ReactiveUI
         public System.IDisposable Schedule<TState>(TState state, System.TimeSpan dueTime, System.Func<System.Reactive.Concurrency.IScheduler, TState, System.IDisposable> action) { }
         public System.IDisposable Schedule<TState>(TState state, System.DateTimeOffset dueTime, System.Func<System.Reactive.Concurrency.IScheduler, TState, System.IDisposable> action) { }
     }
-    public class WeakEventManager<TEventSource, TEventHandler, TEventArgs>
-        where TEventSource :  class
-        where TEventHandler :  class
-    {
-        protected WeakEventManager() { }
-        public static void AddHandler(TEventSource source, TEventHandler handler) { }
-        public static void DeliverEvent(TEventSource sender, TEventArgs args) { }
-        public static void RemoveHandler(TEventSource source, TEventHandler handler) { }
-        protected virtual void StartListening(object source) { }
-        protected virtual void StopListening(object source) { }
-    }
     public class static WhenAnyMixin
     {
         public static System.IObservable<TRet> WhenAny<TSender, TRet, T1>(this TSender This, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Func<ReactiveUI.IObservedChange<TSender, T1>, TRet> selector) { }
