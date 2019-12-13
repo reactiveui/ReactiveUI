@@ -262,7 +262,7 @@ namespace ReactiveUI
         {
             int currentIndex = 0;
             var expressions = expressionChain.ToList();
-            changeValues = new IObservedChange<object, object>[expressions.Count()];
+            changeValues = new IObservedChange<object, object>[expressions.Count];
 
             foreach (Expression expression in expressions.SkipLast(1))
             {

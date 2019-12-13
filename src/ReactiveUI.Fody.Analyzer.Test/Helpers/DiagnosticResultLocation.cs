@@ -10,7 +10,7 @@ namespace TestHelper
     /// <summary>
     /// Location where the diagnostic appears, as determined by path, line number, and column number.
     /// </summary>
-    public struct DiagnosticResultLocation
+    public struct DiagnosticResultLocation : IEquatable<DiagnosticResultLocation>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DiagnosticResultLocation"/> struct.
@@ -73,7 +73,7 @@ namespace TestHelper
         /// <returns>Are Equal.</returns>
         public bool Equals(DiagnosticResultLocation other)
         {
-            return string.Equals(Path, other.Path) && Line == other.Line && Column == other.Column;
+            return string.Equals(Path, other.Path, StringComparison.InvariantCultureIgnoreCase) && Line == other.Line && Column == other.Column;
         }
 
         /// <summary>

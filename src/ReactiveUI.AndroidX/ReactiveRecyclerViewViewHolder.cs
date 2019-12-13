@@ -80,18 +80,10 @@ namespace ReactiveUI.AndroidX
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
+        public event PropertyChangingEventHandler PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Gets an observable that signals that this ViewHolder has been selected.
@@ -174,13 +166,13 @@ namespace ReactiveUI.AndroidX
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            PropertyChangingEventManager.DeliverEvent(this, args);
+            PropertyChanging?.Invoke(this, args);
         }
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
-            PropertyChangedEventManager.DeliverEvent(this, args);
+            PropertyChanged?.Invoke(this, args);
         }
 
         [OnDeserialized]

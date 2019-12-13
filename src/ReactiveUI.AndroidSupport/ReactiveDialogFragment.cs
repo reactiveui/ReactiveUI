@@ -63,18 +63,10 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
-        {
-            add => PropertyChangingEventManager.AddHandler(this, value);
-            remove => PropertyChangingEventManager.RemoveHandler(this, value);
-        }
+        public event PropertyChangingEventHandler PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add => PropertyChangedEventManager.AddHandler(this, value);
-            remove => PropertyChangedEventManager.RemoveHandler(this, value);
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
@@ -98,13 +90,13 @@ namespace ReactiveUI.AndroidSupport
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            PropertyChangingEventManager.DeliverEvent(this, args);
+            PropertyChanging?.Invoke(this, args);
         }
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
-            PropertyChangedEventManager.DeliverEvent(this, args);
+            PropertyChanged?.Invoke(this, args);
         }
 
         /// <inheritdoc />

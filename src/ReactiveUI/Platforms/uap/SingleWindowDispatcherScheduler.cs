@@ -152,13 +152,13 @@ namespace ReactiveUI
             }
         }
 
-        private CoreDispatcher TryGetDispatcher()
+        private static CoreDispatcher TryGetDispatcher()
         {
             CoreDispatcher coreDispatcher;
 
             try
             {
-                coreDispatcher = CoreApplication.Views.FirstOrDefault()?.Dispatcher;
+                coreDispatcher = CoreApplication.Views.Count > 0 ? CoreApplication.Views[0].Dispatcher : null;
             }
             catch
             {
