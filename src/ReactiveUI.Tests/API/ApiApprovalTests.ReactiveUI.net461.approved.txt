@@ -116,6 +116,12 @@ namespace ReactiveUI
         public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
+    public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
+    {
+        public System.Func<string, string> ViewModelToViewFunc { get; set; }
+        public ReactiveUI.IViewFor ResolveView<T>(T viewModel, string contract = null)
+            where T :  class { }
+    }
     public class static DependencyResolverMixins
     {
         public static void InitializeReactiveUI(this Splat.IMutableDependencyResolver resolver) { }

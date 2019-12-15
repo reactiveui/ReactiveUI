@@ -61,7 +61,8 @@ namespace ReactiveUI.Tests
             using (resolver.WithResolver())
             {
                 var fixture = new DefaultViewLocator();
-                fixture.ViewModelToViewFunc = viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention");
+                fixture.ViewModelToViewFunc =
+                    viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention");
                 var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
@@ -220,7 +221,8 @@ namespace ReactiveUI.Tests
             using (resolver.WithResolver())
             {
                 var fixture = new DefaultViewLocator();
-                fixture.ViewModelToViewFunc = viewModelName => "DoesNotExist, " + typeof(DefaultViewLocatorTests).Assembly.FullName;
+                fixture.ViewModelToViewFunc = viewModelName =>
+                    "DoesNotExist, " + typeof(DefaultViewLocatorTests).Assembly.FullName;
                 var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
@@ -318,6 +320,26 @@ namespace ReactiveUI.Tests
 
                 var result = fixture.ResolveView<IRoutableViewModel>(vm);
                 Assert.IsType<RoutableFooView>(result);
+            }
+        }
+
+        [Fact]
+        public void CanOverrideNameResolutionFunc()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            resolver.Register(() => new RoutableFooCustomView());
+
+            using (resolver.WithResolver())
+            {
+                var fixture = new DefaultViewLocator();
+                fixture.ViewModelToViewFunc = x => x.Replace("ViewModel", "CustomView");
+                var vm = new RoutableFooViewModel();
+
+                var result = fixture.ResolveView<IRoutableViewModel>(vm);
+                Assert.IsType<RoutableFooCustomView>(result);
             }
         }
     }
