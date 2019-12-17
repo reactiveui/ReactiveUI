@@ -396,7 +396,7 @@ namespace ReactiveUI
                 })
                 .FirstOrDefault(x => x.methodImplementation == null);
 
-            if (missingMethod.methodImplementation == default)
+            if (missingMethod.methodName != default)
             {
                 throw new Exception($"Your class must implement {missingMethod.methodName} and call {callingTypeName}.{missingMethod.methodName}");
             }
