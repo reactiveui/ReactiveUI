@@ -106,7 +106,10 @@ namespace ReactiveUI
             [CallerMemberName] string propertyName = null)
             where TObj : IReactiveObject
         {
-            Contract.Requires(propertyName != null);
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
 
             if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
             {
@@ -175,7 +178,10 @@ namespace ReactiveUI
         internal static void RaisingPropertyChanging<TSender>(this TSender reactiveObject, string propertyName)
             where TSender : IReactiveObject
         {
-            Contract.Requires(propertyName != null);
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
 
             var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
 
@@ -185,7 +191,10 @@ namespace ReactiveUI
         internal static void RaisingPropertyChanged<TSender>(this TSender reactiveObject, string propertyName)
             where TSender : IReactiveObject
         {
-            Contract.Requires(propertyName != null);
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
 
             var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
 

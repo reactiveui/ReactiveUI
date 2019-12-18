@@ -143,7 +143,7 @@ namespace ReactiveUI
 
         private ISubject<T> SetupSubjectIfNecessary<T>(string contract)
         {
-            ISubject<T> ret = null;
+            ISubject<T>? ret = null;
 
             WithMessageBus(typeof(T), contract, (mb, item) =>
             {

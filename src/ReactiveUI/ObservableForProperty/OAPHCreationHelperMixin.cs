@@ -217,9 +217,20 @@ namespace ReactiveUI
             IScheduler scheduler = null)
             where TObj : class, IReactiveObject
         {
-            Contract.Requires(target != null);
-            Contract.Requires(observable != null);
-            Contract.Requires(property != null);
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
+            if (observable == null)
+            {
+                throw new ArgumentNullException(nameof(observable));
+            }
+
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
 
             Expression expression = Reflection.Rewrite(property.Body);
 
@@ -252,9 +263,20 @@ namespace ReactiveUI
             IScheduler scheduler = null)
             where TObj : class, IReactiveObject
         {
-            Contract.Requires(target != null);
-            Contract.Requires(observable != null);
-            Contract.Requires(property != null);
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
+            if (observable == null)
+            {
+                throw new ArgumentNullException(nameof(observable));
+            }
+
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
 
             return new ObservableAsPropertyHelper<TRet>(
                                                         observable,

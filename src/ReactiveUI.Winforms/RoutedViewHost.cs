@@ -20,7 +20,7 @@ namespace ReactiveUI.Winforms
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private RoutingState _router;
         private Control _defaultContent;
-        private IObservable<string> _viewContractObservable;
+        private IObservable<string>? _viewContractObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
@@ -116,7 +116,7 @@ namespace ReactiveUI.Winforms
         /// Gets or sets the view contract observable.
         /// </summary>
         [Browsable(false)]
-        public IObservable<string> ViewContractObservable
+        public IObservable<string>? ViewContractObservable
         {
             get => _viewContractObservable;
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);

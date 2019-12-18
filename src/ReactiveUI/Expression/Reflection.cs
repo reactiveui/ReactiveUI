@@ -115,17 +115,17 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[], object> GetValueFetcherForProperty(MemberInfo member)
+        public static Func<object, object[], object>? GetValueFetcherForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
 
-            FieldInfo field = member as FieldInfo;
+            FieldInfo? field = member as FieldInfo;
             if (field != null)
             {
                 return (obj, _) => field.GetValue(obj);
             }
 
-            PropertyInfo property = member as PropertyInfo;
+            PropertyInfo? property = member as PropertyInfo;
             if (property != null)
             {
                 return property.GetValue;
@@ -342,9 +342,9 @@ namespace ReactiveUI
         /// <param name="throwOnFailure">If we should throw an exception if the type can't be found.</param>
         /// <returns>The type that was found or null.</returns>
         /// <exception cref="TypeLoadException">If we were unable to find the type.</exception>
-        public static Type ReallyFindType(string type, bool throwOnFailure)
+        public static Type? ReallyFindType(string type, bool throwOnFailure)
         {
-            Type ret = typeCache.Get(type);
+            Type? ret = typeCache.Get(type);
             if (ret != null || !throwOnFailure)
             {
                 return ret;

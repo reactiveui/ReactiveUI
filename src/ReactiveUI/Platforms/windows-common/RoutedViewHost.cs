@@ -73,7 +73,7 @@ namespace ReactiveUI
             }
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
-            Func<string> platformGetter = () => default(string);
+            Func<string?> platformGetter = () => default(string);
 
             if (platform == null)
             {
@@ -86,7 +86,7 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
+            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string?>(
                     eventHandler =>
                     {
                         void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());

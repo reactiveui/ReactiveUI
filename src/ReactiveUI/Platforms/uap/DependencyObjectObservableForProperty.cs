@@ -94,7 +94,7 @@ namespace ReactiveUI
             });
         }
 
-        private static PropertyInfo ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
+        private static PropertyInfo? ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
         {
             var current = typeInfo;
             while (current != null)
@@ -111,7 +111,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private static FieldInfo ActuallyGetField(TypeInfo typeInfo, string propertyName)
+        private static FieldInfo? ActuallyGetField(TypeInfo typeInfo, string propertyName)
         {
             var current = typeInfo;
             while (current != null)
@@ -128,7 +128,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private static Func<DependencyProperty> GetDependencyPropertyFetcher(Type type, string propertyName)
+        private static Func<DependencyProperty>? GetDependencyPropertyFetcher(Type type, string propertyName)
         {
             var typeInfo = type.GetTypeInfo();
 

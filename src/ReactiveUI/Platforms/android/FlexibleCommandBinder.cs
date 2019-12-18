@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -88,6 +89,7 @@ namespace ReactiveUI
         /// <param name="commandParameter">Command parameter.</param>
         /// <param name="eventName">Event name.</param>
         /// <param name="enabledProperty">Enabled property name.</param>
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object aray.")]
         protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, PropertyInfo enabledProperty)
         {
             if (command == null)
@@ -108,7 +110,7 @@ namespace ReactiveUI
                 }
             });
 
-            var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
+            Action<object, object, object[]?> enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
             if (enabledSetter == null)
             {
                 return actionDisp;

@@ -172,7 +172,7 @@ namespace ReactiveUI
     public abstract class ReactiveNavigationController<TViewModel> : ReactiveNavigationController, IViewFor<TViewModel>
         where TViewModel : class
     {
-        private TViewModel _viewModel;
+        private TViewModel? _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.

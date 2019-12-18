@@ -93,10 +93,10 @@ namespace ReactiveUI
         /// <returns>
         /// The view associated with the given view model.
         /// </returns>
-        public IViewFor ResolveView<T>(T viewModel, string contract = null)
+        public IViewFor? ResolveView<T>(T viewModel, string? contract = null)
             where T : class
         {
-            var view = AttemptViewResolutionFor(viewModel.GetType(), contract);
+            var view = AttemptViewResolutionFor(viewModel?.GetType(), contract);
 
             if (view != null)
             {
@@ -128,7 +128,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private static Type ToggleViewModelType(Type viewModelType)
+        private static Type? ToggleViewModelType(Type viewModelType)
         {
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
 
@@ -163,7 +163,7 @@ namespace ReactiveUI
             return typeName.Insert(idxPeriod + 1, "I");
         }
 
-        private IViewFor AttemptViewResolutionFor(Type viewModelType, string contract)
+        private IViewFor? AttemptViewResolutionFor(Type? viewModelType, string? contract)
         {
             if (viewModelType == null)
             {
@@ -190,7 +190,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private IViewFor AttemptViewResolution(string viewTypeName, string contract)
+        private IViewFor? AttemptViewResolution(string? viewTypeName, string? contract)
         {
             try
             {

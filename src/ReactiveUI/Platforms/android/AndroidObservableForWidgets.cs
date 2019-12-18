@@ -152,11 +152,11 @@ namespace ReactiveUI
 
         private class DispatchItem
         {
-            public Type Type { get; set; }
+            public Type? Type { get; set; }
 
-            public string Property { get; set; }
+            public string? Property { get; set; }
 
-            public Func<object, Expression, IObservable<IObservedChange<object, object>>> Func { get; set; }
+            public Func<object, Expression, IObservable<IObservedChange<object, object>>>? Func { get; set; }
         }
     }
 }

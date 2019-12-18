@@ -47,11 +47,11 @@ namespace ReactiveUI
         private const string NormalState = "Normal";
         private bool _isTransitioning;
         private bool _canSplitTransition;
-        private Storyboard _startingTransition;
-        private Storyboard _completingTransition;
-        private Grid _container;
-        private ContentPresenter _previousContentPresentationSite;
-        private ContentPresenter _currentContentPresentationSite;
+        private Storyboard? _startingTransition;
+        private Storyboard? _completingTransition;
+        private Grid? _container;
+        private ContentPresenter? _previousContentPresentationSite;
+        private ContentPresenter? _currentContentPresentationSite;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransitioningContentControl"/> class.
@@ -126,7 +126,7 @@ namespace ReactiveUI
         /// <value>The transition part.</value>
         public TransitionPartType TransitionPart { get => (TransitionPartType)GetValue(TransitionPartProperty); set => SetValue(TransitionPartProperty, value); }
 
-        private Storyboard StartingTransition
+        private Storyboard? StartingTransition
         {
             get => _startingTransition;
             set
@@ -139,7 +139,7 @@ namespace ReactiveUI
             }
         }
 
-        private Storyboard CompletingTransition
+        private Storyboard? CompletingTransition
         {
             get => _completingTransition;
             set
@@ -329,8 +329,8 @@ namespace ReactiveUI
         /// </summary>
         private void SetTransitionDefaultValues()
         {
-            // Do some special handling of particular transitions so that we get nice smooth transitions that utilise the size of the content.
-            if (Transition == TransitionType.FadeDown)
+            // Do some special handling of particular transitions so that we get nice smooth transitions that utilize the size of the content.
+            if (Transition == TransitionType.FadeDown && CompletingTransition != null)
             {
                 var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
                 completingDoubleAnimation.From = -ActualHeight;

@@ -27,7 +27,7 @@ namespace ReactiveUI
     public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
-        private TViewModel _viewModel;
+        private TViewModel? _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
@@ -47,17 +47,17 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
             get { return _viewModel; }
             set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
         }
 
         /// <inheritdoc/>
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get { return _viewModel; }
-            set { _viewModel = (TViewModel)value; }
+            set { _viewModel = (TViewModel?)value; }
         }
     }
 

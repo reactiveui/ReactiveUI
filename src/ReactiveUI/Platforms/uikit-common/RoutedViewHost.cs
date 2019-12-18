@@ -24,7 +24,7 @@ namespace ReactiveUI
     {
         private readonly SerialDisposable _titleUpdater;
         private RoutingState _router;
-        private IObservable<string> _viewContractObservable;
+        private IObservable<string?> _viewContractObservable;
         private bool _routerInstigated;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace ReactiveUI
         /// </summary>
         public RoutedViewHost()
         {
-            ViewContractObservable = Observable.Return<string>(null);
+            ViewContractObservable = Observable.Return<string?>(null);
             _titleUpdater = new SerialDisposable();
 
             this.WhenActivated(
@@ -119,7 +119,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view contract observable.
         /// </summary>
-        public IObservable<string> ViewContractObservable
+        public IObservable<string?> ViewContractObservable
         {
             get => _viewContractObservable;
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
@@ -173,7 +173,7 @@ namespace ReactiveUI
             base.Dispose(disposing);
         }
 
-        private NSViewController ResolveView(IRoutableViewModel viewModel, string contract)
+        private NSViewController? ResolveView(IRoutableViewModel viewModel, string contract)
         {
             if (viewModel == null)
             {

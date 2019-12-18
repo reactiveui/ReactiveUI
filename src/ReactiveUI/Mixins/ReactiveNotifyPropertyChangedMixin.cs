@@ -146,8 +146,8 @@ namespace ReactiveUI
             bool skipInitial = true,
             bool suppressWarnings = false)
         {
-            IObservable<IObservedChange<object, object>> notifier =
-                Observable.Return(new ObservedChange<object, object>(null, null, source));
+            IObservable<IObservedChange<object?, object?>> notifier =
+                Observable.Return(new ObservedChange<object?, object?>(null, null, source));
 
             IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n

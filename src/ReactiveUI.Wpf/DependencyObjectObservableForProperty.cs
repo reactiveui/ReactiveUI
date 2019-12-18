@@ -66,14 +66,14 @@ namespace ReactiveUI
             });
         }
 
-        private static DependencyProperty GetDependencyProperty(Type type, string propertyName)
+        private static DependencyProperty? GetDependencyProperty(Type type, string propertyName)
         {
             var fi = type.GetTypeInfo().GetFields(BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public)
                 .FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
 
             if (fi != null)
             {
-                return (DependencyProperty)fi.GetValue(null);
+                return (DependencyProperty?)fi.GetValue(null);
             }
 
             return null;

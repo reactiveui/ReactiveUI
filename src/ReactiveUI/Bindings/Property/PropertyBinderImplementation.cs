@@ -305,7 +305,7 @@ namespace ReactiveUI
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
                     .SelectMany(x =>
                     {
-                        if (!converter.TryConvert(x, viewType, conversionHint, out object tmp))
+                        if (!converter.TryConvert(x, viewType, conversionHint, out object? tmp))
                         {
                             return Observable<object>.Empty;
                         }
@@ -313,7 +313,7 @@ namespace ReactiveUI
                         return Observable.Return(tmp);
                     });
 
-            var (disposable, obs) = BindToDirect<TView, TVProp, object>(source, view, viewExpression);
+            var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
 
             return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewModel, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
         }
@@ -464,7 +464,7 @@ namespace ReactiveUI
             return _typeConverterCache.Get((lhs, rhs));
         }
 
-        private static Func<object, object, object[], object> GetSetConverter(Type fromType, Type targetType)
+        private static Func<object, object, object[], object>? GetSetConverter(Type fromType, Type targetType)
         {
             if (fromType == null)
             {
@@ -491,7 +491,7 @@ namespace ReactiveUI
             var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
             object SetThenGet(object paramTarget, object paramValue, object[] paramParams)
             {
-                Func<object, object, object[], object> converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
+                Func<object, object, object[], object>? converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
 
                 if (converter == null)
                 {

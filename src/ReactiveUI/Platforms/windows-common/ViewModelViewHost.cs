@@ -82,7 +82,7 @@ namespace ReactiveUI
             }
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
-            Func<string> platformGetter = () => default(string);
+            Func<string?> platformGetter = () => default(string);
 
             if (platform == null)
             {

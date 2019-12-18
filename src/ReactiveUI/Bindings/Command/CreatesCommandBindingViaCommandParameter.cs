@@ -66,7 +66,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable? BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
 #if MONO
             where TEventArgs : EventArgs
 #endif

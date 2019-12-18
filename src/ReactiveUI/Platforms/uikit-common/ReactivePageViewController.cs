@@ -197,7 +197,7 @@ namespace ReactiveUI
     public abstract class ReactivePageViewController<TViewModel> : ReactivePageViewController, IViewFor<TViewModel>
         where TViewModel : class
     {
-        private TViewModel _viewModel;
+        private TViewModel? _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.

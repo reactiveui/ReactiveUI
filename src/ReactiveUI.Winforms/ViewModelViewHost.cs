@@ -20,7 +20,7 @@ namespace ReactiveUI.Winforms
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private Control _defaultContent;
-        private IObservable<string> _viewContractObservable;
+        private IObservable<string>? _viewContractObservable;
         private object _viewModel;
         private object _content;
         private bool _cacheViews;
@@ -73,7 +73,7 @@ namespace ReactiveUI.Winforms
         /// The view contract observable.
         /// </value>
         [Browsable(false)]
-        public IObservable<string> ViewContractObservable
+        public IObservable<string>? ViewContractObservable
         {
             get => _viewContractObservable;
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
