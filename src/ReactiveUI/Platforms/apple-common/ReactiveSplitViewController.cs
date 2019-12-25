@@ -181,7 +181,7 @@ namespace ReactiveUI
     public abstract class ReactiveSplitViewController<TViewModel> : ReactiveSplitViewController, IViewFor<TViewModel>
         where TViewModel : class
     {
-        private TViewModel _viewModel;
+        private TViewModel? _viewModel;
 
 #if UIKIT
         /// <summary>
@@ -231,7 +231,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);

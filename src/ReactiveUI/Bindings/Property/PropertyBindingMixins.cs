@@ -63,8 +63,8 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 object conversionHint = null,
-                IBindingTypeConverter vmToViewConverterOverride = null,
-                IBindingTypeConverter viewToVMConverterOverride = null)
+                IBindingTypeConverter? vmToViewConverterOverride = null,
+                IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -130,9 +130,9 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare> signalViewUpdate,
-                object conversionHint = null,
-                IBindingTypeConverter vmToViewConverterOverride = null,
-                IBindingTypeConverter viewToVMConverterOverride = null)
+                object? conversionHint = null,
+                IBindingTypeConverter? vmToViewConverterOverride = null,
+                IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor =>
             binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, conversionHint, vmToViewConverterOverride, viewToVMConverterOverride);
@@ -273,8 +273,8 @@ namespace ReactiveUI
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                object conversionHint = null,
-                IBindingTypeConverter vmToViewConverterOverride = null)
+                object? conversionHint = null,
+                IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -357,8 +357,8 @@ namespace ReactiveUI
             this IObservable<TValue> @this,
             TTarget target,
             Expression<Func<TTarget, TTValue>> property,
-            object conversionHint = null,
-            IBindingTypeConverter vmToViewConverterOverride = null)
+            object? conversionHint = null,
+            IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class
         {
             return binderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);

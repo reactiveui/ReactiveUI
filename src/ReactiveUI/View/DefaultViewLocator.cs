@@ -110,7 +110,7 @@ namespace ReactiveUI
                 return view;
             }
 
-            view = AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract);
+            view = AttemptViewResolutionFor(ToggleViewModelType(viewModel?.GetType()), contract);
 
             if (view != null)
             {

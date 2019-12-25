@@ -47,7 +47,7 @@ namespace ReactiveUI.Testing
         /// <returns>The builder.</returns>
         public static TBuilder With<TBuilder, TField>(
             this TBuilder builder,
-            ref List<TField> field,
+            ref List<TField>? field,
             IEnumerable<TField> values)
             where TBuilder : IBuilder
         {
@@ -77,7 +77,7 @@ namespace ReactiveUI.Testing
         /// <param name="field">The field.</param>
         /// <param name="value">The value.</param>
         /// <returns>The builder.</returns>
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField> field, TField value)
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField>? field, TField value)
             where TBuilder : IBuilder
         {
             if (field == null)

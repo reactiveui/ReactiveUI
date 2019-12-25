@@ -29,9 +29,9 @@ namespace ReactiveUI.XamForms
             propertyChanged: OnViewModelChanged);
 
         /// <inheritdoc/>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
-            get => (TViewModel)GetValue(ViewModelProperty);
+            get => (TViewModel?)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 

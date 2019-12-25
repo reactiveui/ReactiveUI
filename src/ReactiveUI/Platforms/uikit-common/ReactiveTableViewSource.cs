@@ -246,14 +246,14 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public override string TitleForHeader(UITableView tableView, nint section)
+        public override string? TitleForHeader(UITableView tableView, nint section)
         {
             var header = _commonSource.SectionInfo[(int)section].Header;
             return header?.Title;
         }
 
         /// <inheritdoc/>
-        public override string TitleForFooter(UITableView tableView, nint section)
+        public override string? TitleForFooter(UITableView tableView, nint section)
         {
             var footer = _commonSource.SectionInfo[(int)section].Footer;
             return footer?.Title;

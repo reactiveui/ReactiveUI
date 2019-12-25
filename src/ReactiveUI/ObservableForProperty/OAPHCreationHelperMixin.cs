@@ -54,7 +54,7 @@ namespace ReactiveUI
             Expression<Func<TObj, TRet>> property,
             TRet initialValue = default(TRet),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             where TObj : class, IReactiveObject => source.ObservableToProperty(target, property, initialValue, deferSubscription, scheduler);
 
         /// <summary>

@@ -81,7 +81,7 @@ namespace ReactiveUI
         /// current one OnError.</param>
         /// <param name="message">An error message to print.</param>
         /// <returns>The same Observable.</returns>
-        public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string message = null)
+        public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string? message = null)
             where TObj : IEnableLogger
             where TException : Exception
         {

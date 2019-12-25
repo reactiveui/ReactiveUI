@@ -56,7 +56,7 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 IObservable<TParam> withParameter,
-                string toEvent = null)
+                string? toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
@@ -87,7 +87,7 @@ namespace ReactiveUI
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
-                string toEvent = null)
+                string? toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
@@ -122,7 +122,7 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
-                string toEvent = null)
+                string? toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand

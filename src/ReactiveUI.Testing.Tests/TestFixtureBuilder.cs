@@ -13,7 +13,7 @@ namespace ReactiveUI.Testing.Tests
     public class TestFixtureBuilder : IBuilder
     {
         private int _count;
-        private string _name;
+        private string? _name;
         private List<string> _tests = new List<string>();
         private Dictionary<string, string> _variables = new Dictionary<string, string>();
 
@@ -79,7 +79,7 @@ namespace ReactiveUI.Testing.Tests
         /// </summary>
         /// <param name="tests">The tests.</param>
         /// <returns>The builder.</returns>
-        public TestFixtureBuilder WithTests(IEnumerable<string> tests) => this.With(ref _tests, tests);
+        public TestFixtureBuilder WithTests(IEnumerable<string>? tests) => this.With(ref _tests, tests);
 
         private TestFixture Build() => new TestFixture
         {

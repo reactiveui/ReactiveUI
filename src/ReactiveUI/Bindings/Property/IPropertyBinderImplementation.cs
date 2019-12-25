@@ -71,8 +71,8 @@ namespace ReactiveUI
                 Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare> signalViewUpdate,
                 object conversionHint,
-                IBindingTypeConverter vmToViewConverterOverride = null,
-                IBindingTypeConverter viewToVMConverterOverride = null)
+                IBindingTypeConverter? vmToViewConverterOverride = null,
+                IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor;
 
@@ -177,7 +177,7 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 object conversionHint,
-                IBindingTypeConverter vmToViewConverterOverride = null)
+                IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor;
 
@@ -250,7 +250,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TTValue>> propertyExpression,
             object conversionHint,
-            IBindingTypeConverter vmToViewConverterOverride = null)
+            IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class;
     }
 }

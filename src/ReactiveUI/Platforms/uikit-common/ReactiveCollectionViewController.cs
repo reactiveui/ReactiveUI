@@ -163,7 +163,7 @@ namespace ReactiveUI
     public abstract class ReactiveCollectionViewController<TViewModel> : ReactiveCollectionViewController, IViewFor<TViewModel>
         where TViewModel : class
     {
-        private TViewModel _viewModel;
+        private TViewModel? _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewController{TViewModel}"/> class.
@@ -219,7 +219,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
