@@ -8,11 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Users\richardb\source\repos\richbryant\Reactive.Wasm\src\System.Reactive.Wasm\System.Reactive.Wasm.csproj" />
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+    <PackageReference Include="Reactive.Wasm" Version="1.0.1-preview.12" />
+    <PackageReference Include="ReactiveUI" Version="11.0.6" />
   </ItemGroup>
 
 </Project>
