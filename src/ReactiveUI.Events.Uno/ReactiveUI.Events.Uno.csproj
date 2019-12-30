@@ -1,0 +1,29 @@
+<Project Sdk="MSBuild.Sdk.Extras">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard20;MonoAndroid90;Xamarin.iOS10;Xamarin.Mac20</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.16299</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Events.Uno</AssemblyName>
+    <RootNamespace>ReactiveUI.Events</RootNamespace>
+    <PackageDescription>Provides Observable-based events API for Uno Platform including UWP, Android, iOS, Mac, and web (WASM).</PackageDescription>
+    <PackageId>ReactiveUI.Events.Uno</PackageId>
+    <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">
+    <SDKReference Include="WindowsDesktop, Version=10.0.16299.0">
+      <Name>Windows Desktop Extensions for the UWP</Name>
+    </SDKReference>
+    <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
+      <Name>Windows Mobile Extensions for the UWP</Name>
+    </SDKReference>
+    <ProjectReference Include="..\ReactiveUI.Events\ReactiveUI.Events.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" !$(TargetFramework.StartsWith('uap')) ">
+    <PackageReference Include="Uno.UI" Version="2.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="Pharmacist.Common" Version="1.*" />
+  </ItemGroup>
+  
+</Project>
