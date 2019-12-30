@@ -15,11 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Splat.Drawing" Version="9.2.11" />
+    <PackageReference Include="Splat.Drawing" Version="9.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('uap')) ">
-    <PackageReference Include="Uno.UI" Version="1.*" />
+    <PackageReference Include="Uno.UI" Version="2.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
