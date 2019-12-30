@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Events", "Reacti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Events.XamEssentials", "ReactiveUI.Events.XamEssentials\ReactiveUI.Events.XamEssentials.csproj", "{CAF8C047-6BB9-4629-884F-F8AFA6B95D11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events.Uno", "ReactiveUI.Events.Uno\ReactiveUI.Events.Uno.csproj", "{7CD8BFEF-4879-4FF0-B67F-8E89337B0382}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
