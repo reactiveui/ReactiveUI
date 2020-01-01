@@ -31,7 +31,7 @@ namespace ReactiveUI.Blazor
             }
 
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CurrentThreadScheduler.Instance);
+            RxApp.MainThreadScheduler = CurrentThreadScheduler.Instance;
         }
     }
 }
