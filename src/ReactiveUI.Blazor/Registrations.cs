@@ -4,10 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.PlatformServices;
-using System.Text;
 
 namespace ReactiveUI.Blazor
 {
@@ -27,18 +25,13 @@ namespace ReactiveUI.Blazor
 
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
-#if NETSTANDARD
-            if (WasmPlatformEnlightenmentProvider.IsWasm)
+            if (Type.GetType("Mono.Runtime") != null)
             {
-                RxApp.TaskpoolScheduler = WasmScheduler.Default;
-                RxApp.MainThreadScheduler = WasmScheduler.Default;
+                PlatformEnlightenmentProvider.Current.EnableWasm();
             }
-            else
-#endif
-            {
-                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CurrentThreadScheduler.Instance);
-            }
+
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxApp.MainThreadScheduler = CurrentThreadScheduler.Instance;
         }
     }
 }
