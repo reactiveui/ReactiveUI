@@ -73,7 +73,7 @@ namespace ReactiveUI
                          view,
                          vmProperty,
                          viewProperty,
-                         (IObservable<Unit>)null,
+                         (IObservable<Unit>?)null,
                          conversionHint,
                          vmToViewConverterOverride,
                          viewToVMConverterOverride);
@@ -176,7 +176,7 @@ namespace ReactiveUI
             Func<TVMProp, TVProp> vmToViewConverter,
             Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class
-            where TView : class, IViewFor => binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>)null, vmToViewConverter, viewToVmConverter);
+            where TView : class, IViewFor => binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>?)null, vmToViewConverter, viewToVmConverter);
 
         /// <summary>
         /// Binds the specified view model property to the given view property.

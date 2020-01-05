@@ -258,7 +258,7 @@ namespace ReactiveUI
         /// <param name="current">The object that starts the property chain.</param>
         /// <param name="expressionChain">A list of expressions which will point towards a property or field.</param>
         /// <returns>If the value was successfully retrieved or not.</returns>
-        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, IEnumerable<Expression> expressionChain)
+        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object?>[] changeValues, object current, IEnumerable<Expression> expressionChain)
         {
             int currentIndex = 0;
             var expressions = expressionChain.ToList();

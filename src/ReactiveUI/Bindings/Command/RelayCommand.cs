@@ -29,7 +29,7 @@ namespace ReactiveUI
             _execute = execute ?? (_ => { });
         }
 
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {

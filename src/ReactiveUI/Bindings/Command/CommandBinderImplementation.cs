@@ -65,7 +65,7 @@ namespace ReactiveUI
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent, cmd =>
+            IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent ?? string.Empty, cmd =>
             {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null)

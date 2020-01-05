@@ -120,7 +120,7 @@ namespace ReactiveUI
 
             bool VmToViewFunc(TVMProp vmValue, out TVProp vValue)
             {
-                var result = vmToViewConverter.TryConvert(vmValue, typeof(TVProp), conversionHint, out object tmp);
+                var result = vmToViewConverter.TryConvert(vmValue, typeof(TVProp), conversionHint, out object? tmp);
 
                 vValue = result ? (TVProp)tmp : default(TVProp);
                 return result;
@@ -128,7 +128,7 @@ namespace ReactiveUI
 
             bool ViewToVmFunc(TVProp vValue, out TVMProp vmValue)
             {
-                var result = viewToVMConverter.TryConvert(vValue, typeof(TVMProp), conversionHint, out object tmp);
+                var result = viewToVMConverter.TryConvert(vValue, typeof(TVMProp), conversionHint, out object? tmp);
 
                 vmValue = result ? (TVMProp)tmp : default(TVMProp);
                 return result;

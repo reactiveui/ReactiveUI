@@ -8,6 +8,7 @@
     <PackageId>ReactiveUI</PackageId>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <WarningsAsErrors>CS8625;CS8604;CS8600;CS8614;CS8603;CS8618;CS8619</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +16,7 @@
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="Splat" Version="9.*" />
     <PackageReference Include="DynamicData" Version="6.*" />
-    <PackageReference Include="System.Reactive" Version="4.3.1" />
+    <PackageReference Include="System.Reactive" Version="4.3.2" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">

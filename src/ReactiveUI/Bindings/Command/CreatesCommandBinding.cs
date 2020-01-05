@@ -16,24 +16,24 @@ namespace ReactiveUI
 {
     internal class CreatesCommandBinding
     {
-        private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache =
-            new MemoizingMRUCache<Type, ICreatesCommandBinding>(
+        private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> bindCommandCache =
+            new MemoizingMRUCache<Type, ICreatesCommandBinding?>(
                 (t, _) =>
             {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
-                    .Aggregate((score: 0, binding: (ICreatesCommandBinding)null), (acc, x) =>
+                    .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
                     {
                         int score = x.GetAffinityForObject(t, false);
                         return (score > acc.score) ? (score, x) : acc;
                     }).binding;
             }, RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandEventCache =
+        private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> bindCommandEventCache =
             new MemoizingMRUCache<Type, ICreatesCommandBinding>(
                 (t, _) =>
             {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
-                    .Aggregate((score: 0, binding: (ICreatesCommandBinding)null), (acc, x) =>
+                    .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
                     {
                         int score = x.GetAffinityForObject(t, true);
                         return (score > acc.score) ? (score, x) : acc;
