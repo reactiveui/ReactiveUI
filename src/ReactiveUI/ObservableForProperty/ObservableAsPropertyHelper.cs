@@ -59,7 +59,7 @@ namespace ReactiveUI
             Action<T> onChanged,
             T initialValue = default(T),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             : this(observable, onChanged, null, initialValue, deferSubscription, scheduler)
         {
         }
@@ -94,10 +94,10 @@ namespace ReactiveUI
         public ObservableAsPropertyHelper(
             IObservable<T> observable,
             Action<T> onChanged,
-            Action<T> onChanging = null,
+            Action<T>? onChanging = null,
             T initialValue = default(T),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
         {
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
@@ -170,7 +170,7 @@ namespace ReactiveUI
         /// normally be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>A default property helper.</returns>
-        public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null) =>
+        public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler? scheduler = null) =>
             new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue, false, scheduler);
 
         /// <summary>

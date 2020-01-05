@@ -22,7 +22,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
         [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
-        internal DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
+        internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null)
         {
             ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
         }

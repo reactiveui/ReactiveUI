@@ -229,7 +229,7 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor view = null)
+        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null)
         {
             return item.WhenActivated(
                 () =>

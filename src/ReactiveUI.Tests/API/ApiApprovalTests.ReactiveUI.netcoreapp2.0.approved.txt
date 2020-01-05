@@ -180,12 +180,12 @@ namespace ReactiveUI
     }
     public interface IMessageBus : Splat.IEnableLogger
     {
-        bool IsRegistered(System.Type type, string contract = null);
-        System.IObservable<T> Listen<T>(string contract = null);
-        System.IObservable<T> ListenIncludeLatest<T>(string contract = null);
-        System.IDisposable RegisterMessageSource<T>(System.IObservable<T> source, string contract = null);
-        void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string contract = null);
-        void SendMessage<T>(T message, string contract = null);
+        bool IsRegistered(System.Type type, string? contract = null);
+        System.IObservable<T> Listen<T>(string? contract = null);
+        System.IObservable<T> ListenIncludeLatest<T>(string? contract = null);
+        System.IDisposable RegisterMessageSource<T>(System.IObservable<T> source, string? contract = null);
+        void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string? contract = null);
+        void SendMessage<T>(T message, string? contract = null);
     }
     public class INPCObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
@@ -270,11 +270,11 @@ namespace ReactiveUI
     }
     public class static IReactiveObjectExtensions
     {
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj reactiveObject, ref TRet backingField, TRet newValue, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj reactiveObject, ref TRet backingField, TRet newValue, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string? propertyName = null)
             where TObj : ReactiveUI.IReactiveObject { }
-        public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
+        public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string? propertyName = null)
             where TSender : ReactiveUI.IReactiveObject { }
-        public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string propertyName = null)
+        public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberNameAttribute()] string? propertyName = null)
             where TSender : ReactiveUI.IReactiveObject { }
     }
     public interface IReactivePropertyChangedEventArgs<out TSender>
@@ -323,7 +323,7 @@ namespace ReactiveUI
     }
     public interface IViewLocator : Splat.IEnableLogger
     {
-        ReactiveUI.IViewFor ResolveView<T>(T viewModel, string contract = null)
+        ReactiveUI.IViewFor ResolveView<T>(T viewModel, string? contract = null)
             where T :  class;
     }
     public sealed class InteractionContext<TInput, TOutput>
@@ -346,32 +346,32 @@ namespace ReactiveUI
     {
         public MessageBus() { }
         public static ReactiveUI.IMessageBus Current { get; set; }
-        public bool IsRegistered(System.Type type, string contract = null) { }
-        public System.IObservable<T> Listen<T>(string contract = null) { }
-        public System.IObservable<T> ListenIncludeLatest<T>(string contract = null) { }
-        public System.IDisposable RegisterMessageSource<T>(System.IObservable<T> source, string contract = null) { }
-        public void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string contract = null) { }
-        public void SendMessage<T>(T message, string contract = null) { }
+        public bool IsRegistered(System.Type type, string? contract = null) { }
+        public System.IObservable<T> Listen<T>(string? contract = null) { }
+        public System.IObservable<T> ListenIncludeLatest<T>(string? contract = null) { }
+        public System.IDisposable RegisterMessageSource<T>(System.IObservable<T> source, string? contract = null) { }
+        public void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string? contract = null) { }
+        public void SendMessage<T>(T message, string? contract = null) { }
     }
     public class static OAPHCreationHelperMixin
     {
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
     }
     public sealed class ObservableAsPropertyHelper<T> : ReactiveUI.IHandleObservableErrors, Splat.IEnableLogger, System.IDisposable
     {
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, T initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null) { }
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T> onChanging = null, T initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, T initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T> onChanging = null, T initialValue = null, bool deferSubscription = False, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         public bool IsSubscribed { get; }
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public T Value { get; }
-        public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T initialValue = null, System.Reactive.Concurrency.IScheduler scheduler = null) { }
+        public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T initialValue = null, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         public void Dispose() { }
     }
     public class static ObservableLoggingMixin
@@ -653,7 +653,7 @@ namespace ReactiveUI
         public static T GetAppState<T>(this ReactiveUI.ISuspensionHost item) { }
         public static System.IObservable<T> ObserveAppState<T>(this ReactiveUI.ISuspensionHost item)
             where T :  class { }
-        public static System.IDisposable SetupDefaultSuspendResume(this ReactiveUI.ISuspensionHost item, ReactiveUI.ISuspensionDriver driver = null) { }
+        public static System.IDisposable SetupDefaultSuspendResume(this ReactiveUI.ISuspensionHost item, ReactiveUI.ISuspensionDriver? driver = null) { }
     }
     public class UnhandledErrorException : System.Exception
     {

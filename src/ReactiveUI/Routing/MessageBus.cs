@@ -46,7 +46,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void RegisterScheduler<T>(IScheduler scheduler, string contract = null)
+        public void RegisterScheduler<T>(IScheduler scheduler, string? contract = null)
         {
             _schedulerMappings[(typeof(T), contract)] = scheduler;
         }
@@ -61,7 +61,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An Observable representing the notifications posted to the
         /// message bus.</returns>
-        public IObservable<T> Listen<T>(string contract = null)
+        public IObservable<T> Listen<T>(string? contract = null)
         {
             this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
@@ -78,7 +78,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An Observable representing the notifications posted to the
         /// message bus.</returns>
-        public IObservable<T> ListenIncludeLatest<T>(string contract = null)
+        public IObservable<T> ListenIncludeLatest<T>(string? contract = null)
         {
             this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
@@ -93,7 +93,7 @@ namespace ReactiveUI
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns>True if messages have been posted for this message Type.</returns>
-        public bool IsRegistered(Type type, string contract = null)
+        public bool IsRegistered(Type type, string? contract = null)
         {
             bool ret = false;
             WithMessageBus(type, contract, (mb, item) => { ret = mb.ContainsKey(item) && mb[item].IsAlive; });
@@ -115,7 +115,7 @@ namespace ReactiveUI
         /// <returns>a Disposable.</returns>
         public IDisposable RegisterMessageSource<T>(
             IObservable<T> source,
-            string contract = null)
+            string? contract = null)
         {
             if (source == null)
             {
@@ -136,7 +136,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void SendMessage<T>(T message, string contract = null)
+        public void SendMessage<T>(T message, string? contract = null)
         {
             SetupSubjectIfNecessary<T>(contract).OnNext(message);
         }

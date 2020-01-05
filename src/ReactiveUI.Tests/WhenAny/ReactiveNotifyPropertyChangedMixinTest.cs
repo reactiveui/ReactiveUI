@@ -525,7 +525,7 @@ namespace ReactiveUI.Tests
             };
 
             object sender = null;
-            string propertyName = null;
+            string? propertyName = null;
             fixture.Changed.ObserveOn(ImmediateScheduler.Instance).Subscribe(
                 x =>
                 {
@@ -557,7 +557,7 @@ namespace ReactiveUI.Tests
             };
 
             object sender = null;
-            string propertyName = null;
+            string? propertyName = null;
             fixture.Changing.ObserveOn(ImmediateScheduler.Instance).Subscribe(
                 x =>
                 {

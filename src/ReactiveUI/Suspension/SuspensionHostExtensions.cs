@@ -51,7 +51,7 @@ namespace ReactiveUI
         /// <param name="item">The suspension host.</param>
         /// <param name="driver">The suspension driver.</param>
         /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
-        public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver driver = null)
+        public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
         {
             if (item == null)
             {

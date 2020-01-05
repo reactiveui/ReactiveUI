@@ -33,7 +33,7 @@ namespace ReactiveUI
         /// <param name="activity">The activity.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>The return view.</returns>
-        public static View GetControl(this Activity activity, [CallerMemberName] string propertyName = null)
+        public static View GetControl(this Activity activity, [CallerMemberName] string? propertyName = null)
             => GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)));
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace ReactiveUI
         /// <param name="assembly">The assembly containing the user-defined view.</param>
         /// <param name="propertyName">The property.</param>
         /// <returns>The return view.</returns>
-        public static View GetControl(this View view, Assembly assembly, [CallerMemberName] string propertyName = null)
+        public static View GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null)
             => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(assembly, propertyName)));
 
         /// <summary>

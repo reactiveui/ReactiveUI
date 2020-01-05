@@ -14,8 +14,8 @@ namespace ReactiveUI.Testing.Tests
     {
         private int _count;
         private string? _name;
-        private List<string> _tests = new List<string>();
-        private Dictionary<string, string> _variables = new Dictionary<string, string>();
+        private List<string>? _tests = new List<string>();
+        private Dictionary<string, string>? _variables = new Dictionary<string, string>();
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TestFixtureBuilder"/> to <see cref="TestFixture"/>.

@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests.Winforms
     {
         public Func<Type, IViewFor> LocatorFunc { get; set; }
 
-        public IViewFor ResolveView<T>(T viewModel, string contract = null)
+        public IViewFor ResolveView<T>(T viewModel, string? contract = null)
             where T : class
         {
             return LocatorFunc(viewModel.GetType());

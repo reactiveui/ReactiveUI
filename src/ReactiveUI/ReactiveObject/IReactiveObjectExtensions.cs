@@ -103,7 +103,7 @@ namespace ReactiveUI
             this TObj reactiveObject,
             ref TRet backingField,
             TRet newValue,
-            [CallerMemberName] string propertyName = null)
+            [CallerMemberName] string? propertyName = null)
             where TObj : IReactiveObject
         {
             if (propertyName == null)
@@ -132,7 +132,7 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
             where TSender : IReactiveObject
         {
             reactiveObject.RaisingPropertyChanged(propertyName);
@@ -148,7 +148,7 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
             where TSender : IReactiveObject
         {
             reactiveObject.RaisingPropertyChanging(propertyName);
