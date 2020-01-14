@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -56,7 +56,13 @@ namespace ReactiveUI.XamForms
                     })
                     .Subscribe());
 
-                var previousCount = this.WhenAnyObservable(x => x.Router.NavigationChanged).CountChanged().Select(_ => Router.NavigationStack.Count).StartWith(Router.NavigationStack.Count);
+                var previousCount =
+                    this.WhenAnyObservable(x => x.Router.NavigationChanged)
+                        .CountChanged()
+                        .ObserveOn(Router.Scheduler)
+                        .Select(_ => Router.NavigationStack.Count)
+                        .StartWith(Router.NavigationStack.Count);
+
                 var currentCount = previousCount.Skip(1);
 
                 d(Observable.Zip(previousCount, currentCount, (previous, current) => new { Delta = previous - current, Current = current })
@@ -140,7 +146,10 @@ namespace ReactiveUI.XamForms
 
                         try
                         {
-                            Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                            if (Router.NavigationStack.Count > 1)
+                            {
+                                Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                            }
                         }
                         finally
                         {
@@ -150,7 +159,6 @@ namespace ReactiveUI.XamForms
                         ((IViewFor)CurrentPage).ViewModel = Router.GetCurrentViewModel();
                     }));
             }));
-
             var screen = Locator.Current.GetService<IScreen>();
             if (screen == null)
             {
@@ -161,22 +169,22 @@ namespace ReactiveUI.XamForms
 
             this.WhenAnyValue(x => x.Router)
                 .SelectMany(router =>
-                {
-                    return router.NavigationStack.ToObservable()
-                            .Select(x => (Page)ViewLocator.Current.ResolveView(x))
-                            .SelectMany(x => PushAsync(x).ToObservable())
-                            .Finally(() =>
-                            {
-                        var vm = router.GetCurrentViewModel();
-                        if (vm == null)
+                    router
+                        .NavigationStack
+                        .ToObservable()
+                        .Select(x => (Page)ViewLocator.Current.ResolveView(x))
+                        .SelectMany(x => PushAsync(x).ToObservable())
+                        .Finally(() =>
                         {
-                                    return;
-                                }
+                            var vm = router.GetCurrentViewModel();
+                            if (vm == null)
+                            {
+                                return;
+                            }
 
-                        ((IViewFor)CurrentPage).ViewModel = vm;
-                        CurrentPage.Title = vm.UrlPathSegment;
-                    });
-                })
+                            ((IViewFor)CurrentPage).ViewModel = vm;
+                            CurrentPage.Title = vm.UrlPathSegment;
+                        }))
                 .Subscribe();
         }
 
