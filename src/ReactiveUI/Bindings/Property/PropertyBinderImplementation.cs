@@ -102,7 +102,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare> signalViewUpdate,
+                IObservable<TDontCare>? signalViewUpdate,
                 object conversionHint,
                 IBindingTypeConverter? vmToViewConverterOverride = null,
                 IBindingTypeConverter? viewToVMConverterOverride = null)
@@ -182,7 +182,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare> signalViewUpdate,
+                IObservable<TDontCare>? signalViewUpdate,
                 Func<TVMProp, TVProp> vmToViewConverter,
                 Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class
@@ -266,7 +266,7 @@ namespace ReactiveUI
         /// <exception cref="ArgumentException">
         /// There is no registered converter from <typeparamref name="TVMProp"/> to <typeparamref name="TVProp"/>.
         /// </exception>
-        public IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        public IReactiveBinding<TView, TViewModel, TVProp>? OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -567,7 +567,7 @@ namespace ReactiveUI
             TView view,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
-            IObservable<TDontCare> signalViewUpdate,
+            IObservable<TDontCare>? signalViewUpdate,
             OutFunc<TVMProp, TVProp> vmToViewConverter,
             OutFunc<TVProp, TVMProp> viewToVmConverter)
             where TView : class, IViewFor

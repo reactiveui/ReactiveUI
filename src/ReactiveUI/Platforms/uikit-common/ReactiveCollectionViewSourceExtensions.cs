@@ -37,7 +37,7 @@ namespace ReactiveUI
         public static IDisposable BindTo<TSource, TCell>(
             this IObservable<IReadOnlyList<CollectionViewSectionInformation<TSource, TCell>>> sectionsObservable,
             UICollectionView collectionView,
-            Func<ReactiveCollectionViewSource<TSource>, IDisposable> initSource = null)
+            Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UICollectionViewCell
         {
             var source = new ReactiveCollectionViewSource<TSource>(collectionView);
@@ -65,8 +65,8 @@ namespace ReactiveUI
             this IObservable<INotifyCollectionChanged> sourceObservable,
             UICollectionView collectionView,
             NSString cellKey,
-            Action<TCell> initializeCellAction = null,
-            Func<ReactiveCollectionViewSource<TSource>, IDisposable> initSource = null)
+            Action<TCell>? initializeCellAction = null,
+            Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UICollectionViewCell
         {
             return sourceObservable
@@ -98,8 +98,8 @@ namespace ReactiveUI
         public static IDisposable BindTo<TSource, TCell>(
             this IObservable<INotifyCollectionChanged> sourceObservable,
             UICollectionView collectionView,
-            Action<TCell> initializeCellAction = null,
-            Func<ReactiveCollectionViewSource<TSource>, IDisposable> initSource = null)
+            Action<TCell>? initializeCellAction = null,
+            Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UICollectionViewCell
         {
             if (collectionView == null)

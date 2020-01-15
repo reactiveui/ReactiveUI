@@ -35,7 +35,7 @@ namespace ReactiveUI
         /// <param name="cellKey">The cell key.</param>
         /// <param name="sizeHint">The size hint.</param>
         /// <param name="initializeCellAction">The initialize cell action.</param>
-        public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
+        public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell>? initializeCellAction = null)
             : this(tableView)
         {
             Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction) };

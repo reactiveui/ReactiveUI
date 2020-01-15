@@ -33,7 +33,7 @@ namespace ReactiveUI
         /// <param name="collection">The notify collection chaged.</param>
         /// <param name="cellKey">The cell key.</param>
         /// <param name="initializeCellAction">The cell initialization action.</param>
-        public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell> initializeCellAction = null)
+        public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell>? initializeCellAction = null)
             : this(collectionView)
         {
             Data = new[] { new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction) };

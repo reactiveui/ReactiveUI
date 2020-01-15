@@ -208,14 +208,14 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNamesAttribute(new string[] {
                 "view",
                 "isViewModel"})]
-        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare> signalViewUpdate, object conversionHint, ReactiveUI.IBindingTypeConverter vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter viewToVMConverterOverride = null)
+        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object conversionHint, ReactiveUI.IBindingTypeConverter vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
         [return: System.Runtime.CompilerServices.TupleElementNamesAttribute(new string[] {
                 "view",
                 "isViewModel"})]
-        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare> signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
@@ -426,13 +426,13 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNamesAttribute(new string[] {
                 "view",
                 "isViewModel"})]
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare> signalViewUpdate, object conversionHint, ReactiveUI.IBindingTypeConverter vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter viewToVMConverterOverride = null)
+        public ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object conversionHint, ReactiveUI.IBindingTypeConverter vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNamesAttribute(new string[] {
                 "view",
                 "isViewModel"})]
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare> signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        public ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         public System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue>> propertyExpression, object conversionHint = null, ReactiveUI.IBindingTypeConverter vmToViewConverterOverride = null)
@@ -455,7 +455,7 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNamesAttribute(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare> signalViewUpdate, object conversionHint = null, ReactiveUI.IBindingTypeConverter vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter viewToVMConverterOverride = null)
+        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object conversionHint = null, ReactiveUI.IBindingTypeConverter vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNamesAttribute(new string[] {
@@ -467,7 +467,7 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNamesAttribute(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare> signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         public static System.IDisposable BindTo<TValue, TTarget, TTValue>(this System.IObservable<TValue> @this, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue>> property, object conversionHint = null, ReactiveUI.IBindingTypeConverter vmToViewConverterOverride = null)

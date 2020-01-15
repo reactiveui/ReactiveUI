@@ -25,11 +25,11 @@ namespace ReactiveUI
     /// </summary>
     public class MessageBus : IMessageBus
     {
-        private readonly Dictionary<(Type type, string contract), NotAWeakReference> _messageBus =
-            new Dictionary<(Type type, string contract), NotAWeakReference>();
+        private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus =
+            new Dictionary<(Type type, string? contract), NotAWeakReference>();
 
-        private readonly IDictionary<(Type type, string contract), IScheduler> _schedulerMappings =
-            new Dictionary<(Type type, string contract), IScheduler>();
+        private readonly IDictionary<(Type type, string? contract), IScheduler> _schedulerMappings =
+            new Dictionary<(Type type, string? contract), IScheduler>();
 
         /// <summary>
         /// Gets or sets the Current MessageBus.
@@ -141,7 +141,7 @@ namespace ReactiveUI
             SetupSubjectIfNecessary<T>(contract).OnNext(message);
         }
 
-        private ISubject<T> SetupSubjectIfNecessary<T>(string contract)
+        private ISubject<T> SetupSubjectIfNecessary<T>(string? contract)
         {
             ISubject<T>? ret = null;
 
@@ -162,8 +162,8 @@ namespace ReactiveUI
 
         private void WithMessageBus(
             Type type,
-            string contract,
-            Action<Dictionary<(Type type, string contract), NotAWeakReference>, (Type type, string contract)> block)
+            string? contract,
+            Action<Dictionary<(Type type, string? contract), NotAWeakReference>, (Type type, string? contract)> block)
         {
             lock (_messageBus)
             {

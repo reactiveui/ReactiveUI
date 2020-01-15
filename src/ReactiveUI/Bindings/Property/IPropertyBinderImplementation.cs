@@ -69,7 +69,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare> signalViewUpdate,
+                IObservable<TDontCare>? signalViewUpdate,
                 object? conversionHint,
                 IBindingTypeConverter? vmToViewConverterOverride = null,
                 IBindingTypeConverter? viewToVMConverterOverride = null)
@@ -126,7 +126,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare> signalViewUpdate,
+                IObservable<TDontCare>? signalViewUpdate,
                 Func<TVMProp, TVProp> vmToViewConverter,
                 Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class

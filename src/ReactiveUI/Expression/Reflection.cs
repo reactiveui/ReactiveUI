@@ -70,7 +70,10 @@ namespace ReactiveUI
         /// <returns>A string form for the property the expression is pointing to.</returns>
         public static string ExpressionToPropertyNames(Expression expression)
         {
-            Contract.Requires(expression != null);
+            if(expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
 
             StringBuilder sb = new StringBuilder();
 

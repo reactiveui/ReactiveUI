@@ -21,7 +21,7 @@ namespace ReactiveUI
     public class UnhandledInteractionException<TInput, TOutput> : Exception
     {
         [field: NonSerialized]
-        private readonly Interaction<TInput, TOutput> _interaction;
+        private readonly Interaction<TInput, TOutput>? _interaction;
         private readonly TInput _input;
 
         /// <summary>

@@ -18,12 +18,12 @@ namespace ReactiveUI
     /// </summary>
     public static class ViewForMixins
     {
-        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache =
-            new MemoizingMRUCache<Type, IActivationForViewFetcher>(
+        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> activationFetcherCache =
+            new MemoizingMRUCache<Type, IActivationForViewFetcher?>(
                (t, _) =>
                    Locator.Current
-                          .GetServices<IActivationForViewFetcher>()
-                          .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher)), (acc, x) =>
+                          .GetServices<IActivationForViewFetcher?>()
+                          .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher?)), (acc, x) =>
                           {
                               int score = x.GetAffinityForView(t);
                               return score > acc.count ? (score, x) : acc;
@@ -142,7 +142,7 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor view)
+        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view)
         {
             if (item == null)
             {
