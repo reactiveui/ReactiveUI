@@ -149,7 +149,7 @@ namespace ReactiveUI
                 TView view,
                 Expression controlExpression,
                 IObservable<TParam> withParameter,
-                string toEvent,
+                string? toEvent,
                 Func<ICommand, ICommand>? commandFixuper = null)
             where TView : class, IViewFor
             where TProp : ICommand

@@ -105,7 +105,7 @@ namespace ReactiveUI
             this IObservable<INotifyCollectionChanged> sourceObservable,
             UITableView tableView,
             float sizeHint,
-            Action<TCell> initializeCellAction = null,
+            Action<TCell>? initializeCellAction = null,
             Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UITableViewCell
         {

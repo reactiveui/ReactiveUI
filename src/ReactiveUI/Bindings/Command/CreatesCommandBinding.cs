@@ -29,7 +29,7 @@ namespace ReactiveUI
             }, RxApp.SmallCacheLimit);
 
         private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> bindCommandEventCache =
-            new MemoizingMRUCache<Type, ICreatesCommandBinding>(
+            new MemoizingMRUCache<Type, ICreatesCommandBinding?>(
                 (t, _) =>
             {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()

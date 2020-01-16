@@ -176,7 +176,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                object conversionHint,
+                object? conversionHint,
                 IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor;
@@ -249,7 +249,7 @@ namespace ReactiveUI
             IObservable<TValue> observedChange,
             TTarget target,
             Expression<Func<TTarget, TTValue>> propertyExpression,
-            object conversionHint,
+            object? conversionHint,
             IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class;
     }

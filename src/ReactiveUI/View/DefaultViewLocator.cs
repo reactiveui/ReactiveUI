@@ -128,7 +128,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private static Type? ToggleViewModelType(Type viewModelType)
+        private static Type? ToggleViewModelType(Type? viewModelType)
         {
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
 

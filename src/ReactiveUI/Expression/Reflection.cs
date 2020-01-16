@@ -70,7 +70,7 @@ namespace ReactiveUI
         /// <returns>A string form for the property the expression is pointing to.</returns>
         public static string ExpressionToPropertyNames(Expression expression)
         {
-            if(expression == null)
+            if (expression == null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }
