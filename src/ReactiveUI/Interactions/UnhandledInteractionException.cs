@@ -76,7 +76,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the interaction that was not handled.
         /// </summary>
-        public Interaction<TInput, TOutput> Interaction => _interaction;
+        public Interaction<TInput, TOutput>? Interaction => _interaction;
 
         /// <summary>
         /// Gets the input for the interaction that was not handled.

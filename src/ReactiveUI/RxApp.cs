@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
@@ -31,6 +32,7 @@ namespace ReactiveUI
     /// This class also initializes a whole bunch of other stuff, including the IoC container,
     /// logging and error handling.
     /// </remarks>
+    [SuppressMessage("Usage", "CS8618: Non-nullable property is uninitialized", Justification = "Threading magic.")]
     public static class RxApp
     {
 #if ANDROID || IOS
@@ -226,7 +228,7 @@ namespace ReactiveUI
                 if (ModeDetector.InUnitTestRunner())
                 {
                     _unitTestSuspensionHost = value;
-                    _suspensionHost = _suspensionHost ?? value;
+                    _suspensionHost ??= value;
                 }
                 else
                 {

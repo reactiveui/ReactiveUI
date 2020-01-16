@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -19,6 +20,7 @@ namespace ReactiveUI
     /// RoutingState manages the ViewModel Stack and allows ViewModels to
     /// navigate to other ViewModels.
     /// </summary>
+    [SuppressMessage("Usage", "CS8618: Non-nullable property is uninitialized", Justification = "Searialization restores values.")]
     [DataContract]
     public class RoutingState : ReactiveObject
     {

@@ -175,7 +175,7 @@ namespace ReactiveUI
             return s.ThrownExceptions;
         }
 
-        internal static void RaisingPropertyChanging<TSender>(this TSender reactiveObject, string propertyName)
+        internal static void RaisingPropertyChanging<TSender>(this TSender reactiveObject, string? propertyName)
             where TSender : IReactiveObject
         {
             if (propertyName == null)
@@ -188,7 +188,7 @@ namespace ReactiveUI
             s.RaisePropertyChanging(propertyName);
         }
 
-        internal static void RaisingPropertyChanged<TSender>(this TSender reactiveObject, string propertyName)
+        internal static void RaisingPropertyChanged<TSender>(this TSender reactiveObject, string? propertyName)
             where TSender : IReactiveObject
         {
             if (propertyName == null)

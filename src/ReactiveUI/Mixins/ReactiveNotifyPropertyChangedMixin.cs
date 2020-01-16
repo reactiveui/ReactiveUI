@@ -19,12 +19,12 @@ namespace ReactiveUI
     /// </summary>
     public static class ReactiveNotifyPropertyChangedMixin
     {
-        private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty> notifyFactoryCache =
-            new MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty>(
+        private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> notifyFactoryCache =
+            new MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>(
                 (t, _) =>
                 {
                     return Locator.Current.GetServices<ICreatesObservableForProperty>()
-                                  .Aggregate((score: 0, binding: (ICreatesObservableForProperty)null), (acc, x) =>
+                                  .Aggregate((score: 0, binding: (ICreatesObservableForProperty?)null), (acc, x) =>
                                   {
                                       int score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
                                       return score > acc.score ? (score, x) : acc;
