@@ -7,12 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor
@@ -37,7 +35,7 @@ namespace ReactiveUI.Blazor
         /// </summary>
         public ReactiveComponentBase()
         {
-            this.WhenAnyValue(x => x.ViewModel).Subscribe(_ => StateHasChanged());
+            this.WhenAnyValue(x => x.ViewModel).Where(x => x != null).Subscribe(_ => StateHasChanged());
             var viewModelsPropertyChanged = this.WhenAnyValue(x => x.ViewModel)
                 .Where(x => x != null)
                 .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
