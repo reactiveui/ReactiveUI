@@ -33,21 +33,21 @@ namespace ReactiveUI.Blazor
         /// </summary>
         public ReactiveLayoutComponentBase()
         {
-            this.WhenAnyValue(x => x.ViewModel).Subscribe(_ => StateHasChanged());
-            var viewModelsPropertyChanged = this.WhenAnyValue(x => x.ViewModel)
-                .Where(x => x != null)
-                .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+            var viewModelsChangedObservable = this.WhenAnyValue(x => x.ViewModel)
+            .Where(x => x != null)
+            .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
+                eventHandler =>
+                {
+                    void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
 
-                        return Handler;
-                    },
-                    eh => x.PropertyChanged += eh,
-                    eh => x.PropertyChanged -= eh))
-                .Switch();
+                    return Handler;
+                },
+                eh => x.PropertyChanged += eh,
+                eh => x.PropertyChanged -= eh))
+            .Switch();
 
-            viewModelsPropertyChanged.Do(_ => StateHasChanged()).Subscribe();
+            viewModelsChangedObservable.Do(_ => StateHasChanged()).Subscribe();
+            this.WhenAnyValue(x => x.ViewModel).Where(x => x != null).Subscribe(_ => StateHasChanged());
         }
 
         /// <inheritdoc />

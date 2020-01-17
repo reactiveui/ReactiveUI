@@ -7,12 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor
@@ -38,7 +36,7 @@ namespace ReactiveUI.Blazor
         public ReactiveComponentBase()
         {
             var viewModelsChangedObservable = this.WhenAnyValue(x => x.ViewModel)
-            .WhereNotNull()
+            .Where(x => x != null)
             .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
                 eventHandler =>
                 {
@@ -51,7 +49,7 @@ namespace ReactiveUI.Blazor
             .Switch();
 
             viewModelsChangedObservable.Do(_ => StateHasChanged()).Subscribe();
-            this.WhenAnyValue(x => x.ViewModel).WhereNotNull().Subscribe(_ => StateHasChanged());
+            this.WhenAnyValue(x => x.ViewModel).Where(x => x != null).Subscribe(_ => StateHasChanged());
         }
 
         /// <inheritdoc />
