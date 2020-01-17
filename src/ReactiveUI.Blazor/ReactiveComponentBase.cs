@@ -37,7 +37,7 @@ namespace ReactiveUI.Blazor
         /// </summary>
         public ReactiveComponentBase()
         {
-            var propertyChangedObservable = this.WhenAnyValue(x => x.ViewModel)
+            var viewModelsChangedObservable = this.WhenAnyValue(x => x.ViewModel)
             .WhereNotNull()
             .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
                 eventHandler =>
@@ -50,8 +50,7 @@ namespace ReactiveUI.Blazor
                 eh => x.PropertyChanged -= eh))
             .Switch();
 
-            propertyChangedObservable.Do(_ => StateHasChanged()).Subscribe();
-
+            viewModelsChangedObservable.Do(_ => StateHasChanged()).Subscribe();
             this.WhenAnyValue(x => x.ViewModel).WhereNotNull().Subscribe(_ => StateHasChanged());
         }
 
