@@ -17,16 +17,24 @@
 					<Default>int</Default>
 				</Literal>
 				<Literal>
-					<ID>property</ID>
-					<ToolTip>Property name</ToolTip>
-					<Default>MyProperty</Default>
+                    <ID>fieldName</ID>
+					<ToolTip>Name of backing field</ToolTip>
+					<Default>myField</Default>
+				</Literal>
+				<Literal>
+				  <ID>propertyName</ID>
+				  <ToolTip>Name of property</ToolTip>
+				  <Default>MyProperty</Default>
 				</Literal>
 			</Declarations>
-			<Code Language="csharp"><![CDATA[private ObservableAsPropertyHelper<$type$> _$property$;
-			public $type$ $property$ 
-			{ 
-				get {return _$property$.Value;}
-			}$end$]]>
+			<Imports>
+				<Import>
+					<Namespace>ReactiveUI</Namespace>
+				</Import>
+			</Imports>
+			<Code Language="csharp">
+				<![CDATA[private ObservableAsPropertyHelper<$type$> $fieldName$;
+				public $type$ $propertyName$ => $fieldName$.Value;$end$]]>
 			</Code>
 		</Snippet>
 	</CodeSnippet>
