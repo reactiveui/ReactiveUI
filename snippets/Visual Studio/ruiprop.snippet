@@ -24,11 +24,17 @@
         <Literal Editable="true">
           <ID>propertyName</ID>
           <ToolTip>Name of property</ToolTip>
-          <Default>myProperty</Default>
+          <Default>MyProperty</Default>
         </Literal>
       </Declarations>
-      <Code Language="csharp" Delimiter="$"><![CDATA[public $type$ $propertyName$ { get => $fieldName$; set => this.RaiseAndSetIfChanged(ref $fieldName$, value); }$end$]]>
-			</Code>
+      <Code Language="csharp" Delimiter="$">
+        <![CDATA[private $type$ $fieldName$;
+		public $type$ $propertyName$ 
+        { 
+            get => $fieldName$; 
+            set => this.RaiseAndSetIfChanged(ref $fieldName$, value); 
+        }$end$]]>
+      </Code>
     </Snippet>
   </CodeSnippet>
 </CodeSnippets>

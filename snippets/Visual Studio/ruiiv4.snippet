@@ -20,18 +20,18 @@
       </Declarations>
       <Code Language="csharp">
         <![CDATA[public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof($classname$Model), typeof($classname$), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(ViewModel), typeof($classname$Model), typeof($classname$), new PropertyMetadata(default($classname$Model)));
 
         public $classname$Model ViewModel
         {
-            get { return ($classname$Model)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+            get => ($classname$Model)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
         object IViewFor.ViewModel
         {
-            get { return ViewModel; }
-            set { ViewModel = ($classname$Model)value; }
+            get => ViewModel;
+            set => ViewModel = ($classname$Model)value;
         }$end$]]>
       </Code>
     </Snippet>

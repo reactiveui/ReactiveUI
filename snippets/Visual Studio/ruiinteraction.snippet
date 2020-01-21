@@ -21,6 +21,11 @@
 					<Default>Unit</Default>
 					<ToolTip>Interaction's output type</ToolTip>
 				</Literal>
+				<Literal>
+					<ID>interaction</ID>
+					<ToolTip>Interaction name</ToolTip>
+					<Default>DoSomethingInteraction</Default>
+				</Literal>
 			</Declarations>
 			<Imports>
 				<Import>
@@ -31,7 +36,7 @@
 				</Import>
 			</Imports>
 			<Code Language="CSharp">
-				<![CDATA[public Interaction<$TInput$, $TOutput$> DoSomethingInteraction => new Interaction<$TInput$, $TOutput$>();$end$]]>
+				<![CDATA[public Interaction<$TInput$, $TOutput$> $interaction$ { get; } = new Interaction<$TInput$, $TOutput$>();$end$]]>
 			</Code>
 		</Snippet>
 	</CodeSnippet>
