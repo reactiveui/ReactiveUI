@@ -135,6 +135,7 @@ namespace ReactiveUI.XamForms
                         popToRootPending = false;
                         return page;
                     })
+                    .Concat()
                     .Subscribe()
                     .DisposeWith(disposable);
 
