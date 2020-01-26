@@ -73,7 +73,7 @@ namespace ReactiveUI.XamForms
                     })
                     .Where(_ => !userInstigated)
                     .Where(x => x.Delta > 0)
-                    .SelectMany(
+                    .Select(
                         async x =>
                         {
                             // XF doesn't provide a means of navigating back more than one screen at a time apart from navigating right back to the root page
@@ -107,6 +107,7 @@ namespace ReactiveUI.XamForms
 
                             return Unit.Default;
                         })
+                    .Concat()
                     .Subscribe()
                     .DisposeWith(disposable);
 
@@ -135,7 +136,6 @@ namespace ReactiveUI.XamForms
                         popToRootPending = false;
                         return page;
                     })
-                    .Concat()
                     .Subscribe()
                     .DisposeWith(disposable);
 
