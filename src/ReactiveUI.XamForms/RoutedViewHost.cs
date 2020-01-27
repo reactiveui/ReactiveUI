@@ -6,13 +6,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using Splat;
 using Xamarin.Forms;
 
-#pragma warning disable RCS1090 // Call 'ConfigureAwait(false)'.
 namespace ReactiveUI.XamForms
 {
     /// <summary>
@@ -20,7 +20,8 @@ namespace ReactiveUI.XamForms
     /// </summary>
     /// <seealso cref="Xamarin.Forms.NavigationPage" />
     /// <seealso cref="ReactiveUI.IActivatableView" />
-    public class RoutedViewHost : NavigationPage, IActivatableView
+    [SuppressMessage("Readability", "RCS1090: Call 'ConfigureAwait(false)", Justification = "This class interacts with the UI thread.")]
+    public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         /// <summary>
         /// The router bindable property.
@@ -38,13 +39,13 @@ namespace ReactiveUI.XamForms
         /// <exception cref="Exception">You *must* register an IScreen class representing your App's main Screen.</exception>
         public RoutedViewHost()
         {
-            this.WhenActivated(new Action<Action<IDisposable>>(d =>
+            this.WhenActivated(disposable =>
             {
                 bool currentlyPopping = false;
                 bool popToRootPending = false;
                 bool userInstigated = false;
 
-                d(this.WhenAnyObservable(x => x.Router.NavigationChanged)
+                this.WhenAnyObservable(x => x.Router.NavigationChanged)
                     .Where(_ => Router.NavigationStack.Count == 0)
                     .Select(x =>
                     {
@@ -54,21 +55,25 @@ namespace ReactiveUI.XamForms
                         popToRootPending = true;
                         return x;
                     })
-                    .Subscribe());
+                    .Subscribe()
+                    .DisposeWith(disposable);
 
-                var previousCount =
-                    this.WhenAnyObservable(x => x.Router.NavigationChanged)
-                        .CountChanged()
-                        .ObserveOn(Router.Scheduler)
-                        .Select(_ => Router.NavigationStack.Count)
-                        .StartWith(Router.NavigationStack.Count);
+                Router.NavigationChanged
+                    .CountChanged()
+                    .Select(_ => Router.NavigationStack.Count)
+                    .StartWith(Router.NavigationStack.Count)
+                    .Buffer(2, 1)
+                    .Select(counts => new
+                    {
+                        Delta = counts[0] - counts[1],
+                        Current = counts[1],
 
-                var currentCount = previousCount.Skip(1);
-
-                d(Observable.Zip(previousCount, currentCount, (previous, current) => new { Delta = previous - current, Current = current })
+                        // cache current viewmodel as it might change if some other Navigation command is executed midway
+                        CurrentViewModel = Router.GetCurrentViewModel()
+                    })
                     .Where(_ => !userInstigated)
                     .Where(x => x.Delta > 0)
-                    .SelectMany(
+                    .Select(
                         async x =>
                         {
                             // XF doesn't provide a means of navigating back more than one screen at a time apart from navigating right back to the root page
@@ -94,14 +99,20 @@ namespace ReactiveUI.XamForms
                             finally
                             {
                                 currentlyPopping = false;
-                                ((IViewFor)CurrentPage).ViewModel = Router.GetCurrentViewModel();
+                                if (CurrentPage is IViewFor page && x.CurrentViewModel != null)
+                                {
+                                    page.ViewModel = x.CurrentViewModel;
+                                }
                             }
 
                             return Unit.Default;
                         })
-                    .Subscribe());
+                    .Concat()
+                    .Subscribe()
+                    .DisposeWith(disposable);
 
-                d(this.WhenAnyObservable(x => x.Router.Navigate)
+                Router
+                    .Navigate
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
                     .SelectMany(async page =>
                     {
@@ -125,20 +136,21 @@ namespace ReactiveUI.XamForms
                         popToRootPending = false;
                         return page;
                     })
-                    .Subscribe());
+                    .Subscribe()
+                    .DisposeWith(disposable);
 
                 var poppingEvent = Observable.FromEvent<EventHandler<NavigationEventArgs>, Unit>(
-                        eventHandler =>
-                        {
-                            void Handler(object sender, NavigationEventArgs e) => eventHandler(Unit.Default);
-                            return Handler;
-                        },
-                        x => Popped += x,
-                        x => Popped -= x);
+                    eventHandler =>
+                    {
+                        void Handler(object sender, NavigationEventArgs e) => eventHandler(Unit.Default);
+                        return Handler;
+                    },
+                    x => Popped += x,
+                    x => Popped -= x);
 
                 // NB: Catch when the user hit back as opposed to the application
                 // requesting Back via NavigateBack
-                d(poppingEvent
+                poppingEvent
                     .Where(_ => !currentlyPopping && Router != null)
                     .Subscribe(_ =>
                     {
@@ -146,19 +158,23 @@ namespace ReactiveUI.XamForms
 
                         try
                         {
-                            if (Router.NavigationStack.Count > 1)
-                            {
-                                Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
-                            }
+                            Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
                         }
                         finally
                         {
                             userInstigated = false;
                         }
 
-                        ((IViewFor)CurrentPage).ViewModel = Router.GetCurrentViewModel();
-                    }));
-            }));
+                        var vm = Router.GetCurrentViewModel();
+                        if (CurrentPage is IViewFor page && vm != null)
+                        {
+                            // don't replace view model if vm is null
+                            page.ViewModel = vm;
+                        }
+                    })
+                    .DisposeWith(disposable);
+            });
+
             var screen = Locator.Current.GetService<IScreen>();
             if (screen == null)
             {
@@ -169,8 +185,8 @@ namespace ReactiveUI.XamForms
 
             this.WhenAnyValue(x => x.Router)
                 .SelectMany(router =>
-                    router
-                        .NavigationStack
+                {
+                    return router.NavigationStack
                         .ToObservable()
                         .Select(x => (Page)ViewLocator.Current.ResolveView(x))
                         .SelectMany(x => PushAsync(x).ToObservable())
@@ -184,7 +200,8 @@ namespace ReactiveUI.XamForms
 
                             ((IViewFor)CurrentPage).ViewModel = vm;
                             CurrentPage.Title = vm.UrlPathSegment;
-                        }))
+                        });
+                })
                 .Subscribe();
         }
 
@@ -227,4 +244,3 @@ namespace ReactiveUI.XamForms
         }
     }
 }
-#pragma warning restore RCS1090 // Call 'ConfigureAwait(false)'.
