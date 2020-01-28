@@ -29,27 +29,6 @@ namespace ReactiveUI.Blazor
 
         private bool _disposedValue; // To detect redundant calls
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveLayoutComponentBase{T}"/> class.
-        /// </summary>
-        public ReactiveLayoutComponentBase()
-        {
-            var viewModelsPropertyChanged = this.WhenAnyValue(x => x.ViewModel)
-                .Where(x => x != null)
-                .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
-
-                        return Handler;
-                    },
-                    eh => x.PropertyChanged += eh,
-                    eh => x.PropertyChanged -= eh))
-                .Switch();
-
-            viewModelsPropertyChanged.Do(_ => InvokeAsync(StateHasChanged)).Subscribe();
-        }
-
         /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -102,8 +81,25 @@ namespace ReactiveUI.Blazor
         {
             if (isFirstRender)
             {
-                this.WhenAnyValue(x => x.ViewModel).Where(x => x != null).Subscribe(_ => InvokeAsync(StateHasChanged));
+                this.WhenAnyValue(x => x.ViewModel)
+                    .Skip(1)
+                    .Where(x => x != null)
+                    .Subscribe(_ => InvokeAsync(StateHasChanged));
             }
+
+            this.WhenAnyValue(x => x.ViewModel)
+                .Where(x => x != null)
+                .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
+                    eventHandler =>
+                    {
+                        void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                        return Handler;
+                    },
+                    eh => x.PropertyChanged += eh,
+                    eh => x.PropertyChanged -= eh))
+                .Switch()
+                .Do(_ => InvokeAsync(StateHasChanged))
+                .Subscribe();
         }
 
         /// <summary>
