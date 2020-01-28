@@ -11,6 +11,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor
@@ -33,7 +34,6 @@ namespace ReactiveUI.Blazor
         /// </summary>
         public ReactiveLayoutComponentBase()
         {
-            this.WhenAnyValue(x => x.ViewModel).Where(x => x != null).Subscribe(_ => InvokeAsync(StateHasChanged));
             var viewModelsPropertyChanged = this.WhenAnyValue(x => x.ViewModel)
                 .Where(x => x != null)
                 .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
@@ -95,6 +95,15 @@ namespace ReactiveUI.Blazor
         {
             _initSubject.OnNext(Unit.Default);
             base.OnInitialized();
+        }
+
+        /// <inheritdoc />
+        protected override void OnAfterRender(bool isFirstRender)
+        {
+            if (isFirstRender)
+            {
+                this.WhenAnyValue(x => x.ViewModel).Where(x => x != null).Subscribe(_ => InvokeAsync(StateHasChanged));
+            }
         }
 
         /// <summary>
