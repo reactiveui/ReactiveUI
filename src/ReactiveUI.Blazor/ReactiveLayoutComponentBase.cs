@@ -98,7 +98,8 @@ namespace ReactiveUI.Blazor
                     eh => x.PropertyChanged += eh,
                     eh => x.PropertyChanged -= eh))
                 .Switch()
-                .Do(_ => InvokeAsync(StateHasChanged)).Subscribe();
+                .Do(_ => InvokeAsync(StateHasChanged))
+                .Subscribe();
         }
 
         /// <summary>
