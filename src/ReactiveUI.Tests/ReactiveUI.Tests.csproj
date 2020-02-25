@@ -1,8 +1,8 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>    
-    <TargetFrameworks>netstandard2.0;netcoreapp2.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461</TargetFrameworks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +23,7 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) ">
+    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.1')) AND '$(OS)' == 'Windows_NT'">
       <PropertyGroup>
           <UseWpf>true</UseWpf>
           <UseWindowsForms>true</UseWindowsForms>

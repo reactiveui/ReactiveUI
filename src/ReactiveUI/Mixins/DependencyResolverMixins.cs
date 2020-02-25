@@ -34,7 +34,8 @@ namespace ReactiveUI
                 "ReactiveUI.Winforms",
                 "ReactiveUI.Wpf",
                 "ReactiveUI.Uno",
-                "ReactiveUI.Blazor"
+                "ReactiveUI.Blazor",
+                "ReactiveUI.Drawing"
             };
 
             // Set up the built-in registration
@@ -45,8 +46,10 @@ namespace ReactiveUI
 
             var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", string.Empty));
 
-            extraNs
-                .ForEach(ns => ProcessRegistrationForNamespace(ns, assemblyName, resolver));
+            foreach (var ns in extraNs)
+            {
+                ProcessRegistrationForNamespace(ns, assemblyName, resolver);
+            }
         }
 
         /// <summary>

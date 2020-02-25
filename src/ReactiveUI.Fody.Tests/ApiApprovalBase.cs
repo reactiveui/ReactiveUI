@@ -41,7 +41,7 @@ namespace ReactiveUI.Fody.Tests
                 approvedPublicApi = File.ReadAllText(approvedFileName);
             }
 
-            var receivedPublicApi = Filter(ApiGenerator.GeneratePublicApi(assembly));
+            var receivedPublicApi = Filter(ApiGenerator.GeneratePublicApi(assembly, new ApiGeneratorOptions()));
 
             if (!string.Equals(receivedPublicApi, approvedPublicApi, StringComparison.InvariantCulture))
             {

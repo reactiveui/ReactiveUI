@@ -1,6 +1,6 @@
-[assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
-[assembly: System.Windows.Markup.XmlnsDefinitionAttribute("http://reactiveui.net", "ReactiveUI")]
-[assembly: System.Windows.ThemeInfoAttribute(System.Windows.ResourceDictionaryLocation.None, System.Windows.ResourceDictionaryLocation.SourceAssembly)]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
+[assembly: System.Windows.Markup.XmlnsDefinition("http://reactiveui.net", "ReactiveUI")]
+[assembly: System.Windows.ThemeInfo(System.Windows.ResourceDictionaryLocation.None, System.Windows.ResourceDictionaryLocation.SourceAssembly)]
 namespace ReactiveUI
 {
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher
@@ -20,7 +20,7 @@ namespace ReactiveUI
         public AutoSuspendHelper(System.Windows.Application app) { }
         public System.TimeSpan IdleTimeout { get; set; }
     }
-    [System.FlagsAttribute()]
+    [System.Flags]
     public enum BooleanToVisibilityHint
     {
         None = 0,
@@ -36,8 +36,8 @@ namespace ReactiveUI
     public class DependencyObjectObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
         public DependencyObjectObservableForProperty() { }
-        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = False) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = False, bool suppressWarnings = False) { }
+        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
     public class PlatformOperations
     {
@@ -79,10 +79,10 @@ namespace ReactiveUI
         public System.IObservable<string> ViewContractObservable { get; set; }
         public ReactiveUI.IViewLocator ViewLocator { get; set; }
     }
-    [System.Windows.TemplatePartAttribute(Name="PART_Container", Type=typeof(System.Windows.FrameworkElement))]
-    [System.Windows.TemplatePartAttribute(Name="PART_CurrentContentPresentationSite", Type=typeof(System.Windows.Controls.ContentPresenter))]
-    [System.Windows.TemplatePartAttribute(Name="PART_PreviousContentPresentationSite", Type=typeof(System.Windows.Controls.ContentPresenter))]
-    [System.Windows.TemplateVisualStateAttribute(GroupName="PresentationStates", Name="Normal")]
+    [System.Windows.TemplatePart(Name="PART_Container", Type=typeof(System.Windows.FrameworkElement))]
+    [System.Windows.TemplatePart(Name="PART_CurrentContentPresentationSite", Type=typeof(System.Windows.Controls.ContentPresenter))]
+    [System.Windows.TemplatePart(Name="PART_PreviousContentPresentationSite", Type=typeof(System.Windows.Controls.ContentPresenter))]
+    [System.Windows.TemplateVisualState(GroupName="PresentationStates", Name="Normal")]
     public class TransitioningContentControl : System.Windows.Controls.ContentControl
     {
         public static readonly System.Windows.DependencyProperty TransitionPartProperty;

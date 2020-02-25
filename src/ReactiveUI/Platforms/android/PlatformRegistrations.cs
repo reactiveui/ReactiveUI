@@ -30,7 +30,6 @@ namespace ReactiveUI
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
             registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
-            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
         }
     }
 }
