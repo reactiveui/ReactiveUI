@@ -32,7 +32,6 @@ namespace ReactiveUI
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
             registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
-            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
         }
     }
 }

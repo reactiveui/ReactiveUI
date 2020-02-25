@@ -96,6 +96,11 @@ namespace ReactiveUI
         public IViewFor ResolveView<T>(T viewModel, string contract = null)
             where T : class
         {
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
             var view = AttemptViewResolutionFor(viewModel.GetType(), contract);
 
             if (view != null)

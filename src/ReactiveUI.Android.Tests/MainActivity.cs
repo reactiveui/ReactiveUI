@@ -29,7 +29,6 @@ namespace Splat.Android.Tests
         /// <inheritdoc/>
         protected override void OnCreate(Bundle bundle)
         {
-            Locator.CurrentMutable.RegisterPlatformBitmapLoader();
             AddExecutionAssembly(typeof(ExtensibilityPointFactory).Assembly);
 
             AddTestAssembly(typeof(ReactiveUI.Tests.RxAppTest).Assembly);

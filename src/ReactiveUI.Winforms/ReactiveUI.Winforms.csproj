@@ -16,12 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Splat.Drawing" Version="9.*" />
+      <PackageReference Include="System.Reactive" Version="4.3.2" />
   </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="System.Reactive" Version="4.3.2" />
-    </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>

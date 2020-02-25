@@ -14,10 +14,6 @@
     <DefineConstants>HAS_UNO;WASM</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Splat.Drawing" Version="9.*" />
-  </ItemGroup>
-
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('uap')) ">
     <PackageReference Include="Uno.UI" Version="2.*" />
   </ItemGroup>

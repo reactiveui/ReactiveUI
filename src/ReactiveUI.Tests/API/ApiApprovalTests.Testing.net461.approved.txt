@@ -1,28 +1,28 @@
-[assembly: System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
 namespace ReactiveUI.Testing
 {
     public interface IBuilder { }
-    public class static IBuilderExtensions
+    public static class IBuilderExtensions
     {
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref TField field, TField value)
-            where TBuilder : ReactiveUI.Testing.IBuilder { }
         public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField> field, System.Collections.Generic.IEnumerable<TField> values)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
         public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField> field, TField value)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref TField field, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair) { }
         public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
         public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, TKey key, TField value)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair) { }
     }
-    public class static MessageBusExtensions
+    public static class MessageBusExtensions
     {
-        public static TRet With<TRet>(this ReactiveUI.IMessageBus messageBus, System.Func<TRet> block) { }
         public static void With(this ReactiveUI.IMessageBus messageBus, System.Action block) { }
+        public static TRet With<TRet>(this ReactiveUI.IMessageBus messageBus, System.Func<TRet> block) { }
         public static System.IDisposable WithMessageBus(this ReactiveUI.IMessageBus messageBus) { }
     }
-    public class static SchedulerExtensions
+    public static class SchedulerExtensions
     {
         public static void AdvanceByMs(this Microsoft.Reactive.Testing.TestScheduler sched, double milliseconds) { }
         public static void AdvanceToMs(this Microsoft.Reactive.Testing.TestScheduler sched, double milliseconds) { }
@@ -30,13 +30,13 @@ namespace ReactiveUI.Testing
         public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnCompletedAt<T>(this Microsoft.Reactive.Testing.TestScheduler sched, double milliseconds) { }
         public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnErrorAt<T>(this Microsoft.Reactive.Testing.TestScheduler sched, double milliseconds, System.Exception ex) { }
         public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnNextAt<T>(this Microsoft.Reactive.Testing.TestScheduler sched, double milliseconds, T value) { }
-        public static TRet With<T, TRet>(this T sched, System.Func<T, TRet> block)
-            where T : System.Reactive.Concurrency.IScheduler { }
         public static void With<T>(this T sched, System.Action<T> block)
             where T : System.Reactive.Concurrency.IScheduler { }
-        public static System.Threading.Tasks.Task<TRet> WithAsync<T, TRet>(this T sched, System.Func<T, System.Threading.Tasks.Task<TRet>> block)
+        public static TRet With<T, TRet>(this T sched, System.Func<T, TRet> block)
             where T : System.Reactive.Concurrency.IScheduler { }
         public static System.Threading.Tasks.Task WithAsync<T>(this T sched, System.Func<T, System.Threading.Tasks.Task> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static System.Threading.Tasks.Task<TRet> WithAsync<T, TRet>(this T sched, System.Func<T, System.Threading.Tasks.Task<TRet>> block)
             where T : System.Reactive.Concurrency.IScheduler { }
         public static System.IDisposable WithScheduler(System.Reactive.Concurrency.IScheduler sched) { }
     }

@@ -14,11 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Splat.Drawing" Version="9.*" />
-  </ItemGroup>
-
-  <ItemGroup>
-      <PackageReference Include="System.Reactive" Version="4.3.2" />
+    <PackageReference Include="System.Reactive" Version="4.3.2" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />

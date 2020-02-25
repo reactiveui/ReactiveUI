@@ -49,6 +49,11 @@ namespace ReactiveUI.Fody.Analyzer
         /// <param name="context">The Roslyn Context.</param>
         public override void Initialize(AnalysisContext context)
         {
+            if (context is null)
+            {
+                throw new System.ArgumentNullException(nameof(context));
+            }
+
             context.EnableConcurrentExecution();
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 
