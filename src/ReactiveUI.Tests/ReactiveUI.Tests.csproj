@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.0')) AND '$(OS)' == 'Windows_NT'">
+    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.1')) AND '$(OS)' == 'Windows_NT'">
       <PropertyGroup>
           <UseWpf>true</UseWpf>
           <UseWindowsForms>true</UseWindowsForms>
