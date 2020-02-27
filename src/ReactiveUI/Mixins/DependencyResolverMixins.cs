@@ -75,8 +75,8 @@ namespace ReactiveUI
             foreach (var ti in assembly.DefinedTypes
                 .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)) && !ti.IsAbstract))
             {
-                // grab the first _implemented_ interface that also implements IViewFor, this should be the expected IViewFor<>
-                var ivf = ti.ImplementedInterfaces.FirstOrDefault(t => t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));
+                // grab the first _implemented_ interface that matches IViewFor<T>
+                var ivf = ti.ImplementedInterfaces.FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IViewFor<>));
 
                 // need to check for null because some classes may implement IViewFor but not IViewFor<T> - we don't care about those
                 if (ivf != null)
