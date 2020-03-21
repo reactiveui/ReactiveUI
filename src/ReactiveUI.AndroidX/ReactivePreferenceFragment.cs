@@ -9,10 +9,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Android.Preferences;
 using Android.Runtime;
+using AndroidX.Preference;
 
-namespace ReactiveUI
+namespace ReactiveUI.AndroidX
 {
     /// <summary>
     /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
@@ -20,8 +20,7 @@ namespace ReactiveUI
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-    [Obsolete("This class was deprecated in API level 28. Use the ReactivePreferenceFragment in ReactiveUI.AndroidX (recommended) or ReactiveUI.AndroidSupport for consistent behavior across all devices and access to Lifecycle.", false)]
-    public class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment, IViewFor<TViewModel>, ICanActivate
+    public abstract class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
         private TViewModel _viewModel;
@@ -63,8 +62,7 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-    [Obsolete("This class was deprecated in API level 28. Use the ReactivePreferenceFragment in ReactiveUI.AndroidX (recommended) or ReactiveUI.AndroidSupport for consistent behavior across all devices and access to Lifecycle.", false)]
-    public class ReactivePreferenceFragment : PreferenceFragment, IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
+    public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat, IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();

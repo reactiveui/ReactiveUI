@@ -6,14 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Threading;
 using Android.Support.V7.Widget;
 using Android.Views;
 using DynamicData;
@@ -33,7 +28,7 @@ namespace ReactiveUI.AndroidSupport
     {
         private readonly ISourceList<TViewModel> _list;
 
-        private IDisposable _inner;
+        private readonly IDisposable _inner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel}"/> class.

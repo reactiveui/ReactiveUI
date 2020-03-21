@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reactive.Disposables;
-using System.Threading;
 using Android.Views;
 using AndroidX.ViewPager.Widget;
 using DynamicData;
@@ -31,7 +29,7 @@ namespace ReactiveUI.AndroidX
         private readonly SourceList<TViewModel> _list;
         private readonly Func<TViewModel, ViewGroup, View> _viewCreator;
         private readonly Action<TViewModel, View> _viewInitializer;
-        private IDisposable _inner;
+        private readonly IDisposable _inner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.
