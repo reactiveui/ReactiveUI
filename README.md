@@ -372,7 +372,7 @@ The following have been core team members in the past.
       <td align="center" valign="top">
         <img width="120" height="100" src="https://github.com/onovotny.png?s=150">
         <br>
-        <a href="https://github.com/onovotny">Oren Novotny</a>
+        <a href="https://github.com/clairernovotny">Claire Novotny</a>
         <p>New York, USA</p>
       </td>
      </tr>
