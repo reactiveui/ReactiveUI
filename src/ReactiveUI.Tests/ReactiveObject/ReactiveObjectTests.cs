@@ -55,44 +55,62 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void DeferringNotificationsDontShowUpUntilUndeferred()
+        public void DeferredNotificationsDontShowUpUntilUndeferred()
         {
             var fixture = new TestFixture();
-            fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
+            fixture.Changing.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changing).Subscribe();
+            fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changed).Subscribe();
 
-            Assert.Equal(0, output.Count);
+            Assert.Equal(0, changing.Count);
+            Assert.Equal(0, changed.Count);
             fixture.NullableInt = 4;
-            Assert.Equal(1, output.Count);
+            Assert.Equal(1, changing.Count);
+            Assert.Equal(1, changed.Count);
 
             var stopDelaying = fixture.DelayChangeNotifications();
 
             fixture.NullableInt = 5;
-            Assert.Equal(1, output.Count);
+            Assert.Equal(1, changing.Count);
+            Assert.Equal(1, changed.Count);
 
             fixture.IsNotNullString = "Bar";
-            Assert.Equal(1, output.Count);
+            Assert.Equal(1, changing.Count);
+            Assert.Equal(1, changed.Count);
 
             fixture.NullableInt = 6;
-            Assert.Equal(1, output.Count);
+            Assert.Equal(1, changing.Count);
+            Assert.Equal(1, changed.Count);
 
             fixture.IsNotNullString = "Baz";
-            Assert.Equal(1, output.Count);
+            Assert.Equal(1, changing.Count);
+            Assert.Equal(1, changed.Count);
 
             var stopDelayingMore = fixture.DelayChangeNotifications();
 
             fixture.IsNotNullString = "Bamf";
-            Assert.Equal(1, output.Count);
+            Assert.Equal(1, changing.Count);
+            Assert.Equal(1, changed.Count);
 
             stopDelaying.Dispose();
 
             fixture.IsNotNullString = "Blargh";
-            Assert.Equal(1, output.Count);
+            Assert.Equal(1, changing.Count);
+            Assert.Equal(1, changed.Count);
 
             // NB: Because we debounce queued up notifications, we should only
             // see a notification from the latest NullableInt and the latest
             // IsNotNullableString
             stopDelayingMore.Dispose();
-            Assert.Equal(3, output.Count);
+
+            Assert.Equal(3, changing.Count);
+            Assert.Equal("NullableInt", changing[0].PropertyName);
+            Assert.Equal("NullableInt", changing[1].PropertyName);
+            Assert.Equal("IsNotNullString", changing[2].PropertyName);
+
+            Assert.Equal(3, changed.Count);
+            Assert.Equal("NullableInt", changed[0].PropertyName);
+            Assert.Equal("NullableInt", changed[1].PropertyName);
+            Assert.Equal("IsNotNullString", changed[2].PropertyName);
         }
 
         [Fact]
