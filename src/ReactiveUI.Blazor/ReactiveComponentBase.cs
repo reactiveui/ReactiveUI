@@ -85,6 +85,7 @@ namespace ReactiveUI.Blazor
         {
             if (firstRender)
             {
+                // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
                 var viewModelChanged =
                     this.WhenAnyValue(x => x.ViewModel)
                         .Publish()
