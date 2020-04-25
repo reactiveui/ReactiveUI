@@ -76,30 +76,42 @@ namespace ReactiveUI.Blazor
         /// <inheritdoc />
         protected override void OnInitialized()
         {
-            var viewModelChanged = this.WhenAnyValue(x => x.ViewModel);
-
-            viewModelChanged
-                .Skip(1)
-                .Where(x => x != null)
-                .Subscribe(_ => InvokeAsync(StateHasChanged));
-
-            viewModelChanged
-                .Where(x => x != null)
-                .Select(x =>
-                    Observable
-                        .FromEvent<PropertyChangedEventHandler, Unit>(
-                            eventHandler =>
-                            {
-                                void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
-                                return Handler;
-                            },
-                            eh => x.PropertyChanged += eh,
-                            eh => x.PropertyChanged -= eh))
-                .Switch()
-                .Subscribe(_ => InvokeAsync(StateHasChanged));
-
             _initSubject.OnNext(Unit.Default);
             base.OnInitialized();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (firstRender)
+            {
+                var viewModelChanged =
+                    this.WhenAnyValue(x => x.ViewModel)
+                        .Publish()
+                        .RefCount();
+
+                viewModelChanged
+                    .Skip(1)
+                    .Where(x => x != null)
+                    .Subscribe(_ => InvokeAsync(StateHasChanged));
+
+                viewModelChanged
+                    .Where(x => x != null)
+                    .Select(x =>
+                        Observable
+                            .FromEvent<PropertyChangedEventHandler, Unit>(
+                                eventHandler =>
+                                {
+                                    void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                                    return Handler;
+                                },
+                                eh => x.PropertyChanged += eh,
+                                eh => x.PropertyChanged -= eh))
+                    .Switch()
+                    .Subscribe(_ => InvokeAsync(StateHasChanged));
+            }
+
+            base.OnAfterRender(firstRender);
         }
 
         /// <summary>
