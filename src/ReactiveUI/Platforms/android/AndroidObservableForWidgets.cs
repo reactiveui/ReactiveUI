@@ -142,10 +142,14 @@ namespace ReactiveUI
                 {
                     var view = (TView)x;
 
-                    return Observable.FromEvent<EventHandler<TEventArgs>, TEventArgs>(
+                    return Observable.FromEvent<EventHandler<TEventArgs>, ObservedChange<object, object>>(
+                        eventHandler =>
+                        {
+                            void Handler(object sender, TEventArgs e) => eventHandler(new ObservedChange<object, object>(view, ex));
+                            return Handler;
+                        },
                         h => addHandler(view, h),
-                        h => removeHandler(view, h))
-                                     .Select(_ => new ObservedChange<object, object>(view, ex));
+                        h => removeHandler(view, h));
                 }
             };
         }
