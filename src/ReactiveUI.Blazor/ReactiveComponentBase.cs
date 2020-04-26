@@ -88,16 +88,14 @@ namespace ReactiveUI.Blazor
                 // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
                 var viewModelChanged =
                     this.WhenAnyValue(x => x.ViewModel)
+                        .Where(x => x != null)
                         .Publish()
                         .RefCount();
 
                 viewModelChanged
-                    .Skip(1)
-                    .Where(x => x != null)
                     .Subscribe(_ => InvokeAsync(StateHasChanged));
 
                 viewModelChanged
-                    .Where(x => x != null)
                     .Select(x =>
                         Observable
                             .FromEvent<PropertyChangedEventHandler, Unit>(
