@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
@@ -79,30 +80,37 @@ namespace ReactiveUI.Blazor
             base.OnInitialized();
         }
 
-        /// <inheritdoc />
-        protected override void OnAfterRender(bool isFirstRender)
+        /// <inheritdoc/>
+        protected override void OnAfterRender(bool firstRender)
         {
-            if (isFirstRender)
+            if (firstRender)
             {
-                this.WhenAnyValue(x => x.ViewModel)
-                    .Skip(1)
-                    .Where(x => x != null)
+                // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
+                var viewModelChanged =
+                    this.WhenAnyValue(x => x.ViewModel)
+                        .Where(x => x != null)
+                        .Publish()
+                        .RefCount();
+
+                viewModelChanged
+                    .Subscribe(_ => InvokeAsync(StateHasChanged));
+
+                viewModelChanged
+                    .Select(x =>
+                        Observable
+                            .FromEvent<PropertyChangedEventHandler, Unit>(
+                                eventHandler =>
+                                {
+                                    void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                                    return Handler;
+                                },
+                                eh => x.PropertyChanged += eh,
+                                eh => x.PropertyChanged -= eh))
+                    .Switch()
                     .Subscribe(_ => InvokeAsync(StateHasChanged));
             }
 
-            this.WhenAnyValue(x => x.ViewModel)
-                .Where(x => x != null)
-                .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
-                        return Handler;
-                    },
-                    eh => x.PropertyChanged += eh,
-                    eh => x.PropertyChanged -= eh))
-                .Switch()
-                .Do(_ => InvokeAsync(StateHasChanged))
-                .Subscribe();
+            base.OnAfterRender(firstRender);
         }
 
         /// <summary>
@@ -125,7 +133,6 @@ namespace ReactiveUI.Blazor
                 if (disposing)
                 {
                     _initSubject?.Dispose();
-
                     _deactivateSubject.OnNext(Unit.Default);
                 }
 
