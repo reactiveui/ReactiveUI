@@ -27,6 +27,7 @@ namespace ReactiveUI.Blazor
         private readonly Subject<Unit> _initSubject = new Subject<Unit>();
         [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
         private readonly Subject<Unit> _deactivateSubject = new Subject<Unit>();
+        private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
 
         private T _viewModel;
 
@@ -87,15 +88,16 @@ namespace ReactiveUI.Blazor
             {
                 // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
                 var viewModelChanged =
-                    this.WhenAnyValue(x => x.ViewModel)
-                        .Where(x => x != null)
-                        .Publish()
-                        .RefCount();
+                    this.WhenAnyValue(x => x.ViewModel);
 
                 viewModelChanged
-                    .Subscribe(_ => InvokeAsync(StateHasChanged));
+                    .Skip(1)
+                    .Where(x => x != null)
+                    .Subscribe(_ => InvokeAsync(StateHasChanged))
+                    .DisposeWith(_compositeDisposable);
 
                 viewModelChanged
+                    .Where(x => x != null)
                     .Select(x =>
                         Observable
                             .FromEvent<PropertyChangedEventHandler, Unit>(
@@ -107,7 +109,8 @@ namespace ReactiveUI.Blazor
                                 eh => x.PropertyChanged += eh,
                                 eh => x.PropertyChanged -= eh))
                     .Switch()
-                    .Subscribe(_ => InvokeAsync(StateHasChanged));
+                    .Subscribe(_ => InvokeAsync(StateHasChanged))
+                    .DisposeWith(_compositeDisposable);
             }
 
             base.OnAfterRender(firstRender);
@@ -133,6 +136,7 @@ namespace ReactiveUI.Blazor
                 if (disposing)
                 {
                     _initSubject?.Dispose();
+                    _compositeDisposable?.Dispose();
                     _deactivateSubject.OnNext(Unit.Default);
                 }
 
