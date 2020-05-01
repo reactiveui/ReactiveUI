@@ -27,6 +27,7 @@ namespace ReactiveUI.Blazor
         private readonly Subject<Unit> _initSubject = new Subject<Unit>();
         [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
         private readonly Subject<Unit> _deactivateSubject = new Subject<Unit>();
+        private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
 
         private T _viewModel;
 
@@ -90,10 +91,11 @@ namespace ReactiveUI.Blazor
                     this.WhenAnyValue(x => x.ViewModel)
                         .Where(x => x != null)
                         .Publish()
-                        .RefCount();
+                        .RefCount(2);
 
                 viewModelChanged
-                    .Subscribe(_ => InvokeAsync(StateHasChanged));
+                    .Subscribe(_ => InvokeAsync(StateHasChanged))
+                    .DisposeWith(_compositeDisposable);
 
                 viewModelChanged
                     .Select(x =>
@@ -107,7 +109,8 @@ namespace ReactiveUI.Blazor
                                 eh => x.PropertyChanged += eh,
                                 eh => x.PropertyChanged -= eh))
                     .Switch()
-                    .Subscribe(_ => InvokeAsync(StateHasChanged));
+                    .Subscribe(_ => InvokeAsync(StateHasChanged))
+                    .DisposeWith(_compositeDisposable);
             }
 
             base.OnAfterRender(firstRender);
@@ -133,6 +136,7 @@ namespace ReactiveUI.Blazor
                 if (disposing)
                 {
                     _initSubject?.Dispose();
+                    _compositeDisposable?.Dispose();
                     _deactivateSubject.OnNext(Unit.Default);
                 }
 
