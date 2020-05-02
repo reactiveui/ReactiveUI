@@ -34,19 +34,26 @@ namespace ReactiveUI
             new PropertyMetadata(TransitionType.Fade, OnTransitionChanged));
 
         /// <summary>
-        /// <see cref="DependencyProperty"/> for the <see cref="TransitionPart"/> property.
+        /// <see cref="DependencyProperty"/> for the <see cref="Transition"/> property.
         /// </summary>
-        public static readonly DependencyProperty TransitionPartProperty =
-            DependencyProperty.RegisterAttached(
-                "TransitionPart",
-                typeof(TransitionPartType),
-                typeof(TransitioningContentControl),
-                new PropertyMetadata(TransitionPartType.OutIn, OnTransitionPartChanged));
+        public static readonly DependencyProperty TransitionDirectionProperty = DependencyProperty.RegisterAttached(
+            "TransitionDirection",
+            typeof(TransitionDirection),
+            typeof(TransitioningContentControl),
+            new PropertyMetadata(TransitionDirection.Left));
+
+        /// <summary>
+        /// <see cref="DependencyProperty"/> for the <see cref="Transition"/> property.
+        /// </summary>
+        public static readonly DependencyProperty TransitionDurationProperty = DependencyProperty.RegisterAttached(
+            "TransitionDuration",
+            typeof(TimeSpan),
+            typeof(TransitioningContentControl),
+            new PropertyMetadata(TimeSpan.FromSeconds(0.3)));
 
         private const string PresentationGroup = "PresentationStates";
         private const string NormalState = "Normal";
         private bool _isTransitioning;
-        private bool _canSplitTransition;
         private Storyboard _startingTransition;
         private Storyboard _completingTransition;
         private Grid _container;
@@ -82,36 +89,50 @@ namespace ReactiveUI
             Fade,
 
             /// <summary>
-            /// A transition that fades the new element in from the top.
+            /// A transition that slides old content out of view, and slides new content back in from the same direction.
             /// </summary>
-            FadeDown,
+            Move,
 
             /// <summary>
-            /// A transition that slides old content left and out of view, then slides new content back in from the same direction.
+            /// A transition that keeps old content in view, and slides new content over.
             /// </summary>
-            SlideLeft
+            Slide,
+
+            /// <summary>
+            /// A transition that slides old content in view, and slider new content over it a little distance while changing opacity.
+            /// </summary>
+            Drop,
+
+            /// <summary>
+            /// A transition that slides old content out of view, then slides new content back in from the opposite direction.
+            /// </summary>
+            Bounce
         }
 
         /// <summary>
-        /// Represents the part of the transition that the developer would like the TransitioningContentControl to perform.
+        /// Represents the type of transition that a TransitioningContentControl will perform.
         /// </summary>
-        /// <remarks>This only applies to certain TransitionTypes. An InvalidOperationException will be thrown if the TransitionType does not support the TransitionPartType. Default is OutIn.</remarks>
-        public enum TransitionPartType
+        public enum TransitionDirection
         {
             /// <summary>
-            /// Transitions out only.
+            /// Up direction.
             /// </summary>
-            Out,
+            Up,
 
             /// <summary>
-            /// Transitions in only.
+            /// Down direction.
             /// </summary>
-            In,
+            Down,
 
             /// <summary>
-            /// Transitions in and out.
+            /// Left direction.
             /// </summary>
-            OutIn
+            Left,
+
+            /// <summary>
+            /// Right direction.
+            /// </summary>
+            Right
         }
 
         /// <summary>
@@ -121,10 +142,16 @@ namespace ReactiveUI
         public TransitionType Transition { get => (TransitionType)GetValue(TransitionProperty); set => SetValue(TransitionProperty, value); }
 
         /// <summary>
-        /// Gets or sets the transition part.
+        /// Gets or sets the transition direction.
         /// </summary>
-        /// <value>The transition part.</value>
-        public TransitionPartType TransitionPart { get => (TransitionPartType)GetValue(TransitionPartProperty); set => SetValue(TransitionPartProperty, value); }
+        /// <value>The direction.</value>
+        public TransitionDirection Direction { get => (TransitionDirection)GetValue(TransitionDirectionProperty); set => SetValue(TransitionDirectionProperty, value); }
+
+        /// <summary>
+        /// Gets or sets the transition duration.
+        /// </summary>
+        /// <value>The duration.</value>
+        public TimeSpan Duration { get => (TimeSpan)GetValue(TransitionDurationProperty); set => SetValue(TransitionDurationProperty, value); }
 
         private Storyboard StartingTransition
         {
@@ -200,36 +227,6 @@ namespace ReactiveUI
         {
             var transitioningContentControl = (TransitioningContentControl)d;
             var transition = (TransitionType)e.NewValue;
-
-            transitioningContentControl._canSplitTransition = VerifyCanSplitTransition(
-                transition,
-                transitioningContentControl.TransitionPart);
-        }
-
-        private static void OnTransitionPartChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var transitioningContentControl = (TransitioningContentControl)d;
-            var transitionPart = (TransitionPartType)e.NewValue;
-
-            transitioningContentControl._canSplitTransition =
-                VerifyCanSplitTransition(transitioningContentControl.Transition, transitionPart);
-        }
-
-        private static bool VerifyCanSplitTransition(TransitionType transition, TransitionPartType transitionPart)
-        {
-            // Check whether the TransitionPart is compatible with the current transition.
-            var canSplitTransition = true;
-            if (transition == TransitionType.Fade || transition == TransitionType.FadeDown)
-            {
-                if (transitionPart != TransitionPartType.OutIn)
-                {
-                    throw new InvalidOperationException("Cannot split this transition.");
-                }
-
-                canSplitTransition = false;
-            }
-
-            return canSplitTransition;
         }
 
         /// <summary>
@@ -268,23 +265,22 @@ namespace ReactiveUI
 
                 if (!_isTransitioning)
                 {
-                    // Determine the TransitionPart that is associated with this transition and either set up a single part transition, or a queued transition.
                     string startingTransitionName;
-                    if (TransitionPart == TransitionPartType.OutIn && _canSplitTransition)
+                    if (Transition == TransitionType.Bounce)
                     {
                         // Wire up the completion transition.
-                        var transitionInName = Transition + "Transition_" + TransitionPartType.In;
+                        var transitionInName = "Transition_" + Transition + Direction + "In";
                         CompletingTransition = GetTransitionStoryboardByName(transitionInName);
 
                         // Wire up the first transition to start the second transition when it's complete.
-                        startingTransitionName = Transition + "Transition_" + TransitionPartType.Out;
+                        startingTransitionName = "Transition_" + Transition + Direction + "Out";
                         var transitionOut = GetTransitionStoryboardByName(startingTransitionName);
                         transitionOut.Completed += (sender, args) => VisualStateManager.GoToState(this, transitionInName, false);
                         StartingTransition = transitionOut;
                     }
                     else
                     {
-                        startingTransitionName = Transition + "Transition_" + TransitionPart;
+                        startingTransitionName = Transition == TransitionType.Fade ? "Transition_Fade" : "Transition_" + Transition + Direction;
                         CompletingTransition = GetTransitionStoryboardByName(startingTransitionName);
                     }
 
@@ -330,33 +326,131 @@ namespace ReactiveUI
         private void SetTransitionDefaultValues()
         {
             // Do some special handling of particular transitions so that we get nice smooth transitions that utilise the size of the content.
-            if (Transition == TransitionType.FadeDown)
+            if (Transition == TransitionType.Fade)
             {
                 var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                completingDoubleAnimation.From = -ActualHeight;
-
                 var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
-                startingDoubleAnimation.To = ActualHeight;
-
-                return;
+                startingDoubleAnimation.Duration = Duration;
+                completingDoubleAnimation.Duration = Duration;
             }
 
-            if (Transition == TransitionType.SlideLeft)
+            if (Transition == TransitionType.Slide)
             {
-                if (CompletingTransition != null)
+                var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                startingDoubleAnimation.Duration = Duration;
+                if (Direction == TransitionDirection.Down)
                 {
-                    var completingDoubleAnimation =
-                        (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                    completingDoubleAnimation.KeyFrames[1].Value = -ActualWidth;
+                    startingDoubleAnimation.From = -ActualHeight;
                 }
 
-                if (StartingTransition != null)
+                if (Direction == TransitionDirection.Up)
                 {
-                    var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+                    startingDoubleAnimation.From = ActualHeight;
+                }
+
+                if (Direction == TransitionDirection.Right)
+                {
+                    startingDoubleAnimation.From = -ActualWidth;
+                }
+
+                if (Direction == TransitionDirection.Left)
+                {
+                    startingDoubleAnimation.From = ActualWidth;
+                }
+            }
+
+            if (Transition == TransitionType.Move)
+            {
+                var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
+                startingDoubleAnimation.Duration = Duration;
+                completingDoubleAnimation.Duration = Duration;
+                if (Direction == TransitionDirection.Down)
+                {
+                    startingDoubleAnimation.To = ActualHeight;
+                    completingDoubleAnimation.From = -ActualHeight;
+                }
+
+                if (Direction == TransitionDirection.Up)
+                {
+                    startingDoubleAnimation.To = -ActualHeight;
+                    completingDoubleAnimation.From = ActualHeight;
+                }
+
+                if (Direction == TransitionDirection.Right)
+                {
+                    startingDoubleAnimation.To = ActualWidth;
+                    completingDoubleAnimation.From = -ActualWidth;
+                }
+
+                if (Direction == TransitionDirection.Left)
+                {
                     startingDoubleAnimation.To = -ActualWidth;
+                    completingDoubleAnimation.From = ActualWidth;
+                }
+            }
+
+            if (Transition == TransitionType.Bounce)
+            {
+                if (Direction == TransitionDirection.Down)
+                {
+                    if (CompletingTransition != null)
+                    {
+                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
+                        completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;
+                    }
+
+                    if (StartingTransition != null)
+                    {
+                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+                        startingDoubleAnimation.To = ActualHeight;
+                    }
                 }
 
-                return;
+                if (Direction == TransitionDirection.Up)
+                {
+                    if (CompletingTransition != null)
+                    {
+                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
+                        completingDoubleAnimation.KeyFrames[1].Value = -ActualHeight;
+                    }
+
+                    if (StartingTransition != null)
+                    {
+                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+                        startingDoubleAnimation.To = -ActualHeight;
+                    }
+                }
+
+                if (Direction == TransitionDirection.Right)
+                {
+                    if (CompletingTransition != null)
+                    {
+                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
+                        completingDoubleAnimation.KeyFrames[1].Value = ActualWidth;
+                    }
+
+                    if (StartingTransition != null)
+                    {
+                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+                        startingDoubleAnimation.To = ActualWidth;
+                    }
+                }
+
+                if (Direction == TransitionDirection.Left)
+                {
+                    if (CompletingTransition != null)
+                    {
+                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
+                        completingDoubleAnimation.KeyFrames[1].Value = -ActualWidth;
+                    }
+
+                    if (StartingTransition != null)
+                    {
+                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+                        startingDoubleAnimation.To = -ActualWidth;
+                    }
+                }
             }
         }
     }
