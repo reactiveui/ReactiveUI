@@ -28,6 +28,7 @@ var packageWhitelist = new List<FilePath>
     MakeAbsolute(File("./src/ReactiveUI.XamForms/ReactiveUI.XamForms.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Uno/ReactiveUI.Uno.csproj")),
     MakeAbsolute(File("./src/ReactiveUI.Blazor/ReactiveUI.Blazor.csproj")),
+    MakeAbsolute(File("./src/ReactiveUI.Drawing/ReactiveUI.Drawing.csproj")),
 };
 
 if (IsRunningOnWindows())

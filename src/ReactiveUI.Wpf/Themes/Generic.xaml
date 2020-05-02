@@ -30,7 +30,7 @@
                                     </Storyboard>
                                 </VisualState>
 
-                                <VisualState x:Name="FadeTransition_OutIn">
+                                <VisualState x:Name="Transition_Fade">
                                     <Storyboard>
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
@@ -46,7 +46,111 @@
                                     </Storyboard>
                                 </VisualState>
 
-                                <VisualState x:Name="FadeDownTransition_OutIn">
+                                <VisualState x:Name="Transition_SlideLeft">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="-30" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_SlideRight">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="-30" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_SlideDown">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="-30" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_SlideUp">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="-30" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_MoveLeft">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="-30" To="0"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="0" To="30"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_MoveRight">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="-30" To="0"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="0" To="30"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_MoveDown">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="-30" To="0"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="0" To="30"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_MoveUp">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="-30" To="0"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="0" To="30"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_DropDown">
                                     <Storyboard>
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
@@ -74,8 +178,91 @@
                                     </Storyboard>
                                 </VisualState>
 
-                                <!-- SlideLeftTransition -->
-                                <VisualState x:Name="SlideLeftTransition_In">
+                                <VisualState x:Name="Transition_DropUp">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="0" To="30"/>
+ 
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="-30" To="0"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)"
+                                            From="0" To="1"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)"
+                                            From="1" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_DropRight">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="-30" To="0"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="0" To="30"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)"
+                                            From="0" To="1"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)"
+                                            From="1" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_DropLeft">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="-30" To="0"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="0" To="30"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)"
+                                            From="0" To="1"/>
+
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.3"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)"
+                                            From="1" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_BounceLeftIn">
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames 
                                             Storyboard.TargetName="PART_CurrentContentPresentationSite"
@@ -108,12 +295,171 @@
                                     </Storyboard>
                                 </VisualState>
 
-                                <VisualState x:Name="SlideLeftTransition_Out">
+                                <VisualState x:Name="Transition_BounceLeftOut">
                                     <Storyboard>
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.2"
                                             Storyboard.TargetName="PART_PreviousContentPresentationSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="0" To="-90"/>
+
+                                        <ObjectAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                
+                                <VisualState x:Name="Transition_BounceRightIn">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.7" Value="0">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CircleEase EasingMode="EaseOut"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:00.4" Value="1"/>
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <ObjectAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_BounceRightOut">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.2"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
+                                            From="0" To="-90"/>
+
+                                        <ObjectAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                
+                                <VisualState x:Name="Transition_BounceUpIn">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.7" Value="0">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CircleEase EasingMode="EaseOut"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:00.4" Value="1"/>
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <ObjectAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_BounceUpOut">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.2"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
+                                            From="0" To="-90"/>
+
+                                        <ObjectAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                
+                                <VisualState x:Name="Transition_BounceDownIn">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.7" Value="0">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CircleEase EasingMode="EaseOut"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:00.4" Value="1"/>
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <ObjectAnimationUsingKeyFrames 
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
+                                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <VisualState x:Name="Transition_BounceDownOut">
+                                    <Storyboard>
+                                        <DoubleAnimation 
+                                            BeginTime="00:00:00" Duration="00:00:00.2"
+                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="0" To="-90"/>
 
                                         <ObjectAnimationUsingKeyFrames 
@@ -143,7 +489,7 @@
                                         <TranslateTransform X="0" Y="0" />
                                     </TransformGroup.Children>
                                 </TransformGroup>
-<!--
+                                <!--
                                 <Controls:CompatCompositeTransform 
                                     ScaleX="1" ScaleY="1"
                                     TranslateX="0" TranslateY="0"/>
@@ -170,7 +516,7 @@
                                         <TranslateTransform X="0" Y="0" />
                                     </TransformGroup.Children>
                                 </TransformGroup>
-<!--
+                                <!--
                                 <Controls:CompatCompositeTransform 
                                     ScaleX="1" ScaleY="1"
                                     TranslateX="0" TranslateY="0"/>

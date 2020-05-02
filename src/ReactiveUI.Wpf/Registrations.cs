@@ -30,7 +30,6 @@ namespace ReactiveUI.Wpf
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
 
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
 

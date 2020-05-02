@@ -41,7 +41,7 @@ namespace ReactiveUI
     /// <code>
     /// <![CDATA[
     /// // A synchronous command taking a parameter and returning nothing.
-    /// var command = ReactiveCommand.Create<int, Unit>(x => Console.WriteLine(x));
+    /// ReactiveCommand<int, Unit> command = ReactiveCommand.Create<int>(x => Console.WriteLine(x));
     ///
     /// // This outputs 42 to console.
     /// command.Execute(42).Subscribe();
@@ -60,7 +60,7 @@ namespace ReactiveUI
     /// <![CDATA[
     /// // An asynchronous command that waits 2 seconds and returns 42.
     /// var command = ReactiveCommand.CreateFromObservable<Unit, int>(
-    ///      () => Observable.Return(42).Delay(TimeSpan.FromSeconds(2))
+    ///      _ => Observable.Return(42).Delay(TimeSpan.FromSeconds(2))
     /// );
     ///
     /// // Calling the asynchronous reactive command:

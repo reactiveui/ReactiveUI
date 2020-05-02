@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>ReactiveUI - Interaction</Title>
+			<Shortcut>ruiinteraction</Shortcut>
+			<Description>Code snippet for a ReactiveUI Interaction</Description>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>TInput</ID>
+					<Default>Unit</Default>
+					<ToolTip>Interaction's input type</ToolTip>
+				</Literal>
+				<Literal>
+					<ID>TOutput</ID>
+					<Default>Unit</Default>
+					<ToolTip>Interaction's output type</ToolTip>
+				</Literal>
+				<Literal>
+					<ID>interaction</ID>
+					<ToolTip>Interaction name</ToolTip>
+					<Default>DoSomethingInteraction</Default>
+				</Literal>
+			</Declarations>
+			<Imports>
+				<Import>
+					<Namespace>System.Reactive</Namespace>
+				</Import>
+				<Import>
+					<Namespace>ReactiveUI</Namespace>
+				</Import>
+			</Imports>
+			<Code Language="CSharp">
+				<![CDATA[public Interaction<$TInput$, $TOutput$> $interaction$ { get; } = new Interaction<$TInput$, $TOutput$>();$end$]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

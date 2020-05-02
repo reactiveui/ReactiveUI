@@ -5,15 +5,16 @@
 
 using System;
 using System.Reactive.Concurrency;
+using ReactiveUI;
 using Splat;
 
-namespace ReactiveUI
+namespace ReactiveUI.Drawing
 {
     /// <summary>
-    /// Tizen platform registrations.
+    /// Splat Drawing platform registrations.
     /// </summary>
     /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
-    public class PlatformRegistrations : IWantsToRegisterStuff
+    public class Registrations : IWantsToRegisterStuff
     {
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
@@ -23,10 +24,9 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(registerFunction));
             }
 
-            registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-            registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = EcoreMainloopScheduler.MainThreadScheduler;
+#if !NETSTANDARD && !NETCOREAPP2_0
+            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
+#endif
         }
     }
 }

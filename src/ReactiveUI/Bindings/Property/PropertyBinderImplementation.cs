@@ -596,30 +596,30 @@ namespace ReactiveUI
                                                     signalInitialUpdate.Select(_ => true),
                                                     signalObservable);
 
-            var changeWithValues = somethingChanged.Select(isVm =>
+            var changeWithValues = somethingChanged.Select<bool, (bool isValid, object view, bool isViewModel)>(isVm =>
             {
                 if (!Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
                     !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain()))
                 {
-                    return null;
+                    return (false, null, false);
                 }
 
                 if (isVm)
                 {
                     if (!vmToViewConverter(vmValue, out TVProp vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView))
                     {
-                        return null;
+                        return (false, null, false);
                     }
 
-                    return Tuple.Create((object)vmAsView, isVm);
+                    return (true, (object)vmAsView, isVm);
                 }
 
                 if (!viewToVmConverter(vValue, out TVMProp vAsViewModel) || EqualityComparer<TVMProp>.Default.Equals(vmValue, vAsViewModel))
                 {
-                    return null;
+                    return (false, null, false);
                 }
 
-                return Tuple.Create((object)vAsViewModel, isVm);
+                return (true, (object)vAsViewModel, isVm);
             });
 
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
@@ -628,7 +628,10 @@ namespace ReactiveUI
                 return null;
             }
 
-            IObservable<(object view, bool isViewModel)> changes = changeWithValues.Where(value => value != null).Select(value => (value.Item1, value.Item2)).Publish().RefCount();
+            IObservable<(object view, bool isViewModel)> changes = changeWithValues
+                .Where(value => value.isValid)
+                .Select(value => (value.view, value.isViewModel))
+                .Publish().RefCount();
 
             IDisposable disposable = changes.Subscribe(isVmWithLatestValue =>
             {

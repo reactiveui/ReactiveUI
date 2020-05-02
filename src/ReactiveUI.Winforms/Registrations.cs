@@ -34,7 +34,6 @@ namespace ReactiveUI.Winforms
             registerFunction(() => new PanelSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
             registerFunction(() => new TableContentSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
 
             if (!ModeDetector.InUnitTestRunner())
             {

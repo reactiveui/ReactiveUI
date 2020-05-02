@@ -7,8 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
@@ -27,35 +27,17 @@ namespace ReactiveUI.Blazor
         private readonly Subject<Unit> _initSubject = new Subject<Unit>();
         [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
         private readonly Subject<Unit> _deactivateSubject = new Subject<Unit>();
+        private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
 
         private T _viewModel;
 
         private bool _disposedValue; // To detect redundant calls
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveComponentBase{T}"/> class.
-        /// </summary>
-        public ReactiveComponentBase()
-        {
-            var propertyChangedObservable = this.WhenAnyValue(x => x.ViewModel)
-                .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
-
-                        return Handler;
-                    },
-                    eh => x.PropertyChanged += eh,
-                    eh => x.PropertyChanged -= eh))
-                .Switch();
-
-            propertyChangedObservable.Do(_ => StateHasChanged()).Subscribe();
-        }
-
         /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <inheritdoc />
+        [Parameter]
         public T ViewModel
         {
             get => _viewModel;
@@ -99,6 +81,41 @@ namespace ReactiveUI.Blazor
             base.OnInitialized();
         }
 
+        /// <inheritdoc/>
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (firstRender)
+            {
+                // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
+                var viewModelChanged =
+                    this.WhenAnyValue(x => x.ViewModel)
+                        .Where(x => x != null)
+                        .Publish()
+                        .RefCount(2);
+
+                viewModelChanged
+                    .Subscribe(_ => InvokeAsync(StateHasChanged))
+                    .DisposeWith(_compositeDisposable);
+
+                viewModelChanged
+                    .Select(x =>
+                        Observable
+                            .FromEvent<PropertyChangedEventHandler, Unit>(
+                                eventHandler =>
+                                {
+                                    void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                                    return Handler;
+                                },
+                                eh => x.PropertyChanged += eh,
+                                eh => x.PropertyChanged -= eh))
+                    .Switch()
+                    .Subscribe(_ => InvokeAsync(StateHasChanged))
+                    .DisposeWith(_compositeDisposable);
+            }
+
+            base.OnAfterRender(firstRender);
+        }
+
         /// <summary>
         /// Invokes the property changed event.
         /// </summary>
@@ -119,7 +136,7 @@ namespace ReactiveUI.Blazor
                 if (disposing)
                 {
                     _initSubject?.Dispose();
-
+                    _compositeDisposable?.Dispose();
                     _deactivateSubject.OnNext(Unit.Default);
                 }
 

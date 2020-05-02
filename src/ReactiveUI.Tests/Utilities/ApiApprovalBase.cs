@@ -43,7 +43,8 @@ namespace ReactiveUI.Tests
                 approvedPublicApi = File.ReadAllText(approvedFileName);
             }
 
-            var receivedPublicApi = Filter(ApiGenerator.GeneratePublicApi(assembly, whitelistedNamespacePrefixes: new[] { "ReactiveUI", "System.Reactive" }));
+            var generatorOptions = new ApiGeneratorOptions { WhitelistedNamespacePrefixes = new[] { "ReactiveUI", "System.Reactive" } };
+            var receivedPublicApi = Filter(ApiGenerator.GeneratePublicApi(assembly, generatorOptions));
 
             if (!string.Equals(receivedPublicApi, approvedPublicApi, StringComparison.InvariantCulture))
             {

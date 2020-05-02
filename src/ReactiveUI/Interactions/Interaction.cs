@@ -16,30 +16,31 @@ using System.Threading.Tasks;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Represents an interaction between collaborating parties.
+    /// Represents an interaction between collaborating application components.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Interactions allow collaborating components to asynchronously ask questions of each other. Typically,
-    /// a view model wants to ask the user a question before proceeding with some operation, and it's the view
-    /// that provides the interface via which users can answer the question.
+    /// Interactions allow collaborating components in an application to ask each other questions. Typically,
+    /// interactions allow a view model to get the user's confirmation from the view before proceeding with
+    /// some operation. The view provides the interaction's confirmation interface in a handler registered
+    /// for the interaction.
     /// </para>
     /// <para>
-    /// Interactions have both an input and output, both of which are strongly-typed via generic type parameters.
-    /// The input is passed into the interaction so that handlers have the information they require. The output
-    /// is provided by a handler.
+    /// Interactions have both an input and an output. Interaction inputs and outputs use generic type parameters.
+    /// The interaction's input provides handlers the information they require to ask a question. The handler
+    /// then provides the interaction with an output as the answer to the question.
     /// </para>
     /// <para>
     /// By default, handlers are invoked in reverse order of registration. That is, handlers registered later
     /// are given the opportunity to handle interactions before handlers that were registered earlier. This
     /// chaining mechanism enables handlers to be registered temporarily in a specific context, such that
-    /// interactions can be handled in a different manner. Subclasses may modify this behavior by overriding
-    /// the <see cref="Handle"/> method.
+    /// interactions can be handled differently according to the situation. This behavior can be modified
+    /// by overriding the <see cref="Handle"/> method in a subclass.
     /// </para>
     /// <para>
     /// Note that handlers are not required to handle an interaction. They can choose to ignore it, leaving it
-    /// for some other handler to handle. If no handler handles the interaction, the <see cref="Handle"/> method
-    /// will throw an <see cref="UnhandledInteractionException{TInput, TOutput}"/>.
+    /// for some other handler to handle. The interaction's <see cref="Handle"/> method will throw an
+    /// <see cref="UnhandledInteractionException{TInput, TOutput}"/> if no handler handles the interaction.
     /// </para>
     /// </remarks>
     /// <typeparam name="TInput">
@@ -73,7 +74,7 @@ namespace ReactiveUI
         /// <remarks>
         /// <para>
         /// This overload of <c>RegisterHandler</c> is only useful if the handler can handle the interaction
-        /// immediately. That is, it does not need to wait for a user or some other collaborating component.
+        /// immediately. That is, it does not need to wait for the user or some other collaborating component.
         /// </para>
         /// </remarks>
         /// <param name="handler">
@@ -155,18 +156,18 @@ namespace ReactiveUI
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This method passes the interaction through to relevant handlers in reverse order of registration,
-        /// ceasing once any handler handles the interaction. If the interaction remains unhandled after all
-        /// relevant handlers have executed, an <see cref="UnhandledInteractionException{TInput, TOutput}"/> is thrown.
+        /// This method passes the interaction in turn to its registered handlers in reverse order of registration
+        /// until one of them handles the interaction. If the interaction remains unhandled after all
+        /// its registered handlers have executed, an <see cref="UnhandledInteractionException{TInput, TOutput}"/> is thrown.
         /// </para>
         /// </remarks>
         /// <param name="input">
         /// The input for the interaction.
         /// </param>
         /// <returns>
-        /// An observable that ticks when the interaction completes, or throws an
-        /// <see cref="UnhandledInteractionException{TInput, TOutput}"/> if no handler handles the interaction.
+        /// An observable that ticks when the interaction completes.
         /// </returns>
+        /// <exception cref="UnhandledInteractionException{TInput, TOutput}">Thrown when no handler handles the interaction.</exception>
         public virtual IObservable<TOutput> Handle(TInput input)
         {
             var context = new InteractionContext<TInput, TOutput>(input);
@@ -188,7 +189,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Gets all registered handlers in order of their registration.
+        /// Gets all registered handlers by order of registration.
         /// </summary>
         /// <returns>
         /// All registered handlers.

@@ -12,9 +12,14 @@
 		<Snippet>
 			<Declarations>
 				<Literal>
-					<ID>type</ID>
-					<ToolTip>Command type</ToolTip>
-					<Default>object</Default>
+					<ID>TParam</ID>
+					<ToolTip>Type of parameter</ToolTip>
+					<Default>Unit</Default>					
+				</Literal>
+				<Literal>
+					<ID>TResult</ID>
+					<ToolTip>Type of result</ToolTip>
+					<Default>Unit</Default>					
 				</Literal>
 				<Literal>
 					<ID>command</ID>
@@ -22,8 +27,16 @@
 					<Default>DoSomething</Default>
 				</Literal>
 			</Declarations>
+			<Imports>
+				<Import>
+					<Namespace>System.Reactive</Namespace>
+				</Import>
+				<Import>
+					<Namespace>ReactiveUI</Namespace>
+				</Import>
+			</Imports>
 			<Code Language="csharp">
-				<![CDATA[public ReactiveCommand<$type$> $command$ { get; private set; }$end$]]>
+				<![CDATA[public ReactiveCommand<$TParam$, $TResult$> $command$ { get; }$end$]]>
 			</Code>
 		</Snippet>
 	</CodeSnippet>
