@@ -4,7 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -60,57 +62,51 @@ namespace ReactiveUI.Tests
             var fixture = new TestFixture();
             fixture.Changing.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changing).Subscribe();
             fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changed).Subscribe();
+            var propertyChangingEvents = new List<PropertyChangingEventArgs>();
+            fixture.PropertyChanging += (sender, args) => propertyChangingEvents.Add(args);
+            var propertyChangedEvents = new List<PropertyChangedEventArgs>();
+            fixture.PropertyChanged += (sender, args) => propertyChangedEvents.Add(args);
 
-            Assert.Equal(0, changing.Count);
-            Assert.Equal(0, changed.Count);
+            AssertCount(0, changing, changed, propertyChangingEvents, propertyChangedEvents);
             fixture.NullableInt = 4;
-            Assert.Equal(1, changing.Count);
-            Assert.Equal(1, changed.Count);
+            AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
             var stopDelaying = fixture.DelayChangeNotifications();
 
             fixture.NullableInt = 5;
-            Assert.Equal(1, changing.Count);
-            Assert.Equal(1, changed.Count);
+            AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
             fixture.IsNotNullString = "Bar";
-            Assert.Equal(1, changing.Count);
-            Assert.Equal(1, changed.Count);
+            AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
             fixture.NullableInt = 6;
-            Assert.Equal(1, changing.Count);
-            Assert.Equal(1, changed.Count);
+            AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
             fixture.IsNotNullString = "Baz";
-            Assert.Equal(1, changing.Count);
-            Assert.Equal(1, changed.Count);
+            AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
             var stopDelayingMore = fixture.DelayChangeNotifications();
 
             fixture.IsNotNullString = "Bamf";
-            Assert.Equal(1, changing.Count);
-            Assert.Equal(1, changed.Count);
+            AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
             stopDelaying.Dispose();
 
             fixture.IsNotNullString = "Blargh";
-            Assert.Equal(1, changing.Count);
-            Assert.Equal(1, changed.Count);
+            AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
             // NB: Because we debounce queued up notifications, we should only
             // see a notification from the latest NullableInt and the latest
             // IsNotNullableString
             stopDelayingMore.Dispose();
 
-            Assert.Equal(3, changing.Count);
-            Assert.Equal("NullableInt", changing[0].PropertyName);
-            Assert.Equal("NullableInt", changing[1].PropertyName);
-            Assert.Equal("IsNotNullString", changing[2].PropertyName);
+            AssertCount(3, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
-            Assert.Equal(3, changed.Count);
-            Assert.Equal("NullableInt", changed[0].PropertyName);
-            Assert.Equal("NullableInt", changed[1].PropertyName);
-            Assert.Equal("IsNotNullString", changed[2].PropertyName);
+            var expectedEventProperties = new[] { "NullableInt", "NullableInt", "IsNotNullString" };
+            Assert.Equal(expectedEventProperties, changing.Select(e => e.PropertyName));
+            Assert.Equal(expectedEventProperties, changed.Select(e => e.PropertyName));
+            Assert.Equal(expectedEventProperties, propertyChangingEvents.Select(e => e.PropertyName));
+            Assert.Equal(expectedEventProperties, propertyChangedEvents.Select(e => e.PropertyName));
         }
 
         [Fact]
@@ -227,6 +223,14 @@ namespace ReactiveUI.Tests
 
             Assert.IsType<Exception>(result);
             Assert.Equal("This is a test.", result.Message);
+        }
+
+        private static void AssertCount(int expected, params ICollection[] collections)
+        {
+            foreach (var collection in collections)
+            {
+                Assert.Equal(expected, collection.Count);
+            }
         }
     }
 }
