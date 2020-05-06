@@ -73,7 +73,7 @@ namespace ReactiveUI
     /// </typeparam>
     public abstract class ReactiveCommandBase<TParam, TResult> : IObservable<TResult>, ICommand, IReactiveCommand
     {
-        private EventHandler _canExecuteChanged;
+        private EventHandler? _canExecuteChanged;
         private bool _canExecuteValue;
 
         /// <inheritdoc/>
@@ -213,7 +213,7 @@ namespace ReactiveUI
         /// This method is called when the Command should execute.
         /// </summary>
         /// <param name="parameter">The parameter being passed to the ICommand.</param>
-        protected virtual void ICommandExecute(object parameter)
+        protected virtual void ICommandExecute(object? parameter)
         {
             // ensure that null is coerced to default(TParam) so that commands taking value types will use a sensible default if no parameter is supplied
             if (parameter == null)
@@ -227,7 +227,7 @@ namespace ReactiveUI
                     $"Command requires parameters of type {typeof(TParam).FullName}, but received parameter of type {parameter.GetType().FullName}.");
             }
 
-            Execute((TParam)parameter)
+            Execute((TParam)parameter!)
                 .Catch(Observable<TResult>.Empty)
                 .Subscribe();
         }

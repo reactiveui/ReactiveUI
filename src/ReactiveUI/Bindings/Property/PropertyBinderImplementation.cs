@@ -97,7 +97,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -177,7 +177,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -330,35 +330,35 @@ namespace ReactiveUI
         /// <param name="viewModel">The instance of the view model to bind to.</param>
         /// <param name="view">The instance of the view to bind to.</param>
         /// <param name="vmProperty">
-        /// An expression representing the property to be bound to on the view model.
-        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
-        /// the binding will attempt to subscribe recursively to updates in order to
-        /// always get the last value of the property chain.
+        ///     An expression representing the property to be bound to on the view model.
+        ///     This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        ///     the binding will attempt to subscribe recursively to updates in order to
+        ///     always get the last value of the property chain.
         /// </param>
         /// <param name="viewProperty">
-        /// An expression representing the property to be bound to on the view.
-        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
-        /// the binding will attempt to subscribe recursively to updates in order to
-        /// always set the correct property.
+        ///     An expression representing the property to be bound to on the view.
+        ///     This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        ///     the binding will attempt to subscribe recursively to updates in order to
+        ///     always set the correct property.
         ///
-        /// If it is left null, the framework will attempt to automatically figure out
-        /// the control and property that is to be bound, by looking for a control of the
-        /// same name as the <paramref name="vmProperty"/>, and its most natural property.
+        ///     If it is left null, the framework will attempt to automatically figure out
+        ///     the control and property that is to be bound, by looking for a control of the
+        ///     same name as the <paramref name="vmProperty"/>, and its most natural property.
         /// </param>
         /// <param name="selector">
-        /// A function that will be used to transform the values of the property on the view model
-        /// before being bound to the view property.
+        ///     A function that will be used to transform the values of the property on the view model
+        ///     before being bound to the view property.
         /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
-                TViewModel viewModel,
-                TView view,
-                Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TOut>> viewProperty,
-                Func<TProp, TOut> selector)
+        public IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
+            TViewModel viewModel,
+            TView view,
+            Expression<Func<TViewModel, TProp>> vmProperty,
+            Expression<Func<TView, TOut>> viewProperty,
+            Func<TProp, TOut> selector)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -431,7 +431,7 @@ namespace ReactiveUI
 
             var viewExpression = Reflection.Rewrite(propertyExpression.Body);
 
-            var ret = EvalBindingHooks(observedChange, target, null, viewExpression, BindingDirection.OneWay);
+            var ret = EvalBindingHooks(observedChange, target, null!, viewExpression, BindingDirection.OneWay);
             if (!ret)
             {
                 return Disposable.Empty;
@@ -464,7 +464,7 @@ namespace ReactiveUI
             return _typeConverterCache.Get((lhs, rhs));
         }
 
-        private static Func<object, object, object[], object>? GetSetConverter(Type fromType, Type targetType)
+        private static Func<object, object, object[], object>? GetSetConverter(Type? fromType, Type targetType)
         {
             if (fromType == null)
             {
@@ -489,13 +489,13 @@ namespace ReactiveUI
         {
             var defaultSetter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
-            object SetThenGet(object paramTarget, object paramValue, object[] paramParams)
+            object SetThenGet(object paramTarget, object? paramValue, object[] paramParams)
             {
                 Func<object, object, object[], object>? converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
 
                 if (converter == null)
                 {
-                    defaultSetter(paramTarget, paramValue, paramParams);
+                    defaultSetter(paramTarget, paramValue ?? throw new ArgumentNullException(nameof(paramValue)), paramParams);
                     return defaultGetter(paramTarget, paramParams);
                 }
 
@@ -539,7 +539,7 @@ namespace ReactiveUI
             {
                 vmFetcher = () => new IObservedChange<object, object>[]
                 {
-                    new ObservedChange<object, object>(null, null, viewModel)
+                    new ObservedChange<object, object>(null!, null, viewModel)
                 };
             }
 
@@ -562,7 +562,7 @@ namespace ReactiveUI
             return shouldBind;
         }
 
-        private IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        private IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)>? BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             TViewModel viewModel,
             TView view,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -596,7 +596,7 @@ namespace ReactiveUI
                                                     signalInitialUpdate.Select(_ => true),
                                                     signalObservable);
 
-            var changeWithValues = somethingChanged.Select<bool, (bool isValid, object view, bool isViewModel)>(isVm =>
+            var changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
             {
                 if (!Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
                     !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain()))
@@ -611,7 +611,7 @@ namespace ReactiveUI
                         return (false, null, false);
                     }
 
-                    return (true, (object)vmAsView, isVm);
+                    return (true, (object?)vmAsView, isVm);
                 }
 
                 if (!viewToVmConverter(vValue, out TVMProp vAsViewModel) || EqualityComparer<TVMProp>.Default.Equals(vmValue, vAsViewModel))
@@ -619,7 +619,7 @@ namespace ReactiveUI
                     return (false, null, false);
                 }
 
-                return (true, (object)vAsViewModel, isVm);
+                return (true, (object?)vAsViewModel, isVm);
             });
 
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
@@ -628,10 +628,11 @@ namespace ReactiveUI
                 return null;
             }
 
-            IObservable<(object view, bool isViewModel)> changes = changeWithValues
+            IObservable<(object? view, bool isViewModel)> changes = changeWithValues
                 .Where(value => value.isValid)
                 .Select(value => (value.view, value.isViewModel))
-                .Publish().RefCount();
+                .Publish()
+                .RefCount();
 
             IDisposable disposable = changes.Subscribe(isVmWithLatestValue =>
             {

@@ -175,11 +175,11 @@ namespace ReactiveUI
                     var cmd = commandFixuper != null ? commandFixuper(x.val) : x.val;
                     if (toEvent != null)
                     {
-                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y), toEvent);
+                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent);
                     }
                     else
                     {
-                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y));
+                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!));
                     }
                 });
 

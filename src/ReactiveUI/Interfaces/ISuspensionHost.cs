@@ -63,7 +63,7 @@ namespace ReactiveUI
         /// Gets or sets a function that can be used to create a new application state - usually
         /// this method just calls 'new' on an object.
         /// </summary>
-        Func<object> CreateNewAppState { get; set; }
+        Func<object>? CreateNewAppState { get; set; }
 
         /// <summary>
         /// Gets or sets the current application state - get a typed version of this via

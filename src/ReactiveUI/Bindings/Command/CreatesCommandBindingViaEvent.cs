@@ -81,7 +81,7 @@ namespace ReactiveUI
         {
             var ret = new CompositeDisposable();
 
-            object latestParameter = null;
+            object? latestParameter = null;
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
 
             ret.Add(commandParameter.Subscribe(x => latestParameter = x));

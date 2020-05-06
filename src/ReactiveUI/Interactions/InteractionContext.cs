@@ -27,7 +27,7 @@ namespace ReactiveUI
     public sealed class InteractionContext<TInput, TOutput>
     {
         private readonly TInput _input;
-        private TOutput _output;
+        private TOutput _output = default!;
         private int _outputSet;
 
         internal InteractionContext(TInput input)

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -130,7 +131,8 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>An array of arguments.</returns>
-        public static object[] GetArgumentsArray(this Expression expression)
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:ClosingSquareBracketsMustBeSpacedCorrectly", Justification = "Reviewed.")]
+        public static object[]? GetArgumentsArray(this Expression expression)
         {
             if (expression == null)
             {

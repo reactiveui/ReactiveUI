@@ -22,7 +22,7 @@ namespace ReactiveUI
     {
         [field: NonSerialized]
         private readonly Interaction<TInput, TOutput>? _interaction;
-        private readonly TInput _input;
+        private readonly TInput _input = default!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnhandledInteractionException{TInput, TOutput}"/> class.
@@ -70,7 +70,7 @@ namespace ReactiveUI
         protected UnhandledInteractionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            _input = (TInput)info.GetValue(nameof(Input), typeof(TInput));
+            _input = (TInput) info.GetValue(nameof(Input), typeof(TInput));
         }
 
         /// <summary>

@@ -193,31 +193,30 @@ namespace ReactiveUI
         /// <param name="viewModel">The instance of the view model to bind to.</param>
         /// <param name="view">The instance of the view to bind to.</param>
         /// <param name="vmProperty">
-        /// An expression representing the property to be bound to on the view model.
-        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
-        /// the binding will attempt to subscribe recursively to updates in order to
-        /// always get the last value of the property chain.
+        ///     An expression representing the property to be bound to on the view model.
+        ///     This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        ///     the binding will attempt to subscribe recursively to updates in order to
+        ///     always get the last value of the property chain.
         /// </param>
         /// <param name="viewProperty">
-        /// An expression representing the property to be bound to on the view.
-        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
-        /// the binding will attempt to subscribe recursively to updates in order to
-        /// always set the correct property.
+        ///     An expression representing the property to be bound to on the view.
+        ///     This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        ///     the binding will attempt to subscribe recursively to updates in order to
+        ///     always set the correct property.
         /// </param>
         /// <param name="selector">
-        /// A function that will be used to transform the values of the property on the view model
-        /// before being bound to the view property.
+        ///     A function that will be used to transform the values of the property on the view model
+        ///     before being bound to the view property.
         /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
-                TViewModel viewModel,
-                TView view,
-                Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TOut>> viewProperty,
-                Func<TProp, TOut> selector)
+        IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel viewModel,
+            TView view,
+            Expression<Func<TViewModel, TProp>> vmProperty,
+            Expression<Func<TView, TOut>> viewProperty,
+            Func<TProp, TOut> selector)
             where TViewModel : class
             where TView : class, IViewFor;
 

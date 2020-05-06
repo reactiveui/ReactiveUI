@@ -141,7 +141,7 @@ namespace ReactiveUI
             SetupSubjectIfNecessary<T>(contract).OnNext(message);
         }
 
-        private ISubject<T> SetupSubjectIfNecessary<T>(string? contract)
+        private ISubject<T>? SetupSubjectIfNecessary<T>(string? contract)
         {
             ISubject<T>? ret = null;
 

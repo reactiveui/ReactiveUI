@@ -170,7 +170,7 @@ namespace ReactiveUI
                     throw new InvalidCastException($"Unable to cast from {val.GetType()} to {typeof(TValue)}.");
                 }
 
-                return new ObservedChange<TSender, TValue>(source, expression, (TValue)val);
+                return new ObservedChange<TSender, TValue>(source, expression, (TValue)val!);
             });
 
             return r.DistinctUntilChanged(x => x.Value);

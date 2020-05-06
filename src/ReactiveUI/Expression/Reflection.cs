@@ -170,17 +170,17 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-        public static Action<object, object, object[]> GetValueSetterForProperty(MemberInfo member)
+        public static Action<object, object, object[]>? GetValueSetterForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
 
-            FieldInfo field = member as FieldInfo;
+            FieldInfo? field = member as FieldInfo;
             if (field != null)
             {
                 return (obj, val, _) => field.SetValue(obj, val);
             }
 
-            PropertyInfo property = member as PropertyInfo;
+            PropertyInfo? property = member as PropertyInfo;
             if (property != null)
             {
                 return property.SetValue;
@@ -271,7 +271,7 @@ namespace ReactiveUI
             {
                 if (current == null)
                 {
-                    changeValues[currentIndex] = null;
+                    changeValues[currentIndex] = null!;
                     return false;
                 }
 
@@ -283,7 +283,7 @@ namespace ReactiveUI
 
             if (current == null)
             {
-                changeValues[currentIndex] = null;
+                changeValues[currentIndex] = null!;
                 return false;
             }
 
@@ -324,7 +324,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressions.Last();
-            Action<object, object, object[]> setter = shouldThrow ?
+            Action<object, object, object[]>? setter = shouldThrow ?
                 GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
                 GetValueSetterForProperty(lastExpression.GetMemberInfo());
 
