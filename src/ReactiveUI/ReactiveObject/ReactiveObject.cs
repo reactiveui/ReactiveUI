@@ -5,6 +5,8 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
 using System.Runtime.Serialization;
 using System.Threading;
 
@@ -20,6 +22,8 @@ namespace ReactiveUI
     {
         private readonly Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> _changing;
         private readonly Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> _changed;
+        private readonly Lazy<Unit> _propertyChangingEventsSubscribed;
+        private readonly Lazy<Unit> _propertyChangedEventsSubscribed;
         private readonly Lazy<IObservable<Exception>> _thrownExceptions;
 
         /// <summary>
@@ -29,14 +33,46 @@ namespace ReactiveUI
         {
             _changing = new Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>>(() => ((IReactiveObject)this).GetChangingObservable(), LazyThreadSafetyMode.PublicationOnly);
             _changed = new Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>>(() => ((IReactiveObject)this).GetChangedObservable(), LazyThreadSafetyMode.PublicationOnly);
+            _propertyChangingEventsSubscribed = new Lazy<Unit>(
+                                                        () =>
+                                                        {
+                                                            this.SubscribePropertyChangingEvents();
+                                                            return Unit.Default;
+                                                        }, LazyThreadSafetyMode.PublicationOnly);
+            _propertyChangedEventsSubscribed = new Lazy<Unit>(
+                                                        () =>
+                                                        {
+                                                            this.SubscribePropertyChangedEvents();
+                                                            return Unit.Default;
+                                                        }, LazyThreadSafetyMode.PublicationOnly);
             _thrownExceptions = new Lazy<IObservable<Exception>>(this.GetThrownExceptionsObservable, LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add
+            {
+                _ = _propertyChangingEventsSubscribed.Value;
+                PropertyChangingHandler += value;
+            }
+            remove => PropertyChangingHandler -= value;
+        }
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add
+            {
+                _ = _propertyChangedEventsSubscribed.Value;
+                PropertyChangedHandler += value;
+            }
+            remove => PropertyChangedHandler -= value;
+        }
+
+        private event PropertyChangingEventHandler PropertyChangingHandler;
+
+        private event PropertyChangedEventHandler PropertyChangedHandler;
 
         /// <inheritdoc />
         [IgnoreDataMember]
@@ -51,10 +87,10 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
