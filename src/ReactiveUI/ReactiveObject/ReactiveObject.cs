@@ -54,9 +54,9 @@ namespace ReactiveUI
             add
             {
                 _ = _propertyChangingEventsSubscribed.Value;
-                _propertyChanging += value;
+                PropertyChangingHandler += value;
             }
-            remove => _propertyChanging -= value;
+            remove => PropertyChangingHandler -= value;
         }
 
         /// <inheritdoc/>
@@ -65,22 +65,14 @@ namespace ReactiveUI
             add
             {
                 _ = _propertyChangedEventsSubscribed.Value;
-                _propertyChanged += value;
+                PropertyChangedHandler += value;
             }
-            remove => _propertyChanged -= value;
+            remove => PropertyChangedHandler -= value;
         }
 
-        [SuppressMessage(
-            "StyleCop.CSharp.NamingRules",
-            "SA1300:Element should begin with upper-case letter",
-            Justification = "Event is private backing field for PropertyChanging")]
-        private event PropertyChangingEventHandler _propertyChanging;
+        private event PropertyChangingEventHandler PropertyChangingHandler;
 
-        [SuppressMessage(
-            "StyleCop.CSharp.NamingRules",
-            "SA1300:Element should begin with upper-case letter",
-            Justification = "Event is private backing field for PropertyChanged")]
-        private event PropertyChangedEventHandler _propertyChanged;
+        private event PropertyChangedEventHandler PropertyChangedHandler;
 
         /// <inheritdoc />
         [IgnoreDataMember]
@@ -95,10 +87,10 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => _propertyChanging?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => _propertyChanged?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);

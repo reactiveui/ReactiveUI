@@ -44,12 +44,13 @@ namespace ReactiveUI
             IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
 
             /// <summary>
-            /// Gets a observable when a exception is thrown.
+            /// Gets a observable for when an exception is thrown.
             /// </summary>
             IObservable<Exception> ThrownExceptions { get; }
 
             /// <summary>
-            /// sdfsdg.
+            /// Subscribe raise property changing events to a property changing
+            /// observable. Must be called before raising property changing events.
             /// </summary>
             void SubscribePropertyChangingEvents();
 
@@ -60,7 +61,8 @@ namespace ReactiveUI
             void RaisePropertyChanging(string propertyName);
 
             /// <summary>
-            /// sdf sdfs fgdf.
+            /// Subscribe raise property changed events to a property changed
+            /// observable. Must be called before raising property changed events.
             /// </summary>
             void SubscribePropertyChangedEvents();
 
