@@ -51,7 +51,7 @@
     <PackageReference Include="Xunit.StaFact" Version="0.3.18" />
     <PackageReference Include="Shouldly" Version="4.0.0-beta0002" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.4.1" />
-    <PackageReference Include="PublicApiGenerator" Version="10.0.2" />
+    <PackageReference Include="PublicApiGenerator" Version="10.1.0" />
   </ItemGroup>
   
   <ItemGroup Condition="$(IsTestProject)">
@@ -76,7 +76,7 @@
 
   <ItemGroup>
     <PackageReference Include="stylecop.analyzers" Version="1.1.118" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" Version="2.3.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>

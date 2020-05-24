@@ -40,7 +40,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
         public void CommandBinderBindsToCustomControl()
         {
             var fixture = new CreatesWinformsCommandBinding();
