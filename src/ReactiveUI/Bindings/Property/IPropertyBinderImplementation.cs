@@ -212,7 +212,8 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel viewModel,
+        IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
+            TViewModel viewModel,
             TView view,
             Expression<Func<TViewModel, TProp>> vmProperty,
             Expression<Func<TView, TOut>> viewProperty,

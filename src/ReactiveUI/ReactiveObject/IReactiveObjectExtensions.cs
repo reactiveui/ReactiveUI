@@ -147,7 +147,10 @@ namespace ReactiveUI
         public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
             where TSender : IReactiveObject
         {
-            reactiveObject.RaisingPropertyChanged(propertyName);
+            if (propertyName != null)
+            {
+                reactiveObject.RaisingPropertyChanged(propertyName);
+            }
         }
 
         /// <summary>
@@ -163,7 +166,10 @@ namespace ReactiveUI
         public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
             where TSender : IReactiveObject
         {
-            reactiveObject.RaisingPropertyChanging(propertyName);
+            if (propertyName != null)
+            {
+                reactiveObject.RaisingPropertyChanging(propertyName);
+            }
         }
 
         internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable<TSender>(this TSender reactiveObject)

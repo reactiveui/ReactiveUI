@@ -135,7 +135,10 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), item.GetValue());
+            if (target != null)
+            {
+                Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), item.GetValue());
+            }
         }
     }
 }

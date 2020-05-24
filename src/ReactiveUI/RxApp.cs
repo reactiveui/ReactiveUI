@@ -167,7 +167,7 @@ namespace ReactiveUI
                 if (ModeDetector.InUnitTestRunner())
                 {
                     _unitTestMainThreadScheduler = value;
-                    _mainThreadScheduler = _mainThreadScheduler ?? value;
+                    _mainThreadScheduler ??= value;
                 }
                 else
                 {

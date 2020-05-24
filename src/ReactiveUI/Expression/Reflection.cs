@@ -232,7 +232,7 @@ namespace ReactiveUI
             {
                 if (current == null)
                 {
-                    changeValue = default(TValue);
+                    changeValue = default!;
                     return false;
                 }
 
@@ -241,7 +241,7 @@ namespace ReactiveUI
 
             if (current == null)
             {
-                changeValue = default(TValue);
+                changeValue = default!;
                 return false;
             }
 

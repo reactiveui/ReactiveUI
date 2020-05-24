@@ -123,7 +123,7 @@ namespace ReactiveUI.Tests
 
             private string _property2;
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler? PropertyChanged;
 
             public string Property1
             {
@@ -157,7 +157,7 @@ namespace ReactiveUI.Tests
 
             private string _property2;
 
-            public event PropertyChangingEventHandler PropertyChanging;
+            public event PropertyChangingEventHandler? PropertyChanging;
 
             public string Property1
             {

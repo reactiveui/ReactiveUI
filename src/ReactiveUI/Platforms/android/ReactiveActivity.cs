@@ -90,10 +90,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changing

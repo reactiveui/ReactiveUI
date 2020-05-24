@@ -66,7 +66,7 @@ namespace ReactiveUI
 
                     d(navigationStackChanged
                         .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add)
-                        .Select(_ => new { View = ResolveView(Router.GetCurrentViewModel(), /*contract*/null), Animate = Router.NavigationStack.Count > 1 })
+                        .Select(_ => new { View = ResolveView(Router.GetCurrentViewModel(), null), Animate = Router.NavigationStack.Count > 1 })
                         .Subscribe(x =>
                         {
                             if (_routerInstigated)

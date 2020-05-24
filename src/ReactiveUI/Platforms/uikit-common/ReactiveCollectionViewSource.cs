@@ -62,10 +62,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets or sets the data that should be displayed by this

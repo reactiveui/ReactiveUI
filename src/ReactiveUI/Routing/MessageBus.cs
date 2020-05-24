@@ -82,7 +82,7 @@ namespace ReactiveUI
         {
             this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
-            return SetupSubjectIfNecessary<T>(contract);
+            return SetupSubjectIfNecessary<T>(contract) ?? Observable.Create<T>(observer => observer.OnCompleted);
         }
 
         /// <summary>

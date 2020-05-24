@@ -80,10 +80,10 @@ namespace ReactiveUI.AndroidX
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets an observable that signals that this ViewHolder has been selected.
