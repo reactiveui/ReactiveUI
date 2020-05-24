@@ -136,7 +136,7 @@ namespace ReactiveUI
         /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
         /// to simplify writing common unit tests.
         /// </summary>
-        public static IScheduler MainThreadScheduler
+        public static IScheduler? MainThreadScheduler
         {
             get
             {
@@ -181,7 +181,7 @@ namespace ReactiveUI
         /// run in a background thread. In both modes, this will run on the TPL
         /// Task Pool.
         /// </summary>
-        public static IScheduler TaskpoolScheduler
+        public static IScheduler? TaskpoolScheduler
         {
             get => _unitTestTaskpoolScheduler ?? _taskpoolScheduler;
             set
@@ -209,7 +209,7 @@ namespace ReactiveUI
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.
         /// </summary>
-        public static IObserver<Exception> DefaultExceptionHandler
+        public static IObserver<Exception>? DefaultExceptionHandler
         {
             get => _defaultExceptionHandler;
             set => _defaultExceptionHandler = value;

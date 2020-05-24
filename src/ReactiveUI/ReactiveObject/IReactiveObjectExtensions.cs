@@ -389,7 +389,7 @@ namespace ReactiveUI
                 }
             }
 
-            internal void NotifyObservable<T>(TSender rxObj, T item, ISubject<T> subject)
+            internal void NotifyObservable<T>(TSender rxObj, T item, ISubject<T>? subject)
             {
                 try
                 {

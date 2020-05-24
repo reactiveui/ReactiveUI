@@ -751,13 +751,13 @@ namespace ReactiveUI
             public TResult Result => _result;
 
             public static ExecutionInfo CreateBegin() =>
-                new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
+                new ExecutionInfo(ExecutionDemarcation.Begin, default!);
 
             public static ExecutionInfo CreateResult(TResult result) =>
                 new ExecutionInfo(ExecutionDemarcation.Result, result);
 
             public static ExecutionInfo CreateEnd() =>
-                new ExecutionInfo(ExecutionDemarcation.End, default(TResult));
+                new ExecutionInfo(ExecutionDemarcation.End, default!);
         }
     }
 }

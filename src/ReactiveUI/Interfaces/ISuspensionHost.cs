@@ -72,6 +72,6 @@ namespace ReactiveUI
         /// via the client application - the framework places no restrictions on
         /// the object other than it can be serialized.
         /// </summary>
-        object AppState { get; set; }
+        object? AppState { get; set; }
     }
 }

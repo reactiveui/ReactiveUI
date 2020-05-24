@@ -102,7 +102,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the application state that will be used when suspending and resuming the class.
         /// </summary>
-        public object AppState
+        public object? AppState
         {
             get => _appState;
             set => this.RaiseAndSetIfChanged(ref _appState, value);

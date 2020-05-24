@@ -182,7 +182,7 @@ namespace ReactiveUI
         /// <returns>A Disposable that deactivates this registration.</returns>
         public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block)
         {
-            return item.WhenActivated(block, null);
+            return item.WhenActivated(block, null!);
         }
 
         /// <summary>

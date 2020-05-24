@@ -153,7 +153,7 @@ namespace ReactiveUI
                     return;
                 }
 
-                ret = new ScheduledSubject<T>(GetScheduler(item), null, new BehaviorSubject<T>(default(T)));
+                ret = new ScheduledSubject<T>(GetScheduler(item), null, new BehaviorSubject<T>(default!));
                 mb[item] = new NotAWeakReference(ret);
             });
 
@@ -176,7 +176,7 @@ namespace ReactiveUI
             }
         }
 
-        private IScheduler GetScheduler((Type type, string contract) item)
+        private IScheduler GetScheduler((Type type, string? contract) item)
         {
             _schedulerMappings.TryGetValue(item, out IScheduler scheduler);
             return scheduler ?? CurrentThreadScheduler.Instance;
