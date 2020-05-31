@@ -14,7 +14,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the View Model associated with the View.
         /// </summary>
-        object ViewModel { get; set; }
+        object? ViewModel { get; set; }
     }
 
 #pragma warning disable SA1402 // File may only contain a single type
@@ -30,6 +30,6 @@ namespace ReactiveUI
         /// Gets or sets the ViewModel corresponding to this specific View. This should be
         /// a DependencyProperty if you're using XAML.
         /// </summary>
-        new T ViewModel { get; set; }
+        new T? ViewModel { get; set; }
     }
 }

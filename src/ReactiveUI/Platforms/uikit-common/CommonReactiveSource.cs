@@ -87,7 +87,7 @@ namespace ReactiveUI
         {
             Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 
-            var list = (IList)SectionInfo[section].Collection;
+            var list = (IList)SectionInfo[section].Collection!;
             var count = list.Count;
             this.Log().Debug(CultureInfo.InvariantCulture, "Reporting rows in section {0} = {1}", section, count);
 
@@ -98,7 +98,7 @@ namespace ReactiveUI
         {
             Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 
-            var list = (IList)SectionInfo[path.Section].Collection;
+            var list = (IList)SectionInfo[path.Section].Collection!;
             this.Log().Debug(CultureInfo.InvariantCulture, "Returning item at {0}-{1}", path.Section, path.Row);
 
             return list[path.Row];
@@ -110,7 +110,7 @@ namespace ReactiveUI
 
             this.Log().Debug(CultureInfo.InvariantCulture, "Getting cell for index path {0}-{1}", indexPath.Section, indexPath.Row);
             var section = SectionInfo[indexPath.Section];
-            var vm = ((IList)section.Collection)[indexPath.Row];
+            var vm = ((IList)section.Collection!)[indexPath.Row];
             var cell = _adapter.DequeueReusableCell(section.CellKeySelector(vm), indexPath);
             var view = cell as IViewFor;
 

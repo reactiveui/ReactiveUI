@@ -76,7 +76,7 @@ namespace ReactiveUI
         /// <value>
         /// The launch options.
         /// </value>
-        public IDictionary<string, string> LaunchOptions { get; private set; }
+        public IDictionary<string, string>? LaunchOptions { get; private set; }
 
         /// <summary>
         /// Advances the finished launching observable.

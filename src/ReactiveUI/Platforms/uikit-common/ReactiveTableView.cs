@@ -219,10 +219,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (TViewModel)value;
+            set => ViewModel = (TViewModel)value!;
         }
     }
 }

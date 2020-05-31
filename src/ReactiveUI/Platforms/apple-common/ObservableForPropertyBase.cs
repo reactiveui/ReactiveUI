@@ -158,8 +158,7 @@ namespace ReactiveUI
         /// <param name="createObservable">Create observable.</param>
         protected void Register(Type type, string property, int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> createObservable)
         {
-            Dictionary<string, ObservablePropertyInfo> typeProperties;
-            if (!_config.TryGetValue(type, out typeProperties))
+            if (!_config.TryGetValue(type, out Dictionary<string, ObservablePropertyInfo> typeProperties))
             {
                 typeProperties = new Dictionary<string, ObservablePropertyInfo>();
                 _config[type] = typeProperties;
@@ -172,7 +171,7 @@ namespace ReactiveUI
         {
             public int Affinity { get; set; }
 
-            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> CreateObservable { get; set; }
+            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>>? CreateObservable { get; set; }
         }
     }
 }

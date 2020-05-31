@@ -136,7 +136,7 @@ namespace ReactiveUI
         /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
         /// to simplify writing common unit tests.
         /// </summary>
-        public static IScheduler? MainThreadScheduler
+        public static IScheduler MainThreadScheduler
         {
             get
             {
@@ -154,7 +154,7 @@ namespace ReactiveUI
                     LogHost.Default.Warn("You can install the needed package via NuGet, see https://reactiveui.net/docs/getting-started/installation/");
                 }
 
-                return _mainThreadScheduler;
+                return _mainThreadScheduler!;
             }
 
             set

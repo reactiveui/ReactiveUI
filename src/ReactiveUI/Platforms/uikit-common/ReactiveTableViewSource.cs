@@ -260,14 +260,14 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public override UIView GetViewForHeader(UITableView tableView, nint section)
+        public override UIView? GetViewForHeader(UITableView tableView, nint section)
         {
             var header = _commonSource.SectionInfo[(int)section].Header;
             return header?.View?.Invoke();
         }
 
         /// <inheritdoc/>
-        public override UIView GetViewForFooter(UITableView tableView, nint section)
+        public override UIView? GetViewForFooter(UITableView tableView, nint section)
         {
             var footer = _commonSource.SectionInfo[(int)section].Footer;
             return footer?.View?.Invoke();

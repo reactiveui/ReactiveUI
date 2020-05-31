@@ -20,7 +20,7 @@ namespace ReactiveUI
     public class CollectionViewSectionInformation<TSource> : ISectionInformation<TSource, UICollectionView, UICollectionViewCell>
     {
         /// <inheritdoc/>
-        public INotifyCollectionChanged Collection { get; protected set; }
+        public INotifyCollectionChanged? Collection { get; protected set; }
 
         /// <inheritdoc/>
         public Action<UICollectionViewCell>? InitializeCellAction { get; protected set; }

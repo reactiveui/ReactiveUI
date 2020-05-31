@@ -21,7 +21,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the collection.
         /// </summary>
-        INotifyCollectionChanged Collection { get; }
+        INotifyCollectionChanged? Collection { get; }
 
         /// <summary>
         /// Gets the cell key selector.

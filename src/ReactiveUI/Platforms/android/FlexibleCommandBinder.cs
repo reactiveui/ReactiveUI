@@ -89,7 +89,7 @@ namespace ReactiveUI
         /// <param name="commandParameter">Command parameter.</param>
         /// <param name="eventName">Event name.</param>
         /// <param name="enabledProperty">Enabled property name.</param>
-        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object aray.")]
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
         protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, PropertyInfo enabledProperty)
         {
             if (command == null)
@@ -99,7 +99,7 @@ namespace ReactiveUI
 
             commandParameter = commandParameter ?? Observable.Return(target);
 
-            object latestParam = null;
+            object? latestParam = null;
             var ctl = target;
 
             var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe(_ =>
@@ -110,7 +110,7 @@ namespace ReactiveUI
                 }
             });
 
-            Action<object, object, object[]?> enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
+            Action<object, object?, object[]?>? enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
             if (enabledSetter == null)
             {
                 return actionDisp;
@@ -150,7 +150,7 @@ namespace ReactiveUI
         {
             public int Affinity { get; set; }
 
-            public Func<ICommand, object, IObservable<object>, IDisposable> CreateBinding { get; set; }
+            public Func<ICommand, object, IObservable<object>, IDisposable>? CreateBinding { get; set; }
         }
     }
 }

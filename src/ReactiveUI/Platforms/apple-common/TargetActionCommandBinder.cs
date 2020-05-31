@@ -65,7 +65,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object aray.")]
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
             if (command == null)
@@ -80,7 +80,7 @@ namespace ReactiveUI
 
             commandParameter = commandParameter ?? Observable.Return(target);
 
-            object latestParam = null;
+            object? latestParam = null;
             var ctlDelegate = new ControlDelegate(
                 x =>
                 {
@@ -99,7 +99,7 @@ namespace ReactiveUI
             targetSetter(target, ctlDelegate, null);
             var actionDisp = Disposable.Create(() => targetSetter(target, null, null));
 
-            Action<object, object, object[]?> enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
+            Action<object, object, object[]?>? enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
             if (enabledSetter == null)
             {
                 return actionDisp;

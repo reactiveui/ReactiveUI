@@ -19,6 +19,7 @@ namespace ReactiveUI
     /// <summary>
     /// Helper class for handling Reflection amd Expression tree related items.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
     public static class Reflection
     {
         private static readonly ExpressionRewriter expressionRewriter = new ExpressionRewriter();
@@ -118,7 +119,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[], object>? GetValueFetcherForProperty(MemberInfo member)
+        public static Func<object, object[]?, object>? GetValueFetcherForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
 
@@ -145,7 +146,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[], object> GetValueFetcherOrThrow(MemberInfo member)
+        public static Func<object, object[]?, object> GetValueFetcherOrThrow(MemberInfo member)
         {
             if (member is null)
             {
@@ -170,7 +171,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-        public static Action<object, object, object[]>? GetValueSetterForProperty(MemberInfo member)
+        public static Action<object, object?, object[]?>? GetValueSetterForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
 
@@ -197,7 +198,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-        public static Action<object, object, object[]> GetValueSetterOrThrow(MemberInfo member)
+        public static Action<object, object?, object[]?>? GetValueSetterOrThrow(MemberInfo member)
         {
             if (member is null)
             {
@@ -225,7 +226,7 @@ namespace ReactiveUI
         /// <param name="expressionChain">A list of expressions which will point towards a property or field.</param>
         /// <typeparam name="TValue">The type of the end value we are trying to get.</typeparam>
         /// <returns>If the value was successfully retrieved or not.</returns>
-        public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, IEnumerable<Expression> expressionChain)
+        public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object? current, IEnumerable<Expression> expressionChain)
         {
             var expressions = expressionChain.ToList();
             foreach (Expression expression in expressions.SkipLast(1))
@@ -306,7 +307,7 @@ namespace ReactiveUI
         /// <param name="shouldThrow">If we should throw if we are unable to set the value.</param>
         /// <typeparam name="TValue">The type of the end value we are trying to set.</typeparam>
         /// <returns>If the value was successfully retrieved or not.</returns>
-        public static bool TrySetValueToPropertyChain<TValue>(object target, IEnumerable<Expression> expressionChain, TValue value, bool shouldThrow = true)
+        public static bool TrySetValueToPropertyChain<TValue>(object? target, IEnumerable<Expression> expressionChain, TValue value, bool shouldThrow = true)
         {
             var expressions = expressionChain.ToList();
             foreach (Expression expression in expressions.SkipLast(1))
@@ -315,7 +316,7 @@ namespace ReactiveUI
                     GetValueFetcherOrThrow(expression.GetMemberInfo()) :
                     GetValueFetcherForProperty(expression.GetMemberInfo());
 
-                target = getter(target, expression.GetArgumentsArray());
+                target = getter(target ?? throw new ArgumentNullException(nameof(target)), expression.GetArgumentsArray());
             }
 
             if (target == null)
@@ -324,7 +325,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressions.Last();
-            Action<object, object, object[]>? setter = shouldThrow ?
+            Action<object, object?, object[]?>? setter = shouldThrow ?
                 GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
                 GetValueSetterForProperty(lastExpression.GetMemberInfo());
 
@@ -345,9 +346,9 @@ namespace ReactiveUI
         /// <param name="throwOnFailure">If we should throw an exception if the type can't be found.</param>
         /// <returns>The type that was found or null.</returns>
         /// <exception cref="TypeLoadException">If we were unable to find the type.</exception>
-        public static Type? ReallyFindType(string type, bool throwOnFailure)
+        public static Type? ReallyFindType(string? type, bool throwOnFailure)
         {
-            Type? ret = typeCache.Get(type);
+            Type? ret = typeCache.Get(type ?? string.Empty);
             if (ret != null || !throwOnFailure)
             {
                 return ret;
@@ -427,7 +428,7 @@ namespace ReactiveUI
         {
             return view.WhenAnyValue(x => x.ViewModel)
                 .Where(x => x != null)
-                .Select(x => ((TViewModel)x).WhenAnyDynamic(expression, y => y.Value))
+                .Select(x => ((TViewModel)x!).WhenAnyDynamic(expression, y => y.Value))
                 .Switch();
         }
     }

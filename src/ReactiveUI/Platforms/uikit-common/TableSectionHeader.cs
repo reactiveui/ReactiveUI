@@ -37,7 +37,7 @@ namespace ReactiveUI
         /// Gets or sets the function that creates the <see cref="UIView"/>
         /// used as header for this section. Overrides Title.
         /// </summary>
-        public Func<UIView> View { get; protected set; }
+        public Func<UIView>? View { get; protected set; }
 
         /// <summary>
         /// Gets or sets the height of the header.
@@ -47,6 +47,6 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the title for the section header, only used if View is null.
         /// </summary>
-        public string Title { get; protected set; }
+        public string? Title { get; protected set; }
     }
 }

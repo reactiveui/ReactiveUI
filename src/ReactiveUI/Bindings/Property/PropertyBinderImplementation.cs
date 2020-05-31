@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -18,9 +19,10 @@ namespace ReactiveUI
     /// <summary>
     /// Provides methods to bind properties to observables.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
     public class PropertyBinderImplementation : IPropertyBinderImplementation
     {
-        private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter> _typeConverterCache = new MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter>(
+        private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?>(
             (types, _) =>
             {
                 return Locator.Current.GetServices<IBindingTypeConverter>()
@@ -31,7 +33,7 @@ namespace ReactiveUI
                     }).currentBinding;
             }, RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter> _setMethodCache = new MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter>(
+        private static readonly MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?> _setMethodCache = new MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?>(
             (type, _) =>
             {
                 return Locator.Current.GetServices<ISetMethodBindingConverter>()
@@ -459,12 +461,12 @@ namespace ReactiveUI
             return disposable;
         }
 
-        internal static IBindingTypeConverter GetConverterForTypes(Type lhs, Type rhs)
+        internal static IBindingTypeConverter? GetConverterForTypes(Type lhs, Type rhs)
         {
             return _typeConverterCache.Get((lhs, rhs));
         }
 
-        private static Func<object, object, object[], object>? GetSetConverter(Type? fromType, Type targetType)
+        private static Func<object, object?, object[]?, object>? GetSetConverter(Type? fromType, Type targetType)
         {
             if (fromType == null)
             {
@@ -489,9 +491,9 @@ namespace ReactiveUI
         {
             var defaultSetter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
-            object SetThenGet(object paramTarget, object? paramValue, object[] paramParams)
+            object SetThenGet(object paramTarget, object? paramValue, object[]? paramParams)
             {
-                Func<object, object, object[], object>? converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
+                Func<object, object?, object[]?, object>? converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
 
                 if (converter == null)
                 {
@@ -526,7 +528,12 @@ namespace ReactiveUI
         {
             var hooks = Locator.Current.GetServices<IPropertyBindingHook>();
 
-            Func<IObservedChange<object, object>[]> vmFetcher;
+            if (view == null)
+            {
+                throw new ArgumentNullException(nameof(view));
+            }
+
+            Func<IObservedChange<object, object?>[]> vmFetcher;
             if (vmExpression != null)
             {
                 vmFetcher = () =>
@@ -543,7 +550,7 @@ namespace ReactiveUI
                 };
             }
 
-            var vFetcher = new Func<IObservedChange<object, object>[]>(() =>
+            var vFetcher = new Func<IObservedChange<object, object?>[]>(() =>
             {
                 Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, view, viewExpression.GetExpressionChain());
                 return fetchedValues;

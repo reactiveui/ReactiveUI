@@ -24,7 +24,7 @@ namespace ReactiveUI
         public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
             where T : class
         {
-            return item.WhenAny(x => x.AppState, x => (T)x.Value)
+            return item.WhenAny(x => x.AppState, x => (T)x)
                         .Where(x => x != null);
         }
 
@@ -39,6 +39,11 @@ namespace ReactiveUI
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item));
+            }
+
+            if (item.AppState == null)
+            {
+                throw new NullReferenceException(nameof(item.AppState));
             }
 
             return (T)item.AppState;
@@ -58,8 +63,13 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(item));
             }
 
+            if (item.AppState == null)
+            {
+                throw new NullReferenceException(nameof(item.AppState));
+            }
+
             var ret = new CompositeDisposable();
-            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
+            driver ??= Locator.Current.GetService<ISuspensionDriver>();
 
             ret.Add(item.ShouldInvalidateState
                          .SelectMany(_ => driver.InvalidateState())

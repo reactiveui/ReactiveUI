@@ -67,11 +67,11 @@ namespace ReactiveUI
         where TBinder : class, IBinder
         {
             private readonly Context _context;
-            private readonly IObserver<TBinder> _observer;
+            private readonly IObserver<TBinder?> _observer;
 
             private bool _disposed;
 
-            public ServiceConnection(Context context, IObserver<TBinder> observer)
+            public ServiceConnection(Context context, IObserver<TBinder?> observer)
             {
                 _context = context;
                 _observer = observer;

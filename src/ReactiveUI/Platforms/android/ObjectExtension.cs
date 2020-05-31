@@ -17,7 +17,7 @@ namespace ReactiveUI
         {
             if (value == null)
             {
-                return default(TObject);
+                return default!;
             }
 
             if (!(value is JavaHolder))
@@ -28,7 +28,7 @@ namespace ReactiveUI
             return (TObject)((JavaHolder)value).Instance;
         }
 
-        public static Object ToJavaObject<TObject>(this TObject value)
+        public static Object? ToJavaObject<TObject>(this TObject value)
         {
             if (value == null)
             {

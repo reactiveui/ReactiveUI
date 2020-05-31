@@ -11,7 +11,7 @@ namespace ReactiveUI
     public class PlatformOperations : IPlatformOperations
     {
         /// <inheritdoc/>
-        public string GetOrientation()
+        public string? GetOrientation()
         {
 #if UIKIT && !TVOS
             return UIKit.UIDevice.CurrentDevice.Orientation.ToString();

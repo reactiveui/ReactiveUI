@@ -22,7 +22,7 @@ namespace ReactiveUI
     /// </summary>
     public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
-        private static readonly IDictionary<(Type viewType, string propertyName), Func<object, Expression, IObservable<IObservedChange<object, object>>>> dispatchTable;
+        private static readonly Dictionary<(Type? viewType, string? propertyName), Func<object, Expression, IObservable<IObservedChange<object, object>>>?> dispatchTable;
 
         static AndroidObservableForWidgets()
         {

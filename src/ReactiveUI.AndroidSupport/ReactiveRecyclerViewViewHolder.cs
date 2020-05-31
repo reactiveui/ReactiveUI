@@ -121,7 +121,7 @@ namespace ReactiveUI.AndroidSupport
         public View View => ItemView;
 
         /// <inheritdoc/>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
@@ -134,7 +134,7 @@ namespace ReactiveUI.AndroidSupport
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <inheritdoc/>
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (TViewModel)value;

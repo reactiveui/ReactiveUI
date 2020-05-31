@@ -52,8 +52,8 @@ namespace ReactiveUI
         /// <param name="scheduler">A scheduler for where to send navigation changes to.</param>
         public RoutingState(IScheduler scheduler)
         {
+            _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
             _navigationStack = new ObservableCollection<IRoutableViewModel>();
-            _scheduler = scheduler;
             SetupRx();
         }
 

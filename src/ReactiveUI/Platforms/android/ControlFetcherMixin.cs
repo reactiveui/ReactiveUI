@@ -197,8 +197,13 @@ namespace ReactiveUI
             return resourceNameOverride ?? member.Name;
         }
 
-        private static View GetCachedControl(string propertyName, object rootView, Func<View> fetchControlFromView)
+        private static View GetCachedControl(string? propertyName, object rootView, Func<View> fetchControlFromView)
         {
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+
             var ourViewCache = viewCache.GetOrCreateValue(rootView);
 
             if (ourViewCache.TryGetValue(propertyName, out View ret))
@@ -212,8 +217,13 @@ namespace ReactiveUI
             return ret;
         }
 
-        private static int GetControlIdByName(Assembly assembly, string name)
+        private static int GetControlIdByName(Assembly assembly, string? name)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             var ids = _controlIds.GetOrAdd(
                 assembly,
                 currentAssembly =>

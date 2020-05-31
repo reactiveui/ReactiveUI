@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="WireUpResourceAttribute"/> class.
         /// </summary>
         /// <param name="resourceName">Name of the resource.</param>
-        public WireUpResourceAttribute(string resourceName)
+        public WireUpResourceAttribute(string? resourceName)
         {
             ResourceNameOverride = resourceName;
         }
@@ -32,6 +32,6 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the resource name override.
         /// </summary>
-        public string ResourceNameOverride { get; }
+        public string? ResourceNameOverride { get; }
     }
 }
