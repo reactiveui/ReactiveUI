@@ -18,8 +18,8 @@ namespace ReactiveUI.Winforms
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private RoutingState _router;
-        private Control _defaultContent;
+        private RoutingState? _router;
+        private Control? _defaultContent;
         private IObservable<string>? _viewContractObservable;
 
         /// <summary>
@@ -72,10 +72,14 @@ namespace ReactiveUI.Winforms
                 }
 
                 IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                view.ViewModel = x.ViewModel;
+                IViewFor? view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                if (view != null)
+                {
+                    view.ViewModel = x.ViewModel;
 
-                viewLastAdded = InitView((Control)view);
+                    viewLastAdded = InitView((Control)view);
+                }
+
                 Controls.Add(viewLastAdded);
                 ResumeLayout();
             }, RxApp.DefaultExceptionHandler.OnNext));
@@ -126,7 +130,7 @@ namespace ReactiveUI.Winforms
         /// Gets or sets the view locator.
         /// </summary>
         [Browsable(false)]
-        public IViewLocator ViewLocator { get; set; }
+        public IViewLocator? ViewLocator { get; set; }
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
