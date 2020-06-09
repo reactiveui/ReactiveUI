@@ -32,9 +32,9 @@ namespace ReactiveUI.XamForms
         /// <summary>
         /// Gets or sets the ViewModel to display.
         /// </summary>
-        public TViewModel? ViewModel
+        public TViewModel ViewModel
         {
-            get => (TViewModel?)GetValue(ViewModelProperty);
+            get => (TViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 

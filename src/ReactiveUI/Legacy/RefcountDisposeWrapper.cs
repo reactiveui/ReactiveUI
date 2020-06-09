@@ -28,7 +28,7 @@ namespace ReactiveUI.Legacy
             if (Interlocked.Decrement(ref _refCount) == 0)
             {
                 var inner = Interlocked.Exchange(ref _inner, null);
-                inner.Dispose();
+                inner?.Dispose();
             }
         }
     }

@@ -36,7 +36,7 @@ namespace ReactiveUI.AndroidX
         }
 
         /// <inheritdoc/>
-        public TViewModel? ViewModel
+        public TViewModel ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);

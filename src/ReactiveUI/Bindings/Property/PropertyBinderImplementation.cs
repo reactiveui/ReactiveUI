@@ -124,7 +124,7 @@ namespace ReactiveUI
             {
                 var result = vmToViewConverter.TryConvert(vmValue, typeof(TVProp), conversionHint, out object? tmp);
 
-                vValue = result ? (TVProp)tmp : default(TVProp);
+                vValue = (result ? (TVProp)tmp : default(TVProp)) ?? throw new InvalidOperationException();
                 return result;
             }
 
@@ -132,7 +132,7 @@ namespace ReactiveUI
             {
                 var result = viewToVMConverter.TryConvert(vValue, typeof(TVMProp), conversionHint, out object? tmp);
 
-                vmValue = result ? (TVMProp)tmp : default(TVMProp);
+                vmValue = (result ? (TVMProp)tmp : default(TVMProp)) ?? throw new InvalidOperationException();
                 return result;
             }
 
@@ -382,9 +382,8 @@ namespace ReactiveUI
                 return null;
             }
 
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (TProp)x).Select(selector);
+            IObservable<object?> source = (IObservable<object?>)Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (TProp)x).Select(selector);
 
-            var viewType = viewExpression.Type;
             var (disposable, obs) = BindToDirect<TView, TOut, TOut>(source, view, viewExpression);
 
             return new ReactiveBinding<TView, TViewModel, TOut>(view, viewModel, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
@@ -484,7 +483,7 @@ namespace ReactiveUI
         }
 
         private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
-            IObservable<TObs> changeObservable,
+            IObservable<object?> changeObservable,
             TTarget target,
             Expression viewExpression)
             where TTarget : class
@@ -544,7 +543,7 @@ namespace ReactiveUI
             }
             else
             {
-                vmFetcher = () => new IObservedChange<object, object>[]
+                vmFetcher = () => new IObservedChange<object, object?>[]
                 {
                     new ObservedChange<object, object>(null!, null, viewModel)
                 };
