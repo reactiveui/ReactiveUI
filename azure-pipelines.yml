@@ -1,10 +1,14 @@
 trigger:
 - master
+- main
+- latest
 - rel/*
 - preview/*
 
 pr:
 - master
+- main
+- latest
 - rel/*
 - preview/*
 
