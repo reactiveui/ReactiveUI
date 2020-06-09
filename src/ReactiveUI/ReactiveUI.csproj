@@ -8,7 +8,7 @@
     <PackageId>ReactiveUI</PackageId>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <WarningsAsErrors>CS8625;CS8604;CS8600;CS8614;CS8603;CS8618;CS8619</WarningsAsErrors>
+    <WarningsAsErrors>CS8625;CS8604;CS8600;CS8614;CS8603;CS8618;CS8619;CS8602;CS8601;CS8620;CS8766;</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
