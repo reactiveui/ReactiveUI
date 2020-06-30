@@ -167,7 +167,7 @@ namespace ReactiveUI
             if (!_routerInstigated)
             {
                 // user must have clicked Back button in nav controller, so we need to manually sync up the router state
-                Router.NavigationStack.RemoveAt(_router.NavigationStack.Count - 1);
+                Router?.NavigationStack.RemoveAt(_router!.NavigationStack.Count - 1);
             }
 
             return base.PopViewController(animated);

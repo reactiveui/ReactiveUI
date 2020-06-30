@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -138,7 +139,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         public void SendMessage<T>(T message, string? contract = null)
         {
-            SetupSubjectIfNecessary<T>(contract).OnNext(message);
+            SetupSubjectIfNecessary<T>(contract)?.OnNext(message);
         }
 
         private ISubject<T>? SetupSubjectIfNecessary<T>(string? contract)
@@ -178,7 +179,7 @@ namespace ReactiveUI
 
         private IScheduler GetScheduler((Type type, string? contract) item)
         {
-            _schedulerMappings.TryGetValue(item, out IScheduler scheduler);
+            _schedulerMappings.TryGetValue(item, out IScheduler? scheduler);
             return scheduler ?? CurrentThreadScheduler.Instance;
         }
     }

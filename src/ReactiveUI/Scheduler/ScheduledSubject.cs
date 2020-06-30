@@ -33,7 +33,7 @@ namespace ReactiveUI
         public ScheduledSubject(IScheduler scheduler, IObserver<T>? defaultObserver = null, ISubject<T>? defaultSubject = null)
         {
             _scheduler = scheduler;
-            _defaultObserver = defaultObserver;
+            _defaultObserver = defaultObserver ?? new Subject<T>();
             _subject = defaultSubject ?? new Subject<T>();
 
             if (defaultObserver != null)

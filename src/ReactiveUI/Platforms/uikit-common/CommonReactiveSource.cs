@@ -390,7 +390,7 @@ namespace ReactiveUI
 
                             foreach (var normalizedUpdate in normalizedUpdates)
                             {
-                                switch (normalizedUpdate.Type)
+                                switch (normalizedUpdate?.Type)
                                 {
                                     case UpdateType.Add:
                                         DoUpdate(_adapter.InsertItems, new[] { normalizedUpdate.Index }, section);
@@ -445,17 +445,17 @@ namespace ReactiveUI
             public PendingChange(NotifyCollectionChangedEventArgs ea)
             {
                 Action = ea.Action;
-                OldItems = ea.OldItems == null ? null : ea.OldItems.Cast<object>().ToList();
-                NewItems = ea.NewItems == null ? null : ea.NewItems.Cast<object>().ToList();
+                OldItems = ea.OldItems?.Cast<object>().ToList();
+                NewItems = ea.NewItems?.Cast<object>().ToList();
                 OldStartingIndex = ea.OldStartingIndex;
                 NewStartingIndex = ea.NewStartingIndex;
             }
 
             public NotifyCollectionChangedAction Action { get; }
 
-            public IList OldItems { get; }
+            public IList? OldItems { get; }
 
-            public IList NewItems { get; }
+            public IList? NewItems { get; }
 
             public int OldStartingIndex { get; }
 

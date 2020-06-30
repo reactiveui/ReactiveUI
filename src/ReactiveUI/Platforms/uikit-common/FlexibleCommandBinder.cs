@@ -70,7 +70,7 @@ namespace ReactiveUI
 
             var typeProperties = _config[match];
 
-            return typeProperties.CreateBinding(command, target, commandParameter);
+            return typeProperties?.CreateBinding(command, target, commandParameter) ?? Disposable.Empty;
         }
 
         /// <inheritdoc/>

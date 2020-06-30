@@ -111,7 +111,7 @@ namespace ReactiveUI
                 {
                     onChanging(x);
                     _lastValue = x;
-                    onChanged(x);
+                    onChanged!(x);
                 },
                 ex => _thrownExceptions.Value.OnNext(ex))
                 .DisposeWith(_disposable);

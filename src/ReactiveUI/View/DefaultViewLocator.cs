@@ -135,7 +135,17 @@ namespace ReactiveUI
 
         private static Type? ToggleViewModelType(Type? viewModelType)
         {
+            if (viewModelType == null)
+            {
+                return null;
+            }
+
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
+
+            if (viewModelTypeName == null)
+            {
+                return null;
+            }
 
             if (viewModelType.GetTypeInfo().IsInterface)
             {
@@ -176,6 +186,12 @@ namespace ReactiveUI
             }
 
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
+
+            if (viewModelTypeName == null)
+            {
+                return null;
+            }
+
             var proposedViewTypeName = ViewModelToViewFunc(viewModelTypeName);
             var view = AttemptViewResolution(proposedViewTypeName, contract);
 
