@@ -57,7 +57,8 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object>>? GetNotificationForProperty(
+            object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (sender == null)
             {
@@ -82,7 +83,7 @@ namespace ReactiveUI
                 throw new NotSupportedException($"Notifications for {type.Name}.{propertyName} are not supported");
             }
 
-            return match.CreateObservable((NSObject)sender, expression);
+            return match.CreateObservable?.Invoke((NSObject)sender, expression);
         }
 
 #if UIKIT

@@ -496,7 +496,7 @@ namespace ReactiveUI
 
                 if (converter == null)
                 {
-                    defaultSetter(paramTarget, paramValue ?? throw new ArgumentNullException(nameof(paramValue)), paramParams);
+                    defaultSetter?.Invoke(paramTarget, paramValue ?? throw new ArgumentNullException(nameof(paramValue)), paramParams);
                     return defaultGetter(paramTarget, paramParams);
                 }
 

@@ -48,7 +48,7 @@ namespace ReactiveUI
                 return 0;
             }
 
-            return dispatchTable.Keys.Any(x => x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName) ? 5 : 0;
+            return dispatchTable.Keys.Any(x => x.viewType != null && (x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName)) ? 5 : 0;
         }
 
         /// <inheritdoc/>
@@ -60,9 +60,9 @@ namespace ReactiveUI
             }
 
             var type = sender.GetType();
-            var tableItem = dispatchTable.Keys.First(x => x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName);
+            var tableItem = dispatchTable.Keys.First(x => x.viewType != null && (x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName));
 
-            return dispatchTable[tableItem](sender, expression);
+            return dispatchTable[tableItem]?.Invoke(sender, expression);
         }
 
         private static DispatchItem CreateFromAdapterView()

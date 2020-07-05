@@ -70,7 +70,7 @@ namespace ReactiveUI
 
             var typeProperties = _config[match];
 
-            return typeProperties?.CreateBinding(command, target, commandParameter) ?? Disposable.Empty;
+            return typeProperties?.CreateBinding?.Invoke(command, target, commandParameter) ?? Disposable.Empty;
         }
 
         /// <inheritdoc/>
@@ -96,7 +96,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(command));
             }
 
-            commandParameter = commandParameter ?? Observable.Return(target);
+            commandParameter ??= Observable.Return(target);
 
             object? latestParam = null;
             var ctl = target;

@@ -111,12 +111,17 @@ namespace ReactiveUI
 
         private static void Adopt(NSViewController parent, NSViewController? child)
         {
+            if (child == null)
+            {
+                return;
+            }
+
             // ensure the child view fills our entire frame
             child.View.Frame = parent.View.Bounds;
 #if UIKIT
             child.View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
 #else
-            child.View.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+                child.View.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 #endif
             child.View.TranslatesAutoresizingMaskIntoConstraints = true;
 
@@ -179,7 +184,7 @@ namespace ReactiveUI
 
                         if (view == null)
                         {
-                            var message = $"Unable to resolve view for \"{x.ViewModel.GetType()}\"";
+                            var message = $"Unable to resolve view for \"{x.ViewModel?.GetType()}\"";
 
                             if (x.Contract != null)
                             {
@@ -194,7 +199,7 @@ namespace ReactiveUI
 
                         if (viewController == null)
                         {
-                            throw new Exception($"Resolved view type '{viewController.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
+                            throw new Exception($"Resolved view type '{viewController?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                         }
 
                         view.ViewModel = x.ViewModel;

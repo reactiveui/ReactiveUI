@@ -81,7 +81,7 @@ namespace ReactiveUI
             public override void OnReceive(Context context, Intent intent)
             {
                 var extraDevice = intent.GetParcelableExtra(UsbManager.ExtraDevice) as UsbDevice;
-                if (_device.DeviceName != extraDevice.DeviceName)
+                if (_device.DeviceName != extraDevice?.DeviceName)
                 {
                     return;
                 }

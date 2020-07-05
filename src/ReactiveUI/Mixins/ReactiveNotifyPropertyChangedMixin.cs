@@ -207,7 +207,7 @@ namespace ReactiveUI
                 .StartWith(kicker);
         }
 
-        private static IObservable<IObservedChange<object, object>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
+        private static IObservable<IObservedChange<object, object>>? NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
         {
             var propertyName = expression.GetMemberInfo().Name;
             var result = notifyFactoryCache.Get((sender.GetType(), propertyName, beforeChange));

@@ -82,7 +82,7 @@ namespace ReactiveUI
             }
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
-            Func<string?> platformGetter = () => default(string);
+            Func<string?> platformGetter = () => default;
 
             if (platform == null)
             {
@@ -95,10 +95,10 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
+            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string?>(
                 eventHandler =>
                 {
-                    void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
+                    void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter() !);
                     return Handler;
                 },
                 x => SizeChanged += x,
@@ -120,7 +120,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view contract observable.
         /// </summary>
-        public IObservable<string> ViewContractObservable
+        public IObservable<string?> ViewContractObservable
         {
             get => (IObservable<string>)GetValue(ViewContractObservableProperty);
             set => SetValue(ViewContractObservableProperty, value);
@@ -138,7 +138,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the ViewModel to display.
         /// </summary>
-        public object ViewModel
+        public object? ViewModel
         {
             get => GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
@@ -189,7 +189,7 @@ namespace ReactiveUI
             ((ViewModelViewHost)dependencyObject)._updateViewModel.OnNext(Unit.Default);
         }
 
-        private void ResolveViewForViewModel(object viewModel, string contract)
+        private void ResolveViewForViewModel(object? viewModel, string contract)
         {
             if (viewModel == null)
             {

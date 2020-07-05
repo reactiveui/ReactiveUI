@@ -38,11 +38,11 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="command">The command to bind.</param>
         /// <param name="target">The target object, usually a UI control of
-        /// some kind.</param>
+        ///     some kind.</param>
         /// <param name="commandParameter">An IObservable source whose latest
-        /// value will be passed as the command parameter to the command. Hosts
-        /// will always pass a valid IObservable, but this may be
-        /// Observable.Empty.</param>
+        ///     value will be passed as the command parameter to the command. Hosts
+        ///     will always pass a valid IObservable, but this may be
+        ///     Observable.Empty.</param>
         /// <returns>An IDisposable which will disconnect the binding when
         /// disposed.</returns>
         IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter);

@@ -399,7 +399,7 @@ namespace ReactiveUI
             {
                 try
                 {
-                    subject.OnNext(item);
+                    subject?.OnNext(item);
                 }
                 catch (Exception ex)
                 {

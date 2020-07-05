@@ -85,9 +85,9 @@ namespace ReactiveUI
                               .SelectMany(x => driver.LoadState())
                               .LoggedCatch(
                                   item,
-                                  Observable.Defer(() => Observable.Return(item.CreateNewAppState())),
+                                  Observable.Defer(() => Observable.Return(item.CreateNewAppState?.Invoke())),
                                   "Failed to restore app state from storage, creating from scratch")
-                                  .Subscribe(x => item.AppState = x ?? item.CreateNewAppState()));
+                                  .Subscribe(x => item.AppState = x ?? item.CreateNewAppState?.Invoke()));
 
             return ret;
         }

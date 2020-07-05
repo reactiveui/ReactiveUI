@@ -39,7 +39,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public bool TryConvert(object from, Type toType, object? conversionHint, out object result)
+        public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
         {
             var hint = conversionHint is BooleanToVisibilityHint ?
                 (BooleanToVisibilityHint)conversionHint :

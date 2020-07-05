@@ -46,7 +46,7 @@ namespace ReactiveUI
                 var serializer = new BinaryFormatter();
                 var st = new MemoryStream();
 
-                AutoSuspendHelper.LatestBundle.PutByteArray("__state", st.ToArray());
+                AutoSuspendHelper.LatestBundle?.PutByteArray("__state", st.ToArray());
                 return Observables.Unit;
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@ namespace ReactiveUI
         {
             try
             {
-                AutoSuspendHelper.LatestBundle.PutByteArray("__state", Array.Empty<byte>());
+                AutoSuspendHelper.LatestBundle?.PutByteArray("__state", Array.Empty<byte>());
                 return Observables.Unit;
             }
             catch (Exception ex)

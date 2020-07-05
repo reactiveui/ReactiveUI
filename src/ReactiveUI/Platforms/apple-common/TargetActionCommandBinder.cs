@@ -93,11 +93,11 @@ namespace ReactiveUI
             var sel = new Selector("theAction:");
 
             // TODO how does this work? Is there an Action property?
-            Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Action"))(target, sel, null);
+            Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Action"))?.Invoke(target, sel, null);
 
             var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Target"));
-            targetSetter(target, ctlDelegate, null);
-            var actionDisp = Disposable.Create(() => targetSetter(target, null, null));
+            targetSetter?.Invoke(target, ctlDelegate, null);
+            var actionDisp = Disposable.Create(() => targetSetter?.Invoke(target, null, null));
 
             Action<object, object, object[]?>? enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
             if (enabledSetter == null)
