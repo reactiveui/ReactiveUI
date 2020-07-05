@@ -86,7 +86,7 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string?>(
+            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
                     eventHandler =>
                     {
                         void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
@@ -127,7 +127,7 @@ namespace ReactiveUI
 
                         view.ViewModel = x.viewModel;
                         Content = view;
-                    }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
+                    }, ex => RxApp.DefaultExceptionHandler?.OnNext(ex)));
             });
         }
 

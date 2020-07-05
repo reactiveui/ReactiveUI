@@ -114,7 +114,7 @@ namespace ReactiveUI
             vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
             contractChanged
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => _viewContract = x);
+                .Subscribe(x => _viewContract = x ?? string.Empty);
         }
 
         /// <summary>

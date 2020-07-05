@@ -35,7 +35,7 @@ namespace ReactiveUI
             ViewContractObservable = Observable.Return<string?>(null);
             _titleUpdater = new SerialDisposable();
 
-            this.WhenActivated(
+            _ = this.WhenActivated(
                 d =>
                 {
                     d(this
@@ -46,7 +46,7 @@ namespace ReactiveUI
                             _routerInstigated = true;
                             NSViewController? view = null;
 
-                            if (Router != null)
+                            if (Router != null && x != null)
                             {
                                 foreach (var viewModel in x.NavigationStack)
                                 {
@@ -59,9 +59,12 @@ namespace ReactiveUI
                                     PushViewController(view, false);
                                 }
 
-                                _titleUpdater.Disposable = Router.GetCurrentViewModel()
-                                    .WhenAnyValue(y => y.UrlPathSegment)
-                                    .Subscribe(y => view.NavigationItem.Title = y);
+                                if (view != null)
+                                {
+                                    _titleUpdater.Disposable = Router.GetCurrentViewModel()
+                                        .WhenAnyValue(y => y.UrlPathSegment)
+                                        .Subscribe(y => view.NavigationItem.Title = y);
+                                }
                             }
 
                             _routerInstigated = false;
@@ -69,12 +72,12 @@ namespace ReactiveUI
 
                     var navigationStackChanged = this.WhenAnyValue(x => x.Router)
                         .Where(x => x != null)
-                        .Select(x => x.NavigationStack.ObserveCollectionChanges())
+                        .Select(x => x?.NavigationStack.ObserveCollectionChanges())
                         .Switch();
 
                     d(navigationStackChanged
                         .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add)
-                        .Select(_ => new { View = ResolveView(Router?.GetCurrentViewModel(), null), Animate = Router.NavigationStack.Count > 1 })
+                        .Select(_ => new { View = ResolveView(Router?.GetCurrentViewModel(), null), Animate = Router?.NavigationStack.Count > 1 })
                         .Subscribe(x =>
                         {
                             if (_routerInstigated || Router == null)
@@ -82,15 +85,18 @@ namespace ReactiveUI
                                 return;
                             }
 
-                            _titleUpdater.Disposable = Router.GetCurrentViewModel()
-                                .WhenAnyValue(y => y.UrlPathSegment)
-                                .Subscribe(y => x.View.NavigationItem.Title = y);
+                            if (x != null && x.View != null)
+                            {
+                                _titleUpdater.Disposable = Router.GetCurrentViewModel()
+                                    .WhenAnyValue(y => y.UrlPathSegment)
+                                    .Subscribe(y => x.View.NavigationItem.Title = y);
+                            }
 
                             _routerInstigated = true;
 
                             // super important that animate is false if it's the first view being pushed, otherwise iOS gets hella confused
                             // and calls PushViewController twice
-                            PushViewController(x.View, x.Animate);
+                            PushViewController(x?.View, x.Animate);
 
                             _routerInstigated = false;
                         }));
@@ -105,7 +111,7 @@ namespace ReactiveUI
                         }));
 
                     d(this
-                        .WhenAnyObservable(x => x.Router.NavigateBack!)
+                        .WhenAnyObservable(x => x.Router.NavigateBack)
                         .Subscribe(x =>
                         {
                             _routerInstigated = true;
@@ -156,7 +162,7 @@ namespace ReactiveUI
                 var viewModel = (IRoutableViewModel?)view.ViewModel;
                 if (viewModel != null)
                 {
-                    Router.NavigationStack.Add(viewModel);
+                    Router?.NavigationStack.Add(viewModel);
                 }
             }
         }

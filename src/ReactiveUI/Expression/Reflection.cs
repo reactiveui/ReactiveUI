@@ -24,7 +24,7 @@ namespace ReactiveUI
     {
         private static readonly ExpressionRewriter expressionRewriter = new ExpressionRewriter();
 
-        private static readonly MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>(
+        private static readonly MemoizingMRUCache<string, Type?> _typeCache = new MemoizingMRUCache<string, Type?>(
             (type, _) =>
             {
                 return Type.GetType(
@@ -348,7 +348,7 @@ namespace ReactiveUI
         /// <exception cref="TypeLoadException">If we were unable to find the type.</exception>
         public static Type? ReallyFindType(string? type, bool throwOnFailure)
         {
-            Type? ret = typeCache.Get(type ?? string.Empty);
+            Type? ret = _typeCache.Get(type ?? string.Empty);
             if (ret != null || !throwOnFailure)
             {
                 return ret;

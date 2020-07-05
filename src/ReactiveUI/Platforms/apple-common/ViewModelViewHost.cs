@@ -121,7 +121,7 @@ namespace ReactiveUI
 #if UIKIT
             child.View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
 #else
-                child.View.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+            child.View.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 #endif
             child.View.TranslatesAutoresizingMaskIntoConstraints = true;
 
