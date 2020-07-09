@@ -52,14 +52,15 @@ namespace ReactiveUI
         /// The view model dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(default(object)));
+            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
 
         /// <summary>
         /// The view contract observable dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewContractObservableProperty =
-            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
+            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, SomethingChanged));
 
+        private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
         private string _viewContract;
         private bool _isDisposed;
 
@@ -105,17 +106,15 @@ namespace ReactiveUI
                 .StartWith(platformGetter())
                 .DistinctUntilChanged();
 
-            // Observable that fires when ViewModel or ViewContractObservable change, or ViewContractObservable fires
-            var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.ViewModel),
-                this.WhenAnyObservable(x => x.ViewContractObservable),
-                (vm, contract) => new { ViewModel = vm, Contract = contract });
+            var contractChanged = _updateViewModel.Select(_ => ViewContractObservable).Switch();
+            var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
 
-            vmAndContract.Subscribe(x =>
-            {
-                _viewContract = x.Contract;
-                ResolveViewForViewModel(x.ViewModel, x.Contract);
-            });
+            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
+
+            vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
+            contractChanged
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => _viewContract = x);
         }
 
         /// <summary>
@@ -177,7 +176,17 @@ namespace ReactiveUI
                 return;
             }
 
+            if (isDisposing)
+            {
+                _updateViewModel?.Dispose();
+            }
+
             _isDisposed = true;
+        }
+
+        private static void SomethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            ((ViewModelViewHost)dependencyObject)._updateViewModel.OnNext(Unit.Default);
         }
 
         private void ResolveViewForViewModel(object viewModel, string contract)
