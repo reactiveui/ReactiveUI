@@ -52,15 +52,16 @@ namespace ReactiveUI
         /// The view model dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
+            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, ViewModelChanged));
 
         /// <summary>
         /// The view contract observable dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewContractObservableProperty =
-            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, SomethingChanged));
+            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, ViewContractChanged));
 
         private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
+        private readonly Subject<Unit> _updateViewContract = new Subject<Unit>();
         private string _viewContract;
         private bool _isDisposed;
 
@@ -106,7 +107,7 @@ namespace ReactiveUI
                 .StartWith(platformGetter())
                 .DistinctUntilChanged();
 
-            var contractChanged = _updateViewModel.Select(_ => ViewContractObservable).Switch();
+            var contractChanged = _updateViewContract.Select(_ => ViewContractObservable).Switch();
             var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
 
             var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
@@ -179,14 +180,20 @@ namespace ReactiveUI
             if (isDisposing)
             {
                 _updateViewModel?.Dispose();
+                _updateViewContract?.Dispose();
             }
 
             _isDisposed = true;
         }
 
-        private static void SomethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        private static void ViewModelChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             ((ViewModelViewHost)dependencyObject)._updateViewModel.OnNext(Unit.Default);
+        }
+
+        private static void ViewContractChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            ((ViewModelViewHost)dependencyObject)._updateViewContract.OnNext(Unit.Default);
         }
 
         private void ResolveViewForViewModel(object viewModel, string contract)
