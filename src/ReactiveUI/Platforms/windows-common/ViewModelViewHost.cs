@@ -96,6 +96,16 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
+            var contractChanged = _updateViewContract.Select(_ => ViewContractObservable).Switch();
+            var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
+
+            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
+
+            vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
+            contractChanged
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => _viewContract = x);
+
             ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
                 eventHandler =>
                 {
@@ -106,16 +116,6 @@ namespace ReactiveUI
                 x => SizeChanged -= x)
                 .StartWith(platformGetter())
                 .DistinctUntilChanged();
-
-            var contractChanged = _updateViewContract.Select(_ => ViewContractObservable).Switch();
-            var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
-
-            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
-
-            vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
-            contractChanged
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => _viewContract = x);
         }
 
         /// <summary>
