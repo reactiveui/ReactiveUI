@@ -14,7 +14,7 @@ namespace ReactiveUI.Tests.Winforms
 {
     public class CommandBindingTests
     {
-        [Fact]
+        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
         public void CommandBinderBindsToButton()
         {
             var fixture = new CreatesWinformsCommandBinding();
@@ -92,7 +92,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
         public void CommandBinderAffectsEnabledState()
         {
             var fixture = new CreatesWinformsCommandBinding();
@@ -112,7 +112,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
         public void CommandBinderAffectsEnabledStateForComponents()
         {
             var fixture = new CreatesWinformsCommandBinding();
