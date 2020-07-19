@@ -171,7 +171,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-        public static Action<object, object?, object[]?>? GetValueSetterForProperty(MemberInfo member)
+        public static Action<object, object?, object[]?> GetValueSetterForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
 
@@ -187,7 +187,7 @@ namespace ReactiveUI
                 return property.SetValue;
             }
 
-            return null;
+            return null!;
         }
 
         /// <summary>

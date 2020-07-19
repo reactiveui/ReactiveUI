@@ -111,16 +111,15 @@ namespace ReactiveUI
             this.Log().Debug(CultureInfo.InvariantCulture, "Getting cell for index path {0}-{1}", indexPath.Section, indexPath.Row);
             var section = SectionInfo[indexPath.Section];
             var vm = ((IList)section.Collection!)[indexPath.Row];
-            var cell = _adapter.DequeueReusableCell(section.CellKeySelector(vm), indexPath);
-            var view = cell as IViewFor;
+            var cell = _adapter.DequeueReusableCell(section?.CellKeySelector?.Invoke(vm) ?? NSString.Empty, indexPath);
 
-            if (view != null)
+            if (cell is IViewFor view)
             {
                 this.Log().Debug(CultureInfo.InvariantCulture, "Setting VM for index path {0}-{1}", indexPath.Section, indexPath.Row);
                 view.ViewModel = vm;
             }
 
-            var initializeCellAction = section.InitializeCellAction ?? (_ => { });
+            var initializeCellAction = section?.InitializeCellAction ?? (_ => { });
             initializeCellAction(cell);
 
             return cell;

@@ -26,11 +26,11 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the cell key selector.
         /// </summary>
-        Func<object, NSString> CellKeySelector { get; }
+        Func<object?, NSString>? CellKeySelector { get; }
 
         /// <summary>
         /// Gets the initialize cell action.
         /// </summary>
-        Action<TUIViewCell> InitializeCellAction { get; }
+        Action<TUIViewCell>? InitializeCellAction { get; }
     }
 }

@@ -26,7 +26,7 @@ namespace ReactiveUI
         public Action<UITableViewCell>? InitializeCellAction { get; protected set; }
 
         /// <inheritdoc/>
-        public Func<object, NSString>? CellKeySelector { get; protected set; }
+        public Func<object?, NSString>? CellKeySelector { get; protected set; }
 
         /// <summary>
         /// Gets or sets the size hint.
@@ -63,7 +63,7 @@ namespace ReactiveUI
         /// <param name="cellKeySelector">The cell key selector.</param>
         /// <param name="sizeHint">The size hint.</param>
         /// <param name="initializeCellAction">The initialize cell action.</param>
-        public TableSectionInformation(INotifyCollectionChanged collection, Func<object, NSString>? cellKeySelector, float sizeHint, Action<TCell>? initializeCellAction = null)
+        public TableSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString>? cellKeySelector, float sizeHint, Action<TCell>? initializeCellAction = null)
         {
             Collection = collection;
             SizeHint = sizeHint;

@@ -63,7 +63,7 @@ namespace ReactiveUI
             {
                 try
                 {
-                    var view = layoutHost.View.GetControl(layoutHost.GetType().Assembly, member.GetResourceName());
+                    var view = layoutHost.View?.GetControl(layoutHost.GetType().Assembly, member.GetResourceName());
                     member.SetValue(layoutHost, view);
                 }
                 catch (Exception ex)

@@ -18,6 +18,6 @@ namespace ReactiveUI
         /// <value>
         /// The view.
         /// </value>
-        View View { get; }
+        View? View { get; }
     }
 }

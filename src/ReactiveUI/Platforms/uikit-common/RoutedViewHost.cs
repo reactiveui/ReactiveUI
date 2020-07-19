@@ -23,7 +23,7 @@ namespace ReactiveUI
     public class RoutedViewHost : ReactiveNavigationController
     {
         private readonly SerialDisposable _titleUpdater;
-        private RoutingState? _router;
+        private RoutingState _router;
         private IObservable<string?>? _viewContractObservable;
         private bool _routerInstigated;
 
@@ -96,7 +96,7 @@ namespace ReactiveUI
 
                             // super important that animate is false if it's the first view being pushed, otherwise iOS gets hella confused
                             // and calls PushViewController twice
-                            PushViewController(x?.View, x.Animate);
+                            PushViewController(x?.View, x?.Animate ?? false);
 
                             _routerInstigated = false;
                         }));
@@ -124,7 +124,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
         /// </summary>
-        public RoutingState? Router
+        public RoutingState Router
         {
             get => _router;
             set => this.RaiseAndSetIfChanged(ref _router, value);

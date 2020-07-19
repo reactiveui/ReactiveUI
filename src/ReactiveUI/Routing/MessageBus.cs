@@ -148,7 +148,7 @@ namespace ReactiveUI
 
             WithMessageBus(typeof(T), contract, (mb, item) =>
             {
-                if (mb.TryGetValue(item, out NotAWeakReference subjRef) && subjRef.IsAlive)
+                if (mb.TryGetValue(item, out NotAWeakReference? subjRef) && subjRef.IsAlive)
                 {
                     ret = (ISubject<T>)subjRef.Target;
                     return;

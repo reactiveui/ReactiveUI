@@ -25,10 +25,10 @@ namespace ReactiveUI
         private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?>(
             (types, _) =>
             {
-                return Locator.Current.GetServices<IBindingTypeConverter>()
+                return Locator.Current.GetServices<IBindingTypeConverter?>()
                     .Aggregate((currentAffinity: -1, currentBinding: default(IBindingTypeConverter)), (acc, x) =>
                     {
-                        var score = x.GetAffinityForObjects(types.fromType, types.toType);
+                        var score = x?.GetAffinityForObjects(types.fromType, types.toType) ?? -1;
                         return score > acc.currentAffinity && score > 0 ? (score, x) : acc;
                     }).currentBinding;
             }, RxApp.SmallCacheLimit);
