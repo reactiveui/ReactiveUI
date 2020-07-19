@@ -22,7 +22,7 @@ namespace ReactiveUI
         /// <param name="context">The Context to bind the Service from.</param>
         /// <param name="intent">Identifies the service to connect to. The Intent may specify either an explicit component name, or a logical description (action, category, etc) to match an IntentFilter published by a service.</param>
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
-        public static IObservable<IBinder> ServiceBound(this Context context, Intent intent, Bind flags = Bind.None)
+        public static IObservable<IBinder?> ServiceBound(this Context context, Intent intent, Bind flags = Bind.None)
         {
             return ServiceBound<IBinder>(context, intent, flags);
         }
@@ -35,14 +35,14 @@ namespace ReactiveUI
         /// <param name="intent">Identifies the service to connect to. The Intent may specify either an explicit component name, or a logical description (action, category, etc) to match an IntentFilter published by a service.</param>
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
         /// <typeparam name="TBinder">The type of the returned service binder.</typeparam>
-        public static IObservable<TBinder> ServiceBound<TBinder>(this Context context, Intent intent, Bind flags = Bind.None)
+        public static IObservable<TBinder?> ServiceBound<TBinder>(this Context context, Intent intent, Bind flags = Bind.None)
         where TBinder
             : class,
             IBinder
         {
-            return Observable.Create<TBinder>(observer =>
+            return Observable.Create<TBinder?>(observer =>
             {
-                var connection = new ServiceConnection<TBinder>(context, observer);
+                var connection = new ServiceConnection<TBinder?>(context, observer);
                 try
                 {
                     if (!context.BindService(intent, connection, flags))

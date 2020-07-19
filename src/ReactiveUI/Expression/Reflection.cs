@@ -126,7 +126,7 @@ namespace ReactiveUI
             FieldInfo? field = member as FieldInfo;
             if (field != null)
             {
-                return (obj, _) => field.GetValue(obj);
+                return (obj, _) => field.GetValue(obj) ?? throw new InvalidOperationException();
             }
 
             PropertyInfo? property = member as PropertyInfo;
@@ -316,7 +316,10 @@ namespace ReactiveUI
                     GetValueFetcherOrThrow(expression.GetMemberInfo()) :
                     GetValueFetcherForProperty(expression.GetMemberInfo());
 
-                target = getter(target ?? throw new ArgumentNullException(nameof(target)), expression.GetArgumentsArray());
+                if (getter != null)
+                {
+                    target = getter(target ?? throw new ArgumentNullException(nameof(target)), expression.GetArgumentsArray());
+                }
             }
 
             if (target == null)
@@ -372,8 +375,8 @@ namespace ReactiveUI
             }
 
             Type ti = type;
-            EventInfo ei = ti.GetRuntimeEvent(eventName);
-            if (ei == null)
+            EventInfo? ei = ti.GetRuntimeEvent(eventName);
+            if (ei == null || ei.EventHandlerType == null)
             {
                 throw new Exception($"Couldn't find {type.FullName}.{eventName}");
             }
@@ -418,7 +421,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(item));
             }
 
-            return (item.GetMethod ?? item.SetMethod).IsStatic;
+            return ((item.GetMethod ?? item.SetMethod) !).IsStatic;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "TViewModel used to help generic calling.")]

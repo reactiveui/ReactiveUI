@@ -99,7 +99,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -179,7 +179,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -556,7 +556,7 @@ namespace ReactiveUI
             });
 
             var shouldBind = hooks.Aggregate(true, (acc, x) =>
-                acc && x.ExecuteHook(viewModel, view, vmFetcher, vFetcher, direction));
+                acc && x.ExecuteHook(viewModel, view, vmFetcher!, vFetcher!, direction));
 
             if (!shouldBind)
             {
@@ -568,7 +568,7 @@ namespace ReactiveUI
             return shouldBind;
         }
 
-        private IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)>? BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        private IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             TViewModel viewModel,
             TView view,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -631,7 +631,7 @@ namespace ReactiveUI
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
             if (!ret)
             {
-                return null;
+                return null!;
             }
 
             IObservable<(object? view, bool isViewModel)> changes = changeWithValues
@@ -656,7 +656,7 @@ namespace ReactiveUI
             // want the ViewModel to win at first.
             signalInitialUpdate.OnNext(true);
 
-            return new ReactiveBinding<TView, TViewModel, (object view, bool isViewModel)>(
+            return new ReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>(
                    view,
                    viewModel,
                    viewExpression,
