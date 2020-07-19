@@ -490,9 +490,15 @@ namespace ReactiveUI
         {
             var defaultSetter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
+
             object SetThenGet(object paramTarget, object? paramValue, object[]? paramParams)
             {
                 Func<object, object?, object[]?, object>? converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
+
+                if (defaultGetter == null)
+                {
+                    throw new InvalidOperationException($"{nameof(defaultGetter)} was not found.");
+                }
 
                 if (converter == null)
                 {
@@ -508,7 +514,7 @@ namespace ReactiveUI
 
             if (viewExpression.GetParent().NodeType == ExpressionType.Parameter)
             {
-                setObservable = changeObservable.Select(x => (TValue)SetThenGet(target, x, viewExpression.GetArgumentsArray()));
+                setObservable = changeObservable.Select(x => (TValue)SetThenGet(target, x, viewExpression.GetArgumentsArray()) !);
             }
             else
             {
