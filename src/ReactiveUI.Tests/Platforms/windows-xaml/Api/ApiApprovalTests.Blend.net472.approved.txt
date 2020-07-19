@@ -1,4 +1,4 @@
-[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.7.2", FrameworkDisplayName=".NET Framework 4.7.2")]
 namespace ReactiveUI.Blend
 {
     public class FollowObservableStateBehavior : Microsoft.Xaml.Behaviors.Behavior<System.Windows.FrameworkElement>

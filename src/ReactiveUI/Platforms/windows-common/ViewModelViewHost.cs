@@ -52,15 +52,16 @@ namespace ReactiveUI
         /// The view model dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, SomethingChanged));
+            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, ViewModelChanged));
 
         /// <summary>
         /// The view contract observable dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewContractObservableProperty =
-            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, SomethingChanged));
+            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, ViewContractChanged));
 
         private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
+        private readonly Subject<Unit> _updateViewContract = new Subject<Unit>();
         private string _viewContract;
         private bool _isDisposed;
 
@@ -95,7 +96,17 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string?>(
+            var contractChanged = _updateViewContract.Select(_ => ViewContractObservable).Switch();
+            var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
+
+            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
+
+            vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
+            contractChanged
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => _viewContract = x);
+
+            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
                 eventHandler =>
                 {
                     void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter() !);
@@ -105,16 +116,6 @@ namespace ReactiveUI
                 x => SizeChanged -= x)
                 .StartWith(platformGetter())
                 .DistinctUntilChanged();
-
-            var contractChanged = _updateViewModel.Select(_ => ViewContractObservable).Switch();
-            var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
-
-            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
-
-            vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
-            contractChanged
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => _viewContract = x ?? string.Empty);
         }
 
         /// <summary>
@@ -179,17 +180,23 @@ namespace ReactiveUI
             if (isDisposing)
             {
                 _updateViewModel?.Dispose();
+                _updateViewContract?.Dispose();
             }
 
             _isDisposed = true;
         }
 
-        private static void SomethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        private static void ViewModelChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             ((ViewModelViewHost)dependencyObject)._updateViewModel.OnNext(Unit.Default);
         }
 
-        private void ResolveViewForViewModel(object? viewModel, string contract)
+        private static void ViewContractChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            ((ViewModelViewHost)dependencyObject)._updateViewContract.OnNext(Unit.Default);
+        }
+
+        private void ResolveViewForViewModel(object viewModel, string contract)
         {
             if (viewModel == null)
             {

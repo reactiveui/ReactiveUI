@@ -106,8 +106,13 @@ namespace ReactiveUI
         [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Used on some platforms")]
         private static Func<object> TypeFactory(TypeInfo typeInfo)
         {
-            return Expression.Lambda<Func<object>>(Expression.New(
-                typeInfo.DeclaredConstructors.First(ci => ci.IsPublic && !ci.GetParameters().Any()))).Compile();
+            var parameterlessConstructor = typeInfo.DeclaredConstructors.FirstOrDefault(ci => ci.IsPublic && !ci.GetParameters().Any());
+            if (parameterlessConstructor == null)
+            {
+                throw new Exception($"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.");
+            }
+
+            return Expression.Lambda<Func<object>>(Expression.New(parameterlessConstructor)).Compile();
         }
 
         [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
