@@ -23,7 +23,7 @@ namespace ReactiveUI
     public class RoutedViewHost : ReactiveNavigationController
     {
         private readonly SerialDisposable _titleUpdater;
-        private RoutingState _router;
+        private RoutingState? _router;
         private IObservable<string?>? _viewContractObservable;
         private bool _routerInstigated;
 
@@ -111,7 +111,7 @@ namespace ReactiveUI
                         }));
 
                     d(this
-                        .WhenAnyObservable(x => x.Router.NavigateBack)
+                        .WhenAnyObservable(x => x.Router!.NavigateBack!)
                         .Subscribe(x =>
                         {
                             _routerInstigated = true;
@@ -124,7 +124,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
         /// </summary>
-        public RoutingState Router
+        public RoutingState? Router
         {
             get => _router;
             set => this.RaiseAndSetIfChanged(ref _router, value);
@@ -173,7 +173,7 @@ namespace ReactiveUI
             if (!_routerInstigated)
             {
                 // user must have clicked Back button in nav controller, so we need to manually sync up the router state
-                Router.NavigationStack.RemoveAt(_router.NavigationStack.Count - 1);
+                Router?.NavigationStack.RemoveAt(_router!.NavigationStack.Count - 1);
             }
 
             return base.PopViewController(animated);

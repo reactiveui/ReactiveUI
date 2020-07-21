@@ -73,7 +73,7 @@ namespace ReactiveUI
             }
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
-            Func<string> platformGetter = () => default(string) !;
+            Func<string?> platformGetter = () => default!;
 
             if (platform == null)
             {
@@ -99,7 +99,7 @@ namespace ReactiveUI
                 .Select(x => x);
 
             var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel),
+                this.WhenAnyObservable(x => x.Router.CurrentViewModel!),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (viewModel, contract) => (viewModel, contract));
 
