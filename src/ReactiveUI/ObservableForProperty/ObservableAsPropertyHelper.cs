@@ -48,7 +48,7 @@ namespace ReactiveUI
         /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/>
         /// should defer the subscription to the <paramref name="observable"/> source
         /// until the first call to <see cref="Value"/>, or if it should immediately
-        /// subscribe to the the <paramref name="observable"/> source.
+        /// subscribe to the <paramref name="observable"/> source.
         /// </param>
         /// <param name="scheduler">
         /// The scheduler that the notifications will be provided on -
@@ -85,7 +85,7 @@ namespace ReactiveUI
         /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/>
         /// should defer the subscription to the <paramref name="observable"/> source
         /// until the first call to <see cref="Value"/>, or if it should immediately
-        /// subscribe to the the <paramref name="observable"/> source.
+        /// subscribe to the <paramref name="observable"/> source.
         /// </param>
         /// <param name="scheduler">
         /// The scheduler that the notifications will provided on - this
