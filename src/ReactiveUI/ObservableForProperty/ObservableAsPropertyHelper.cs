@@ -136,7 +136,12 @@ namespace ReactiveUI
             {
                 if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0)
                 {
-                    _source.Subscribe(_subject).DisposeWith(_disposable);
+                    // Do not subscribe if disposed
+                    var localReferenceInCaseDisposeIsCalled = _disposable;
+                    if (localReferenceInCaseDisposeIsCalled != null)
+                    {
+                        _source.Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
+                    }
                 }
 
                 return _lastValue;
