@@ -163,6 +163,25 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void OAPHDeferSubscriptionShouldNotThrowIfDisposed()
+        {
+            var observable = Observable.Create<int>(o =>
+            {
+                o.OnNext(42);
+                o.OnCompleted();
+
+                return Disposable.Empty;
+            });
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
+
+            Assert.False(fixture.IsSubscribed);
+            fixture.Dispose();
+            var ex = Record.Exception(() => Assert.Equal(0, fixture.Value));
+            Assert.Null(ex);
+        }
+
+        [Fact]
         public void OAPHShouldRethrowErrors()
         {
             var input = new Subject<int>();

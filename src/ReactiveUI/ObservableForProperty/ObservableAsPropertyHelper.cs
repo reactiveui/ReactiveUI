@@ -48,7 +48,7 @@ namespace ReactiveUI
         /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/>
         /// should defer the subscription to the <paramref name="observable"/> source
         /// until the first call to <see cref="Value"/>, or if it should immediately
-        /// subscribe to the the <paramref name="observable"/> source.
+        /// subscribe to the <paramref name="observable"/> source.
         /// </param>
         /// <param name="scheduler">
         /// The scheduler that the notifications will be provided on -
@@ -85,7 +85,7 @@ namespace ReactiveUI
         /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/>
         /// should defer the subscription to the <paramref name="observable"/> source
         /// until the first call to <see cref="Value"/>, or if it should immediately
-        /// subscribe to the the <paramref name="observable"/> source.
+        /// subscribe to the <paramref name="observable"/> source.
         /// </param>
         /// <param name="scheduler">
         /// The scheduler that the notifications will provided on - this
@@ -136,7 +136,12 @@ namespace ReactiveUI
             {
                 if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0)
                 {
-                    _source.Subscribe(_subject).DisposeWith(_disposable);
+                    // Do not subscribe if disposed
+                    var localReferenceInCaseDisposeIsCalled = _disposable;
+                    if (localReferenceInCaseDisposeIsCalled != null)
+                    {
+                        _source.Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
+                    }
                 }
 
                 return _lastValue;
