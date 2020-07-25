@@ -29,21 +29,21 @@ namespace ReactiveUI.Blazor
         private readonly Subject<Unit> _deactivateSubject = new Subject<Unit>();
         private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
 
-        private T _viewModel;
+        private T? _viewModel;
 
         private bool _disposedValue; // To detect redundant calls
 
         /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc />
         [Inject]
-        public T ViewModel
+        public T? ViewModel
         {
             get => _viewModel;
             set
             {
-                if (EqualityComparer<T>.Default.Equals(_viewModel, value))
+                if (EqualityComparer<T?>.Default.Equals(_viewModel, value))
                 {
                     return;
                 }
@@ -54,10 +54,10 @@ namespace ReactiveUI.Blazor
         }
 
         /// <inheritdoc />
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (T)value;
+            set => ViewModel = (T?)value;
         }
 
         /// <inheritdoc />
@@ -106,8 +106,8 @@ namespace ReactiveUI.Blazor
                                     void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
                                     return Handler;
                                 },
-                                eh => x.PropertyChanged += eh,
-                                eh => x.PropertyChanged -= eh))
+                                eh => x!.PropertyChanged += eh,
+                                eh => x!.PropertyChanged -= eh))
                     .Switch()
                     .Subscribe(_ => InvokeAsync(StateHasChanged))
                     .DisposeWith(_compositeDisposable);
@@ -120,7 +120,7 @@ namespace ReactiveUI.Blazor
         /// Invokes the property changed event.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
