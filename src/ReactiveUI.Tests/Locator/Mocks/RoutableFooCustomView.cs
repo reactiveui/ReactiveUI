@@ -7,7 +7,7 @@ namespace ReactiveUI.Tests
 {
     public class RoutableFooCustomView : IViewFor<IRoutableFooViewModel>
     {
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (IRoutableFooViewModel)value;

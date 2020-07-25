@@ -107,7 +107,7 @@ namespace ReactiveUI.XamForms
         /// <summary>
         /// Gets or sets the view model whose associated view is to be displayed.
         /// </summary>
-        public object ViewModel
+        public object? ViewModel
         {
             get => GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);

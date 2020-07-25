@@ -36,7 +36,7 @@ namespace ReactiveUI.XamForms
         }
 
         /// <inheritdoc/>
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (TViewModel)value;
