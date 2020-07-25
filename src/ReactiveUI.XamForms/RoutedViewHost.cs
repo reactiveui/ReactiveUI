@@ -21,6 +21,7 @@ namespace ReactiveUI.XamForms
     /// <seealso cref="Xamarin.Forms.NavigationPage" />
     /// <seealso cref="ReactiveUI.IActivatableView" />
     [SuppressMessage("Readability", "RCS1090: Call 'ConfigureAwait(false)", Justification = "This class interacts with the UI thread.")]
+    [SuppressMessage("Usage", "CS8603 :Possible null reference return.", Justification = "WhenAnyObservable handles null deference.")]
     public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         /// <summary>
@@ -58,7 +59,8 @@ namespace ReactiveUI.XamForms
                     .Subscribe()
                     .DisposeWith(disposable);
 
-                Router.NavigationChanged
+                Router?
+                    .NavigationChanged?
                     .CountChanged()
                     .Select(_ => Router.NavigationStack.Count)
                     .StartWith(Router.NavigationStack.Count)
@@ -111,7 +113,7 @@ namespace ReactiveUI.XamForms
                     .Subscribe()
                     .DisposeWith(disposable);
 
-                Router
+                Router?
                     .Navigate
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
                     .SelectMany(async page =>
@@ -158,14 +160,14 @@ namespace ReactiveUI.XamForms
 
                         try
                         {
-                            Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                            Router?.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
                         }
                         finally
                         {
                             userInstigated = false;
                         }
 
-                        var vm = Router.GetCurrentViewModel();
+                        var vm = Router?.GetCurrentViewModel();
                         if (CurrentPage is IViewFor page && vm != null)
                         {
                             // don't replace view model if vm is null
@@ -188,7 +190,7 @@ namespace ReactiveUI.XamForms
                 {
                     return router.NavigationStack
                         .ToObservable()
-                        .Select(x => (Page)ViewLocator.Current.ResolveView(x))
+                        .Select(x => (Page)ViewLocator.Current.ResolveView(x) !)
                         .SelectMany(x => PushAsync(x).ToObservable())
                         .Finally(() =>
                         {

@@ -40,10 +40,10 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets or sets a value indicating whether [default cache views enabled].
@@ -53,7 +53,7 @@ namespace ReactiveUI.Winforms
         /// <summary>
         /// Gets the current view.
         /// </summary>
-        public Control CurrentView => _content as Control;
+        public Control? CurrentView => _content as Control;
 
         /// <summary>
         /// Gets or sets the default content.

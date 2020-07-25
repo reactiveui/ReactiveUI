@@ -10,9 +10,9 @@ namespace ReactiveUI.Tests
         object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (IFooViewModel)value;
+            set => ViewModel = (IFooViewModel?)value;
         }
 
-        public IFooViewModel ViewModel { get; set; }
+        public IFooViewModel? ViewModel { get; set; }
     }
 }

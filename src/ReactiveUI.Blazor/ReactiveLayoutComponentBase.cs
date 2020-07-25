@@ -25,20 +25,20 @@ namespace ReactiveUI.Blazor
     {
         private readonly Subject<Unit> _initSubject = new Subject<Unit>();
 
-        private T _viewModel;
+        private T? _viewModel;
 
         private bool _disposedValue; // To detect redundant calls
 
         /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc />
-        public T ViewModel
+        public T? ViewModel
         {
             get => _viewModel;
             set
             {
-                if (EqualityComparer<T>.Default.Equals(_viewModel, value))
+                if (EqualityComparer<T?>.Default.Equals(_viewModel, value))
                 {
                     return;
                 }
@@ -52,7 +52,7 @@ namespace ReactiveUI.Blazor
         object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (T)value;
+            set => ViewModel = (T?)value;
         }
 
         /// <inheritdoc />
@@ -95,8 +95,8 @@ namespace ReactiveUI.Blazor
                         void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
                         return Handler;
                     },
-                    eh => x.PropertyChanged += eh,
-                    eh => x.PropertyChanged -= eh))
+                    eh => x!.PropertyChanged += eh,
+                    eh => x!.PropertyChanged -= eh))
                 .Switch()
                 .Do(_ => InvokeAsync(StateHasChanged))
                 .Subscribe();

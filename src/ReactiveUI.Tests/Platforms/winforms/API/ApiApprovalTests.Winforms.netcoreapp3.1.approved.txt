@@ -38,7 +38,7 @@ namespace ReactiveUI.Winforms
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The ViewModel.")]
         [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public TViewModel ViewModel { get; set; }
+        public TViewModel? ViewModel { get; set; }
         protected override void Dispose(bool disposing) { }
     }
     public class Registrations

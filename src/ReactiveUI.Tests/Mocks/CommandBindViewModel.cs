@@ -14,8 +14,8 @@ namespace ReactiveUI.Tests
 {
     public class CommandBindViewModel : ReactiveObject
     {
-        private ReactiveCommand<int, Unit> _Command1;
-        private ReactiveCommand<Unit, Unit> _Command2;
+        private ReactiveCommand<int, Unit> _Command1 = null!;
+        private ReactiveCommand<Unit, Unit> _Command2 = null!;
 
         private int _value;
 
@@ -23,6 +23,7 @@ namespace ReactiveUI.Tests
         {
             Command1 = ReactiveCommand.Create<int, Unit>(_ => Unit.Default);
             Command2 = ReactiveCommand.Create(() => { });
+            NestedViewModel = new FakeNestedViewModel();
         }
 
         public ReactiveCommand<int, Unit> Command1

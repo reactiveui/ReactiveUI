@@ -40,16 +40,16 @@ namespace ReactiveUI.Tests.Xaml
 
         public ListBox FakeItemsControl { get; set; }
 
-        public PropertyBindViewModel ViewModel
+        public PropertyBindViewModel? ViewModel
         {
             get => (PropertyBindViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (PropertyBindViewModel)value;
+            set => ViewModel = (PropertyBindViewModel?)value;
         }
     }
 }

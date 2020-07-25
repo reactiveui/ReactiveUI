@@ -50,7 +50,7 @@ namespace ReactiveUI
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
         public ReactivePage() { }
         public TViewModel BindingRoot { get; }
-        public TViewModel ViewModel { get; set; }
+        public TViewModel? ViewModel { get; set; }
     }
     public class ReactiveUserControl<TViewModel> : System.Windows.Controls.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
@@ -58,7 +58,7 @@ namespace ReactiveUI
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
         public ReactiveUserControl() { }
         public TViewModel BindingRoot { get; }
-        public TViewModel ViewModel { get; set; }
+        public TViewModel? ViewModel { get; set; }
     }
     public class ReactiveWindow<TViewModel> : System.Windows.Window, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
@@ -66,7 +66,7 @@ namespace ReactiveUI
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
         public ReactiveWindow() { }
         public TViewModel BindingRoot { get; }
-        public TViewModel ViewModel { get; set; }
+        public TViewModel? ViewModel { get; set; }
     }
     public class RoutedViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView, Splat.IEnableLogger
     {

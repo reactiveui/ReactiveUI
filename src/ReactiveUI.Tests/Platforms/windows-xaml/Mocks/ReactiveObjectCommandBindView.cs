@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests.Xaml
 {
     public class ReactiveObjectCommandBindView : ReactiveObject, IViewFor<CommandBindViewModel>
     {
-        private CommandBindViewModel _vm;
+        private CommandBindViewModel? _vm;
 
         public ReactiveObjectCommandBindView()
         {
@@ -29,13 +29,13 @@ namespace ReactiveUI.Tests.Xaml
             Command2 = new Image();
         }
 
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (CommandBindViewModel)value;
+            set => ViewModel = (CommandBindViewModel?)value;
         }
 
-        public CommandBindViewModel ViewModel
+        public CommandBindViewModel? ViewModel
         {
             get => _vm;
             set => this.RaiseAndSetIfChanged(ref _vm, value);
