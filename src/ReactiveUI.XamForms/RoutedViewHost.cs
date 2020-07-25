@@ -21,7 +21,6 @@ namespace ReactiveUI.XamForms
     /// <seealso cref="Xamarin.Forms.NavigationPage" />
     /// <seealso cref="ReactiveUI.IActivatableView" />
     [SuppressMessage("Readability", "RCS1090: Call 'ConfigureAwait(false)", Justification = "This class interacts with the UI thread.")]
-    [SuppressMessage("Usage", "CS8603 :Possible null reference return.", Justification = "WhenAnyObservable handles null deference.")]
     public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         /// <summary>
@@ -46,7 +45,7 @@ namespace ReactiveUI.XamForms
                 bool popToRootPending = false;
                 bool userInstigated = false;
 
-                this.WhenAnyObservable(x => x.Router.NavigationChanged)
+                this.WhenAnyObservable(x => x.Router.NavigationChanged!)
                     .Where(_ => Router.NavigationStack.Count == 0)
                     .Select(x =>
                     {

@@ -19,13 +19,13 @@ namespace ReactiveUI.Tests.Winforms
             SomeDouble = new TextBox();
         }
 
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (FakeWinformViewModel)value;
+            set => ViewModel = (FakeWinformViewModel?)value;
         }
 
-        public FakeWinformViewModel ViewModel { get; set; }
+        public FakeWinformViewModel? ViewModel { get; set; }
 
         public Button Property1 { get; }
 

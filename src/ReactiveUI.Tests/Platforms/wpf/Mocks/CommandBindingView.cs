@@ -21,13 +21,13 @@ namespace ReactiveUI.Tests.Wpf
             Command2 = new Image();
         }
 
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (CommandBindingViewModel)value;
+            set => ViewModel = (CommandBindingViewModel?)value;
         }
 
-        public CommandBindingViewModel ViewModel { get; set; }
+        public CommandBindingViewModel? ViewModel { get; set; }
 
         public CustomClickButton Command1 { get; protected set; }
 

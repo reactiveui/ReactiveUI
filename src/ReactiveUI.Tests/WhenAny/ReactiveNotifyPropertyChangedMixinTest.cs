@@ -282,7 +282,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 // Here we've set the value but it shouldn't change
-                fixture.Child.IsOnlyOneWord = null;
+                fixture.Child.IsOnlyOneWord = null!;
                 sched.Start();
                 Assert.Equal(3, changes.Count);
 
@@ -323,7 +323,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(2, changes.Count);
 
                 // Oops, now the child is Null, we may now blow up
-                fixture.Child = null;
+                fixture.Child = null!;
                 sched.Start();
                 Assert.Equal(2, changes.Count);
 
@@ -346,7 +346,7 @@ namespace ReactiveUI.Tests
             {
                 var fixture = new NonReactiveINPCObject
                 {
-                    InpcProperty = null
+                    InpcProperty = null!
                 };
                 fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord)
                     .ToObservableChangeSet(ImmediateScheduler.Instance)
@@ -524,7 +524,7 @@ namespace ReactiveUI.Tests
                 PocoProperty = "Bamf"
             };
 
-            object sender = null;
+            object sender = null!;
             string? propertyName = null;
             fixture.Changed.ObserveOn(ImmediateScheduler.Instance).Subscribe(
                 x =>
@@ -538,11 +538,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(fixture, sender);
             Assert.Equal(nameof(fixture.UsesExprRaiseSet), propertyName);
 
-            sender = null;
+            sender = null!;
             propertyName = null;
             fixture.PocoProperty = "abc";
 
-            Assert.Equal(null, sender);
+            Assert.Equal(null!, sender);
             Assert.Equal(null, propertyName);
         }
 
@@ -556,7 +556,7 @@ namespace ReactiveUI.Tests
                 PocoProperty = "Bamf"
             };
 
-            object sender = null;
+            object sender = null!;
             string? propertyName = null;
             fixture.Changing.ObserveOn(ImmediateScheduler.Instance).Subscribe(
                 x =>
@@ -570,11 +570,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(fixture, sender);
             Assert.Equal(nameof(fixture.UsesExprRaiseSet), propertyName);
 
-            sender = null;
+            sender = null!;
             propertyName = null;
             fixture.PocoProperty = "abc";
 
-            Assert.Equal(null, sender);
+            Assert.Equal(null!, sender);
             Assert.Equal(null, propertyName);
         }
 

@@ -41,12 +41,12 @@ namespace ReactiveUI.Winforms
             ViewContractObservable = Observable<string>.Default;
 
             var vmAndContract =
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel)
+                this.WhenAnyObservable(x => x.Router!.CurrentViewModel!)
                     .CombineLatest(
-                        this.WhenAnyObservable(x => x.ViewContractObservable),
+                        this.WhenAnyObservable(x => x.ViewContractObservable!),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-            Control viewLastAdded = null;
+            Control viewLastAdded = null!;
             _disposables.Add(vmAndContract.Subscribe(
                 x =>
             {
@@ -82,7 +82,7 @@ namespace ReactiveUI.Winforms
 
                 Controls.Add(viewLastAdded);
                 ResumeLayout();
-            }, RxApp.DefaultExceptionHandler.OnNext));
+            }, RxApp.DefaultExceptionHandler!.OnNext));
         }
 
         /// <inheritdoc/>
@@ -99,7 +99,7 @@ namespace ReactiveUI.Winforms
         /// </value>
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
-        public Control DefaultContent
+        public Control? DefaultContent
         {
             get => _defaultContent;
             set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
@@ -110,7 +110,7 @@ namespace ReactiveUI.Winforms
         /// </summary>
         [Category("ReactiveUI")]
         [Description("The router.")]
-        public RoutingState Router
+        public RoutingState? Router
         {
             get => _router;
             set => this.RaiseAndSetIfChanged(ref _router, value);

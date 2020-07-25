@@ -15,13 +15,13 @@ namespace ReactiveUI.Tests.Winforms
             Command2 = new CustomClickableControl();
         }
 
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (WinformCommandBindViewModel)value;
+            set => ViewModel = (WinformCommandBindViewModel?)value;
         }
 
-        public WinformCommandBindViewModel ViewModel { get; set; }
+        public WinformCommandBindViewModel? ViewModel { get; set; }
 
         public Button Command1 { get; protected set; }
 
