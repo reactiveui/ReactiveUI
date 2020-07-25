@@ -14,21 +14,21 @@ namespace ReactiveUI.Tests
 {
     public class PropertyBindViewModel : ReactiveObject
     {
-        private string _Property1;
-        private PropertyBindModel _Model;
+        private string? _Property1;
+        private PropertyBindModel? _Model;
         private int _Property2;
         private double _JustADouble;
         private decimal _JustADecimal;
         private double? _NullableDouble;
         private int _JustAInt32;
 
-        public PropertyBindViewModel(PropertyBindModel model = null)
+        public PropertyBindViewModel(PropertyBindModel? model = null)
         {
             Model = model ?? new PropertyBindModel { AThing = 42, AnotherThing = "Baz" };
             SomeCollectionOfStrings = new ObservableCollectionExtended<string>(new[] { "Foo", "Bar" });
         }
 
-        public string Property1
+        public string? Property1
         {
             get => _Property1;
             set => this.RaiseAndSetIfChanged(ref _Property1, value);
@@ -66,7 +66,7 @@ namespace ReactiveUI.Tests
 
         public ObservableCollectionExtended<string> SomeCollectionOfStrings { get; }
 
-        public PropertyBindModel Model
+        public PropertyBindModel? Model
         {
             get => _Model;
             set => this.RaiseAndSetIfChanged(ref _Model, value);

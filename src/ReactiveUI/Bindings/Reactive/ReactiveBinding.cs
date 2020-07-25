@@ -34,7 +34,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
-        public TViewModel? ViewModel { get; }
+        public TViewModel ViewModel { get; }
 
         /// <inheritdoc />
         public Expression ViewModelExpression { get; }

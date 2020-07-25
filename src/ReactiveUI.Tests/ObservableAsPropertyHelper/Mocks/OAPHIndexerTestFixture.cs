@@ -7,7 +7,7 @@ namespace ReactiveUI.Tests
 {
     internal class OAPHIndexerTestFixture : ReactiveObject
     {
-        private string _text;
+        private string? _text;
 
         public OAPHIndexerTestFixture()
         {
@@ -16,12 +16,12 @@ namespace ReactiveUI.Tests
                            .Value;
         }
 
-        public string Text
+        public string? Text
         {
             get => _text;
             set => this.RaiseAndSetIfChanged(ref _text, value);
         }
 
-        public string this[string propertyName] => string.Empty;
+        public string? this[string propertyName] => string.Empty;
     }
 }

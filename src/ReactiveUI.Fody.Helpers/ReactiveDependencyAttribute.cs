@@ -35,6 +35,6 @@ namespace ReactiveUI.Fody.Helpers
         /// <summary>
         /// Gets or sets the target property on the backing property.
         /// </summary>
-        public string TargetProperty { get; set; }
+        public string? TargetProperty { get; set; }
     }
 }

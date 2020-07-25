@@ -120,7 +120,7 @@ namespace ReactiveUI.Blazor
         /// Invokes the property changed event.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

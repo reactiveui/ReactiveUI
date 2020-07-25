@@ -24,7 +24,7 @@ namespace ReactiveUI.Blend
         public static readonly DependencyProperty ObservableProperty =
             DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(OnObservableChanged));
 
-        private IDisposable _watcher;
+        private IDisposable? _watcher;
 
         /// <summary>
         /// Gets or sets the observable which will activate the trigger.

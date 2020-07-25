@@ -21,6 +21,6 @@ namespace ReactiveUI.Fody.Tests
         }
 
         [ObservableAsProperty]
-        public string TestProperty { get; private set; }
+        public string? TestProperty { get; private set; }
     }
 }

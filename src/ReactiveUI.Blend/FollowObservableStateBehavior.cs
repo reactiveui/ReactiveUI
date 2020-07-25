@@ -28,7 +28,7 @@ namespace ReactiveUI.Blend
     public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 #endif
     {
-        private IDisposable _watcher;
+        private IDisposable? _watcher;
 
         /// <summary>
         /// Gets or sets the state observable.

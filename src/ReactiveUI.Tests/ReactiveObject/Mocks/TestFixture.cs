@@ -14,24 +14,24 @@ namespace ReactiveUI.Tests
     public class TestFixture : ReactiveObject
     {
         [IgnoreDataMember]
-        private string _isNotNullString;
+        private string? _isNotNullString;
 
         [IgnoreDataMember]
-        private string _isOnlyOneWord;
+        private string? _isOnlyOneWord;
 
-        private string _notSerialized;
+        private string? _notSerialized;
 
         [IgnoreDataMember]
         private int? _nullableInt;
 
         [IgnoreDataMember]
-        private string _pocoProperty;
+        private string? _pocoProperty;
 
         [IgnoreDataMember]
-        private List<string> _stackOverflowTrigger;
+        private List<string>? _stackOverflowTrigger;
 
         [IgnoreDataMember]
-        private string _usesExprRaiseSet;
+        private string? _usesExprRaiseSet;
 
         public TestFixture()
         {
@@ -39,20 +39,20 @@ namespace ReactiveUI.Tests
         }
 
         [DataMember]
-        public string IsNotNullString
+        public string? IsNotNullString
         {
             get => _isNotNullString;
             set => this.RaiseAndSetIfChanged(ref _isNotNullString, value);
         }
 
         [DataMember]
-        public string IsOnlyOneWord
+        public string? IsOnlyOneWord
         {
             get => _isOnlyOneWord;
             set => this.RaiseAndSetIfChanged(ref _isOnlyOneWord, value);
         }
 
-        public string NotSerialized
+        public string? NotSerialized
         {
             get => _notSerialized;
             set => this.RaiseAndSetIfChanged(ref _notSerialized, value);
@@ -66,14 +66,14 @@ namespace ReactiveUI.Tests
         }
 
         [DataMember]
-        public string PocoProperty
+        public string? PocoProperty
         {
             get => _pocoProperty;
             set => _pocoProperty = value;
         }
 
         [DataMember]
-        public List<string> StackOverflowTrigger
+        public List<string>? StackOverflowTrigger
         {
             get => _stackOverflowTrigger;
             set => this.RaiseAndSetIfChanged(ref _stackOverflowTrigger, value.ToList());
@@ -83,7 +83,7 @@ namespace ReactiveUI.Tests
         public ObservableCollectionExtended<int> TestCollection { get; protected set; }
 
         [DataMember]
-        public string UsesExprRaiseSet
+        public string? UsesExprRaiseSet
         {
             get => _usesExprRaiseSet;
             set => this.RaiseAndSetIfChanged(ref _usesExprRaiseSet, value);

@@ -64,39 +64,45 @@ namespace ReactiveUI.Fody.Analyzer
 
         private static void AnalyzeAttribute(SyntaxNodeAnalysisContext context)
         {
-            var attr = context.ContainingSymbol
+            var attr = context.ContainingSymbol?
                               .GetAttributes()
-                              .FirstOrDefault(a => a.ApplicationSyntaxReference.Span == context.Node.Span);
+                              .FirstOrDefault(a => a.ApplicationSyntaxReference!.Span == context.Node.Span);
 
-            if (attr.AttributeClass.ToDisplayString() != "ReactiveUI.Fody.Helpers.ReactiveAttribute")
+            if (attr?.AttributeClass?.ToDisplayString() != "ReactiveUI.Fody.Helpers.ReactiveAttribute")
             {
                 return;
             }
 
-            if (!(context.Node.Parent.Parent is PropertyDeclarationSyntax property))
+            if (!(context.Node.Parent?.Parent is PropertyDeclarationSyntax property))
             {
                 return;
             }
 
-            var reactiveObject = context.ContainingSymbol.ContainingType;
-            if (!reactiveObject.AllInterfaces.Any(interfaceTypeSymbol => interfaceTypeSymbol.ToDisplayString() == "ReactiveUI.IReactiveObject"))
+            if (context.ContainingSymbol != null)
             {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        InheritanceRule,
-                        context.Node.GetLocation(),
-                        reactiveObject.Name));
+                var reactiveObject = context.ContainingSymbol.ContainingType;
+                if (!reactiveObject.AllInterfaces.Any(interfaceTypeSymbol => interfaceTypeSymbol.ToDisplayString() == "ReactiveUI.IReactiveObject"))
+                {
+                    context.ReportDiagnostic(
+                                             Diagnostic.Create(
+                                                               InheritanceRule,
+                                                               context.Node.GetLocation(),
+                                                               reactiveObject.Name));
+                }
             }
 
             if (HasBackingField(property))
             {
                 var propertySymbol = context.ContainingSymbol;
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        AutoPropertyRule,
-                        context.Node.GetLocation(),
-                        propertySymbol.Name,
-                        propertySymbol.ContainingType.Name));
+                if (propertySymbol != null)
+                {
+                    context.ReportDiagnostic(
+                                             Diagnostic.Create(
+                                                               AutoPropertyRule,
+                                                               context.Node.GetLocation(),
+                                                               propertySymbol.Name,
+                                                               propertySymbol.ContainingType.Name));
+                }
             }
         }
 

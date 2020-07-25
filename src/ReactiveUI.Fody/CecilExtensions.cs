@@ -67,7 +67,7 @@ namespace ReactiveUI.Fody
         /// <returns>
         ///   <c>true</c> if [is assignable from] [the specified type]; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsAssignableFrom(this TypeReference baseType, TypeReference type, Action<string> logger = null)
+        public static bool IsAssignableFrom(this TypeReference baseType, TypeReference type, Action<string>? logger = null)
         {
             if (baseType == null)
             {
@@ -91,9 +91,9 @@ namespace ReactiveUI.Fody
         /// <returns>
         ///   <c>true</c> if [is assignable from] [the specified type]; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsAssignableFrom(this TypeDefinition baseType, TypeDefinition type, Action<string> logger = null)
+        public static bool IsAssignableFrom(this TypeDefinition baseType, TypeDefinition type, Action<string>? logger = null)
         {
-            logger = logger ?? (x => { });
+            logger ??= x => { };
 
             Queue<TypeDefinition> queue = new Queue<TypeDefinition>();
             queue.Enqueue(type);
@@ -226,7 +226,7 @@ namespace ReactiveUI.Fody
         /// <param name="scope">The scope.</param>
         /// <param name="typeParameters">The type parameters.</param>
         /// <returns>The type reference.</returns>
-        public static TypeReference FindType(this ModuleDefinition currentModule, string @namespace, string typeName, IMetadataScope scope = null, params string[] typeParameters)
+        public static TypeReference FindType(this ModuleDefinition currentModule, string @namespace, string typeName, IMetadataScope? scope = null, params string[] typeParameters)
         {
             if (typeParameters == null)
             {

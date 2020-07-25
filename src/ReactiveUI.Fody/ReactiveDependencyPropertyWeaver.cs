@@ -22,7 +22,7 @@ namespace ReactiveUI.Fody
         /// <value>
         /// The module definition.
         /// </value>
-        public ModuleDefinition ModuleDefinition { get; set; }
+        public ModuleDefinition? ModuleDefinition { get; set; }
 
         /// <summary>
         /// Gets or sets a action that will log an MessageImportance.High message to MSBuild. OPTIONAL.
@@ -30,7 +30,7 @@ namespace ReactiveUI.Fody
         /// <value>
         /// The log information.
         /// </value>
-        public Action<string> LogInfo { get; set; }
+        public Action<string>? LogInfo { get; set; }
 
         /// <summary>
         /// Gets or sets a action which will log an error message to MSBuild. OPTIONAL.
@@ -38,7 +38,7 @@ namespace ReactiveUI.Fody
         /// <value>
         /// The log error.
         /// </value>
-        public Action<string> LogError { get; set; }
+        public Action<string>? LogError { get; set; }
 
         /// <summary>
         /// Executes this instance.
@@ -52,22 +52,22 @@ namespace ReactiveUI.Fody
         /// </exception>
         public void Execute()
         {
-            var reactiveUI = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI").OrderByDescending(x => x.Version).FirstOrDefault();
+            var reactiveUI = ModuleDefinition?.AssemblyReferences.Where(x => x.Name == "ReactiveUI").OrderByDescending(x => x.Version).FirstOrDefault();
             if (reactiveUI == null)
             {
-                LogInfo("Could not find assembly: ReactiveUI (" + string.Join(", ", ModuleDefinition.AssemblyReferences.Select(x => x.Name)) + ")");
+                LogInfo?.Invoke("Could not find assembly: ReactiveUI (" + string.Join(", ", ModuleDefinition?.AssemblyReferences.Select(x => x.Name)) + ")");
                 return;
             }
 
-            LogInfo($"{reactiveUI.Name} {reactiveUI.Version}");
-            var helpers = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI.Fody.Helpers").OrderByDescending(x => x.Version).FirstOrDefault();
+            LogInfo?.Invoke($"{reactiveUI.Name} {reactiveUI.Version}");
+            var helpers = ModuleDefinition?.AssemblyReferences.Where(x => x.Name == "ReactiveUI.Fody.Helpers").OrderByDescending(x => x.Version).FirstOrDefault();
             if (helpers == null)
             {
-                LogInfo("Could not find assembly: ReactiveUI.Fody.Helpers (" + string.Join(", ", ModuleDefinition.AssemblyReferences.Select(x => x.Name)) + ")");
+                LogInfo?.Invoke("Could not find assembly: ReactiveUI.Fody.Helpers (" + string.Join(", ", ModuleDefinition?.AssemblyReferences.Select(x => x.Name)) + ")");
                 return;
             }
 
-            LogInfo($"{helpers.Name} {helpers.Version}");
+            LogInfo?.Invoke($"{helpers.Name} {helpers.Version}");
             var reactiveObject = new TypeReference("ReactiveUI", "IReactiveObject", ModuleDefinition, reactiveUI);
 
             var targetTypes = ModuleDefinition.GetAllTypes().Where(x => x.BaseType != null && reactiveObject.IsAssignableFrom(x.BaseType)).ToArray();
@@ -77,13 +77,13 @@ namespace ReactiveUI.Fody
                 throw new Exception("reactiveObjectExtensions is null");
             }
 
-            var raisePropertyChangedMethod = ModuleDefinition.ImportReference(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaisePropertyChanged"));
+            var raisePropertyChangedMethod = ModuleDefinition?.ImportReference(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaisePropertyChanged"));
             if (raisePropertyChangedMethod == null)
             {
                 throw new Exception("raisePropertyChangedMethod is null");
             }
 
-            var reactiveDependencyAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ReactiveDependencyAttribute", helpers);
+            var reactiveDependencyAttribute = ModuleDefinition?.FindType("ReactiveUI.Fody.Helpers", "ReactiveDependencyAttribute", helpers);
             if (reactiveDependencyAttribute == null)
             {
                 throw new Exception("reactiveDecoratorAttribute is null");
@@ -96,7 +96,7 @@ namespace ReactiveUI.Fody
                     // If the property already has a body then do not weave to prevent loss of instructions
                     if (!facadeProperty.GetMethod.Body.Instructions.Any(x => x.Operand is FieldReference) || facadeProperty.GetMethod.Body.HasVariables)
                     {
-                        LogError($"Property {facadeProperty.Name} is not an auto property and therefore not suitable for ReactiveDependency weaving");
+                        LogError?.Invoke($"Property {facadeProperty.Name} is not an auto property and therefore not suitable for ReactiveDependency weaving");
                         continue;
                     }
 
@@ -106,13 +106,13 @@ namespace ReactiveUI.Fody
                     var targetValue = targetNamedArgument.Value?.ToString();
                     if (string.IsNullOrEmpty(targetValue))
                     {
-                        LogError("No target property defined on the object");
+                        LogError?.Invoke("No target property defined on the object");
                         continue;
                     }
 
                     if (targetType.Properties.All(x => x.Name != targetValue) && targetType.Fields.All(x => x.Name != targetValue))
                     {
-                        LogError($"dependency object property/field name '{targetValue}' not found on target type {targetType.Name}");
+                        LogError?.Invoke($"dependency object property/field name '{targetValue}' not found on target type {targetType.Name}");
                         continue;
                     }
 
@@ -125,7 +125,7 @@ namespace ReactiveUI.Fody
 
                     if (objDependencyTargetType == null)
                     {
-                        LogError("Couldn't result the dependency type");
+                        LogError?.Invoke("Couldn't result the dependency type");
                         continue;
                     }
 
@@ -141,7 +141,7 @@ namespace ReactiveUI.Fody
 
                     if (objDependencyTargetType.Properties.All(x => x.Name != destinationPropertyName))
                     {
-                        LogError($"Target property {destinationPropertyName} on dependency of type {objDependencyTargetType.DeclaringType.Name} not found");
+                        LogError?.Invoke($"Target property {destinationPropertyName} on dependency of type {objDependencyTargetType.DeclaringType.Name} not found");
                         continue;
                     }
 
@@ -150,14 +150,14 @@ namespace ReactiveUI.Fody
                     // The property on the facade/decorator should have a setter
                     if (facadeProperty.SetMethod == null)
                     {
-                        LogError($"Property {facadeProperty.DeclaringType.FullName}.{facadeProperty.Name} has no setter, therefore it is not possible for the property to change, and thus should not be marked with [ReactiveDecorator]");
+                        LogError?.Invoke($"Property {facadeProperty.DeclaringType.FullName}.{facadeProperty.Name} has no setter, therefore it is not possible for the property to change, and thus should not be marked with [ReactiveDecorator]");
                         continue;
                     }
 
                     // The property on the dependency should have a setter e.g. Dependency.SomeProperty = value;
                     if (destinationProperty.SetMethod == null)
                     {
-                        LogError($"Dependency object's property {destinationProperty.DeclaringType.FullName}.{destinationProperty.Name} has no setter, therefore it is not possible for the property to change, and thus should not be marked with [ReactiveDecorator]");
+                        LogError?.Invoke($"Dependency object's property {destinationProperty.DeclaringType.FullName}.{destinationProperty.Name} has no setter, therefore it is not possible for the property to change, and thus should not be marked with [ReactiveDecorator]");
                         continue;
                     }
 

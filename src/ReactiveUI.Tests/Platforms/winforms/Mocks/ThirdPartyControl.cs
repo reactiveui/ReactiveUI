@@ -12,7 +12,7 @@ namespace AThirdPartyNamespace
     {
         private string _value;
 
-        public event EventHandler ValueChanged;
+        public event EventHandler? ValueChanged;
 
         public string Value
         {

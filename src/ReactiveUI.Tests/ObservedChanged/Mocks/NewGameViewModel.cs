@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests
 {
     public class NewGameViewModel : ReactiveObject
     {
-        private string _newPlayerName;
+        private string? _newPlayerName;
 
         public NewGameViewModel()
         {
@@ -58,7 +58,7 @@ namespace ReactiveUI.Tests
 
         public ReactiveCommand<Unit, Unit> RandomizeOrder { get; }
 
-        public string NewPlayerName
+        public string? NewPlayerName
         {
             get => _newPlayerName;
             set => this.RaiseAndSetIfChanged(ref _newPlayerName, value);

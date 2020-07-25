@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests
                                                         () =>
                                                         {
                                                             schedulerFactoryCalls++;
-                                                            return null;
+                                                            return null!;
                                                         });
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
@@ -32,14 +32,14 @@ namespace ReactiveUI.Tests
         [Fact]
         public void FactoryThrowsArgumentNullException_FallsBackToCurrentThread()
         {
-            IScheduler schedulerExecutedOn = null;
+            IScheduler? schedulerExecutedOn = null;
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             var schedulerFactory = new Func<IScheduler>(() => throw new ArgumentNullException());
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
             sut.Schedule<object>(
-                                 null,
+                                 null!,
                                  (scheduler, state) =>
                                  {
                                      schedulerExecutedOn = scheduler;
@@ -69,12 +69,12 @@ namespace ReactiveUI.Tests
         [Fact]
         public void FactoryThrowsInvalidOperationException_FallsBackToCurrentThread()
         {
-            IScheduler schedulerExecutedOn = null;
+            IScheduler schedulerExecutedOn = null!;
             var schedulerFactory = new Func<IScheduler>(() => throw new InvalidOperationException());
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
             sut.Schedule<object>(
-                                 null,
+                                 null!,
                                  (scheduler, state) =>
                                  {
                                      schedulerExecutedOn = scheduler;

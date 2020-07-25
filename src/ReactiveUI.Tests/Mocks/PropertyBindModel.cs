@@ -15,6 +15,6 @@ namespace ReactiveUI.Tests
     {
         public int AThing { get; set; }
 
-        public string AnotherThing { get; set; }
+        public string? AnotherThing { get; set; }
     }
 }

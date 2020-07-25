@@ -28,7 +28,7 @@ namespace ReactiveUI.Tests
                 // ...whereas ObservableForProperty *is* guaranteed to.
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord).Subscribe(x =>
                 {
-                    output.Add(x.GetValue());
+                    output.Add(x.GetValue() !);
                 });
 
                 foreach (var v in input)
@@ -50,7 +50,7 @@ namespace ReactiveUI.Tests
                 Child = new TestFixture { IsNotNullString = "Foo" },
             };
 
-            Expression<Func<HostTestFixture, string>> expression = x => x.Child.IsNotNullString;
+            Expression<Func<HostTestFixture, string>> expression = x => x.Child.IsNotNullString!;
             var fixture = new ObservedChange<HostTestFixture, string>(input, expression.Body);
 
             Assert.Equal("Foo", fixture.GetValue());
@@ -64,7 +64,7 @@ namespace ReactiveUI.Tests
                 Child = new TestFixture { IsNotNullString = "Foo" },
             };
 
-            Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord;
+            Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord!;
             var fixture = new ObservedChange<TestFixture, string>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body);
 
             fixture.SetValueToProperty(output, x => x.Child.IsNotNullString);

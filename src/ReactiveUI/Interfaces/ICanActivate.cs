@@ -21,7 +21,7 @@ namespace ReactiveUI
         IObservable<Unit> Activated { get; }
 
         /// <summary>
-        /// Gets a obervable which is triggered when the ViewModel is deactivated.
+        /// Gets a observable which is triggered when the ViewModel is deactivated.
         /// </summary>
         IObservable<Unit> Deactivated { get; }
     }

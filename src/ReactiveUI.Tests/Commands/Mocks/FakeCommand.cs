@@ -10,7 +10,13 @@ namespace ReactiveUI.Tests
 {
     public class FakeCommand : ICommand
     {
-        public event EventHandler CanExecuteChanged;
+        public FakeCommand()
+        {
+            CanExecuteParameter = default!;
+            ExecuteParameter = default!;
+        }
+
+        public event EventHandler CanExecuteChanged = null!;
 
         public object CanExecuteParameter { get; private set; }
 

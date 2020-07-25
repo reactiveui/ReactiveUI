@@ -56,7 +56,7 @@ namespace ReactiveUI.AndroidX
         /// <param name="position">The position of the current view in the list.</param>
         /// <param name="viewModel">The ViewModel associated with the current View.</param>
         /// <returns>An ID to be used in OnCreateViewHolder.</returns>
-        public virtual int GetItemViewType(int position, TViewModel viewModel)
+        public virtual int GetItemViewType(int position, TViewModel? viewModel)
         {
             return base.GetItemViewType(position);
         }
@@ -89,7 +89,7 @@ namespace ReactiveUI.AndroidX
             base.Dispose(disposing);
         }
 
-        private TViewModel GetViewModelByPosition(int position)
+        private TViewModel? GetViewModelByPosition(int position)
         {
             return position >= _list.Count ? null : _list.Items.ElementAt(position);
         }

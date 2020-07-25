@@ -38,6 +38,6 @@ namespace ReactiveUI.Fody.Tests
 
         // Property named differently to that on the dependency but still pass through value
         [ReactiveDependency(nameof(Dependency), TargetProperty = "StringProperty")]
-        public string AnotherStringProperty { get; set; }
+        public string? AnotherStringProperty { get; set; }
     }
 }

@@ -159,7 +159,7 @@ namespace ReactiveUI.Winforms
                         SuspendLayout();
 
                         // clear out existing visible control view
-                        foreach (Control c in Controls)
+                        foreach (Control? c in Controls)
                         {
                             c?.Dispose();
                             Controls.Remove(c);
