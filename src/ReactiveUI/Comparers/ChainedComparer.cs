@@ -15,8 +15,8 @@ namespace ReactiveUI
 
         public ChainedComparer(IComparer<T>? parent, Comparison<T> comparison)
         {
-            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
-            _inner = comparison ?? throw new ArgumentNullException(nameof(comparison));
+            _parent = parent;
+            _inner = comparison;
         }
 
         /// <inheritdoc />

@@ -120,11 +120,12 @@ namespace ReactiveUI
                     $"Can't two-way convert between {typeof(TVMProp)} and {typeof(TVProp)}. To fix this, register a IBindingTypeConverter or call the version with the converter Func.");
             }
 
+#pragma warning disable CS8601 // Possible null reference assignment.
             bool VmToViewFunc(TVMProp vmValue, out TVProp vValue)
             {
                 var result = vmToViewConverter.TryConvert(vmValue, typeof(TVProp), conversionHint, out object? tmp);
 
-                vValue = (result ? (TVProp)tmp : default(TVProp)) ?? throw new InvalidOperationException();
+                vValue = result ? (TVProp)tmp : default;
                 return result;
             }
 
@@ -132,9 +133,10 @@ namespace ReactiveUI
             {
                 var result = viewToVMConverter.TryConvert(vValue, typeof(TVMProp), conversionHint, out object? tmp);
 
-                vmValue = (result ? (TVMProp)tmp : default(TVMProp)) ?? throw new InvalidOperationException();
+                vmValue = result ? (TVMProp)tmp : default;
                 return result;
             }
+#pragma warning restore CS8601 // Possible null reference assignment.
 
             return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc);
         }
@@ -551,7 +553,7 @@ namespace ReactiveUI
             {
                 vmFetcher = () => new IObservedChange<object, object?>[]
                 {
-                    new ObservedChange<object, object>(null!, null, viewModel)
+                    new ObservedChange<object, object>(null!, null!, viewModel)
                 };
             }
 

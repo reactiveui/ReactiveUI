@@ -25,10 +25,10 @@ namespace ReactiveUI
         /// <param name="sender">The sender.</param>
         /// <param name="expression">Expression describing the member.</param>
         /// <param name="value">The value.</param>
-        public ObservedChange(TSender sender, Expression? expression, TValue value = default)
+        public ObservedChange(TSender sender, Expression expression, TValue value = default)
         {
-            Sender = sender ?? throw new ArgumentNullException(nameof(sender));
-            Expression = expression ?? throw new ArgumentNullException(nameof(expression));
+            Sender = sender;
+            Expression = expression;
             Value = value;
         }
 

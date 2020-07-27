@@ -395,7 +395,7 @@ namespace ReactiveUI
     }
     public class ObservedChange<TSender, TValue> : ReactiveUI.IObservedChange<TSender, TValue>
     {
-        public ObservedChange(TSender sender, System.Linq.Expressions.Expression? expression, TValue value = default) { }
+        public ObservedChange(TSender sender, System.Linq.Expressions.Expression expression, TValue value = default) { }
         public System.Linq.Expressions.Expression Expression { get; }
         public TSender Sender { get; }
         public TValue Value { get; }
