@@ -58,14 +58,14 @@ namespace ReactiveUI
 #endif
 
         [ThreadStatic]
-        private static IScheduler? _unitTestTaskpoolScheduler;
-        private static IScheduler? _taskpoolScheduler;
+        private static IScheduler _unitTestTaskpoolScheduler;
+        private static IScheduler _taskpoolScheduler;
         [ThreadStatic]
-        private static IScheduler? _unitTestMainThreadScheduler;
-        private static IScheduler? _mainThreadScheduler;
-        private static IObserver<Exception>? _defaultExceptionHandler;
+        private static IScheduler _unitTestMainThreadScheduler;
+        private static IScheduler _mainThreadScheduler;
+        private static IObserver<Exception> _defaultExceptionHandler;
         [ThreadStatic]
-        private static ISuspensionHost? _unitTestSuspensionHost;
+        private static ISuspensionHost _unitTestSuspensionHost;
         private static ISuspensionHost _suspensionHost;
         private static bool _hasSchedulerBeenChecked;
 
@@ -181,7 +181,7 @@ namespace ReactiveUI
         /// run in a background thread. In both modes, this will run on the TPL
         /// Task Pool.
         /// </summary>
-        public static IScheduler? TaskpoolScheduler
+        public static IScheduler TaskpoolScheduler
         {
             get => _unitTestTaskpoolScheduler ?? _taskpoolScheduler;
             set
@@ -209,7 +209,7 @@ namespace ReactiveUI
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.
         /// </summary>
-        public static IObserver<Exception>? DefaultExceptionHandler
+        public static IObserver<Exception> DefaultExceptionHandler
         {
             get => _defaultExceptionHandler;
             set => _defaultExceptionHandler = value;
