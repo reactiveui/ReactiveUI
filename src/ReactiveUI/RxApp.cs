@@ -58,15 +58,15 @@ namespace ReactiveUI
 #endif
 
         [ThreadStatic]
-        private static IScheduler _unitTestTaskpoolScheduler;
-        private static IScheduler _taskpoolScheduler;
+        private static IScheduler _unitTestTaskpoolScheduler = null!;
+        private static IScheduler _taskpoolScheduler = null!;
         [ThreadStatic]
-        private static IScheduler _unitTestMainThreadScheduler;
-        private static IScheduler _mainThreadScheduler;
-        private static IObserver<Exception> _defaultExceptionHandler;
+        private static IScheduler _unitTestMainThreadScheduler = null!;
+        private static IScheduler _mainThreadScheduler = null!;
+        private static IObserver<Exception> _defaultExceptionHandler = null!;
         [ThreadStatic]
-        private static ISuspensionHost _unitTestSuspensionHost;
-        private static ISuspensionHost _suspensionHost;
+        private static ISuspensionHost _unitTestSuspensionHost = null!;
+        private static ISuspensionHost _suspensionHost = null!;
         private static bool _hasSchedulerBeenChecked;
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace ReactiveUI
     public class RoutedViewHost : ReactiveNavigationController
     {
         private readonly SerialDisposable _titleUpdater;
-        private RoutingState? _router;
+        private RoutingState _router = null!;
         private IObservable<string?>? _viewContractObservable;
         private bool _routerInstigated;
 
@@ -124,7 +124,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
         /// </summary>
-        public RoutingState? Router
+        public RoutingState Router
         {
             get => _router;
             set => this.RaiseAndSetIfChanged(ref _router, value);

@@ -13,6 +13,7 @@ using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using DynamicData;
 using DynamicData.Binding;
+#pragma warning disable 8618
 
 namespace ReactiveUI
 {
@@ -32,7 +33,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Initializes static members of the <see cref="RoutingState"/> class.
-        /// </summary>
+        /// </summary>R
         static RoutingState()
         {
             RxApp.EnsureInitialized();
@@ -85,14 +86,14 @@ namespace ReactiveUI
         /// Gets or sets a command which will navigate back to the previous element in the stack.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand<Unit, Unit> NavigateBack { get; protected set; } = null!;
+        public ReactiveCommand<Unit, Unit> NavigateBack { get; protected set; }
 
         /// <summary>
         /// Gets or sets a command that navigates to the a new element in the stack - the Execute parameter
         /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; } = null!;
+        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; }
 
         /// <summary>
         /// Gets or sets a command that navigates to a new element and resets the navigation stack (i.e. the
@@ -101,19 +102,19 @@ namespace ReactiveUI
         /// IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; } = null!;
+        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
 
         /// <summary>
         /// Gets or sets the current view model which is to be shown for the Routing.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; } = null!;
+        public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
         /// <summary>
         /// Gets or sets an observable which will signal when the Navigation changes.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } = null!;
+        public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; }
 
         [OnDeserialized]
         private void SetupRx(StreamingContext sc)
