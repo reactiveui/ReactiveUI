@@ -62,7 +62,7 @@ namespace ReactiveUI.Tests
         public void CurrentViewModelObservableIsAccurateViaWhenAnyObservable()
         {
             var fixture = new TestScreen();
-            fixture.WhenAnyObservable(x => x.Router.CurrentViewModel).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
+            fixture.WhenAnyObservable(x => x.Router!.CurrentViewModel).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             fixture.Router = new RoutingState();
 
             Assert.Equal(1, output.Count);

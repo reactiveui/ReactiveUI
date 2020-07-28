@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Text;
+
 using Splat;
 
 namespace ReactiveUI
@@ -132,17 +133,7 @@ namespace ReactiveUI
             PropertyInfo? property = member as PropertyInfo;
             if (property != null)
             {
-                object? Func(object input, object[]? index)
-                {
-                    if (index == null)
-                    {
-                        return property.GetValue(input);
-                    }
-
-                    return property.GetValue(input, index);
-                }
-
-                return Func;
+                return property.GetValue;
             }
 
             return null;
@@ -289,16 +280,10 @@ namespace ReactiveUI
                 }
 
                 var sender = current;
-
-                var func = GetValueFetcherOrThrow(expression.GetMemberInfo());
-
-                if (func == null)
-                {
-                    throw new InvalidOperationException("The GetValueFetcherOrThrow return value is null for the property chain.");
-                }
-
-                current = func(current, expression.GetArgumentsArray());
-                changeValues[currentIndex] = new ObservedChange<object, object>(sender, expression, current!);
+                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
+#pragma warning disable CS8604 // Possible null reference argument.
+                changeValues[currentIndex] = new ObservedChange<object, object>(sender, expression, current);
+#pragma warning restore CS8604 // Possible null reference argument.
                 currentIndex++;
             }
 
@@ -309,25 +294,8 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressions.Last();
-
-            var finalFunc = GetValueFetcherOrThrow(lastExpression.GetMemberInfo());
-
-            if (finalFunc == null)
-            {
-                changeValues[currentIndex] = null!;
-                return false;
-            }
-
-            var lastArguments = lastExpression.GetArgumentsArray();
-
-            if (lastArguments == null)
-            {
-                changeValues[currentIndex] = null!;
-                return false;
-            }
-
 #pragma warning disable CS8604 // Possible null reference argument.
-            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, finalFunc(current!, lastArguments!));
+            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray()));
 #pragma warning restore CS8604 // Possible null reference argument.
 
             return true;
@@ -460,7 +428,8 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(item));
             }
 
-            return ((item.GetMethod ?? item.SetMethod) !).IsStatic;
+            var method = (item.GetMethod ?? item.SetMethod) !;
+            return method.IsStatic;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "TViewModel used to help generic calling.")]
