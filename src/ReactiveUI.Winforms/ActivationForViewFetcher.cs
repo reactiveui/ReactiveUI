@@ -42,29 +42,17 @@ namespace ReactiveUI.Winforms
                 }
 
                 var handleDestroyed = Observable.FromEvent<EventHandler, bool>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, EventArgs e) => eventHandler(false);
-                        return Handler;
-                    },
+                    eventHandler => (sender, e) => eventHandler(false),
                     h => control.HandleDestroyed += h,
                     h => control.HandleDestroyed -= h);
 
                 var handleCreated = Observable.FromEvent<EventHandler, bool>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, EventArgs e) => eventHandler(true);
-                        return Handler;
-                    },
+                    eventHandler => (sender, e) => eventHandler(true),
                     h => control.HandleCreated += h,
                     h => control.HandleCreated -= h);
 
                 var visibleChanged = Observable.FromEvent<EventHandler, bool>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, EventArgs e) => eventHandler(control.Visible);
-                        return Handler;
-                    },
+                    eventHandler => (sender, e) => eventHandler(control.Visible),
                     h => control.VisibleChanged += h,
                     h => control.VisibleChanged -= h);
 

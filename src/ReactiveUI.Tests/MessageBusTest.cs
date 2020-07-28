@@ -133,8 +133,8 @@ namespace ReactiveUI.Tests
             otherThread.Start();
             otherThread.Join();
 
-            Assert.NotEqual(listenedThreadId.Value, thisThreadId);
-            Assert.Equal(listenedThreadId.Value, otherThreadId.Value);
+            Assert.NotEqual(listenedThreadId!.Value, thisThreadId);
+            Assert.Equal(listenedThreadId.Value, otherThreadId!.Value);
         }
     }
 }

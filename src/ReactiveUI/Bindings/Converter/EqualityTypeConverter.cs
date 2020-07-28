@@ -20,10 +20,10 @@ namespace ReactiveUI
         private static readonly MemoizingMRUCache<Type, MethodInfo> _referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>(
               (t, _) =>
               {
-                  return _methodInfo = _methodInfo ?? typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast));
+                  return _methodInfo ??= typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast));
               }, RxApp.SmallCacheLimit);
 
-        private static MethodInfo _methodInfo;
+        private static MethodInfo? _methodInfo;
 
         /// <summary>
         /// Handles casting for a reference. Understands about nullable types
@@ -33,7 +33,7 @@ namespace ReactiveUI
         /// <param name="targetType">The target we want to cast to.</param>
         /// <returns>The new value after it has been casted.</returns>
         /// <exception cref="InvalidCastException">If we cannot cast the object.</exception>
-        public static object DoReferenceCast(object from, Type targetType)
+        public static object? DoReferenceCast(object? from, Type targetType)
         {
             var backingNullableType = Nullable.GetUnderlyingType(targetType);
 
@@ -101,9 +101,12 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public bool TryConvert(object from, Type toType, object conversionHint, out object result)
+        public bool TryConvert(object? @from, Type toType, object? conversionHint, out object? result)
         {
-            Contract.Requires(toType != null);
+            if (toType == null)
+            {
+                throw new ArgumentNullException(nameof(toType));
+            }
 
             var mi = _referenceCastCache.Get(toType);
 

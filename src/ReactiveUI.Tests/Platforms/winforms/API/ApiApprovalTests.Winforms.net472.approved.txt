@@ -15,20 +15,20 @@ namespace ReactiveUI.Winforms
     public class CreatesWinformsCommandBinding : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesWinformsCommandBinding() { }
-        public System.IDisposable BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter) { }
-        public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
+        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter) { }
+        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
     public class PanelSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger
     {
         public PanelSetMethodBindingConverter() { }
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
-        public object PerformSet(object toTarget, object newValue, object[] arguments) { }
+        public object PerformSet(object? toTarget, object? newValue, object[]? arguments) { }
     }
     public class PlatformOperations
     {
         public PlatformOperations() { }
-        public string GetOrientation() { }
+        public string? GetOrientation() { }
     }
     public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
@@ -52,23 +52,23 @@ namespace ReactiveUI.Winforms
         public RoutedControlHost() { }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The default control when no viewmodel is specified")]
-        public System.Windows.Forms.Control DefaultContent { get; set; }
+        public System.Windows.Forms.Control? DefaultContent { get; set; }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The router.")]
-        public ReactiveUI.RoutingState Router { get; set; }
+        public ReactiveUI.RoutingState? Router { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public System.IObservable<string> ViewContractObservable { get; set; }
+        public System.IObservable<string>? ViewContractObservable { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public ReactiveUI.IViewLocator ViewLocator { get; set; }
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
+        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
         protected override void Dispose(bool disposing) { }
     }
     public class TableContentSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger
     {
         public TableContentSetMethodBindingConverter() { }
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
-        public object PerformSet(object toTarget, object newValue, object[] arguments) { }
+        public object PerformSet(object? toTarget, object? newValue, object[]? arguments) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
     public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
@@ -82,22 +82,22 @@ namespace ReactiveUI.Winforms
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The Current View")]
-        public object Content { get; set; }
-        public System.Windows.Forms.Control CurrentView { get; }
+        public object? Content { get; set; }
+        public System.Windows.Forms.Control? CurrentView { get; }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The default control when no viewmodel is specified")]
-        public System.Windows.Forms.Control DefaultContent { get; set; }
+        public System.Windows.Forms.Control? DefaultContent { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public System.IObservable<string> ViewContractObservable { get; set; }
+        public System.IObservable<string>? ViewContractObservable { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public ReactiveUI.IViewLocator ViewLocator { get; set; }
+        public ReactiveUI.IViewLocator? ViewLocator { get; set; }
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The viewmodel to host.")]
-        public object ViewModel { get; set; }
+        public object? ViewModel { get; set; }
         public static bool DefaultCacheViewsEnabled { get; set; }
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
         protected override void Dispose(bool disposing) { }
     }
     public class WinformsCreatesObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger

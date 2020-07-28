@@ -22,7 +22,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
         [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
-        internal DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
+        internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null)
         {
             ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
         }
@@ -93,8 +93,7 @@ namespace ReactiveUI
         /// <returns>
         /// The view associated with the given view model.
         /// </returns>
-        public IViewFor ResolveView<T>(T viewModel, string contract = null)
-            where T : class
+        public IViewFor? ResolveView<T>(T viewModel, string? contract = null)
         {
             if (viewModel is null)
             {
@@ -115,7 +114,7 @@ namespace ReactiveUI
                 return view;
             }
 
-            view = AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract);
+            view = AttemptViewResolutionFor(ToggleViewModelType(viewModel?.GetType()), contract);
 
             if (view != null)
             {
@@ -133,9 +132,19 @@ namespace ReactiveUI
             return null;
         }
 
-        private static Type ToggleViewModelType(Type viewModelType)
+        private static Type? ToggleViewModelType(Type? viewModelType)
         {
+            if (viewModelType == null)
+            {
+                return null;
+            }
+
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
+
+            if (viewModelTypeName == null)
+            {
+                return null;
+            }
 
             if (viewModelType.GetTypeInfo().IsInterface)
             {
@@ -168,7 +177,7 @@ namespace ReactiveUI
             return typeName.Insert(idxPeriod + 1, "I");
         }
 
-        private IViewFor AttemptViewResolutionFor(Type viewModelType, string contract)
+        private IViewFor? AttemptViewResolutionFor(Type? viewModelType, string? contract)
         {
             if (viewModelType == null)
             {
@@ -176,6 +185,12 @@ namespace ReactiveUI
             }
 
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
+
+            if (viewModelTypeName == null)
+            {
+                return null;
+            }
+
             var proposedViewTypeName = ViewModelToViewFunc(viewModelTypeName);
             var view = AttemptViewResolution(proposedViewTypeName, contract);
 
@@ -195,7 +210,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private IViewFor AttemptViewResolution(string viewTypeName, string contract)
+        private IViewFor? AttemptViewResolution(string? viewTypeName, string? contract)
         {
             try
             {

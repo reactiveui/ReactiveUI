@@ -10,7 +10,7 @@ namespace ReactiveUI.Tests.Winforms
 {
     public class CustomClickableComponent : Component
     {
-        public event EventHandler Click;
+        public event EventHandler? Click;
 
         public void PerformClick()
         {

@@ -28,11 +28,11 @@ namespace ReactiveUI.Fody.Tests
         }
 
         [Reactive]
-        public string SomeCoolNewProperty { get; set; }
+        public string? SomeCoolNewProperty { get; set; }
 
         // Works with private fields
         [ReactiveDependency(nameof(_model))]
-        public override string StringProperty { get; set; }
+        public override string? StringProperty { get; set; }
 
         // Can't be attributed as has additional functionality in the decorated get
         public override int IntProperty

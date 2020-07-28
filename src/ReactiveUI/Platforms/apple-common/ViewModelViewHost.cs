@@ -27,11 +27,11 @@ namespace ReactiveUI
     public class ViewModelViewHost : ReactiveViewController
     {
         private readonly SerialDisposable _currentView;
-        private readonly ObservableAsPropertyHelper<string> _viewContract;
-        private IViewLocator _viewLocator;
-        private NSViewController _defaultContent;
-        private IReactiveObject _viewModel;
-        private IObservable<string> _viewContractObservable;
+        private readonly ObservableAsPropertyHelper<string?> _viewContract;
+        private IViewLocator? _viewLocator;
+        private NSViewController? _defaultContent;
+        private object? _viewModel;
+        private IObservable<string?>? _viewContractObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
@@ -40,7 +40,7 @@ namespace ReactiveUI
         {
             _currentView = new SerialDisposable();
             _viewContract = this
-                .WhenAnyObservable(x => x.ViewContractObservable)
+                .WhenAnyObservable(x => x.ViewContractObservable!)
                 .ToProperty(this, x => x.ViewContract, scheduler: RxApp.MainThreadScheduler);
 
             Initialize();
@@ -52,7 +52,7 @@ namespace ReactiveUI
         /// <value>
         /// The view locator.
         /// </value>
-        public IViewLocator ViewLocator
+        public IViewLocator? ViewLocator
         {
             get => _viewLocator;
             set => this.RaiseAndSetIfChanged(ref _viewLocator, value);
@@ -64,7 +64,7 @@ namespace ReactiveUI
         /// <value>
         /// The default content.
         /// </value>
-        public NSViewController DefaultContent
+        public NSViewController? DefaultContent
         {
             get => _defaultContent;
             set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
@@ -73,7 +73,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view model.
         /// </summary>
-        public IReactiveObject ViewModel
+        public object? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
@@ -82,7 +82,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view contract observable.
         /// </summary>
-        public IObservable<string> ViewContractObservable
+        public IObservable<string?>? ViewContractObservable
         {
             get => _viewContractObservable;
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
@@ -91,7 +91,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view contract.
         /// </summary>
-        public string ViewContract
+        public string? ViewContract
         {
             get => _viewContract.Value;
             set => ViewContractObservable = Observable.Return(value);
@@ -109,8 +109,13 @@ namespace ReactiveUI
             }
         }
 
-        private static void Adopt(NSViewController parent, NSViewController child)
+        private static void Adopt(NSViewController parent, NSViewController? child)
         {
+            if (child == null)
+            {
+                return;
+            }
+
             // ensure the child view fills our entire frame
             child.View.Frame = parent.View.Bounds;
 #if UIKIT
@@ -157,7 +162,7 @@ namespace ReactiveUI
             var viewChange = Observable
                 .CombineLatest(
                     this.WhenAnyValue(x => x.ViewModel),
-                    this.WhenAnyObservable(x => x.ViewContractObservable).StartWith((string)null),
+                    this.WhenAnyObservable(x => x.ViewContractObservable!).StartWith((string?)null),
                     (vm, contract) => new { ViewModel = vm, Contract = contract })
                 .Where(x => x.ViewModel != null);
 
@@ -175,11 +180,11 @@ namespace ReactiveUI
                     x =>
                     {
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                        var view = viewLocator.ResolveView<object?>(x.ViewModel, x.Contract);
 
                         if (view == null)
                         {
-                            var message = $"Unable to resolve view for \"{x.ViewModel.GetType()}\"";
+                            var message = $"Unable to resolve view for \"{x.ViewModel?.GetType()}\"";
 
                             if (x.Contract != null)
                             {
@@ -194,7 +199,7 @@ namespace ReactiveUI
 
                         if (viewController == null)
                         {
-                            throw new Exception($"Resolved view type '{viewController.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
+                            throw new Exception($"Resolved view type '{viewController?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                         }
 
                         view.ViewModel = x.ViewModel;

@@ -57,7 +57,8 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object>>? GetNotificationForProperty(
+            object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (sender == null)
             {
@@ -82,7 +83,7 @@ namespace ReactiveUI
                 throw new NotSupportedException($"Notifications for {type.Name}.{propertyName} are not supported");
             }
 
-            return match.CreateObservable((NSObject)sender, expression);
+            return match.CreateObservable?.Invoke((NSObject)sender, expression);
         }
 
 #if UIKIT
@@ -158,8 +159,7 @@ namespace ReactiveUI
         /// <param name="createObservable">Create observable.</param>
         protected void Register(Type type, string property, int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> createObservable)
         {
-            Dictionary<string, ObservablePropertyInfo> typeProperties;
-            if (!_config.TryGetValue(type, out typeProperties))
+            if (!_config.TryGetValue(type, out Dictionary<string, ObservablePropertyInfo> typeProperties))
             {
                 typeProperties = new Dictionary<string, ObservablePropertyInfo>();
                 _config[type] = typeProperties;
@@ -172,7 +172,7 @@ namespace ReactiveUI
         {
             public int Affinity { get; set; }
 
-            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> CreateObservable { get; set; }
+            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>>? CreateObservable { get; set; }
         }
     }
 }

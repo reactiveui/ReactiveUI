@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -25,11 +26,11 @@ namespace ReactiveUI
     /// </summary>
     public class MessageBus : IMessageBus
     {
-        private readonly Dictionary<(Type type, string contract), NotAWeakReference> _messageBus =
-            new Dictionary<(Type type, string contract), NotAWeakReference>();
+        private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus =
+            new Dictionary<(Type type, string? contract), NotAWeakReference>();
 
-        private readonly IDictionary<(Type type, string contract), IScheduler> _schedulerMappings =
-            new Dictionary<(Type type, string contract), IScheduler>();
+        private readonly IDictionary<(Type type, string? contract), IScheduler> _schedulerMappings =
+            new Dictionary<(Type type, string? contract), IScheduler>();
 
         /// <summary>
         /// Gets or sets the Current MessageBus.
@@ -46,7 +47,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void RegisterScheduler<T>(IScheduler scheduler, string contract = null)
+        public void RegisterScheduler<T>(IScheduler scheduler, string? contract = null)
         {
             _schedulerMappings[(typeof(T), contract)] = scheduler;
         }
@@ -61,7 +62,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An Observable representing the notifications posted to the
         /// message bus.</returns>
-        public IObservable<T> Listen<T>(string contract = null)
+        public IObservable<T> Listen<T>(string? contract = null)
         {
             this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
@@ -78,11 +79,11 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An Observable representing the notifications posted to the
         /// message bus.</returns>
-        public IObservable<T> ListenIncludeLatest<T>(string contract = null)
+        public IObservable<T> ListenIncludeLatest<T>(string? contract = null)
         {
             this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
-            return SetupSubjectIfNecessary<T>(contract);
+            return SetupSubjectIfNecessary<T>(contract) ?? Observable.Create<T>(observer => observer.OnCompleted);
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace ReactiveUI
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns>True if messages have been posted for this message Type.</returns>
-        public bool IsRegistered(Type type, string contract = null)
+        public bool IsRegistered(Type type, string? contract = null)
         {
             bool ret = false;
             WithMessageBus(type, contract, (mb, item) => { ret = mb.ContainsKey(item) && mb[item].IsAlive; });
@@ -115,14 +116,14 @@ namespace ReactiveUI
         /// <returns>a Disposable.</returns>
         public IDisposable RegisterMessageSource<T>(
             IObservable<T> source,
-            string contract = null)
+            string? contract = null)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
+            return source.Subscribe(SetupSubjectIfNecessary<T>(contract) !);
         }
 
         /// <summary>
@@ -136,24 +137,24 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void SendMessage<T>(T message, string contract = null)
+        public void SendMessage<T>(T message, string? contract = null)
         {
-            SetupSubjectIfNecessary<T>(contract).OnNext(message);
+            SetupSubjectIfNecessary<T>(contract)?.OnNext(message);
         }
 
-        private ISubject<T> SetupSubjectIfNecessary<T>(string contract)
+        private ISubject<T>? SetupSubjectIfNecessary<T>(string? contract)
         {
-            ISubject<T> ret = null;
+            ISubject<T>? ret = null;
 
             WithMessageBus(typeof(T), contract, (mb, item) =>
             {
-                if (mb.TryGetValue(item, out NotAWeakReference subjRef) && subjRef.IsAlive)
+                if (mb.TryGetValue(item, out NotAWeakReference? subjRef) && subjRef.IsAlive)
                 {
                     ret = (ISubject<T>)subjRef.Target;
                     return;
                 }
 
-                ret = new ScheduledSubject<T>(GetScheduler(item), null, new BehaviorSubject<T>(default(T)));
+                ret = new ScheduledSubject<T>(GetScheduler(item), null, new BehaviorSubject<T>(default!));
                 mb[item] = new NotAWeakReference(ret);
             });
 
@@ -162,8 +163,8 @@ namespace ReactiveUI
 
         private void WithMessageBus(
             Type type,
-            string contract,
-            Action<Dictionary<(Type type, string contract), NotAWeakReference>, (Type type, string contract)> block)
+            string? contract,
+            Action<Dictionary<(Type type, string? contract), NotAWeakReference>, (Type type, string? contract)> block)
         {
             lock (_messageBus)
             {
@@ -176,9 +177,9 @@ namespace ReactiveUI
             }
         }
 
-        private IScheduler GetScheduler((Type type, string contract) item)
+        private IScheduler GetScheduler((Type type, string? contract) item)
         {
-            _schedulerMappings.TryGetValue(item, out IScheduler scheduler);
+            _schedulerMappings.TryGetValue(item, out IScheduler? scheduler);
             return scheduler ?? CurrentThreadScheduler.Instance;
         }
     }

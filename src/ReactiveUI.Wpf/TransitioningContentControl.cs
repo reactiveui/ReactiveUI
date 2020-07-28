@@ -54,11 +54,11 @@ namespace ReactiveUI
         private const string PresentationGroup = "PresentationStates";
         private const string NormalState = "Normal";
         private bool _isTransitioning;
-        private Storyboard _startingTransition;
-        private Storyboard _completingTransition;
-        private Grid _container;
-        private ContentPresenter _previousContentPresentationSite;
-        private ContentPresenter _currentContentPresentationSite;
+        private Storyboard? _startingTransition;
+        private Storyboard? _completingTransition;
+        private Grid? _container;
+        private ContentPresenter? _previousContentPresentationSite;
+        private ContentPresenter? _currentContentPresentationSite;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransitioningContentControl"/> class.
@@ -71,12 +71,12 @@ namespace ReactiveUI
         /// <summary>
         /// Occurs when a transition has completed.
         /// </summary>
-        public event RoutedEventHandler TransitionCompleted;
+        public event RoutedEventHandler? TransitionCompleted;
 
         /// <summary>
         /// Occurs when a transition has started.
         /// </summary>
-        public event RoutedEventHandler TransitionStarted;
+        public event RoutedEventHandler? TransitionStarted;
 
         /// <summary>
         /// Represents the type of transition that a TransitioningContentControl will perform.
@@ -153,7 +153,7 @@ namespace ReactiveUI
         /// <value>The duration.</value>
         public TimeSpan Duration { get => (TimeSpan)GetValue(TransitionDurationProperty); set => SetValue(TransitionDurationProperty, value); }
 
-        private Storyboard StartingTransition
+        private Storyboard? StartingTransition
         {
             get => _startingTransition;
             set
@@ -166,7 +166,7 @@ namespace ReactiveUI
             }
         }
 
-        private Storyboard CompletingTransition
+        private Storyboard? CompletingTransition
         {
             get => _completingTransition;
             set
@@ -243,7 +243,7 @@ namespace ReactiveUI
             }
         }
 
-        private void OnTransitionCompleted(object sender, EventArgs e)
+        private void OnTransitionCompleted(object? sender, EventArgs e)
         {
             AbortTransition();
 
@@ -328,65 +328,74 @@ namespace ReactiveUI
             // Do some special handling of particular transitions so that we get nice smooth transitions that utilise the size of the content.
             if (Transition == TransitionType.Fade)
             {
-                var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
-                startingDoubleAnimation.Duration = Duration;
-                completingDoubleAnimation.Duration = Duration;
+                if (CompletingTransition != null)
+                {
+                    var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
+                    startingDoubleAnimation.Duration = Duration;
+                    completingDoubleAnimation.Duration = Duration;
+                }
             }
 
             if (Transition == TransitionType.Slide)
             {
-                var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                startingDoubleAnimation.Duration = Duration;
-                if (Direction == TransitionDirection.Down)
+                if (CompletingTransition != null)
                 {
-                    startingDoubleAnimation.From = -ActualHeight;
-                }
+                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                    startingDoubleAnimation.Duration = Duration;
+                    if (Direction == TransitionDirection.Down)
+                    {
+                        startingDoubleAnimation.From = -ActualHeight;
+                    }
 
-                if (Direction == TransitionDirection.Up)
-                {
-                    startingDoubleAnimation.From = ActualHeight;
-                }
+                    if (Direction == TransitionDirection.Up)
+                    {
+                        startingDoubleAnimation.From = ActualHeight;
+                    }
 
-                if (Direction == TransitionDirection.Right)
-                {
-                    startingDoubleAnimation.From = -ActualWidth;
-                }
+                    if (Direction == TransitionDirection.Right)
+                    {
+                        startingDoubleAnimation.From = -ActualWidth;
+                    }
 
-                if (Direction == TransitionDirection.Left)
-                {
-                    startingDoubleAnimation.From = ActualWidth;
+                    if (Direction == TransitionDirection.Left)
+                    {
+                        startingDoubleAnimation.From = ActualWidth;
+                    }
                 }
             }
 
             if (Transition == TransitionType.Move)
             {
-                var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
-                startingDoubleAnimation.Duration = Duration;
-                completingDoubleAnimation.Duration = Duration;
-                if (Direction == TransitionDirection.Down)
+                if (CompletingTransition != null)
                 {
-                    startingDoubleAnimation.To = ActualHeight;
-                    completingDoubleAnimation.From = -ActualHeight;
-                }
+                    var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
+                    startingDoubleAnimation.Duration = Duration;
+                    completingDoubleAnimation.Duration = Duration;
+                    if (Direction == TransitionDirection.Down)
+                    {
+                        startingDoubleAnimation.To = ActualHeight;
+                        completingDoubleAnimation.From = -ActualHeight;
+                    }
 
-                if (Direction == TransitionDirection.Up)
-                {
-                    startingDoubleAnimation.To = -ActualHeight;
-                    completingDoubleAnimation.From = ActualHeight;
-                }
+                    if (Direction == TransitionDirection.Up)
+                    {
+                        startingDoubleAnimation.To = -ActualHeight;
+                        completingDoubleAnimation.From = ActualHeight;
+                    }
 
-                if (Direction == TransitionDirection.Right)
-                {
-                    startingDoubleAnimation.To = ActualWidth;
-                    completingDoubleAnimation.From = -ActualWidth;
-                }
+                    if (Direction == TransitionDirection.Right)
+                    {
+                        startingDoubleAnimation.To = ActualWidth;
+                        completingDoubleAnimation.From = -ActualWidth;
+                    }
 
-                if (Direction == TransitionDirection.Left)
-                {
-                    startingDoubleAnimation.To = -ActualWidth;
-                    completingDoubleAnimation.From = ActualWidth;
+                    if (Direction == TransitionDirection.Left)
+                    {
+                        startingDoubleAnimation.To = -ActualWidth;
+                        completingDoubleAnimation.From = ActualWidth;
+                    }
                 }
             }
 

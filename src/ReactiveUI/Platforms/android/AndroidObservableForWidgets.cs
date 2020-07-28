@@ -22,7 +22,7 @@ namespace ReactiveUI
     /// </summary>
     public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
-        private static readonly IDictionary<(Type viewType, string propertyName), Func<object, Expression, IObservable<IObservedChange<object, object>>>> dispatchTable;
+        private static readonly Dictionary<(Type? viewType, string? propertyName), Func<object, Expression, IObservable<IObservedChange<object, object>>>?> dispatchTable;
 
         static AndroidObservableForWidgets()
         {
@@ -48,11 +48,11 @@ namespace ReactiveUI
                 return 0;
             }
 
-            return dispatchTable.Keys.Any(x => x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName) ? 5 : 0;
+            return dispatchTable.Keys.Any(x => x.viewType != null && (x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName)) ? 5 : 0;
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object>>? GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (sender == null)
             {
@@ -60,9 +60,9 @@ namespace ReactiveUI
             }
 
             var type = sender.GetType();
-            var tableItem = dispatchTable.Keys.First(x => x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName);
+            var tableItem = dispatchTable.Keys.First(x => x.viewType != null && (x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName));
 
-            return dispatchTable[tableItem](sender, expression);
+            return dispatchTable[tableItem]?.Invoke(sender, expression);
         }
 
         private static DispatchItem CreateFromAdapterView()
@@ -156,11 +156,11 @@ namespace ReactiveUI
 
         private class DispatchItem
         {
-            public Type Type { get; set; }
+            public Type? Type { get; set; }
 
-            public string Property { get; set; }
+            public string? Property { get; set; }
 
-            public Func<object, Expression, IObservable<IObservedChange<object, object>>> Func { get; set; }
+            public Func<object, Expression, IObservable<IObservedChange<object, object>>>? Func { get; set; }
         }
     }
 }

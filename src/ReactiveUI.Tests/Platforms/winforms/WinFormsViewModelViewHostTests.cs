@@ -46,7 +46,7 @@ namespace ReactiveUI.Tests.Winforms
 
             var currentView = target.CurrentView;
             var isDisposed = false;
-            currentView.Disposed += (o, e) => isDisposed = true;
+            currentView!.Disposed += (o, e) => isDisposed = true;
 
             // switch the viewmodel
             target.ViewModel = new FakeWinformViewModel();

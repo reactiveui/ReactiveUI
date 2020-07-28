@@ -36,7 +36,7 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(0, output.Count);
             Assert.Null(fixture.ViewModel);
 
-            fixture.WhenAnyValue(x => x.ViewModel.Child.IsNotNullString).Subscribe(output.Add);
+            fixture.WhenAnyValue(x => x.ViewModel!.Child!.IsNotNullString!).Subscribe(output.Add);
 
             fixture.ViewModel = vm;
             Assert.Equal(1, output.Count);

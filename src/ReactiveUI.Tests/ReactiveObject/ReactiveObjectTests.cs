@@ -132,8 +132,8 @@ namespace ReactiveUI.Tests
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz"
             };
-            var output = new List<IObservedChange<TestFixture, string>>();
-            fixture.ObservableForProperty(x => x.IsNotNullString).Subscribe(x => { output.Add(x); });
+            var output = new List<IObservedChange<TestFixture, string?>>();
+            fixture.ObservableForProperty(x => x.IsNotNullString).Subscribe(x => { output.Add(x!); });
 
             fixture.IsNotNullString = "Bar";
             fixture.IsNotNullString = "Baz";
@@ -179,7 +179,7 @@ namespace ReactiveUI.Tests
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz"
             };
-            string json = JSONHelper.Serialize(fixture);
+            string? json = JSONHelper.Serialize(fixture);
 
             // Should look something like:
             // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}

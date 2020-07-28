@@ -10,11 +10,11 @@ namespace AThirdPartyNamespace
 {
     public class ThirdPartyControl : Control
     {
-        private string _value;
+        private string? _value;
 
-        public event EventHandler ValueChanged;
+        public event EventHandler? ValueChanged;
 
-        public string Value
+        public string? Value
         {
             get => _value;
             set

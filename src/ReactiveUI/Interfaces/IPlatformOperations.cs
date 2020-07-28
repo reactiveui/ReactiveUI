@@ -15,6 +15,6 @@ namespace ReactiveUI
         /// of the screen.
         /// </summary>
         /// <returns>The device orientation descriptor.</returns>
-        string GetOrientation();
+        string? GetOrientation();
     }
 }

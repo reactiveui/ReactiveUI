@@ -52,7 +52,7 @@ namespace ReactiveUI.Tests
 
             new Registrations().Register((factory, serviceType) =>
             {
-                if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out List<Type> implementationTypes) == false)
+                if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out var implementationTypes) == false)
                 {
                     implementationTypes = new List<Type>();
                     serviceTypeToImplementationTypes.Add(serviceType, implementationTypes);
@@ -63,7 +63,7 @@ namespace ReactiveUI.Tests
 
             new PlatformRegistrations().Register((factory, serviceType) =>
             {
-                if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out List<Type> implementationTypes) == false)
+                if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out var implementationTypes) == false)
                 {
                     implementationTypes = new List<Type>();
                     serviceTypeToImplementationTypes.Add(serviceType, implementationTypes);
@@ -86,14 +86,14 @@ namespace ReactiveUI.Tests
 
         private static void GetRegistrationsForPlatform(string typeName, Dictionary<Type, List<Type>> serviceTypeToImplementationTypes)
         {
-            Type platformRegistrationsType = Type.GetType(typeName);
+            var platformRegistrationsType = Type.GetType(typeName);
             if (platformRegistrationsType != null)
             {
                 var platformRegistrations = Activator.CreateInstance(platformRegistrationsType);
-                System.Reflection.MethodInfo register = platformRegistrationsType.GetMethod("Register");
+                var register = platformRegistrationsType.GetMethod("Register");
                 var registerParameter = new Action<Func<object>, Type>((factory, serviceType) =>
                 {
-                    if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out List<Type> implementationTypes) == false)
+                    if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out var implementationTypes) == false)
                     {
                         implementationTypes = new List<Type>();
                         serviceTypeToImplementationTypes.Add(serviceType, implementationTypes);
@@ -102,7 +102,7 @@ namespace ReactiveUI.Tests
                     implementationTypes.Add(factory().GetType());
                 });
 
-                register.Invoke(platformRegistrations, new object[] { registerParameter });
+                register?.Invoke(platformRegistrations, new object[] { registerParameter });
             }
         }
     }

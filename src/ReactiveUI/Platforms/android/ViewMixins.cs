@@ -30,7 +30,7 @@ namespace ReactiveUI
                 return tagData.ToNetObject<T>();
             }
 
-            return default;
+            return default!;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="item">The view.</param>
         /// <returns>The view host.</returns>
-        public static ILayoutViewHost GetViewHost(this View item)
+        public static ILayoutViewHost? GetViewHost(this View item)
         {
             return item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
         }

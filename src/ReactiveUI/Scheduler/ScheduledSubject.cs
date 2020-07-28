@@ -30,10 +30,10 @@ namespace ReactiveUI
         /// <param name="scheduler">The scheduler where to dispatch items to.</param>
         /// <param name="defaultObserver">A optional default observer where notifications will be sent.</param>
         /// <param name="defaultSubject">A optional default subject which this Subject will wrap.</param>
-        public ScheduledSubject(IScheduler scheduler, IObserver<T> defaultObserver = null, ISubject<T> defaultSubject = null)
+        public ScheduledSubject(IScheduler scheduler, IObserver<T>? defaultObserver = null, ISubject<T>? defaultSubject = null)
         {
             _scheduler = scheduler;
-            _defaultObserver = defaultObserver;
+            _defaultObserver = defaultObserver ?? new Subject<T>();
             _subject = defaultSubject ?? new Subject<T>();
 
             if (defaultObserver != null)

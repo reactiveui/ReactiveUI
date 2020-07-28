@@ -28,7 +28,7 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [SuppressMessage("Design", "CA1801: Parameter never used", Justification = "Used on some platforms.")]
-        public static object ExitFrame(object f)
+        public static object? ExitFrame(object f)
         {
 #if !NETFX_CORE
             ((DispatcherFrame)f).Continue = false;

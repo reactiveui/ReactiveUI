@@ -26,7 +26,7 @@ namespace ReactiveUI.AndroidX
     public class ReactiveFragmentActivity<TViewModel> : ReactiveFragmentActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
-        private TViewModel _viewModel;
+        private TViewModel? _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveFragmentActivity{TViewModel}"/> class.
@@ -36,17 +36,17 @@ namespace ReactiveUI.AndroidX
         }
 
         /// <inheritdoc/>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
         /// <inheritdoc/>
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => _viewModel;
-            set => _viewModel = (TViewModel)value;
+            set => _viewModel = (TViewModel?)value;
         }
     }
 
@@ -62,10 +62,10 @@ namespace ReactiveUI.AndroidX
         private readonly Subject<(int requestCode, Result result, Intent intent)> _activityResult = new Subject<(int requestCode, Result result, Intent intent)>();
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragmentActivity>> Changing => this.GetChangingObservable();

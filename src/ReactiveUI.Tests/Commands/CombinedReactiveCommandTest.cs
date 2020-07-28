@@ -84,7 +84,7 @@ namespace ReactiveUI.Tests
                                          var child = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
                                          var childCommands = new[] { child };
                                          var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);
-                                         Exception exception = null;
+                                         Exception? exception = null;
                                          fixture.ThrownExceptions.Subscribe(ex => exception = ex);
                                          fixture.Execute().Subscribe(_ => { }, _ => { });
 

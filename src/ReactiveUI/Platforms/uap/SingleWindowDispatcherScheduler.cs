@@ -31,7 +31,7 @@ namespace ReactiveUI
     public class SingleWindowDispatcherScheduler : IScheduler
     {
         private const CoreDispatcherPriority Priority = default;
-        private static CoreDispatcher _dispatcher;
+        private static CoreDispatcher? _dispatcher;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleWindowDispatcherScheduler"/> class.
@@ -43,7 +43,7 @@ namespace ReactiveUI
                 return;
             }
 
-            CoreDispatcher coreDispatcher = TryGetDispatcher();
+            CoreDispatcher? coreDispatcher = TryGetDispatcher();
 
             Interlocked.CompareExchange(ref _dispatcher, coreDispatcher, null);
         }
@@ -134,7 +134,7 @@ namespace ReactiveUI
         /// <param name="ex">The exception.</param>
         private static void RaiseUnhandledException(Exception ex)
         {
-            var timer = new DispatcherTimer
+            DispatcherTimer? timer = new DispatcherTimer
             {
                 Interval = TimeSpan.Zero
             };
@@ -152,9 +152,9 @@ namespace ReactiveUI
             }
         }
 
-        private static CoreDispatcher TryGetDispatcher()
+        private static CoreDispatcher? TryGetDispatcher()
         {
-            CoreDispatcher coreDispatcher;
+            CoreDispatcher? coreDispatcher;
 
             try
             {
@@ -222,7 +222,7 @@ namespace ReactiveUI
             // --
             // Because, we can't guarantee that DispatcherTimer will dispatch to the correct CoreDispatcher if there are multiple
             // so we dispatch explicitly from our own method.
-            var timer = ThreadPoolTimer.CreateTimer(_ => d.Disposable = ScheduleOnDispatcherNow(state, action), dueTime);
+            ThreadPoolTimer? timer = ThreadPoolTimer.CreateTimer(_ => d.Disposable = ScheduleOnDispatcherNow(state, action), dueTime);
 
             d.Disposable = Disposable.Create(() =>
             {

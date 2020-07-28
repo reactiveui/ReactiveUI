@@ -5,6 +5,8 @@
 
 using System;
 using System.Reactive;
+using System.Reactive.Linq;
+
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -38,9 +40,9 @@ namespace ReactiveUI.Tests
         #pragma warning disable CA1812 // Class is not instantiated
         private class CanActivateStub : ICanActivate
         {
-            public IObservable<Unit> Activated { get; }
+            public IObservable<Unit> Activated { get; } = Observable.Empty<Unit>();
 
-            public IObservable<Unit> Deactivated { get; }
+            public IObservable<Unit> Deactivated { get; } = Observable.Empty<Unit>();
         }
     }
 }

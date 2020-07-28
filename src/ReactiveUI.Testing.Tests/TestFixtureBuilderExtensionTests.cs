@@ -83,7 +83,7 @@ namespace ReactiveUI.Testing.Tests
             TestFixture builder = new TestFixtureBuilder().WithKeyValue(key, value);
 
             // Then
-            builder.Variables[key].ShouldBe(value);
+            builder.Variables?[key].ShouldBe(value);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace ReactiveUI.Testing.Tests
             TestFixture builder = new TestFixtureBuilder().WithKeyValue(keyValuePair);
 
             // Then
-            builder.Variables[keyValuePair.Key].ShouldBe(keyValuePair.Value);
+            builder.Variables?[keyValuePair.Key].ShouldBe(keyValuePair.Value);
         }
 
         /// <summary>

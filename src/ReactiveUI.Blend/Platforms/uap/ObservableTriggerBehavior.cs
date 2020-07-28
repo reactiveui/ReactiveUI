@@ -40,7 +40,7 @@ namespace ReactiveUI.Blend
         public static readonly DependencyProperty SourceObjectProperty =
             DependencyProperty.Register("SourceObject", typeof(object), typeof(ObservableTriggerBehavior), new PropertyMetadata(null, OnSourceObjectChanged));
 
-        private object _resolvedSource;
+        private object? _resolvedSource;
         private SerialDisposable _watcher;
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace ReactiveUI.Blend
             observableTriggerBehavior.SetResolvedSource(observableTriggerBehavior.ComputeResolvedSource());
         }
 
-        private void SetResolvedSource(object newSource)
+        private void SetResolvedSource(object? newSource)
         {
             if (AssociatedObject == null || _resolvedSource == newSource)
             {
@@ -150,7 +150,7 @@ namespace ReactiveUI.Blend
             _resolvedSource = newSource;
         }
 
-        private object ComputeResolvedSource()
+        private object? ComputeResolvedSource()
         {
             if (ReadLocalValue(ObservableTriggerBehavior.SourceObjectProperty) != DependencyProperty.UnsetValue)
             {

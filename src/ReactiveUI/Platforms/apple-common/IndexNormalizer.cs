@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="updates">The updates.</param>
         /// <returns>A list updates.</returns>
-        public static IList<Update> Normalize(IEnumerable<Update> updates)
+        public static IList<Update?> Normalize(IEnumerable<Update> updates)
         {
             var updatesList = updates.ToList();
             MarkDuplicates(updatesList);

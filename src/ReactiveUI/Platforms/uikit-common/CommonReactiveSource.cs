@@ -87,7 +87,7 @@ namespace ReactiveUI
         {
             Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 
-            var list = (IList)SectionInfo[section].Collection;
+            var list = (IList)SectionInfo[section].Collection!;
             var count = list.Count;
             this.Log().Debug(CultureInfo.InvariantCulture, "Reporting rows in section {0} = {1}", section, count);
 
@@ -98,7 +98,7 @@ namespace ReactiveUI
         {
             Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 
-            var list = (IList)SectionInfo[path.Section].Collection;
+            var list = (IList)SectionInfo[path.Section].Collection!;
             this.Log().Debug(CultureInfo.InvariantCulture, "Returning item at {0}-{1}", path.Section, path.Row);
 
             return list[path.Row];
@@ -110,17 +110,16 @@ namespace ReactiveUI
 
             this.Log().Debug(CultureInfo.InvariantCulture, "Getting cell for index path {0}-{1}", indexPath.Section, indexPath.Row);
             var section = SectionInfo[indexPath.Section];
-            var vm = ((IList)section.Collection)[indexPath.Row];
-            var cell = _adapter.DequeueReusableCell(section.CellKeySelector(vm), indexPath);
-            var view = cell as IViewFor;
+            var vm = ((IList)section.Collection!)[indexPath.Row];
+            var cell = _adapter.DequeueReusableCell(section?.CellKeySelector?.Invoke(vm) ?? NSString.Empty, indexPath);
 
-            if (view != null)
+            if (cell is IViewFor view)
             {
                 this.Log().Debug(CultureInfo.InvariantCulture, "Setting VM for index path {0}-{1}", indexPath.Section, indexPath.Row);
                 view.ViewModel = vm;
             }
 
-            var initializeCellAction = section.InitializeCellAction ?? (_ => { });
+            var initializeCellAction = section?.InitializeCellAction ?? (_ => { });
             initializeCellAction(cell);
 
             return cell;
@@ -390,7 +389,7 @@ namespace ReactiveUI
 
                             foreach (var normalizedUpdate in normalizedUpdates)
                             {
-                                switch (normalizedUpdate.Type)
+                                switch (normalizedUpdate?.Type)
                                 {
                                     case UpdateType.Add:
                                         DoUpdate(_adapter.InsertItems, new[] { normalizedUpdate.Index }, section);
@@ -445,17 +444,17 @@ namespace ReactiveUI
             public PendingChange(NotifyCollectionChangedEventArgs ea)
             {
                 Action = ea.Action;
-                OldItems = ea.OldItems == null ? null : ea.OldItems.Cast<object>().ToList();
-                NewItems = ea.NewItems == null ? null : ea.NewItems.Cast<object>().ToList();
+                OldItems = ea.OldItems?.Cast<object>().ToList();
+                NewItems = ea.NewItems?.Cast<object>().ToList();
                 OldStartingIndex = ea.OldStartingIndex;
                 NewStartingIndex = ea.NewStartingIndex;
             }
 
             public NotifyCollectionChangedAction Action { get; }
 
-            public IList OldItems { get; }
+            public IList? OldItems { get; }
 
-            public IList NewItems { get; }
+            public IList? NewItems { get; }
 
             public int OldStartingIndex { get; }
 

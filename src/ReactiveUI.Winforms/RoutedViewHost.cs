@@ -18,9 +18,9 @@ namespace ReactiveUI.Winforms
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private RoutingState _router;
-        private Control _defaultContent;
-        private IObservable<string> _viewContractObservable;
+        private RoutingState? _router;
+        private Control? _defaultContent;
+        private IObservable<string>? _viewContractObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
@@ -41,12 +41,12 @@ namespace ReactiveUI.Winforms
             ViewContractObservable = Observable<string>.Default;
 
             var vmAndContract =
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel)
+                this.WhenAnyObservable(x => x.Router!.CurrentViewModel!)
                     .CombineLatest(
-                        this.WhenAnyObservable(x => x.ViewContractObservable),
+                        this.WhenAnyObservable(x => x.ViewContractObservable!),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-            Control viewLastAdded = null;
+            Control viewLastAdded = null!;
             _disposables.Add(vmAndContract.Subscribe(
                 x =>
             {
@@ -72,20 +72,24 @@ namespace ReactiveUI.Winforms
                 }
 
                 IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                view.ViewModel = x.ViewModel;
+                IViewFor? view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                if (view != null)
+                {
+                    view.ViewModel = x.ViewModel;
 
-                viewLastAdded = InitView((Control)view);
+                    viewLastAdded = InitView((Control)view);
+                }
+
                 Controls.Add(viewLastAdded);
                 ResumeLayout();
-            }, RxApp.DefaultExceptionHandler.OnNext));
+            }, RxApp.DefaultExceptionHandler!.OnNext));
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets or sets the default content.
@@ -95,7 +99,7 @@ namespace ReactiveUI.Winforms
         /// </value>
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
-        public Control DefaultContent
+        public Control? DefaultContent
         {
             get => _defaultContent;
             set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
@@ -106,7 +110,7 @@ namespace ReactiveUI.Winforms
         /// </summary>
         [Category("ReactiveUI")]
         [Description("The router.")]
-        public RoutingState Router
+        public RoutingState? Router
         {
             get => _router;
             set => this.RaiseAndSetIfChanged(ref _router, value);
@@ -116,7 +120,7 @@ namespace ReactiveUI.Winforms
         /// Gets or sets the view contract observable.
         /// </summary>
         [Browsable(false)]
-        public IObservable<string> ViewContractObservable
+        public IObservable<string>? ViewContractObservable
         {
             get => _viewContractObservable;
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
@@ -126,7 +130,7 @@ namespace ReactiveUI.Winforms
         /// Gets or sets the view locator.
         /// </summary>
         [Browsable(false)]
-        public IViewLocator ViewLocator { get; set; }
+        public IViewLocator? ViewLocator { get; set; }
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)

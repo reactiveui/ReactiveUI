@@ -24,7 +24,7 @@ namespace ReactiveUI
         public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
             where T : class
         {
-            return item.WhenAny(x => x.AppState, x => (T)x.Value)
+            return item.WhenAny(x => x.AppState, x => (T)x)
                         .Where(x => x != null);
         }
 
@@ -41,6 +41,11 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(item));
             }
 
+            if (item.AppState == null)
+            {
+                throw new NullReferenceException(nameof(item.AppState));
+            }
+
             return (T)item.AppState;
         }
 
@@ -51,15 +56,20 @@ namespace ReactiveUI
         /// <param name="item">The suspension host.</param>
         /// <param name="driver">The suspension driver.</param>
         /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
-        public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver driver = null)
+        public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
         {
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
+            if (item.AppState == null)
+            {
+                throw new NullReferenceException(nameof(item.AppState));
+            }
+
             var ret = new CompositeDisposable();
-            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
+            driver ??= Locator.Current.GetService<ISuspensionDriver>();
 
             ret.Add(item.ShouldInvalidateState
                          .SelectMany(_ => driver.InvalidateState())
@@ -75,9 +85,9 @@ namespace ReactiveUI
                               .SelectMany(x => driver.LoadState())
                               .LoggedCatch(
                                   item,
-                                  Observable.Defer(() => Observable.Return(item.CreateNewAppState())),
+                                  Observable.Defer(() => Observable.Return(item.CreateNewAppState?.Invoke())),
                                   "Failed to restore app state from storage, creating from scratch")
-                                  .Subscribe(x => item.AppState = x ?? item.CreateNewAppState()));
+                                  .Subscribe(x => item.AppState = x ?? item.CreateNewAppState?.Invoke()));
 
             return ret;
         }

@@ -31,6 +31,7 @@ namespace ReactiveUI
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
+
     public
 #if HAS_UNO
         partial
@@ -62,7 +63,7 @@ namespace ReactiveUI
 
         private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
         private readonly Subject<Unit> _updateViewContract = new Subject<Unit>();
-        private string _viewContract;
+        private string? _viewContract;
         private bool _isDisposed;
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace ReactiveUI
             }
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
-            Func<string> platformGetter = () => default(string);
+            Func<string?> platformGetter = () => default;
 
             if (platform == null)
             {
@@ -104,12 +105,12 @@ namespace ReactiveUI
             vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
             contractChanged
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => _viewContract = x);
+                .Subscribe(x => _viewContract = x ?? string.Empty);
 
             ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
                 eventHandler =>
                 {
-                    void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
+                    void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter() !);
                     return Handler;
                 },
                 x => SizeChanged += x,
@@ -121,7 +122,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view contract observable.
         /// </summary>
-        public IObservable<string> ViewContractObservable
+        public IObservable<string?> ViewContractObservable
         {
             get => (IObservable<string>)GetValue(ViewContractObservableProperty);
             set => SetValue(ViewContractObservableProperty, value);
@@ -139,7 +140,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the ViewModel to display.
         /// </summary>
-        public object ViewModel
+        public object? ViewModel
         {
             get => GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
@@ -148,7 +149,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view contract.
         /// </summary>
-        public string ViewContract
+        public string? ViewContract
         {
             get => _viewContract;
             set => ViewContractObservable = Observable.Return(value);
@@ -157,7 +158,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view locator.
         /// </summary>
-        public IViewLocator ViewLocator { get; set; }
+        public IViewLocator? ViewLocator { get; set; }
 
         /// <inheritdoc />
         public void Dispose()
@@ -196,7 +197,7 @@ namespace ReactiveUI
             ((ViewModelViewHost)dependencyObject)._updateViewContract.OnNext(Unit.Default);
         }
 
-        private void ResolveViewForViewModel(object viewModel, string contract)
+        private void ResolveViewForViewModel(object? viewModel, string? contract)
         {
             if (viewModel == null)
             {

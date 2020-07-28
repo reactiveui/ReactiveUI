@@ -39,17 +39,17 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public bool TryConvert(object from, Type toType, object conversionHint, out object result)
+        public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
         {
             var hint = conversionHint is BooleanToVisibilityHint ?
                 (BooleanToVisibilityHint)conversionHint :
                 BooleanToVisibilityHint.None;
 
-            if (toType == typeof(Visibility))
+            if (toType == typeof(Visibility) && from is bool fromBool)
             {
-                var fromAsBool = hint.HasFlag(BooleanToVisibilityHint.Inverse) ? !(bool)@from : (bool)from;
+                var fromAsBool = (hint & BooleanToVisibilityHint.Inverse) != 0 ? !fromBool : fromBool;
 #if !NETFX_CORE && !HAS_UNO
-                var notVisible = hint.HasFlag(BooleanToVisibilityHint.UseHidden) ? Visibility.Hidden : Visibility.Collapsed;
+                var notVisible = (hint & BooleanToVisibilityHint.UseHidden) != 0 ? Visibility.Hidden : Visibility.Collapsed;
 #else
                 var notVisible = Visibility.Collapsed;
 #endif
@@ -57,8 +57,14 @@ namespace ReactiveUI
                 return true;
             }
 
-            var fromAsVis = (Visibility)from;
-            result = fromAsVis == Visibility.Visible ^ !hint.HasFlag(BooleanToVisibilityHint.Inverse);
+            if (from is Visibility fromAsVis)
+            {
+                result = fromAsVis == Visibility.Visible ^ (hint & BooleanToVisibilityHint.Inverse) == 0;
+            }
+            else
+            {
+                result = Visibility.Visible;
+            }
 
             return true;
         }

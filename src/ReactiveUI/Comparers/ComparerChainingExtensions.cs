@@ -28,7 +28,7 @@ namespace ReactiveUI
         /// A function supplying the values for the comparer.
         /// </param>
         /// <returns>A comparer.</returns>
-        public static IComparer<T> ThenBy<T, TValue>(this IComparer<T> parent, Func<T, TValue> selector)
+        public static IComparer<T> ThenBy<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector)
         {
             return ThenBy(parent, selector, Comparer<TValue>.Default);
         }
@@ -52,7 +52,7 @@ namespace ReactiveUI
         /// The comparer to use when comparing the values returned by the selector.
         /// </param>
         /// <returns>A comparer.</returns>
-        public static IComparer<T> ThenBy<T, TValue>(this IComparer<T> parent, Func<T, TValue> selector, IComparer<TValue> comparer)
+        public static IComparer<T> ThenBy<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector, IComparer<TValue> comparer)
         {
             return new ChainedComparer<T>(parent, (x, y) => comparer.Compare(selector(x), selector(y)));
         }
@@ -72,7 +72,7 @@ namespace ReactiveUI
         /// A function supplying the values for the comparer.
         /// </param>
         /// <returns>A comparer.</returns>
-        public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T> parent, Func<T, TValue> selector)
+        public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector)
         {
             return ThenByDescending(parent, selector, Comparer<TValue>.Default);
         }
@@ -96,7 +96,7 @@ namespace ReactiveUI
         /// The comparer to use when comparing the values returned by the selector.
         /// </param>
         /// <returns>A comparer.</returns>
-        public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T> parent, Func<T, TValue> selector, IComparer<TValue> comparer)
+        public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector, IComparer<TValue> comparer)
         {
             return new ChainedComparer<T>(parent, (x, y) => -comparer.Compare(selector(x), selector(y)));
         }

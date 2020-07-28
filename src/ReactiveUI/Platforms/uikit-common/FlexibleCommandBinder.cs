@@ -70,7 +70,7 @@ namespace ReactiveUI
 
             var typeProperties = _config[match];
 
-            return typeProperties.CreateBinding(command, target, commandParameter);
+            return typeProperties?.CreateBinding?.Invoke(command, target, commandParameter) ?? Disposable.Empty;
         }
 
         /// <inheritdoc/>
@@ -96,9 +96,9 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(command));
             }
 
-            commandParameter = commandParameter ?? Observable.Return(target);
+            commandParameter ??= Observable.Return(target);
 
-            object latestParam = null;
+            object? latestParam = null;
             var ctl = target;
 
             var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe((e) =>
@@ -149,9 +149,9 @@ namespace ReactiveUI
 
             commandParameter = commandParameter ?? Observable.Return(target);
 
-            object latestParam = null;
+            object? latestParam = null;
 
-            IDisposable actionDisp = null;
+            IDisposable actionDisposable = Disposable.Empty;
 
             var ctl = target as UIControl;
             if (ctl != null)
@@ -165,20 +165,20 @@ namespace ReactiveUI
                 });
 
                 ctl.AddTarget(eh, UIControlEvent.TouchUpInside);
-                actionDisp = Disposable.Create(() => ctl.RemoveTarget(eh, UIControlEvent.TouchUpInside));
+                actionDisposable = Disposable.Create(() => ctl.RemoveTarget(eh, UIControlEvent.TouchUpInside));
             }
 
             var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
             if (enabledSetter == null)
             {
-                return actionDisp;
+                return actionDisposable;
             }
 
             // Initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
 
             return new CompositeDisposable(
-                actionDisp,
+                actionDisposable,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEvent<EventHandler, bool>(
                     eventHandler =>
@@ -206,7 +206,7 @@ namespace ReactiveUI
         {
             public int Affinity { get; set; }
 
-            public Func<ICommand, object, IObservable<object>, IDisposable> CreateBinding { get; set; }
+            public Func<ICommand, object, IObservable<object>, IDisposable>? CreateBinding { get; set; }
         }
     }
 }

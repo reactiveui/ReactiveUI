@@ -10,7 +10,7 @@ namespace ReactiveUI.Legacy
 {
     internal sealed class RefcountDisposeWrapper
     {
-        private IDisposable _inner;
+        private IDisposable? _inner;
         private int _refCount = 1;
 
         public RefcountDisposeWrapper(IDisposable inner)
@@ -28,7 +28,7 @@ namespace ReactiveUI.Legacy
             if (Interlocked.Decrement(ref _refCount) == 0)
             {
                 var inner = Interlocked.Exchange(ref _inner, null);
-                inner.Dispose();
+                inner?.Dispose();
             }
         }
     }

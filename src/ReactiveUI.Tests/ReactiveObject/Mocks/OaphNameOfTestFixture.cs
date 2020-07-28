@@ -11,10 +11,10 @@ namespace ReactiveUI.Tests
     public class OaphNameOfTestFixture : TestFixture
     {
         [IgnoreDataMember]
-        private readonly ObservableAsPropertyHelper<string> _firstThreeLettersOfOneWord;
+        private readonly ObservableAsPropertyHelper<string?> _firstThreeLettersOfOneWord;
 
         [IgnoreDataMember]
-        private readonly ObservableAsPropertyHelper<string> _lastThreeLettersOfOneWord;
+        private readonly ObservableAsPropertyHelper<string?> _lastThreeLettersOfOneWord;
 
         public OaphNameOfTestFixture()
         {
@@ -24,9 +24,9 @@ namespace ReactiveUI.Tests
         }
 
         [IgnoreDataMember]
-        public string FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;
+        public string? FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;
 
         [IgnoreDataMember]
-        public string LastThreeLettersOfOneWord => _lastThreeLettersOfOneWord.Value;
+        public string? LastThreeLettersOfOneWord => _lastThreeLettersOfOneWord.Value;
     }
 }

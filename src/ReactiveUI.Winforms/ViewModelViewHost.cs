@@ -19,10 +19,10 @@ namespace ReactiveUI.Winforms
     public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private Control _defaultContent;
-        private IObservable<string> _viewContractObservable;
-        private object _viewModel;
-        private object _content;
+        private Control? _defaultContent;
+        private IObservable<string>? _viewContractObservable;
+        private object? _viewModel;
+        private object? _content;
         private bool _cacheViews;
 
         /// <summary>
@@ -40,10 +40,10 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets or sets a value indicating whether [default cache views enabled].
@@ -53,14 +53,14 @@ namespace ReactiveUI.Winforms
         /// <summary>
         /// Gets the current view.
         /// </summary>
-        public Control CurrentView => _content as Control;
+        public Control? CurrentView => _content as Control;
 
         /// <summary>
         /// Gets or sets the default content.
         /// </summary>
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
-        public Control DefaultContent
+        public Control? DefaultContent
         {
             get => _defaultContent;
             set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
@@ -73,7 +73,7 @@ namespace ReactiveUI.Winforms
         /// The view contract observable.
         /// </value>
         [Browsable(false)]
-        public IObservable<string> ViewContractObservable
+        public IObservable<string>? ViewContractObservable
         {
             get => _viewContractObservable;
             set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
@@ -83,13 +83,13 @@ namespace ReactiveUI.Winforms
         /// Gets or sets the view locator.
         /// </summary>
         [Browsable(false)]
-        public IViewLocator ViewLocator { get; set; }
+        public IViewLocator? ViewLocator { get; set; }
 
         /// <inheritdoc/>
         [Category("ReactiveUI")]
         [Description("The viewmodel to host.")]
         [Bindable(true)]
-        public object ViewModel
+        public object? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
@@ -101,7 +101,7 @@ namespace ReactiveUI.Winforms
         [Category("ReactiveUI")]
         [Description("The Current View")]
         [Bindable(true)]
-        public object Content
+        public object? Content
         {
             get => _content;
             protected set => this.RaiseAndSetIfChanged(ref _content, value);
@@ -150,22 +150,25 @@ namespace ReactiveUI.Winforms
         private IEnumerable<IDisposable> SetupBindings()
         {
             var viewChanges =
-                this.WhenAnyValue(x => x.Content).Select(x => x as Control).Where(x => x != null).Subscribe(x =>
-                {
-                    // change the view in the ui
-                    SuspendLayout();
-
-                    // clear out existing visible control view
-                    foreach (Control c in Controls)
+                this.WhenAnyValue(x => x.Content)
+                    .Select(x => x as Control)
+                    .Where(x => x != null)
+                    .Subscribe(x =>
                     {
-                        c.Dispose();
-                        Controls.Remove(c);
-                    }
+                        // change the view in the ui
+                        SuspendLayout();
 
-                    x.Dock = DockStyle.Fill;
-                    Controls.Add(x);
-                    ResumeLayout();
-                });
+                        // clear out existing visible control view
+                        foreach (Control? c in Controls)
+                        {
+                            c?.Dispose();
+                            Controls.Remove(c);
+                        }
+
+                        x!.Dock = DockStyle.Fill;
+                        Controls.Add(x);
+                        ResumeLayout();
+                    });
 
             yield return viewChanges;
 
@@ -182,7 +185,7 @@ namespace ReactiveUI.Winforms
             var vmAndContract =
                 this.WhenAny(x => x.ViewModel, x => x.Value)
                     .CombineLatest(
-                        this.WhenAnyObservable(x => x.ViewContractObservable),
+                        this.WhenAnyObservable(x => x.ViewContractObservable!),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
             yield return vmAndContract.Subscribe(
@@ -204,8 +207,7 @@ namespace ReactiveUI.Winforms
                         // when caching views, check the current viewmodel and type
                         var c = _content as IViewFor;
 
-                        if (c != null && c.ViewModel != null
-                            && c.ViewModel.GetType() == x.ViewModel.GetType())
+                        if (c?.ViewModel != null && c.ViewModel.GetType() == x.ViewModel!.GetType())
                         {
                             c.ViewModel = x.ViewModel;
 
@@ -216,10 +218,13 @@ namespace ReactiveUI.Winforms
                     }
 
                     IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                    view.ViewModel = x.ViewModel;
-                    Content = view;
-                }, RxApp.DefaultExceptionHandler.OnNext);
+                    IViewFor? view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                    if (view != null)
+                    {
+                        view.ViewModel = x.ViewModel;
+                        Content = view;
+                    }
+                }, RxApp.DefaultExceptionHandler!.OnNext);
         }
     }
 }

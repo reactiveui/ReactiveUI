@@ -49,7 +49,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
             if (target == null)
             {
@@ -70,7 +70,7 @@ namespace ReactiveUI
             var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(eventInfo.Args);
 
-            return (IDisposable)mi.Invoke(this, new[] { command, target, commandParameter, eventInfo.EventInfo.Name });
+            return (IDisposable?)mi.Invoke(this, new[] { command, target, commandParameter, eventInfo.EventInfo?.Name });
         }
 
         /// <inheritdoc/>
@@ -81,7 +81,7 @@ namespace ReactiveUI
         {
             var ret = new CompositeDisposable();
 
-            object latestParameter = null;
+            object? latestParameter = null;
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
 
             ret.Add(commandParameter.Subscribe(x => latestParameter = x));

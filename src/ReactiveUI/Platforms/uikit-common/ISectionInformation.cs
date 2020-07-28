@@ -21,16 +21,16 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the collection.
         /// </summary>
-        INotifyCollectionChanged Collection { get; }
+        INotifyCollectionChanged? Collection { get; }
 
         /// <summary>
         /// Gets the cell key selector.
         /// </summary>
-        Func<object, NSString> CellKeySelector { get; }
+        Func<object?, NSString>? CellKeySelector { get; }
 
         /// <summary>
         /// Gets the initialize cell action.
         /// </summary>
-        Action<TUIViewCell> InitializeCellAction { get; }
+        Action<TUIViewCell>? InitializeCellAction { get; }
     }
 }

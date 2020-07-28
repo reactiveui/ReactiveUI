@@ -20,13 +20,13 @@ namespace ReactiveUI.Tests
         {
             var instance = new INPCObservableForProperty();
 
-            Assert.Equal(5, instance.GetAffinityForObject(typeof(TestClassChanged), null, false));
-            Assert.Equal(0, instance.GetAffinityForObject(typeof(TestClassChanged), null, true));
-            Assert.Equal(0, instance.GetAffinityForObject(typeof(object), null, false));
+            Assert.Equal(5, instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false));
+            Assert.Equal(0, instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true));
+            Assert.Equal(0, instance.GetAffinityForObject(typeof(object), string.Empty, false));
 
-            Assert.Equal(5, instance.GetAffinityForObject(typeof(TestClassChanging), null, true));
-            Assert.Equal(0, instance.GetAffinityForObject(typeof(TestClassChanging), null, false));
-            Assert.Equal(0, instance.GetAffinityForObject(typeof(object), null, false));
+            Assert.Equal(5, instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true));
+            Assert.Equal(0, instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false));
+            Assert.Equal(0, instance.GetAffinityForObject(typeof(object), string.Empty, false));
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace ReactiveUI.Tests
 
             var testClass = new TestClassChanged();
 
-            Expression<Func<TestClassChanged, string>> expr = x => x.Property1;
+            Expression<Func<TestClassChanged, string?>> expr = x => x!.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
             var changes = new List<IObservedChange<object, object>>();
@@ -58,7 +58,7 @@ namespace ReactiveUI.Tests
 
             var testClass = new TestClassChanging();
 
-            Expression<Func<TestClassChanged, string>> expr = x => x.Property1;
+            Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
             var changes = new List<IObservedChange<object, object>>();
@@ -80,7 +80,7 @@ namespace ReactiveUI.Tests
 
             var testClass = new TestClassChanged();
 
-            Expression<Func<TestClassChanged, string>> expr = x => x.Property1;
+            Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
             var changes = new List<IObservedChange<object, object>>();
@@ -102,7 +102,7 @@ namespace ReactiveUI.Tests
 
             var testClass = new TestClassChanging();
 
-            Expression<Func<TestClassChanged, string>> expr = x => x.Property1;
+            Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
             var changes = new List<IObservedChange<object, object>>();
@@ -119,13 +119,13 @@ namespace ReactiveUI.Tests
 
         private class TestClassChanged : INotifyPropertyChanged
         {
-            private string _property;
+            private string? _property;
 
-            private string _property2;
+            private string? _property2;
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler? PropertyChanged;
 
-            public string Property1
+            public string? Property1
             {
                 get => _property;
                 set
@@ -135,7 +135,7 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            public string Property2
+            public string? Property2
             {
                 get => _property2;
                 set
@@ -145,7 +145,7 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            public void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
@@ -153,13 +153,13 @@ namespace ReactiveUI.Tests
 
         private class TestClassChanging : INotifyPropertyChanging
         {
-            private string _property1;
+            private string? _property1;
 
-            private string _property2;
+            private string? _property2;
 
-            public event PropertyChangingEventHandler PropertyChanging;
+            public event PropertyChangingEventHandler? PropertyChanging;
 
-            public string Property1
+            public string? Property1
             {
                 get => _property1;
                 set
@@ -169,7 +169,7 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            public string Property2
+            public string? Property2
             {
                 get => _property2;
                 set
@@ -179,7 +179,7 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            public void OnPropertyChanging([CallerMemberName] string propertyName = null)
+            public void OnPropertyChanging([CallerMemberName] string? propertyName = null)
             {
                 var handler = PropertyChanging;
                 handler?.Invoke(this, new PropertyChangingEventArgs(propertyName));

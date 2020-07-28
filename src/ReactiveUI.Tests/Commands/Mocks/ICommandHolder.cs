@@ -9,9 +9,9 @@ namespace ReactiveUI.Tests
 {
     public class ICommandHolder : ReactiveObject
     {
-        private ICommand _theCommand;
+        private ICommand? _theCommand;
 
-        public ICommand TheCommand
+        public ICommand? TheCommand
         {
             get => _theCommand;
             set => this.RaiseAndSetIfChanged(ref _theCommand, value);

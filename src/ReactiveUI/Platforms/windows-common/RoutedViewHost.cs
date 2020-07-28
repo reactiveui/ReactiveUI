@@ -73,7 +73,7 @@ namespace ReactiveUI
             }
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
-            Func<string> platformGetter = () => default(string);
+            Func<string?> platformGetter = () => default!;
 
             if (platform == null)
             {
@@ -86,7 +86,7 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
+            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string?>(
                     eventHandler =>
                     {
                         void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
@@ -99,7 +99,7 @@ namespace ReactiveUI
                 .Select(x => x);
 
             var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel),
+                this.WhenAnyObservable(x => x.Router.CurrentViewModel!),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (viewModel, contract) => (viewModel, contract));
 
@@ -127,7 +127,7 @@ namespace ReactiveUI
 
                         view.ViewModel = x.viewModel;
                         Content = view;
-                    }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
+                    }, ex => RxApp.DefaultExceptionHandler?.OnNext(ex)));
             });
         }
 
@@ -156,9 +156,9 @@ namespace ReactiveUI
         /// <value>
         /// The view contract observable.
         /// </value>
-        public IObservable<string> ViewContractObservable
+        public IObservable<string?> ViewContractObservable
         {
-            get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+            get => (IObservable<string?>)GetValue(ViewContractObservableProperty);
             set => SetValue(ViewContractObservableProperty, value);
         }
 
@@ -168,6 +168,6 @@ namespace ReactiveUI
         /// <value>
         /// The view locator.
         /// </value>
-        public IViewLocator ViewLocator { get; set; }
+        public IViewLocator? ViewLocator { get; set; }
     }
 }

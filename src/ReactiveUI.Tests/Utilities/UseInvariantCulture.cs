@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Xunit.Sdk;
 
 namespace ReactiveUI.Tests
@@ -18,7 +19,7 @@ namespace ReactiveUI.Tests
     // run tests on invariant culture to avoid problems e.g with culture specific decimal separator
     public class UseInvariantCulture : BeforeAfterTestAttribute
     {
-        private CultureInfo _storedCulture;
+        private CultureInfo? _storedCulture;
 
         public override void Before(MethodInfo methodUnderTest)
         {
@@ -28,7 +29,10 @@ namespace ReactiveUI.Tests
 
         public override void After(MethodInfo methodUnderTest)
         {
-            Thread.CurrentThread.CurrentCulture = _storedCulture;
+            if (_storedCulture != null)
+            {
+                Thread.CurrentThread.CurrentCulture = _storedCulture;
+            }
         }
     }
 }

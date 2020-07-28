@@ -28,11 +28,11 @@ namespace ReactiveUI
         public static IObservable<T> Log<T, TObj>(
             this IObservable<T> @this,
             TObj klass,
-            string message = null,
-            Func<T, string> stringifier = null)
+            string? message = null,
+            Func<T, string>? stringifier = null)
             where TObj : IEnableLogger
         {
-            message = message ?? string.Empty;
+            message ??= string.Empty;
 
             if (stringifier != null)
             {
@@ -58,10 +58,10 @@ namespace ReactiveUI
         /// <param name="next">The Observable to replace the current one OnError.</param>
         /// <param name="message">An error message to print.</param>
         /// <returns>The same Observable.</returns>
-        public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> @this, TObj klass, IObservable<T> next = null, string message = null)
+        public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> @this, TObj klass, IObservable<T>? next = null, string? message = null)
             where TObj : IEnableLogger
         {
-            next = next ?? Observable<T>.Default;
+            next ??= Observable<T>.Default;
             return @this.Catch<T, Exception>(ex =>
             {
                 klass.Log().Warn(ex, message ?? string.Empty);
@@ -81,7 +81,7 @@ namespace ReactiveUI
         /// current one OnError.</param>
         /// <param name="message">An error message to print.</param>
         /// <returns>The same Observable.</returns>
-        public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string message = null)
+        public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string? message = null)
             where TObj : IEnableLogger
             where TException : Exception
         {

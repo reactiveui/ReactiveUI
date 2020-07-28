@@ -9,12 +9,16 @@ namespace ReactiveUI.Tests.Winforms
 {
     internal class FakeViewLocator : IViewLocator
     {
-        public Func<Type, IViewFor> LocatorFunc { get; set; }
+        public Func<Type, IViewFor>? LocatorFunc { get; set; }
 
-        public IViewFor ResolveView<T>(T viewModel, string contract = null)
-            where T : class
+        public IViewFor? ResolveView<T>(T viewModel, string? contract = null)
         {
-            return LocatorFunc(viewModel.GetType());
+            if (viewModel is null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
+            }
+
+            return LocatorFunc?.Invoke(viewModel.GetType());
         }
     }
 }

@@ -57,9 +57,9 @@ namespace ReactiveUI
         public ObservableAsPropertyHelper(
             IObservable<T> observable,
             Action<T> onChanged,
-            T initialValue = default(T),
+            T initialValue = default,
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             : this(observable, onChanged, null, initialValue, deferSubscription, scheduler)
         {
         }
@@ -94,10 +94,10 @@ namespace ReactiveUI
         public ObservableAsPropertyHelper(
             IObservable<T> observable,
             Action<T> onChanged,
-            Action<T> onChanging = null,
-            T initialValue = default(T),
+            Action<T>? onChanging = null,
+            T initialValue = default,
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
         {
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
@@ -111,7 +111,7 @@ namespace ReactiveUI
                 {
                     onChanging(x);
                     _lastValue = x;
-                    onChanged(x);
+                    onChanged!(x);
                 },
                 ex => _thrownExceptions.Value.OnNext(ex))
                 .DisposeWith(_disposable);
@@ -175,7 +175,7 @@ namespace ReactiveUI
         /// normally be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>A default property helper.</returns>
-        public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null) =>
+        public static ObservableAsPropertyHelper<T> Default(T initialValue = default, IScheduler? scheduler = null) =>
             new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue, false, scheduler);
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace ReactiveUI
         public void Dispose()
         {
             _disposable?.Dispose();
-            _disposable = null;
+            _disposable = null!;
         }
     }
 }

@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
@@ -31,6 +32,7 @@ namespace ReactiveUI
     /// This class also initializes a whole bunch of other stuff, including the IoC container,
     /// logging and error handling.
     /// </remarks>
+    [SuppressMessage("Usage", "CS8618: Non-nullable property is uninitialized", Justification = "Threading magic.")]
     public static class RxApp
     {
 #if ANDROID || IOS
@@ -56,15 +58,15 @@ namespace ReactiveUI
 #endif
 
         [ThreadStatic]
-        private static IScheduler _unitTestTaskpoolScheduler;
-        private static IScheduler _taskpoolScheduler;
+        private static IScheduler _unitTestTaskpoolScheduler = null!;
+        private static IScheduler _taskpoolScheduler = null!;
         [ThreadStatic]
-        private static IScheduler _unitTestMainThreadScheduler;
-        private static IScheduler _mainThreadScheduler;
-        private static IObserver<Exception> _defaultExceptionHandler;
+        private static IScheduler _unitTestMainThreadScheduler = null!;
+        private static IScheduler _mainThreadScheduler = null!;
+        private static IObserver<Exception> _defaultExceptionHandler = null!;
         [ThreadStatic]
-        private static ISuspensionHost _unitTestSuspensionHost;
-        private static ISuspensionHost _suspensionHost;
+        private static ISuspensionHost _unitTestSuspensionHost = null!;
+        private static ISuspensionHost _suspensionHost = null!;
         private static bool _hasSchedulerBeenChecked;
 
         /// <summary>
@@ -152,7 +154,7 @@ namespace ReactiveUI
                     LogHost.Default.Warn("You can install the needed package via NuGet, see https://reactiveui.net/docs/getting-started/installation/");
                 }
 
-                return _mainThreadScheduler;
+                return _mainThreadScheduler!;
             }
 
             set
@@ -165,7 +167,7 @@ namespace ReactiveUI
                 if (ModeDetector.InUnitTestRunner())
                 {
                     _unitTestMainThreadScheduler = value;
-                    _mainThreadScheduler = _mainThreadScheduler ?? value;
+                    _mainThreadScheduler ??= value;
                 }
                 else
                 {
@@ -226,7 +228,7 @@ namespace ReactiveUI
                 if (ModeDetector.InUnitTestRunner())
                 {
                     _unitTestSuspensionHost = value;
-                    _suspensionHost = _suspensionHost ?? value;
+                    _suspensionHost ??= value;
                 }
                 else
                 {

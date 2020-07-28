@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object>>? GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (sender == null)
             {
@@ -94,7 +95,7 @@ namespace ReactiveUI
             });
         }
 
-        private static PropertyInfo ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
+        private static PropertyInfo? ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
         {
             var current = typeInfo;
             while (current != null)
@@ -111,7 +112,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private static FieldInfo ActuallyGetField(TypeInfo typeInfo, string propertyName)
+        private static FieldInfo? ActuallyGetField(TypeInfo typeInfo, string propertyName)
         {
             var current = typeInfo;
             while (current != null)
@@ -128,7 +129,7 @@ namespace ReactiveUI
             return null;
         }
 
-        private static Func<DependencyProperty> GetDependencyPropertyFetcher(Type type, string propertyName)
+        private static Func<DependencyProperty>? GetDependencyPropertyFetcher(Type type, string propertyName)
         {
             var typeInfo = type.GetTypeInfo();
 

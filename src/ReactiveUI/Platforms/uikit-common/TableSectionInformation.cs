@@ -20,13 +20,13 @@ namespace ReactiveUI
     public class TableSectionInformation<TSource> : ISectionInformation<TSource, UITableView, UITableViewCell>
     {
         /// <inheritdoc/>
-        public INotifyCollectionChanged Collection { get; protected set; }
+        public INotifyCollectionChanged? Collection { get; protected set; }
 
         /// <inheritdoc/>
-        public Action<UITableViewCell> InitializeCellAction { get; protected set; }
+        public Action<UITableViewCell>? InitializeCellAction { get; protected set; }
 
         /// <inheritdoc/>
-        public Func<object, NSString> CellKeySelector { get; protected set; }
+        public Func<object?, NSString>? CellKeySelector { get; protected set; }
 
         /// <summary>
         /// Gets or sets the size hint.
@@ -37,13 +37,13 @@ namespace ReactiveUI
         /// Gets or sets the header of this section.
         /// </summary>
         /// <value>The header, or null if a header shouldn't be used.</value>
-        public TableSectionHeader Header { get; set; }
+        public TableSectionHeader? Header { get; set; }
 
         /// <summary>
         /// Gets or sets the footer of this section.
         /// </summary>
         /// <value>The footer, or null if a footer shouldn't be used.</value>
-        public TableSectionHeader Footer { get; set; }
+        public TableSectionHeader? Footer { get; set; }
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ namespace ReactiveUI
         /// <param name="cellKeySelector">The cell key selector.</param>
         /// <param name="sizeHint">The size hint.</param>
         /// <param name="initializeCellAction">The initialize cell action.</param>
-        public TableSectionInformation(INotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, float sizeHint, Action<TCell> initializeCellAction = null)
+        public TableSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString>? cellKeySelector, float sizeHint, Action<TCell>? initializeCellAction = null)
         {
             Collection = collection;
             SizeHint = sizeHint;
@@ -81,7 +81,7 @@ namespace ReactiveUI
         /// <param name="cellKey">The cell key.</param>
         /// <param name="sizeHint">The size hint.</param>
         /// <param name="initializeCellAction">The initialize cell action.</param>
-        public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
+        public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell>? initializeCellAction = null)
             : this(collection, _ => cellKey, sizeHint, initializeCellAction)
         {
         }

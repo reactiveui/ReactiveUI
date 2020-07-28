@@ -46,9 +46,9 @@ namespace ReactiveUI.Testing
         /// <param name="values">The values.</param>
         /// <returns>The builder.</returns>
         public static TBuilder With<TBuilder, TField>(
-            this TBuilder builder,
-            ref List<TField> field,
-            IEnumerable<TField> values)
+                this TBuilder builder,
+                ref List<TField>? field,
+                IEnumerable<TField> values)
             where TBuilder : IBuilder
         {
             if (field == null)
@@ -77,7 +77,7 @@ namespace ReactiveUI.Testing
         /// <param name="field">The field.</param>
         /// <param name="value">The value.</param>
         /// <returns>The builder.</returns>
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField> field, TField value)
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField>? field, TField value)
             where TBuilder : IBuilder
         {
             if (field == null)
@@ -100,10 +100,11 @@ namespace ReactiveUI.Testing
         /// <param name="keyValuePair">The key value pair.</param>
         /// <returns>The builder.</returns>
         public static TBuilder With<TBuilder, TKey, TField>(
-            this TBuilder builder,
-            ref Dictionary<TKey, TField> dictionary,
-            KeyValuePair<TKey, TField> keyValuePair)
+                this TBuilder builder,
+                ref Dictionary<TKey, TField> dictionary,
+                KeyValuePair<TKey, TField> keyValuePair)
             where TBuilder : IBuilder
+            where TKey : notnull
         {
             if (dictionary == null)
             {
@@ -126,11 +127,12 @@ namespace ReactiveUI.Testing
         /// <param name="value">The value.</param>
         /// <returns>The builder.</returns>
         public static TBuilder With<TBuilder, TKey, TField>(
-            this TBuilder builder,
-            ref Dictionary<TKey, TField> dictionary,
-            TKey key,
-            TField value)
+                this TBuilder builder,
+                ref Dictionary<TKey, TField> dictionary,
+                TKey key,
+                TField value)
             where TBuilder : IBuilder
+            where TKey : notnull
         {
             if (dictionary == null)
             {
@@ -152,9 +154,10 @@ namespace ReactiveUI.Testing
         /// <param name="keyValuePair">The key value pair.</param>
         /// <returns> The builder.</returns>
         public static TBuilder With<TBuilder, TKey, TField>(
-            this TBuilder builder,
-            ref Dictionary<TKey, TField> dictionary,
-            IDictionary<TKey, TField> keyValuePair)
+                this TBuilder builder,
+                ref Dictionary<TKey, TField> dictionary,
+                IDictionary<TKey, TField> keyValuePair)
+            where TKey : notnull
         {
             if (dictionary == null)
             {

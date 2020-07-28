@@ -35,7 +35,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        void RegisterScheduler<T>(IScheduler scheduler, string contract = null);
+        void RegisterScheduler<T>(IScheduler scheduler, string? contract = null);
 
         /// <summary>
         /// Listen provides an Observable that will fire whenever a Message is
@@ -46,7 +46,7 @@ namespace ReactiveUI
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An observable sequence.</returns>
-        IObservable<T> Listen<T>(string contract = null);
+        IObservable<T> Listen<T>(string? contract = null);
 
         /// <summary>
         /// ListenIncludeLatest provides an Observable that will fire whenever a Message is
@@ -59,7 +59,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An Observable representing the notifications posted to the
         /// message bus.</returns>
-        IObservable<T> ListenIncludeLatest<T>(string contract = null);
+        IObservable<T> ListenIncludeLatest<T>(string? contract = null);
 
         /// <summary>
         /// Determines if a particular message Type is registered.
@@ -69,7 +69,7 @@ namespace ReactiveUI
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns>True if messages have been posted for this message Type.</returns>
-        bool IsRegistered(Type type, string contract = null);
+        bool IsRegistered(Type type, string? contract = null);
 
         /// <summary>
         /// Registers an Observable representing the stream of messages to send.
@@ -83,7 +83,7 @@ namespace ReactiveUI
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns>A disposable.</returns>
-        IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null);
+        IDisposable RegisterMessageSource<T>(IObservable<T> source, string? contract = null);
 
         /// <summary>
         /// Sends a single message using the specified Type and contract.
@@ -96,6 +96,6 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        void SendMessage<T>(T message, string contract = null);
+        void SendMessage<T>(T message, string? contract = null);
     }
 }

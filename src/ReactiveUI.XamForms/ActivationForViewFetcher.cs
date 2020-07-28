@@ -40,7 +40,7 @@ namespace ReactiveUI.XamForms
             return activation.DistinctUntilChanged();
         }
 
-        private static IObservable<bool> GetActivationFor(ICanActivate canActivate)
+        private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate)
         {
             if (canActivate == null)
             {
@@ -52,7 +52,7 @@ namespace ReactiveUI.XamForms
                 canActivate.Deactivated.Select(_ => false));
         }
 
-        private static IObservable<bool> GetActivationFor(Page page)
+        private static IObservable<bool>? GetActivationFor(Page? page)
         {
             if (page == null)
             {
@@ -80,7 +80,7 @@ namespace ReactiveUI.XamForms
             return Observable.Merge(appearing, disappearing);
         }
 
-        private static IObservable<bool> GetActivationFor(View view)
+        private static IObservable<bool>? GetActivationFor(View? view)
         {
             if (view == null)
             {
@@ -102,7 +102,7 @@ namespace ReactiveUI.XamForms
                 .StartWith(view.IsVisible);
         }
 
-        private static IObservable<bool> GetActivationFor(Cell cell)
+        private static IObservable<bool>? GetActivationFor(Cell? cell)
         {
             if (cell == null)
             {

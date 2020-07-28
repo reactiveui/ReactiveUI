@@ -70,9 +70,9 @@ namespace ReactiveUI
             remove => PropertyChangedHandler -= value;
         }
 
-        private event PropertyChangingEventHandler PropertyChangingHandler;
+        private event PropertyChangingEventHandler? PropertyChangingHandler;
 
-        private event PropertyChangedEventHandler PropertyChangedHandler;
+        private event PropertyChangedEventHandler? PropertyChangedHandler;
 
         /// <inheritdoc />
         [IgnoreDataMember]

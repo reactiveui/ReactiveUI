@@ -17,7 +17,7 @@ namespace ReactiveUI
     /// </summary>
     public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
     {
-        private View _view;
+        private View? _view;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LayoutViewHost"/> class.
@@ -46,7 +46,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public View View
+        public View? View
         {
             get => _view;
 
@@ -67,6 +67,6 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="layoutViewHost">The LayoutViewHost to cast.</param>
         [SuppressMessage("Usage", "CA2225: Provide a method named ToView", Justification = "A property is already provided.")]
-        public static implicit operator View(LayoutViewHost layoutViewHost) => layoutViewHost?.View;
+        public static implicit operator View?(LayoutViewHost layoutViewHost) => layoutViewHost?.View;
     }
 }

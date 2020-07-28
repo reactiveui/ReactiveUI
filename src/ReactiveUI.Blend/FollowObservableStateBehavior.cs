@@ -28,7 +28,7 @@ namespace ReactiveUI.Blend
     public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 #endif
     {
-        private IDisposable _watcher;
+        private IDisposable? _watcher;
 
         /// <summary>
         /// Gets or sets the state observable.
@@ -40,7 +40,7 @@ namespace ReactiveUI.Blend
         }
 
         /// <summary>
-        /// The state observable depdendency property.
+        /// The state observable dependency property.
         /// </summary>
         public static readonly DependencyProperty StateObservableProperty =
             DependencyProperty.Register("StateObservable", typeof(IObservable<string>), typeof(FollowObservableStateBehavior), new PropertyMetadata(null, OnStateObservableChanged));

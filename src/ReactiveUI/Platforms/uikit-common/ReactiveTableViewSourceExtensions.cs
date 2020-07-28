@@ -36,7 +36,7 @@ namespace ReactiveUI
         public static IDisposable BindTo<TSource, TCell>(
             this IObservable<IReadOnlyList<TableSectionInformation<TSource, TCell>>> sectionsObservable,
             UITableView tableView,
-            Func<ReactiveTableViewSource<TSource>, IDisposable> initSource = null)
+            Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UITableViewCell
         {
             var source = new ReactiveTableViewSource<TSource>(tableView);
@@ -70,8 +70,8 @@ namespace ReactiveUI
             UITableView tableView,
             NSString cellKey,
             float sizeHint,
-            Action<TCell> initializeCellAction = null,
-            Func<ReactiveTableViewSource<TSource>, IDisposable> initSource = null)
+            Action<TCell>? initializeCellAction = null,
+            Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UITableViewCell
         {
             return sourceObservable
@@ -105,8 +105,8 @@ namespace ReactiveUI
             this IObservable<INotifyCollectionChanged> sourceObservable,
             UITableView tableView,
             float sizeHint,
-            Action<TCell> initializeCellAction = null,
-            Func<ReactiveTableViewSource<TSource>, IDisposable> initSource = null)
+            Action<TCell>? initializeCellAction = null,
+            Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UITableViewCell
         {
             if (tableView == null)

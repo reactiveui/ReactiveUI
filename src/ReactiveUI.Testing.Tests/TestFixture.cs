@@ -21,17 +21,17 @@ namespace ReactiveUI.Testing.Tests
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the tests.
         /// </summary>
-        public IEnumerable<string> Tests { get; set; }
+        public IEnumerable<string>? Tests { get; set; }
 
         /// <summary>
         /// Gets or sets the variables.
         /// </summary>
         [SuppressMessage("Design", "CA2227: Read only dictionary", Justification = "Used in mock.")]
-        public Dictionary<string, string> Variables { get; set; }
+        public Dictionary<string, string>? Variables { get; set; }
     }
 }

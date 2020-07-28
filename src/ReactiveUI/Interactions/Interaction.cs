@@ -61,7 +61,7 @@ namespace ReactiveUI
         /// <param name="handlerScheduler">
         /// The scheduler to use when invoking handlers, which defaults to <c>CurrentThreadScheduler.Instance</c> if <see langword="null"/>.
         /// </param>
-        public Interaction(IScheduler handlerScheduler = null)
+        public Interaction(IScheduler? handlerScheduler = null)
         {
             _handlers = new List<Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>>();
             _sync = new object();
@@ -180,7 +180,7 @@ namespace ReactiveUI
                 .Concat()
                 .TakeWhile(_ => !context.IsHandled)
                 .IgnoreElements()
-                .Select(_ => default(TOutput))
+                .Select(_ => default(TOutput) !)
                 .Concat(
                     Observable.Defer(
                         () => context.IsHandled

@@ -18,15 +18,15 @@ namespace ReactiveUI.Tests
 {
     public class PocoObservableForPropertyTests
     {
-        private static TestLogger _testLoggerForNotificationPocoErrorOnBind;
+        private static TestLogger? _testLoggerForNotificationPocoErrorOnBind;
 
         [Fact]
         public void CheckGetAffinityForObjectValues()
         {
             var instance = new POCOObservableForProperty();
 
-            Assert.Equal(1, instance.GetAffinityForObject(typeof(PocoType), null, false));
-            Assert.Equal(1, instance.GetAffinityForObject(typeof(INPCClass), null, false));
+            Assert.Equal(1, instance.GetAffinityForObject(typeof(PocoType), null!, false));
+            Assert.Equal(1, instance.GetAffinityForObject(typeof(INPCClass), null!, false));
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace ReactiveUI.Tests
 
                     var testClass = new PocoType();
 
-                    Expression<Func<PocoType, string>> expr = x => x.Property1;
+                    Expression<Func<PocoType, string>> expr = x => x.Property1!;
                     var exp = Reflection.Rewrite(expr.Body);
 
                     instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false).Subscribe(_ => { });
@@ -79,7 +79,7 @@ namespace ReactiveUI.Tests
 
                 var testClass = new PocoType();
 
-                Expression<Func<PocoType, string>> expr = x => x.Property1;
+                Expression<Func<PocoType, string>> expr = x => x.Property1!;
                 var exp = Reflection.Rewrite(expr.Body);
 
                 instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false, true).Subscribe(_ => { });
@@ -90,15 +90,15 @@ namespace ReactiveUI.Tests
 
         private class PocoType
         {
-            public string Property1 { get; set; }
+            public string? Property1 { get; set; }
 
-            public string Property2 { get; set; }
+            public string? Property2 { get; set; }
         }
 
 #pragma warning disable CA1812 // Class is not instantiated
         private class INPCClass : INotifyPropertyChanged
         {
-            public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler? PropertyChanged;
 
             public void NotifyPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         }
@@ -140,7 +140,7 @@ namespace ReactiveUI.Tests
             {
             }
 
-            public TestLoggerRegistration(TestLogger testLogger)
+            public TestLoggerRegistration(TestLogger? testLogger)
             {
                 _originalLoggers = Locator.Current.GetServices<ILogger>().ToList();
 

@@ -7,19 +7,19 @@ namespace ReactiveUI.Tests
 {
     public class HostTestFixture : ReactiveObject
     {
-        private TestFixture _Child;
+        private TestFixture? _Child;
 
-        private NonObservableTestFixture _PocoChild;
+        private NonObservableTestFixture? _PocoChild;
 
         private int _SomeOtherParam;
 
-        public TestFixture Child
+        public TestFixture? Child
         {
             get => _Child;
             set => this.RaiseAndSetIfChanged(ref _Child, value);
         }
 
-        public NonObservableTestFixture PocoChild
+        public NonObservableTestFixture? PocoChild
         {
             get => _PocoChild;
             set => this.RaiseAndSetIfChanged(ref _PocoChild, value);

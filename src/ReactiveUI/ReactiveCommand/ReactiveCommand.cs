@@ -92,8 +92,8 @@ namespace ReactiveUI
         /// </returns>
         public static ReactiveCommand<Unit, Unit> Create(
             Action execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             if (execute == null)
             {
@@ -134,8 +134,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<Unit, TResult> Create<TResult>(
             Func<TResult> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             if (execute == null)
             {
@@ -174,8 +174,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<TParam, Unit> Create<TParam>(
             Action<TParam> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             if (execute == null)
             {
@@ -219,8 +219,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
             Func<TParam, TResult> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             if (execute == null)
             {
@@ -259,8 +259,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<Unit, TResult> CreateFromObservable<TResult>(
             Func<IObservable<TResult>> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             if (execute == null)
             {
@@ -293,8 +293,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
             Func<Task<TResult>> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return CreateFromObservable(
                 () => execute().ToObservable(),
@@ -322,8 +322,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
             Func<CancellationToken, Task<TResult>> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return CreateFromObservable(
                 () => Observable.StartAsync(execute),
@@ -348,8 +348,8 @@ namespace ReactiveUI
         /// </returns>
         public static ReactiveCommand<Unit, Unit> CreateFromTask(
             Func<Task> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return CreateFromObservable(
                 () => execute().ToObservable(),
@@ -374,8 +374,8 @@ namespace ReactiveUI
         /// </returns>
         public static ReactiveCommand<Unit, Unit> CreateFromTask(
             Func<CancellationToken, Task> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return CreateFromObservable(
                 () => Observable.StartAsync(execute),
@@ -406,8 +406,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
             Func<TParam, IObservable<TResult>> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return new ReactiveCommand<TParam, TResult>(
                 execute,
@@ -438,8 +438,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
             Func<TParam, Task<TResult>> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return CreateFromObservable<TParam, TResult>(
                 param => execute(param).ToObservable(),
@@ -470,8 +470,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
             Func<TParam, CancellationToken, Task<TResult>> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return CreateFromObservable<TParam, TResult>(
                 param => Observable.StartAsync(ct => execute(param, ct)),
@@ -499,8 +499,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
             Func<TParam, Task> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return CreateFromObservable<TParam, Unit>(
                 param => execute(param).ToObservable(),
@@ -528,8 +528,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
             Func<TParam, CancellationToken, Task> execute,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return CreateFromObservable<TParam, Unit>(
                 param => Observable.StartAsync(ct => execute(param, ct)),
@@ -561,8 +561,8 @@ namespace ReactiveUI
         /// </typeparam>
         public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
             IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
-            IObservable<bool> canExecute = null,
-            IScheduler outputScheduler = null)
+            IObservable<bool>? canExecute = null,
+            IScheduler? outputScheduler = null)
         {
             return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observables.True, outputScheduler ?? RxApp.MainThreadScheduler);
         }
@@ -606,8 +606,8 @@ namespace ReactiveUI
         /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
         protected internal ReactiveCommand(
             Func<TParam, IObservable<TResult>> execute,
-            IObservable<bool> canExecute,
-            IScheduler outputScheduler)
+            IObservable<bool>? canExecute,
+            IScheduler? outputScheduler)
         {
             if (execute == null)
             {
@@ -751,13 +751,13 @@ namespace ReactiveUI
             public TResult Result => _result;
 
             public static ExecutionInfo CreateBegin() =>
-                new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
+                new ExecutionInfo(ExecutionDemarcation.Begin, default!);
 
             public static ExecutionInfo CreateResult(TResult result) =>
                 new ExecutionInfo(ExecutionDemarcation.Result, result);
 
             public static ExecutionInfo CreateEnd() =>
-                new ExecutionInfo(ExecutionDemarcation.End, default(TResult));
+                new ExecutionInfo(ExecutionDemarcation.End, default!);
         }
     }
 }

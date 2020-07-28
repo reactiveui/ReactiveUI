@@ -31,13 +31,13 @@ namespace ReactiveUI.Winforms
         [Description("The ViewModel.")]
         [Bindable(true)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public TViewModel ViewModel { get; set; }
+        public TViewModel? ViewModel { get; set; }
 
         /// <inheritdoc/>
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (TViewModel)value;
+            set => ViewModel = (TViewModel?)value;
         }
 
         /// <summary>

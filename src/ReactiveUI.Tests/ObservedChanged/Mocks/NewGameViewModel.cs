@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests
 {
     public class NewGameViewModel : ReactiveObject
     {
-        private string _newPlayerName;
+        private string? _newPlayerName;
 
         public NewGameViewModel()
         {
@@ -38,10 +38,15 @@ namespace ReactiveUI.Tests
             var canAddPlayer = this.WhenAnyValue(
                                                  x => x.Players.Count,
                                                  x => x.NewPlayerName,
-                                                 (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName));
+                                                 (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName!));
             AddPlayer = ReactiveCommand.Create(
                                                () =>
                                                {
+                                                   if (NewPlayerName == null)
+                                                   {
+                                                       throw new InvalidOperationException("NewPlayerName is null");
+                                                   }
+
                                                    Players.Add(NewPlayerName.Trim());
                                                    NewPlayerName = string.Empty;
                                                },
@@ -58,7 +63,7 @@ namespace ReactiveUI.Tests
 
         public ReactiveCommand<Unit, Unit> RandomizeOrder { get; }
 
-        public string NewPlayerName
+        public string? NewPlayerName
         {
             get => _newPlayerName;
             set => this.RaiseAndSetIfChanged(ref _newPlayerName, value);

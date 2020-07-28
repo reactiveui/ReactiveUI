@@ -28,7 +28,7 @@ namespace ReactiveUI.AndroidSupport
     {
         private readonly SourceList<TViewModel> _list;
         private readonly Func<TViewModel, ViewGroup, View> _viewCreator;
-        private readonly Action<TViewModel, View> _viewInitializer;
+        private readonly Action<TViewModel, View>? _viewInitializer;
         private readonly IDisposable _inner;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace ReactiveUI.AndroidSupport
         public ReactivePagerAdapter(
             IObservable<IChangeSet<TViewModel>> changeSet,
             Func<TViewModel, ViewGroup, View> viewCreator,
-            Action<TViewModel, View> viewInitializer = null)
+            Action<TViewModel, View>? viewInitializer = null)
         {
             _list = new SourceList<TViewModel>(changeSet);
             _viewCreator = viewCreator;
@@ -132,7 +132,7 @@ namespace ReactiveUI.AndroidSupport
         public ReactivePagerAdapter(
             TCollection collection,
             Func<TViewModel, ViewGroup, View> viewCreator,
-            Action<TViewModel, View> viewInitializer = null)
+            Action<TViewModel, View>? viewInitializer = null)
             : base(collection.ToObservableChangeSet<TCollection, TViewModel>(), viewCreator, viewInitializer)
         {
         }

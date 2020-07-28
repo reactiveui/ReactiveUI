@@ -54,7 +54,7 @@ namespace ReactiveUI
             Expression<Func<TObj, TRet>> property,
             TRet initialValue = default(TRet),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             where TObj : class, IReactiveObject => source.ObservableToProperty(target, property, initialValue, deferSubscription, scheduler);
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace ReactiveUI
             out ObservableAsPropertyHelper<TRet> result,
             TRet initialValue = default(TRet),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             where TObj : class, IReactiveObject
         {
             var ret = source.ObservableToProperty(target, property, initialValue, deferSubscription, scheduler);
@@ -149,7 +149,7 @@ namespace ReactiveUI
             string property,
             TRet initialValue = default(TRet),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             where TObj : class, IReactiveObject => source.ObservableToProperty(target, property, initialValue, deferSubscription, scheduler);
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace ReactiveUI
             out ObservableAsPropertyHelper<TRet> result,
             TRet initialValue = default(TRet),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             where TObj : class, IReactiveObject
         {
             result = source.ObservableToProperty(
@@ -214,12 +214,23 @@ namespace ReactiveUI
             Expression<Func<TObj, TRet>> property,
             TRet initialValue = default(TRet),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             where TObj : class, IReactiveObject
         {
-            Contract.Requires(target != null);
-            Contract.Requires(observable != null);
-            Contract.Requires(property != null);
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
+            if (observable == null)
+            {
+                throw new ArgumentNullException(nameof(observable));
+            }
+
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
 
             Expression expression = Reflection.Rewrite(property.Body);
 
@@ -249,12 +260,23 @@ namespace ReactiveUI
             string property,
             TRet initialValue = default(TRet),
             bool deferSubscription = false,
-            IScheduler scheduler = null)
+            IScheduler? scheduler = null)
             where TObj : class, IReactiveObject
         {
-            Contract.Requires(target != null);
-            Contract.Requires(observable != null);
-            Contract.Requires(property != null);
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
+            if (observable == null)
+            {
+                throw new ArgumentNullException(nameof(observable));
+            }
+
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
 
             return new ObservableAsPropertyHelper<TRet>(
                                                         observable,

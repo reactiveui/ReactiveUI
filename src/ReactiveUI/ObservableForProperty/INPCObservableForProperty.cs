@@ -26,7 +26,7 @@ namespace ReactiveUI
 
         /// <inheritdoc/>
         [SuppressMessage("Roslynator", "RCS1211", Justification = "Neater with else clause.")]
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object>>? GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (expression == null)
             {
@@ -49,8 +49,8 @@ namespace ReactiveUI
                         void Handler(object eventSender, PropertyChangingEventArgs e) => eventHandler(e.PropertyName);
                         return Handler;
                     },
-                    x => before.PropertyChanging += x,
-                    x => before.PropertyChanging -= x);
+                    x => before!.PropertyChanging += x,
+                    x => before!.PropertyChanging -= x);
 
                 if (expression.NodeType == ExpressionType.Index)
                 {
@@ -71,8 +71,8 @@ namespace ReactiveUI
                         void Handler(object eventSender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
                         return Handler;
                     },
-                    x => after.PropertyChanged += x,
-                    x => after.PropertyChanged -= x);
+                    x => after!.PropertyChanged += x,
+                    x => after!.PropertyChanged -= x);
 
                 if (expression.NodeType == ExpressionType.Index)
                 {

@@ -65,6 +65,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
             if (command == null)
@@ -79,7 +80,7 @@ namespace ReactiveUI
 
             commandParameter = commandParameter ?? Observable.Return(target);
 
-            object latestParam = null;
+            object? latestParam = null;
             var ctlDelegate = new ControlDelegate(
                 x =>
                 {
@@ -92,13 +93,13 @@ namespace ReactiveUI
             var sel = new Selector("theAction:");
 
             // TODO how does this work? Is there an Action property?
-            Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Action"))(target, sel, null);
+            Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Action"))?.Invoke(target, sel, null);
 
             var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Target"));
-            targetSetter(target, ctlDelegate, null);
-            var actionDisp = Disposable.Create(() => targetSetter(target, null, null));
+            targetSetter?.Invoke(target, ctlDelegate, null);
+            var actionDisp = Disposable.Create(() => targetSetter?.Invoke(target, null, null));
 
-            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
+            Action<object, object, object[]?>? enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
             if (enabledSetter == null)
             {
                 return actionDisp;

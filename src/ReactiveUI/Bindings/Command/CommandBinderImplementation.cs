@@ -46,7 +46,7 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TControl>> controlProperty,
                 Func<TParam> withParameter,
-                string toEvent = null)
+                string? toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
@@ -65,7 +65,7 @@ namespace ReactiveUI
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent, cmd =>
+            IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent ?? string.Empty, cmd =>
             {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null)
@@ -113,7 +113,7 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TControl>> controlProperty,
                 IObservable<TParam> withParameter,
-                string toEvent = null)
+                string? toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
@@ -144,13 +144,13 @@ namespace ReactiveUI
                  bindingDisposable);
         }
 
-        private IDisposable BindCommandInternal<TView, TProp, TParam>(
+        private static IDisposable BindCommandInternal<TView, TProp, TParam>(
                 IObservable<TProp> @this,
                 TView view,
                 Expression controlExpression,
                 IObservable<TParam> withParameter,
-                string toEvent,
-                Func<ICommand, ICommand> commandFixuper = null)
+                string? toEvent,
+                Func<ICommand, ICommand>? commandFixuper = null)
             where TView : class, IViewFor
             where TProp : ICommand
         {
@@ -175,11 +175,11 @@ namespace ReactiveUI
                     var cmd = commandFixuper != null ? commandFixuper(x.val) : x.val;
                     if (toEvent != null)
                     {
-                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y), toEvent);
+                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent);
                     }
                     else
                     {
-                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y));
+                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!));
                     }
                 });
 

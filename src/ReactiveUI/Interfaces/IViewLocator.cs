@@ -21,7 +21,6 @@ namespace ReactiveUI
         /// viewModel.</returns>
         /// <param name="viewModel">View model.</param>
         /// <param name="contract">Contract.</param>
-        IViewFor ResolveView<T>(T viewModel, string contract = null)
-            where T : class;
+        IViewFor? ResolveView<T>(T viewModel, string? contract = null);
     }
 }

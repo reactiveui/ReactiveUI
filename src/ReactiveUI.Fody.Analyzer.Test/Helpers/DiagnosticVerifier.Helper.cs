@@ -57,8 +57,14 @@ namespace TestHelper
             var diagnostics = new List<Diagnostic>();
             foreach (var project in projects)
             {
-                var compilationWithAnalyzers = project.GetCompilationAsync().Result.WithAnalyzers(ImmutableArray.Create(analyzer));
-                var diags = compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().Result;
+                var compilationWithAnalyzers = project.GetCompilationAsync().Result?.WithAnalyzers(ImmutableArray.Create(analyzer));
+                var diags = compilationWithAnalyzers?.GetAnalyzerDiagnosticsAsync().Result;
+
+                if (diags == null)
+                {
+                    continue;
+                }
+
                 foreach (var diag in diags)
                 {
                     if (diag.Location == Location.None || diag.Location.IsInMetadata)
@@ -91,9 +97,9 @@ namespace TestHelper
         /// <param name="source">Classes in the form of a string.</param>
         /// <param name="language">The language the source code is in.</param>
         /// <returns>A Document created from the source string.</returns>
-        protected static Document CreateDocument(string source, string language = LanguageNames.CSharp)
+        protected static Document? CreateDocument(string source, string language = LanguageNames.CSharp)
         {
-            return CreateProject(new[] { source }, language).Documents.First();
+            return CreateProject(new[] { source }, language)?.Documents.First();
         }
 
         /// <summary>
@@ -132,7 +138,7 @@ namespace TestHelper
             }
 
             var project = CreateProject(sources, language);
-            var documents = project.Documents.ToArray();
+            var documents = project?.Documents.ToArray() ?? Array.Empty<Document>();
 
             if (sources.Length != documents.Length)
             {
@@ -148,7 +154,7 @@ namespace TestHelper
         /// <param name="sources">Classes in the form of strings.</param>
         /// <param name="language">The language the source code is in.</param>
         /// <returns>A Project created out of the Documents created from the source strings.</returns>
-        private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp)
+        private static Project? CreateProject(string[] sources, string language = LanguageNames.CSharp)
         {
             string fileNamePrefix = DefaultFilePathPrefix;
             string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;

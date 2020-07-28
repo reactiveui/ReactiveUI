@@ -47,7 +47,7 @@ namespace ReactiveUI.XamForms
             Observable<string>.Never,
             BindingMode.OneWay);
 
-        private string _viewContract;
+        private string? _viewContract;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
@@ -107,7 +107,7 @@ namespace ReactiveUI.XamForms
         /// <summary>
         /// Gets or sets the view model whose associated view is to be displayed.
         /// </summary>
-        public object ViewModel
+        public object? ViewModel
         {
             get => GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
@@ -125,7 +125,7 @@ namespace ReactiveUI.XamForms
         /// <summary>
         /// Gets or sets the observable which signals when the contract to use when resolving the view for the given view model has changed.
         /// </summary>
-        public IObservable<string> ViewContractObservable
+        public IObservable<string?> ViewContractObservable
         {
             get => (IObservable<string>)GetValue(ViewContractObservableProperty);
             set => SetValue(ViewContractObservableProperty, value);
@@ -137,7 +137,7 @@ namespace ReactiveUI.XamForms
         /// <remarks>
         /// This property is a mere convenience so that a fixed contract can be assigned directly in XAML.
         /// </remarks>
-        public string ViewContract
+        public string? ViewContract
         {
             get => _viewContract;
             set => ViewContractObservable = Observable.Return(value);
@@ -146,6 +146,6 @@ namespace ReactiveUI.XamForms
         /// <summary>
         /// Gets or sets the override for the view locator to use when resolving the view. If unspecified, <see cref="ViewLocator.Current"/> will be used.
         /// </summary>
-        public IViewLocator ViewLocator { get; set; }
+        public IViewLocator? ViewLocator { get; set; }
     }
 }

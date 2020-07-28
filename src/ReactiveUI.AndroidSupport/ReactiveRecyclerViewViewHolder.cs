@@ -29,9 +29,9 @@ namespace ReactiveUI.AndroidSupport
         [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1306: Field should start with a lower case letter", Justification = "Legacy reasons")]
         [IgnoreDataMember]
-        protected Lazy<PropertyInfo[]> AllPublicProperties;
+        protected Lazy<PropertyInfo[]> AllPublicProperties = null!;
 
-        private TViewModel _viewModel;
+        private TViewModel? _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> class.
@@ -60,7 +60,7 @@ namespace ReactiveUI.AndroidSupport
                                 h => view.LongClick += h,
                                 h => view.LongClick -= h);
 
-            SelectedWithViewModel = Observable.FromEvent<EventHandler, TViewModel>(
+            SelectedWithViewModel = Observable.FromEvent<EventHandler, TViewModel?>(
                                 eventHandler =>
                                 {
                                     void Handler(object sender, EventArgs e) => eventHandler(ViewModel);
@@ -69,7 +69,7 @@ namespace ReactiveUI.AndroidSupport
                                 h => view.Click += h,
                                 h => view.Click -= h);
 
-            LongClickedWithViewModel = Observable.FromEvent<EventHandler<View.LongClickEventArgs>, TViewModel>(
+            LongClickedWithViewModel = Observable.FromEvent<EventHandler<View.LongClickEventArgs>, TViewModel?>(
                                 eventHandler =>
                                 {
                                     void Handler(object sender, View.LongClickEventArgs e) => eventHandler(ViewModel);
@@ -80,10 +80,10 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler PropertyChanging = null!;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged = null!;
 
         /// <summary>
         /// Gets an observable that signals that this ViewHolder has been selected.
@@ -98,7 +98,7 @@ namespace ReactiveUI.AndroidSupport
         ///
         /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
         /// </summary>
-        public IObservable<TViewModel> SelectedWithViewModel { get; }
+        public IObservable<TViewModel?> SelectedWithViewModel { get; }
 
         /// <summary>
         /// Gets an observable that signals that this ViewHolder has been long-clicked.
@@ -113,7 +113,7 @@ namespace ReactiveUI.AndroidSupport
         ///
         /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
         /// </summary>
-        public IObservable<TViewModel> LongClickedWithViewModel { get; }
+        public IObservable<TViewModel?> LongClickedWithViewModel { get; }
 
         /// <summary>
         /// Gets the current view being shown.
@@ -121,7 +121,7 @@ namespace ReactiveUI.AndroidSupport
         public View View => ItemView;
 
         /// <inheritdoc/>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
@@ -134,10 +134,10 @@ namespace ReactiveUI.AndroidSupport
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <inheritdoc/>
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (TViewModel)value;
+            set => ViewModel = (TViewModel?)value;
         }
 
         /// <inheritdoc/>

@@ -27,13 +27,13 @@ namespace ReactiveUI.Tests.Xaml
             Command2 = new Image();
         }
 
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (CommandBindViewModel)value;
+            set => ViewModel = (CommandBindViewModel?)value;
         }
 
-        public CommandBindViewModel ViewModel { get; set; }
+        public CommandBindViewModel? ViewModel { get; set; }
 
         public CustomClickButton Command1 { get; protected set; }
 

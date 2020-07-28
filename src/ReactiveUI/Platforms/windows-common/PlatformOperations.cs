@@ -21,7 +21,7 @@ namespace ReactiveUI
     public class PlatformOperations : IPlatformOperations
     {
         /// <inheritdoc/>
-        public string GetOrientation()
+        public string? GetOrientation()
         {
 #if NETFX_CORE || HAS_UNO
             try

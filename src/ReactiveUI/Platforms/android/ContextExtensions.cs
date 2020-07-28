@@ -22,7 +22,7 @@ namespace ReactiveUI
         /// <param name="context">The Context to bind the Service from.</param>
         /// <param name="intent">Identifies the service to connect to. The Intent may specify either an explicit component name, or a logical description (action, category, etc) to match an IntentFilter published by a service.</param>
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
-        public static IObservable<IBinder> ServiceBound(this Context context, Intent intent, Bind flags = Bind.None)
+        public static IObservable<IBinder?> ServiceBound(this Context context, Intent intent, Bind flags = Bind.None)
         {
             return ServiceBound<IBinder>(context, intent, flags);
         }
@@ -35,12 +35,10 @@ namespace ReactiveUI
         /// <param name="intent">Identifies the service to connect to. The Intent may specify either an explicit component name, or a logical description (action, category, etc) to match an IntentFilter published by a service.</param>
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
         /// <typeparam name="TBinder">The type of the returned service binder.</typeparam>
-        public static IObservable<TBinder> ServiceBound<TBinder>(this Context context, Intent intent, Bind flags = Bind.None)
-        where TBinder
-            : class,
-            IBinder
+        public static IObservable<TBinder?> ServiceBound<TBinder>(this Context context, Intent intent, Bind flags = Bind.None)
+            where TBinder : class, IBinder
         {
-            return Observable.Create<TBinder>(observer =>
+            return Observable.Create<TBinder?>(observer =>
             {
                 var connection = new ServiceConnection<TBinder>(context, observer);
                 try
@@ -64,14 +62,14 @@ namespace ReactiveUI
         /// </summary>
         /// <typeparam name="TBinder">The binder type.</typeparam>
         private class ServiceConnection<TBinder> : Java.Lang.Object, IServiceConnection
-        where TBinder : class, IBinder
+            where TBinder : class, IBinder
         {
             private readonly Context _context;
-            private readonly IObserver<TBinder> _observer;
+            private readonly IObserver<TBinder?> _observer;
 
             private bool _disposed;
 
-            public ServiceConnection(Context context, IObserver<TBinder> observer)
+            public ServiceConnection(Context context, IObserver<TBinder?> observer)
             {
                 _context = context;
                 _observer = observer;

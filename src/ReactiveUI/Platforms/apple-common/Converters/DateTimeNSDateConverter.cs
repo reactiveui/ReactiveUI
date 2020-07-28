@@ -23,7 +23,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public bool TryConvert(object val, Type toType, object conversionHint, out object result)
+        public bool TryConvert(object? val, Type toType, object? conversionHint, out object? result)
         {
             result = null;
 

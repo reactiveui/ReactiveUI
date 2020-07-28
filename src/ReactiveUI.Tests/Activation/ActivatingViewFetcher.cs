@@ -19,6 +19,12 @@ namespace ReactiveUI.Tests
         public IObservable<bool> GetActivationForView(IActivatableView view)
         {
             var av = view as ActivatingView;
+
+            if (av == null)
+            {
+                throw new ArgumentNullException(nameof(view));
+            }
+
             return av.Loaded.Select(_ => true).Merge(av.Unloaded.Select(_ => false));
         }
     }

@@ -227,7 +227,7 @@ namespace ReactiveUI.Tests
                 }
                 catch (Exception ex)
                 {
-                    failed = ex.InnerException.Message != "Die!";
+                    failed = ex?.InnerException?.Message != "Die!";
                 }
 
                 Assert.False(failed);

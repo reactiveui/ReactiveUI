@@ -17,16 +17,16 @@ namespace ReactiveUI.Tests.Xaml
     {
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
 
-        public HostTestFixture ViewModel
+        public HostTestFixture? ViewModel
         {
             get => (HostTestFixture)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (HostTestFixture)value;
+            set => ViewModel = (HostTestFixture?)value;
         }
     }
 }

@@ -23,13 +23,13 @@ namespace ReactiveUI
         private readonly Action<object> _execute;
         private bool? _prevCanExecute;
 
-        public RelayCommand(Func<object, bool> canExecute = null, Action<object> execute = null)
+        public RelayCommand(Func<object, bool>? canExecute = null, Action<object>? execute = null)
         {
             _canExecute = canExecute ?? (_ => true);
             _execute = execute ?? (_ => { });
         }
 
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {

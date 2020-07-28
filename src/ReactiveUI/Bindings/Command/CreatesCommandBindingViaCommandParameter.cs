@@ -38,7 +38,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
             if (target == null)
             {
@@ -50,23 +50,23 @@ namespace ReactiveUI
             var cmdParamPi = type.GetRuntimeProperty("CommandParameter");
             var ret = new CompositeDisposable();
 
-            var originalCmd = cmdPi.GetValue(target, null);
-            var originalCmdParam = cmdParamPi.GetValue(target, null);
+            var originalCmd = cmdPi?.GetValue(target, null);
+            var originalCmdParam = cmdParamPi?.GetValue(target, null);
 
             ret.Add(Disposable.Create(() =>
             {
-                cmdPi.SetValue(target, originalCmd, null);
-                cmdParamPi.SetValue(target, originalCmdParam, null);
+                cmdPi?.SetValue(target, originalCmd, null);
+                cmdParamPi?.SetValue(target, originalCmdParam, null);
             }));
 
-            ret.Add(commandParameter.Subscribe(x => cmdParamPi.SetValue(target, x, null)));
-            cmdPi.SetValue(target, command, null);
+            ret.Add(commandParameter.Subscribe(x => cmdParamPi?.SetValue(target, x, null)));
+            cmdPi?.SetValue(target, command, null);
 
             return ret;
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable? BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
 #if MONO
             where TEventArgs : EventArgs
 #endif

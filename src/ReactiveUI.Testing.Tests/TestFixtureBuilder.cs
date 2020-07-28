@@ -13,8 +13,8 @@ namespace ReactiveUI.Testing.Tests
     public class TestFixtureBuilder : IBuilder
     {
         private int _count;
-        private string _name;
-        private List<string> _tests = new List<string>();
+        private string? _name;
+        private List<string>? _tests = new List<string>();
         private Dictionary<string, string> _variables = new Dictionary<string, string>();
 
         /// <summary>

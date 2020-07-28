@@ -31,7 +31,7 @@ namespace ReactiveUI
             var canExecuteChanged = Observable.FromEvent<EventHandler, Unit>(
                 eventHandler =>
                 {
-                    void Handler(object sender, EventArgs e) => eventHandler(Unit.Default);
+                    void Handler(object? sender, EventArgs e) => eventHandler(Unit.Default);
                     return Handler;
                 },
                 h => command.CanExecuteChanged += h,
@@ -87,11 +87,7 @@ namespace ReactiveUI
             var commandCanExecuteChanged = commandObs
                 .Select(command => command == null ? Observable<ICommand>.Empty : Observable
                     .FromEvent<EventHandler, ICommand>(
-                        eventHandler =>
-                        {
-                            void Handler(object sender, EventArgs e) => eventHandler(command);
-                            return Handler;
-                        },
+                        eventHandler => (sender, e) => eventHandler(command),
                         h => command.CanExecuteChanged += h,
                         h => command.CanExecuteChanged -= h)
                     .StartWith(command))
@@ -123,7 +119,7 @@ namespace ReactiveUI
             var invocationInfo = command
                 .Select(cmd => cmd == null ? Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty : cmd
                     .CanExecute
-                    .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T))))
+                    .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T) !)))
                 .Switch();
 
             return WithLatestFromFixed(item, invocationInfo, (value, ii) => ii.WithValue(value))

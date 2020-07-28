@@ -51,6 +51,11 @@ namespace ReactiveUI.Tests
                     continue;
                 }
 
+                if (lastValue == null)
+                {
+                    continue;
+                }
+
                 if (!EqualityComparer<T>.Default.Equals(v, lastValue))
                 {
                     yield return v;

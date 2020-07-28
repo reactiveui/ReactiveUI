@@ -9,16 +9,16 @@ namespace ReactiveUI.Tests.Winforms
     {
         private bool _someBooleanProperty;
         private int _someInteger;
-        private string _someText;
+        private string? _someText;
         private double _someDouble;
-        private string _property1;
-        private string _property2;
-        private string _property3;
-        private string _property4;
+        private string? _property1;
+        private string? _property2;
+        private string? _property3;
+        private string? _property4;
 
-        public FakeWinformViewModel(IScreen screen = null)
+        public FakeWinformViewModel(IScreen? screen = null)
         {
-            HostScreen = screen;
+            HostScreen = screen ?? new TestScreen();
         }
 
         public string UrlPathSegment => "fake";
@@ -31,7 +31,7 @@ namespace ReactiveUI.Tests.Winforms
             set => this.RaiseAndSetIfChanged(ref _someInteger, value);
         }
 
-        public string SomeText
+        public string? SomeText
         {
             get => _someText;
             set => this.RaiseAndSetIfChanged(ref _someText, value);
@@ -43,25 +43,25 @@ namespace ReactiveUI.Tests.Winforms
             set => this.RaiseAndSetIfChanged(ref _someDouble, value);
         }
 
-        public string Property1
+        public string? Property1
         {
             get => _property1;
             set => this.RaiseAndSetIfChanged(ref _property1, value);
         }
 
-        public string Property2
+        public string? Property2
         {
             get => _property2;
             set => this.RaiseAndSetIfChanged(ref _property2, value);
         }
 
-        public string Property3
+        public string? Property3
         {
             get => _property3;
             set => this.RaiseAndSetIfChanged(ref _property3, value);
         }
 
-        public string Property4
+        public string? Property4
         {
             get => _property4;
             set => this.RaiseAndSetIfChanged(ref _property4, value);

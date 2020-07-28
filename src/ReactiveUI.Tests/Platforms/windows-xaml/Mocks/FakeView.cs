@@ -28,12 +28,12 @@ namespace ReactiveUI.Tests.Xaml
 
         public TextBox TheTextBox { get; protected set; }
 
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (FakeViewModel)value;
+            set => ViewModel = (FakeViewModel?)value;
         }
 
-        public FakeViewModel ViewModel { get; set; }
+        public FakeViewModel? ViewModel { get; set; }
     }
 }

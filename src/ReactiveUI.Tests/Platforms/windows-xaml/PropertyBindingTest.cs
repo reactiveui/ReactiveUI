@@ -30,7 +30,7 @@ namespace ReactiveUI.Tests.Xaml
             vm.JustADecimal = 123.45m;
             Assert.NotEqual(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
 
-            var disp = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>)null, d => d.ToString(), decimal.Parse);
+            var disp = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, d => d.ToString(), decimal.Parse);
 
             Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
             Assert.Equal(123.45m, vm.JustADecimal);
@@ -38,7 +38,7 @@ namespace ReactiveUI.Tests.Xaml
             view.SomeTextBox.Text = "567.89";
             Assert.Equal(567.89m, vm.JustADecimal);
 
-            disp.Dispose();
+            disp?.Dispose();
             vm.JustADecimal = 0;
 
             Assert.Equal(0, vm.JustADecimal);
@@ -55,7 +55,7 @@ namespace ReactiveUI.Tests.Xaml
             vm.Property1 = "Foo";
             Assert.NotEqual(vm.Property1, view.SomeTextBox.Text);
 
-            var disp = fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+            var disp = fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
             Assert.Equal(vm.Property1, view.SomeTextBox.Text);
             Assert.Equal("Foo", vm.Property1);
@@ -80,7 +80,7 @@ namespace ReactiveUI.Tests.Xaml
             vm.Property2 = 17;
             Assert.NotEqual(vm.Property2.ToString(), view.SomeTextBox.Text);
 
-            var disp = fixture.Bind(vm, view, x => x.Property2, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+            var disp = fixture.Bind(vm, view, x => x.Property2, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
             Assert.Equal(vm.Property2.ToString(), view.SomeTextBox.Text);
             Assert.Equal(17, vm.Property2);
@@ -99,7 +99,7 @@ namespace ReactiveUI.Tests.Xaml
             Assert.NotEqual("0", view.SomeTextBox.Text);
 
             vm.JustADecimal = 17.2m;
-            var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+            var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
             Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
             Assert.Equal(17.2m, vm.JustADecimal);
@@ -120,7 +120,7 @@ namespace ReactiveUI.Tests.Xaml
 
             // Empty test
             vm.JustAInt32 = 12;
-            var disp2 = fixture.Bind(vm, view, x => x.JustAInt32, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+            var disp2 = fixture.Bind(vm, view, x => x.JustAInt32, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
             view.SomeTextBox.Text = string.Empty;
             Assert.Equal(12, vm.JustAInt32);
@@ -139,7 +139,7 @@ namespace ReactiveUI.Tests.Xaml
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = vm };
 
-            view.OneWayBind(view.ViewModel, x => x.Model.AnotherThing, x => x.SomeTextBox.Text);
+            view.OneWayBind(view.ViewModel, x => x!.Model!.AnotherThing, x => x.SomeTextBox.Text);
             Assert.Equal("Baz", view.SomeTextBox.Text);
         }
 
@@ -240,11 +240,11 @@ namespace ReactiveUI.Tests.Xaml
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = null };
 
-            view.OneWayBind(vm, x => x.Model.AnotherThing, x => x.FakeControl.NullHatingString);
+            view.OneWayBind(vm, x => x!.Model!.AnotherThing, x => x.FakeControl.NullHatingString);
             Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
 
             view.ViewModel = vm;
-            Assert.Equal(vm.Model.AnotherThing, view.FakeControl.NullHatingString);
+            Assert.Equal(vm!.Model!.AnotherThing, view.FakeControl.NullHatingString);
         }
 
         [Fact]
@@ -253,7 +253,7 @@ namespace ReactiveUI.Tests.Xaml
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = null };
 
-            view.WhenAnyValue(x => x.ViewModel.JustADouble)
+            view.WhenAnyValue(x => x.ViewModel!.JustADouble)
                 .BindTo(view, x => x.FakeControl.NullHatingString);
 
             Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
@@ -268,8 +268,8 @@ namespace ReactiveUI.Tests.Xaml
             var view = new PropertyBindView { ViewModel = null };
 
             Assert.Throws<ArgumentNullException>(() =>
-                 view.WhenAnyValue(x => x.FakeControl.NullHatingString)
-                     .BindTo(view.ViewModel, x => x.Property1));
+                 view.WhenAnyValue(x => x.FakeControl!.NullHatingString!)
+                     .BindTo(view!.ViewModel!, x => x!.Property1));
         }
 
         [Fact]
@@ -351,10 +351,10 @@ namespace ReactiveUI.Tests.Xaml
             var view = new PropertyBindView { ViewModel = vm };
             var fixture = new PropertyBinderImplementation();
 
-            Func<string, string> nullFunc = null;
+            Func<string?, string?> nullFunc = null!;
 
-            Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null, nullFunc, s => s));
-            Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null, s => s, nullFunc));
+            Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, nullFunc, s => s));
+            Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, s => s, nullFunc));
         }
 
         [Fact]

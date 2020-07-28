@@ -20,6 +20,7 @@ namespace ReactiveUI
     [Preserve(AllMembers = true)]
     internal class LinkerOverrides
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
         private void KeepMe()
         {
             var txt = new TextView(null);

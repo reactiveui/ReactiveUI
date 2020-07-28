@@ -115,10 +115,13 @@ namespace ReactiveUI
             this TObj reactiveObject,
             ref TRet backingField,
             TRet newValue,
-            [CallerMemberName] string propertyName = null)
+            [CallerMemberName] string? propertyName = null)
             where TObj : IReactiveObject
         {
-            Contract.Requires(propertyName != null);
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
 
             if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
             {
@@ -141,10 +144,13 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
             where TSender : IReactiveObject
         {
-            reactiveObject.RaisingPropertyChanged(propertyName);
+            if (propertyName != null)
+            {
+                reactiveObject.RaisingPropertyChanged(propertyName);
+            }
         }
 
         /// <summary>
@@ -157,10 +163,13 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
             where TSender : IReactiveObject
         {
-            reactiveObject.RaisingPropertyChanging(propertyName);
+            if (propertyName != null)
+            {
+                reactiveObject.RaisingPropertyChanging(propertyName);
+            }
         }
 
         internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable<TSender>(this TSender reactiveObject)
@@ -195,7 +204,10 @@ namespace ReactiveUI
         internal static void RaisingPropertyChanging<TSender>(this TSender reactiveObject, string propertyName)
             where TSender : IReactiveObject
         {
-            Contract.Requires(propertyName != null);
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
 
             var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
 
@@ -213,7 +225,10 @@ namespace ReactiveUI
         internal static void RaisingPropertyChanged<TSender>(this TSender reactiveObject, string propertyName)
             where TSender : IReactiveObject
         {
-            Contract.Requires(propertyName != null);
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
 
             var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
 
@@ -380,11 +395,11 @@ namespace ReactiveUI
                 }
             }
 
-            internal void NotifyObservable<T>(TSender rxObj, T item, ISubject<T> subject)
+            internal void NotifyObservable<T>(TSender rxObj, T item, ISubject<T>? subject)
             {
                 try
                 {
-                    subject.OnNext(item);
+                    subject?.OnNext(item);
                 }
                 catch (Exception ex)
                 {

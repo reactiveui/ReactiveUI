@@ -14,17 +14,29 @@ namespace ReactiveUI.Tests
 {
     public static class JSONHelper
     {
-        public static string Serialize<T>(T serializeObject)
+        public static string? Serialize<T>(T serializeObject)
         {
+            if (serializeObject == null)
+            {
+                return null;
+            }
+
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(serializeObject.GetType());
             var ms = new MemoryStream();
             serializer.WriteObject(ms, serializeObject);
             return Encoding.Default.GetString(ms.ToArray());
         }
 
-        public static T Deserialize<T>(string json)
+        public static T? Deserialize<T>(string json)
+            where T : class
         {
             var obj = Activator.CreateInstance<T>();
+
+            if (obj == null)
+            {
+                return default;
+            }
+
             var ms = new MemoryStream(Encoding.Unicode.GetBytes(json));
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
             obj = (T)serializer.ReadObject(ms);

@@ -21,10 +21,10 @@ namespace ReactiveUI.Blend
         /// <summary>
         /// Gets the associated object.
         /// </summary>
-        public T AssociatedObject { get; private set; }
+        public T? AssociatedObject { get; private set; }
 
         /// <inheritdoc/>
-        DependencyObject IBehavior.AssociatedObject => AssociatedObject;
+        DependencyObject? IBehavior.AssociatedObject => AssociatedObject;
 
         /// <inheritdoc/>
         public virtual void Attach(DependencyObject associatedObject)

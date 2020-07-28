@@ -35,7 +35,7 @@ namespace ReactiveUI
         /// <param name="cellKey">The cell key.</param>
         /// <param name="sizeHint">The size hint.</param>
         /// <param name="initializeCellAction">The initialize cell action.</param>
-        public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
+        public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell>? initializeCellAction = null)
             : this(tableView)
         {
             Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction) };
@@ -61,10 +61,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets or sets the data that should be displayed by this
@@ -246,28 +246,28 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public override string TitleForHeader(UITableView tableView, nint section)
+        public override string? TitleForHeader(UITableView tableView, nint section)
         {
             var header = _commonSource.SectionInfo[(int)section].Header;
             return header?.Title;
         }
 
         /// <inheritdoc/>
-        public override string TitleForFooter(UITableView tableView, nint section)
+        public override string? TitleForFooter(UITableView tableView, nint section)
         {
             var footer = _commonSource.SectionInfo[(int)section].Footer;
             return footer?.Title;
         }
 
         /// <inheritdoc/>
-        public override UIView GetViewForHeader(UITableView tableView, nint section)
+        public override UIView? GetViewForHeader(UITableView tableView, nint section)
         {
             var header = _commonSource.SectionInfo[(int)section].Header;
             return header?.View?.Invoke();
         }
 
         /// <inheritdoc/>
-        public override UIView GetViewForFooter(UITableView tableView, nint section)
+        public override UIView? GetViewForFooter(UITableView tableView, nint section)
         {
             var footer = _commonSource.SectionInfo[(int)section].Footer;
             return footer?.View?.Invoke();

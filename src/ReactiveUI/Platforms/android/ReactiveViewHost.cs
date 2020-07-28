@@ -28,9 +28,9 @@ namespace ReactiveUI
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Legacy reasons")]
         [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
         [IgnoreDataMember]
-        protected Lazy<PropertyInfo[]> allPublicProperties;
+        protected Lazy<PropertyInfo[]>? allPublicProperties;
 
-        private TViewModel _viewModel;
+        private TViewModel? _viewModel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.
@@ -55,23 +55,23 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
             get { return _viewModel; }
             set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
         }
 
         /// <inheritdoc/>
-        object IViewFor.ViewModel
+        object? IViewFor.ViewModel
         {
             get { return _viewModel; }
-            set { _viewModel = (TViewModel)value; }
+            set { _viewModel = (TViewModel?)value!; }
         }
 
         /// <inheritdoc />

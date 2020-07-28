@@ -20,13 +20,13 @@ namespace ReactiveUI
     public class CollectionViewSectionInformation<TSource> : ISectionInformation<TSource, UICollectionView, UICollectionViewCell>
     {
         /// <inheritdoc/>
-        public INotifyCollectionChanged Collection { get; protected set; }
+        public INotifyCollectionChanged? Collection { get; protected set; }
 
         /// <inheritdoc/>
-        public Action<UICollectionViewCell> InitializeCellAction { get; protected set; }
+        public Action<UICollectionViewCell>? InitializeCellAction { get; protected set; }
 
         /// <inheritdoc/>
-        public Func<object, NSString> CellKeySelector { get; protected set; }
+        public Func<object?, NSString>? CellKeySelector { get; protected set; }
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ namespace ReactiveUI
         /// <param name="collection">The notify collection changed.</param>
         /// <param name="cellKeySelector">The key selector function.</param>
         /// <param name="initializeCellAction">The cell initialization action.</param>
-        public CollectionViewSectionInformation(INotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString> cellKeySelector, Action<TCell>? initializeCellAction = null)
         {
             Collection = collection;
             CellKeySelector = cellKeySelector;
@@ -62,7 +62,7 @@ namespace ReactiveUI
         /// <param name="collection">The notify collection changed.</param>
         /// <param name="cellKey">The key selector function.</param>
         /// <param name="initializeCellAction">The cell initialization action.</param>
-        public CollectionViewSectionInformation(INotifyCollectionChanged collection, NSString cellKey, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(INotifyCollectionChanged collection, NSString cellKey, Action<TCell>? initializeCellAction = null)
             : this(collection, _ => cellKey, initializeCellAction)
         {
         }

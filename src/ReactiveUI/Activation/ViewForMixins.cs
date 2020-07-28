@@ -18,14 +18,14 @@ namespace ReactiveUI
     /// </summary>
     public static class ViewForMixins
     {
-        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache =
-            new MemoizingMRUCache<Type, IActivationForViewFetcher>(
+        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> activationFetcherCache =
+            new MemoizingMRUCache<Type, IActivationForViewFetcher?>(
                (t, _) =>
                    Locator.Current
-                          .GetServices<IActivationForViewFetcher>()
-                          .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher)), (acc, x) =>
+                          .GetServices<IActivationForViewFetcher?>()
+                          .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher?)), (acc, x) =>
                           {
-                              int score = x.GetAffinityForView(t);
+                              int score = x?.GetAffinityForView(t) ?? 0;
                               return score > acc.count ? (score, x) : acc;
                           }).viewFetcher, RxApp.SmallCacheLimit);
 
@@ -142,7 +142,7 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor view)
+        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view)
         {
             if (item == null)
             {
@@ -182,7 +182,7 @@ namespace ReactiveUI
         /// <returns>A Disposable that deactivates this registration.</returns>
         public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block)
         {
-            return item.WhenActivated(block, null);
+            return item.WhenActivated(block, null!);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor view = null)
+        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null)
         {
             return item.WhenActivated(
                 () =>

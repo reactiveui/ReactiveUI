@@ -64,15 +64,15 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare> signalViewUpdate,
-                object conversionHint,
-                IBindingTypeConverter vmToViewConverterOverride = null,
-                IBindingTypeConverter viewToVMConverterOverride = null)
+                IObservable<TDontCare>? signalViewUpdate,
+                object? conversionHint,
+                IBindingTypeConverter? vmToViewConverterOverride = null,
+                IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor;
 
@@ -121,12 +121,12 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        IReactiveBinding<TView, TViewModel, (object view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare> signalViewUpdate,
+                IObservable<TDontCare>? signalViewUpdate,
                 Func<TVMProp, TVProp> vmToViewConverter,
                 Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class
@@ -171,13 +171,13 @@ namespace ReactiveUI
         /// <exception cref="ArgumentException">
         /// There is no registered converter from <typeparamref name="TVMProp"/> to <typeparamref name="TVProp"/>.
         /// </exception>
-        IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        IReactiveBinding<TView, TViewModel, TVProp>? OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                object conversionHint,
-                IBindingTypeConverter vmToViewConverterOverride = null)
+                object? conversionHint,
+                IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor;
 
@@ -193,31 +193,31 @@ namespace ReactiveUI
         /// <param name="viewModel">The instance of the view model to bind to.</param>
         /// <param name="view">The instance of the view to bind to.</param>
         /// <param name="vmProperty">
-        /// An expression representing the property to be bound to on the view model.
-        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
-        /// the binding will attempt to subscribe recursively to updates in order to
-        /// always get the last value of the property chain.
+        ///     An expression representing the property to be bound to on the view model.
+        ///     This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        ///     the binding will attempt to subscribe recursively to updates in order to
+        ///     always get the last value of the property chain.
         /// </param>
         /// <param name="viewProperty">
-        /// An expression representing the property to be bound to on the view.
-        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
-        /// the binding will attempt to subscribe recursively to updates in order to
-        /// always set the correct property.
+        ///     An expression representing the property to be bound to on the view.
+        ///     This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        ///     the binding will attempt to subscribe recursively to updates in order to
+        ///     always set the correct property.
         /// </param>
         /// <param name="selector">
-        /// A function that will be used to transform the values of the property on the view model
-        /// before being bound to the view property.
+        ///     A function that will be used to transform the values of the property on the view model
+        ///     before being bound to the view property.
         /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
-                TViewModel viewModel,
-                TView view,
-                Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TOut>> viewProperty,
-                Func<TProp, TOut> selector)
+        IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
+            TViewModel viewModel,
+            TView view,
+            Expression<Func<TViewModel, TProp>> vmProperty,
+            Expression<Func<TView, TOut>> viewProperty,
+            Func<TProp, TOut> selector)
             where TViewModel : class
             where TView : class, IViewFor;
 
@@ -249,8 +249,8 @@ namespace ReactiveUI
             IObservable<TValue> observedChange,
             TTarget target,
             Expression<Func<TTarget, TTValue>> propertyExpression,
-            object conversionHint,
-            IBindingTypeConverter vmToViewConverterOverride = null)
+            object? conversionHint,
+            IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class;
     }
 }

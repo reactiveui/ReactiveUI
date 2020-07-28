@@ -67,7 +67,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the latest bundle.
         /// </summary>
-        public static Bundle LatestBundle { get; set; }
+        public static Bundle? LatestBundle { get; set; }
 
         /// <inheritdoc />
         public void Dispose()

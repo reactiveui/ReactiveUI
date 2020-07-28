@@ -20,24 +20,24 @@ namespace ReactiveUI.Fody
             var propertyWeaver = new ReactiveUIPropertyWeaver
             {
                 ModuleDefinition = ModuleDefinition,
-                LogInfo = LogInfo,
-                LogError = LogError
+                LogInfo = WriteInfo,
+                LogError = WriteError
             };
             propertyWeaver.Execute();
 
             var observableAsPropertyWeaver = new ObservableAsPropertyWeaver
             {
                 ModuleDefinition = ModuleDefinition,
-                LogInfo = LogInfo,
-                FindType = FindType
+                LogInfo = WriteInfo,
+                FindType = FindTypeDefinition
             };
             observableAsPropertyWeaver.Execute();
 
             var reactiveDependencyWeaver = new ReactiveDependencyPropertyWeaver
             {
                 ModuleDefinition = ModuleDefinition,
-                LogInfo = LogInfo,
-                LogError = LogError
+                LogInfo = WriteInfo,
+                LogError = WriteError
             };
             reactiveDependencyWeaver.Execute();
         }

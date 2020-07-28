@@ -25,7 +25,7 @@ namespace TestHelper
         /// <returns>DiagnosticAnalyzer to be tested.</returns>
         protected virtual DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace TestHelper
         /// <returns>DiagnosticAnalyzer to be tested.</returns>
         protected virtual DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
         {
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace TestHelper
                                 location.IsInSource,
                                 $"Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata: {diagnostics[i]}\r\n");
 
-                            string resultMethodName = diagnostics[i].Location.SourceTree.FilePath.EndsWith(".cs", StringComparison.Ordinal) ? "GetCSharpResultAt" : "GetBasicResultAt";
+                            string resultMethodName = diagnostics[i].Location.SourceTree!.FilePath.EndsWith(".cs", StringComparison.Ordinal) ? "GetCSharpResultAt" : "GetBasicResultAt";
                             var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
 
                             builder.Append($"{resultMethodName}({linePosition.Line + 1}, {linePosition.Character + 1}, {analyzerType.Name}.{rule.Id})");

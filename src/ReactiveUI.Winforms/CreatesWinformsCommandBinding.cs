@@ -52,7 +52,7 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
             if (target == null)
             {
@@ -74,11 +74,11 @@ namespace ReactiveUI.Winforms
             var mi = GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(eventInfo.Args);
 
-            return (IDisposable)mi.Invoke(this, new[] { command, target, commandParameter, eventInfo.EventInfo.Name });
+            return (IDisposable?)mi.Invoke(this, new[] { command, target, commandParameter, eventInfo.EventInfo?.Name });
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable? BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
         {
             if (command == null)
             {
@@ -92,7 +92,7 @@ namespace ReactiveUI.Winforms
 
             var ret = new CompositeDisposable();
 
-            object latestParameter = null;
+            object? latestParameter = null;
             Type targetType = target.GetType();
 
             ret.Add(commandParameter.Subscribe(x => latestParameter = x));
@@ -112,19 +112,15 @@ namespace ReactiveUI.Winforms
             // For example: System.Windows.Forms.ToolStripButton.
             if (typeof(Component).IsAssignableFrom(targetType))
             {
-                PropertyInfo enabledProperty = targetType.GetRuntimeProperty("Enabled");
+                PropertyInfo? enabledProperty = targetType.GetRuntimeProperty("Enabled");
 
                 if (enabledProperty != null)
                 {
-                    object latestParam = null;
+                    object? latestParam = null;
                     ret.Add(commandParameter.Subscribe(x => latestParam = x));
 
                     ret.Add(Observable.FromEvent<EventHandler, bool>(
-                            eventHandler =>
-                            {
-                                void Handler(object sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
-                                return Handler;
-                            },
+                            eventHandler => (sender, e) => eventHandler(command.CanExecute(latestParam)),
                             x => command.CanExecuteChanged += x,
                             x => command.CanExecuteChanged -= x)
                         .StartWith(command.CanExecute(latestParam))

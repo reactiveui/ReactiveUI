@@ -36,7 +36,7 @@ namespace ReactiveUI.Tests.Xaml
         public void EventBinderBindsToExplicitInheritedEvent()
         {
             var fixture = new FakeView();
-            fixture.BindCommand(fixture.ViewModel, x => x.Cmd, x => x.TheTextBox, "MouseDown");
+            fixture.BindCommand(fixture!.ViewModel!, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace ReactiveUI.Tests.Xaml
             DispatcherUtilities.DoEvents();
             Assert.Equal(1, invokeCount);
 
-            disp.Dispose();
+            disp?.Dispose();
             invoker.Invoke();
             Assert.Equal(1, invokeCount);
         }

@@ -28,7 +28,7 @@ namespace ReactiveUI.Tests
                 // ...whereas ObservableForProperty *is* guaranteed to.
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord).Subscribe(x =>
                 {
-                    output.Add(x.GetValue());
+                    output.Add(x.GetValue() !);
                 });
 
                 foreach (var v in input)
@@ -50,7 +50,7 @@ namespace ReactiveUI.Tests
                 Child = new TestFixture { IsNotNullString = "Foo" },
             };
 
-            Expression<Func<HostTestFixture, string>> expression = x => x.Child.IsNotNullString;
+            Expression<Func<HostTestFixture, string>> expression = x => x!.Child!.IsNotNullString!;
             var fixture = new ObservedChange<HostTestFixture, string>(input, expression.Body);
 
             Assert.Equal("Foo", fixture.GetValue());
@@ -64,10 +64,10 @@ namespace ReactiveUI.Tests
                 Child = new TestFixture { IsNotNullString = "Foo" },
             };
 
-            Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord;
+            Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord!;
             var fixture = new ObservedChange<TestFixture, string>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body);
 
-            fixture.SetValueToProperty(output, x => x.Child.IsNotNullString);
+            fixture.SetValueToProperty(output, x => x.Child!.IsNotNullString);
             Assert.Equal("Bar", output.Child.IsNotNullString);
         }
 
@@ -79,7 +79,7 @@ namespace ReactiveUI.Tests
                 var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture { Child = new TestFixture() };
 
-                input.BindTo(fixture, x => x.Child.IsNotNullString);
+                input.BindTo(fixture, x => x.Child!.IsNotNullString);
 
                 Assert.Null(fixture.Child.IsNotNullString);
 
@@ -101,7 +101,7 @@ namespace ReactiveUI.Tests
                 var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture { Child = new TestFixture() };
 
-                var subscription = input.BindTo(fixture, x => x.Child.IsNotNullString);
+                var subscription = input.BindTo(fixture, x => x.Child!.IsNotNullString);
 
                 Assert.Null(fixture.Child.IsNotNullString);
 
@@ -125,7 +125,7 @@ namespace ReactiveUI.Tests
                 var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture { Child = new TestFixture() };
 
-                input.BindTo(fixture, x => x.Child.IsNotNullString);
+                input.BindTo(fixture, x => x.Child!.IsNotNullString);
 
                 Assert.Null(fixture.Child.IsNotNullString);
 
