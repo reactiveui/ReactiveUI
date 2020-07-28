@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI
 {
@@ -20,9 +21,16 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         public int Compare(T x, T y)
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         {
             int parentResult = _parent?.Compare(x, y) ?? 0;
+
+            if (x == null && y == null)
+            {
+                return 0;
+            }
 
             return parentResult != 0 ? parentResult : _inner(x, y);
         }

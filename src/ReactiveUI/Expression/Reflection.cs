@@ -119,7 +119,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[]?, object>? GetValueFetcherForProperty(MemberInfo member)
+        public static Func<object, object[]?, object?>? GetValueFetcherForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
 
@@ -132,7 +132,17 @@ namespace ReactiveUI
             PropertyInfo? property = member as PropertyInfo;
             if (property != null)
             {
-                return property.GetValue;
+                object? Func(object input, object[]? index)
+                {
+                    if (index == null)
+                    {
+                        return property.GetValue(input);
+                    }
+
+                    return property.GetValue(input, index);
+                }
+
+                return Func;
             }
 
             return null;
@@ -146,7 +156,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[]?, object> GetValueFetcherOrThrow(MemberInfo member)
+        public static Func<object, object[]?, object?> GetValueFetcherOrThrow(MemberInfo member)
         {
             if (member is null)
             {
@@ -247,7 +257,9 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressions.Last();
+#pragma warning disable CS8601 // Possible null reference assignment.
             changeValue = (TValue)GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray());
+#pragma warning restore CS8601 // Possible null reference assignment.
             return true;
         }
 
@@ -262,7 +274,7 @@ namespace ReactiveUI
         /// <param name="current">The object that starts the property chain.</param>
         /// <param name="expressionChain">A list of expressions which will point towards a property or field.</param>
         /// <returns>If the value was successfully retrieved or not.</returns>
-        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object?>[] changeValues, object current, IEnumerable<Expression> expressionChain)
+        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object?>[] changeValues, object? current, IEnumerable<Expression> expressionChain)
         {
             int currentIndex = 0;
             var expressions = expressionChain.ToList();
@@ -277,8 +289,16 @@ namespace ReactiveUI
                 }
 
                 var sender = current;
-                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
-                changeValues[currentIndex] = new ObservedChange<object, object>(sender, expression, current);
+
+                var func = GetValueFetcherOrThrow(expression.GetMemberInfo());
+
+                if (func == null)
+                {
+                    throw new InvalidOperationException("The GetValueFetcherOrThrow return value is null for the property chain.");
+                }
+
+                current = func(current, expression.GetArgumentsArray());
+                changeValues[currentIndex] = new ObservedChange<object, object>(sender, expression, current!);
                 currentIndex++;
             }
 
@@ -289,7 +309,26 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressions.Last();
-            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray()));
+
+            var finalFunc = GetValueFetcherOrThrow(lastExpression.GetMemberInfo());
+
+            if (finalFunc == null)
+            {
+                changeValues[currentIndex] = null!;
+                return false;
+            }
+
+            var lastArguments = lastExpression.GetArgumentsArray();
+
+            if (lastArguments == null)
+            {
+                changeValues[currentIndex] = null!;
+                return false;
+            }
+
+#pragma warning disable CS8604 // Possible null reference argument.
+            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, finalFunc(current!, lastArguments!));
+#pragma warning restore CS8604 // Possible null reference argument.
 
             return true;
         }

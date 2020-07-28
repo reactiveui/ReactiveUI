@@ -94,7 +94,6 @@ namespace ReactiveUI
         /// The view associated with the given view model.
         /// </returns>
         public IViewFor? ResolveView<T>(T viewModel, string? contract = null)
-            where T : class
         {
             if (viewModel is null)
             {

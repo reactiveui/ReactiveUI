@@ -37,6 +37,6 @@ namespace ReactiveUI
         /// <param name="arguments">The arguments required. Used for indexer based values.</param>
         /// <returns>The value that was set.</returns>
         [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:ClosingSquareBracketsMustBeSpacedCorrectly", Justification = "Reviewed.")]
-        object PerformSet(object toTarget, object? newValue, object[]? arguments);
+        object PerformSet(object? toTarget, object? newValue, object[]? arguments);
     }
 }

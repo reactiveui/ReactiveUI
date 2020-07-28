@@ -14,6 +14,7 @@ namespace ReactiveUI.Cocoa
     [Preserve(AllMembers = true)]
     internal class LinkerOverrides
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Needed for linking.")]
         public void KeepMe()
         {
             // UIButon

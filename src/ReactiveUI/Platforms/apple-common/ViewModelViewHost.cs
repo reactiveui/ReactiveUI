@@ -30,7 +30,7 @@ namespace ReactiveUI
         private readonly ObservableAsPropertyHelper<string?> _viewContract;
         private IViewLocator? _viewLocator;
         private NSViewController? _defaultContent;
-        private IReactiveObject? _viewModel;
+        private object? _viewModel;
         private IObservable<string?>? _viewContractObservable;
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the view model.
         /// </summary>
-        public IReactiveObject? ViewModel
+        public object? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
@@ -180,7 +180,7 @@ namespace ReactiveUI
                     x =>
                     {
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                        var view = viewLocator.ResolveView<object?>(x.ViewModel, x.Contract);
 
                         if (view == null)
                         {

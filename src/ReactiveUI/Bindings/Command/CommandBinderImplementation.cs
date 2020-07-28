@@ -144,7 +144,7 @@ namespace ReactiveUI
                  bindingDisposable);
         }
 
-        private IDisposable BindCommandInternal<TView, TProp, TParam>(
+        private static IDisposable BindCommandInternal<TView, TProp, TParam>(
                 IObservable<TProp> @this,
                 TView view,
                 Expression controlExpression,

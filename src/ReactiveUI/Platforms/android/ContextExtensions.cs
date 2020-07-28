@@ -36,13 +36,11 @@ namespace ReactiveUI
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
         /// <typeparam name="TBinder">The type of the returned service binder.</typeparam>
         public static IObservable<TBinder?> ServiceBound<TBinder>(this Context context, Intent intent, Bind flags = Bind.None)
-        where TBinder
-            : class,
-            IBinder
+            where TBinder : class, IBinder
         {
             return Observable.Create<TBinder?>(observer =>
             {
-                var connection = new ServiceConnection<TBinder?>(context, observer);
+                var connection = new ServiceConnection<TBinder>(context, observer);
                 try
                 {
                     if (!context.BindService(intent, connection, flags))
@@ -64,7 +62,7 @@ namespace ReactiveUI
         /// </summary>
         /// <typeparam name="TBinder">The binder type.</typeparam>
         private class ServiceConnection<TBinder> : Java.Lang.Object, IServiceConnection
-        where TBinder : class, IBinder
+            where TBinder : class, IBinder
         {
             private readonly Context _context;
             private readonly IObserver<TBinder?> _observer;

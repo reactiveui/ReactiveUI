@@ -99,7 +99,7 @@ namespace ReactiveUI
         {
             if (Equals(item.Sender, null))
             {
-                throw new ArgumentNullException(nameof(item.Sender));
+                throw new ArgumentNullException(nameof(item), "Sender of the item is null");
             }
 
             if (!Equals(item.Value, default(TValue)))
