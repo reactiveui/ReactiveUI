@@ -6,8 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
@@ -34,7 +32,8 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc />
-        public object PerformSet(object toTarget, object newValue, object[] arguments)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Valid syntax.")]
+        public object PerformSet(object? toTarget, object? newValue, object[]? arguments)
         {
             if (toTarget == null)
             {
@@ -43,10 +42,15 @@ namespace ReactiveUI.Winforms
 
             if (!(toTarget is TableLayoutControlCollection targetCollection))
             {
-                throw new ArgumentException($"{nameof(toTarget)} must be of type {nameof(TableLayoutControlCollection)}");
+                throw new ArgumentException($"{nameof(toTarget)} must be of type {nameof(TableLayoutControlCollection)}", nameof(toTarget));
             }
 
-            IEnumerable<Control> newValueEnumerable = (IEnumerable<Control>)newValue;
+            IEnumerable<Control>? newValueEnumerable = newValue as IEnumerable<Control>;
+
+            if (newValueEnumerable == null)
+            {
+                throw new ArgumentException($"newValue must be {nameof(newValue)}", nameof(newValue));
+            }
 
             targetCollection.Container.SuspendLayout();
 

@@ -7,6 +7,6 @@ namespace ReactiveUI.Tests
 {
     public class NonObservableTestFixture
     {
-        public TestFixture Child { get; set; }
+        public TestFixture? Child { get; set; }
     }
 }

@@ -243,7 +243,7 @@ namespace ReactiveUI
             }
         }
 
-        private void OnTransitionCompleted(object sender, EventArgs e)
+        private void OnTransitionCompleted(object? sender, EventArgs e)
         {
             AbortTransition();
 

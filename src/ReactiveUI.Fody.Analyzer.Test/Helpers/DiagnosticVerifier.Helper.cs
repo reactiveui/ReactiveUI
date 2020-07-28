@@ -59,6 +59,12 @@ namespace TestHelper
             {
                 var compilationWithAnalyzers = project.GetCompilationAsync().Result?.WithAnalyzers(ImmutableArray.Create(analyzer));
                 var diags = compilationWithAnalyzers?.GetAnalyzerDiagnosticsAsync().Result;
+
+                if (diags == null)
+                {
+                    continue;
+                }
+
                 foreach (var diag in diags)
                 {
                     if (diag.Location == Location.None || diag.Location.IsInMetadata)

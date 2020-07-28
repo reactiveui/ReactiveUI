@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests
 {
     public class FakeCollectionViewModel : ReactiveObject
     {
-        private readonly ObservableAsPropertyHelper<string> _numberAsString;
+        private readonly ObservableAsPropertyHelper<string?> _numberAsString;
 
         public FakeCollectionViewModel(FakeCollectionModel model)
         {
@@ -24,6 +24,6 @@ namespace ReactiveUI.Tests
 
         public FakeCollectionModel Model { get; protected set; }
 
-        public string NumberAsString => _numberAsString.Value;
+        public string? NumberAsString => _numberAsString.Value;
     }
 }

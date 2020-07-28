@@ -60,7 +60,7 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, list.Count);
 
-            await fixture.Command1.Execute(1);
+            await fixture.Command1!.Execute(1);
             await fixture.Command3.Execute("foo");
             Assert.Equal(1, list.Count);
 
@@ -90,7 +90,7 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, list.Count);
 
-            await fixture.Command1.Execute(1);
+            await fixture.Command1!.Execute(1);
             Assert.Equal(1, list.Count);
 
             await fixture.Command2.Execute(2);

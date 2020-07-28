@@ -38,10 +38,15 @@ namespace ReactiveUI.Tests
             var canAddPlayer = this.WhenAnyValue(
                                                  x => x.Players.Count,
                                                  x => x.NewPlayerName,
-                                                 (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName));
+                                                 (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName!));
             AddPlayer = ReactiveCommand.Create(
                                                () =>
                                                {
+                                                   if (NewPlayerName == null)
+                                                   {
+                                                       throw new InvalidOperationException("NewPlayerName is null");
+                                                   }
+
                                                    Players.Add(NewPlayerName.Trim());
                                                    NewPlayerName = string.Empty;
                                                },

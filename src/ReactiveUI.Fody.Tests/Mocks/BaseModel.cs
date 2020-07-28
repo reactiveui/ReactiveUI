@@ -15,6 +15,6 @@ namespace ReactiveUI.Fody.Tests
     {
         public virtual int IntProperty { get; set; } = 5;
 
-        public virtual string StringProperty { get; set; } = "Initial Value";
+        public virtual string? StringProperty { get; set; } = "Initial Value";
     }
 }

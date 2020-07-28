@@ -16,8 +16,8 @@ namespace ReactiveUI.Tests.Winforms
 
         public WinformCommandBindViewModel()
         {
-            Command1 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
-            Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+            _command1 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+            _command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
         }
 
         public ReactiveCommand<Unit, Unit> Command1

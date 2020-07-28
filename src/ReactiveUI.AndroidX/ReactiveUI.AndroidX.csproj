@@ -4,6 +4,7 @@
     <TargetFrameworks>MonoAndroid90</TargetFrameworks>
     <PackageDescription>Provides ReactiveUI extensions for the AndroidX Library</PackageDescription>
     <PackageId>ReactiveUI.AndroidX</PackageId>
+    <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;forms;monodroid;monotouch;xamarin.android;net;</PackageTags>
   </PropertyGroup>

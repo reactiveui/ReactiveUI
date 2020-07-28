@@ -33,7 +33,7 @@ namespace ReactiveUI
         /// <param name="targetType">The target we want to cast to.</param>
         /// <returns>The new value after it has been casted.</returns>
         /// <exception cref="InvalidCastException">If we cannot cast the object.</exception>
-        public static object? DoReferenceCast(object from, Type targetType)
+        public static object? DoReferenceCast(object? from, Type targetType)
         {
             var backingNullableType = Nullable.GetUnderlyingType(targetType);
 

@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests.Xaml
 {
     public class CustomClickButton : Button
     {
-        public event EventHandler<EventArgs> CustomClick;
+        public event EventHandler<EventArgs>? CustomClick;
 
         public void RaiseCustomClick() =>
             CustomClick?.Invoke(this, EventArgs.Empty);

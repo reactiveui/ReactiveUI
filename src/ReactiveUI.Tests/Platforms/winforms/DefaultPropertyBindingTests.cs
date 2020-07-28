@@ -75,7 +75,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"));
 
-            Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string>> expression = x => x.Value;
+            Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = x => x.Value;
             var propertyName = expression.Body.GetMemberInfo().Name;
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);

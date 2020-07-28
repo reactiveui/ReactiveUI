@@ -140,7 +140,7 @@ namespace ReactiveUI.Tests
             {
             }
 
-            public TestLoggerRegistration(TestLogger testLogger)
+            public TestLoggerRegistration(TestLogger? testLogger)
             {
                 _originalLoggers = Locator.Current.GetServices<ILogger>().ToList();
 

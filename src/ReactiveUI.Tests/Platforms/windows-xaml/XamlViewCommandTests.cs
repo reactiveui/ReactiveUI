@@ -36,7 +36,7 @@ namespace ReactiveUI.Tests.Xaml
         public void EventBinderBindsToExplicitInheritedEvent()
         {
             var fixture = new FakeView();
-            fixture.BindCommand(fixture.ViewModel, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
+            fixture.BindCommand(fixture!.ViewModel!, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
         }
 
         [Fact]

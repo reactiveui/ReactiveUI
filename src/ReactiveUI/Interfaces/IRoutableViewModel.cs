@@ -13,7 +13,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a string token representing the current ViewModel, such as 'login' or 'user'.
         /// </summary>
-        string UrlPathSegment { get; }
+        string? UrlPathSegment { get; }
 
         /// <summary>
         /// Gets the IScreen that this ViewModel is currently being shown in. This

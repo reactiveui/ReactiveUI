@@ -120,8 +120,7 @@ namespace ReactiveUI
     public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
     {
         public System.Func<string, string> ViewModelToViewFunc { get; set; }
-        public ReactiveUI.IViewFor? ResolveView<T>(T viewModel, string? contract = null)
-            where T :  class { }
+        public ReactiveUI.IViewFor? ResolveView<T>(T viewModel, string? contract = null) { }
     }
     public static class DependencyResolverMixins
     {
@@ -140,7 +139,7 @@ namespace ReactiveUI
         public EqualityTypeConverter() { }
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object? result) { }
-        public static object? DoReferenceCast(object from, System.Type targetType) { }
+        public static object? DoReferenceCast(object? from, System.Type targetType) { }
     }
     public static class ExpressionMixins
     {
@@ -217,14 +216,14 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
+        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
@@ -294,7 +293,7 @@ namespace ReactiveUI
     public interface IRoutableViewModel : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         ReactiveUI.IScreen HostScreen { get; }
-        string UrlPathSegment { get; }
+        string? UrlPathSegment { get; }
     }
     public interface IScreen
     {
@@ -303,7 +302,7 @@ namespace ReactiveUI
     public interface ISetMethodBindingConverter : Splat.IEnableLogger
     {
         int GetAffinityForObjects(System.Type fromType, System.Type toType);
-        object PerformSet(object toTarget, object? newValue, object[]? arguments);
+        object PerformSet(object? toTarget, object? newValue, object[]? arguments);
     }
     public interface ISuspensionDriver
     {
@@ -332,8 +331,7 @@ namespace ReactiveUI
     }
     public interface IViewLocator : Splat.IEnableLogger
     {
-        ReactiveUI.IViewFor? ResolveView<T>(T viewModel, string? contract = null)
-            where T :  class;
+        ReactiveUI.IViewFor? ResolveView<T>(T viewModel, string? contract = null);
     }
     public sealed class InteractionContext<TInput, TOutput>
     {
@@ -435,7 +433,7 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        public ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
@@ -458,25 +456,25 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>>? Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>>? Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>>? Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
+        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>>? Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
+        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         public static System.IDisposable BindTo<TValue, TTarget, TTValue>(this System.IObservable<TValue> @this, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue>> property, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
@@ -576,15 +574,15 @@ namespace ReactiveUI
     {
         public static string ExpressionToPropertyNames(System.Linq.Expressions.Expression expression) { }
         public static System.Type GetEventArgsTypeForEvent(System.Type type, string eventName) { }
-        public static System.Func<object, object[]?, object>? GetValueFetcherForProperty(System.Reflection.MemberInfo member) { }
-        public static System.Func<object, object[]?, object> GetValueFetcherOrThrow(System.Reflection.MemberInfo member) { }
+        public static System.Func<object, object[]?, object?>? GetValueFetcherForProperty(System.Reflection.MemberInfo member) { }
+        public static System.Func<object, object[]?, object?> GetValueFetcherOrThrow(System.Reflection.MemberInfo member) { }
         public static System.Action<object, object?, object[]?> GetValueSetterForProperty(System.Reflection.MemberInfo member) { }
         public static System.Action<object, object?, object[]?>? GetValueSetterOrThrow(System.Reflection.MemberInfo member) { }
         public static bool IsStatic(this System.Reflection.PropertyInfo item) { }
         public static System.Type? ReallyFindType(string? type, bool throwOnFailure) { }
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression expression) { }
         public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) { }
-        public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<, >[] changeValues, object current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
+        public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<, >[] changeValues, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TrySetValueToPropertyChain<TValue>(object? target, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain, TValue value, bool shouldThrow = true) { }
     }
@@ -605,15 +603,15 @@ namespace ReactiveUI
         public RoutingState() { }
         public RoutingState(System.Reactive.Concurrency.IScheduler scheduler) { }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public System.IObservable<ReactiveUI.IRoutableViewModel>? CurrentViewModel { get; set; }
+        public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel>? Navigate { get; set; }
+        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> Navigate { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel>? NavigateAndReset { get; set; }
+        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> NavigateAndReset { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit>? NavigateBack { get; set; }
+        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> NavigateBack { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>>? NavigationChanged { get; set; }
+        public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
@@ -629,11 +627,11 @@ namespace ReactiveUI
     {
         public const int BigCacheLimit = 256;
         public const int SmallCacheLimit = 64;
-        public static System.IObserver<System.Exception>? DefaultExceptionHandler { get; set; }
+        public static System.IObserver<System.Exception> DefaultExceptionHandler { get; set; }
         public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
         public static bool SuppressViewCommandBindingMessage { get; set; }
         public static ReactiveUI.ISuspensionHost SuspensionHost { get; set; }
-        public static System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; set; }
+        public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
     }
     public class ScheduledSubject<T> : System.IDisposable, System.IObservable<T>, System.IObserver<T>, System.Reactive.Subjects.ISubject<T>, System.Reactive.Subjects.ISubject<T, T>
     {

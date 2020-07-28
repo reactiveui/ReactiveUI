@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             var commandExecuted = false;
-            object ea = null;
+            object? ea = null;
             cmd.Subscribe(o =>
             {
                 ea = o;
@@ -50,7 +50,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             var commandExecuted = false;
-            object ea = null;
+            object? ea = null;
             cmd.Subscribe(o =>
             {
                 ea = o;
@@ -76,7 +76,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             var commandExecuted = false;
-            object ea = null;
+            object? ea = null;
             cmd.Subscribe(o =>
             {
                 ea = o;

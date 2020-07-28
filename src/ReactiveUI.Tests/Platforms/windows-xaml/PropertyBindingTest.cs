@@ -38,7 +38,7 @@ namespace ReactiveUI.Tests.Xaml
             view.SomeTextBox.Text = "567.89";
             Assert.Equal(567.89m, vm.JustADecimal);
 
-            disp.Dispose();
+            disp?.Dispose();
             vm.JustADecimal = 0;
 
             Assert.Equal(0, vm.JustADecimal);
@@ -139,7 +139,7 @@ namespace ReactiveUI.Tests.Xaml
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = vm };
 
-            view.OneWayBind(view.ViewModel, x => x.Model.AnotherThing, x => x.SomeTextBox.Text);
+            view.OneWayBind(view.ViewModel, x => x!.Model!.AnotherThing, x => x.SomeTextBox.Text);
             Assert.Equal("Baz", view.SomeTextBox.Text);
         }
 
@@ -240,11 +240,11 @@ namespace ReactiveUI.Tests.Xaml
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = null };
 
-            view.OneWayBind(vm, x => x.Model.AnotherThing, x => x.FakeControl.NullHatingString);
+            view.OneWayBind(vm, x => x!.Model!.AnotherThing, x => x.FakeControl.NullHatingString);
             Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
 
             view.ViewModel = vm;
-            Assert.Equal(vm.Model.AnotherThing, view.FakeControl.NullHatingString);
+            Assert.Equal(vm!.Model!.AnotherThing, view.FakeControl.NullHatingString);
         }
 
         [Fact]
@@ -268,8 +268,8 @@ namespace ReactiveUI.Tests.Xaml
             var view = new PropertyBindView { ViewModel = null };
 
             Assert.Throws<ArgumentNullException>(() =>
-                 view.WhenAnyValue(x => x.FakeControl.NullHatingString)
-                     .BindTo(view.ViewModel, x => x!.Property1));
+                 view.WhenAnyValue(x => x.FakeControl!.NullHatingString!)
+                     .BindTo(view!.ViewModel!, x => x!.Property1));
         }
 
         [Fact]
@@ -351,7 +351,7 @@ namespace ReactiveUI.Tests.Xaml
             var view = new PropertyBindView { ViewModel = vm };
             var fixture = new PropertyBinderImplementation();
 
-            Func<string, string> nullFunc = null!;
+            Func<string?, string?> nullFunc = null!;
 
             Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, nullFunc, s => s));
             Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, s => s, nullFunc));

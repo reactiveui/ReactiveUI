@@ -23,7 +23,7 @@ namespace ReactiveUI.Winforms
     {
         public PanelSetMethodBindingConverter() { }
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
-        public object PerformSet(object toTarget, object newValue, object[] arguments) { }
+        public object PerformSet(object? toTarget, object? newValue, object[]? arguments) { }
     }
     public class PlatformOperations
     {
@@ -68,7 +68,7 @@ namespace ReactiveUI.Winforms
     {
         public TableContentSetMethodBindingConverter() { }
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
-        public object PerformSet(object toTarget, object newValue, object[] arguments) { }
+        public object PerformSet(object? toTarget, object? newValue, object[]? arguments) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
     public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging

@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests
 {
     public class TestScreen : ReactiveObject, IScreen
     {
-        private RoutingState _router;
+        private RoutingState _router = new RoutingState();
 
         public RoutingState Router
         {

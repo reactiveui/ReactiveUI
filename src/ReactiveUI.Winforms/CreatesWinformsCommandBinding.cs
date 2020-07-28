@@ -120,11 +120,7 @@ namespace ReactiveUI.Winforms
                     ret.Add(commandParameter.Subscribe(x => latestParam = x));
 
                     ret.Add(Observable.FromEvent<EventHandler, bool>(
-                            eventHandler =>
-                            {
-                                void Handler(object sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
-                                return Handler;
-                            },
+                            eventHandler => (sender, e) => eventHandler(command.CanExecute(latestParam)),
                             x => command.CanExecuteChanged += x,
                             x => command.CanExecuteChanged -= x)
                         .StartWith(command.CanExecute(latestParam))

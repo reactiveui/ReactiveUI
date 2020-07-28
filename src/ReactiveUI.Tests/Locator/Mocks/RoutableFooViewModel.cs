@@ -7,8 +7,8 @@ namespace ReactiveUI.Tests
 {
     public class RoutableFooViewModel : ReactiveObject, IRoutableFooViewModel
     {
-        public IScreen HostScreen { get; set; }
+        public IScreen HostScreen { get; set; } = new TestScreen();
 
-        public string UrlPathSegment { get; set; }
+        public string? UrlPathSegment { get; set; }
     }
 }

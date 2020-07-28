@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests
     public class OaphTestFixture : TestFixture
     {
         [IgnoreDataMember]
-        private readonly ObservableAsPropertyHelper<string> _firstThreeLettersOfOneWord;
+        private readonly ObservableAsPropertyHelper<string?> _firstThreeLettersOfOneWord;
 
         public OaphTestFixture()
         {
@@ -19,6 +19,6 @@ namespace ReactiveUI.Tests
         }
 
         [IgnoreDataMember]
-        public string FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;
+        public string? FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;
     }
 }

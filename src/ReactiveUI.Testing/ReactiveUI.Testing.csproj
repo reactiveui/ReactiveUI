@@ -6,6 +6,7 @@
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <PackageDescription>Provides extensions for testing ReactiveUI based applications</PackageDescription>
     <PackageId>ReactiveUI.Testing</PackageId>
+    <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;</PackageTags>
   </PropertyGroup>

@@ -60,18 +60,18 @@ namespace ReactiveUI.Tests
         {
             var data = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>
             {
-                { x => x.Child.IsOnlyOneWord.Length, new[] { "Child", "IsOnlyOneWord", "Length" } },
+                { x => x!.Child!.IsOnlyOneWord!.Length, new[] { "Child", "IsOnlyOneWord", "Length" } },
                 { x => x.SomeOtherParam, new[] { "SomeOtherParam" } },
-                { x => x.Child.IsNotNullString, new[] { "Child", "IsNotNullString" } },
-                { x => x.Child.Changed, new[] { "Child", "Changed" } },
+                { x => x.Child!.IsNotNullString!, new[] { "Child", "IsNotNullString" } },
+                { x => x.Child!.Changed, new[] { "Child", "Changed" } },
             };
 
             var dataTypes = new Dictionary<Expression<Func<HostTestFixture, object>>, Type[]>
             {
-                { x => x.Child.IsOnlyOneWord.Length, new[] { typeof(TestFixture), typeof(string), typeof(int) } },
+                { x => x.Child!.IsOnlyOneWord!.Length, new[] { typeof(TestFixture), typeof(string), typeof(int) } },
                 { x => x.SomeOtherParam, new[] { typeof(int) } },
-                { x => x.Child.IsNotNullString, new[] { typeof(TestFixture), typeof(string) } },
-                { x => x.Child.Changed, new[] { typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>) } },
+                { x => x.Child!.IsNotNullString!, new[] { typeof(TestFixture), typeof(string) } },
+                { x => x.Child!.Changed, new[] { typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>) } },
             };
 
             var results = data.Keys.Select(
@@ -107,7 +107,7 @@ namespace ReactiveUI.Tests
                 {
                     Child = new TestFixture()
                 };
-                fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord)
+                fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord)
                     .ToObservableChangeSet(ImmediateScheduler.Instance)
                     .Bind(out var changes)
                     .Subscribe();
@@ -262,7 +262,7 @@ namespace ReactiveUI.Tests
                 {
                     Child = new TestFixture()
                 };
-                fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord)
+                fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord)
                     .ToObservableChangeSet(ImmediateScheduler.Instance)
                     .Bind(out var changes)
                     .Subscribe();
@@ -309,7 +309,7 @@ namespace ReactiveUI.Tests
                 {
                     Child = new TestFixture()
                 };
-                fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord)
+                fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord)
                     .ToObservableChangeSet(ImmediateScheduler.Instance)
                     .Bind(out var changes)
                     .Subscribe();
@@ -376,7 +376,7 @@ namespace ReactiveUI.Tests
                 {
                     Child = new TestFixture()
                 };
-                fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord)
+                fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord)
                     .ToObservableChangeSet(ImmediateScheduler.Instance)
                     .Bind(out var changes)
                     .Subscribe();
@@ -487,9 +487,9 @@ namespace ReactiveUI.Tests
                 PocoProperty = "Bamf"
             };
 
-            var output = new List<IObservedChange<TestFixture, string>>();
+            var output = new List<IObservedChange<TestFixture, string?>>();
             fixture.WhenAny(x => x.PocoProperty, x => x).Subscribe(output.Add);
-            var output2 = new List<string>();
+            var output2 = new List<string?>();
             fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output2.Add);
             var output3 = new List<IObservedChange<TestFixture, int?>>();
             fixture.WhenAny(x => x.NullableInt, x => x).Subscribe(output3.Add);
@@ -595,7 +595,7 @@ namespace ReactiveUI.Tests
                                          var output2 = new List<IObservedChange<HostTestFixture, string>>();
                                          fixture.WhenAny(
                                                          x => x.SomeOtherParam,
-                                                         x => x.Child.IsNotNullString,
+                                                         x => x.Child!.IsNotNullString,
                                                          (sop, nns) => new
                                                          {
                                                              sop,
@@ -604,7 +604,7 @@ namespace ReactiveUI.Tests
                                                                       x =>
                                                                       {
                                                                           output1.Add(x.sop);
-                                                                          output2.Add(x.nns);
+                                                                          output2.Add(x.nns!);
                                                                       });
 
                                          sched.Start();
@@ -645,10 +645,10 @@ namespace ReactiveUI.Tests
                 PocoProperty = "Bamf"
             };
 
-            var output1 = new List<string>();
+            var output1 = new List<string?>();
             var output2 = new List<int>();
             fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output1.Add);
-            fixture.WhenAnyValue(x => x.IsOnlyOneWord, x => x.Length).Subscribe(output2.Add);
+            fixture.WhenAnyValue(x => x.IsOnlyOneWord, x => x!.Length).Subscribe(output2.Add);
 
             Assert.Equal(1, output1.Count);
             Assert.Equal("Bamf", output1[0]);
@@ -673,7 +673,7 @@ namespace ReactiveUI.Tests
                                          var output2 = new List<string>();
                                          fixture.WhenAnyValue(
                                                               x => x.SomeOtherParam,
-                                                              x => x.Child.IsNotNullString,
+                                                              x => x.Child!.IsNotNullString,
                                                               (sop, nns) => new
                                                               {
                                                                   sop,
@@ -682,7 +682,7 @@ namespace ReactiveUI.Tests
                                                                            x =>
                                                                            {
                                                                                output1.Add(x.sop);
-                                                                               output2.Add(x.nns);
+                                                                               output2.Add(x.nns!);
                                                                            });
 
                                          sched.Start();

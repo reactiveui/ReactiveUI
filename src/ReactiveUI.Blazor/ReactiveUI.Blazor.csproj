@@ -3,6 +3,8 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Blazor</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;eventsnet;netstandard;blazor;web;</PackageTags>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

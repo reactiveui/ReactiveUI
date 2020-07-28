@@ -22,8 +22,8 @@ namespace ReactiveUI.Tests.Wpf
 
         public CommandBindingViewModel()
         {
-            Command1 = ReactiveCommand.Create<int, Unit>(_ => Unit.Default, outputScheduler: ImmediateScheduler.Instance);
-            Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+            _Command1 = ReactiveCommand.Create<int, Unit>(_ => Unit.Default, outputScheduler: ImmediateScheduler.Instance);
+            _Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
         }
 
         public ReactiveCommand<int, Unit> Command1
@@ -38,7 +38,7 @@ namespace ReactiveUI.Tests.Wpf
             set => this.RaiseAndSetIfChanged(ref _Command2, value);
         }
 
-        public FakeNestedViewModel NestedViewModel { get; set; }
+        public FakeNestedViewModel? NestedViewModel { get; set; }
 
         public int Value
         {

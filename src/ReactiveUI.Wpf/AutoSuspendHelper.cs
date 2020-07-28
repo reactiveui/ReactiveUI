@@ -45,11 +45,7 @@ namespace ReactiveUI
 
             RxApp.SuspensionHost.IsUnpausing =
                 Observable.FromEvent<EventHandler, Unit>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, EventArgs e) => eventHandler(Unit.Default);
-                        return Handler;
-                    },
+                    eventHandler => (sender, e) => eventHandler(Unit.Default),
                     x => app.Activated += x,
                     x => app.Activated -= x);
 
@@ -58,11 +54,7 @@ namespace ReactiveUI
             // NB: No way to tell OS that we need time to suspend, we have to
             // do it in-process
             var deactivated = Observable.FromEvent<EventHandler, Unit>(
-                    eventHandler =>
-                    {
-                        void Handler(object sender, EventArgs e) => eventHandler(Unit.Default);
-                        return Handler;
-                    },
+                    eventHandler => (sender, e) => eventHandler(Unit.Default),
                     x => app.Deactivated += x,
                     x => app.Deactivated -= x);
 

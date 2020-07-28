@@ -10,11 +10,14 @@ namespace ReactiveUI.Testing
             where TBuilder : ReactiveUI.Testing.IBuilder { }
         public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref TField field, TField value)
             where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair) { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair)
+            where TKey :  notnull { }
         public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
-            where TBuilder : ReactiveUI.Testing.IBuilder { }
+            where TBuilder : ReactiveUI.Testing.IBuilder
+            where TKey :  notnull { }
         public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, TKey key, TField value)
-            where TBuilder : ReactiveUI.Testing.IBuilder { }
+            where TBuilder : ReactiveUI.Testing.IBuilder
+            where TKey :  notnull { }
     }
     public static class MessageBusExtensions
     {
