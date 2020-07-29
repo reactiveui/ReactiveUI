@@ -345,6 +345,16 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
+        public void OneWayBindConverter()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var fixture = new PropertyBinderImplementation();
+            fixture.OneWayBind(vm, view, x => x.JustABoolean, x => x.SomeTextBox.IsEnabled, s => s);
+            Assert.False(view.SomeTextBox.IsEnabled);
+        }
+
+        [Fact]
         public void BindExpectsConverterFuncsToNotBeNull()
         {
             var vm = new PropertyBindViewModel();
