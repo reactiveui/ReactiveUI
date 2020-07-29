@@ -178,7 +178,9 @@ namespace System.Reactive.Concurrency
                     finally
                     {
                         t.Stop();
+#pragma warning disable 8600
                         action = null;
+#pragma warning restore 8600
                     }
                 }
             };

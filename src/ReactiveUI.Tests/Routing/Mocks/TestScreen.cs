@@ -18,7 +18,9 @@ namespace ReactiveUI.Tests
         public RoutingState? Router
         {
 #pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
+#pragma warning disable 8613
             get => _router;
+#pragma warning restore 8613
 #pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
             set => this.RaiseAndSetIfChanged(ref _router, value);
         }
