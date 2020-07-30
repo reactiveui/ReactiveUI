@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -157,11 +157,6 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(viewProperty));
             }
 
-            if (viewModel == null)
-            {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
             var viewType = viewExpression.Type;
@@ -212,11 +207,6 @@ namespace ReactiveUI
             if (viewProperty == null)
             {
                 throw new ArgumentNullException(nameof(viewProperty));
-            }
-
-            if (viewModel == null)
-            {
-                throw new ArgumentNullException(nameof(viewModel));
             }
 
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
@@ -363,7 +353,7 @@ namespace ReactiveUI
             return (setObservable.Subscribe(_ => { }, ex => this.Log().Error(ex, $"{viewExpression} Binding received an Exception!")), setObservable);
         }
 
-        private bool EvalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
+        private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
             where TViewModel : class
         {
             var hooks = Locator.Current.GetServices<IPropertyBindingHook>();
@@ -428,11 +418,6 @@ namespace ReactiveUI
             if (viewProperty == null)
             {
                 throw new ArgumentNullException(nameof(viewProperty));
-            }
-
-            if (viewModel == null)
-            {
-                throw new ArgumentNullException(nameof(viewModel));
             }
 
             var signalInitialUpdate = new Subject<bool>();

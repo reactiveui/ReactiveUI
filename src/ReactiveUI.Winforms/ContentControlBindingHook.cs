@@ -17,7 +17,7 @@ namespace ReactiveUI.Winforms
     public class ContentControlBindingHook : IPropertyBindingHook
     {
         /// <inheritdoc/>
-        public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
+        public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
             if (getCurrentViewProperties == null)
             {
