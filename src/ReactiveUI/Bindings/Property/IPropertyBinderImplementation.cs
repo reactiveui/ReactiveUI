@@ -65,7 +65,7 @@ namespace ReactiveUI
         /// disconnects the binding.
         /// </returns>
         IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -122,7 +122,7 @@ namespace ReactiveUI
         /// disconnects the binding.
         /// </returns>
         IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -172,7 +172,7 @@ namespace ReactiveUI
         /// There is no registered converter from <typeparamref name="TVMProp"/> to <typeparamref name="TVProp"/>.
         /// </exception>
         IReactiveBinding<TView, TViewModel, TVProp>? OneWayBind<TViewModel, TView, TVMProp, TVProp>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -213,7 +213,7 @@ namespace ReactiveUI
         /// disconnects the binding.
         /// </returns>
         IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
-            TViewModel viewModel,
+            TViewModel? viewModel,
             TView view,
             Expression<Func<TViewModel, TProp>> vmProperty,
             Expression<Func<TView, TOut>> viewProperty,

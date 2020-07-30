@@ -48,7 +48,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -91,7 +91,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -138,7 +138,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IReactiveBinding<TView, TViewModel, TVProp>? OneWayBind<TViewModel, TView, TVMProp, TVProp>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -155,6 +155,11 @@ namespace ReactiveUI
             if (viewProperty == null)
             {
                 throw new ArgumentNullException(nameof(viewProperty));
+            }
+
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
             }
 
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
@@ -191,7 +196,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
-            TViewModel viewModel,
+            TViewModel? viewModel,
             TView view,
             Expression<Func<TViewModel, TProp>> vmProperty,
             Expression<Func<TView, TOut>> viewProperty,
@@ -207,6 +212,11 @@ namespace ReactiveUI
             if (viewProperty == null)
             {
                 throw new ArgumentNullException(nameof(viewProperty));
+            }
+
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
             }
 
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
@@ -353,7 +363,7 @@ namespace ReactiveUI
             return (setObservable.Subscribe(_ => { }, ex => this.Log().Error(ex, $"{viewExpression} Binding received an Exception!")), setObservable);
         }
 
-        private bool EvalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
+        private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
             where TViewModel : class
         {
             var hooks = Locator.Current.GetServices<IPropertyBindingHook>();
@@ -376,7 +386,7 @@ namespace ReactiveUI
             {
                 vmFetcher = () => new IObservedChange<object, object?>[]
                 {
-                    new ObservedChange<object, object>(null!, null!, viewModel)
+                    new ObservedChange<object, object?>(null!, null!, viewModel)
                 };
             }
 
@@ -387,7 +397,7 @@ namespace ReactiveUI
             });
 
             var shouldBind = hooks.Aggregate(true, (acc, x) =>
-                acc && x.ExecuteHook(viewModel, view, vmFetcher!, vFetcher!, direction));
+                acc && x.ExecuteHook(view, vmFetcher!, vFetcher!, direction));
 
             if (!shouldBind)
             {
@@ -400,7 +410,7 @@ namespace ReactiveUI
         }
 
         private IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-            TViewModel viewModel,
+            TViewModel? viewModel,
             TView view,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
@@ -418,6 +428,11 @@ namespace ReactiveUI
             if (viewProperty == null)
             {
                 throw new ArgumentNullException(nameof(viewProperty));
+            }
+
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel));
             }
 
             var signalInitialUpdate = new Subject<bool>();
