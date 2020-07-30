@@ -21,6 +21,7 @@ namespace ReactiveUI.Tests
         private decimal _JustADecimal;
         private double? _NullableDouble;
         private int _JustAInt32;
+        private bool _JustABoolean;
 
         public PropertyBindViewModel(PropertyBindModel? model = null)
         {
@@ -44,6 +45,12 @@ namespace ReactiveUI.Tests
         {
             get => _JustADouble;
             set => this.RaiseAndSetIfChanged(ref _JustADouble, value);
+        }
+
+        public bool JustABoolean
+        {
+            get => _JustABoolean;
+            set => this.RaiseAndSetIfChanged(ref _JustABoolean, value);
         }
 
         public decimal JustADecimal

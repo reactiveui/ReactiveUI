@@ -217,7 +217,7 @@ namespace ReactiveUI
                 return null;
             }
 
-            IObservable<object?> source = (IObservable<object?>)Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (TProp)x).Select(selector);
+            IObservable<object?> source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (object?)selector((TProp)x));
 
             var (disposable, obs) = BindToDirect<TView, TOut, TOut>(source, view, viewExpression);
 
