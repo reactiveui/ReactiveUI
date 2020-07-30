@@ -73,7 +73,9 @@ namespace ReactiveUI
             {
                 var result = vmToViewConverter.TryConvert(vmValue, typeof(TVProp), conversionHint, out object? tmp);
 
+#pragma warning disable 8605
                 vValue = result ? (TVProp)tmp : default;
+#pragma warning restore 8605
                 return result;
             }
 
@@ -81,7 +83,9 @@ namespace ReactiveUI
             {
                 var result = viewToVMConverter.TryConvert(vValue, typeof(TVMProp), conversionHint, out object? tmp);
 
+#pragma warning disable 8605
                 vmValue = result ? (TVMProp)tmp : default;
+#pragma warning restore 8605
                 return result;
             }
 #pragma warning restore CS8601 // Possible null reference assignment.
