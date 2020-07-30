@@ -119,9 +119,9 @@ namespace ReactiveUI.Tests
         public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
         {
             var fixture = new TestWhenAnyObsViewModel();
-#pragma warning disable 8603
+#pragma warning disable CS8603 // Possible null reference return.
             fixture.WhenAnyObservable(x => x.Changes).Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
-#pragma warning restore 8603
+#pragma warning restore CS8603  // Possible null reference return.
 
             Assert.Equal(0, output.Count);
 

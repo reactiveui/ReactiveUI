@@ -178,9 +178,9 @@ namespace System.Reactive.Concurrency
                     finally
                     {
                         t.Stop();
-#pragma warning disable 8600
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                         action = null;
-#pragma warning restore 8600
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
                     }
                 }
             };
