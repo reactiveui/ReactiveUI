@@ -19,8 +19,9 @@ namespace ReactiveUI.Tests
         public OaphNameOfTestFixture()
         {
             this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x).ToProperty(this, nameof(FirstThreeLettersOfOneWord), out _firstThreeLettersOfOneWord);
-
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
             _lastThreeLettersOfOneWord = this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(x.Length - 3, 3) : x).ToProperty(this, nameof(LastThreeLettersOfOneWord));
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
         }
 
         [IgnoreDataMember]
