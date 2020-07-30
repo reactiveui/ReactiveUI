@@ -25,7 +25,7 @@ namespace ReactiveUI.Tests
             fixture.Command1 = null;
 
             // these are the overloads of WhenAnyObservable that perform a Merge
-#pragma warning disable 8603
+#pragma warning disable CS8603 // Possible null reference return.
             fixture.WhenAnyObservable(x => x.Command1).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
@@ -49,7 +49,7 @@ namespace ReactiveUI.Tests
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight) => Unit.Default).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight, nine) => Unit.Default).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight, nine, ten) => Unit.Default).Subscribe();
-#pragma warning restore 8603
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         [Fact]
@@ -58,9 +58,9 @@ namespace ReactiveUI.Tests
             var fixture = new TestWhenAnyObsViewModel();
 
             var list = new List<string>();
-#pragma warning disable 8603
+#pragma warning disable CS8603 // Possible null reference return.
             fixture.WhenAnyObservable(x => x.Command3, x => x.Command1, (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-#pragma warning restore 8603
+#pragma warning restore CS8603 // Possible null reference return.
 
             Assert.Equal(0, list.Count);
 
@@ -90,9 +90,9 @@ namespace ReactiveUI.Tests
             var fixture = new TestWhenAnyObsViewModel();
 
             var list = new List<int>();
-#pragma warning disable 8603
+#pragma warning disable CS8603 // Possible null reference return.
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-#pragma warning restore 8603
+#pragma warning restore CS8603 // Possible null reference return.
 
             Assert.Equal(0, list.Count);
 
