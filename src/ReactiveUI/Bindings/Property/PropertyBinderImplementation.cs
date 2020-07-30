@@ -363,7 +363,7 @@ namespace ReactiveUI
             return (setObservable.Subscribe(_ => { }, ex => this.Log().Error(ex, $"{viewExpression} Binding received an Exception!")), setObservable);
         }
 
-        private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
+        private bool EvalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
             where TViewModel : class
         {
             var hooks = Locator.Current.GetServices<IPropertyBindingHook>();
@@ -397,7 +397,7 @@ namespace ReactiveUI
             });
 
             var shouldBind = hooks.Aggregate(true, (acc, x) =>
-                acc && x.ExecuteHook(view, vmFetcher!, vFetcher!, direction));
+                acc && x.ExecuteHook(viewModel, view, vmFetcher!, vFetcher!, direction));
 
             if (!shouldBind)
             {
