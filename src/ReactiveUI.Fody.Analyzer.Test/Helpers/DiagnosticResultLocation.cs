@@ -81,7 +81,7 @@ namespace TestHelper
         /// </summary>
         /// <param name="obj">Other object to compare to.</param>
         /// <returns>Are Equal.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is DiagnosticResultLocation other && Equals(other);
         }
