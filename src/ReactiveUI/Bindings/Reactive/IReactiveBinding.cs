@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the instance of the view model this binding is applied to.
         /// </summary>
-        TViewModel ViewModel { get; }
+        TViewModel? ViewModel { get; }
 
         /// <summary>
         /// Gets an expression representing the propertyon the viewmodel bound to the view.

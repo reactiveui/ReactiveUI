@@ -16,7 +16,7 @@ namespace ReactiveUI
 
         public ReactiveBinding(
             TView view,
-            TViewModel viewModel,
+            TViewModel? viewModel,
             Expression viewExpression,
             Expression viewModelExpression,
             IObservable<TValue> changed,
@@ -34,7 +34,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
-        public TViewModel ViewModel { get; }
+        public TViewModel? ViewModel { get; }
 
         /// <inheritdoc />
         public Expression ViewModelExpression { get; }
