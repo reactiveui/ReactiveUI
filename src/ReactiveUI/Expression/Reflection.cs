@@ -435,7 +435,7 @@ namespace ReactiveUI
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "TViewModel used to help generic calling.")]
-        internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel viewModel, TView view, Expression expression)
+        internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel? viewModel, TView view, Expression expression)
             where TView : class, IViewFor
             where TViewModel : class
         {
