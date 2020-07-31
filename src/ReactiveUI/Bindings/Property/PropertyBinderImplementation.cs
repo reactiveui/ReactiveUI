@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -48,7 +48,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -95,7 +95,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -142,7 +142,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IReactiveBinding<TView, TViewModel, TVProp>? OneWayBind<TViewModel, TView, TVMProp, TVProp>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
@@ -195,7 +195,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
-            TViewModel viewModel,
+            TViewModel? viewModel,
             TView view,
             Expression<Func<TViewModel, TProp>> vmProperty,
             Expression<Func<TView, TOut>> viewProperty,
@@ -357,7 +357,7 @@ namespace ReactiveUI
             return (setObservable.Subscribe(_ => { }, ex => this.Log().Error(ex, $"{viewExpression} Binding received an Exception!")), setObservable);
         }
 
-        private bool EvalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
+        private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
             where TViewModel : class
         {
             var hooks = Locator.Current.GetServices<IPropertyBindingHook>();
@@ -380,7 +380,7 @@ namespace ReactiveUI
             {
                 vmFetcher = () => new IObservedChange<object, object?>[]
                 {
-                    new ObservedChange<object, object>(null!, null!, viewModel)
+                    new ObservedChange<object, object?>(null!, null!, viewModel)
                 };
             }
 
@@ -404,7 +404,7 @@ namespace ReactiveUI
         }
 
         private IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-            TViewModel viewModel,
+            TViewModel? viewModel,
             TView view,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,

@@ -59,7 +59,7 @@ namespace ReactiveUI
         /// </returns>
         public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 object? conversionHint = null,
@@ -126,7 +126,7 @@ namespace ReactiveUI
         /// </returns>
         public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 this TView view,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare>? signalViewUpdate,
@@ -170,7 +170,7 @@ namespace ReactiveUI
         /// </returns>
         public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp>(
             this TView view,
-            TViewModel viewModel,
+            TViewModel? viewModel,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
             Func<TVMProp, TVProp> vmToViewConverter,
@@ -220,7 +220,7 @@ namespace ReactiveUI
         /// </returns>
         public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             this TView view,
-            TViewModel viewModel,
+            TViewModel? viewModel,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
             IObservable<TDontCare>? signalViewUpdate,
@@ -270,7 +270,7 @@ namespace ReactiveUI
         /// </returns>
         public static IReactiveBinding<TView, TViewModel, TVProp>? OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 object? conversionHint = null,
@@ -319,7 +319,7 @@ namespace ReactiveUI
         /// </returns>
         public static IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, TOut> selector)
