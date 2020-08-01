@@ -221,7 +221,7 @@ namespace ReactiveUI
                 return null;
             }
 
-            IObservable<object?> source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (object?)selector((TProp)x));
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>().Select(selector);
 
             var (disposable, obs) = BindToDirect<TView, TOut, TOut>(source, view, viewExpression);
 
@@ -272,7 +272,7 @@ namespace ReactiveUI
                 return Observable.Return(tmp);
             });
 
-            var (disposable, obs) = BindToDirect<TTarget, TTValue, object>(source, target, viewExpression);
+            var (disposable, _) = BindToDirect<TTarget, TTValue, object?>(source, target, viewExpression);
 
             return disposable;
         }
@@ -300,7 +300,7 @@ namespace ReactiveUI
         }
 
         private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
-                IObservable<object?> changeObservable,
+                IObservable<TObs> changeObservable,
                 TTarget target,
                 Expression viewExpression)
             where TTarget : class
