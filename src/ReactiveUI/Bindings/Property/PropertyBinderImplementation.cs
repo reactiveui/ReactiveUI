@@ -319,7 +319,7 @@ namespace ReactiveUI
 
                 if (converter == null)
                 {
-                    defaultSetter?.Invoke(paramTarget, paramValue ?? throw new ArgumentNullException(nameof(paramValue)), paramParams);
+                    defaultSetter?.Invoke(paramTarget, paramValue, paramParams);
                     return defaultGetter(paramTarget, paramParams);
                 }
 
