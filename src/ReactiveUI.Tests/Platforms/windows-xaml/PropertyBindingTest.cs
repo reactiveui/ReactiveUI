@@ -235,7 +235,7 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
-        public void BindToShouldntInitiallySetToNull()
+        public void OneWayBindShouldntInitiallySetToNull()
         {
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = null };
@@ -352,6 +352,77 @@ namespace ReactiveUI.Tests.Xaml
             var fixture = new PropertyBinderImplementation();
             fixture.OneWayBind(vm, view, x => x.JustABoolean, x => x.SomeTextBox.IsEnabled, s => s);
             Assert.False(view.SomeTextBox.IsEnabled);
+        }
+
+        [Fact]
+        public void OneWayBindWithNullStartingValueToNonNullValue()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+
+            view.OneWayBind(vm, x => x.Property1, x => x.SomeTextBox.Text);
+
+            vm.Property1 = "Baz";
+
+            Assert.Equal("Baz", view.SomeTextBox.Text);
+        }
+
+        [Fact]
+        public void OneWayBindWithNonNullStartingValueToNullValue()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+
+            vm.Property1 = "Baz";
+
+            view.OneWayBind(vm, x => x.Property1, x => x.SomeTextBox.Text);
+
+            vm.Property1 = null;
+
+            Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
+        }
+
+        [Fact]
+        public void OneWayBindWithSelectorAndNonNullStartingValueToNullValue()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+
+            view.OneWayBind(vm, x => x.Model, x => x.SomeTextBox.Text, x => x?.AnotherThing);
+
+            vm.Model = null;
+
+            Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
+        }
+
+        [Fact]
+        public void BindToWithNullStartingValueToNonNullValue()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+
+            view.WhenAnyValue(x => x.ViewModel!.Property1)
+                .BindTo(view, x => x.SomeTextBox.Text);
+
+            vm.Property1 = "Baz";
+
+            Assert.Equal("Baz", view.SomeTextBox.Text);
+        }
+
+        [Fact]
+        public void BindToWithNonNullStartingValueToNullValue()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+
+            vm.Property1 = "Baz";
+
+            view.WhenAnyValue(x => x.ViewModel!.Property1)
+                .BindTo(view, x => x.SomeTextBox.Text);
+
+            vm.Property1 = null;
+
+            Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
         }
 
         [Fact]
