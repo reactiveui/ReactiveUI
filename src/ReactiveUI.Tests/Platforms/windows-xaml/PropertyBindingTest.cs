@@ -383,6 +383,19 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
+        public void OneWayBindWithSelectorAndNonNullStartingValueToNullValue()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+
+            view.OneWayBind(vm, x => x.Model, x => x.SomeTextBox.Text, x => x?.AnotherThing);
+
+            vm.Model = null;
+
+            Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
+        }
+
+        [Fact]
         public void BindToWithNullStartingValueToNonNullValue()
         {
             var vm = new PropertyBindViewModel();
