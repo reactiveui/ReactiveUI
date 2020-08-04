@@ -155,7 +155,7 @@ namespace ReactiveUI.Fody
                 }
                 else if (type.CompareTo(ModuleDefinition.TypeSystem.Int64))
                 {
-                    il.Emit(OpCodes.Ldc_I8);
+                    il.Emit(OpCodes.Ldc_I8, 0L);
                 }
                 else if (type.CompareTo(ModuleDefinition.TypeSystem.Double))
                 {
