@@ -17,10 +17,9 @@ namespace ReactiveUI
         /// Determines the view for an associated ViewModel.
         /// </summary>
         /// <typeparam name="T">The view model type.</typeparam>
-        /// <returns>The view, with the ViewModel property assigned to
-        /// viewModel.</returns>
         /// <param name="viewModel">View model.</param>
         /// <param name="contract">Contract.</param>
+        /// <returns>The view associated with the given view model.</returns>
         IViewFor? ResolveView<T>(T viewModel, string? contract = null);
     }
 }
