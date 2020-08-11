@@ -77,7 +77,7 @@
 
   <ItemGroup>
     <PackageReference Include="stylecop.analyzers" Version="1.1.118" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" Version="2.3.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
