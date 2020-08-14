@@ -5,6 +5,7 @@
 
 using System;
 using System.Reactive.Concurrency;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -16,8 +17,11 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = DefaultScheduler.Instance;
+            if (!ModeDetector.InUnitTestRunner())
+            {
+                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+                RxApp.MainThreadScheduler = DefaultScheduler.Instance;
+            }
         }
     }
 }

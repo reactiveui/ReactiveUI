@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests
 {
     public class RxAppTest
     {
-        [Fact(Skip = "Requires initialize to run on seperate thread")]
+        [Fact]
         public void SchedulerShouldBeCurrentThreadInTestRunner()
         {
             Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);

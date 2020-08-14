@@ -27,8 +27,13 @@ namespace ReactiveUI
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
+
+            if (!ModeDetector.InUnitTestRunner())
+            {
+                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+                RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
+            }
+
             registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
         }
     }

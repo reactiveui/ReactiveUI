@@ -44,6 +44,11 @@ namespace ReactiveUI
                     }).currentBinding;
             }, RxApp.SmallCacheLimit);
 
+        static PropertyBinderImplementation()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         private delegate bool OutFunc<in T1, T2>(T1 t1, out T2 t2);
 
         /// <inheritdoc />
