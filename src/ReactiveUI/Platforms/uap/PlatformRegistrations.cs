@@ -28,8 +28,13 @@ namespace ReactiveUI
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = new SingleWindowDispatcherScheduler();
+
+            if (!ModeDetector.InUnitTestRunner())
+            {
+                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+                RxApp.MainThreadScheduler = new SingleWindowDispatcherScheduler();
+            }
+
             registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
         }
     }

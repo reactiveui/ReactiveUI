@@ -29,8 +29,13 @@ namespace ReactiveUI
             registerFunction(() => new UIKitCommandBinders(), typeof(ICreatesCommandBinding));
             registerFunction(() => new DateTimeNSDateConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
+
+            if (!ModeDetector.InUnitTestRunner())
+            {
+                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
+            }
+
             registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
         }
     }

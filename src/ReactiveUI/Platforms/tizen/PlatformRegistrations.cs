@@ -25,8 +25,12 @@ namespace ReactiveUI
 
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = EcoreMainloopScheduler.MainThreadScheduler;
+
+            if (!ModeDetector.InUnitTestRunner())
+            {
+                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+                RxApp.MainThreadScheduler = EcoreMainloopScheduler.MainThreadScheduler;
+            }
         }
     }
 }

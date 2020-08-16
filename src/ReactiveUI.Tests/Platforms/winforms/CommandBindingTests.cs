@@ -14,7 +14,7 @@ namespace ReactiveUI.Tests.Winforms
 {
     public class CommandBindingTests
     {
-        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
+        [Fact]
         public void CommandBinderBindsToButton()
         {
             var fixture = new CreatesWinformsCommandBinding();
@@ -40,7 +40,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
-        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
+        [Fact]
         public void CommandBinderBindsToCustomControl()
         {
             var fixture = new CreatesWinformsCommandBinding();
@@ -66,7 +66,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
-        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
+        [Fact]
         public void CommandBinderBindsToCustomComponent()
         {
             var fixture = new CreatesWinformsCommandBinding();
@@ -92,7 +92,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
-        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
+        [Fact]
         public void CommandBinderAffectsEnabledState()
         {
             var fixture = new CreatesWinformsCommandBinding();
@@ -112,7 +112,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
-        [Fact(Skip = "https://github.com/reactiveui/ReactiveUI/issues/2279")]
+        [Fact]
         public void CommandBinderAffectsEnabledStateForComponents()
         {
             var fixture = new CreatesWinformsCommandBinding();
