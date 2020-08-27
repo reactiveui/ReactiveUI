@@ -13,8 +13,10 @@ using ReactiveUI.Tests.Xaml;
 
 namespace ReactiveUI.Tests.Wpf
 {
-    public class CommandBindingView : IViewFor<CommandBindingViewModel>
+    public class CommandBindingView : ReactiveObject, IViewFor<CommandBindingViewModel>
     {
+        private CommandBindingViewModel? _viewModel;
+
         public CommandBindingView()
         {
             Command1 = new CustomClickButton();
@@ -27,7 +29,11 @@ namespace ReactiveUI.Tests.Wpf
             set => ViewModel = (CommandBindingViewModel?)value;
         }
 
-        public CommandBindingViewModel? ViewModel { get; set; }
+        public CommandBindingViewModel? ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
 
         public CustomClickButton Command1 { get; protected set; }
 
