@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
@@ -176,24 +175,10 @@ namespace ReactiveUI
             return r.DistinctUntilChanged(x => x.Value);
         }
 
-        private static IObservedChange<object?, object?> ObservedChangeFor(Expression expression, IObservedChange<object?, object?> sourceChange)
-        {
-            var propertyName = expression.GetMemberInfo().Name;
-            if (sourceChange.Value == null)
-            {
-                return new ObservedChange<object?, object>(sourceChange.Value, expression);
-            }
-
-            // expression is always a simple expression
-            Reflection.TryGetValueForPropertyChain(out object value, sourceChange.Value, new[] { expression });
-
-            return new ObservedChange<object, object>(sourceChange.Value, expression, value);
-        }
-
         private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
         {
             // Make sure a change at a root node propogates events down
-            var kicker = ObservedChangeFor(expression, sourceChange);
+            IObservedChange<object?, object> kicker = new ObservedChange<object?, object>(sourceChange.Value, expression);
 
             // Handle null values in the chain
             if (sourceChange.Value == null)
@@ -203,8 +188,8 @@ namespace ReactiveUI
 
             // Handle non null values in the chain
             return NotifyForProperty(sourceChange.Value, expression, beforeChange, suppressWarnings)
-                .Select(x => new ObservedChange<object?, object?>(x.Sender, expression, x.GetValue()))
-                .StartWith(kicker);
+                .StartWith(kicker)
+                .Select(x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValue()));
         }
 
         private static IObservable<IObservedChange<object, object>>? NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
