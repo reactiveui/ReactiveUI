@@ -33,7 +33,7 @@ namespace ReactiveUI.Cocoa
 
             // UITextField
             var tf = new UITextField();
-            tv.Text = tf.Text;
+            tf.Text = tf.Text;
 
             // var UIImageView
             var iv = new UIImageView();
