@@ -24,6 +24,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the instance of the view model this binding is applied to.
         /// </summary>
+        [Obsolete("This property has been deprecated. Refer to ViewModelExpression for a representation of the bound view model.")]
         TViewModel? ViewModel { get; }
 
         /// <summary>

@@ -257,6 +257,8 @@ namespace ReactiveUI
         ReactiveUI.BindingDirection Direction { get; }
         TView View { get; }
         System.Linq.Expressions.Expression ViewExpression { get; }
+        [System.Obsolete("This property has been deprecated. Refer to ViewModelExpression for a representat" +
+            "ion of the bound view model.")]
         TViewModel ViewModel { get; }
         System.Linq.Expressions.Expression ViewModelExpression { get; }
     }

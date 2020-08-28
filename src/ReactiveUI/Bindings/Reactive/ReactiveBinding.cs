@@ -24,7 +24,6 @@ namespace ReactiveUI
             IDisposable bindingDisposable)
         {
             View = view;
-            ViewModel = viewModel;
             ViewExpression = viewExpression;
             ViewModelExpression = viewModelExpression;
             Direction = direction;
@@ -34,6 +33,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
+        [Obsolete("This property has been deprecated. Refer to ViewModelExpression for a representation of the bound view model.")]
         public TViewModel? ViewModel { get; }
 
         /// <inheritdoc />
