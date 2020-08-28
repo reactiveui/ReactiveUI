@@ -144,10 +144,10 @@ namespace ReactiveUI
 
 #if UIKIT
         /// <inheritdoc/>
-        public override void WillMoveToSuperview(NSView newsuper)
+        public override void WillMoveToSuperview(NSView? newsuper)
 #else
         /// <inheritdoc/>
-        public override void ViewWillMoveToSuperview(NSView newsuper)
+        public override void ViewWillMoveToSuperview(NSView? newsuper)
 #endif
         {
 #if UIKIT

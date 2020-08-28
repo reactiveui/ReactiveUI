@@ -90,6 +90,7 @@ namespace TestHelper
         /// Gets HashCode.
         /// </summary>
         /// <returns>HashCode.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in NET472")]
         public override int GetHashCode()
         {
             unchecked

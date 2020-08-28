@@ -93,6 +93,11 @@ namespace ReactiveUI.Fody
         /// </returns>
         public static bool IsAssignableFrom(this TypeDefinition baseType, TypeDefinition type, Action<string>? logger = null)
         {
+            if (baseType is null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
+            }
+
             logger ??= x => { };
 
             Queue<TypeDefinition> queue = new Queue<TypeDefinition>();

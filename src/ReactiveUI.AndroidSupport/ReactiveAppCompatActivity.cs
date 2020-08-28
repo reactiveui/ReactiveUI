@@ -60,7 +60,7 @@ namespace ReactiveUI.AndroidSupport
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
         private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-        private readonly Subject<(int requestCode, Result result, Intent intent)> _activityResult = new Subject<(int requestCode, Result result, Intent intent)>();
+        private readonly Subject<(int requestCode, Result result, Intent? intent)> _activityResult = new Subject<(int requestCode, Result result, Intent? intent)>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
@@ -116,7 +116,7 @@ namespace ReactiveUI.AndroidSupport
         /// <value>
         /// The activity result.
         /// </value>
-        public IObservable<(int requestCode, Result result, Intent intent)> ActivityResult => _activityResult.AsObservable();
+        public IObservable<(int requestCode, Result result, Intent? intent)> ActivityResult => _activityResult.AsObservable();
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
@@ -142,7 +142,7 @@ namespace ReactiveUI.AndroidSupport
         /// <param name="intent">The intent.</param>
         /// <param name="requestCode">The request code.</param>
         /// <returns>A task with the result and intent.</returns>
-        public Task<(Result result, Intent intent)> StartActivityForResultAsync(Intent intent, int requestCode)
+        public Task<(Result result, Intent? intent)> StartActivityForResultAsync(Intent? intent, int requestCode)
         {
             // NB: It's important that we set up the subscription *before* we
             // call ActivityForResult
@@ -162,7 +162,7 @@ namespace ReactiveUI.AndroidSupport
         /// <param name="type">The type.</param>
         /// <param name="requestCode">The request code.</param>
         /// <returns>A task with the result and intent.</returns>
-        public Task<(Result result, Intent intent)> StartActivityForResultAsync(Type type, int requestCode)
+        public Task<(Result result, Intent? intent)> StartActivityForResultAsync(Type type, int requestCode)
         {
             // NB: It's important that we set up the subscription *before* we
             // call ActivityForResult
@@ -191,7 +191,7 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
             _activityResult.OnNext((requestCode, resultCode, data));

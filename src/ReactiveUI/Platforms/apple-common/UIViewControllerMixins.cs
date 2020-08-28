@@ -23,14 +23,29 @@ namespace ReactiveUI
 {
     internal static class UIViewControllerMixins
     {
-        internal static void ActivateSubviews(this NSViewController @this, bool activate)
+        internal static void ActivateSubviews(this NSViewController controller, bool activate)
         {
-            @this.View.ActivateSubviews(activate);
+            if (controller is null)
+            {
+                throw new ArgumentNullException(nameof(controller));
+            }
+
+            if (controller.View == null)
+            {
+                throw new ArgumentException("The view on the controller is null.", nameof(controller));
+            }
+
+            controller.View.ActivateSubviews(activate);
         }
 
-        private static void ActivateSubviews(this NSView @this, bool activate)
+        private static void ActivateSubviews(this NSView masterView, bool activate)
         {
-            foreach (var view in @this.Subviews)
+            if (masterView is null)
+            {
+                throw new ArgumentNullException(nameof(masterView));
+            }
+
+            foreach (var view in masterView.Subviews)
             {
                 var subview = view as ICanForceManualActivation;
 

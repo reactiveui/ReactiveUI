@@ -61,6 +61,11 @@ namespace ReactiveUI.AndroidSupport
         /// <inheritdoc/>
         public override Object InstantiateItem(ViewGroup container, int position)
         {
+            if (container is null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
             var data = _list.Items.ElementAt(position);
 
             // NB: PagerAdapter does not recycle itself.

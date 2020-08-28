@@ -123,7 +123,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public override void WillMoveToSuperview(UIView newsuper)
+        public override void WillMoveToSuperview(UIView? newsuper)
         {
             base.WillMoveToSuperview(newsuper);
             _activated.OnNext(Unit.Default);

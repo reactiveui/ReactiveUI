@@ -75,12 +75,12 @@ namespace ReactiveUI
                 _observer = observer;
             }
 
-            void IServiceConnection.OnServiceConnected(ComponentName name, IBinder binder)
+            void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? binder)
             {
-                _observer.OnNext((TBinder)binder);
+                _observer.OnNext((TBinder?)binder);
             }
 
-            void IServiceConnection.OnServiceDisconnected(ComponentName name)
+            void IServiceConnection.OnServiceDisconnected(ComponentName? name)
             {
                 // lost connection to the remote service but it may be revived
                 _observer.OnNext(null);

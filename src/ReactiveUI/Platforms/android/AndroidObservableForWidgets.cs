@@ -126,7 +126,7 @@ namespace ReactiveUI
 #pragma warning restore 618
         }
 
-        private static DispatchItem CreateFromWidget<TView, TEventArgs>(Expression<Func<TView, object>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)
+        private static DispatchItem CreateFromWidget<TView, TEventArgs>(Expression<Func<TView, object?>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)
             where TView : View
             where TEventArgs : EventArgs
         {

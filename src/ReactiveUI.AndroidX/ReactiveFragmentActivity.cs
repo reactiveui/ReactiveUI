@@ -161,8 +161,13 @@ namespace ReactiveUI.AndroidX
         }
 
         /// <inheritdoc/>
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
         {
+            if (data is null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             base.OnActivityResult(requestCode, resultCode, data);
             _activityResult.OnNext((requestCode, resultCode, data));
         }

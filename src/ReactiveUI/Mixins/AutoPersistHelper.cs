@@ -300,7 +300,7 @@ namespace ReactiveUI
         /// </summary>
         /// <typeparam name="TItem">The item type.</typeparam>
         /// <typeparam name="TCollection">The collection type.</typeparam>
-        /// <param name="this">
+        /// <param name="collection">
         /// The reactive collection to watch for changes.
         /// </param>
         /// <param name="onAdd">
@@ -310,22 +310,37 @@ namespace ReactiveUI
         /// A method to be called when an object is removed from the collection.
         /// </param>
         /// <returns>A Disposable that deactivates this behavior.</returns>
-        public static IDisposable ActOnEveryObject<TItem, TCollection>(this TCollection @this, Action<TItem> onAdd, Action<TItem> onRemove)
+        public static IDisposable ActOnEveryObject<TItem, TCollection>(this TCollection collection, Action<TItem> onAdd, Action<TItem> onRemove)
             where TItem : IReactiveObject
             where TCollection : INotifyCollectionChanged, IEnumerable<TItem>
         {
-            foreach (var v in @this)
+            if (onAdd is null)
+            {
+                throw new ArgumentNullException(nameof(onAdd));
+            }
+
+            if (onRemove is null)
+            {
+                throw new ArgumentNullException(nameof(onRemove));
+            }
+
+            if (collection is null)
+            {
+                throw new ArgumentNullException(nameof(collection));
+            }
+
+            foreach (var v in collection)
             {
                 onAdd(v);
             }
 
-            var changedDisposable = ActOnEveryObject(@this.ToObservableChangeSet<TCollection, TItem>(), onAdd, onRemove);
+            var changedDisposable = ActOnEveryObject(collection.ToObservableChangeSet<TCollection, TItem>(), onAdd, onRemove);
 
             return Disposable.Create(() =>
             {
                 changedDisposable.Dispose();
 
-                @this.ForEach(onRemove);
+                collection.ForEach(onRemove);
             });
         }
 

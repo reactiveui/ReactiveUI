@@ -20,9 +20,9 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>The observable sequence of keys for changed shared preferences.</returns>
         /// <param name="sharedPreferences">The shared preferences to get the changes from.</param>
-        public static IObservable<string> PreferenceChanged(this ISharedPreferences sharedPreferences)
+        public static IObservable<string?> PreferenceChanged(this ISharedPreferences sharedPreferences)
         {
-            return Observable.Create<string>(observer =>
+            return Observable.Create<string?>(observer =>
             {
                 var listener = new OnSharedPreferenceChangeListener(observer);
                 sharedPreferences.RegisterOnSharedPreferenceChangeListener(listener);
@@ -37,14 +37,14 @@ namespace ReactiveUI
             : Java.Lang.Object,
             ISharedPreferencesOnSharedPreferenceChangeListener
         {
-            private readonly IObserver<string> _observer;
+            private readonly IObserver<string?> _observer;
 
-            public OnSharedPreferenceChangeListener(IObserver<string> observer)
+            public OnSharedPreferenceChangeListener(IObserver<string?> observer)
             {
                 _observer = observer;
             }
 
-            void ISharedPreferencesOnSharedPreferenceChangeListener.OnSharedPreferenceChanged(ISharedPreferences sharedPreferences, string key)
+            void ISharedPreferencesOnSharedPreferenceChangeListener.OnSharedPreferenceChanged(ISharedPreferences? sharedPreferences, string? key)
             {
                 _observer.OnNext(key);
             }

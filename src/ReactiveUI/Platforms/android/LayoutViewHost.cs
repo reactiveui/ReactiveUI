@@ -37,6 +37,12 @@ namespace ReactiveUI
         protected LayoutViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
         {
             var inflater = LayoutInflater.FromContext(ctx);
+
+            if (inflater == null)
+            {
+                return;
+            }
+
             View = inflater.Inflate(layoutId, parent, attachToRoot);
 
             if (performAutoWireup)

@@ -40,6 +40,16 @@ namespace ReactiveUI
             Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UICollectionViewCell
         {
+            if (sectionsObservable is null)
+            {
+                throw new ArgumentNullException(nameof(sectionsObservable));
+            }
+
+            if (collectionView is null)
+            {
+                throw new ArgumentNullException(nameof(collectionView));
+            }
+
             var source = new ReactiveCollectionViewSource<TSource>(collectionView);
             initSource?.Invoke(source);
 

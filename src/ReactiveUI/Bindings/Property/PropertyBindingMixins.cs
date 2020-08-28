@@ -57,7 +57,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -68,7 +68,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewFor
         {
-            return binderImplementation?.Bind(
+            return binderImplementation.Bind(
                          viewModel,
                          view,
                          vmProperty,
@@ -124,7 +124,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 this TView view,
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -168,7 +168,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
             this TView view,
             TViewModel? viewModel,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -218,7 +218,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             this TView view,
             TViewModel? viewModel,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -268,7 +268,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, TVProp>? OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -317,7 +317,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
+        public static IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,

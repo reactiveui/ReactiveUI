@@ -40,7 +40,7 @@ namespace ReactiveUI
                 {
                     d(this
                         .WhenAnyValue(x => x.Router)
-                        .Where(x => x != null && x.NavigationStack.Count > 0 && ViewControllers.Length == 0)
+                        .Where(x => x != null && x.NavigationStack.Count > 0 && ViewControllers != null && ViewControllers.Length == 0)
                         .Subscribe(x =>
                         {
                             _routerInstigated = true;

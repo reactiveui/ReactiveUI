@@ -40,7 +40,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a common instance to avoid allocations to the MainThread for the HandlerScheduler.
         /// </summary>
-        public static IScheduler MainThreadScheduler { get; } = new HandlerScheduler(new Handler(Looper.MainLooper), Looper.MainLooper.Thread.Id);
+        public static IScheduler MainThreadScheduler { get; } = new HandlerScheduler(new Handler(Looper.MainLooper), Looper.MainLooper?.Thread?.Id);
 
         /// <inheritdoc/>
         public DateTimeOffset Now => DateTimeOffset.Now;

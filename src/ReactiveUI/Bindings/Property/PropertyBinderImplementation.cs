@@ -99,7 +99,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
-        public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>? Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -146,7 +146,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
-        public IReactiveBinding<TView, TViewModel, TVProp>? OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        public IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -179,7 +179,7 @@ namespace ReactiveUI
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret)
             {
-                return null;
+                return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewModel, viewExpression, vmExpression, Observable.Empty<TVProp>(), BindingDirection.OneWay, Disposable.Empty);
             }
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
@@ -199,7 +199,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
-        public IReactiveBinding<TView, TViewModel, TOut>? OneWayBind<TViewModel, TView, TProp, TOut>(
+        public IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
             TViewModel? viewModel,
             TView view,
             Expression<Func<TViewModel, TProp>> vmProperty,
@@ -223,7 +223,7 @@ namespace ReactiveUI
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret)
             {
-                return null;
+                return new ReactiveBinding<TView, TViewModel, TOut>(view, viewModel, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
             }
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>().Select(selector);

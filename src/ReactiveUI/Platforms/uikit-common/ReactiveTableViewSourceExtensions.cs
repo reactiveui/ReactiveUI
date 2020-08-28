@@ -39,6 +39,16 @@ namespace ReactiveUI
             Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UITableViewCell
         {
+            if (sectionsObservable is null)
+            {
+                throw new ArgumentNullException(nameof(sectionsObservable));
+            }
+
+            if (tableView is null)
+            {
+                throw new ArgumentNullException(nameof(tableView));
+            }
+
             var source = new ReactiveTableViewSource<TSource>(tableView);
             if (initSource != null)
             {

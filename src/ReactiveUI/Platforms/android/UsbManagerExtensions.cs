@@ -78,8 +78,13 @@ namespace ReactiveUI
                 _device = device;
             }
 
-            public override void OnReceive(Context context, Intent intent)
+            public override void OnReceive(Context? context, Intent? intent)
             {
+                if (intent is null)
+                {
+                    return;
+                }
+
                 var extraDevice = intent.GetParcelableExtra(UsbManager.ExtraDevice) as UsbDevice;
                 if (_device.DeviceName != extraDevice?.DeviceName)
                 {
@@ -107,10 +112,21 @@ namespace ReactiveUI
                 _accessory = accessory;
             }
 
-            public override void OnReceive(Context context, Intent intent)
+            public override void OnReceive(Context? context, Intent? intent)
             {
+                if (intent is null)
+                {
+                    return;
+                }
+
                 var extraAccessory = intent.GetParcelableExtra(UsbManager.ExtraAccessory) as UsbAccessory;
-                if (_accessory.Manufacturer != extraAccessory?.Manufacturer || _accessory.Model != extraAccessory.Model)
+
+                if (extraAccessory == null)
+                {
+                    return;
+                }
+
+                if (_accessory.Manufacturer != extraAccessory.Manufacturer || _accessory.Model != extraAccessory.Model)
                 {
                     return;
                 }
