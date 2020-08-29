@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shouldly;
 using Splat;
 using Xunit;
 
@@ -23,6 +24,38 @@ namespace ReactiveUI.Tests
             _resolver.RegisterViewsForViewModels(GetType().Assembly);
         }
 
+        /// <summary>
+        /// Gets RegistrationNamespaces.
+        /// </summary>
+        public static IEnumerable<object[]> NamespacesToRegister =>
+            new List<object[]>
+            {
+                new object[] { new[] { DependencyResolverMixins.RegistrationNamespace.XamForms } },
+                new object[] { new[] { DependencyResolverMixins.RegistrationNamespace.Winforms } },
+                new object[] { new[] { DependencyResolverMixins.RegistrationNamespace.Wpf } },
+                new object[] { new[] { DependencyResolverMixins.RegistrationNamespace.Uno } },
+                new object[] { new[] { DependencyResolverMixins.RegistrationNamespace.Blazor } },
+                new object[] { new[] { DependencyResolverMixins.RegistrationNamespace.Drawing } },
+                new object[]
+                {
+                    new[]
+                    {
+                        DependencyResolverMixins.RegistrationNamespace.Winforms,
+                        DependencyResolverMixins.RegistrationNamespace.XamForms,
+                        DependencyResolverMixins.RegistrationNamespace.Wpf
+                    }
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        DependencyResolverMixins.RegistrationNamespace.Blazor,
+                        DependencyResolverMixins.RegistrationNamespace.XamForms,
+                        DependencyResolverMixins.RegistrationNamespace.Wpf
+                    }
+                }
+            };
+
         [Fact]
         public void AllDefaultServicesShouldBeRegistered()
         {
@@ -34,8 +67,9 @@ namespace ReactiveUI.Tests
                     Assert.Equal(shouldRegistered.Value.Count, resolvedServices.Count());
                     foreach (Type implementationType in shouldRegistered.Value)
                     {
-                        var isRegistered = resolvedServices.Any(rs => rs.GetType() == implementationType);
-                        Assert.Equal(true, isRegistered);
+                        resolvedServices
+                            .Any(rs => rs.GetType() == implementationType)
+                            .ShouldBeTrue();
                     }
                 }
             }
@@ -53,15 +87,36 @@ namespace ReactiveUI.Tests
                 foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(registrationNamespaces))
                 {
                     IEnumerable<object> resolvedServices = _resolver.GetServices(shouldRegistered.Key);
-                    Assert.Equal(shouldRegistered.Value.Count, resolvedServices.Count());
+
                     foreach (Type implementationType in shouldRegistered.Value)
                     {
-                        var isRegistered = resolvedServices.Any(rs => rs.GetType() == implementationType);
-                        Assert.Equal(true, isRegistered);
+                        resolvedServices
+                            .Any(rs => rs.GetType() == implementationType)
+                            .ShouldBeTrue();
                     }
                 }
+            }
+        }
 
-                DependencyResolverMixins.SetRegistrationNamespaces(DependencyResolverMixins.DefaultRegistrationNamespaces.ToArray());
+        [Theory]
+        [MemberData(nameof(NamespacesToRegister))]
+        public void RegisteredNamespacesShouldBeRegistered(IEnumerable<DependencyResolverMixins.RegistrationNamespace> namespacesToRegister)
+        {
+            using (_resolver.WithResolver())
+            {
+                var namespaces = namespacesToRegister.ToArray();
+
+                DependencyResolverMixins.SetRegistrationNamespaces(namespaces);
+
+                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
+                {
+                    IEnumerable<object> resolvedServices = _resolver.GetServices(shouldRegistered.Key).ToList();
+
+                    resolvedServices
+                        .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)
+                        .Any(registeredType => !string.IsNullOrEmpty(registeredType) && DependencyResolverMixins.DefaultRegistrationNamespaces.Except(namespacesToRegister).All(x => !registeredType.Contains(x.ToString())))
+                        .ShouldBeTrue();
+                }
             }
         }
 

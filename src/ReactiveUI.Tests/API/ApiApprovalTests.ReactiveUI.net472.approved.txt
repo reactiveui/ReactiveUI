@@ -124,8 +124,19 @@ namespace ReactiveUI
     }
     public static class DependencyResolverMixins
     {
+        public static System.Collections.Generic.IReadOnlyList<ReactiveUI.DependencyResolverMixins.RegistrationNamespace> DefaultRegistrationNamespaces { get; }
         public static void InitializeReactiveUI(this Splat.IMutableDependencyResolver resolver) { }
         public static void RegisterViewsForViewModels(this Splat.IMutableDependencyResolver resolver, System.Reflection.Assembly assembly) { }
+        public static void SetRegistrationNamespaces(params ReactiveUI.DependencyResolverMixins.RegistrationNamespace[] registrationNamespaces) { }
+        public enum RegistrationNamespace
+        {
+            XamForms = 0,
+            Winforms = 1,
+            Wpf = 2,
+            Uno = 3,
+            Blazor = 4,
+            Drawing = 5,
+        }
     }
     public class DummySuspensionDriver : ReactiveUI.ISuspensionDriver
     {
