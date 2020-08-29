@@ -190,6 +190,17 @@ namespace ReactiveUI
     {
         System.IObservable<System.Exception> ThrownExceptions { get; }
     }
+    public interface IInteractionBinderImplementation : Splat.IEnableLogger
+    {
+        System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor
+        ;
+        System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor
+        ;
+    }
     public interface IMessageBus : Splat.IEnableLogger
     {
         bool IsRegistered(System.Type type, string? contract = null);
@@ -334,6 +345,25 @@ namespace ReactiveUI
     public interface IViewLocator : Splat.IEnableLogger
     {
         ReactiveUI.IViewFor? ResolveView<T>(T viewModel, string? contract = null);
+    }
+    public class InteractionBinderImplementation : ReactiveUI.IInteractionBinderImplementation, Splat.IEnableLogger
+    {
+        public InteractionBinderImplementation() { }
+        public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+    }
+    public static class InteractionBindingMixins
+    {
+        public static System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        public static System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
     }
     public sealed class InteractionContext<TInput, TOutput>
     {
