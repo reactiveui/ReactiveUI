@@ -78,6 +78,29 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void WhenNavigatedToCallsDisposeWhenNavigationStackIsReset()
+        {
+            var count = 0;
+
+            var screen = new TestScreen();
+            var vm1 = new RoutableViewModel(screen);
+            var vm2 = new RoutableViewModel(screen);
+
+            vm1.WhenNavigatedTo(() =>
+            {
+                return Disposable.Create(() => count++);
+            });
+
+            screen.Router.Navigate.Execute(vm1);
+
+            Assert.Equal(0, count);
+
+            screen.Router.NavigateAndReset.Execute(vm2);
+
+            Assert.Equal(1, count);
+        }
+
+        [Fact]
         public void WhenNavigatedToObservableFiresWhenViewModelAddedToNavigationStack()
         {
             var count = 0;
@@ -130,6 +153,25 @@ namespace ReactiveUI.Tests
 
             screen.Router.Navigate.Execute(vm);
             screen.Router.NavigateBack.Execute();
+
+            Assert.Equal(1, count);
+        }
+
+        [Fact]
+        public void WhenNavigatedToObservableCompletesWhenNavigationStackIsReset()
+        {
+            var count = 0;
+
+            var screen = new TestScreen();
+            var vm1 = new RoutableViewModel(screen);
+            var vm2 = new RoutableViewModel(screen);
+
+            vm1.WhenNavigatedToObservable().Subscribe(
+                _ => { },
+                () => { count++; });
+
+            screen.Router.Navigate.Execute(vm1);
+            screen.Router.NavigateAndReset.Execute(vm2);
 
             Assert.Equal(1, count);
         }
