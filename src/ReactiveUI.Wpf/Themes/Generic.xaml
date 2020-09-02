@@ -488,9 +488,7 @@
                                         <TranslateTransform X="0" Y="0" />
                                     </TransformGroup.Children>
                                 </TransformGroup>
-                                
                             </Rectangle.RenderTransform>
-                            
                         </Rectangle>
 
                         <ContentPresenter
