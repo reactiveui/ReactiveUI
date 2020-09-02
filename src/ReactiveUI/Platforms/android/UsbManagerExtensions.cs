@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -78,8 +78,13 @@ namespace ReactiveUI
                 _device = device;
             }
 
-            public override void OnReceive(Context context, Intent intent)
+            public override void OnReceive(Context? context, Intent? intent)
             {
+                if (intent is null)
+                {
+                    return;
+                }
+
                 var extraDevice = intent.GetParcelableExtra(UsbManager.ExtraDevice) as UsbDevice;
                 if (_device.DeviceName != extraDevice?.DeviceName)
                 {
@@ -107,10 +112,21 @@ namespace ReactiveUI
                 _accessory = accessory;
             }
 
-            public override void OnReceive(Context context, Intent intent)
+            public override void OnReceive(Context? context, Intent? intent)
             {
+                if (intent is null)
+                {
+                    return;
+                }
+
                 var extraAccessory = intent.GetParcelableExtra(UsbManager.ExtraAccessory) as UsbAccessory;
-                if (_accessory.Manufacturer != extraAccessory?.Manufacturer || _accessory.Model != extraAccessory.Model)
+
+                if (extraAccessory == null)
+                {
+                    return;
+                }
+
+                if (_accessory.Manufacturer != extraAccessory.Manufacturer || _accessory.Model != extraAccessory.Model)
                 {
                     return;
                 }

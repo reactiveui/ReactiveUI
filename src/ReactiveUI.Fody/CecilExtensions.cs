@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -93,6 +93,11 @@ namespace ReactiveUI.Fody
         /// </returns>
         public static bool IsAssignableFrom(this TypeDefinition baseType, TypeDefinition type, Action<string>? logger = null)
         {
+            if (baseType is null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
+            }
+
             logger ??= x => { };
 
             Queue<TypeDefinition> queue = new Queue<TypeDefinition>();

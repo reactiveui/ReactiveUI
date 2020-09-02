@@ -1,11 +1,10 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System;
 using System.Reactive.Concurrency;
-using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI.Wpf
@@ -31,12 +30,11 @@ namespace ReactiveUI.Wpf
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-
             if (!ModeDetector.InUnitTestRunner())
             {
                 // NB: On .NET Core, trying to touch DispatcherScheduler blows up :cry:
                 RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             }
 
             RxApp.SuppressViewCommandBindingMessage = true;

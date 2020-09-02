@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -705,6 +705,51 @@ namespace ReactiveUI.Tests
                                          Assert.Equal(10, output1[2]);
                                          Assert.Equal("Bar", output2[2]);
                                      });
+        }
+
+        [Fact]
+        public void ObjectShouldBeGarbageCollectedWhenPropertyValueChanges()
+        {
+            static (ObjChain1, WeakReference) GetWeakReference1()
+            {
+                var obj = new ObjChain1();
+                var weakRef = new WeakReference(obj.Model);
+                obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+                obj.Model = new ObjChain2();
+
+                return (obj, weakRef);
+            }
+
+            static (ObjChain1, WeakReference) GetWeakReference2()
+            {
+                var obj = new ObjChain1();
+                var weakRef = new WeakReference(obj.Model.Model);
+                obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+                obj.Model.Model = new ObjChain3();
+
+                return (obj, weakRef);
+            }
+
+            static (ObjChain1, WeakReference) GetWeakReference3()
+            {
+                var obj = new ObjChain1();
+                var weakRef = new WeakReference(obj.Model.Model.Model);
+                obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+                obj.Model.Model.Model = new HostTestFixture();
+
+                return (obj, weakRef);
+            }
+
+            var (obj1, weakRef1) = GetWeakReference1();
+            var (obj2, weakRef2) = GetWeakReference2();
+            var (obj3, weakRef3) = GetWeakReference3();
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Assert.False(weakRef1.IsAlive);
+            Assert.False(weakRef2.IsAlive);
+            Assert.False(weakRef3.IsAlive);
         }
     }
 }

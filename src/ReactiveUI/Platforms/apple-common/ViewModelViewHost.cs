@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -111,7 +111,17 @@ namespace ReactiveUI
 
         private static void Adopt(NSViewController parent, NSViewController? child)
         {
-            if (child == null)
+            if (parent is null)
+            {
+                throw new ArgumentNullException(nameof(parent));
+            }
+
+            if (parent.View is null)
+            {
+                throw new ArgumentException("The View on the parent is null.", nameof(parent));
+            }
+
+            if (child?.View is null)
             {
                 return;
             }
@@ -150,6 +160,11 @@ namespace ReactiveUI
 
         private static void Disown(NSViewController child)
         {
+            if (child.View is null)
+            {
+                throw new ArgumentException("The View on the child is null.", nameof(child));
+            }
+
 #if UIKIT
             child.WillMoveToParentViewController(null);
 #endif

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -396,6 +396,28 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
+        public void OneWayBindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
+        {
+            static (IDisposable?, WeakReference) GetWeakReference()
+            {
+                var vm = new PropertyBindViewModel();
+                var view = new PropertyBindView { ViewModel = vm };
+                var weakRef = new WeakReference(vm);
+                var disp = view.OneWayBind(vm, x => x.Property1, x => x.SomeTextBox.Text);
+                view.ViewModel = new PropertyBindViewModel();
+
+                return (disp, weakRef);
+            }
+
+            var (disp, weakRef) = GetWeakReference();
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Assert.False(weakRef.IsAlive);
+        }
+
+        [Fact]
         public void BindToWithNullStartingValueToNonNullValue()
         {
             var vm = new PropertyBindViewModel();
@@ -445,6 +467,28 @@ namespace ReactiveUI.Tests.Xaml
             var view = new PropertyBindView { ViewModel = vm };
 
             view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(), decimal.Parse);
+        }
+
+        [Fact]
+        public void BindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
+        {
+            static (IDisposable?, WeakReference) GetWeakReference()
+            {
+                var vm = new PropertyBindViewModel();
+                var view = new PropertyBindView { ViewModel = vm };
+                var weakRef = new WeakReference(vm);
+                var disp = view.Bind(vm, x => x.Property1, x => x.SomeTextBox.Text);
+                view.ViewModel = new PropertyBindViewModel();
+
+                return (disp, weakRef);
+            }
+
+            var (disp, weakRef) = GetWeakReference();
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Assert.False(weakRef.IsAlive);
         }
     }
 }

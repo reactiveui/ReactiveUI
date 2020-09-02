@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -13,8 +13,10 @@ using ReactiveUI.Tests.Xaml;
 
 namespace ReactiveUI.Tests.Wpf
 {
-    public class CommandBindingView : IViewFor<CommandBindingViewModel>
+    public class CommandBindingView : ReactiveObject, IViewFor<CommandBindingViewModel>
     {
+        private CommandBindingViewModel? _viewModel;
+
         public CommandBindingView()
         {
             Command1 = new CustomClickButton();
@@ -27,7 +29,11 @@ namespace ReactiveUI.Tests.Wpf
             set => ViewModel = (CommandBindingViewModel?)value;
         }
 
-        public CommandBindingViewModel? ViewModel { get; set; }
+        public CommandBindingViewModel? ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
 
         public CustomClickButton Command1 { get; protected set; }
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -245,33 +245,37 @@ namespace ReactiveUI
             return footer?.View == null ? -1 : footer.Height;
         }
 
+#pragma warning disable CS8603 // Possible null reference return.
+
         /// <inheritdoc/>
-        public override string? TitleForHeader(UITableView tableView, nint section)
+        public override string TitleForHeader(UITableView tableView, nint section)
         {
             var header = _commonSource.SectionInfo[(int)section].Header;
             return header?.Title;
         }
 
         /// <inheritdoc/>
-        public override string? TitleForFooter(UITableView tableView, nint section)
+        public override string TitleForFooter(UITableView tableView, nint section)
         {
             var footer = _commonSource.SectionInfo[(int)section].Footer;
             return footer?.Title;
         }
 
         /// <inheritdoc/>
-        public override UIView? GetViewForHeader(UITableView tableView, nint section)
+        public override UIView GetViewForHeader(UITableView tableView, nint section)
         {
             var header = _commonSource.SectionInfo[(int)section].Header;
             return header?.View?.Invoke();
         }
 
         /// <inheritdoc/>
-        public override UIView? GetViewForFooter(UITableView tableView, nint section)
+        public override UIView GetViewForFooter(UITableView tableView, nint section)
         {
             var footer = _commonSource.SectionInfo[(int)section].Footer;
             return footer?.View?.Invoke();
         }
+
+#pragma warning restore CS8603 // Possible null reference return.
 
         /// <summary>
         /// Items at.

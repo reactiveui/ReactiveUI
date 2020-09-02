@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -40,7 +40,7 @@ namespace ReactiveUI
                 {
                     d(this
                         .WhenAnyValue(x => x.Router)
-                        .Where(x => x != null && x.NavigationStack.Count > 0 && ViewControllers.Length == 0)
+                        .Where(x => x != null && x.NavigationStack.Count > 0 && ViewControllers != null && ViewControllers.Length == 0)
                         .Subscribe(x =>
                         {
                             _routerInstigated = true;

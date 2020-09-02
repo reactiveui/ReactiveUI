@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -75,12 +75,12 @@ namespace ReactiveUI
                 _observer = observer;
             }
 
-            void IServiceConnection.OnServiceConnected(ComponentName name, IBinder binder)
+            void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? binder)
             {
-                _observer.OnNext((TBinder)binder);
+                _observer.OnNext((TBinder?)binder);
             }
 
-            void IServiceConnection.OnServiceDisconnected(ComponentName name)
+            void IServiceConnection.OnServiceDisconnected(ComponentName? name)
             {
                 // lost connection to the remote service but it may be revived
                 _observer.OnNext(null);
