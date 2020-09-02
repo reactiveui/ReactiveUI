@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 // This control is gratefully borrowed from http://blog.landdolphin.net/?p=17
 // Thanks guys!
@@ -59,6 +60,7 @@ namespace ReactiveUI
         private Grid? _container;
         private ContentPresenter? _previousContentPresentationSite;
         private ContentPresenter? _currentContentPresentationSite;
+        private Image? _image;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransitioningContentControl"/> class.
@@ -237,6 +239,15 @@ namespace ReactiveUI
             // Go to a normal state and release our hold on the old content.
             VisualStateManager.GoToState(this, NormalState, false);
             _isTransitioning = false;
+            if (_image != null)
+            {
+                (_image.Source as RenderTargetBitmap)?.Clear();
+
+                // https://github.com/dotnet/wpf/issues/2397
+                _image.Source = null;
+                _image.UpdateLayout();
+            }
+
             if (_previousContentPresentationSite != null)
             {
                 _previousContentPresentationSite.Content = null;
@@ -265,6 +276,17 @@ namespace ReactiveUI
 
                 if (!_isTransitioning)
                 {
+                    if (oldContent is UIElement uiElement)
+                    {
+                        _image ??=new Image();
+                        _image.Source = GetRenderTargetBitmapFromUiElement(uiElement);
+                        _previousContentPresentationSite.Content = _image;
+                    }
+                    else
+                    {
+                        _previousContentPresentationSite.Content = oldContent;
+                    }
+
                     string startingTransitionName;
                     if (Transition == TransitionType.Bounce)
                     {
@@ -292,6 +314,15 @@ namespace ReactiveUI
             }
             else
             {
+                if (_image != null)
+                {
+                    (_image.Source as RenderTargetBitmap)?.Clear();
+
+                    // https://github.com/dotnet/wpf/issues/2397
+                    _image.Source = null;
+                    _image.UpdateLayout();
+                }
+
                 if (_currentContentPresentationSite != null)
                 {
                     _currentContentPresentationSite.Content = newContent;
@@ -461,6 +492,23 @@ namespace ReactiveUI
                     }
                 }
             }
+        }
+
+        private static RenderTargetBitmap GetRenderTargetBitmapFromUiElement(UIElement uiElement)
+        {
+            DpiScale dpiScale = VisualTreeHelper.GetDpi(uiElement);
+
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(
+                                                                           Convert.ToInt32(uiElement.RenderSize.Width * dpiScale.DpiScaleX),
+                                                                           Convert.ToInt32(uiElement.RenderSize.Height * dpiScale.DpiScaleY),
+                                                                           dpiScale.PixelsPerInchX,
+                                                                           dpiScale.PixelsPerInchY,
+                                                                           PixelFormats.Pbgra32);
+
+            renderTargetBitmap.Render(uiElement);
+            renderTargetBitmap.Freeze();
+
+            return renderTargetBitmap;
         }
     }
 }
