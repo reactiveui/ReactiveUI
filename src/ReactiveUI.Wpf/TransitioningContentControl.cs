@@ -272,7 +272,6 @@ namespace ReactiveUI
             if (_currentContentPresentationSite != null && _previousContentPresentationSite != null)
             {
                 _currentContentPresentationSite.Content = newContent;
-                _previousContentPresentationSite.Content = oldContent;
 
                 if (!_isTransitioning)
                 {
