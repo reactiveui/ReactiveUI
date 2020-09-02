@@ -356,7 +356,7 @@ namespace ReactiveUI
                         }
 
                         return (TValue)value;
-                    });
+                    })!;
             }
 
             return (setObservable.Subscribe(_ => { }, ex => this.Log().Error(ex, $"{viewExpression} Binding received an Exception!")), setObservable);
