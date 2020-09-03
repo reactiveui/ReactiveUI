@@ -337,85 +337,114 @@ namespace ReactiveUI
         private void SetTransitionDefaultValues()
         {
             // Do some special handling of particular transitions so that we get nice smooth transitions that utilise the size of the content.
-            if (Transition == TransitionType.Fade && CompletingTransition != null)
+            switch (Transition)
             {
-                var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
-                startingDoubleAnimation.Duration = Duration;
-                completingDoubleAnimation.Duration = Duration;
-            }
-
-            if (Transition == TransitionType.Slide && CompletingTransition != null)
-            {
-                var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                startingDoubleAnimation.Duration = Duration;
-
-                startingDoubleAnimation.From = Direction switch
+                case TransitionType.Fade:
                 {
-                    TransitionDirection.Down => -ActualHeight,
-                    TransitionDirection.Up => ActualHeight,
-                    TransitionDirection.Right => -ActualWidth,
-                    TransitionDirection.Left => ActualWidth,
-                    _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
-                };
-            }
+                    if (CompletingTransition is null)
+                    {
+                        return;
+                    }
 
-            if (Transition == TransitionType.Move && CompletingTransition != null)
-            {
-                var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
-                startingDoubleAnimation.Duration = Duration;
-                completingDoubleAnimation.Duration = Duration;
+                    var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                    completingDoubleAnimation.Duration = Duration;
+                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
+                    startingDoubleAnimation.Duration = Duration;
 
-                switch (Direction)
-                {
-                    case TransitionDirection.Down:
-                        startingDoubleAnimation.To = ActualHeight;
-                        completingDoubleAnimation.From = -ActualHeight;
-
-                        break;
-                    case TransitionDirection.Up:
-                        startingDoubleAnimation.To = -ActualHeight;
-                        completingDoubleAnimation.From = ActualHeight;
-
-                        break;
-                    case TransitionDirection.Right:
-                        startingDoubleAnimation.To = ActualWidth;
-                        completingDoubleAnimation.From = -ActualWidth;
-
-                        break;
-                    case TransitionDirection.Left:
-                        startingDoubleAnimation.To = -ActualWidth;
-                        completingDoubleAnimation.From = ActualWidth;
-
-                        break;
-                    default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
-                }
-            }
-
-            if (Transition == TransitionType.Bounce)
-            {
-                if (CompletingTransition != null)
-                {
-                    var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                    completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;
+                    break;
                 }
 
-                if (StartingTransition is null)
+                case TransitionType.Slide:
                 {
-                    return;
+                    if (CompletingTransition is null)
+                    {
+                        return;
+                    }
+
+                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                    startingDoubleAnimation.Duration = Duration;
+
+                    startingDoubleAnimation.From = Direction switch
+                    {
+                        TransitionDirection.Down => -ActualHeight,
+                        TransitionDirection.Up => ActualHeight,
+                        TransitionDirection.Right => -ActualWidth,
+                        TransitionDirection.Left => ActualWidth,
+                        _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
+                    };
+
+                    break;
                 }
 
-                var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-
-                startingDoubleAnimation.To = Direction switch
+                case TransitionType.Move:
                 {
-                    TransitionDirection.Down => ActualHeight,
-                    TransitionDirection.Up => -ActualHeight,
-                    TransitionDirection.Right => ActualWidth,
-                    TransitionDirection.Left => -ActualWidth,
-                    _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
-                };
+                    if (CompletingTransition is null)
+                    {
+                        return;
+                    }
+
+                    var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
+                    startingDoubleAnimation.Duration = Duration;
+                    completingDoubleAnimation.Duration = Duration;
+
+                    switch (Direction)
+                    {
+                        case TransitionDirection.Down:
+                            startingDoubleAnimation.To = ActualHeight;
+                            completingDoubleAnimation.From = -ActualHeight;
+
+                            break;
+                        case TransitionDirection.Up:
+                            startingDoubleAnimation.To = -ActualHeight;
+                            completingDoubleAnimation.From = ActualHeight;
+
+                            break;
+                        case TransitionDirection.Right:
+                            startingDoubleAnimation.To = ActualWidth;
+                            completingDoubleAnimation.From = -ActualWidth;
+
+                            break;
+                        case TransitionDirection.Left:
+                            startingDoubleAnimation.To = -ActualWidth;
+                            completingDoubleAnimation.From = ActualWidth;
+
+                            break;
+                        default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
+                    }
+
+                    break;
+                }
+
+                case TransitionType.Bounce:
+                {
+                    if (CompletingTransition != null)
+                    {
+                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
+                        completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;
+                    }
+
+                    if (StartingTransition is null)
+                    {
+                        return;
+                    }
+
+                    var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+
+                    startingDoubleAnimation.To = Direction switch
+                    {
+                        TransitionDirection.Down => ActualHeight,
+                        TransitionDirection.Up => -ActualHeight,
+                        TransitionDirection.Right => ActualWidth,
+                        TransitionDirection.Left => -ActualWidth,
+                        _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
+                    };
+
+                    break;
+                }
+
+                case TransitionType.Drop: break;
+                default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
             }
         }
 
