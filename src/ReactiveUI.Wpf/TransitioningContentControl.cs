@@ -11,7 +11,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 // This control is gratefully borrowed from http://blog.landdolphin.net/?p=17
 // Thanks guys!
@@ -21,7 +20,7 @@ namespace ReactiveUI
     /// A ContentControl that animates the transition when its content is changed.
     /// </summary>
     [TemplatePart(Name = "PART_Container", Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = "PART_PreviousRectangleSite", Type = typeof(Rectangle))]
+    [TemplatePart(Name = "PART_PreviousImageSite", Type = typeof(Image))]
     [TemplatePart(Name = "PART_CurrentContentPresentationSite", Type = typeof(ContentPresenter))]
     [TemplateVisualState(Name = NormalState, GroupName = PresentationGroup)]
     public class TransitioningContentControl : ContentControl
@@ -59,7 +58,7 @@ namespace ReactiveUI
         private Storyboard? _startingTransition;
         private Storyboard? _completingTransition;
         private Grid? _container;
-        private Rectangle? _previousRectangleSite;
+        private Image? _previousImageSite;
         private ContentPresenter? _currentContentPresentationSite;
 
         /// <summary>
@@ -199,15 +198,13 @@ namespace ReactiveUI
                 throw new ArgumentException("PART_Container not found.");
             }
 
-            _currentContentPresentationSite =
-                GetTemplateChild("PART_CurrentContentPresentationSite") as ContentPresenter;
+            _currentContentPresentationSite = GetTemplateChild("PART_CurrentContentPresentationSite") as ContentPresenter;
             if (_currentContentPresentationSite == null)
             {
                 throw new ArgumentException("PART_CurrentContentPresentationSite not found.");
             }
 
-            _previousRectangleSite =
-                GetTemplateChild("PART_PreviousRectangleSite") as Rectangle;
+            _previousImageSite = GetTemplateChild("PART_PreviousImageSite") as Image;
 
             // Set the current content site to the first piece of content.
             _currentContentPresentationSite.Content = Content;
@@ -234,14 +231,16 @@ namespace ReactiveUI
             VisualStateManager.GoToState(this, NormalState, false);
             _isTransitioning = false;
 
-            if (_previousRectangleSite != null)
+            if (_previousImageSite != null)
             {
-                if (_previousRectangleSite.Fill is ImageBrush imageBrush && imageBrush.ImageSource is RenderTargetBitmap renderTargetBitmap)
+                if (_previousImageSite.Source is RenderTargetBitmap renderTargetBitmap)
                 {
                     renderTargetBitmap.Clear();
                 }
 
-                _previousRectangleSite.Fill = null;
+                // https://github.com/dotnet/wpf/issues/2397
+                _previousImageSite.Source = null;
+                _previousImageSite.UpdateLayout();
             }
         }
 
@@ -265,13 +264,13 @@ namespace ReactiveUI
                 return;
             }
 
-            if (_isTransitioning || _previousRectangleSite == null)
+            if (_isTransitioning || _previousImageSite == null)
             {
                 _currentContentPresentationSite.Content = newContent;
                 return;
             }
 
-            _previousRectangleSite.Fill = GetImageBrushFromUiElement(_currentContentPresentationSite);
+            _previousImageSite.Source = GetRenderTargetBitmapFromUiElement(_currentContentPresentationSite);
             _currentContentPresentationSite.Content = newContent;
             string startingTransitionName;
 
@@ -315,7 +314,7 @@ namespace ReactiveUI
         {
             // Hook up the CurrentTransition.
             var presentationGroup =
-                ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container)).FirstOrDefault(o => o.Name == TransitioningContentControl.PresentationGroup);
+                ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container!))!.FirstOrDefault(o => o.Name == PresentationGroup);
             if (presentationGroup == null)
             {
                 throw new ArgumentException("Invalid VisualStateGroup.");
@@ -350,25 +349,15 @@ namespace ReactiveUI
             {
                 var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
                 startingDoubleAnimation.Duration = Duration;
-                if (Direction == TransitionDirection.Down)
-                {
-                    startingDoubleAnimation.From = -ActualHeight;
-                }
 
-                if (Direction == TransitionDirection.Up)
+                startingDoubleAnimation.From = Direction switch
                 {
-                    startingDoubleAnimation.From = ActualHeight;
-                }
-
-                if (Direction == TransitionDirection.Right)
-                {
-                    startingDoubleAnimation.From = -ActualWidth;
-                }
-
-                if (Direction == TransitionDirection.Left)
-                {
-                    startingDoubleAnimation.From = ActualWidth;
-                }
+                    TransitionDirection.Down => -ActualHeight,
+                    TransitionDirection.Up => ActualHeight,
+                    TransitionDirection.Right => -ActualWidth,
+                    TransitionDirection.Left => ActualWidth,
+                    _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
+                };
             }
 
             if (Transition == TransitionType.Move && CompletingTransition != null)
@@ -377,96 +366,60 @@ namespace ReactiveUI
                 var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
                 startingDoubleAnimation.Duration = Duration;
                 completingDoubleAnimation.Duration = Duration;
-                if (Direction == TransitionDirection.Down)
-                {
-                    startingDoubleAnimation.To = ActualHeight;
-                    completingDoubleAnimation.From = -ActualHeight;
-                }
 
-                if (Direction == TransitionDirection.Up)
+                switch (Direction)
                 {
-                    startingDoubleAnimation.To = -ActualHeight;
-                    completingDoubleAnimation.From = ActualHeight;
-                }
+                    case TransitionDirection.Down:
+                        startingDoubleAnimation.To = ActualHeight;
+                        completingDoubleAnimation.From = -ActualHeight;
 
-                if (Direction == TransitionDirection.Right)
-                {
-                    startingDoubleAnimation.To = ActualWidth;
-                    completingDoubleAnimation.From = -ActualWidth;
-                }
+                        break;
+                    case TransitionDirection.Up:
+                        startingDoubleAnimation.To = -ActualHeight;
+                        completingDoubleAnimation.From = ActualHeight;
 
-                if (Direction == TransitionDirection.Left)
-                {
-                    startingDoubleAnimation.To = -ActualWidth;
-                    completingDoubleAnimation.From = ActualWidth;
+                        break;
+                    case TransitionDirection.Right:
+                        startingDoubleAnimation.To = ActualWidth;
+                        completingDoubleAnimation.From = -ActualWidth;
+
+                        break;
+                    case TransitionDirection.Left:
+                        startingDoubleAnimation.To = -ActualWidth;
+                        completingDoubleAnimation.From = ActualWidth;
+
+                        break;
+                    default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
                 }
             }
 
             if (Transition == TransitionType.Bounce)
             {
-                if (Direction == TransitionDirection.Down)
+                if (CompletingTransition != null)
                 {
-                    if (CompletingTransition != null)
-                    {
-                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                        completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;
-                    }
-
-                    if (StartingTransition != null)
-                    {
-                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-                        startingDoubleAnimation.To = ActualHeight;
-                    }
+                    var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
+                    completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;
                 }
 
-                if (Direction == TransitionDirection.Up)
+                if (StartingTransition is null)
                 {
-                    if (CompletingTransition != null)
-                    {
-                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                        completingDoubleAnimation.KeyFrames[1].Value = -ActualHeight;
-                    }
-
-                    if (StartingTransition != null)
-                    {
-                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-                        startingDoubleAnimation.To = -ActualHeight;
-                    }
+                    return;
                 }
 
-                if (Direction == TransitionDirection.Right)
+                var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+
+                startingDoubleAnimation.To = Direction switch
                 {
-                    if (CompletingTransition != null)
-                    {
-                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                        completingDoubleAnimation.KeyFrames[1].Value = ActualWidth;
-                    }
-
-                    if (StartingTransition != null)
-                    {
-                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-                        startingDoubleAnimation.To = ActualWidth;
-                    }
-                }
-
-                if (Direction == TransitionDirection.Left)
-                {
-                    if (CompletingTransition != null)
-                    {
-                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                        completingDoubleAnimation.KeyFrames[1].Value = -ActualWidth;
-                    }
-
-                    if (StartingTransition != null)
-                    {
-                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-                        startingDoubleAnimation.To = -ActualWidth;
-                    }
-                }
+                    TransitionDirection.Down => ActualHeight,
+                    TransitionDirection.Up => -ActualHeight,
+                    TransitionDirection.Right => ActualWidth,
+                    TransitionDirection.Left => -ActualWidth,
+                    _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
+                };
             }
         }
 
-        private static ImageBrush GetImageBrushFromUiElement(UIElement uiElement)
+        private static RenderTargetBitmap GetRenderTargetBitmapFromUiElement(UIElement uiElement)
         {
             DpiScale dpiScale = VisualTreeHelper.GetDpi(uiElement);
 
@@ -479,9 +432,8 @@ namespace ReactiveUI
 
             renderTargetBitmap.Render(uiElement);
             renderTargetBitmap.Freeze();
-            var imageBrush = new ImageBrush(renderTargetBitmap);
-            imageBrush.Freeze();
-            return imageBrush;
+
+            return renderTargetBitmap;
         }
     }
 }
