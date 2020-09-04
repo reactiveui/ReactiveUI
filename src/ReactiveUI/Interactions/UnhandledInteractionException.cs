@@ -70,7 +70,7 @@ namespace ReactiveUI
         protected UnhandledInteractionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            _input = (TInput)info.GetValue(nameof(Input), typeof(TInput)) !;
+            _input = (TInput)info.GetValue(nameof(Input), typeof(TInput))!;
         }
 
         /// <summary>

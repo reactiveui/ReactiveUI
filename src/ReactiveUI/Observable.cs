@@ -26,6 +26,6 @@ namespace System.Reactive.Linq
         /// <summary>
         /// An observable of type <typeparamref name="T"/> that ticks a single, default value.
         /// </summary>
-        public static readonly IObservable<T> Default = Observable.Return(default(T) !);
+        public static readonly IObservable<T> Default = Observable.Return(default(T)!);
     }
 }

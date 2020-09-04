@@ -440,7 +440,7 @@ namespace ReactiveUI
                 return uniqueEvents;
             }
 
-            private Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>>, IObservable<IReactivePropertyChangedEventArgs<TSender>>)> CreateLazyDelayableSubjectAndObservable()
+            private Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> changeSubject, IObservable<IReactivePropertyChangedEventArgs<TSender>> changeObservable)> CreateLazyDelayableSubjectAndObservable()
             {
                 return new Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>>, IObservable<IReactivePropertyChangedEventArgs<TSender>>)>(() =>
               {

@@ -28,7 +28,7 @@ namespace ReactiveUI.Tests
                 // ...whereas ObservableForProperty *is* guaranteed to.
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord).Subscribe(x =>
                 {
-                    output.Add(x.GetValue() !);
+                    output.Add(x.GetValue()!);
                 });
 
                 foreach (var v in input)

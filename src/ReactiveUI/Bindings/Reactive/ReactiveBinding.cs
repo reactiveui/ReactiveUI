@@ -14,9 +14,27 @@ namespace ReactiveUI
     {
         private readonly IDisposable _bindingDisposable;
 
+        [Obsolete("This constructor will be removed in the future.")]
         public ReactiveBinding(
             TView view,
             TViewModel? viewModel,
+            Expression viewExpression,
+            Expression viewModelExpression,
+            IObservable<TValue> changed,
+            BindingDirection direction,
+            IDisposable bindingDisposable)
+        {
+            View = view;
+            ViewExpression = viewExpression;
+            ViewModelExpression = viewModelExpression;
+            Direction = direction;
+            Changed = changed;
+
+            _bindingDisposable = bindingDisposable;
+        }
+
+        public ReactiveBinding(
+            TView view,
             Expression viewExpression,
             Expression viewModelExpression,
             IObservable<TValue> changed,

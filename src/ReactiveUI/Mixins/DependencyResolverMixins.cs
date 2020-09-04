@@ -44,7 +44,7 @@ namespace ReactiveUI
 
             var fdr = typeof(DependencyResolverMixins);
 
-            var assemblyName = new AssemblyName(fdr?.AssemblyQualifiedName?.Replace(fdr?.FullName + ", ", string.Empty) !);
+            var assemblyName = new AssemblyName(fdr?.AssemblyQualifiedName?.Replace(fdr?.FullName + ", ", string.Empty)!);
 
             foreach (var ns in extraNs)
             {
@@ -126,7 +126,7 @@ namespace ReactiveUI
                 var registerTypeClass = Reflection.ReallyFindType(fullName, false);
                 if (registerTypeClass != null)
                 {
-                    var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass) !;
+                    var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass)!;
                     registerer?.Register((f, t) => resolver.RegisterConstant(f(), t));
                 }
             }

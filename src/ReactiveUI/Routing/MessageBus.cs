@@ -123,7 +123,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return source.Subscribe(SetupSubjectIfNecessary<T>(contract) !);
+            return source.Subscribe(SetupSubjectIfNecessary<T>(contract)!);
         }
 
         /// <summary>

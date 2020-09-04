@@ -119,7 +119,7 @@ namespace ReactiveUI
             var invocationInfo = command
                 .Select(cmd => cmd == null ? Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty : cmd
                     .CanExecute
-                    .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T) !)))
+                    .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T)!)))
                 .Switch();
 
             return WithLatestFromFixed(item, invocationInfo, (value, ii) => ii.WithValue(value))
