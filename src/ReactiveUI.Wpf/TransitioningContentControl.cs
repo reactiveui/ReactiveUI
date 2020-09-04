@@ -222,6 +222,23 @@ namespace ReactiveUI
             base.OnContentChanged(oldContent, newContent);
         }
 
+        private static RenderTargetBitmap GetRenderTargetBitmapFromUiElement(UIElement uiElement)
+        {
+            DpiScale dpiScale = VisualTreeHelper.GetDpi(uiElement);
+
+            var renderTargetBitmap = new RenderTargetBitmap(
+                                                            Convert.ToInt32(uiElement.RenderSize.Width * dpiScale.DpiScaleX),
+                                                            Convert.ToInt32(uiElement.RenderSize.Height * dpiScale.DpiScaleY),
+                                                            dpiScale.PixelsPerInchX,
+                                                            dpiScale.PixelsPerInchY,
+                                                            PixelFormats.Pbgra32);
+
+            renderTargetBitmap.Render(uiElement);
+            renderTargetBitmap.Freeze();
+
+            return renderTargetBitmap;
+        }
+
         /// <summary>
         /// Aborts the transition.
         /// </summary>
@@ -446,23 +463,6 @@ namespace ReactiveUI
                 case TransitionType.Drop: break;
                 default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
             }
-        }
-
-        private static RenderTargetBitmap GetRenderTargetBitmapFromUiElement(UIElement uiElement)
-        {
-            DpiScale dpiScale = VisualTreeHelper.GetDpi(uiElement);
-
-            var renderTargetBitmap = new RenderTargetBitmap(
-                    Convert.ToInt32(uiElement.RenderSize.Width * dpiScale.DpiScaleX),
-                    Convert.ToInt32(uiElement.RenderSize.Height * dpiScale.DpiScaleY),
-                    dpiScale.PixelsPerInchX,
-                    dpiScale.PixelsPerInchY,
-                    PixelFormats.Pbgra32);
-
-            renderTargetBitmap.Render(uiElement);
-            renderTargetBitmap.Freeze();
-
-            return renderTargetBitmap;
         }
     }
 }
