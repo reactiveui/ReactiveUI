@@ -430,7 +430,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(item));
             }
 
-            var method = (item.GetMethod ?? item.SetMethod) !;
+            var method = (item.GetMethod ?? item.SetMethod)!;
             return method.IsStatic;
         }
 
