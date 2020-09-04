@@ -78,7 +78,6 @@ namespace ReactiveUI
 
             return new ReactiveBinding<TView, TViewModel, TProp>(
                 view,
-                viewModel,
                 controlExpression,
                 vmExpression,
                 source,
@@ -136,7 +135,6 @@ namespace ReactiveUI
 
             return new ReactiveBinding<TView, TViewModel, TProp>(
                  view,
-                 viewModel,
                  controlExpression,
                  vmExpression,
                  source,

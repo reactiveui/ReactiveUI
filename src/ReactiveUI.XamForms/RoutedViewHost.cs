@@ -189,7 +189,7 @@ namespace ReactiveUI.XamForms
                 {
                     return router.NavigationStack
                         .ToObservable()
-                        .Select(x => (Page)ViewLocator.Current.ResolveView(x) !)
+                        .Select(x => (Page)ViewLocator.Current.ResolveView(x)!)
                         .SelectMany(x => PushAsync(x).ToObservable())
                         .Finally(() =>
                         {

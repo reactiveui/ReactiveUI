@@ -110,7 +110,7 @@ namespace ReactiveUI
             ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
                 eventHandler =>
                 {
-                    void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter() !);
+                    void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter()!);
                     return Handler;
                 },
                 x => SizeChanged += x,

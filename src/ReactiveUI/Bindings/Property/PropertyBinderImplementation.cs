@@ -179,7 +179,7 @@ namespace ReactiveUI
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret)
             {
-                return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewModel, viewExpression, vmExpression, Observable.Empty<TVProp>(), BindingDirection.OneWay, Disposable.Empty);
+                return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewExpression, vmExpression, Observable.Empty<TVProp>(), BindingDirection.OneWay, Disposable.Empty);
             }
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
@@ -195,7 +195,7 @@ namespace ReactiveUI
 
             var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
 
-            return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewModel, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+            return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
         }
 
         /// <inheritdoc />
@@ -223,14 +223,14 @@ namespace ReactiveUI
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret)
             {
-                return new ReactiveBinding<TView, TViewModel, TOut>(view, viewModel, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
+                return new ReactiveBinding<TView, TViewModel, TOut>(view, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
             }
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>().Select(selector);
 
             var (disposable, obs) = BindToDirect<TView, TOut, TOut>(source, view, viewExpression);
 
-            return new ReactiveBinding<TView, TViewModel, TOut>(view, viewModel, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+            return new ReactiveBinding<TView, TViewModel, TOut>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
         }
 
         /// <inheritdoc />
@@ -336,7 +336,7 @@ namespace ReactiveUI
 
             if (viewExpression.GetParent().NodeType == ExpressionType.Parameter)
             {
-                setObservable = changeObservable.Select(x => (TValue)SetThenGet(target, x, viewExpression.GetArgumentsArray()) !);
+                setObservable = changeObservable.Select(x => (TValue)SetThenGet(target, x, viewExpression.GetArgumentsArray())!);
             }
             else
             {
@@ -498,7 +498,6 @@ namespace ReactiveUI
 
             return new ReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>(
                    view,
-                   viewModel,
                    viewExpression,
                    vmExpression,
                    changes,
