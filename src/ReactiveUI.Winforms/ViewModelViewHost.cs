@@ -151,7 +151,8 @@ namespace ReactiveUI.Winforms
         {
             var viewChanges =
                 this.WhenAnyValue(x => x.Content)
-                    .OfType<Control>()
+                    .Select(x => x as Control)
+                    .Where(x => x != null)
                     .Subscribe(x =>
                     {
                         // change the view in the ui
