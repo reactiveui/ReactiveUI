@@ -46,7 +46,7 @@ namespace ReactiveUI
         /// <summary>
         /// <see cref="DependencyProperty"/> for the <see cref="Transition"/> property.
         /// </summary>
-        public static readonly DependencyProperty DurationProperty = DependencyProperty.RegisterAttached(
+        public static readonly DependencyProperty TransitionDurationProperty = DependencyProperty.RegisterAttached(
             nameof(Duration),
             typeof(TimeSpan),
             typeof(TransitioningContentControl),
@@ -152,7 +152,7 @@ namespace ReactiveUI
         /// Gets or sets the transition duration.
         /// </summary>
         /// <value>The duration.</value>
-        public TimeSpan Duration { get => (TimeSpan)GetValue(DurationProperty); set => SetValue(DurationProperty, value); }
+        public TimeSpan Duration { get => (TimeSpan)GetValue(TransitionDurationProperty); set => SetValue(TransitionDurationProperty, value); }
 
         private Storyboard? StartingTransition
         {
