@@ -180,7 +180,7 @@ namespace ReactiveUI
                 .Concat()
                 .TakeWhile(_ => !context.IsHandled)
                 .IgnoreElements()
-                .Select(_ => default(TOutput) !)
+                .Select(_ => default(TOutput)!)
                 .Concat(
                     Observable.Defer(
                         () => context.IsHandled

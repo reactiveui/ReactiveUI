@@ -73,7 +73,7 @@ namespace ReactiveUI
             var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(new[] { eventArgsType });
 
-            var ret = (IDisposable)mi.Invoke(binder, new[] { command, target, commandParameter, eventName }) !;
+            var ret = (IDisposable)mi.Invoke(binder, new[] { command, target, commandParameter, eventName })!;
             if (ret == null)
             {
                 throw new Exception($"Couldn't bind Command Binder for {type.FullName} and event {eventName}");
