@@ -81,9 +81,7 @@ namespace ReactiveUI
 
             var router = item.HostScreen.Router;
             var navigationStackChanged = router.NavigationChanged?.CountChanged();
-
-            var itemRemoved = navigationStackChanged
-                .Where(x => x.Any(change => change.Reason == ListChangeReason.Remove && change.Item.Current == item));
+            var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
 
             return navigationStackChanged
                 .Where(_ => router?.GetCurrentViewModel() == item)
@@ -115,14 +113,25 @@ namespace ReactiveUI
 
             var router = item.HostScreen.Router;
             var navigationStackChanged = router.NavigationChanged?.CountChanged();
-            bool StackIsCleared(Change<IRoutableViewModel> change) => change.Reason == ListChangeReason.Clear;
-            bool ThisViewModelIsRemoved(Change<IRoutableViewModel> change) => NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item;
-            var itemRemoved = navigationStackChanged.Where(x => x.Any(change => StackIsCleared(change) || ThisViewModelIsRemoved(change)));
+            var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
             var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel[2], (previous, current) => new[] { previous[1], router.GetCurrentViewModel() });
+
             return viewModelsChanged
                 .Where(x => x[0] == item)
                 .Select(_ => Unit.Default)
                 .TakeUntil(itemRemoved);
+        }
+
+        private static bool WasItemRemoved(IChangeSet<IRoutableViewModel> changeSet, IRoutableViewModel item)
+        {
+            return changeSet
+                .Any(
+                    change =>
+                    {
+                        return
+                            change.Reason == ListChangeReason.Clear ||
+                            (NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item);
+                    });
         }
     }
 }
