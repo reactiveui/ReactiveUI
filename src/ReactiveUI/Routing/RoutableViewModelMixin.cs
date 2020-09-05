@@ -124,10 +124,14 @@ namespace ReactiveUI
 
         private static bool WasItemRemoved(IChangeSet<IRoutableViewModel> changeSet, IRoutableViewModel item)
         {
-            bool StackIsCleared(Change<IRoutableViewModel> change) => change.Reason == ListChangeReason.Clear;
-            bool ThisViewModelIsRemoved(Change<IRoutableViewModel> change) => NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item;
-
-            return changeSet.Any(change => StackIsCleared(change) || ThisViewModelIsRemoved(change));
+            return changeSet
+                .Any(
+                    change =>
+                    {
+                        return
+                            change.Reason == ListChangeReason.Clear ||
+                            (NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item);
+                    });
         }
     }
 }
