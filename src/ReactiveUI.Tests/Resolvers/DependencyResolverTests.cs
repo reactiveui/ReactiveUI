@@ -40,7 +40,6 @@ namespace ReactiveUI.Tests
                 {
                     new[]
                     {
-                        DependencyResolverMixins.RegistrationNamespace.Winforms,
                         DependencyResolverMixins.RegistrationNamespace.XamForms,
                         DependencyResolverMixins.RegistrationNamespace.Wpf
                     }
@@ -88,6 +87,7 @@ namespace ReactiveUI.Tests
                 {
                     IEnumerable<object> resolvedServices = _resolver.GetServices(shouldRegistered.Key);
 
+                    Assert.Equal(shouldRegistered.Value.Count, resolvedServices.Count());
                     foreach (Type implementationType in shouldRegistered.Value)
                     {
                         resolvedServices
@@ -110,7 +110,7 @@ namespace ReactiveUI.Tests
 
                 foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
                 {
-                    IEnumerable<object> resolvedServices = _resolver.GetServices(shouldRegistered.Key).ToList();
+                    IEnumerable<object> resolvedServices = _resolver.GetServices(shouldRegistered.Key);
 
                     resolvedServices
                         .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)
