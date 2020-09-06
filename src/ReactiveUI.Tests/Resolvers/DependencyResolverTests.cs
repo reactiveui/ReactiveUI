@@ -74,16 +74,17 @@ namespace ReactiveUI.Tests
             }
         }
 
-        [Fact]
-        public void AllDefaultServicesShouldBeRegisteredPerRegistrationNamespace()
+        [Theory]
+        [MemberData(nameof(NamespacesToRegister))]
+        public void AllDefaultServicesShouldBeRegisteredPerRegistrationNamespace(IEnumerable<DependencyResolverMixins.RegistrationNamespace> namespacesToRegister)
         {
             using (_resolver.WithResolver())
             {
-                var registrationNamespaces = new[] { DependencyResolverMixins.RegistrationNamespace.Wpf };
+                var namespaces = namespacesToRegister.ToArray();
 
-                DependencyResolverMixins.SetRegistrationNamespaces(registrationNamespaces);
+                DependencyResolverMixins.SetRegistrationNamespaces(namespaces);
 
-                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(registrationNamespaces))
+                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
                 {
                     IEnumerable<object> resolvedServices = _resolver.GetServices(shouldRegistered.Key);
 
