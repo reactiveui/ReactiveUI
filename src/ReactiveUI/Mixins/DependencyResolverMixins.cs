@@ -30,32 +30,32 @@ namespace ReactiveUI
         public enum RegistrationNamespace
         {
             /// <summary>
-            /// Xamarin Forms
+            /// Xamarin Forms.
             /// </summary>
             XamForms,
 
             /// <summary>
-            /// Windows Forms
+            /// Windows Forms.
             /// </summary>
             Winforms,
 
             /// <summary>
-            /// WPF
+            /// WPF.
             /// </summary>
             Wpf,
 
             /// <summary>
-            /// Uno
+            /// Uno.
             /// </summary>
             Uno,
 
             /// <summary>
-            /// Blazor
+            /// Blazor.
             /// </summary>
             Blazor,
 
             /// <summary>
-            /// Splat.Drawing
+            /// Drawing.
             /// </summary>
             Drawing
         }
@@ -66,10 +66,6 @@ namespace ReactiveUI
         public static IReadOnlyList<RegistrationNamespace> DefaultRegistrationNamespaces =>
             defaultRegistrationNamespaces;
 
-        // The reason SetRegistrationNamespaces is a separate method and not a parameter to InitializeReactiveUI
-        // is because InitializeReactiveUI is called from within the RxApp static constructor, and there's no
-        // way to directly pass it parameters.
-
         /// <summary>
         /// This method allows you to initialize which platforms <see cref="InitializeReactiveUI"/>
         /// attempts to discover registrations for. If this method is not called, all platforms are assumed.
@@ -78,6 +74,9 @@ namespace ReactiveUI
         /// <param name="registrationNamespaces">Which platforms to use.</param>
         public static void SetRegistrationNamespaces(params RegistrationNamespace[] registrationNamespaces)
         {
+            // The reason SetRegistrationNamespaces is a separate method and not a parameter to InitializeReactiveUI
+            // is because InitializeReactiveUI is called from within the RxApp static constructor, and there's no
+            // way to directly pass it parameters.
             registrationNamespacesToInitialize.Clear();
             foreach (var platform in registrationNamespaces)
             {
