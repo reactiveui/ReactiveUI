@@ -3,11 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Splat;
 using System;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
+using Splat;
 
 namespace ReactiveUI.XamForms
 {
@@ -23,7 +23,7 @@ namespace ReactiveUI.XamForms
     /// public partial class App : Application
     /// {
     ///   private readonly AutoSuspendHelper _autoSuspendHelper;
-    /// 
+    ///
     ///   public App()
     ///   {
     ///     _autoSuspendHelper = new AutoSuspendHelper();
@@ -102,6 +102,14 @@ namespace ReactiveUI.XamForms
         /// </summary>
         public void OnResume() => _onResume.OnNext(Unit.Default);
 
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing).
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Disposes of the items inside the class.
         /// </summary>
@@ -122,14 +130,6 @@ namespace ReactiveUI.XamForms
             }
 
             _disposedValue = true;
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing).
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }
