@@ -19,7 +19,7 @@
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames 
                                             BeginTime="00:00:00" 
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
@@ -34,7 +34,7 @@
                                     <Storyboard>
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite"
+                                            Storyboard.TargetName="PART_PreviousImageSite"
                                             Storyboard.TargetProperty="(UIElement.Opacity)"
                                             From="1" To="0"/>
 
@@ -96,7 +96,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
                                             From="0" To="30"/>
                                     </Storyboard>
@@ -112,7 +112,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
                                             From="0" To="30"/>
                                     </Storyboard>
@@ -128,7 +128,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="0" To="30"/>
                                     </Storyboard>
@@ -144,7 +144,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="0" To="30"/>
                                     </Storyboard>
@@ -160,7 +160,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="0" To="30"/>
 
@@ -172,7 +172,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite"
+                                            Storyboard.TargetName="PART_PreviousImageSite"
                                             Storyboard.TargetProperty="(UIElement.Opacity)"
                                             From="1" To="0"/>
                                     </Storyboard>
@@ -188,7 +188,7 @@
  
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="-30" To="0"/>
 
@@ -200,7 +200,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite"
+                                            Storyboard.TargetName="PART_PreviousImageSite"
                                             Storyboard.TargetProperty="(UIElement.Opacity)"
                                             From="1" To="0"/>
                                     </Storyboard>
@@ -216,7 +216,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
                                             From="0" To="30"/>
 
@@ -228,7 +228,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite"
+                                            Storyboard.TargetName="PART_PreviousImageSite"
                                             Storyboard.TargetProperty="(UIElement.Opacity)"
                                             From="1" To="0"/>
                                     </Storyboard>
@@ -244,7 +244,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
                                             From="0" To="30"/>
 
@@ -256,7 +256,7 @@
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite"
+                                            Storyboard.TargetName="PART_PreviousImageSite"
                                             Storyboard.TargetProperty="(UIElement.Opacity)"
                                             From="1" To="0"/>
                                     </Storyboard>
@@ -284,7 +284,7 @@
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <ObjectAnimationUsingKeyFrames 
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
@@ -299,7 +299,7 @@
                                     <Storyboard>
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.2"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
                                             From="0" To="-90"/>
 
@@ -337,7 +337,7 @@
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <ObjectAnimationUsingKeyFrames 
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
@@ -352,7 +352,7 @@
                                     <Storyboard>
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.2"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
                                             From="0" To="-90"/>
 
@@ -390,7 +390,7 @@
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <ObjectAnimationUsingKeyFrames 
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
@@ -405,7 +405,7 @@
                                     <Storyboard>
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.2"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="0" To="-90"/>
 
@@ -443,7 +443,7 @@
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <ObjectAnimationUsingKeyFrames 
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
@@ -458,7 +458,7 @@
                                     <Storyboard>
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.2"
-                                            Storyboard.TargetName="PART_PreviousContentPresentationSite" 
+                                            Storyboard.TargetName="PART_PreviousImageSite" 
                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="0" To="-90"/>
 
@@ -476,32 +476,20 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
-                        <ContentPresenter 
-                            x:Name="PART_PreviousContentPresentationSite"
-                            Content="{x:Null}"
-                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                        <Image 
+                            x:Name="PART_PreviousImageSite"
+                            Source="{x:Null}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
-                            <ContentPresenter.RenderTransform>
+                            <Image.RenderTransform>
                                 <TransformGroup>
                                     <TransformGroup.Children>
                                         <ScaleTransform ScaleX="1" ScaleY="1" />
                                         <TranslateTransform X="0" Y="0" />
                                     </TransformGroup.Children>
                                 </TransformGroup>
-                                <!--
-                                <Controls:CompatCompositeTransform 
-                                    ScaleX="1" ScaleY="1"
-                                    TranslateX="0" TranslateY="0"/>
--->
-                            </ContentPresenter.RenderTransform>
-
-                            <!--
-                            <ContentPresenter.Projection>
-                                <PlaneProjection/>
-                            </ContentPresenter.Projection>
-                            -->
-                        </ContentPresenter>
+                            </Image.RenderTransform>
+                        </Image>
 
                         <ContentPresenter
                             x:Name="PART_CurrentContentPresentationSite"
@@ -516,19 +504,7 @@
                                         <TranslateTransform X="0" Y="0" />
                                     </TransformGroup.Children>
                                 </TransformGroup>
-                                <!--
-                                <Controls:CompatCompositeTransform 
-                                    ScaleX="1" ScaleY="1"
-                                    TranslateX="0" TranslateY="0"/>
--->
                             </ContentPresenter.RenderTransform>
-
-
-                            <!--
-                            <ContentPresenter.Projection>
-                                <PlaneProjection/>
-                            </ContentPresenter.Projection>
-                            -->
                         </ContentPresenter>
                     </Grid>
                 </ControlTemplate>

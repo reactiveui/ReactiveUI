@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 // This control is gratefully borrowed from http://blog.landdolphin.net/?p=17
 // Thanks guys!
@@ -19,7 +20,7 @@ namespace ReactiveUI
     /// A ContentControl that animates the transition when its content is changed.
     /// </summary>
     [TemplatePart(Name = "PART_Container", Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = "PART_PreviousContentPresentationSite", Type = typeof(ContentPresenter))]
+    [TemplatePart(Name = "PART_PreviousImageSite", Type = typeof(Image))]
     [TemplatePart(Name = "PART_CurrentContentPresentationSite", Type = typeof(ContentPresenter))]
     [TemplateVisualState(Name = NormalState, GroupName = PresentationGroup)]
     public class TransitioningContentControl : ContentControl
@@ -28,16 +29,16 @@ namespace ReactiveUI
         /// <see cref="DependencyProperty"/> for the <see cref="Transition"/> property.
         /// </summary>
         public static readonly DependencyProperty TransitionProperty = DependencyProperty.RegisterAttached(
-            "Transition",
+            nameof(Transition),
             typeof(TransitionType),
             typeof(TransitioningContentControl),
-            new PropertyMetadata(TransitionType.Fade, OnTransitionChanged));
+            new PropertyMetadata(TransitionType.Fade));
 
         /// <summary>
         /// <see cref="DependencyProperty"/> for the <see cref="Transition"/> property.
         /// </summary>
         public static readonly DependencyProperty TransitionDirectionProperty = DependencyProperty.RegisterAttached(
-            "TransitionDirection",
+            nameof(TransitionDirection),
             typeof(TransitionDirection),
             typeof(TransitioningContentControl),
             new PropertyMetadata(TransitionDirection.Left));
@@ -46,7 +47,7 @@ namespace ReactiveUI
         /// <see cref="DependencyProperty"/> for the <see cref="Transition"/> property.
         /// </summary>
         public static readonly DependencyProperty TransitionDurationProperty = DependencyProperty.RegisterAttached(
-            "TransitionDuration",
+            nameof(Duration),
             typeof(TimeSpan),
             typeof(TransitioningContentControl),
             new PropertyMetadata(TimeSpan.FromSeconds(0.3)));
@@ -57,7 +58,7 @@ namespace ReactiveUI
         private Storyboard? _startingTransition;
         private Storyboard? _completingTransition;
         private Grid? _container;
-        private ContentPresenter? _previousContentPresentationSite;
+        private Image? _previousImageSite;
         private ContentPresenter? _currentContentPresentationSite;
 
         /// <summary>
@@ -191,21 +192,19 @@ namespace ReactiveUI
         public override void OnApplyTemplate()
         {
             // Wire up all of the various control parts.
-            _container = (Grid)GetTemplateChild("PART_Container");
+            _container = GetTemplateChild("PART_Container") as Grid;
             if (_container == null)
             {
                 throw new ArgumentException("PART_Container not found.");
             }
 
-            _currentContentPresentationSite =
-                (ContentPresenter)GetTemplateChild("PART_CurrentContentPresentationSite");
+            _currentContentPresentationSite = GetTemplateChild("PART_CurrentContentPresentationSite") as ContentPresenter;
             if (_currentContentPresentationSite == null)
             {
                 throw new ArgumentException("PART_CurrentContentPresentationSite not found.");
             }
 
-            _previousContentPresentationSite =
-                (ContentPresenter)GetTemplateChild("PART_PreviousContentPresentationSite");
+            _previousImageSite = GetTemplateChild("PART_PreviousImageSite") as Image;
 
             // Set the current content site to the first piece of content.
             _currentContentPresentationSite.Content = Content;
@@ -219,14 +218,25 @@ namespace ReactiveUI
         /// <param name="newContent">The new value of the <see cref="ContentControl.Content"/> property.</param>
         protected override void OnContentChanged(object oldContent, object newContent)
         {
-            QueueTransition(oldContent, newContent);
+            QueueTransition(newContent);
             base.OnContentChanged(oldContent, newContent);
         }
 
-        private static void OnTransitionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static RenderTargetBitmap GetRenderTargetBitmapFromUiElement(UIElement uiElement)
         {
-            var transitioningContentControl = (TransitioningContentControl)d;
-            var transition = (TransitionType)e.NewValue;
+            DpiScale dpiScale = VisualTreeHelper.GetDpi(uiElement);
+
+            var renderTargetBitmap = new RenderTargetBitmap(
+                                                            Convert.ToInt32(uiElement.RenderSize.Width * dpiScale.DpiScaleX),
+                                                            Convert.ToInt32(uiElement.RenderSize.Height * dpiScale.DpiScaleY),
+                                                            dpiScale.PixelsPerInchX,
+                                                            dpiScale.PixelsPerInchY,
+                                                            PixelFormats.Pbgra32);
+
+            renderTargetBitmap.Render(uiElement);
+            renderTargetBitmap.Freeze();
+
+            return renderTargetBitmap;
         }
 
         /// <summary>
@@ -237,9 +247,17 @@ namespace ReactiveUI
             // Go to a normal state and release our hold on the old content.
             VisualStateManager.GoToState(this, NormalState, false);
             _isTransitioning = false;
-            if (_previousContentPresentationSite != null)
+
+            if (_previousImageSite != null)
             {
-                _previousContentPresentationSite.Content = null;
+                if (_previousImageSite.Source is RenderTargetBitmap renderTargetBitmap)
+                {
+                    renderTargetBitmap.Clear();
+                }
+
+                // https://github.com/dotnet/wpf/issues/2397
+                _previousImageSite.Source = null;
+                _previousImageSite.UpdateLayout();
             }
         }
 
@@ -255,55 +273,65 @@ namespace ReactiveUI
             TransitionStarted?.Invoke(this, new RoutedEventArgs());
         }
 
-        private void QueueTransition(object oldContent, object newContent)
+        private void QueueTransition(object newContent)
         {
             // Both ContentPresenters must be available, otherwise a transition is useless.
-            if (_currentContentPresentationSite != null && _previousContentPresentationSite != null)
+            if (_currentContentPresentationSite == null)
+            {
+                return;
+            }
+
+            if (_isTransitioning || _previousImageSite == null)
             {
                 _currentContentPresentationSite.Content = newContent;
-                _previousContentPresentationSite.Content = oldContent;
+                return;
+            }
 
-                if (!_isTransitioning)
-                {
-                    string startingTransitionName;
-                    if (Transition == TransitionType.Bounce)
-                    {
-                        // Wire up the completion transition.
-                        var transitionInName = "Transition_" + Transition + Direction + "In";
-                        CompletingTransition = GetTransitionStoryboardByName(transitionInName);
+            _previousImageSite.Source = GetRenderTargetBitmapFromUiElement(_currentContentPresentationSite);
+            _currentContentPresentationSite.Content = newContent;
+            string startingTransitionName;
 
-                        // Wire up the first transition to start the second transition when it's complete.
-                        startingTransitionName = "Transition_" + Transition + Direction + "Out";
-                        var transitionOut = GetTransitionStoryboardByName(startingTransitionName);
-                        transitionOut.Completed += (sender, args) => VisualStateManager.GoToState(this, transitionInName, false);
-                        StartingTransition = transitionOut;
-                    }
-                    else
-                    {
-                        startingTransitionName = Transition == TransitionType.Fade ? "Transition_Fade" : "Transition_" + Transition + Direction;
-                        CompletingTransition = GetTransitionStoryboardByName(startingTransitionName);
-                    }
+            if (Transition == TransitionType.Bounce)
+            {
+                // Wire up the completion transition.
+                var transitionInName = $"Transition_{Transition}{Direction}In";
+                CompletingTransition = GetTransitionStoryboardByName(transitionInName);
 
-                    // Start the transition.
-                    _isTransitioning = true;
-                    RaiseTransitionStarted();
-                    VisualStateManager.GoToState(this, startingTransitionName, false);
-                }
+                // Wire up the first transition to start the second transition when it's complete.
+                startingTransitionName = $"Transition_{Transition}{Direction}Out";
+                Storyboard transitionOut = GetTransitionStoryboardByName(startingTransitionName);
+
+                transitionOut.Completed += (sender, args) => VisualStateManager.GoToState(
+                    this,
+                    transitionInName,
+                    false);
+
+                StartingTransition = transitionOut;
             }
             else
             {
-                if (_currentContentPresentationSite != null)
-                {
-                    _currentContentPresentationSite.Content = newContent;
-                }
+                startingTransitionName = Transition == TransitionType.Fade
+                                             ? "Transition_Fade"
+                                             : $"Transition_{Transition}{Direction}";
+
+                CompletingTransition = GetTransitionStoryboardByName(startingTransitionName);
             }
+
+            // Start the transition.
+            _isTransitioning = true;
+            RaiseTransitionStarted();
+
+            VisualStateManager.GoToState(
+                                         this,
+                                         startingTransitionName,
+                                         false);
         }
 
         private Storyboard GetTransitionStoryboardByName(string transitionName)
         {
             // Hook up the CurrentTransition.
             var presentationGroup =
-                ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container)).FirstOrDefault(o => o.Name == PresentationGroup);
+                ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container!))!.FirstOrDefault(o => o.Name == PresentationGroup);
             if (presentationGroup == null)
             {
                 throw new ArgumentException("Invalid VisualStateGroup.");
@@ -326,82 +354,86 @@ namespace ReactiveUI
         private void SetTransitionDefaultValues()
         {
             // Do some special handling of particular transitions so that we get nice smooth transitions that utilise the size of the content.
-            if (Transition == TransitionType.Fade)
+            switch (Transition)
             {
-                if (CompletingTransition != null)
+                case TransitionType.Fade:
                 {
+                    if (CompletingTransition is null)
+                    {
+                        return;
+                    }
+
                     var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                    completingDoubleAnimation.Duration = Duration;
                     var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
                     startingDoubleAnimation.Duration = Duration;
-                    completingDoubleAnimation.Duration = Duration;
-                }
-            }
 
-            if (Transition == TransitionType.Slide)
-            {
-                if (CompletingTransition != null)
+                    break;
+                }
+
+                case TransitionType.Slide:
                 {
+                    if (CompletingTransition is null)
+                    {
+                        return;
+                    }
+
                     var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
                     startingDoubleAnimation.Duration = Duration;
-                    if (Direction == TransitionDirection.Down)
-                    {
-                        startingDoubleAnimation.From = -ActualHeight;
-                    }
 
-                    if (Direction == TransitionDirection.Up)
+                    startingDoubleAnimation.From = Direction switch
                     {
-                        startingDoubleAnimation.From = ActualHeight;
-                    }
+                        TransitionDirection.Down => -ActualHeight,
+                        TransitionDirection.Up => ActualHeight,
+                        TransitionDirection.Right => -ActualWidth,
+                        TransitionDirection.Left => ActualWidth,
+                        _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
+                    };
 
-                    if (Direction == TransitionDirection.Right)
-                    {
-                        startingDoubleAnimation.From = -ActualWidth;
-                    }
-
-                    if (Direction == TransitionDirection.Left)
-                    {
-                        startingDoubleAnimation.From = ActualWidth;
-                    }
+                    break;
                 }
-            }
 
-            if (Transition == TransitionType.Move)
-            {
-                if (CompletingTransition != null)
+                case TransitionType.Move:
                 {
+                    if (CompletingTransition is null)
+                    {
+                        return;
+                    }
+
                     var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
                     var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
                     startingDoubleAnimation.Duration = Duration;
                     completingDoubleAnimation.Duration = Duration;
-                    if (Direction == TransitionDirection.Down)
+
+                    switch (Direction)
                     {
-                        startingDoubleAnimation.To = ActualHeight;
-                        completingDoubleAnimation.From = -ActualHeight;
+                        case TransitionDirection.Down:
+                            startingDoubleAnimation.To = ActualHeight;
+                            completingDoubleAnimation.From = -ActualHeight;
+
+                            break;
+                        case TransitionDirection.Up:
+                            startingDoubleAnimation.To = -ActualHeight;
+                            completingDoubleAnimation.From = ActualHeight;
+
+                            break;
+                        case TransitionDirection.Right:
+                            startingDoubleAnimation.To = ActualWidth;
+                            completingDoubleAnimation.From = -ActualWidth;
+
+                            break;
+                        case TransitionDirection.Left:
+                            startingDoubleAnimation.To = -ActualWidth;
+                            completingDoubleAnimation.From = ActualWidth;
+
+                            break;
+                        default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
                     }
 
-                    if (Direction == TransitionDirection.Up)
-                    {
-                        startingDoubleAnimation.To = -ActualHeight;
-                        completingDoubleAnimation.From = ActualHeight;
-                    }
-
-                    if (Direction == TransitionDirection.Right)
-                    {
-                        startingDoubleAnimation.To = ActualWidth;
-                        completingDoubleAnimation.From = -ActualWidth;
-                    }
-
-                    if (Direction == TransitionDirection.Left)
-                    {
-                        startingDoubleAnimation.To = -ActualWidth;
-                        completingDoubleAnimation.From = ActualWidth;
-                    }
+                    break;
                 }
-            }
 
-            if (Transition == TransitionType.Bounce)
-            {
-                if (Direction == TransitionDirection.Down)
+                case TransitionType.Bounce:
                 {
                     if (CompletingTransition != null)
                     {
@@ -409,57 +441,27 @@ namespace ReactiveUI
                         completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;
                     }
 
-                    if (StartingTransition != null)
+                    if (StartingTransition is null)
                     {
-                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-                        startingDoubleAnimation.To = ActualHeight;
+                        return;
                     }
+
+                    var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+
+                    startingDoubleAnimation.To = Direction switch
+                    {
+                        TransitionDirection.Down => ActualHeight,
+                        TransitionDirection.Up => -ActualHeight,
+                        TransitionDirection.Right => ActualWidth,
+                        TransitionDirection.Left => -ActualWidth,
+                        _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
+                    };
+
+                    break;
                 }
 
-                if (Direction == TransitionDirection.Up)
-                {
-                    if (CompletingTransition != null)
-                    {
-                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                        completingDoubleAnimation.KeyFrames[1].Value = -ActualHeight;
-                    }
-
-                    if (StartingTransition != null)
-                    {
-                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-                        startingDoubleAnimation.To = -ActualHeight;
-                    }
-                }
-
-                if (Direction == TransitionDirection.Right)
-                {
-                    if (CompletingTransition != null)
-                    {
-                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                        completingDoubleAnimation.KeyFrames[1].Value = ActualWidth;
-                    }
-
-                    if (StartingTransition != null)
-                    {
-                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-                        startingDoubleAnimation.To = ActualWidth;
-                    }
-                }
-
-                if (Direction == TransitionDirection.Left)
-                {
-                    if (CompletingTransition != null)
-                    {
-                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                        completingDoubleAnimation.KeyFrames[1].Value = -ActualWidth;
-                    }
-
-                    if (StartingTransition != null)
-                    {
-                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-                        startingDoubleAnimation.To = -ActualWidth;
-                    }
-                }
+                case TransitionType.Drop: break;
+                default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
             }
         }
     }
