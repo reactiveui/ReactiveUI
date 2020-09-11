@@ -18,80 +18,16 @@ namespace ReactiveUI
     /// </summary>
     public static class DependencyResolverMixins
     {
-        private static IReadOnlyList<RegistrationNamespace> defaultRegistrationNamespaces =
-            (RegistrationNamespace[])Enum.GetValues(typeof(RegistrationNamespace));
-
-        private static HashSet<RegistrationNamespace> registrationNamespacesToInitialize =
-            new HashSet<RegistrationNamespace>(defaultRegistrationNamespaces);
-
-        /// <summary>
-        /// Platforms or other registration namespaces for the dependency resolver to consider when initializing.
-        /// </summary>
-        public enum RegistrationNamespace
-        {
-            /// <summary>
-            /// Xamarin Forms.
-            /// </summary>
-            XamForms,
-
-            /// <summary>
-            /// Windows Forms.
-            /// </summary>
-            Winforms,
-
-            /// <summary>
-            /// WPF.
-            /// </summary>
-            Wpf,
-
-            /// <summary>
-            /// Uno.
-            /// </summary>
-            Uno,
-
-            /// <summary>
-            /// Blazor.
-            /// </summary>
-            Blazor,
-
-            /// <summary>
-            /// Drawing.
-            /// </summary>
-            Drawing
-        }
-
-        /// <summary>
-        /// Gets the default registration namespaces for the dependency resolver to consider, consisting of all registration namespaces.
-        /// </summary>
-        public static IReadOnlyList<RegistrationNamespace> DefaultRegistrationNamespaces =>
-            defaultRegistrationNamespaces;
-
-        /// <summary>
-        /// This method allows you to initialize which platforms <see cref="InitializeReactiveUI"/>
-        /// attempts to discover registrations for. If this method is not called, all platforms are assumed.
-        /// </summary>
-        /// <remarks>Call this before <see cref="InitializeReactiveUI"/>.</remarks>
-        /// <param name="registrationNamespaces">Which platforms to use.</param>
-        public static void SetRegistrationNamespaces(params RegistrationNamespace[] registrationNamespaces)
-        {
-            // The reason SetRegistrationNamespaces is a separate method and not a parameter to InitializeReactiveUI
-            // is because InitializeReactiveUI is called from within the RxApp static constructor, and there's no
-            // way to directly pass it parameters.
-            registrationNamespacesToInitialize.Clear();
-            foreach (var platform in registrationNamespaces)
-            {
-                registrationNamespacesToInitialize.Add(platform);
-            }
-        }
-
         /// <summary>
         /// This method allows you to initialize resolvers with the default
         /// ReactiveUI types. All resolvers used as the default
         /// Locator.Current.
+        /// If no namespaces are passed in, all registrations will be checked.
         /// </summary>
         /// <param name="resolver">The resolver to initialize.</param>
+        /// <param name="registrationNamespaces">Which platforms to use.</param>
         [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
-        public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
+        public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
         {
             var possibleNamespaces = new Dictionary<RegistrationNamespace, string>
             {
@@ -103,9 +39,14 @@ namespace ReactiveUI
                 { RegistrationNamespace.Drawing, "ReactiveUI.Drawing" }
             };
 
+            if (registrationNamespaces.Length == 0)
+            {
+                registrationNamespaces = PlatformRegistrationManager.DefaultRegistrationNamespaces;
+            }
+
             var extraNs =
                 possibleNamespaces
-                    .Where(kvp => registrationNamespacesToInitialize.Contains(kvp.Key))
+                    .Where(kvp => registrationNamespaces.Contains(kvp.Key))
                     .Select(kvp => kvp.Value)
                     .ToArray();
 

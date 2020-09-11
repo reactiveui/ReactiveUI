@@ -86,7 +86,7 @@ namespace ReactiveUI
                     return;
                 }
 
-                Locator.CurrentMutable.InitializeReactiveUI();
+                Locator.CurrentMutable.InitializeReactiveUI(PlatformRegistrationManager.NamespacesToRegister);
             });
 
             DefaultExceptionHandler = Observer.Create<Exception>(ex =>
