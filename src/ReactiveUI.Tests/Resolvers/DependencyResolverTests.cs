@@ -76,11 +76,12 @@ namespace ReactiveUI.Tests
 
                 resolver.InitializeReactiveUI(namespaces);
 
-                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
+                var registeredService = GetServicesThatShouldBeRegistered(namespaces);
+
+                foreach (var shouldRegistered in registeredService)
                 {
                     IEnumerable<object> resolvedServices = resolver.GetServices(shouldRegistered.Key);
 
-                    Assert.Equal(shouldRegistered.Value.Count, resolvedServices.Count());
                     foreach (Type implementationType in shouldRegistered.Value)
                     {
                         resolvedServices
