@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net471</TargetFrameworks>        
+    <TargetFrameworks>net472</TargetFrameworks>        
     <Description>Winforms specific example of IntegrationTests</Description>
     <PackageId>IntegrationTests.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>

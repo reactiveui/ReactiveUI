@@ -124,7 +124,7 @@ namespace ReactiveUI
     }
     public static class DependencyResolverMixins
     {
-        public static void InitializeReactiveUI(this Splat.IMutableDependencyResolver resolver) { }
+        public static void InitializeReactiveUI(this Splat.IMutableDependencyResolver resolver, params ReactiveUI.RegistrationNamespace[] registrationNamespaces) { }
         public static void RegisterViewsForViewModels(this Splat.IMutableDependencyResolver resolver, System.Reflection.Assembly assembly) { }
     }
     public class DummySuspensionDriver : ReactiveUI.ISuspensionDriver
@@ -454,6 +454,10 @@ namespace ReactiveUI
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
         public System.IObservable<ReactiveUI.IObservedChange<object, object>>? GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
+    public static class PlatformRegistrationManager
+    {
+        public static void SetRegistrationNamespaces(params ReactiveUI.RegistrationNamespace[] namespaces) { }
+    }
     public class PlatformRegistrations
     {
         public PlatformRegistrations() { }
@@ -617,6 +621,15 @@ namespace ReactiveUI
         public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<, >[] changeValues, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TrySetValueToPropertyChain<TValue>(object? target, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain, TValue value, bool shouldThrow = true) { }
+    }
+    public enum RegistrationNamespace
+    {
+        XamForms = 0,
+        Winforms = 1,
+        Wpf = 2,
+        Uno = 3,
+        Blazor = 4,
+        Drawing = 5,
     }
     public class Registrations
     {

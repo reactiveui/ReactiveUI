@@ -6,47 +6,138 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shouldly;
 using Splat;
 using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    public sealed class DependencyResolverTests : IDisposable
+    public sealed class DependencyResolverTests
     {
-        private readonly IDependencyResolver _resolver;
-
-        public DependencyResolverTests()
-        {
-            _resolver = new ModernDependencyResolver();
-            _resolver.InitializeSplat();
-            _resolver.InitializeReactiveUI();
-            _resolver.RegisterViewsForViewModels(GetType().Assembly);
-        }
+        /// <summary>
+        /// Gets RegistrationNamespaces.
+        /// </summary>
+        public static IEnumerable<object[]> NamespacesToRegister =>
+            new List<object[]>
+            {
+                new object[] { new[] { RegistrationNamespace.XamForms } },
+                new object[] { new[] { RegistrationNamespace.Winforms } },
+                new object[] { new[] { RegistrationNamespace.Wpf } },
+                new object[] { new[] { RegistrationNamespace.Uno } },
+                new object[] { new[] { RegistrationNamespace.Blazor } },
+                new object[] { new[] { RegistrationNamespace.Drawing } },
+                new object[]
+                {
+                    new[]
+                    {
+                        RegistrationNamespace.XamForms,
+                        RegistrationNamespace.Wpf
+                    }
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        RegistrationNamespace.Blazor,
+                        RegistrationNamespace.XamForms,
+                        RegistrationNamespace.Wpf
+                    }
+                }
+            };
 
         [Fact]
         public void AllDefaultServicesShouldBeRegistered()
         {
-            using (_resolver.WithResolver())
+            var resolver = GenerateResolver();
+            using (resolver.WithResolver())
             {
-                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered())
+                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(PlatformRegistrationManager.DefaultRegistrationNamespaces))
                 {
-                    IEnumerable<object> resolvedServices = _resolver.GetServices(shouldRegistered.Key);
+                    IEnumerable<object> resolvedServices = resolver.GetServices(shouldRegistered.Key);
                     Assert.Equal(shouldRegistered.Value.Count, resolvedServices.Count());
                     foreach (Type implementationType in shouldRegistered.Value)
                     {
-                        var isRegistered = resolvedServices.Any(rs => rs.GetType() == implementationType);
-                        Assert.Equal(true, isRegistered);
+                        resolvedServices
+                            .Any(rs => rs.GetType() == implementationType)
+                            .ShouldBeTrue();
                     }
                 }
             }
         }
 
-        public void Dispose()
+        [Theory]
+        [MemberData(nameof(NamespacesToRegister))]
+        public void AllDefaultServicesShouldBeRegisteredPerRegistrationNamespace(IEnumerable<RegistrationNamespace> namespacesToRegister)
         {
-            _resolver?.Dispose();
+            var resolver = GenerateResolver();
+            using (resolver.WithResolver())
+            {
+                var namespaces = namespacesToRegister.ToArray();
+
+                resolver.InitializeReactiveUI(namespaces);
+
+                var registeredService = GetServicesThatShouldBeRegistered(namespaces);
+
+                foreach (var shouldRegistered in registeredService)
+                {
+                    IEnumerable<object> resolvedServices = resolver.GetServices(shouldRegistered.Key);
+
+                    foreach (Type implementationType in shouldRegistered.Value)
+                    {
+                        resolvedServices
+                            .Any(rs => rs.GetType() == implementationType)
+                            .ShouldBeTrue();
+                    }
+                }
+            }
         }
 
-        private static Dictionary<Type, List<Type>> GetServicesThatShouldBeRegistered()
+        [Theory]
+        [MemberData(nameof(NamespacesToRegister))]
+        public void RegisteredNamespacesShouldBeRegistered(IEnumerable<RegistrationNamespace> namespacesToRegister)
+        {
+            var resolver = GenerateResolver();
+            using (resolver.WithResolver())
+            {
+                var namespaces = namespacesToRegister.ToArray();
+
+                resolver.InitializeReactiveUI(namespaces);
+
+                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
+                {
+                    IEnumerable<object> resolvedServices = resolver.GetServices(shouldRegistered.Key);
+
+                    resolvedServices
+                        .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)
+                        .Any(registeredType => !string.IsNullOrEmpty(registeredType) && PlatformRegistrationManager.DefaultRegistrationNamespaces.Except(namespacesToRegister).All(x => !registeredType.Contains(x.ToString())))
+                        .ShouldBeTrue();
+                }
+            }
+        }
+
+        private static IEnumerable<string> GetServiceRegistrationTypeNames(
+            IEnumerable<RegistrationNamespace> registrationNamespaces)
+        {
+            foreach (RegistrationNamespace registrationNamespace in registrationNamespaces)
+            {
+                if (registrationNamespace == RegistrationNamespace.Wpf)
+                {
+                    yield return "ReactiveUI.Wpf.Registrations, ReactiveUI.Wpf";
+                }
+
+                if (registrationNamespace == RegistrationNamespace.XamForms)
+                {
+                    yield return "ReactiveUI.XamForms.Registrations, ReactiveUI.XamForms";
+                }
+
+                if (registrationNamespace == RegistrationNamespace.Winforms)
+                {
+                    yield return "ReactiveUI.Winforms.Registrations, ReactiveUI.Winforms";
+                }
+            }
+        }
+
+        private static Dictionary<Type, List<Type>> GetServicesThatShouldBeRegistered(IReadOnlyList<RegistrationNamespace> onlyNamespaces)
         {
             Dictionary<Type, List<Type>> serviceTypeToImplementationTypes = new Dictionary<Type, List<Type>>();
 
@@ -72,16 +163,19 @@ namespace ReactiveUI.Tests
                 implementationTypes.Add(factory().GetType());
             });
 
-            var typeNames = new[]
-            {
-                "ReactiveUI.XamForms.Registrations, ReactiveUI.XamForms",
-                "ReactiveUI.Winforms.Registrations, ReactiveUI.Winforms",
-                "ReactiveUI.Wpf.Registrations, ReactiveUI.Wpf"
-            };
+            var typeNames = GetServiceRegistrationTypeNames(onlyNamespaces);
 
             typeNames.ForEach(typeName => GetRegistrationsForPlatform(typeName, serviceTypeToImplementationTypes));
 
             return serviceTypeToImplementationTypes;
+        }
+
+        private static ModernDependencyResolver GenerateResolver()
+        {
+            var resolver = new ModernDependencyResolver();
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            return resolver;
         }
 
         private static void GetRegistrationsForPlatform(string typeName, Dictionary<Type, List<Type>> serviceTypeToImplementationTypes)

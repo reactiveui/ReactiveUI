@@ -57,6 +57,9 @@
     <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="28.0.*" />
+    <PackageReference Include="Xamarin.Android.Support.v7.Preference" Version="28.0.*" />
+    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" Version="28.0.*" />
+    <PackageReference Include="Xamarin.Android.Support.Compat" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.Collections" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.*" />
   </ItemGroup>
