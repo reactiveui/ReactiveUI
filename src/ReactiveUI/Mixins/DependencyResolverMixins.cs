@@ -4,9 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -23,19 +22,21 @@ namespace ReactiveUI
         /// This method allows you to initialize resolvers with the default
         /// ReactiveUI types. All resolvers used as the default
         /// Locator.Current.
+        /// If no namespaces are passed in, all registrations will be checked.
         /// </summary>
         /// <param name="resolver">The resolver to initialize.</param>
+        /// <param name="registrationNamespaces">Which platforms to use.</param>
         [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
-        public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
+        public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
         {
-            var extraNs = new[]
+            var possibleNamespaces = new Dictionary<RegistrationNamespace, string>
             {
-                "ReactiveUI.XamForms",
-                "ReactiveUI.Winforms",
-                "ReactiveUI.Wpf",
-                "ReactiveUI.Uno",
-                "ReactiveUI.Blazor",
-                "ReactiveUI.Drawing"
+                { RegistrationNamespace.XamForms, "ReactiveUI.XamForms" },
+                { RegistrationNamespace.Winforms, "ReactiveUI.Winforms" },
+                { RegistrationNamespace.Wpf, "ReactiveUI.Wpf" },
+                { RegistrationNamespace.Uno, "ReactiveUI.Uno" },
+                { RegistrationNamespace.Blazor, "ReactiveUI.Blazor" },
+                { RegistrationNamespace.Drawing, "ReactiveUI.Drawing" }
             };
 
             void RegisterService(Func<object> serviceFactory, Type serviceType)
@@ -47,7 +48,18 @@ namespace ReactiveUI
                 }
             }
 
-            // Set up the built-in registrations
+            if (registrationNamespaces.Length == 0)
+            {
+                registrationNamespaces = PlatformRegistrationManager.DefaultRegistrationNamespaces;
+            }
+
+            var extraNs =
+                possibleNamespaces
+                    .Where(kvp => registrationNamespaces.Contains(kvp.Key))
+                    .Select(kvp => kvp.Value)
+                    .ToArray();
+
+            // Set up the built-in registration
             new Registrations().Register(RegisterService);
             new PlatformRegistrations().Register(RegisterService);
 
