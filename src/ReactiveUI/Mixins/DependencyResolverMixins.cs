@@ -38,9 +38,18 @@ namespace ReactiveUI
                 "ReactiveUI.Drawing"
             };
 
-            // Set up the built-in registration
-            new Registrations().Register((f, t) => resolver.RegisterConstant(f(), t));
-            new PlatformRegistrations().Register((f, t) => resolver.RegisterConstant(f(), t));
+            void RegisterService(Func<object> serviceFactory, Type serviceType)
+            {
+                // Skip already registered type
+                if (!resolver.HasRegistration(serviceType))
+                {
+                    resolver.RegisterConstant(serviceFactory(), serviceType);
+                }
+            }
+
+            // Set up the built-in registrations
+            new Registrations().Register(RegisterService);
+            new PlatformRegistrations().Register(RegisterService);
 
             var fdr = typeof(DependencyResolverMixins);
 
