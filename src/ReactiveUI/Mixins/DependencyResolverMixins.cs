@@ -53,7 +53,7 @@ namespace ReactiveUI
 
             var fdr = typeof(DependencyResolverMixins);
 
-            var assemblyName = new AssemblyName(fdr?.AssemblyQualifiedName?.Replace(fdr?.FullName + ", ", string.Empty)!);
+            var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName?.Replace(fdr.FullName + ", ", string.Empty)!);
 
             foreach (var ns in extraNs)
             {
@@ -92,7 +92,7 @@ namespace ReactiveUI
                 {
                     // my kingdom for c# 6!
                     var contractSource = ti.GetCustomAttribute<ViewContractAttribute>();
-                    var contract = contractSource != null ? contractSource.Contract : string.Empty;
+                    var contract = contractSource?.Contract ?? string.Empty;
 
                     RegisterType(resolver, ti, ivf, contract);
                 }
