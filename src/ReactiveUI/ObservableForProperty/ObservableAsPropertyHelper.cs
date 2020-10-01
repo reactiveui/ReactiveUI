@@ -25,7 +25,6 @@ namespace ReactiveUI
     public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
     {
         private readonly Lazy<ISubject<Exception>> _thrownExceptions;
-        private readonly IObservable<T> _source;
         private readonly ISubject<T> _subject;
         private T _lastValue;
         private CompositeDisposable _disposable = new CompositeDisposable();
@@ -119,10 +118,16 @@ namespace ReactiveUI
             _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
 
             _lastValue = initialValue;
-            _source = observable.StartWith(initialValue).DistinctUntilChanged();
+
+            // Avoid the first notification only if the subscription is deferred and the initial value
+            // is not set or is set to default.
+            Source = deferSubscription && Equals(initialValue, default(T))
+               ? observable.DistinctUntilChanged()
+               : observable.StartWith(initialValue).DistinctUntilChanged();
+
             if (!deferSubscription)
             {
-                _source.Subscribe(_subject).DisposeWith(_disposable);
+                Source.Subscribe(_subject).DisposeWith(_disposable);
                 _activated = 1;
             }
         }
@@ -140,7 +145,7 @@ namespace ReactiveUI
                     var localReferenceInCaseDisposeIsCalled = _disposable;
                     if (localReferenceInCaseDisposeIsCalled != null)
                     {
-                        _source.Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
+                        Source.Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
                     }
                 }
 
@@ -161,6 +166,8 @@ namespace ReactiveUI
         /// internal state.
         /// </summary>
         public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
+
+        internal /* for testing purposes */ IObservable<T> Source { get; }
 
         /// <summary>
         /// Constructs a "default" ObservableAsPropertyHelper object. This is

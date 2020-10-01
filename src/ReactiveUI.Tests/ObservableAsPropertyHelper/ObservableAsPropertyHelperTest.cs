@@ -182,6 +182,50 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void OAPHDeferSubscriptionWithDefaultValueShouldNotEmitInitialValue()
+        {
+            var observable = Observable.Empty<int>();
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, default, true);
+
+            Assert.False(fixture.IsSubscribed);
+
+            int? emittedValue = null;
+            fixture.Source.Subscribe(val => emittedValue = val);
+            Assert.Null(emittedValue);
+            Assert.False(fixture.IsSubscribed);
+        }
+
+        [Fact]
+        public void OAPHDeferSubscriptionWithInitialValueShouldEmitInitialValue()
+        {
+            var observable = Observable.Empty<int>();
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 42, true);
+
+            Assert.False(fixture.IsSubscribed);
+
+            int? emittedValue = null;
+            fixture.Source.Subscribe(val => emittedValue = val);
+            Assert.Equal(42, emittedValue);
+            Assert.False(fixture.IsSubscribed);
+        }
+
+        [Fact]
+        public void OAPHWithDefaultValueShouldEmitInitialValue()
+        {
+            var observable = Observable.Empty<int>();
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, default, false);
+
+            Assert.True(fixture.IsSubscribed);
+
+            int? emittedValue = null;
+            fixture.Source.Subscribe(val => emittedValue = val);
+            Assert.Equal(default(int), emittedValue);
+        }
+
+        [Fact]
         public void OAPHShouldRethrowErrors()
         {
             var input = new Subject<int>();
