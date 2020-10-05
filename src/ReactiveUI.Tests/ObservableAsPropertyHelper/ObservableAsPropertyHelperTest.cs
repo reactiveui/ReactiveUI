@@ -181,12 +181,14 @@ namespace ReactiveUI.Tests
             Assert.Null(ex);
         }
 
-        [Fact]
-        public void OAPHDeferSubscriptionWithDefaultValueShouldNotEmitInitialValue()
+        [Theory]
+        [InlineData(default(int))]
+        [InlineData(42)]
+        public void OAPHDeferSubscriptionWithInitialValueShouldNotEmitInitialValue(int initialValue)
         {
             var observable = Observable.Empty<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, default, true);
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, true);
 
             Assert.False(fixture.IsSubscribed);
 
@@ -196,33 +198,36 @@ namespace ReactiveUI.Tests
             Assert.False(fixture.IsSubscribed);
         }
 
-        [Fact]
-        public void OAPHDeferSubscriptionWithInitialValueShouldEmitInitialValue()
+        [Theory]
+        [InlineData(default(int))]
+        [InlineData(42)]
+        public void OAPHDeferSubscriptionWithInitialValueEmitInitialValueWhenSubscribed(int initialValue)
         {
             var observable = Observable.Empty<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 42, true);
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, true);
 
             Assert.False(fixture.IsSubscribed);
 
-            int? emittedValue = null;
-            fixture.Source.Subscribe(val => emittedValue = val);
-            Assert.Equal(42, emittedValue);
-            Assert.False(fixture.IsSubscribed);
+            var result = fixture.Value;
+            Assert.True(fixture.IsSubscribed);
+            Assert.Equal(initialValue, result);
         }
 
-        [Fact]
-        public void OAPHWithDefaultValueShouldEmitInitialValue()
+        [Theory]
+        [InlineData(default(int))]
+        [InlineData(42)]
+        public void OAPHInitialValueShouldEmitInitialValue(int initialValue)
         {
             var observable = Observable.Empty<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, default, false);
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, false);
 
             Assert.True(fixture.IsSubscribed);
 
             int? emittedValue = null;
             fixture.Source.Subscribe(val => emittedValue = val);
-            Assert.Equal(default(int), emittedValue);
+            Assert.Equal(initialValue, emittedValue);
         }
 
         [Fact]

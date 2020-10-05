@@ -26,7 +26,6 @@ namespace ReactiveUI
     {
         private readonly Lazy<ISubject<Exception>> _thrownExceptions;
         private readonly ISubject<T> _subject;
-        private T _initialValue;
         private T _lastValue;
         private CompositeDisposable _disposable = new CompositeDisposable();
         private int _activated;
@@ -118,7 +117,7 @@ namespace ReactiveUI
 
             _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
 
-            _initialValue = initialValue;
+            _lastValue = initialValue;
 
             // Avoid the first notification only if the subscription is deferred and the initial value
             // is not set or is set to default.
@@ -128,7 +127,6 @@ namespace ReactiveUI
 
             if (!deferSubscription)
             {
-                _lastValue = initialValue;
                 Source.Subscribe(_subject).DisposeWith(_disposable);
                 _activated = 1;
             }
@@ -147,7 +145,7 @@ namespace ReactiveUI
                     var localReferenceInCaseDisposeIsCalled = _disposable;
                     if (localReferenceInCaseDisposeIsCalled != null)
                     {
-                        Source.StartWith(_initialValue).Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
+                        Source.StartWith(_lastValue).Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
                     }
                 }
 
