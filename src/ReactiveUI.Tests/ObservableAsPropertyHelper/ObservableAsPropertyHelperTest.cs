@@ -188,7 +188,23 @@ namespace ReactiveUI.Tests
         {
             var observable = Observable.Empty<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, true);
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: true);
+
+            Assert.False(fixture.IsSubscribed);
+
+            int? emittedValue = null;
+            fixture.Source.Subscribe(val => emittedValue = val);
+            Assert.Null(emittedValue);
+            Assert.False(fixture.IsSubscribed);
+        }
+
+        [Fact]
+        public void OAPHDeferSubscriptionWithInitialFuncValueShouldNotEmitInitialValueNorAccessFunc()
+        {
+            var observable = Observable.Empty<int>();
+            Func<int> throwIfAccessed = () => throw new Exception();
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, getInitialValue: throwIfAccessed, deferSubscription: true);
 
             Assert.False(fixture.IsSubscribed);
 
@@ -205,13 +221,35 @@ namespace ReactiveUI.Tests
         {
             var observable = Observable.Empty<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, true);
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: true);
 
             Assert.False(fixture.IsSubscribed);
 
             var result = fixture.Value;
             Assert.True(fixture.IsSubscribed);
             Assert.Equal(initialValue, result);
+        }
+
+        [Fact]
+        public void OAPHDeferSubscriptionWithInitialFuncValueEmitInitialValueWhenSubscribed()
+        {
+            var observable = Observable.Empty<int>();
+            bool wasAccessed = false;
+            Func<int> getInitialValue = () =>
+            {
+                wasAccessed = true;
+                return 42;
+            };
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, getInitialValue: getInitialValue, deferSubscription: true);
+
+            Assert.False(fixture.IsSubscribed);
+            Assert.False(wasAccessed);
+
+            var result = fixture.Value;
+            Assert.True(fixture.IsSubscribed);
+            Assert.True(wasAccessed);
+            Assert.Equal(42, result);
         }
 
         [Theory]
@@ -221,7 +259,7 @@ namespace ReactiveUI.Tests
         {
             var observable = Observable.Empty<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, false);
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: false);
 
             Assert.True(fixture.IsSubscribed);
 

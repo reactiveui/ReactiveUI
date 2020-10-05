@@ -26,6 +26,7 @@ namespace ReactiveUI
     {
         private readonly Lazy<ISubject<Exception>> _thrownExceptions;
         private readonly ISubject<T> _subject;
+        private readonly Func<T> _getInitialValue;
         private T _lastValue;
         private CompositeDisposable _disposable = new CompositeDisposable();
         private int _activated;
@@ -97,6 +98,44 @@ namespace ReactiveUI
             T initialValue = default,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
+            : this(observable, onChanged, onChanging, () => initialValue, deferSubscription, scheduler)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObservableAsPropertyHelper{T}"/> class.
+        /// </summary>
+        /// <param name="observable">
+        /// The Observable to base the property on.
+        /// </param>
+        /// <param name="onChanged">
+        /// The action to take when the property changes, typically this will call
+        /// the ViewModel's RaisePropertyChanged method.
+        /// </param>
+        /// <param name="onChanging">
+        /// The action to take when the property changes, typically this will call
+        /// the ViewModel's RaisePropertyChanging method.
+        /// </param>
+        /// <param name="getInitialValue">
+        /// The function used to retrieve the initial value of the property.
+        /// </param>
+        /// <param name="deferSubscription">
+        /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/>
+        /// should defer the subscription to the <paramref name="observable"/> source
+        /// until the first call to <see cref="Value"/>, or if it should immediately
+        /// subscribe to the <paramref name="observable"/> source.
+        /// </param>
+        /// <param name="scheduler">
+        /// The scheduler that the notifications will provided on - this
+        /// should normally be a Dispatcher-based scheduler.
+        /// </param>
+        public ObservableAsPropertyHelper(
+            IObservable<T> observable,
+            Action<T> onChanged,
+            Action<T>? onChanging = null,
+            Func<T>? getInitialValue = null,
+            bool deferSubscription = false,
+            IScheduler? scheduler = null)
         {
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
@@ -117,16 +156,19 @@ namespace ReactiveUI
 
             _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
 
-            _lastValue = initialValue;
+#pragma warning disable CS8603 // Possible null reference return.
+            _getInitialValue = getInitialValue ?? (() => default);
+#pragma warning restore CS8603 // Possible null reference return.
 
-            // Avoid the first notification only if the subscription is deferred and the initial value
-            // is not set or is set to default.
-            Source = deferSubscription
-               ? observable.DistinctUntilChanged()
-               : observable.StartWith(initialValue).DistinctUntilChanged();
-
-            if (!deferSubscription)
+            if (deferSubscription)
             {
+                _lastValue = default;
+                Source = observable.DistinctUntilChanged();
+            }
+            else
+            {
+                _lastValue = _getInitialValue();
+                Source = observable.StartWith(_lastValue).DistinctUntilChanged();
                 Source.Subscribe(_subject).DisposeWith(_disposable);
                 _activated = 1;
             }
@@ -145,6 +187,7 @@ namespace ReactiveUI
                     var localReferenceInCaseDisposeIsCalled = _disposable;
                     if (localReferenceInCaseDisposeIsCalled != null)
                     {
+                        _lastValue = _getInitialValue();
                         Source.StartWith(_lastValue).Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
                     }
                 }
