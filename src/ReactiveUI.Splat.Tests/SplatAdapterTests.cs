@@ -58,10 +58,9 @@ namespace ReactiveUI.Splat.Tests
         public void AutofacDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
         {
             // Invoke RxApp which initializes the ReactiveUI platform.
-            var scheduler = RxApp.MainThreadScheduler;
             var builder = new ContainerBuilder();
+            Locator.SetLocator(new AutofacDependencyResolver(builder));
             var container = builder.Build();
-            Locator.SetLocator(new AutofacDependencyResolver(container));
 
             var converters = container.Resolve<IEnumerable<IBindingTypeConverter>>().ToList();
 
@@ -77,10 +76,9 @@ namespace ReactiveUI.Splat.Tests
         public void AutofacDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
         {
             // Invoke RxApp which initializes the ReactiveUI platform.
-            var scheduler = RxApp.MainThreadScheduler;
             var builder = new ContainerBuilder();
+            Locator.SetLocator(new AutofacDependencyResolver(builder));
             var container = builder.Build();
-            Locator.SetLocator(new AutofacDependencyResolver(container));
 
             var converters = container.Resolve<IEnumerable<ICreatesCommandBinding>>().ToList();
 
@@ -96,7 +94,6 @@ namespace ReactiveUI.Splat.Tests
         public void NinjectDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
         {
             // Invoke RxApp which initializes the ReactiveUI platform.
-            var scheduler = RxApp.MainThreadScheduler;
             var container = new StandardKernel();
             container.UseNinjectDependencyResolver();
 
