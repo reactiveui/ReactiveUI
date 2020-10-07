@@ -61,9 +61,10 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
-| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]  | None                                     |
+| Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz] | None                                    |
+| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]   | None                                    |
 | Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   | None                                    |
-| Any               | [ReactiveUI.Validation][ValidationsDocs]    | [![ValidationsBadge]][ValidationsCore] | None
+| Any               | [ReactiveUI.Validation][ValDocs]    | [![ValBadge]][ValCore] | None                                  |
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
 [CoreEvents]: https://www.nuget.org/packages/ReactiveUI.Events/
@@ -107,15 +108,18 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [UnoBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.svg
 [UnoDoc]: https://reactiveui.net/docs/getting-started/installation/uno-platform
 
+[Blaz]: https://www.nuget.org/packages/ReactiveUI.Blazor/
+[BlazBadge]: https://img.shields.io/nuget/v/ReactiveUI.Blazor.svg
+[BlazDoc]: https://www.reactiveui.net/blog/2020/07/article-blazor-compelling-example
 
 [Ava]: https://www.nuget.org/packages/Avalonia.ReactiveUI/
 [AvaBadge]: https://img.shields.io/nuget/v/Avalonia.ReactiveUI.svg
 [AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
 [EventsDocs]: https://reactiveui.net/docs/handbook/events/
 
-[ValidationsCore]: https://www.nuget.org/packages/ReactiveUI.Validation/
-[ValidationsBadge]: https://img.shields.io/nuget/v/ReactiveUI.Validation.svg
-[ValidationsDocs]: https://reactiveui.net/docs/handbook/user-input-validation/
+[ValCore]: https://www.nuget.org/packages/ReactiveUI.Validation/
+[ValBadge]: https://img.shields.io/nuget/v/ReactiveUI.Validation.svg
+[ValDocs]: https://reactiveui.net/docs/handbook/user-input-validation/
 
 <h2>A Compelling Example</h2>
 
