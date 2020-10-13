@@ -8,7 +8,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>  
-
+  <!--Item Group-->
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
