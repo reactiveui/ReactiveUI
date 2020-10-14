@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DiffEngine;
 using PublicApiGenerator;
 using Shouldly;
 using Splat;
@@ -56,7 +57,7 @@ namespace ReactiveUI.Tests
                 File.WriteAllText(receivedFileName, receivedPublicApi);
                 try
                 {
-                    ShouldlyConfiguration.DiffTools.GetDiffTool().Open(receivedFileName, approvedFileName, true);
+                    DiffEngine.DiffRunner.Launch(receivedFileName, approvedFileName);
                 }
                 catch (ShouldAssertException)
                 {

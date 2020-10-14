@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DiffEngine;
 using PublicApiGenerator;
 using Shouldly;
 using Splat;
@@ -48,7 +49,7 @@ namespace ReactiveUI.Fody.Tests
                 if (!string.Equals(receivedPublicApi, approvedPublicApi, StringComparison.InvariantCulture))
                 {
                     File.WriteAllText(receivedFileName, receivedPublicApi);
-                    ShouldlyConfiguration.DiffTools.GetDiffTool().Open(receivedFileName, approvedFileName, true);
+                    DiffEngine.DiffRunner.Launch(receivedFileName, approvedFileName);
                 }
 
                 Assert.Equal(approvedPublicApi, receivedPublicApi);
