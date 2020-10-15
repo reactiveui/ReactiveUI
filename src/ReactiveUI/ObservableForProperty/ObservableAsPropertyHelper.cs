@@ -162,7 +162,9 @@ namespace ReactiveUI
 
             if (deferSubscription)
             {
+#pragma warning disable CS8601 // Possible null reference assignment.
                 _lastValue = default;
+#pragma warning restore CS8601 // Possible null reference assignment.
                 Source = observable.DistinctUntilChanged();
             }
             else
