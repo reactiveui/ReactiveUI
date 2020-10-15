@@ -39,7 +39,18 @@ namespace ReactiveUI
             case ExpressionType.Convert:
                 return VisitUnary((UnaryExpression)node);
             default:
-                throw new NotSupportedException($"Unsupported expression type: '{node.NodeType}'");
+                var errorMessageBuilder = new StringBuilder($"Unsupported expression of type '{node.NodeType}' {node}.");
+
+                if (node is BinaryExpression binaryExpression)
+                {
+                    errorMessageBuilder.Append(" Did you meant to use expressions '")
+                        .Append(binaryExpression.Left)
+                        .Append("' and '")
+                        .Append(binaryExpression.Right)
+                        .Append("'?");
+                }
+
+                throw new NotSupportedException(errorMessageBuilder.ToString());
             }
         }
 

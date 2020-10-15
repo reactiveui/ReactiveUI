@@ -61,7 +61,14 @@ namespace ReactiveUI
                     node = memberExpr.Expression;
                     break;
                 default:
-                    throw new NotSupportedException($"Unsupported expression type: '{node.NodeType}'");
+                    var errorMessageBuilder = new StringBuilder($"Unsupported expression of type '{node.NodeType}'.");
+
+                    if (node is ConstantExpression)
+                    {
+                        errorMessageBuilder.Append(" Did you miss the member access prefix in the expression?");
+                    }
+
+                    throw new NotSupportedException(errorMessageBuilder.ToString());
                 }
             }
 
