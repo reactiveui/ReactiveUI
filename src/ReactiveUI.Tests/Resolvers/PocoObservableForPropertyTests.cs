@@ -8,10 +8,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Shouldly;
+
+using FluentAssertions;
+
 using Splat;
+
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -84,7 +85,7 @@ namespace ReactiveUI.Tests
 
                 instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false, true).Subscribe(_ => { });
 
-                testLogger.LastMessages.ShouldNotContain(m => m.Contains(nameof(POCOObservableForProperty)));
+                testLogger.LastMessages.Should().NotContain(m => m.Contains(nameof(POCOObservableForProperty)));
             }
         }
 

@@ -6,7 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shouldly;
+
+using FluentAssertions;
+
 using Splat;
 using Xunit;
 
@@ -59,7 +61,7 @@ namespace ReactiveUI.Tests
                     {
                         resolvedServices
                             .Any(rs => rs.GetType() == implementationType)
-                            .ShouldBeTrue();
+                            .Should().BeTrue();
                     }
                 }
             }
@@ -86,7 +88,7 @@ namespace ReactiveUI.Tests
                     {
                         resolvedServices
                             .Any(rs => rs.GetType() == implementationType)
-                            .ShouldBeTrue();
+                            .Should().BeTrue();
                     }
                 }
             }
@@ -110,7 +112,7 @@ namespace ReactiveUI.Tests
                     resolvedServices
                         .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)
                         .Any(registeredType => !string.IsNullOrEmpty(registeredType) && PlatformRegistrationManager.DefaultRegistrationNamespaces.Except(namespacesToRegister).All(x => !registeredType.Contains(x.ToString())))
-                        .ShouldBeTrue();
+                        .Should().BeTrue();
                 }
             }
         }

@@ -8,7 +8,9 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
-using Shouldly;
+
+using FluentAssertions;
+
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -32,7 +34,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -52,7 +54,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -74,7 +76,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -96,7 +98,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -198,7 +200,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -220,7 +222,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -240,7 +242,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -260,7 +262,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -327,7 +329,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
@@ -352,7 +354,7 @@ namespace ReactiveUI.Tests
 
             bool isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-            isDeletionConfirmed.ShouldBeTrue();
+            isDeletionConfirmed.Should().BeTrue();
         }
 
         [Fact]
