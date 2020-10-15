@@ -24,6 +24,8 @@ namespace ReactiveUI.Tests
 {
     public class ReactiveNotifyPropertyChangedMixinTest
     {
+        public string? Dummy { get; set; }
+
         [Fact]
         public void AnyChangeInExpressionListTriggersUpdate()
         {
@@ -750,6 +752,26 @@ namespace ReactiveUI.Tests
             Assert.False(weakRef1.IsAlive);
             Assert.False(weakRef2.IsAlive);
             Assert.False(weakRef3.IsAlive);
+        }
+
+        [Fact]
+        public void WhenAnyValueUnsupportedExpressionType_Equal()
+        {
+            var fixture = new TestFixture();
+            var exception = Assert.Throws<NotSupportedException>(
+                () => fixture.WhenAnyValue(x => x.IsNotNullString == x.IsOnlyOneWord).Subscribe());
+
+            Assert.Equal("Unsupported expression of type 'Equal' (x.IsNotNullString == x.IsOnlyOneWord). Did you meant to use expressions 'x.IsNotNullString' and 'x.IsOnlyOneWord'?", exception.Message);
+        }
+
+        [Fact]
+        public void WhenAnyValueUnsupportedExpressionType_Constant()
+        {
+            var fixture = new TestFixture();
+            var exception = Assert.Throws<NotSupportedException>(
+                () => fixture.WhenAnyValue(x => Dummy).Subscribe());
+
+            Assert.Equal("Unsupported expression of type 'Constant'. Did you miss the member access prefix in the expression?", exception.Message);
         }
     }
 }
