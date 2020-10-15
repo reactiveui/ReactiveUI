@@ -4,7 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using Shouldly;
+
+using FluentAssertions;
+
 using Xunit;
 
 namespace ReactiveUI.Testing.Tests
@@ -66,7 +68,7 @@ namespace ReactiveUI.Testing.Tests
                     .WithDictionary(dictionary);
 
             // Then
-            builder.Variables.ShouldBe(dictionary);
+            builder.Variables.Should().BeEquivalentTo(dictionary);
             Assert.Equal(dictionary, builder.Variables);
         }
 
@@ -83,7 +85,7 @@ namespace ReactiveUI.Testing.Tests
             TestFixture builder = new TestFixtureBuilder().WithKeyValue(key, value);
 
             // Then
-            builder.Variables?[key].ShouldBe(value);
+            builder.Variables?[key].Should().BeEquivalentTo(value);
         }
 
         /// <summary>
@@ -98,7 +100,7 @@ namespace ReactiveUI.Testing.Tests
             TestFixture builder = new TestFixtureBuilder().WithKeyValue(keyValuePair);
 
             // Then
-            builder.Variables?[keyValuePair.Key].ShouldBe(keyValuePair.Value);
+            builder.Variables?[keyValuePair.Key].Should().BeEquivalentTo(keyValuePair.Value);
         }
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace ReactiveUI.Testing.Tests
             TestFixture builder = new TestFixtureBuilder().WithTests(new[] { test1, test2, test3 });
 
             // Then
-            builder.Tests.ShouldBe(new[] { test1, test2, test3 });
+            builder.Tests.Should().BeEquivalentTo(new[] { test1, test2, test3 });
         }
 
         /// <summary>
@@ -128,7 +130,7 @@ namespace ReactiveUI.Testing.Tests
             TestFixture builder = new TestFixtureBuilder().WithTest("testing");
 
             // Then
-            builder.Tests.ShouldBe(new[] { "testing" });
+            builder.Tests.Should().BeEquivalentTo(new[] { "testing" });
         }
 
         /// <summary>
@@ -147,7 +149,7 @@ namespace ReactiveUI.Testing.Tests
             TestFixture builder = new TestFixtureBuilder().WithCount(count);
 
             // Then
-            builder.Count.ShouldBe(count);
+            builder.Count.Should().Be(count);
         }
 
         [Theory]
@@ -161,7 +163,7 @@ namespace ReactiveUI.Testing.Tests
             TestFixture builder = new TestFixtureBuilder().WithName(name);
 
             // Then
-            builder.Name.ShouldBe(name);
+            builder.Name.Should().BeEquivalentTo(name);
         }
     }
 }

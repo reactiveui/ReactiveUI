@@ -4,17 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+
+using DiffEngine;
+
 using PublicApiGenerator;
-using Shouldly;
+
 using Splat;
 using Xunit;
 
@@ -48,7 +48,7 @@ namespace ReactiveUI.Fody.Tests
                 if (!string.Equals(receivedPublicApi, approvedPublicApi, StringComparison.InvariantCulture))
                 {
                     File.WriteAllText(receivedFileName, receivedPublicApi);
-                    ShouldlyConfiguration.DiffTools.GetDiffTool().Open(receivedFileName, approvedFileName, true);
+                    DiffRunner.Launch(receivedFileName, approvedFileName);
                 }
 
                 Assert.Equal(approvedPublicApi, receivedPublicApi);

@@ -1,5 +1,7 @@
 using System;
-using Shouldly;
+
+using FluentAssertions;
+
 using Xunit;
 
 namespace ReactiveUI.Tests.Suspension
@@ -14,15 +16,15 @@ namespace ReactiveUI.Tests.Suspension
 
             var result = fixture.GetAppState<DummyAppState>();
 
-            result.ShouldBe(fixture.AppState);
+            result.Should().Be(fixture.AppState);
         }
 
         [Fact]
         public void NullSuspensionHostThrowsException()
         {
-            var result = Record.Exception(() => ((SuspensionHost)null!).SetupDefaultSuspendResume());
+            Action result = () => ((SuspensionHost)null!).SetupDefaultSuspendResume();
 
-            result.ShouldBeOfType<ArgumentNullException>();
+            result.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -32,7 +34,7 @@ namespace ReactiveUI.Tests.Suspension
 
             var result = Record.Exception(() => fixture.SetupDefaultSuspendResume());
 
-            result.ShouldBeNull();
+            result.Should().BeNull();
         }
 
         [Fact]
@@ -42,7 +44,7 @@ namespace ReactiveUI.Tests.Suspension
 
             var result = Record.Exception(() => fixture.ObserveAppState<DummyAppState>().Subscribe());
 
-            result.ShouldBeNull();
+            result.Should().BeNull();
         }
 
         [Fact]
@@ -50,9 +52,9 @@ namespace ReactiveUI.Tests.Suspension
         {
             var fixture = new SuspensionHost();
 
-            var result = Record.Exception(() => fixture.ObserveAppState<DummyAppState>().Subscribe());
+            Action result = () => fixture.ObserveAppState<DummyAppState>().Subscribe();
 
-            result.ShouldNotBeOfType<InvalidCastException>();
+            result.Should().NotThrow<InvalidCastException>();
         }
     }
 }
