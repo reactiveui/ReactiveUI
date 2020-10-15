@@ -4,15 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using ReactiveUI.Tests.Xaml;
-using Shouldly;
+
+using FluentAssertions;
+
 using Splat;
+
 using Xunit;
 
 using FactAttribute = Xunit.WpfFactAttribute;
@@ -49,7 +47,7 @@ namespace ReactiveUI.Tests.Wpf
             var vm = new CommandBindingViewModel();
             var view = new FakeXamlCommandBindingView { ViewModel = vm };
 
-            testLogger.Messages.ShouldNotContain(t => t.message.Contains(nameof(POCOObservableForProperty)) && t.message.Contains(view.NameOfButtonDeclaredInXaml) && t.logLevel == LogLevel.Warn);
+            testLogger.Messages.Should().NotContain(t => t.message.Contains(nameof(POCOObservableForProperty)) && t.message.Contains(view.NameOfButtonDeclaredInXaml) && t.logLevel == LogLevel.Warn);
         }
 
         [Fact]

@@ -5,10 +5,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using PublicApiGenerator;
+
 using ReactiveUI.Fody.Helpers;
-using Shouldly;
+
 using Xunit;
 
 namespace ReactiveUI.Fody.Tests.API
