@@ -57,6 +57,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]   | [ReactiveUI.Events.WinForms][WinEvents] |
 | Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   | [ReactiveUI.Events.XamForms][XamEvents] |
 | Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events.XamEssentials][XamE] |
+| AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX] | [ReactiveUI.Events][CoreEvents]         |
 | Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]   | [ReactiveUI.Events][CoreEvents]         |
 | Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
 | Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
@@ -100,6 +101,9 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
 [DroBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidSupport.svg
 [DroDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-android
+
+[DroX]: https://www.nuget.org/packages/ReactiveUI.AndroidX/
+[DroXBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidX.svg
 
 [MacDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-mac
 [IosDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-ios
