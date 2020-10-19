@@ -50,7 +50,7 @@ namespace ReactiveUI.XamForms.Tests
         {
             var fixture = CreateRoutedViewHost(initialViewModel: null);
 
-            var viewModel = await _navigationViewModel.Navigate(nameof(MainViewModel)).GetAwaiter();
+            var viewModel = await _navigationViewModel.Navigate(nameof(MainViewModel));
 
             Assert.NotNull(viewModel);
 
@@ -69,7 +69,7 @@ namespace ReactiveUI.XamForms.Tests
         {
             var fixture = CreateRoutedViewHost();
 
-            var viewModel = await _navigationViewModel.Navigate(nameof(ChildViewModel)).GetAwaiter();
+            var viewModel = await _navigationViewModel.Navigate(nameof(ChildViewModel));
 
             Assert.NotNull(viewModel);
 
@@ -88,8 +88,8 @@ namespace ReactiveUI.XamForms.Tests
         {
             var fixture = CreateRoutedViewHost();
 
-            await _navigationViewModel.Navigate(nameof(ChildViewModel)).GetAwaiter();
-            var viewModel = await _navigationViewModel.NavigateToChild("Testing").GetAwaiter();
+            await _navigationViewModel.Navigate(nameof(ChildViewModel));
+            var viewModel = await _navigationViewModel.NavigateToChild("Testing");
 
             Assert.NotNull(viewModel);
 
@@ -109,8 +109,8 @@ namespace ReactiveUI.XamForms.Tests
             var fixture = CreateRoutedViewHost();
             var mainPage = fixture.CurrentPage;
 
-            await _navigationViewModel.Navigate(nameof(ChildViewModel)).GetAwaiter();
-            await _navigationViewModel.NavigateBack().GetAwaiter();
+            await _navigationViewModel.Navigate(nameof(ChildViewModel));
+            await _navigationViewModel.NavigateBack();
 
             var currentPage = fixture.CurrentPage;
             Assert.Equal(mainPage, currentPage);
@@ -127,11 +127,11 @@ namespace ReactiveUI.XamForms.Tests
         {
             var fixture = CreateRoutedViewHost();
 
-            var childViewModel = await _navigationViewModel.Navigate(nameof(ChildViewModel)).GetAwaiter();
+            var childViewModel = await _navigationViewModel.Navigate(nameof(ChildViewModel));
             var childPage = fixture.CurrentPage;
 
-            var viewModel = await _navigationViewModel.NavigateToChild("Testing").GetAwaiter();
-            await _navigationViewModel.NavigateBack().GetAwaiter();
+            var viewModel = await _navigationViewModel.NavigateToChild("Testing");
+            await _navigationViewModel.NavigateBack();
 
             var currentPage = fixture.CurrentPage;
             Assert.Equal(childPage, currentPage);
@@ -149,10 +149,10 @@ namespace ReactiveUI.XamForms.Tests
             var fixture = CreateRoutedViewHost();
             var mainPage = fixture.CurrentPage;
 
-            await _navigationViewModel.Navigate(nameof(ChildViewModel)).GetAwaiter();
-            await _navigationViewModel.NavigateToChild("Testing").GetAwaiter();
-            await _navigationViewModel.NavigateBack().GetAwaiter();
-            await _navigationViewModel.NavigateBack().GetAwaiter();
+            await _navigationViewModel.Navigate(nameof(ChildViewModel));
+            await _navigationViewModel.NavigateToChild("Testing");
+            await _navigationViewModel.NavigateBack();
+            await _navigationViewModel.NavigateBack();
 
             var currentPage = fixture.CurrentPage;
             Assert.Equal(mainPage, currentPage);
@@ -170,7 +170,7 @@ namespace ReactiveUI.XamForms.Tests
             var fixture = CreateRoutedViewHost();
             var mainPage = fixture.CurrentPage;
 
-            await _navigationViewModel.NavigateBack().GetAwaiter();
+            await _navigationViewModel.NavigateBack();
 
             var currentPage = fixture.CurrentPage;
             Assert.Equal(mainPage, currentPage);
@@ -187,8 +187,8 @@ namespace ReactiveUI.XamForms.Tests
         {
             var fixture = CreateRoutedViewHost();
 
-            await _navigationViewModel.NavigateBack().GetAwaiter();
-            var viewModel = await _navigationViewModel.Navigate(nameof(ChildViewModel)).GetAwaiter();
+            await _navigationViewModel.NavigateBack();
+            var viewModel = await _navigationViewModel.Navigate(nameof(ChildViewModel));
 
             Assert.NotNull(viewModel);
 
@@ -212,10 +212,10 @@ namespace ReactiveUI.XamForms.Tests
 
             if (stackDepthBefore > 1)
             {
-                await _navigationViewModel.Navigate(nameof(ChildViewModel)).GetAwaiter();
+                await _navigationViewModel.Navigate(nameof(ChildViewModel));
             }
 
-            var viewModel = await _navigationViewModel.NavigateAndResetToChild("Reset test").GetAwaiter();
+            var viewModel = await _navigationViewModel.NavigateAndResetToChild("Reset test");
 
             Assert.NotNull(viewModel);
 
@@ -239,7 +239,7 @@ namespace ReactiveUI.XamForms.Tests
             var fixture = CreateRoutedViewHost();
             var viewModel = _navigationViewModel.Router.GetCurrentViewModel();
 
-            await _navigationViewModel.Navigate(nameof(ChildViewModel)).GetAwaiter();
+            await _navigationViewModel.Navigate(nameof(ChildViewModel));
             await fixture.PopAsyncInner(animated, fast).ConfigureAwait(true);
 
             Assert.Equal(1, fixture.StackDepth);
@@ -265,8 +265,8 @@ namespace ReactiveUI.XamForms.Tests
             var fixture = CreateRoutedViewHost();
             var rootViewModel = _navigationViewModel.Router.GetCurrentViewModel();
 
-            var viewModel = await _navigationViewModel.NavigateToChild("C1").GetAwaiter();
-            await _navigationViewModel.NavigateToChild("C2").GetAwaiter();
+            var viewModel = await _navigationViewModel.NavigateToChild("C1");
+            await _navigationViewModel.NavigateToChild("C2");
             await fixture.PopAsyncInner(animated, fast).ConfigureAwait(true);
 
             Assert.Equal(2, fixture.StackDepth);
