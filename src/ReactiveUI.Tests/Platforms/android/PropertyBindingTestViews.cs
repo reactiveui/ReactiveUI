@@ -21,37 +21,52 @@ namespace ReactiveUI.Tests
 {
     public class PropertyBindView : ReactiveFragment<PropertyBindViewModel>
     {
-        public TextView SomeTextBox;
-        public TextView Property2;
-        public PropertyBindFakeControl FakeControl;
-
         public PropertyBindView()
         {
             SomeTextBox = new TextView(Application.Context);
             Property2 = new TextView(Application.Context);
             FakeControl = new PropertyBindFakeControl();
         }
+
+        public TextView SomeTextBox { get; set; }
+
+        public TextView Property2 { get; set; }
+
+        public PropertyBindFakeControl FakeControl { get; set; }
     }
 
     public class PropertyBindFakeControl : ReactiveFragment, INotifyPropertyChanged
     {
-        double? _NullableDouble;
-        public double? NullableDouble {
+        private double? _NullableDouble;
+        private double _JustADouble;
+        private string _NullHatingString = string.Empty;
+
+        public double? NullableDouble
+        {
             get { return _NullableDouble; }
             set { this.RaiseAndSetIfChanged(ref _NullableDouble, value); }
         }
 
-        double _JustADouble;
-        public double JustADouble {
+        public double JustADouble
+        {
             get { return _JustADouble; }
             set { this.RaiseAndSetIfChanged(ref _JustADouble, value); }
         }
 
-        string _NullHatingString = "";
-        public string NullHatingString {
-            get { return _NullHatingString; }
-            set {
-                if (value == null) throw new ArgumentNullException("No nulls! I get confused!");
+        public string NullHatingString
+        {
+            get
+            {
+                return _NullHatingString;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
                 this.RaiseAndSetIfChanged(ref _NullHatingString, value);
             }
         }

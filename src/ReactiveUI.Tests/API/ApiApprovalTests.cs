@@ -5,9 +5,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using PublicApiGenerator;
-using Shouldly;
+
 using Xunit;
 
 namespace ReactiveUI.Tests.API

@@ -25,7 +25,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, fixture.Result);
         }
 
-        private async Task<int> AwaitAnObservable()
+        private static async Task<int> AwaitAnObservable()
         {
             var o = Observable.Start(
                 () =>
