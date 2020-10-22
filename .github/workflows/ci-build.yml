@@ -63,7 +63,7 @@ jobs:
     - name: Run Unit Tests and Generate Coverage
       uses: glennawatson/coverlet-msbuild@v1
       with:
-        project-files: '**/*Tests*.csproj'
+        project-files: 'src/**/*Tests*.csproj'
         no-build: true
         exclude-filter: '[${{env.productNamespacePrefix}}*Tests.*]*'
         include-filter: '[${{env.productNamespacePrefix}}*]*'
