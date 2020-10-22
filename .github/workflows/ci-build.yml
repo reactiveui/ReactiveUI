@@ -67,17 +67,11 @@ jobs:
         no-build: true
         exclude-filter: '[${{env.productNamespacePrefix}}*Tests.*]*'
         include-filter: '[${{env.productNamespacePrefix}}*]*'
-        output-format: opencover
+        output-format: cobertura
         output: '../../artifacts/coverage/'
         configuration: ${{ env.configuration }}
         skip-auto-props: false
         use-sourcelink: false
-
-    - name: Create Coverage Artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: nuget
-        path: 'artifacts/**/*.xml'
 
     - name: Combine Coverage Reports
       shell: bash
