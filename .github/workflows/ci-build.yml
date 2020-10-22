@@ -72,6 +72,7 @@ jobs:
         configuration: ${{ env.configuration }}
         skip-auto-props: false
         use-sourcelink: false
+        working-directory: src
 
     - name: Combine Coverage Reports
       shell: bash
