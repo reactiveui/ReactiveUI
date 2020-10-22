@@ -375,6 +375,21 @@ namespace ReactiveUI.Tests
         [InlineData(new string[] { "FooBar", "Bazz" }, new string[] { "Foo", "Baz" }, new string[] { "Bar", "azz" })]
         public void ToProperty_NameOf_ValidValuesProduced(string[] testWords, string[] first3Letters, string[] last3Letters)
         {
+            if (testWords is null)
+            {
+                throw new ArgumentNullException(nameof(testWords));
+            }
+
+            if (first3Letters is null)
+            {
+                throw new ArgumentNullException(nameof(first3Letters));
+            }
+
+            if (last3Letters is null)
+            {
+                throw new ArgumentNullException(nameof(last3Letters));
+            }
+
             var fixture = new OaphNameOfTestFixture();
 
             fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanging).Subscribe();

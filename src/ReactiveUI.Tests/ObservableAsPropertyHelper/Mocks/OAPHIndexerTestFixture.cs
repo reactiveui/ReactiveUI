@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests
 {
     internal class OAPHIndexerTestFixture : ReactiveObject
@@ -22,6 +24,7 @@ namespace ReactiveUI.Tests
             set => this.RaiseAndSetIfChanged(ref _text, value);
         }
 
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by test.")]
         public string? this[string propertyName] => string.Empty;
     }
 }
