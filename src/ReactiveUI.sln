@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Blazor", "Reacti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.AndroidX", "ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj", "{86430CEC-BAA3-4ED4-A90D-982437137D19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Android.Tests", "ReactiveUI.Android.Tests\ReactiveUI.Android.Tests.csproj", "{CBF8E93D-A2EA-4692-8087-B3655A35B0C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.TestRunner.Android", "ReactiveUI.TestRunner.Android\ReactiveUI.TestRunner.Android.csproj", "{CBF8E93D-A2EA-4692-8087-B3655A35B0C0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Fody.Analyzer", "ReactiveUI.Fody.Analyzer\ReactiveUI.Fody.Analyzer.csproj", "{366789D4-4117-46CE-864F-BF1201F35319}"
 EndProject
