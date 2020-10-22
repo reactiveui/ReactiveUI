@@ -1,0 +1,148 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: [ main ]
+
+env:
+  configuration: Release
+  productNamespacePrefix: "ReactiveUI"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    outputs:
+      nbgv: ${{ steps.nbgv.outputs.SemVer2 }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: NuGet restore
+      run: | 
+        dotnet restore ReactiveUI.sln
+        dotnet restore ReactiveUI.Events.sln
+      working-directory: src
+
+    - name: NBGV
+      id: nbgv
+      uses: dotnet/nbgv@master
+      with:
+        setAllVars: true
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Install Pharmacist and Generate Events
+      run: |
+        dotnet tool install -g Pharmacist
+        pharmacist generate-platform -p android,ios,mac,tvos -o "src/ReactiveUI.Events/" --output-prefix "Events_"
+        pharmacist generate-platform -p wpf -o "src/ReactiveUI.Events.WPF/" --output-prefix "Events_"
+        pharmacist generate-platform -p winforms -o "src/ReactiveUI.Events.Winforms/" --output-prefix "Events_"
+
+    - name: Build
+      run: | 
+        msbuild /t:build,pack /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.sln
+        msbuild /t:build,pack /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.Events.sln
+      working-directory: src
+
+    - name: Run Unit Tests and Generate Coverage
+      uses: glennawatson/coverlet-msbuild@v1
+      with:
+        project-files: 'src/**/*Tests*.csproj'
+        no-build: true
+        exclude-filter: '[${{env.productNamespacePrefix}}*Tests.*]*'
+        include-filter: '[${{env.productNamespacePrefix}}*]*'
+        output-format: cobertura
+        output: '../../artifacts/coverage/'
+        configuration: ${{ env.configuration }}
+        skip-auto-props: false
+        use-sourcelink: false
+        working-directory: src
+
+    - name: Combine Coverage Reports
+      shell: bash
+      run: |
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+        reportgenerator -reports:artifacts/coverage/*.xml -targetdir:artifacts/finalcoverage  -reporttypes:Cobertura
+
+    - name: Upload Code Coverage
+      run: |
+        npm install -g codecov
+        codecov
+      working-directory: artifacts/finalcoverage
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Create NuGet Artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: nuget
+        path: '**/*.nupkg'
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: contains(github.event.pull_request.labels.*.name, 'release') && github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Download NuGet Packages
+      uses: actions/download-artifact@v2
+      with:
+        name: nuget
+
+    - name: Save SignClient Configuration
+      run: 'echo "$SIGN_CLIENT_CONFIG" > SignPackages.json'
+      shell: bash
+      env:
+        SIGN_CLIENT_CONFIG: ${{secrets.SIGN_CLIENT_CONFIG}}
+
+    - name: Sign NuGet Packages
+      uses: glennawatson/signclient@v1
+      with:
+        input-files: '**/*.nupkg'
+        sign-client-secret: ${{ secrets.SIGN_CLIENT_SECRET }}
+        sign-client-user: ${{ secrets.SIGN_CLIENT_USER_ID }}
+        project-name: reactiveui
+        description: reactiveui
+        config-file: SignPackages.json
+
+    - name: Changelog
+      uses: glennawatson/ChangeLog@v1
+      id: changelog
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+          tag_name: ${{ needs.build.outputs.nbgv }}
+          release_name: ${{ needs.build.outputs.nbgv }}
+          body: |
+            ${{ steps.changelog.outputs.commitLog }}
+
+    - name: NuGet Push
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
+        SOURCE_URL: https://api.nuget.org/v3/index.json
+      run: |
+        dotnet nuget push -s ${{ env.SOURCE_URL }} -k ${{ env.NUGET_AUTH_TOKEN }} **/*.nupkg
+
