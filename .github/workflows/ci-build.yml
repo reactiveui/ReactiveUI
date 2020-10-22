@@ -71,6 +71,8 @@ jobs:
         merge-with: '../../artifacts/coverage/coverage.json'
         output: '../../artifacts/coverage/'
         configuration: ${{ env.configuration }}
+        skip-auto-props: false
+        use-sourcelink: false
 
     - name: Combine Coverage Reports
       shell: bash
