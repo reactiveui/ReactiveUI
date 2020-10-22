@@ -7,7 +7,9 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Android.Views;
@@ -19,7 +21,7 @@ namespace ReactiveUI.AndroidX
     /// A <see cref="RecyclerView.ViewHolder"/> implementation that binds to a reactive view model.
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-    public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolder, ILayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveRecyclerViewViewHolder<TViewModel>>, IReactiveObject
+    public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolder, ILayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveRecyclerViewViewHolder<TViewModel>>, IReactiveObject, ICanActivate
             where TViewModel : class, IReactiveObject
     {
         /// <summary>
@@ -31,6 +33,10 @@ namespace ReactiveUI.AndroidX
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]>? AllPublicProperties;
 
+        private readonly Subject<Unit> _activated = new Subject<Unit>();
+
+        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+
         private TViewModel? _viewModel;
 
         /// <summary>
@@ -41,6 +47,9 @@ namespace ReactiveUI.AndroidX
             : base(view)
         {
             SetupRxObj();
+
+            view.ViewAttachedToWindow += OnViewAttachedToWindow;
+            view.ViewDetachedFromWindow += OnViewDetachedFromWindow;
 
             Selected = Observable.FromEvent<EventHandler, int>(
                                 eventHandler =>
@@ -115,6 +124,12 @@ namespace ReactiveUI.AndroidX
         /// </summary>
         public IObservable<TViewModel?> LongClickedWithViewModel { get; }
 
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated.AsObservable();
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
         /// <summary>
         /// Gets the current view being shown.
         /// </summary>
@@ -175,6 +190,24 @@ namespace ReactiveUI.AndroidX
             PropertyChanged?.Invoke(this, args);
         }
 
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (View != null)
+                {
+                    View.ViewAttachedToWindow -= OnViewAttachedToWindow;
+                    View.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
+                }
+
+                _activated?.Dispose();
+                _deactivated?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
         [OnDeserialized]
         private void SetupRxObj(StreamingContext sc)
         {
@@ -185,6 +218,16 @@ namespace ReactiveUI.AndroidX
         {
             AllPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
+        }
+
+        private void OnViewAttachedToWindow(object sender, View.ViewAttachedToWindowEventArgs args)
+        {
+            _activated.OnNext(Unit.Default);
+        }
+
+        private void OnViewDetachedFromWindow(object sender, View.ViewDetachedFromWindowEventArgs args)
+        {
+            _deactivated.OnNext(Unit.Default);
         }
     }
 }
