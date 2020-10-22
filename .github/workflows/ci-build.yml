@@ -49,7 +49,7 @@ jobs:
 
     - name: Install Pharmacist and Generate Events
       run: |
-        dotnet install -g Pharmacist
+        dotnet tool install -g Pharmacist
         pharmacist generate-platform -p android,ios,mac,tvos -o "src/ReactiveUI.Events/" --output-prefix "Events_"
         pharmacist generate-platform -p wpf -o "src/ReactiveUI.Events.WPF/" --output-prefix "Events_"
         pharmacist generate-platform -p winforms -o "src/ReactiveUI.Events.Winforms/" --output-prefix "Events_"
