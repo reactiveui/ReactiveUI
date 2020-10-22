@@ -49,7 +49,7 @@ namespace ReactiveUI.AndroidX
             SetupRxObj();
 
             view.ViewAttachedToWindow += OnViewAttachedToWindow;
-            view.ViewDetachedFromWindow += OnViewDeAttachedToWindow;
+            view.ViewDetachedFromWindow += OnViewDetachedFromWindow;
 
             Selected = Observable.FromEvent<EventHandler, int>(
                                 eventHandler =>
@@ -198,7 +198,7 @@ namespace ReactiveUI.AndroidX
                 if (View != null)
                 {
                     View.ViewAttachedToWindow -= OnViewAttachedToWindow;
-                    View.ViewDetachedFromWindow -= OnViewDeAttachedToWindow;
+                    View.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
                 }
 
                 _activated?.Dispose();
@@ -225,7 +225,7 @@ namespace ReactiveUI.AndroidX
             _activated.OnNext(Unit.Default);
         }
 
-        private void OnViewDeAttachedToWindow(object sender, View.ViewDetachedFromWindowEventArgs args)
+        private void OnViewDetachedFromWindow(object sender, View.ViewDetachedFromWindowEventArgs args)
         {
             _deactivated.OnNext(Unit.Default);
         }
