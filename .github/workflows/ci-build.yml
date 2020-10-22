@@ -61,9 +61,29 @@ jobs:
       working-directory: src
 
     - name: Run Unit Tests and Generate Coverage
+      uses: glennawatson/coverlet-msbuild@v1
+      with:
+        project-files: 'src/**/*Tests*.csproj'
+        no-build: true
+        exclude-filter: '[${{env.productNamespacePrefix}}*Tests.*]*'
+        include-filter: '[${{env.productNamespacePrefix}}*]*'
+        output-format: opencover
+        output: '../../artifacts/coverage/'
+        configuration: ${{ env.configuration }}
+        skip-auto-props: false
+        use-sourcelink: false
+
+    - name: Create Coverage Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: nuget
+        path: 'artifacts/**/*.xml'
+
+    - name: Combine Coverage Reports
+      shell: bash
       run: |
-        dotnet test --no-build /p:AltCover=true /p:CopyLocalLockFileAssemblies="true" /p:AltCoverCobertura=../artifacts/finalcoverage/finalcoverage.xml /p:Configuration=${{ env.configuration }} ReactiveUI.sln
-      working-directory: src
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+        reportgenerator -reports:artifacts/coverage/*.xml -targetdir:artifacts/finalcoverage  -reporttypes:Cobertura
 
     - name: Upload Code Coverage
       run: |
