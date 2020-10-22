@@ -33,7 +33,9 @@ jobs:
         node-version: '12.x'
 
     - name: NuGet restore
-      run: dotnet restore
+      run: | 
+        dotnet restore ReactiveUI.sln
+        dotnet restore ReactiveUI.Events.sln
       working-directory: src
 
     - name: NBGV
@@ -45,8 +47,17 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1
 
+    - name: Install Pharmacist and Generate Events
+      run: |
+        dotnet install -g Pharmacist
+        pharmacist generate-platform -p android,ios,mac,tvos -o "src/ReactiveUI.Events/" --output-prefix "Events_"
+        pharmacist generate-platform -p wpf -o "src/ReactiveUI.Events.WPF/" --output-prefix "Events_"
+        pharmacist generate-platform -p winforms -o "src/ReactiveUI.Events.Winforms/" --output-prefix "Events_"
+
     - name: Build
-      run: msbuild /t:build,pack /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }}
+      run: | 
+        msbuild /t:build,pack /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.sln
+        msbuild /t:build,pack /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.Events.sln
       working-directory: src
 
     - name: Run Unit Tests and Generate Coverage
