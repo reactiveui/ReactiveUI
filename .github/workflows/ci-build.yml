@@ -61,18 +61,9 @@ jobs:
       working-directory: src
 
     - name: Run Unit Tests and Generate Coverage
-      uses: glennawatson/coverlet-msbuild@v1
-      with:
-        project-files: 'src/**/*Tests*.csproj'
-        no-build: true
-        exclude-filter: '[${{env.productNamespacePrefix}}*Tests.*]*'
-        include-filter: '[${{env.productNamespacePrefix}}*]*'
-        output-format: opencover
-        merge-with: '../../artifacts/coverage/coverage.json'
-        output: '../../artifacts/coverage/'
-        configuration: ${{ env.configuration }}
-        skip-auto-props: false
-        use-sourcelink: false
+      run: |
+        dotnet test /p:AltCover=true /p:CopyLocalLockFileAssemblies="true" /p:AltCoverCobertura=../artifacts/finalcoverage/finalcoverage.xml /p:Configuration=${{ env.configuration }} ReactiveUI.sln
+      working-directory: src
 
     - name: Combine Coverage Reports
       shell: bash
