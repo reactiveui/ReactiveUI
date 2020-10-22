@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using FluentAssertions;
@@ -96,6 +97,7 @@ namespace ReactiveUI.Tests
 
         [Theory]
         [MemberData(nameof(NamespacesToRegister))]
+        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in NET472")]
         public void RegisteredNamespacesShouldBeRegistered(IEnumerable<RegistrationNamespace> namespacesToRegister)
         {
             var resolver = GenerateResolver();

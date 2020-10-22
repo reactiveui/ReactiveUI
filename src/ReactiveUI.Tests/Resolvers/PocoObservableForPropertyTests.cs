@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -70,6 +71,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in NET472")]
         public void NotificationPocoSuppressErrorOnBind()
         {
             using (var testLoggerRegistration = new TestLoggerRegistration())
