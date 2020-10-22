@@ -62,14 +62,8 @@ jobs:
 
     - name: Run Unit Tests and Generate Coverage
       run: |
-        dotnet test /p:AltCover=true /p:CopyLocalLockFileAssemblies="true" /p:AltCoverCobertura=../artifacts/finalcoverage/finalcoverage.xml /p:Configuration=${{ env.configuration }} ReactiveUI.sln
+        dotnet test --no-build /p:AltCover=true /p:CopyLocalLockFileAssemblies="true" /p:AltCoverCobertura=../artifacts/finalcoverage/finalcoverage.xml /p:Configuration=${{ env.configuration }} ReactiveUI.sln
       working-directory: src
-
-    - name: Combine Coverage Reports
-      shell: bash
-      run: |
-        dotnet tool install --global dotnet-reportgenerator-globaltool
-        reportgenerator -reports:artifacts/coverage/*.xml -targetdir:artifacts/finalcoverage  -reporttypes:Cobertura
 
     - name: Upload Code Coverage
       run: |
