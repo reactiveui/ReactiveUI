@@ -4,7 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+
 using Splat;
+
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -50,6 +53,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in all platforms.")]
         public void ViewModelToViewNamingConventionCanBeCustomized()
         {
             var resolver = new ModernDependencyResolver();
@@ -324,6 +328,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in all frameworks.")]
         public void CanOverrideNameResolutionFunc()
         {
             var resolver = new ModernDependencyResolver();
