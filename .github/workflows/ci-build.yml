@@ -60,12 +60,11 @@ jobs:
       with:
         project-files: 'src/**/*Tests*.csproj'
         no-build: true
-        exclude-filter: '[${{env.productNamespacePrefix}}*Tests.*]*'
+        exclude-filter: '[${{env.productNamespacePrefix}}.*.Tests.*]*'
         include-filter: '[${{env.productNamespacePrefix}}*]*'
         output-format: cobertura
         output: '../../artifacts/'
         configuration: ${{ env.configuration }}
-        working-directory: src
 
     - name: Upload Code Coverage
       shell: bash
