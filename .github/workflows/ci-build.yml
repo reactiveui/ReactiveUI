@@ -68,23 +68,15 @@ jobs:
         exclude-filter: '[${{env.productNamespacePrefix}}*Tests.*]*'
         include-filter: '[${{env.productNamespacePrefix}}*]*'
         output-format: cobertura
-        output: '../../artifacts/coverage/'
+        output: '../../artifacts/'
         configuration: ${{ env.configuration }}
-        skip-auto-props: false
-        use-sourcelink: false
         working-directory: src
 
-    - name: Combine Coverage Reports
+    - name: Upload Code Coverage
       shell: bash
       run: |
-        dotnet tool install --global dotnet-reportgenerator-globaltool
-        reportgenerator -reports:artifacts/coverage/*.xml -targetdir:artifacts/finalcoverage  -reporttypes:Cobertura
-
-    - name: Upload Code Coverage
-      run: |
-        npm install -g codecov
-        codecov
-      working-directory: artifacts/finalcoverage
+        echo $PWD
+        bash <(curl -s https://codecov.io/bash) -X gcov -X coveragepy -t ${{ env.CODECOV_TOKEN }} -s '$PWD/artifacts' -f '*.xml'
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
