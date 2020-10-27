@@ -27,22 +27,17 @@ jobs:
       with:
         dotnet-version: 3.1.x
 
-    - name: Use Node.js
-      uses: actions/setup-node@v1
+    - name: NBGV
+      id: nbgv
+      uses: dotnet/nbgv@master
       with:
-        node-version: '12.x'
+        setAllVars: true
 
     - name: NuGet restore
       run: | 
         dotnet restore ReactiveUI.sln
         dotnet restore ReactiveUI.Events.sln
       working-directory: src
-
-    - name: NBGV
-      id: nbgv
-      uses: dotnet/nbgv@master
-      with:
-        setAllVars: true
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1
@@ -65,26 +60,17 @@ jobs:
       with:
         project-files: 'src/**/*Tests*.csproj'
         no-build: true
-        exclude-filter: '[${{env.productNamespacePrefix}}*Tests.*]*'
+        exclude-filter: '[${{env.productNamespacePrefix}}.*.Tests.*]*'
         include-filter: '[${{env.productNamespacePrefix}}*]*'
         output-format: cobertura
-        output: '../../artifacts/coverage/'
+        output: '../../artifacts/'
         configuration: ${{ env.configuration }}
-        skip-auto-props: false
-        use-sourcelink: false
-        working-directory: src
-
-    - name: Combine Coverage Reports
-      shell: bash
-      run: |
-        dotnet tool install --global dotnet-reportgenerator-globaltool
-        reportgenerator -reports:artifacts/coverage/*.xml -targetdir:artifacts/finalcoverage  -reporttypes:Cobertura
 
     - name: Upload Code Coverage
+      shell: bash
       run: |
-        npm install -g codecov
-        codecov
-      working-directory: artifacts/finalcoverage
+        echo $PWD
+        bash <(curl -s https://codecov.io/bash) -X gcov -X coveragepy -t ${{ env.CODECOV_TOKEN }} -s '$PWD/artifacts' -f '*.xml'
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
