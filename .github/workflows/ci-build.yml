@@ -27,22 +27,17 @@ jobs:
       with:
         dotnet-version: 3.1.x
 
-    - name: Use Node.js
-      uses: actions/setup-node@v1
+    - name: NBGV
+      id: nbgv
+      uses: dotnet/nbgv@master
       with:
-        node-version: '12.x'
+        setAllVars: true
 
     - name: NuGet restore
       run: | 
         dotnet restore ReactiveUI.sln
         dotnet restore ReactiveUI.Events.sln
       working-directory: src
-
-    - name: NBGV
-      id: nbgv
-      uses: dotnet/nbgv@master
-      with:
-        setAllVars: true
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1
