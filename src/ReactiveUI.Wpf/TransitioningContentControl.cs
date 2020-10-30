@@ -224,6 +224,11 @@ namespace ReactiveUI
 
         private static RenderTargetBitmap GetRenderTargetBitmapFromUiElement(UIElement uiElement)
         {
+            if (uiElement.RenderSize.Height == 0)
+            {
+                return default!;
+            }
+
             DpiScale dpiScale = VisualTreeHelper.GetDpi(uiElement);
 
             var renderTargetBitmap = new RenderTargetBitmap(
@@ -288,6 +293,7 @@ namespace ReactiveUI
             }
 
             _previousImageSite.Source = GetRenderTargetBitmapFromUiElement(_currentContentPresentationSite);
+
             _currentContentPresentationSite.Content = newContent;
             string startingTransitionName;
 
