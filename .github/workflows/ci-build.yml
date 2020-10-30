@@ -64,6 +64,7 @@ jobs:
         include-filter: '[${{env.productNamespacePrefix}}*]*'
         output-format: cobertura
         output: '../../artifacts/'
+        merge-with: '../../artifacts/coverage.json'
         configuration: ${{ env.configuration }}
 
     - name: Upload Code Coverage
