@@ -13,7 +13,7 @@
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <PackageReference Include="Pharmacist.Common" Version="1.*" />
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">
