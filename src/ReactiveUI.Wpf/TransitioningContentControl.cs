@@ -227,6 +227,7 @@ namespace ReactiveUI
             if (uiElement.RenderSize.Height == 0 || uiElement.RenderSize.Width == 0)
             {
                 return default;
+
             }
 
             DpiScale dpiScale = VisualTreeHelper.GetDpi(uiElement);
