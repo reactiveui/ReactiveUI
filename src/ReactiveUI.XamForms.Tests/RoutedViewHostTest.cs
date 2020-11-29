@@ -283,14 +283,11 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal("Child view: C1", currentPage.Title);
         }
 
-        public void Dispose()
-        {
-            Locator.SetLocator(new ModernDependencyResolver());
-        }
+        public void Dispose() => Locator.SetLocator(new ModernDependencyResolver());
 
         private RoutedViewHost CreateRoutedViewHost(string? initialViewModel = nameof(MainViewModel))
         {
-            if (initialViewModel != null)
+            if (initialViewModel is not null)
             {
                 var mainViewModel = Locator.Current.GetService<IRoutableViewModel>(initialViewModel);
                 _navigationViewModel.Router.NavigationStack.Add(mainViewModel);

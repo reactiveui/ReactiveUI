@@ -12,9 +12,6 @@ namespace ReactiveUI.Tests.Winforms
     {
         public event EventHandler? Click;
 
-        public void PerformClick()
-        {
-            Click?.Invoke(this, EventArgs.Empty);
-        }
+        public void PerformClick() => Click?.Invoke(this, EventArgs.Empty);
     }
 }

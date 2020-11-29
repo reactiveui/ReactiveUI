@@ -22,10 +22,7 @@ namespace ReactiveUI.Fody.Helpers
         /// Initializes a new instance of the <see cref="ReactiveDependencyAttribute"/> class.
         /// </summary>
         /// <param name="targetName">Name of the target.</param>
-        public ReactiveDependencyAttribute(string targetName)
-        {
-            _targetName = targetName;
-        }
+        public ReactiveDependencyAttribute(string targetName) => _targetName = targetName;
 
         /// <summary>
         /// Gets the name of the backing property.

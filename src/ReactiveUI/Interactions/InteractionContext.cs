@@ -30,10 +30,7 @@ namespace ReactiveUI
         private TOutput _output = default!;
         private int _outputSet;
 
-        internal InteractionContext(TInput input)
-        {
-            _input = input;
-        }
+        internal InteractionContext(TInput input) => _input = input;
 
         /// <summary>
         /// Gets the input for the interaction.

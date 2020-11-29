@@ -49,7 +49,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
+        public event PropertyChangingEventHandler? PropertyChanging
         {
             add
             {
@@ -60,7 +60,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
+        public event PropertyChangedEventHandler? PropertyChanged
         {
             add
             {

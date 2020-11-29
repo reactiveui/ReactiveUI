@@ -23,7 +23,7 @@ using Splat;
 namespace ReactiveUI
 {
     internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable
-        where TSectionInfo : ISectionInformation<TSource, TUIView, TUIViewCell>
+        where TSectionInfo : ISectionInformation<TUIViewCell>
     {
         private readonly IUICollViewAdapter<TUIView, TUIViewCell> _adapter;
         private readonly int _mainThreadId;
@@ -137,7 +137,7 @@ namespace ReactiveUI
             {
                 case NotifyCollectionChangedAction.Add:
                     return Enumerable
-                        .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
+                        .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
                         .Select(Update.CreateAdd);
                 case NotifyCollectionChangedAction.Remove:
                     // Use OldStartingIndex for each "Update.Index" because the batch update processes and removes items sequentially
@@ -145,19 +145,19 @@ namespace ReactiveUI
                     // For example if we are removing the items from indexes 1 to 5.
                     // When item at index 1 is removed item at index 2 is now at index 1 and so on down the line.
                     return Enumerable
-                        .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
+                        .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
                         .Select(x => Update.CreateDelete(pendingChange.OldStartingIndex));
                 case NotifyCollectionChangedAction.Move:
                     return Enumerable
-                        .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
+                        .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
                         .Select(Update.CreateDelete)
                         .Concat(
                             Enumerable
-                            .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
+                            .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
                             .Select(Update.CreateAdd));
                 case NotifyCollectionChangedAction.Replace:
                     return Enumerable
-                        .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
+                        .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
                         .SelectMany(x => new[] { Update.CreateDelete(x), Update.CreateAdd(x) });
                 default:
                     throw new NotSupportedException("Don't know how to deal with " + pendingChange.Action);
@@ -180,7 +180,7 @@ namespace ReactiveUI
             var sectionInfoId = SectionInfoIdGenerator.Generate();
             this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] SectionInfo changed to {1}.", sectionInfoId, sectionInfo);
 
-            if (sectionInfo == null)
+            if (sectionInfo is null)
             {
                 _sectionInfoDisposable.Disposable = null;
                 return;
@@ -188,18 +188,21 @@ namespace ReactiveUI
 
             var notifyCollectionChanged = sectionInfo as INotifyCollectionChanged;
 
-            if (notifyCollectionChanged == null)
+            if (notifyCollectionChanged is null)
             {
                 this.Log().Warn(CultureInfo.InvariantCulture, "[#{0}] SectionInfo {1} does not implement INotifyCollectionChanged - any added or removed sections will not be reflected in the UI.", sectionInfoId, sectionInfo);
             }
 
-            var sectionChanged = (notifyCollectionChanged == null ?
+            var sectionChanged = (notifyCollectionChanged is null ?
                 Observable<Unit>.Never :
                 notifyCollectionChanged.ObserveCollectionChanges().Select(_ => Unit.Default))
                     .StartWith(Unit.Default);
 
-            var disposables = new CompositeDisposable();
-            disposables.Add(Disposable.Create(() => this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", sectionInfoId)));
+            var disposables = new CompositeDisposable
+            {
+                Disposable.Create(() => this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", sectionInfoId))
+            };
+
             _sectionInfoDisposable.Disposable = disposables;
             SubscribeToSectionInfoChanges(sectionInfoId, sectionInfo, sectionChanged, disposables);
         }
@@ -236,10 +239,10 @@ namespace ReactiveUI
                     var anySectionChanged = Observable
                         .Merge(
                             sectionInfo
-                            .Select((y, index) => y.Collection.ObserveCollectionChanges().Select(z => new { Section = index, Change = z })))
+                            .Select((y, index) => y.Collection!.ObserveCollectionChanges().Select(z => new { Section = index, Change = z })))
                         .Publish();
 
-                    // since reloads are applied asynchronously, it is possible for data to change whilst the reload is occuring
+                    // since reloads are applied asynchronously, it is possible for data to change whilst the reload is occurring
                     // thus, we need to ensure any such changes result in another reload
                     sectionDisposables.Add(
                         isReloading
@@ -282,8 +285,8 @@ namespace ReactiveUI
                                         y.Change.EventArgs.Action,
                                         y.Change.EventArgs.OldStartingIndex,
                                         y.Change.EventArgs.NewStartingIndex,
-                                        y.Change.EventArgs.OldItems == null ? "null" : y.Change.EventArgs.OldItems.Count.ToString(CultureInfo.InvariantCulture),
-                                        y.Change.EventArgs.NewItems == null ? "null" : y.Change.EventArgs.NewItems.Count.ToString(CultureInfo.InvariantCulture));
+                                        y.Change.EventArgs.OldItems is null ? "null" : y.Change.EventArgs.OldItems.Count.ToString(CultureInfo.InvariantCulture),
+                                        y.Change.EventArgs.NewItems is null ? "null" : y.Change.EventArgs.NewItems.Count.ToString(CultureInfo.InvariantCulture));
                             }
 
                             if (!_isCollectingChanges)
@@ -343,8 +346,8 @@ namespace ReactiveUI
                                     pendingSectionChange.pendingChange.Action,
                                     pendingSectionChange.pendingChange.OldStartingIndex,
                                     pendingSectionChange.pendingChange.NewStartingIndex,
-                                    pendingSectionChange.pendingChange.OldItems == null ? "null" : pendingSectionChange.pendingChange.OldItems.Count.ToString(CultureInfo.InvariantCulture),
-                                    pendingSectionChange.pendingChange.NewItems == null ? "null" : pendingSectionChange.pendingChange.NewItems.Count.ToString(CultureInfo.InvariantCulture));
+                                    pendingSectionChange.pendingChange.OldItems is null ? "null" : pendingSectionChange.pendingChange.OldItems.Count.ToString(CultureInfo.InvariantCulture),
+                                    pendingSectionChange.pendingChange.NewItems is null ? "null" : pendingSectionChange.pendingChange.NewItems.Count.ToString(CultureInfo.InvariantCulture));
                             }
                         }
 

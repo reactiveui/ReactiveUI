@@ -29,10 +29,7 @@ namespace ReactiveUI
                               return score > acc.count ? (score, x) : acc;
                           }).viewFetcher, RxApp.SmallCacheLimit);
 
-        static ViewForMixins()
-        {
-            RxApp.EnsureInitialized();
-        }
+        static ViewForMixins() => RxApp.EnsureInitialized();
 
         /// <summary>
         /// WhenActivated allows you to register a Func to be called when a
@@ -46,7 +43,7 @@ namespace ReactiveUI
         /// </param>
         public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -67,7 +64,7 @@ namespace ReactiveUI
         /// </param>
         public static void WhenActivated(this IActivatableViewModel item, Action<Action<IDisposable>> block)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -92,7 +89,7 @@ namespace ReactiveUI
         /// </param>
         public static void WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -118,7 +115,7 @@ namespace ReactiveUI
         /// <returns>A Disposable that deactivates this registration.</returns>
         public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -144,13 +141,13 @@ namespace ReactiveUI
         /// <returns>A Disposable that deactivates this registration.</returns>
         public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
             var activationFetcher = activationFetcherCache.Get(item.GetType());
-            if (activationFetcher == null)
+            if (activationFetcher is null)
             {
                 const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, msg, item.GetType().FullName));
@@ -180,10 +177,7 @@ namespace ReactiveUI
         /// deactivated (i.e. "d(someObservable.Subscribe());").
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block)
-        {
-            return item.WhenActivated(block, null!);
-        }
+        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block) => item.WhenActivated(block, null!);
 
         /// <summary>
         /// WhenActivated allows you to register a Func to be called when a
@@ -202,16 +196,14 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view)
-        {
-            return item.WhenActivated(
+        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view) =>
+            item.WhenActivated(
                 () =>
-            {
-                var ret = new List<IDisposable>();
-                block(ret.Add);
-                return ret;
-            }, view);
-        }
+                {
+                    var ret = new List<IDisposable>();
+                    block(ret.Add);
+                    return ret;
+                }, view);
 
         /// <summary>
         /// WhenActivated allows you to register a Func to be called when a
@@ -229,16 +221,14 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null)
-        {
-            return item.WhenActivated(
+        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) =>
+            item.WhenActivated(
                 () =>
-            {
-                var d = new CompositeDisposable();
-                block(d);
-                return new[] { d };
-            }, view);
-        }
+                {
+                    var d = new CompositeDisposable();
+                    block(d);
+                    return new[] { d };
+                }, view);
 
         private static IDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
         {
@@ -275,7 +265,7 @@ namespace ReactiveUI
                                 // NB: We need to make sure to respect ordering so that the cleanup
                                 // happens before we activate again
                                 vmDisposable.Disposable = Disposable.Empty;
-                                if (x != null)
+                                if (x is not null)
                                 {
                                     vmDisposable.Disposable = x.Activator.Activate();
                                 }

@@ -8,10 +8,7 @@ namespace ReactiveUI.Tests.Winforms
     [SingleInstanceView]
     public class NeverUsedView : ReactiveUI.Winforms.ReactiveUserControl<NeverUsedViewModel>
     {
-        public NeverUsedView()
-        {
-            Instances++;
-        }
+        public NeverUsedView() => Instances++;
 
         public static int Instances { get; private set; }
     }

@@ -36,7 +36,7 @@ namespace ReactiveUI
         /// <param name="app">The application.</param>
         public AutoSuspendHelper(Application app)
         {
-            if (app == null)
+            if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
@@ -75,10 +75,7 @@ namespace ReactiveUI
         /// Raises the applications Launch event.
         /// </summary>
         /// <param name="args">The <see cref="IActivatedEventArgs"/> instance containing the event data.</param>
-        public void OnLaunched(IActivatedEventArgs args)
-        {
-            _activated.OnNext(args);
-        }
+        public void OnLaunched(IActivatedEventArgs args) => _activated.OnNext(args);
 
         /// <inheritdoc />
         public void Dispose()

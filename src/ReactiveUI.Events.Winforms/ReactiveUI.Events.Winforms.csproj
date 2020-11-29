@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net472</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <PackageDescription> Provides Observable-based events API for Win Forms UI controls &amp;	event handlers</PackageDescription>
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="System.Reactive" Version="4.4.1" />
+      <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -27,7 +27,7 @@ namespace ReactiveUI
         {
             int parentResult = _parent?.Compare(x, y) ?? 0;
 
-            if (x == null && y == null)
+            if (x is null && y is null)
             {
                 return 0;
             }

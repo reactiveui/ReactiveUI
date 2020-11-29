@@ -33,7 +33,7 @@ namespace ReactiveUI.Tests
 
             var sourceDirectory = Path.GetDirectoryName(filePath);
 
-            if (sourceDirectory == null)
+            if (sourceDirectory is null)
             {
                 throw new ArgumentNullException(filePath);
             }

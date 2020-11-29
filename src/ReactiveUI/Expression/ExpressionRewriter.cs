@@ -9,7 +9,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
@@ -18,8 +17,13 @@ namespace ReactiveUI
     /// </summary>
     internal class ExpressionRewriter : ExpressionVisitor
     {
-        public override Expression Visit(Expression node)
+        public override Expression Visit(Expression? node)
         {
+            if (node is null)
+            {
+                throw new InvalidOperationException("The expression has a null instance in it.");
+            }
+
             switch (node.NodeType)
             {
             case ExpressionType.ArrayIndex:
@@ -64,26 +68,39 @@ namespace ReactiveUI
             Expression left = Visit(node.Left);
             Expression right = Visit(node.Right);
 
-            // Translate arrayindex into normal index expression
+            // Translate array index into normal index expression
             return Expression.MakeIndex(left, left.Type.GetRuntimeProperty("Item"), new[] { right });
         }
 
         protected override Expression VisitUnary(UnaryExpression node)
         {
-            if (node.NodeType == ExpressionType.ArrayLength)
+            if (node is null)
             {
-                Expression expression = Visit(node.Operand);
+                throw new ArgumentNullException(nameof(node));
+            }
 
-                // translate arraylength into normal member expression
-                return Expression.MakeMemberAccess(expression, expression.Type.GetRuntimeProperty("Length"));
-            }
-            else if (node.NodeType == ExpressionType.Convert)
+            switch (node.NodeType)
             {
-                return Visit(node.Operand);
-            }
-            else
-            {
-                return node.Update(Visit(node.Operand));
+                case ExpressionType.ArrayLength:
+                {
+                    Expression expression = Visit(node.Operand);
+
+                    var lengthProperty = expression.Type.GetRuntimeProperty("Length");
+
+                    if (lengthProperty is null)
+                    {
+                        throw new InvalidOperationException(
+                            "There is a unary expression pointing to an array which does not have a length");
+                    }
+
+                    // translate array length into normal member expression
+                    return Expression.MakeMemberAccess(expression, lengthProperty);
+                }
+
+                case ExpressionType.Convert:
+                    return Visit(node.Operand);
+                default:
+                    return node.Update(Visit(node.Operand));
             }
         }
 
@@ -112,9 +129,6 @@ namespace ReactiveUI
             return base.VisitIndex(node);
         }
 
-        protected override Expression VisitMember(MemberExpression node)
-        {
-            return base.VisitMember(node);
-        }
+        protected override Expression VisitMember(MemberExpression node) => base.VisitMember(node);
     }
 }

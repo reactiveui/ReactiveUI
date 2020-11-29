@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid90;netcoreapp2.0;tizen40</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0;tizen40</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;uap10.0.16299;netcoreapp3.1</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
@@ -14,8 +14,8 @@
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="Splat" Version="9.*" />
-    <PackageReference Include="DynamicData" Version="6.*" />
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="DynamicData" Version="7.*" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
@@ -74,13 +74,13 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp2')) ">
-    <Compile Include="Platforms\netcoreapp2\**\*.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
+    <Compile Include="Platforms\netcoreapp3\**\*.cs" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
-    <Compile Include="Platforms\netcoreapp3\**\*.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net5')) ">
+    <Compile Include="Platforms\net5\**\*.cs" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
 

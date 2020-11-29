@@ -2,14 +2,14 @@
 
   <PropertyGroup>    
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;net5.0-windows10.0.19041</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.4.1" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
   </ItemGroup>
   
   <ItemGroup>
@@ -37,6 +37,21 @@
           <Compile Include="Platforms\Winforms\**\*.cs" />
           <Compile Include="Platforms\windows-xaml\**\*.cs" />
           <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
+      </ItemGroup>
+    </When>
+    <When Condition=" $(TargetFramework.StartsWith('net5')) AND '$(OS)' == 'Windows_NT'">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+        <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+        <Compile Include="Platforms\common-gui\**\*.cs" />
+        <Compile Include="Platforms\wpf\**\*.cs" />
+        <Compile Include="Platforms\Winforms\**\*.cs" />
+        <Compile Include="Platforms\windows-xaml\**\*.cs" />
+        <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
       </ItemGroup>
     </When>
     <When Condition=" $(TargetFramework.StartsWith('net4'))">

@@ -19,17 +19,12 @@ namespace ReactiveUI
     public class ActivationForViewFetcher : IActivationForViewFetcher
     {
         /// <inheritdoc/>
-        public int GetAffinityForView(Type view)
-        {
-            return typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
-        }
+        public int GetAffinityForView(Type view) => typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
 
         /// <inheritdoc/>
         public IObservable<bool> GetActivationForView(IActivatableView view)
         {
-            var fe = view as FrameworkElement;
-
-            if (fe == null)
+            if (!(view is FrameworkElement fe))
             {
                 return Observable<bool>.Empty;
             }

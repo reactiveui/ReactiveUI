@@ -88,22 +88,13 @@ namespace ReactiveUI.AndroidSupport
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <inheritdoc />
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         public override void OnPause()

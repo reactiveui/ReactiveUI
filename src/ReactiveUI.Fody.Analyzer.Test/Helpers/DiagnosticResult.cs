@@ -25,7 +25,7 @@ namespace TestHelper
         {
             get
             {
-                if (_locations == null)
+                if (_locations is null)
                 {
                     _locations = Array.Empty<DiagnosticResultLocation>();
                 }
@@ -33,10 +33,7 @@ namespace TestHelper
                 return _locations;
             }
 
-            set
-            {
-                _locations = value;
-            }
+            set => _locations = value;
         }
 
         /// <summary>
@@ -57,35 +54,17 @@ namespace TestHelper
         /// <summary>
         /// Gets the Path of the source file that caused the Analysis Result.
         /// </summary>
-        public string Path
-        {
-            get
-            {
-                return Locations.Count > 0 ? Locations[0].Path : string.Empty;
-            }
-        }
+        public string Path => Locations.Count > 0 ? Locations[0].Path : string.Empty;
 
         /// <summary>
         /// Gets the line number of the source that caused the Analysis Result.
         /// </summary>
-        public int Line
-        {
-            get
-            {
-                return Locations.Count > 0 ? Locations[0].Line : -1;
-            }
-        }
+        public int Line => Locations.Count > 0 ? Locations[0].Line : -1;
 
         /// <summary>
         /// Gets the column number of the source that caused the Analysis Result.
         /// </summary>
-        public int Column
-        {
-            get
-            {
-                return Locations.Count > 0 ? Locations[0].Column : -1;
-            }
-        }
+        public int Column => Locations.Count > 0 ? Locations[0].Column : -1;
 
         /// <summary>
         /// Performs equality against left and right.
@@ -93,10 +72,7 @@ namespace TestHelper
         /// <param name="left">Left side to compare.</param>
         /// <param name="right">Right side to compare.</param>
         /// <returns>If the two values are equal.</returns>
-        public static bool operator ==(DiagnosticResult left, DiagnosticResult right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(DiagnosticResult left, DiagnosticResult right) => left.Equals(right);
 
         /// <summary>
         /// Performs inequality against left and right.
@@ -104,29 +80,21 @@ namespace TestHelper
         /// <param name="left">Left side to compare.</param>
         /// <param name="right">Right side to compare.</param>
         /// <returns>If the two values are not equal.</returns>
-        public static bool operator !=(DiagnosticResult left, DiagnosticResult right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(DiagnosticResult left, DiagnosticResult right) => !(left == right);
 
         /// <inheritdoc/>
-        public override bool Equals(object? obj)
-        {
-            return obj is DiagnosticResult result && Equals(result);
-        }
+        public override bool Equals(object? obj) => obj is DiagnosticResult result && Equals(result);
 
         /// <inheritdoc/>
-        public bool Equals(DiagnosticResult other)
-        {
-            return EqualityComparer<IList<DiagnosticResultLocation>>.Default.Equals(_locations, other._locations) &&
-                   EqualityComparer<IList<DiagnosticResultLocation>>.Default.Equals(Locations, other.Locations) &&
-                   Severity == other.Severity &&
-                   Id == other.Id &&
-                   Message == other.Message &&
-                   Path == other.Path &&
-                   Line == other.Line &&
-                   Column == other.Column;
-        }
+        public bool Equals(DiagnosticResult other) =>
+            EqualityComparer<IList<DiagnosticResultLocation>>.Default.Equals(_locations, other._locations) &&
+            EqualityComparer<IList<DiagnosticResultLocation>>.Default.Equals(Locations, other.Locations) &&
+            Severity == other.Severity &&
+            Id == other.Id &&
+            Message == other.Message &&
+            Path == other.Path &&
+            Line == other.Line &&
+            Column == other.Column;
 
         /// <inheritdoc/>
         public override int GetHashCode()

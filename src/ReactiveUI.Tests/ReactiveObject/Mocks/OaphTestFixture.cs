@@ -13,10 +13,7 @@ namespace ReactiveUI.Tests
         [IgnoreDataMember]
         private readonly ObservableAsPropertyHelper<string?> _firstThreeLettersOfOneWord;
 
-        public OaphTestFixture()
-        {
-            this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x).ToProperty(this, x => x.FirstThreeLettersOfOneWord, out _firstThreeLettersOfOneWord);
-        }
+        public OaphTestFixture() => this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x).ToProperty(this, x => x.FirstThreeLettersOfOneWord, out _firstThreeLettersOfOneWord);
 
         [IgnoreDataMember]
         public string? FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;

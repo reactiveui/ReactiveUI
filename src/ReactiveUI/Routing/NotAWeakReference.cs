@@ -9,10 +9,7 @@ namespace ReactiveUI
 {
     internal class NotAWeakReference
     {
-        public NotAWeakReference(object target)
-        {
-            Target = target;
-        }
+        public NotAWeakReference(object target) => Target = target;
 
         public object Target { get; private set; }
 

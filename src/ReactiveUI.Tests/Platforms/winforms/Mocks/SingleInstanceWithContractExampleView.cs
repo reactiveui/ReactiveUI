@@ -9,10 +9,7 @@ namespace ReactiveUI.Tests.Winforms
     [SingleInstanceView]
     public class SingleInstanceWithContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<SingleInstanceExampleViewModel>
     {
-        public SingleInstanceWithContractExampleView()
-        {
-            Instances++;
-        }
+        public SingleInstanceWithContractExampleView() => Instances++;
 
         public static int Instances { get; private set; }
     }

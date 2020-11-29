@@ -4,13 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reflection;
 using System.Windows.Input;
-using Splat;
 
 namespace ReactiveUI
 {
@@ -19,11 +13,11 @@ namespace ReactiveUI
     /// </summary>
     internal class RelayCommand : ICommand
     {
-        private readonly Func<object, bool> _canExecute;
-        private readonly Action<object> _execute;
+        private readonly Func<object?, bool> _canExecute;
+        private readonly Action<object?> _execute;
         private bool? _prevCanExecute;
 
-        public RelayCommand(Func<object, bool>? canExecute = null, Action<object>? execute = null)
+        public RelayCommand(Func<object?, bool>? canExecute = null, Action<object?>? execute = null)
         {
             _canExecute = canExecute ?? (_ => true);
             _execute = execute ?? (_ => { });
@@ -31,10 +25,10 @@ namespace ReactiveUI
 
         public event EventHandler? CanExecuteChanged;
 
-        public bool CanExecute(object parameter)
+        public bool CanExecute(object? parameter)
         {
             var ce = _canExecute(parameter);
-            if (CanExecuteChanged != null && (!_prevCanExecute.HasValue || ce != _prevCanExecute))
+            if (CanExecuteChanged is not null && (!_prevCanExecute.HasValue || ce != _prevCanExecute))
             {
                 CanExecuteChanged(this, EventArgs.Empty);
                 _prevCanExecute = ce;
@@ -43,9 +37,6 @@ namespace ReactiveUI
             return ce;
         }
 
-        public void Execute(object parameter)
-        {
-            _execute(parameter);
-        }
+        public void Execute(object? parameter) => _execute(parameter);
     }
 }

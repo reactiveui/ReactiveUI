@@ -1,12 +1,12 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows10.0.19041;net472</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Presentation Foundation (WPF)</PackageDescription>
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;net461</PackageTags>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;net472</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />

@@ -78,7 +78,7 @@ namespace ReactiveUI.Fody.Analyzer
                 return;
             }
 
-            if (context.ContainingSymbol != null)
+            if (context.ContainingSymbol is not null)
             {
                 var reactiveObject = context.ContainingSymbol.ContainingType;
                 if (!reactiveObject.AllInterfaces.Any(interfaceTypeSymbol => interfaceTypeSymbol.ToDisplayString() == "ReactiveUI.IReactiveObject"))
@@ -94,7 +94,7 @@ namespace ReactiveUI.Fody.Analyzer
             if (HasBackingField(property))
             {
                 var propertySymbol = context.ContainingSymbol;
-                if (propertySymbol != null)
+                if (propertySymbol is not null)
                 {
                     context.ReportDiagnostic(
                                              Diagnostic.Create(
@@ -111,9 +111,9 @@ namespace ReactiveUI.Fody.Analyzer
             var getter = property.AccessorList?.Accessors.FirstOrDefault(x => x.IsKind(SyntaxKind.GetAccessorDeclaration));
             var setter = property.AccessorList?.Accessors.FirstOrDefault(x => x.IsKind(SyntaxKind.SetAccessorDeclaration));
 
-            if (setter?.Body == null || getter?.Body == null)
+            if (setter?.Body is null || getter?.Body is null)
             {
-                return setter?.ExpressionBody != null && getter?.ExpressionBody != null;
+                return setter?.ExpressionBody is not null && getter?.ExpressionBody is not null;
             }
 
             bool setterHasBodyStatements = setter.Body.Statements.Any();

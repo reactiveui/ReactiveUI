@@ -4,12 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+
 using Splat;
 
 namespace ReactiveUI
@@ -27,9 +27,42 @@ namespace ReactiveUI
         private readonly Lazy<ISubject<Exception>> _thrownExceptions;
         private readonly ISubject<T> _subject;
         private readonly Func<T> _getInitialValue;
+        private readonly CompositeDisposable _disposable = new ();
         private T _lastValue;
-        private CompositeDisposable _disposable = new CompositeDisposable();
         private int _activated;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObservableAsPropertyHelper{T}"/> class.
+        /// </summary>
+        /// <param name="observable">
+        /// The Observable to base the property on.
+        /// </param>
+        /// <param name="onChanged">
+        /// The action to take when the property changes, typically this will call the
+        /// ViewModel's RaisePropertyChanged method.
+        /// </param>
+        /// <param name="getInitialValue">
+        /// The function used to retrieve the initial value of the property.
+        /// </param>
+        /// <param name="deferSubscription">
+        /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/>
+        /// should defer the subscription to the <paramref name="observable"/> source
+        /// until the first call to <see cref="Value"/>, or if it should immediately
+        /// subscribe to the <paramref name="observable"/> source.
+        /// </param>
+        /// <param name="scheduler">
+        /// The scheduler that the notifications will be provided on -
+        /// this should normally be a Dispatcher-based scheduler.
+        /// </param>
+        public ObservableAsPropertyHelper(
+            IObservable<T> observable,
+            Action<T> onChanged,
+            Func<T> getInitialValue,
+            bool deferSubscription = false,
+            IScheduler? scheduler = null)
+            : this(observable, onChanged, null, getInitialValue, deferSubscription, scheduler)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableAsPropertyHelper{T}"/> class.
@@ -57,7 +90,7 @@ namespace ReactiveUI
         public ObservableAsPropertyHelper(
             IObservable<T> observable,
             Action<T> onChanged,
-            T initialValue = default,
+            T initialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             : this(observable, onChanged, null, initialValue, deferSubscription, scheduler)
@@ -94,8 +127,8 @@ namespace ReactiveUI
         public ObservableAsPropertyHelper(
             IObservable<T> observable,
             Action<T> onChanged,
-            Action<T>? onChanging = null,
-            T initialValue = default,
+            Action<T>? onChanging,
+            T initialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             : this(observable, onChanged, onChanging, () => initialValue, deferSubscription, scheduler)
@@ -132,39 +165,42 @@ namespace ReactiveUI
         public ObservableAsPropertyHelper(
             IObservable<T> observable,
             Action<T> onChanged,
-            Action<T>? onChanging = null,
-            Func<T>? getInitialValue = null,
+            Action<T>? onChanging,
+            Func<T>? getInitialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
         {
-            Contract.Requires(observable != null);
-            Contract.Requires(onChanged != null);
+            if (observable is null)
+            {
+                throw new ArgumentNullException(nameof(observable));
+            }
 
-            scheduler = scheduler ?? CurrentThreadScheduler.Instance;
-            onChanging = onChanging ?? (_ => { });
+            if (onChanged is null)
+            {
+                throw new ArgumentNullException(nameof(onChanged));
+            }
+
+            scheduler ??= CurrentThreadScheduler.Instance;
+            _lastValue = default!;
+
+            _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
 
             _subject = new ScheduledSubject<T>(scheduler);
             _subject.Subscribe(
                 x =>
                 {
-                    onChanging(x);
+                    onChanging?.Invoke(x);
                     _lastValue = x;
-                    onChanged!(x);
+                    onChanged.Invoke(x);
                 },
                 ex => _thrownExceptions.Value.OnNext(ex))
                 .DisposeWith(_disposable);
 
-            _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
-
-#pragma warning disable CS8603 // Possible null reference return.
-            _getInitialValue = getInitialValue ?? (() => default);
-#pragma warning restore CS8603 // Possible null reference return.
+            _getInitialValue = getInitialValue ?? (() => default!);
 
             if (deferSubscription)
             {
-#pragma warning disable CS8601 // Possible null reference assignment.
-                _lastValue = default;
-#pragma warning restore CS8601 // Possible null reference assignment.
+                _lastValue = default!;
                 Source = observable.DistinctUntilChanged();
             }
             else
@@ -187,11 +223,8 @@ namespace ReactiveUI
                 {
                     // Do not subscribe if disposed
                     var localReferenceInCaseDisposeIsCalled = _disposable;
-                    if (localReferenceInCaseDisposeIsCalled != null)
-                    {
-                        _lastValue = _getInitialValue();
-                        Source.StartWith(_lastValue).Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
-                    }
+                    _lastValue = _getInitialValue();
+                    Source.StartWith(_lastValue).Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
                 }
 
                 return _lastValue;
@@ -216,8 +249,8 @@ namespace ReactiveUI
 
         /// <summary>
         /// Constructs a "default" ObservableAsPropertyHelper object. This is
-        /// useful for when you will initialize the OAPH later, but don't want
-        /// bindings to access a null OAPH at startup.
+        /// useful for when you will initialize the ObservableAsPropertyHelper later, but don't want
+        /// bindings to access a null ObservableAsPropertyHelper at startup.
         /// </summary>
         /// <param name="initialValue">
         /// The initial (and only) value of the property.
@@ -227,16 +260,12 @@ namespace ReactiveUI
         /// normally be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>A default property helper.</returns>
-        public static ObservableAsPropertyHelper<T> Default(T initialValue = default, IScheduler? scheduler = null) =>
-            new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue, false, scheduler);
+        public static ObservableAsPropertyHelper<T> Default(T initialValue, IScheduler? scheduler = null) =>
+            new (Observable<T>.Never, _ => { }, initialValue, false, scheduler);
 
         /// <summary>
         /// Disposes this ObservableAsPropertyHelper.
         /// </summary>
-        public void Dispose()
-        {
-            _disposable?.Dispose();
-            _disposable = null!;
-        }
+        public void Dispose() => _disposable.Dispose();
     }
 }

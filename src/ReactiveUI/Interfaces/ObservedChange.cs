@@ -25,7 +25,7 @@ namespace ReactiveUI
         /// <param name="sender">The sender.</param>
         /// <param name="expression">Expression describing the member.</param>
         /// <param name="value">The value.</param>
-        public ObservedChange(TSender sender, Expression expression, TValue value = default)
+        public ObservedChange(TSender sender, Expression expression, TValue value)
         {
             Sender = sender;
             Expression = expression;
@@ -33,12 +33,12 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public TSender Sender { get; private set; }
+        public TSender Sender { get; }
 
         /// <inheritdoc/>
-        public Expression Expression { get; private set; }
+        public Expression Expression { get; }
 
         /// <inheritdoc/>
-        public TValue Value { get; private set; }
+        public TValue Value { get; }
     }
 }

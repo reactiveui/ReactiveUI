@@ -295,8 +295,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void NoThrownExceptionsSubscriberEqualsOAPHDeath()
-        {
+        public void NoThrownExceptionsSubscriberEqualsOAPHDeath() =>
             new TestScheduler().With(sched =>
             {
                 var input = new Subject<int>();
@@ -320,7 +319,6 @@ namespace ReactiveUI.Tests
                 Assert.False(failed);
                 Assert.Equal(4, fixture.Value);
             });
-        }
 
         [Fact]
         public void ToPropertyShouldFireBothChangingAndChanged()
@@ -422,22 +420,23 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName()
-        {
+        public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName() =>
             new TestScheduler().With(sched =>
             {
                 var fixture = new OAPHIndexerTestFixture();
                 var propertiesChanged = new List<string>();
 
-                fixture.PropertyChanged += (sender, args) =>
+                fixture.PropertyChanged += (_, args) =>
                 {
-                    propertiesChanged.Add(args.PropertyName);
+                    if (args.PropertyName != null)
+                    {
+                        propertiesChanged.Add(args.PropertyName);
+                    }
                 };
 
                 fixture.Text = "awesome";
 
                 Assert.Equal(new[] { "Text", "Item[]" }, propertiesChanged);
             });
-        }
     }
 }

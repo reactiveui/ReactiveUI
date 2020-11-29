@@ -89,7 +89,7 @@ namespace ReactiveUI.Blazor
                 // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
                 var viewModelChanged =
                     this.WhenAnyValue(x => x.ViewModel)
-                        .Where(x => x != null)
+                        .Where(x => x is not null)
                         .Publish()
                         .RefCount(2);
 
@@ -98,16 +98,17 @@ namespace ReactiveUI.Blazor
                     .DisposeWith(_compositeDisposable);
 
                 viewModelChanged
+                    .WhereNotNull()
                     .Select(x =>
                         Observable
                             .FromEvent<PropertyChangedEventHandler, Unit>(
                                 eventHandler =>
                                 {
-                                    void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                                    void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
                                     return Handler;
                                 },
-                                eh => x!.PropertyChanged += eh,
-                                eh => x!.PropertyChanged -= eh))
+                                eh => x.PropertyChanged += eh,
+                                eh => x.PropertyChanged -= eh))
                     .Switch()
                     .Subscribe(_ => InvokeAsync(StateHasChanged))
                     .DisposeWith(_compositeDisposable);
@@ -120,10 +121,7 @@ namespace ReactiveUI.Blazor
         /// Invokes the property changed event.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Cleans up the managed resources of the object.

@@ -25,7 +25,7 @@ namespace ReactiveUI
         /// </returns>
         public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -47,7 +47,7 @@ namespace ReactiveUI
         /// </returns>
         public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -74,10 +74,8 @@ namespace ReactiveUI
         /// the given change notification stream.
         /// </returns>
         public static IObservable<TValue> Value<TSender, TValue>(
-            this IObservable<IObservedChange<TSender, TValue>> item)
-        {
-            return item.Select(GetValue);
-        }
+            this IObservable<IObservedChange<TSender, TValue>> item) =>
+            item.Select(GetValue);
 
         /// <summary>
         /// Attempts to return the current value of a property given a
@@ -135,7 +133,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            if (target != null)
+            if (target is not null)
             {
                 Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), item.GetValue());
             }

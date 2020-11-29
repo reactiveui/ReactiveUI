@@ -64,10 +64,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="TransitioningContentControl"/> class.
         /// </summary>
-        public TransitioningContentControl()
-        {
-            DefaultStyleKey = typeof(TransitioningContentControl);
-        }
+        public TransitioningContentControl() => DefaultStyleKey = typeof(TransitioningContentControl);
 
         /// <summary>
         /// Occurs when a transition has completed.
@@ -160,7 +157,7 @@ namespace ReactiveUI
             set
             {
                 _startingTransition = value;
-                if (_startingTransition != null)
+                if (_startingTransition is not null)
                 {
                     SetTransitionDefaultValues();
                 }
@@ -173,14 +170,14 @@ namespace ReactiveUI
             set
             {
                 // Decouple transition.
-                if (_completingTransition != null)
+                if (_completingTransition is not null)
                 {
                     _completingTransition.Completed -= OnTransitionCompleted;
                 }
 
                 _completingTransition = value;
 
-                if (_completingTransition != null)
+                if (_completingTransition is not null)
                 {
                     _completingTransition.Completed += OnTransitionCompleted;
                     SetTransitionDefaultValues();
@@ -193,13 +190,13 @@ namespace ReactiveUI
         {
             // Wire up all of the various control parts.
             _container = GetTemplateChild("PART_Container") as Grid;
-            if (_container == null)
+            if (_container is null)
             {
                 throw new ArgumentException("PART_Container not found.");
             }
 
             _currentContentPresentationSite = GetTemplateChild("PART_CurrentContentPresentationSite") as ContentPresenter;
-            if (_currentContentPresentationSite == null)
+            if (_currentContentPresentationSite is null)
             {
                 throw new ArgumentException("PART_CurrentContentPresentationSite not found.");
             }
@@ -229,7 +226,7 @@ namespace ReactiveUI
                 return default!;
             }
 
-            DpiScale dpiScale = VisualTreeHelper.GetDpi(uiElement);
+            var dpiScale = VisualTreeHelper.GetDpi(uiElement);
 
             var renderTargetBitmap = new RenderTargetBitmap(
                                                             Convert.ToInt32(uiElement.RenderSize.Width * dpiScale.DpiScaleX),
@@ -253,7 +250,7 @@ namespace ReactiveUI
             VisualStateManager.GoToState(this, NormalState, false);
             _isTransitioning = false;
 
-            if (_previousImageSite != null)
+            if (_previousImageSite is not null)
             {
                 if (_previousImageSite.Source is RenderTargetBitmap renderTargetBitmap)
                 {
@@ -273,20 +270,17 @@ namespace ReactiveUI
             TransitionCompleted?.Invoke(this, new RoutedEventArgs());
         }
 
-        private void RaiseTransitionStarted()
-        {
-            TransitionStarted?.Invoke(this, new RoutedEventArgs());
-        }
+        private void RaiseTransitionStarted() => TransitionStarted?.Invoke(this, new RoutedEventArgs());
 
         private void QueueTransition(object newContent)
         {
             // Both ContentPresenters must be available, otherwise a transition is useless.
-            if (_currentContentPresentationSite == null)
+            if (_currentContentPresentationSite is null)
             {
                 return;
             }
 
-            if (_isTransitioning || _previousImageSite == null)
+            if (_isTransitioning || _previousImageSite is null)
             {
                 _currentContentPresentationSite.Content = newContent;
                 return;
@@ -338,7 +332,7 @@ namespace ReactiveUI
             // Hook up the CurrentTransition.
             var presentationGroup =
                 ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container!))!.FirstOrDefault(o => o.Name == PresentationGroup);
-            if (presentationGroup == null)
+            if (presentationGroup is null)
             {
                 throw new ArgumentException("Invalid VisualStateGroup.");
             }
@@ -346,7 +340,7 @@ namespace ReactiveUI
             var transition =
                 ((IEnumerable<VisualState>)presentationGroup.States).Where(o => o.Name == transitionName).Select(
                     o => o.Storyboard).FirstOrDefault();
-            if (transition == null)
+            if (transition is null)
             {
                 throw new ArgumentException("Invalid transition");
             }
@@ -441,7 +435,7 @@ namespace ReactiveUI
 
                 case TransitionType.Bounce:
                 {
-                    if (CompletingTransition != null)
+                    if (CompletingTransition is not null)
                     {
                         var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
                         completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;

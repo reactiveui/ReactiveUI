@@ -81,8 +81,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void HandlersAreExecutedOnHandlerScheduler()
-        {
+        public void HandlersAreExecutedOnHandlerScheduler() =>
             new TestScheduler().With(sched =>
             {
                 var interaction = new Interaction<Unit, string>(sched);
@@ -100,7 +99,6 @@ namespace ReactiveUI.Tests
                     Assert.True(handled);
                 }
             });
-        }
 
         [Fact]
         public void NestedHandlersAreExecutedInReverseOrderOfSubscription()

@@ -78,40 +78,28 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="notification">The notification.</param>
         [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
-        public void DidFinishLaunching(NSNotification notification)
-        {
-            _isResuming.OnNext(Unit.Default);
-        }
+        public void DidFinishLaunching(NSNotification notification) => _isResuming.OnNext(Unit.Default);
 
         /// <summary>
         /// Dids the resign active.
         /// </summary>
         /// <param name="notification">The notification.</param>
         [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
-        public void DidResignActive(NSNotification notification)
-        {
-            _shouldPersistState.OnNext(Disposable.Empty);
-        }
+        public void DidResignActive(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
 
         /// <summary>
         /// Dids the become active.
         /// </summary>
         /// <param name="notification">The notification.</param>
         [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
-        public void DidBecomeActive(NSNotification notification)
-        {
-            _isUnpausing.OnNext(Unit.Default);
-        }
+        public void DidBecomeActive(NSNotification notification) => _isUnpausing.OnNext(Unit.Default);
 
         /// <summary>
         /// Dids the hide.
         /// </summary>
         /// <param name="notification">The notification.</param>
         [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
-        public void DidHide(NSNotification notification)
-        {
-            _shouldPersistState.OnNext(Disposable.Empty);
-        }
+        public void DidHide(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
 
         /// <inheritdoc />
         public void Dispose()

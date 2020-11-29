@@ -24,14 +24,8 @@ namespace ReactiveUI.Tests
             });
         }
 
-        public bool? InUnitTestRunner()
-        {
-            return false;
-        }
+        public bool? InUnitTestRunner() => false;
 
-        public bool? InDesignMode()
-        {
-            return false;
-        }
+        public bool? InDesignMode() => false;
     }
 }

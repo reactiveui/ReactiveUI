@@ -15,7 +15,7 @@ using Windows.UI.Xaml;
 namespace ReactiveUI.Uno
 {
     /// <summary>
-    /// ActiveationForViewFetcher is how ReactiveUI determine when a
+    /// ActivationForViewFetcher is how ReactiveUI determine when a
     /// View is activated or deactivated. This is usually only used when porting
     /// ReactiveUI to a new UI framework.
     /// </summary>

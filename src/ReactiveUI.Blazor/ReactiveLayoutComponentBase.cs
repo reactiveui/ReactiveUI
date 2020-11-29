@@ -83,20 +83,20 @@ namespace ReactiveUI.Blazor
             {
                 this.WhenAnyValue(x => x.ViewModel)
                     .Skip(1)
-                    .Where(x => x != null)
+                    .WhereNotNull()
                     .Subscribe(_ => InvokeAsync(StateHasChanged));
             }
 
             this.WhenAnyValue(x => x.ViewModel)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
                     eventHandler =>
                     {
-                        void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                        void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
                         return Handler;
                     },
-                    eh => x!.PropertyChanged += eh,
-                    eh => x!.PropertyChanged -= eh))
+                    eh => x.PropertyChanged += eh,
+                    eh => x.PropertyChanged -= eh))
                 .Switch()
                 .Do(_ => InvokeAsync(StateHasChanged))
                 .Subscribe();
@@ -106,10 +106,7 @@ namespace ReactiveUI.Blazor
         /// Invokes the property changed event.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Cleans up the managed resources of the object.

@@ -53,7 +53,7 @@ namespace ReactiveUI
         /// <param name="resolveMembers">The resolve members.</param>
         public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
-            if (layoutHost == null)
+            if (layoutHost is null)
             {
                 throw new ArgumentNullException(nameof(layoutHost));
             }
@@ -81,7 +81,7 @@ namespace ReactiveUI
         /// <param name="resolveMembers">The resolve members.</param>
         public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
-            if (view == null)
+            if (view is null)
             {
                 throw new ArgumentNullException(nameof(view));
             }
@@ -116,7 +116,7 @@ namespace ReactiveUI
         [Obsolete("This class is obsoleted in this android platform")]
         public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
-            if (fragment == null)
+            if (fragment is null)
             {
                 throw new ArgumentNullException(nameof(fragment));
             }
@@ -148,7 +148,7 @@ namespace ReactiveUI
         /// <param name="resolveMembers">The resolve members.</param>
         public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
-            if (activity == null)
+            if (activity is null)
             {
                 throw new ArgumentNullException(nameof(activity));
             }
@@ -181,14 +181,14 @@ namespace ReactiveUI
             {
                 default: // Implicit matches the Default.
                     return members.Where(member => member.PropertyType.IsSubclassOf(typeof(View))
-                                              || member.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
+                                              || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null);
 
                 case ResolveStrategy.ExplicitOptIn:
-                    return members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
+                    return members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null);
 
                 case ResolveStrategy.ExplicitOptOut:
                     return members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType)
-                                              && member.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
+                                              && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null);
             }
         }
 
@@ -200,7 +200,7 @@ namespace ReactiveUI
 
         private static View? GetCachedControl(string? propertyName, object rootView, Func<View?> fetchControlFromView)
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
@@ -212,7 +212,7 @@ namespace ReactiveUI
 
             var ourViewCache = viewCache.GetOrCreateValue(rootView);
 
-            if (ourViewCache.TryGetValue(propertyName, out View? ret))
+            if (ourViewCache.TryGetValue(propertyName, out var ret))
             {
                 return ret;
             }
@@ -225,7 +225,7 @@ namespace ReactiveUI
 
         private static int GetControlIdByName(Assembly assembly, string? name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

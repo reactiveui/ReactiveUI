@@ -10,7 +10,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
@@ -28,47 +27,56 @@ namespace ReactiveUI
         public static IEnumerable<Expression> GetExpressionChain(this Expression expression)
         {
             var expressions = new List<Expression>();
-            var node = expression;
+            Expression? node = expression;
 
-            while (node != null && node.NodeType != ExpressionType.Parameter)
+            while (node is not null && node.NodeType != ExpressionType.Parameter)
             {
                 switch (node.NodeType)
                 {
-                case ExpressionType.Index:
-                    var indexExpr = (IndexExpression)node;
-                    if (indexExpr.Object.NodeType != ExpressionType.Parameter)
+                    case ExpressionType.Index when node is IndexExpression indexExpression:
                     {
-                        expressions.Add(indexExpr.Update(Expression.Parameter(indexExpr.GetParent().Type), indexExpr.Arguments));
-                    }
-                    else
-                    {
-                        expressions.Add(indexExpr);
+                        var parent = indexExpression.GetParent();
+                        if (indexExpression.Object is not null && parent is not null && indexExpression.Object.NodeType != ExpressionType.Parameter)
+                        {
+                            expressions.Add(
+                                indexExpression.Update(Expression.Parameter(parent.Type), indexExpression.Arguments));
+                        }
+                        else
+                        {
+                            expressions.Add(indexExpression);
+                        }
+
+                        node = indexExpression.Object;
+                        break;
                     }
 
-                    node = indexExpr.Object;
-                    break;
-                case ExpressionType.MemberAccess:
-                    var memberExpr = (MemberExpression)node;
-                    if (memberExpr.Expression.NodeType != ExpressionType.Parameter)
+                    case ExpressionType.MemberAccess when node is MemberExpression memberExpression:
                     {
-                        expressions.Add(memberExpr.Update(Expression.Parameter(memberExpr.GetParent().Type)));
-                    }
-                    else
-                    {
-                        expressions.Add(memberExpr);
-                    }
+                        var parent = memberExpression.GetParent();
+                        if (parent is not null && memberExpression.Expression is not null && memberExpression.Expression.NodeType != ExpressionType.Parameter)
+                        {
+                            expressions.Add(memberExpression.Update(Expression.Parameter(parent.Type)));
+                        }
+                        else
+                        {
+                            expressions.Add(memberExpression);
+                        }
 
-                    node = memberExpr.Expression;
-                    break;
-                default:
-                    var errorMessageBuilder = new StringBuilder($"Unsupported expression of type '{node.NodeType}'.");
-
-                    if (node is ConstantExpression)
-                    {
-                        errorMessageBuilder.Append(" Did you miss the member access prefix in the expression?");
+                        node = memberExpression.Expression;
+                        break;
                     }
 
-                    throw new NotSupportedException(errorMessageBuilder.ToString());
+                    default:
+                    {
+                        var errorMessageBuilder = new StringBuilder($"Unsupported expression of type '{node.NodeType}'.");
+
+                        if (node is ConstantExpression)
+                        {
+                            errorMessageBuilder.Append(" Did you miss the member access prefix in the expression?");
+                        }
+
+                        throw new NotSupportedException(errorMessageBuilder.ToString());
+                    }
                 }
             }
 
@@ -83,27 +91,26 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>The member info from the expression.</returns>
-        public static MemberInfo GetMemberInfo(this Expression expression)
+        public static MemberInfo? GetMemberInfo(this Expression expression)
         {
-            if (expression == null)
+            if (expression is null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            MemberInfo info;
+            MemberInfo? info;
             switch (expression.NodeType)
             {
-            case ExpressionType.Index:
-                info = ((IndexExpression)expression).Indexer;
-                break;
-            case ExpressionType.MemberAccess:
-                info = ((MemberExpression)expression).Member;
-                break;
-            case ExpressionType.Convert:
-            case ExpressionType.ConvertChecked:
-                return GetMemberInfo(((UnaryExpression)expression).Operand);
-            default:
-                throw new NotSupportedException($"Unsupported expression type: '{expression.NodeType}'");
+                case ExpressionType.Index when expression is IndexExpression indexExpression:
+                    info = indexExpression.Indexer;
+                    break;
+                case ExpressionType.MemberAccess when expression is MemberExpression memberExpression:
+                    info = memberExpression.Member;
+                    break;
+                case ExpressionType.Convert or ExpressionType.ConvertChecked when expression is UnaryExpression unaryExpression:
+                    return GetMemberInfo(unaryExpression.Operand);
+                default:
+                    throw new NotSupportedException($"Unsupported expression type: '{expression.NodeType}'");
             }
 
             return info;
@@ -114,22 +121,20 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>The parent expression.</returns>
-        public static Expression GetParent(this Expression expression)
+        public static Expression? GetParent(this Expression expression)
         {
-            if (expression == null)
+            if (expression is null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            switch (expression.NodeType)
+            return expression.NodeType switch
             {
-            case ExpressionType.Index:
-                return ((IndexExpression)expression).Object;
-            case ExpressionType.MemberAccess:
-                return ((MemberExpression)expression).Expression;
-            default:
-                throw new NotSupportedException($"Unsupported expression type: '{expression.NodeType}'");
-            }
+                ExpressionType.Index when expression is IndexExpression indexExpression => indexExpression.Object,
+                ExpressionType.MemberAccess when expression is MemberExpression memberExpression => memberExpression
+                    .Expression,
+                _ => throw new NotSupportedException($"Unsupported expression type: '{expression.NodeType}'")
+            };
         }
 
         /// <summary>
@@ -139,9 +144,9 @@ namespace ReactiveUI
         /// <param name="expression">The expression.</param>
         /// <returns>An array of arguments.</returns>
         [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:ClosingSquareBracketsMustBeSpacedCorrectly", Justification = "Reviewed.")]
-        public static object[]? GetArgumentsArray(this Expression expression)
+        public static object?[]? GetArgumentsArray(this Expression expression)
         {
-            if (expression == null)
+            if (expression is null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }

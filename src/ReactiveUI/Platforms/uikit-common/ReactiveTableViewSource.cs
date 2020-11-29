@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reactive.Subjects;
+
 using Foundation;
-using Splat;
+
 using UIKit;
 
 namespace ReactiveUI
@@ -21,10 +22,10 @@ namespace ReactiveUI
     /// items are animated in and out as items are added.
     /// </summary>
     /// <typeparam name="TSource">The source type.</typeparam>
-    public class ReactiveTableViewSource<TSource> : UITableViewSource, IEnableLogger, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
+    public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         private readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> _commonSource;
-        private readonly Subject<object> _elementSelected = new Subject<object>();
+        private readonly Subject<object> _elementSelected = new ();
         private readonly UITableViewAdapter _adapter;
 
         /// <summary>
@@ -36,10 +37,8 @@ namespace ReactiveUI
         /// <param name="sizeHint">The size hint.</param>
         /// <param name="initializeCellAction">The initialize cell action.</param>
         public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell>? initializeCellAction = null)
-            : this(tableView)
-        {
+            : this(tableView) =>
             Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction) };
-        }
 
         [Obsolete("Please bind your view model to the Data property.")]
 #pragma warning disable SA1600 // Elements should be documented
@@ -78,7 +77,7 @@ namespace ReactiveUI
 
             set
             {
-                if (_commonSource.SectionInfo == value)
+                if (Equals(_commonSource.SectionInfo, value))
                 {
                     return;
                 }
@@ -160,7 +159,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
         {
-            if (indexPath == null)
+            if (indexPath is null)
             {
                 throw new ArgumentNullException(nameof(indexPath));
             }
@@ -169,10 +168,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public override nint NumberOfSections(UITableView tableView)
-        {
-            return _commonSource.NumberOfSections();
-        }
+        public override nint NumberOfSections(UITableView tableView) => _commonSource.NumberOfSections();
 
         /// <inheritdoc/>
         public override nint RowsInSection(UITableView tableview, nint section)
@@ -196,7 +192,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
         {
-            if (indexPath == null)
+            if (indexPath is null)
             {
                 throw new ArgumentNullException(nameof(indexPath));
             }
@@ -207,7 +203,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
         {
-            if (indexPath == null)
+            if (indexPath is null)
             {
                 throw new ArgumentNullException(nameof(indexPath));
             }
@@ -228,7 +224,7 @@ namespace ReactiveUI
             var header = _commonSource.SectionInfo[(int)section].Header;
 
             // NB: -1 is a magic # that causes iOS to use the regular height. go figure.
-            return header == null || header.View == null ? -1 : header.Height;
+            return header?.View is null ? -1 : header.Height;
         }
 
         /// <inheritdoc/>
@@ -242,7 +238,7 @@ namespace ReactiveUI
             }
 
             var footer = _commonSource.SectionInfo[(int)section].Footer;
-            return footer?.View == null ? -1 : footer.Height;
+            return footer?.View is null ? -1 : footer.Height;
         }
 
 #pragma warning disable CS8603 // Possible null reference return.
@@ -284,7 +280,7 @@ namespace ReactiveUI
         /// <returns>The item.</returns>
         public object ItemAt(NSIndexPath indexPath)
         {
-            if (indexPath == null)
+            if (indexPath is null)
             {
                 throw new ArgumentNullException(nameof(indexPath));
             }
@@ -297,33 +293,24 @@ namespace ReactiveUI
         /// notifications (neither traditional nor Observable notifications)
         /// until the return value is disposed.
         /// </summary>
-        /// <returns>An object that, when disposed, reenables change
+        /// <returns>An object that, when disposed, re-enables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _commonSource?.Dispose();
-                _elementSelected?.Dispose();
-                _adapter?.Dispose();
+                _commonSource.Dispose();
+                _elementSelected.Dispose();
+                _adapter.Dispose();
             }
 
             base.Dispose(disposing);

@@ -13,9 +13,6 @@ namespace ReactiveUI.Tests
     public class WinformsApiApprovalTests : ApiApprovalBase
     {
         [Fact]
-        public void Winforms()
-        {
-            CheckApproval(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly);
-        }
+        public void Winforms() => CheckApproval(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly);
     }
 }

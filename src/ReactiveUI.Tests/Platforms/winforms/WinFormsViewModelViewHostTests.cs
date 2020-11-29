@@ -14,10 +14,7 @@ namespace ReactiveUI.Tests.Winforms
 {
     public class WinFormsViewModelViewHostTests
     {
-        public WinFormsViewModelViewHostTests()
-        {
-            WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
-        }
+        public WinFormsViewModelViewHostTests() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
 
         [Fact]
         public void SettingViewModelShouldAddTheViewtoItsControls()

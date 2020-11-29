@@ -22,10 +22,7 @@ namespace ReactiveUI.Fody.Tests.Issues
 
         private class TestModel : ReactiveObject
         {
-            public TestModel()
-            {
-                OtherProperty = MyProperty;
-            }
+            public TestModel() => OtherProperty = MyProperty;
 
             [ObservableAsProperty]
             public string? MyProperty { get; private set; }

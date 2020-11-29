@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
@@ -20,12 +19,11 @@ namespace ReactiveUI
     /// <summary>
     /// Helper class for handling Reflection amd Expression tree related items.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
     public static class Reflection
     {
-        private static readonly ExpressionRewriter expressionRewriter = new ExpressionRewriter();
+        private static readonly ExpressionRewriter _expressionRewriter = new ();
 
-        private static readonly MemoizingMRUCache<string, Type?> _typeCache = new MemoizingMRUCache<string, Type?>(
+        private static readonly MemoizingMRUCache<string, Type?> _typeCache = new (
             (type, _) =>
             {
                 return Type.GetType(
@@ -33,7 +31,7 @@ namespace ReactiveUI
                                     assemblyName =>
                                     {
                                         var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(z => z.FullName == assemblyName.FullName);
-                                        if (assembly != null)
+                                        if (assembly is not null)
                                         {
                                             return assembly;
                                         }
@@ -57,10 +55,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="expression">The expression to rewrite.</param>
         /// <returns>The rewritten expression.</returns>
-        public static Expression Rewrite(Expression expression)
-        {
-            return expressionRewriter.Visit(expression);
-        }
+        public static Expression Rewrite(Expression expression) => _expressionRewriter.Visit(expression);
 
         /// <summary>
         /// Will convert a Expression which points towards a property
@@ -72,7 +67,7 @@ namespace ReactiveUI
         /// <returns>A string form for the property the expression is pointing to.</returns>
         public static string ExpressionToPropertyNames(Expression expression)
         {
-            if (expression == null)
+            if (expression is null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }
@@ -83,23 +78,25 @@ namespace ReactiveUI
             {
                 if (exp.NodeType != ExpressionType.Parameter)
                 {
-                    // Indexer expression
-                    if (exp.NodeType == ExpressionType.Index)
+                    switch (exp.NodeType)
                     {
-                        var ie = (IndexExpression)exp;
-                        sb.Append(ie.Indexer.Name).Append('[');
-
-                        foreach (var argument in ie.Arguments)
+                        // Indexer expression
+                        case ExpressionType.Index when exp is IndexExpression indexExpression && indexExpression.Indexer is not null:
                         {
-                            sb.Append(((ConstantExpression)argument).Value).Append(',');
+                            sb.Append(indexExpression.Indexer.Name).Append('[');
+
+                            foreach (var argument in indexExpression.Arguments)
+                            {
+                                sb.Append(((ConstantExpression)argument).Value).Append(',');
+                            }
+
+                            sb.Replace(',', ']', sb.Length - 1, 1);
+                            break;
                         }
 
-                        sb.Replace(',', ']', sb.Length - 1, 1);
-                    }
-                    else if (exp.NodeType == ExpressionType.MemberAccess)
-                    {
-                        var me = (MemberExpression)exp;
-                        sb.Append(me.Member.Name);
+                        case ExpressionType.MemberAccess when exp is MemberExpression memberExpression:
+                            sb.Append(memberExpression.Member.Name);
+                            break;
                     }
                 }
 
@@ -120,23 +117,19 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[]?, object?>? GetValueFetcherForProperty(MemberInfo member)
+        public static Func<object, object?[]?, object?>? GetValueFetcherForProperty(MemberInfo? member)
         {
-            Contract.Requires(member != null);
-
-            FieldInfo? field = member as FieldInfo;
-            if (field != null)
+            if (member is null)
             {
-                return (obj, _) => field.GetValue(obj) ?? throw new InvalidOperationException();
+                throw new ArgumentNullException(nameof(member));
             }
 
-            PropertyInfo? property = member as PropertyInfo;
-            if (property != null)
+            return member switch
             {
-                return property.GetValue;
-            }
-
-            return null;
+                FieldInfo field => (obj, _) => field.GetValue(obj) ?? throw new InvalidOperationException(),
+                PropertyInfo property => property.GetValue,
+                _ => null
+            };
         }
 
         /// <summary>
@@ -147,7 +140,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[]?, object?> GetValueFetcherOrThrow(MemberInfo member)
+        public static Func<object, object?[]?, object?> GetValueFetcherOrThrow(MemberInfo? member)
         {
             if (member is null)
             {
@@ -156,7 +149,7 @@ namespace ReactiveUI
 
             var ret = GetValueFetcherForProperty(member);
 
-            if (ret == null)
+            if (ret is null)
             {
                 throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
             }
@@ -172,18 +165,21 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-        public static Action<object, object?, object[]?> GetValueSetterForProperty(MemberInfo member)
+        public static Action<object, object?, object?[]?> GetValueSetterForProperty(MemberInfo? member)
         {
-            Contract.Requires(member != null);
+            if (member is null)
+            {
+                throw new ArgumentNullException(nameof(member));
+            }
 
-            FieldInfo? field = member as FieldInfo;
-            if (field != null)
+            var field = member as FieldInfo;
+            if (field is not null)
             {
                 return (obj, val, _) => field.SetValue(obj, val);
             }
 
-            PropertyInfo? property = member as PropertyInfo;
-            if (property != null)
+            var property = member as PropertyInfo;
+            if (property is not null)
             {
                 return property.SetValue;
             }
@@ -199,7 +195,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-        public static Action<object, object?, object[]?>? GetValueSetterOrThrow(MemberInfo member)
+        public static Action<object, object?, object?[]?> GetValueSetterOrThrow(MemberInfo? member)
         {
             if (member is null)
             {
@@ -208,7 +204,7 @@ namespace ReactiveUI
 
             var ret = GetValueSetterForProperty(member);
 
-            if (ret == null)
+            if (ret is null)
             {
                 throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
             }
@@ -232,7 +228,7 @@ namespace ReactiveUI
             var expressions = expressionChain.ToList();
             foreach (Expression expression in expressions.SkipLast(1))
             {
-                if (current == null)
+                if (current is null)
                 {
                     changeValue = default!;
                     return false;
@@ -241,7 +237,7 @@ namespace ReactiveUI
                 current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
             }
 
-            if (current == null)
+            if (current is null)
             {
                 changeValue = default!;
                 return false;
@@ -275,7 +271,7 @@ namespace ReactiveUI
 
             foreach (Expression expression in expressions.SkipLast(1))
             {
-                if (current == null)
+                if (current is null)
                 {
                     changeValues[currentIndex] = null!;
                     return false;
@@ -289,7 +285,7 @@ namespace ReactiveUI
                 currentIndex++;
             }
 
-            if (current == null)
+            if (current is null)
             {
                 changeValues[currentIndex] = null!;
                 return false;
@@ -325,23 +321,23 @@ namespace ReactiveUI
                     GetValueFetcherOrThrow(expression.GetMemberInfo()) :
                     GetValueFetcherForProperty(expression.GetMemberInfo());
 
-                if (getter != null)
+                if (getter is not null)
                 {
                     target = getter(target ?? throw new ArgumentNullException(nameof(target)), expression.GetArgumentsArray());
                 }
             }
 
-            if (target == null)
+            if (target is null)
             {
                 return false;
             }
 
             Expression lastExpression = expressions.Last();
-            Action<object, object?, object[]?>? setter = shouldThrow ?
-                GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
-                GetValueSetterForProperty(lastExpression.GetMemberInfo());
+            var setter = shouldThrow ?
+                             GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
+                             GetValueSetterForProperty(lastExpression.GetMemberInfo());
 
-            if (setter == null)
+            if (setter is null)
             {
                 return false;
             }
@@ -360,8 +356,8 @@ namespace ReactiveUI
         /// <exception cref="TypeLoadException">If we were unable to find the type.</exception>
         public static Type? ReallyFindType(string? type, bool throwOnFailure)
         {
-            Type? ret = _typeCache.Get(type ?? string.Empty);
-            if (ret != null || !throwOnFailure)
+            var ret = _typeCache.Get(type ?? string.Empty);
+            if (ret is not null || !throwOnFailure)
             {
                 return ret;
             }
@@ -378,14 +374,14 @@ namespace ReactiveUI
         /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
         public static Type GetEventArgsTypeForEvent(Type type, string eventName)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
             Type ti = type;
-            EventInfo? ei = ti.GetRuntimeEvent(eventName);
-            if (ei == null || ei.EventHandlerType == null)
+            var ei = ti.GetRuntimeEvent(eventName);
+            if (ei is null || ei.EventHandlerType is null)
             {
                 throw new Exception($"Couldn't find {type.FullName}.{eventName}");
             }
@@ -410,7 +406,7 @@ namespace ReactiveUI
                     IEnumerable<MethodInfo> methods = targetObject.GetType().GetTypeInfo().DeclaredMethods;
                     return (methodName: x, methodImplementation: methods.FirstOrDefault(y => y.Name == x));
                 })
-                .FirstOrDefault(x => x.methodImplementation == null);
+                .FirstOrDefault(x => x.methodImplementation is null);
 
             if (missingMethod.methodName != default)
             {
@@ -425,7 +421,7 @@ namespace ReactiveUI
         /// <returns>If the property is static or not.</returns>
         public static bool IsStatic(this PropertyInfo item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -435,14 +431,12 @@ namespace ReactiveUI
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "TViewModel used to help generic calling.")]
-        internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel? viewModel, TView view, Expression expression)
+        internal static IObservable<object?> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel? viewModel, TView view, Expression expression)
             where TView : class, IViewFor
-            where TViewModel : class
-        {
-            return view.WhenAnyValue(x => x.ViewModel)
-                .Where(x => x != null)
+            where TViewModel : class =>
+            view.WhenAnyValue(x => x.ViewModel)
+                .Where(x => x is not null)
                 .Select(x => ((TViewModel)x!).WhenAnyDynamic(expression, y => y.Value))
                 .Switch();
-        }
     }
 }

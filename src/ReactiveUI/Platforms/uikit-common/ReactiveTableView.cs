@@ -102,36 +102,25 @@ namespace ReactiveUI
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <inheritdoc/>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         public override void WillMoveToSuperview(UIView? newsuper)
         {
             base.WillMoveToSuperview(newsuper);
-            (newsuper != null ? _activated : _deactivated).OnNext(Unit.Default);
+            (newsuper is not null ? _activated : _deactivated).OnNext(Unit.Default);
         }
 
         /// <inheritdoc/>
-        void ICanForceManualActivation.Activate(bool activate)
-        {
+        void ICanForceManualActivation.Activate(bool activate) =>
             RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? _activated : _deactivated).OnNext(Unit.Default));
-        }
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)

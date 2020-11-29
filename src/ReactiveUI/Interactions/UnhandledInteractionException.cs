@@ -68,10 +68,8 @@ namespace ReactiveUI
         /// <param name="info">The serialization information.</param>
         /// <param name="context">The serialization context.</param>
         protected UnhandledInteractionException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
+            : base(info, context) =>
             _input = (TInput)info.GetValue(nameof(Input), typeof(TInput))!;
-        }
 
         /// <summary>
         /// Gets the interaction that was not handled.
@@ -86,7 +84,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }

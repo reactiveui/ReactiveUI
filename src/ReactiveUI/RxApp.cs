@@ -81,7 +81,7 @@ namespace ReactiveUI
 
             Locator.RegisterResolverCallbackChanged(() =>
             {
-                if (Locator.CurrentMutable == null)
+                if (Locator.CurrentMutable is null)
                 {
                     return;
                 }
@@ -124,7 +124,7 @@ namespace ReactiveUI
 
             LogHost.Default.Info("Initializing to normal mode");
 
-            if (_mainThreadScheduler == null)
+            if (_mainThreadScheduler is null)
             {
                 _mainThreadScheduler = DefaultScheduler.Instance;
             }
@@ -249,10 +249,7 @@ namespace ReactiveUI
                 return _unitTestMainThreadScheduler;
             }
 
-            set
-            {
-                _unitTestMainThreadScheduler = value;
-            }
+            set => _unitTestMainThreadScheduler = value;
         }
 
         [MethodImpl(MethodImplOptions.NoOptimization)]

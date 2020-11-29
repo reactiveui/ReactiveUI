@@ -98,16 +98,10 @@ namespace ReactiveUI
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveView>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -116,10 +110,7 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
 #if UIKIT
         /// <inheritdoc/>
@@ -133,20 +124,18 @@ namespace ReactiveUI
             base.WillMoveToSuperview(newsuper);
 #else
             // Xamarin throws ArgumentNullException if newsuper is null
-            if (newsuper != null)
+            if (newsuper is not null)
             {
                 base.ViewWillMoveToSuperview(newsuper);
             }
 #endif
-            (newsuper != null ? _activated : _deactivated).OnNext(Unit.Default);
+            (newsuper is not null ? _activated : _deactivated).OnNext(Unit.Default);
         }
 
         /// <inheritdoc/>
-        void ICanForceManualActivation.Activate(bool activate)
-        {
+        void ICanForceManualActivation.Activate(bool activate) =>
             RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? _activated : _deactivated).OnNext(Unit.Default));
-        }
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)

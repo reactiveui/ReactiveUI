@@ -47,14 +47,14 @@ namespace ReactiveUI.Winforms
             return defaultEventsToBind.Any(x =>
             {
                 var ei = type.GetEvent(x.name, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
-                return ei != null;
+                return ei is not null;
             }) ? 4 : 0;
         }
 
         /// <inheritdoc/>
         public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
-            if (target == null)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -64,9 +64,9 @@ namespace ReactiveUI.Winforms
             var type = target.GetType();
             var eventInfo = defaultEventsToBind
                 .Select(x => new { EventInfo = type.GetEvent(x.name, bf), Args = x.type })
-                .FirstOrDefault(x => x.EventInfo != null);
+                .FirstOrDefault(x => x.EventInfo is not null);
 
-            if (eventInfo == null)
+            if (eventInfo is null)
             {
                 return null;
             }
@@ -80,12 +80,12 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc/>
         public IDisposable? BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
         {
-            if (command == null)
+            if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            if (target == null)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -112,9 +112,9 @@ namespace ReactiveUI.Winforms
             // For example: System.Windows.Forms.ToolStripButton.
             if (typeof(Component).IsAssignableFrom(targetType))
             {
-                PropertyInfo? enabledProperty = targetType.GetRuntimeProperty("Enabled");
+                var enabledProperty = targetType.GetRuntimeProperty("Enabled");
 
-                if (enabledProperty != null)
+                if (enabledProperty is not null)
                 {
                     object? latestParam = null;
                     ret.Add(commandParameter.Subscribe(x => latestParam = x));

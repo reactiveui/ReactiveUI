@@ -40,7 +40,7 @@ namespace ReactiveUI
         /// important to dispose the binding when the view is deactivated.</param>
         /// <returns>A class representing the binding. Dispose it to disconnect
         /// the binding.</returns>
-        public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -51,12 +51,12 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            if (vmProperty == null)
+            if (vmProperty is null)
             {
                 throw new ArgumentNullException(nameof(vmProperty));
             }
 
-            if (controlProperty == null)
+            if (controlProperty is null)
             {
                 throw new ArgumentNullException(nameof(controlProperty));
             }
@@ -67,8 +67,7 @@ namespace ReactiveUI
 
             IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent ?? string.Empty, cmd =>
             {
-                var rc = cmd as IReactiveCommand;
-                if (rc == null)
+                if (!(cmd is IReactiveCommand rc))
                 {
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 }
@@ -76,7 +75,7 @@ namespace ReactiveUI
                 return ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
             });
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(
+            return new ReactiveBinding<TView, TProp>(
                 view,
                 controlExpression,
                 vmExpression,
@@ -106,7 +105,7 @@ namespace ReactiveUI
         /// instead of the default.
         /// NOTE: If this parameter is used inside WhenActivated, it's
         /// important to dispose the binding when the view is deactivated.</param>
-        public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -117,12 +116,12 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            if (vmProperty == null)
+            if (vmProperty is null)
             {
                 throw new ArgumentNullException(nameof(vmProperty));
             }
 
-            if (controlProperty == null)
+            if (controlProperty is null)
             {
                 throw new ArgumentNullException(nameof(controlProperty));
             }
@@ -133,7 +132,7 @@ namespace ReactiveUI
 
             IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, withParameter, toEvent);
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(
+            return new ReactiveBinding<TView, TProp>(
                  view,
                  controlExpression,
                  vmExpression,
@@ -143,7 +142,7 @@ namespace ReactiveUI
         }
 
         private static IDisposable BindCommandInternal<TView, TProp, TParam>(
-                IObservable<TProp> @this,
+                IObservable<TProp> source,
                 TView view,
                 Expression controlExpression,
                 IObservable<TParam> withParameter,
@@ -154,24 +153,23 @@ namespace ReactiveUI
         {
             IDisposable disp = Disposable.Empty;
 
-            var bindInfo = Observable.CombineLatest(
-                @this,
-                view.SubscribeToExpressionChain<TView, object>(controlExpression, false, false, RxApp.SuppressViewCommandBindingMessage).Select(x => x.Value),
+            var bindInfo = source.CombineLatest(
+                view.SubscribeToExpressionChain<TView, object?>(controlExpression, false, false, RxApp.SuppressViewCommandBindingMessage).Select(x => x.Value),
                 (val, host) => new { val, host });
 
             var propSub = bindInfo
-                .Where(x => x.host != null)
+                .Where(x => x.host is not null)
                 .Subscribe(x =>
                 {
                     disp.Dispose();
-                    if (x == null)
+                    if (x is null)
                     {
                         disp = Disposable.Empty;
                         return;
                     }
 
-                    var cmd = commandFixuper != null ? commandFixuper(x.val) : x.val;
-                    if (toEvent != null)
+                    var cmd = commandFixuper is not null ? commandFixuper(x.val) : x.val;
+                    if (toEvent is not null)
                     {
                         disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent);
                     }

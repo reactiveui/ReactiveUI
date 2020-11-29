@@ -16,9 +16,6 @@ namespace ReactiveUI.Fody.Tests.API
     public class ApiApprovalTests : ApiApprovalBase
     {
         [Fact]
-        public void ReactiveUIFody()
-        {
-            CheckApproval(typeof(ReactiveAttribute).Assembly);
-        }
+        public void ReactiveUIFody() => CheckApproval(typeof(ReactiveAttribute).Assembly);
     }
 }

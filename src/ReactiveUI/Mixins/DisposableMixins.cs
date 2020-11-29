@@ -28,7 +28,7 @@ namespace System.Reactive.Disposables
         public static T DisposeWith<T>(this T item, CompositeDisposable compositeDisposable)
             where T : IDisposable
         {
-            if (compositeDisposable == null)
+            if (compositeDisposable is null)
             {
                 throw new ArgumentNullException(nameof(compositeDisposable));
             }

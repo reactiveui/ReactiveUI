@@ -22,10 +22,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="contract">The value of the contract for view
         /// resolution.</param>
-        public ViewContractAttribute(string contract)
-        {
-            Contract = contract;
-        }
+        public ViewContractAttribute(string contract) => Contract = contract;
 
         /// <summary>
         /// Gets the contract to use when resolving the view in the Splat Dependency Injection engine.

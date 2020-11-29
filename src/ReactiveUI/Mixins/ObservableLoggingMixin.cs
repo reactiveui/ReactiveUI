@@ -34,7 +34,7 @@ namespace ReactiveUI
         {
             message ??= string.Empty;
 
-            if (stringifier != null)
+            if (stringifier is not null)
             {
                 return @this.Do(
                     x => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, stringifier(x)),
@@ -83,13 +83,11 @@ namespace ReactiveUI
         /// <returns>The same Observable.</returns>
         public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string? message = null)
             where TObj : IEnableLogger
-            where TException : Exception
-        {
-            return @this.Catch<T, TException>(ex =>
+            where TException : Exception =>
+            @this.Catch<T, TException>(ex =>
             {
                 klass.Log().Warn(ex, message ?? string.Empty);
                 return next(ex);
             });
-        }
     }
 }

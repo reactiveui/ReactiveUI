@@ -34,7 +34,7 @@ namespace ReactiveUI
             var innerDisp = Disposable.Empty;
             bool isCancelled = false;
 
-            IntPtr timer = EcoreMainloop.AddTimer(dueTime.TotalSeconds, () =>
+            var timer = EcoreMainloop.AddTimer(dueTime.TotalSeconds, () =>
             {
                 if (!isCancelled)
                 {

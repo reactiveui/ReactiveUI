@@ -30,7 +30,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(controller));
             }
 
-            if (controller.View == null)
+            if (controller.View is null)
             {
                 throw new ArgumentException("The view on the controller is null.", nameof(controller));
             }
@@ -47,9 +47,7 @@ namespace ReactiveUI
 
             foreach (var view in masterView.Subviews)
             {
-                var subview = view as ICanForceManualActivation;
-
-                if (subview != null)
+                if (view is ICanForceManualActivation subview)
                 {
                     subview.Activate(activate);
                 }

@@ -92,10 +92,7 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         public override void WillMoveToSuperview(UIView? newsuper)
@@ -112,23 +109,15 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void ICanForceManualActivation.Activate(bool activate)
-        {
+        void ICanForceManualActivation.Activate(bool activate) =>
             RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? _activated : _deactivated).OnNext(Unit.Default));
-        }
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)

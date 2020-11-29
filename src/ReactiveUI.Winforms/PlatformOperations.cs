@@ -17,9 +17,6 @@ namespace ReactiveUI.Winforms
     public class PlatformOperations : IPlatformOperations
     {
         /// <inheritdoc/>
-        public string? GetOrientation()
-        {
-            return null;
-        }
+        public string? GetOrientation() => null;
     }
 }

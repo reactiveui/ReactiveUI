@@ -31,7 +31,7 @@ namespace ReactiveUI.Fody.Tests
 
             var sourceDirectory = Path.GetDirectoryName(filePath);
 
-            if (sourceDirectory != null)
+            if (sourceDirectory is not null)
             {
                 var approvedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.approved.txt");
                 var receivedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.received.txt");

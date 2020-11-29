@@ -14,15 +14,9 @@ namespace ReactiveUI.Tests.API
     public class ApiApprovalTests : ApiApprovalBase
     {
         [Fact]
-        public void Testing()
-        {
-            CheckApproval(typeof(Testing.SchedulerExtensions).Assembly);
-        }
+        public void Testing() => CheckApproval(typeof(Testing.SchedulerExtensions).Assembly);
 
         [Fact]
-        public void ReactiveUI()
-        {
-            CheckApproval(typeof(RxApp).Assembly);
-        }
+        public void ReactiveUI() => CheckApproval(typeof(RxApp).Assembly);
     }
 }

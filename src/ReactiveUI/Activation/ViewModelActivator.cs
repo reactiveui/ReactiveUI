@@ -114,9 +114,6 @@ namespace ReactiveUI
         /// on activation, then disposed on deactivation.
         /// </summary>
         /// <param name="block">The block to add.</param>
-        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)
-        {
-            _blocks.Add(block);
-        }
+        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block) => _blocks.Add(block);
     }
 }

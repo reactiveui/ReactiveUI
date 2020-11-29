@@ -22,12 +22,9 @@ namespace ReactiveUI.Winforms
     /// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
     public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo> eventInfoCache = new MemoizingMRUCache<(Type type, string name), EventInfo>(
-            (pair, _) =>
-        {
-            return pair.type.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
-                .FirstOrDefault(x => x.Name == pair.name + "Changed");
-        }, RxApp.SmallCacheLimit);
+        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> eventInfoCache = new MemoizingMRUCache<(Type type, string name), EventInfo?>(
+            (pair, _) => pair.type.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
+                .FirstOrDefault(x => x.Name == pair.name + "Changed"), RxApp.SmallCacheLimit);
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
@@ -39,20 +36,20 @@ namespace ReactiveUI.Winforms
             }
 
             var ei = eventInfoCache.Get((type, propertyName));
-            return beforeChanged == false && ei != null ? 8 : 0;
+            return beforeChanged == false && ei is not null ? 8 : 0;
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            if (sender == null)
+            if (sender is null)
             {
                 throw new ArgumentNullException(nameof(sender));
             }
 
             var ei = eventInfoCache.Get((sender.GetType(), propertyName));
 
-            return Observable.Create<IObservedChange<object, object>>(subj =>
+            return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
                 bool completed = false;
                 var handler = new EventHandler((o, e) =>
@@ -64,7 +61,7 @@ namespace ReactiveUI.Winforms
 
                     try
                     {
-                        subj.OnNext(new ObservedChange<object, object>(sender, expression));
+                        subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
                     }
                     catch (Exception ex)
                     {
@@ -73,7 +70,14 @@ namespace ReactiveUI.Winforms
                     }
                 });
 
+                if (ei is null)
+                {
+                    subj.OnError(new InvalidOperationException("There is no valid event information found."));
+                    return Disposable.Empty;
+                }
+
                 ei.AddEventHandler(sender, handler);
+
                 return Disposable.Create(() => ei.RemoveEventHandler(sender, handler));
             });
         }

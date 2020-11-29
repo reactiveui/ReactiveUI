@@ -57,7 +57,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -66,22 +66,20 @@ namespace ReactiveUI
                 IBindingTypeConverter? vmToViewConverterOverride = null,
                 IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel : class
-            where TView : class, IViewFor
-        {
-            return binderImplementation.Bind(
-                         viewModel,
-                         view,
-                         vmProperty,
-                         viewProperty,
-                         (IObservable<Unit>?)null,
-                         conversionHint,
-                         vmToViewConverterOverride,
-                         viewToVMConverterOverride);
-        }
+            where TView : class, IViewFor =>
+            binderImplementation.Bind(
+                viewModel,
+                view,
+                vmProperty,
+                viewProperty,
+                (IObservable<Unit>?)null,
+                conversionHint,
+                vmToViewConverterOverride,
+                viewToVMConverterOverride);
 
         /// <summary>
         /// Binds the specified view model property to the given view property, and
-        /// provide a custom view update signaller to signal when the view property has been updated.
+        /// provide a custom view update signaler to signal when the view property has been updated.
         /// </summary>
         /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
         /// <typeparam name="TView">The type of the view being bound.</typeparam>
@@ -124,7 +122,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 this TView view,
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -168,7 +166,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
             this TView view,
             TViewModel? viewModel,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -218,7 +216,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             this TView view,
             TViewModel? viewModel,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -227,10 +225,8 @@ namespace ReactiveUI
             Func<TVMProp, TVProp> vmToViewConverter,
             Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel : class
-            where TView : class, IViewFor
-        {
-            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter);
-        }
+            where TView : class, IViewFor =>
+            binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter);
 
         /// <summary>
         /// Binds the given property on the view model to a given property on the view in a one-way (view model to view) fashion.
@@ -268,7 +264,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -276,16 +272,14 @@ namespace ReactiveUI
                 object? conversionHint = null,
                 IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel : class
-            where TView : class, IViewFor
-        {
-            return binderImplementation.OneWayBind(
+            where TView : class, IViewFor =>
+            binderImplementation.OneWayBind(
                 viewModel,
                 view,
                 vmProperty,
                 viewProperty,
                 conversionHint,
                 vmToViewConverterOverride);
-        }
 
         /// <summary>
         /// Binds the specified view model property to the given view, in a one-way (view model to view) fashion,
@@ -317,17 +311,15 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
+        public static IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, TOut> selector)
             where TViewModel : class
-            where TView : class, IViewFor
-        {
-            return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
-        }
+            where TView : class, IViewFor =>
+            binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
 
         /// <summary>
         /// BindTo takes an Observable stream and applies it to a target
@@ -359,9 +351,7 @@ namespace ReactiveUI
             Expression<Func<TTarget, TTValue>> property,
             object? conversionHint = null,
             IBindingTypeConverter? vmToViewConverterOverride = null)
-            where TTarget : class
-        {
-            return binderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
-        }
+            where TTarget : class =>
+            binderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
     }
 }

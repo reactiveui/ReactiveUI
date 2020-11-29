@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard20;MonoAndroid90;Xamarin.iOS10;Xamarin.Mac20</TargetFrameworks>
+    <TargetFrameworks>netstandard20;MonoAndroid10.0;Xamarin.iOS10;Xamarin.Mac20</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.16299</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno</PackageDescription>

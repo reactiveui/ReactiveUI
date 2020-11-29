@@ -25,7 +25,7 @@ namespace ReactiveUI
             where T : ILayoutViewHost
         {
             var tagData = item?.GetTag(ViewHostTag);
-            if (tagData != null)
+            if (tagData is not null)
             {
                 return tagData.ToNetObject<T>();
             }
@@ -39,9 +39,6 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="item">The view.</param>
         /// <returns>The view host.</returns>
-        public static ILayoutViewHost? GetViewHost(this View item)
-        {
-            return item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
-        }
+        public static ILayoutViewHost? GetViewHost(this View item) => item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
     }
 }

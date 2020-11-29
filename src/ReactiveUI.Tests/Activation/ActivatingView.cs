@@ -14,14 +14,12 @@ namespace ReactiveUI.Tests
     {
         private ActivatingViewModel? _viewModel;
 
-        public ActivatingView()
-        {
+        public ActivatingView() =>
             this.WhenActivated(d =>
             {
                 IsActiveCount++;
                 d(Disposable.Create(() => IsActiveCount--));
             });
-        }
 
         public Subject<Unit> Loaded { get; } = new Subject<Unit>();
 

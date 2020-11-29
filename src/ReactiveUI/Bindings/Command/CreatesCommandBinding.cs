@@ -46,13 +46,13 @@ namespace ReactiveUI
 
             var binder = bindCommandCache.Get(type);
 
-            if (binder == null)
+            if (binder is null)
             {
                 throw new Exception($"Couldn't find a Command Binder for {type.FullName}");
             }
 
             var ret = binder.BindCommandToObject(command, target, commandParameter);
-            if (ret == null)
+            if (ret is null)
             {
                 throw new Exception($"Couldn't bind Command Binder for {type.FullName}");
             }
@@ -64,7 +64,7 @@ namespace ReactiveUI
         {
             var type = target.GetType();
             var binder = bindCommandEventCache.Get(type);
-            if (binder == null)
+            if (binder is null)
             {
                 throw new Exception($"Couldn't find a Command Binder for {type.FullName} and event {eventName}");
             }
@@ -74,7 +74,7 @@ namespace ReactiveUI
             mi = mi.MakeGenericMethod(new[] { eventArgsType });
 
             var ret = (IDisposable)mi.Invoke(binder, new[] { command, target, commandParameter, eventName })!;
-            if (ret == null)
+            if (ret is null)
             {
                 throw new Exception($"Couldn't bind Command Binder for {type.FullName} and event {eventName}");
             }

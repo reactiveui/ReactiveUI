@@ -17,7 +17,7 @@ namespace ReactiveUI.Wpf
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
-            if (registerFunction == null)
+            if (registerFunction is null)
             {
                 throw new ArgumentNullException(nameof(registerFunction));
             }

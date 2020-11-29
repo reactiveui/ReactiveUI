@@ -18,14 +18,11 @@ namespace ReactiveUI.XamForms
     public class ActivationForViewFetcher : IActivationForViewFetcher
     {
         /// <inheritdoc/>
-        public int GetAffinityForView(Type view)
-        {
-            return
-                typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-                typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-                typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
+        public int GetAffinityForView(Type view) =>
+            typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+            typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+            typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
                 ? 10 : 0;
-        }
 
         /// <inheritdoc/>
         public IObservable<bool> GetActivationForView(IActivatableView view)
@@ -42,7 +39,7 @@ namespace ReactiveUI.XamForms
 
         private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate)
         {
-            if (canActivate == null)
+            if (canActivate is null)
             {
                 return null;
             }
@@ -54,7 +51,7 @@ namespace ReactiveUI.XamForms
 
         private static IObservable<bool>? GetActivationFor(Page? page)
         {
-            if (page == null)
+            if (page is null)
             {
                 return null;
             }
@@ -62,7 +59,7 @@ namespace ReactiveUI.XamForms
             var appearing = Observable.FromEvent<EventHandler, bool>(
                 eventHandler =>
                 {
-                    void Handler(object sender, EventArgs e) => eventHandler(true);
+                    void Handler(object? sender, EventArgs e) => eventHandler(true);
                     return Handler;
                 },
                 x => page.Appearing += x,
@@ -71,7 +68,7 @@ namespace ReactiveUI.XamForms
             var disappearing = Observable.FromEvent<EventHandler, bool>(
                 eventHandler =>
                 {
-                    void Handler(object sender, EventArgs e) => eventHandler(false);
+                    void Handler(object? sender, EventArgs e) => eventHandler(false);
                     return Handler;
                 },
                 x => page.Disappearing += x,
@@ -82,15 +79,15 @@ namespace ReactiveUI.XamForms
 
         private static IObservable<bool>? GetActivationFor(View? view)
         {
-            if (view == null)
+            if (view is null)
             {
                 return null;
             }
 
-            var propertyChanged = Observable.FromEvent<PropertyChangedEventHandler, string>(
+            var propertyChanged = Observable.FromEvent<PropertyChangedEventHandler, string?>(
                 eventHandler =>
                 {
-                    void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
+                    void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
                     return Handler;
                 },
                 x => view.PropertyChanged += x,
@@ -104,7 +101,7 @@ namespace ReactiveUI.XamForms
 
         private static IObservable<bool>? GetActivationFor(Cell? cell)
         {
-            if (cell == null)
+            if (cell is null)
             {
                 return null;
             }
@@ -112,7 +109,7 @@ namespace ReactiveUI.XamForms
             var appearing = Observable.FromEvent<EventHandler, bool>(
                     eventHandler =>
                     {
-                        void Handler(object sender, EventArgs e) => eventHandler(true);
+                        void Handler(object? sender, EventArgs e) => eventHandler(true);
                         return Handler;
                     },
                     x => cell.Appearing += x,
@@ -121,7 +118,7 @@ namespace ReactiveUI.XamForms
             var disappearing = Observable.FromEvent<EventHandler, bool>(
                     eventHandler =>
                     {
-                        void Handler(object sender, EventArgs e) => eventHandler(false);
+                        void Handler(object? sender, EventArgs e) => eventHandler(false);
                         return Handler;
                     },
                     x => cell.Disappearing += x,

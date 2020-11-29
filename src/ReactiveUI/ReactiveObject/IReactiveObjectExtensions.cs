@@ -118,7 +118,7 @@ namespace ReactiveUI
             [CallerMemberName] string? propertyName = null)
             where TObj : IReactiveObject
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
@@ -147,7 +147,7 @@ namespace ReactiveUI
         public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
             where TSender : IReactiveObject
         {
-            if (propertyName != null)
+            if (propertyName is not null)
             {
                 reactiveObject.RaisingPropertyChanged(propertyName);
             }
@@ -166,7 +166,7 @@ namespace ReactiveUI
         public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
             where TSender : IReactiveObject
         {
-            if (propertyName != null)
+            if (propertyName is not null)
             {
                 reactiveObject.RaisingPropertyChanging(propertyName);
             }
@@ -204,7 +204,7 @@ namespace ReactiveUI
         internal static void RaisingPropertyChanging<TSender>(this TSender reactiveObject, string propertyName)
             where TSender : IReactiveObject
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
@@ -225,7 +225,7 @@ namespace ReactiveUI
         internal static void RaisingPropertyChanged<TSender>(this TSender reactiveObject, string propertyName)
             where TSender : IReactiveObject
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
@@ -292,10 +292,7 @@ namespace ReactiveUI
 
             public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
-            public bool AreChangeNotificationsEnabled()
-            {
-                return Interlocked.Read(ref _changeNotificationsSuppressed) == 0;
-            }
+            public bool AreChangeNotificationsEnabled() => Interlocked.Read(ref _changeNotificationsSuppressed) == 0;
 
             public bool AreChangeNotificationsDelayed() => Interlocked.Read(ref _changeNotificationsDelayed) > 0;
 
@@ -345,10 +342,7 @@ namespace ReactiveUI
                 });
             }
 
-            public void SubscribePropertyChangingEvents()
-            {
-                _ = _propertyChanging.Value;
-            }
+            public void SubscribePropertyChangingEvents() => _ = _propertyChanging.Value;
 
             public void RaisePropertyChanging(string propertyName)
             {
@@ -370,10 +364,7 @@ namespace ReactiveUI
                 }
             }
 
-            public void SubscribePropertyChangedEvents()
-            {
-                _ = _propertyChanged.Value;
-            }
+            public void SubscribePropertyChangedEvents() => _ = _propertyChanged.Value;
 
             public void RaisePropertyChanged(string propertyName)
             {
@@ -430,7 +421,8 @@ namespace ReactiveUI
 
                 for (int i = events.Count - 1; i >= 0; i--)
                 {
-                    if (seen.Add(events[i].PropertyName))
+                    var propertyName = events[i].PropertyName;
+                    if (propertyName is not null && seen.Add(propertyName))
                     {
                         uniqueEvents.Push(events[i]);
                     }
@@ -440,26 +432,23 @@ namespace ReactiveUI
                 return uniqueEvents;
             }
 
-            private Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> changeSubject, IObservable<IReactivePropertyChangedEventArgs<TSender>> changeObservable)> CreateLazyDelayableSubjectAndObservable()
-            {
-                return new Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>>, IObservable<IReactivePropertyChangedEventArgs<TSender>>)>(() =>
-              {
-                  var changeSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
-                  var changeObservable = changeSubject
-                      .Buffer(changeSubject.Where(_ => !AreChangeNotificationsDelayed()).Select(_ => Unit.Default)
-                                           .Merge(_startOrStopDelayingChangeNotifications.Value))
-                      .SelectMany(DistinctEvents)
-                      .Publish()
-                      .RefCount();
+            private Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> changeSubject, IObservable<IReactivePropertyChangedEventArgs<TSender>> changeObservable)> CreateLazyDelayableSubjectAndObservable() =>
+                new Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>>, IObservable<IReactivePropertyChangedEventArgs<TSender>>)>(() =>
+                {
+                    var changeSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
+                    var changeObservable = changeSubject
+                                           .Buffer(changeSubject.Where(_ => !AreChangeNotificationsDelayed()).Select(_ => Unit.Default)
+                                                                .Merge(_startOrStopDelayingChangeNotifications.Value))
+                                           .SelectMany(DistinctEvents)
+                                           .Publish()
+                                           .RefCount();
 
-                  return (changeSubject, changeObservable);
-              });
-            }
+                    return (changeSubject, changeObservable);
+                });
 
             private Lazy<ISubject<TEventArgs>> CreateLazyDelayableEventSubject<TEventArgs>(Action<TEventArgs> raiseEvent)
-                where TEventArgs : IReactivePropertyChangedEventArgs<TSender>
-            {
-                return new Lazy<ISubject<TEventArgs>>(() =>
+                where TEventArgs : IReactivePropertyChangedEventArgs<TSender> =>
+                new Lazy<ISubject<TEventArgs>>(() =>
                 {
                     var changeSubject = new Subject<TEventArgs>();
                     changeSubject
@@ -470,7 +459,6 @@ namespace ReactiveUI
 
                     return changeSubject;
                 });
-            }
         }
     }
 }

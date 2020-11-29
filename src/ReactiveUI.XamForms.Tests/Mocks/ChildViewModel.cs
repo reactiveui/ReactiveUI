@@ -4,16 +4,11 @@ namespace ReactiveUI.XamForms.Tests.Mocks
 {
     public class ChildViewModel : ReactiveObject, IRoutableViewModel
     {
-        public ChildViewModel()
-        {
-            HostScreen = Locator.Current.GetService<IScreen>();
-        }
+        public ChildViewModel() => HostScreen = Locator.Current.GetService<IScreen>();
 
         public ChildViewModel(string value)
-            : this()
-        {
+            : this() =>
             Value = value;
-        }
 
         public string? UrlPathSegment => "Child view: " + Value;
 

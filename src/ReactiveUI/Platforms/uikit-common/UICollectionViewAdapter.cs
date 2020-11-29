@@ -54,55 +54,25 @@ namespace ReactiveUI
         {
         }
 
-        public void PerformUpdates(Action updates, Action completion)
-        {
-            _view.PerformBatchUpdates(new NSAction(updates), (completed) => completion());
-        }
+        public void PerformUpdates(Action updates, Action completion) => _view.PerformBatchUpdates(new NSAction(updates), (completed) => completion());
 
-        public void InsertSections(NSIndexSet indexes)
-        {
-            _view.InsertSections(indexes);
-        }
+        public void InsertSections(NSIndexSet indexes) => _view.InsertSections(indexes);
 
-        public void DeleteSections(NSIndexSet indexes)
-        {
-            _view.DeleteSections(indexes);
-        }
+        public void DeleteSections(NSIndexSet indexes) => _view.DeleteSections(indexes);
 
-        public void ReloadSections(NSIndexSet indexes)
-        {
-            _view.ReloadSections(indexes);
-        }
+        public void ReloadSections(NSIndexSet indexes) => _view.ReloadSections(indexes);
 
-        public void MoveSection(int fromIndex, int toIndex)
-        {
-            _view.MoveSection(fromIndex, toIndex);
-        }
+        public void MoveSection(int fromIndex, int toIndex) => _view.MoveSection(fromIndex, toIndex);
 
-        public void InsertItems(NSIndexPath[] paths)
-        {
-            _view.InsertItems(paths);
-        }
+        public void InsertItems(NSIndexPath[] paths) => _view.InsertItems(paths);
 
-        public void DeleteItems(NSIndexPath[] paths)
-        {
-            _view.DeleteItems(paths);
-        }
+        public void DeleteItems(NSIndexPath[] paths) => _view.DeleteItems(paths);
 
-        public void ReloadItems(NSIndexPath[] paths)
-        {
-            _view.ReloadItems(paths);
-        }
+        public void ReloadItems(NSIndexPath[] paths) => _view.ReloadItems(paths);
 
-        public void MoveItem(NSIndexPath path, NSIndexPath newPath)
-        {
-            _view.MoveItem(path, newPath);
-        }
+        public void MoveItem(NSIndexPath path, NSIndexPath newPath) => _view.MoveItem(path, newPath);
 
-        public UICollectionViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path)
-        {
-            return (UICollectionViewCell)_view.DequeueReusableCell(cellKey, path);
-        }
+        public UICollectionViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path) => (UICollectionViewCell)_view.DequeueReusableCell(cellKey, path);
 
         public void Dispose()
         {

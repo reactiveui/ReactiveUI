@@ -239,10 +239,7 @@ namespace ReactiveUI.Tests
 
         private class RoutableViewModel : ReactiveObject, IRoutableViewModel
         {
-            public RoutableViewModel(IScreen screen)
-            {
-                HostScreen = screen;
-            }
+            public RoutableViewModel(IScreen screen) => HostScreen = screen;
 
             public string UrlPathSegment => "Test";
 

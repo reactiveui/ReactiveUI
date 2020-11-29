@@ -52,7 +52,7 @@ namespace ReactiveUI.Blend
                 throw new ArgumentException("Sender must be of type " + nameof(ObservableTrigger), nameof(sender));
             }
 
-            if (triggerItem._watcher != null)
+            if (triggerItem._watcher is not null)
             {
                 triggerItem._watcher.Dispose();
                 triggerItem._watcher = null;

@@ -61,7 +61,7 @@ namespace ReactiveUI.Blend
             {
                 var actionCollection = (ActionCollection)GetValue(ObservableTriggerBehavior.ActionsProperty);
 
-                if (actionCollection == null)
+                if (actionCollection is null)
                 {
                     actionCollection = new ActionCollection();
                     SetValue(ObservableTriggerBehavior.ActionsProperty, actionCollection);
@@ -95,10 +95,7 @@ namespace ReactiveUI.Blend
         }
 
         /// <inheritdoc />
-        public void Dispose()
-        {
-            _watcher?.Dispose();
-        }
+        public void Dispose() => _watcher?.Dispose();
 
         /// <inheritdoc/>
         protected override void OnAttached()
@@ -142,7 +139,7 @@ namespace ReactiveUI.Blend
 
         private void SetResolvedSource(object? newSource)
         {
-            if (AssociatedObject == null || _resolvedSource == newSource)
+            if (AssociatedObject is null || _resolvedSource == newSource)
             {
                 return;
             }

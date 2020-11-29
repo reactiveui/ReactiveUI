@@ -36,16 +36,14 @@ namespace ReactiveUI.Winforms
 
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Valid syntax.")]
-        public object PerformSet(object? toTarget, object? newValue, object[]? arguments)
+        public object PerformSet(object? toTarget, object? newValue, object?[]? arguments)
         {
-            if (toTarget == null)
+            if (toTarget is null)
             {
                 throw new ArgumentNullException(nameof(toTarget));
             }
 
-            IEnumerable<Control>? newValueEnumerable = newValue as IEnumerable<Control>;
-
-            if (newValueEnumerable == null)
+            if (!(newValue is IEnumerable<Control> newValueEnumerable))
             {
                 throw new ArgumentException($"newValue must be {nameof(newValue)}", nameof(newValue));
             }

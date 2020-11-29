@@ -19,7 +19,7 @@ namespace ReactiveUI
     /// </summary>
     internal static class CommandBinderImplementationMixins
     {
-        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
+        public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this ICommandBinderImplementation @this,
                 TViewModel viewModel,
                 TView view,
@@ -28,12 +28,10 @@ namespace ReactiveUI
                 string? toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
-            where TProp : ICommand
-        {
-            return @this.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
-        }
+            where TProp : ICommand =>
+            @this.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
 
-        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this ICommandBinderImplementation @this,
                 TViewModel viewModel,
                 TView view,
@@ -45,7 +43,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            if (withParameter == null)
+            if (withParameter is null)
             {
                 throw new ArgumentNullException(nameof(withParameter));
             }

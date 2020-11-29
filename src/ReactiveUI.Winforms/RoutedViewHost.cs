@@ -31,10 +31,10 @@ namespace ReactiveUI.Winforms
 
             _disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
             {
-                if (x != null && Controls.Count == 0)
+                if (x is not null && Controls.Count == 0)
                 {
                     Controls.Add(InitView(x));
-                    components.Add(DefaultContent);
+                    components?.Add(DefaultContent);
                 }
             }));
 
@@ -54,14 +54,14 @@ namespace ReactiveUI.Winforms
                 SuspendLayout();
                 Controls.Clear();
 
-                if (viewLastAdded != null)
+                if (viewLastAdded is not null)
                 {
                     viewLastAdded.Dispose();
                 }
 
-                if (x.ViewModel == null)
+                if (x.ViewModel is null)
                 {
-                    if (DefaultContent != null)
+                    if (DefaultContent is not null)
                     {
                         InitView(DefaultContent);
                         Controls.Add(DefaultContent);
@@ -72,8 +72,8 @@ namespace ReactiveUI.Winforms
                 }
 
                 IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                IViewFor? view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                if (view != null)
+                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                if (view is not null)
                 {
                     view.ViewModel = x.ViewModel;
 
@@ -133,16 +133,10 @@ namespace ReactiveUI.Winforms
         public IViewLocator? ViewLocator { get; set; }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// Clean up any resources being used.
@@ -150,7 +144,7 @@ namespace ReactiveUI.Winforms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
+            if (disposing && components is not null)
             {
                 components.Dispose();
                 _disposables.Dispose();

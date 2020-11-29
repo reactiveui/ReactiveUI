@@ -26,9 +26,6 @@ namespace ReactiveUI.XamForms.Tests.Mocks
             return Router.NavigateAndReset.Execute(viewModel);
         }
 
-        public IObservable<Unit> NavigateBack()
-        {
-            return Router.NavigateBack.Execute();
-        }
+        public IObservable<Unit> NavigateBack() => Router.NavigateBack.Execute();
     }
 }

@@ -12,30 +12,24 @@ namespace ReactiveUI.Tests
     {
         public FakeCommand()
         {
-            CanExecuteParameter = default!;
-            ExecuteParameter = default!;
+            CanExecuteParameter = default;
+            ExecuteParameter = default;
         }
 
-        public event EventHandler CanExecuteChanged = null!;
+        public event EventHandler? CanExecuteChanged;
 
-        public object CanExecuteParameter { get; private set; }
+        public object? CanExecuteParameter { get; private set; }
 
-        public object ExecuteParameter { get; private set; }
+        public object? ExecuteParameter { get; private set; }
 
-        public bool CanExecute(object parameter)
+        public bool CanExecute(object? parameter)
         {
             CanExecuteParameter = parameter;
             return true;
         }
 
-        public void Execute(object parameter)
-        {
-            ExecuteParameter = parameter;
-        }
+        public void Execute(object? parameter) => ExecuteParameter = parameter;
 
-        protected virtual void NotifyCanExecuteChanged(EventArgs e)
-        {
-            CanExecuteChanged?.Invoke(this, e);
-        }
+        protected virtual void NotifyCanExecuteChanged(EventArgs e) => CanExecuteChanged?.Invoke(this, e);
     }
 }

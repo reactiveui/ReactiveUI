@@ -85,7 +85,7 @@ namespace ReactiveUI
         /// </returns>
         public IDisposable RegisterHandler(Action<InteractionContext<TInput, TOutput>> handler)
         {
-            if (handler == null)
+            if (handler is null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }
@@ -114,7 +114,7 @@ namespace ReactiveUI
         /// </returns>
         public IDisposable RegisterHandler(Func<InteractionContext<TInput, TOutput>, Task> handler)
         {
-            if (handler == null)
+            if (handler is null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }
@@ -140,7 +140,7 @@ namespace ReactiveUI
         /// </returns>
         public IDisposable RegisterHandler<TDontCare>(Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
         {
-            if (handler == null)
+            if (handler is null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }

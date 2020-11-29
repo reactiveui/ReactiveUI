@@ -28,10 +28,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="TableSectionHeader"/> class.
         /// </summary>
         /// <param name="title">Title to use.</param>
-        public TableSectionHeader(string title)
-        {
-            Title = title;
-        }
+        public TableSectionHeader(string title) => Title = title;
 
         /// <summary>
         /// Gets or sets the function that creates the <see cref="UIView"/>

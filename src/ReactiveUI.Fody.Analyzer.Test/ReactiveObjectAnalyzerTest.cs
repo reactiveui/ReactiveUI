@@ -160,9 +160,6 @@ namespace ReactiveUI.Fody.Analyzer.Test
         /// Returns the Roslyn Analyzer under test.
         /// </summary>
         /// <returns>ReactiveObjectAnalyzer.</returns>
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new ReactiveObjectAnalyzer();
-        }
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new ReactiveObjectAnalyzer();
     }
 }

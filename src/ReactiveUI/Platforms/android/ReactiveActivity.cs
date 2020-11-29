@@ -49,15 +49,15 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public TViewModel? ViewModel
         {
-            get { return _viewModel; }
-            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
         /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
-            get { return _viewModel; }
-            set { _viewModel = (TViewModel?)value; }
+            get => _viewModel;
+            set => _viewModel = (TViewModel?)value;
         }
     }
 
@@ -96,16 +96,10 @@ namespace ReactiveUI
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <inheritdoc />
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changing
-        {
-            get { return this.GetChangingObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changing => this.GetChangingObservable();
 
         /// <inheritdoc />
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changed
-        {
-            get { return this.GetChangedObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
@@ -138,16 +132,10 @@ namespace ReactiveUI
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// Starts the activity for result asynchronously.

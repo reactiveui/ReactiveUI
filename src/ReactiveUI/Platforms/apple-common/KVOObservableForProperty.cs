@@ -25,13 +25,13 @@ namespace ReactiveUI
     /// </summary>
     public class KVOObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> declaredInNSObject;
+        private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> DeclaredInNSObject;
 
         static KVOObservableForProperty()
         {
             var monotouchAssemblyName = typeof(NSObject).Assembly.FullName;
 
-            declaredInNSObject = new MemoizingMRUCache<(Type type, string propertyName), bool>(
+            DeclaredInNSObject = new MemoizingMRUCache<(Type type, string propertyName), bool>(
                 (pair, _) =>
             {
                 var thisType = pair.type;
@@ -42,7 +42,7 @@ namespace ReactiveUI
                     return false;
                 }
 
-                while (thisType != null)
+                while (thisType is not null)
                 {
                     if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.propertyName))
                     {
@@ -61,25 +61,21 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
-        {
-            return declaredInNSObject.Get((type, propertyName)) ? 15 : 0;
-        }
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => DeclaredInNSObject.Get((type, propertyName)) ? 15 : 0;
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>>? GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            var obj = sender as NSObject;
-            if (obj == null)
+            if (sender is not NSObject obj)
             {
                 throw new ArgumentException("Sender isn't an NSObject");
             }
 
-            return Observable.Create<IObservedChange<object, object>>(subj =>
+            return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
                 var bobs = new BlockObserveValueDelegate((key, s, _) =>
                 {
-                    subj.OnNext(new ObservedChange<object, object>(s, expression));
+                    subj.OnNext(new ObservedChange<object, object?>(s, expression, default));
                 });
                 var pin = GCHandle.Alloc(bobs);
 
@@ -100,7 +96,7 @@ namespace ReactiveUI
             bool propIsBoolean = false;
 
             var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(x => !x.IsStatic());
-            if (pi == null)
+            if (pi is null)
             {
                 goto attemptGuess;
             }
@@ -111,13 +107,13 @@ namespace ReactiveUI
             }
 
             var mi = pi.GetGetMethod();
-            if (mi == null)
+            if (mi is null)
             {
                 goto attemptGuess;
             }
 
-            var attr = mi.GetCustomAttributes(true).Select(x => x as ExportAttribute).FirstOrDefault(x => x != null);
-            if (attr == null)
+            var attr = mi.GetCustomAttributes(true).OfType<ExportAttribute?>().FirstOrDefault();
+            if (attr is null)
             {
                 goto attemptGuess;
             }

@@ -13,10 +13,7 @@ namespace ReactiveUI.Tests
     {
         private readonly NewGameViewModel _viewmodel;
 
-        public NewGameViewModelTests()
-        {
-            _viewmodel = new NewGameViewModel();
-        }
+        public NewGameViewModelTests() => _viewmodel = new NewGameViewModel();
 
         [Fact]
         public void CanAddUpToSevenPlayers()

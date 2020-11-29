@@ -76,7 +76,7 @@ namespace ReactiveUI.XamForms
                     {
                         _viewContract = x.Contract;
 
-                        if (x.ViewModel == null)
+                        if (x.ViewModel is null)
                         {
                             Content = DefaultContent;
                             return;
@@ -85,14 +85,12 @@ namespace ReactiveUI.XamForms
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                         var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
 
-                        if (view == null)
+                        if (view is null)
                         {
                             throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
                         }
 
-                        var castView = view as View;
-
-                        if (castView == null)
+                        if (!(view is View castView))
                         {
                             throw new Exception($"View '{view.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
                         }

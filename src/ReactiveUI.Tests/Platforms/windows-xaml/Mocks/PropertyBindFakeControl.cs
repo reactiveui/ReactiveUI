@@ -47,7 +47,7 @@ namespace ReactiveUI.Tests.Xaml
             get => (string)GetValue(NullHatingStringProperty);
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     throw new ArgumentNullException(nameof(value), "No nulls! I get confused!");
                 }

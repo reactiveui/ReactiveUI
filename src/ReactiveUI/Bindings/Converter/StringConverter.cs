@@ -14,10 +14,7 @@ namespace ReactiveUI
     public class StringConverter : IBindingTypeConverter
     {
         /// <inheritdoc/>
-        public int GetAffinityForObjects(Type fromType, Type toType)
-        {
-            return toType == typeof(string) ? 2 : 0;
-        }
+        public int GetAffinityForObjects(Type fromType, Type toType) => toType == typeof(string) ? 2 : 0;
 
         /// <inheritdoc/>
         public bool TryConvert(object? @from, Type toType, object? conversionHint, out object? result)

@@ -23,12 +23,12 @@ namespace ReactiveUI.Fody
         /// <param name="il">The il.</param>
         public static void Emit(this MethodBody body, Action<ILProcessor> il)
         {
-            if (body == null)
+            if (body is null)
             {
                 throw new ArgumentNullException(nameof(body));
             }
 
-            if (il == null)
+            if (il is null)
             {
                 throw new ArgumentNullException(nameof(il));
             }
@@ -44,7 +44,7 @@ namespace ReactiveUI.Fody
         /// <returns>A generic method with generic typed arguments.</returns>
         public static GenericInstanceMethod MakeGenericMethod(this MethodReference method, params TypeReference[] genericArguments)
         {
-            if (genericArguments == null)
+            if (genericArguments is null)
             {
                 throw new ArgumentNullException(nameof(genericArguments));
             }
@@ -69,12 +69,12 @@ namespace ReactiveUI.Fody
         /// </returns>
         public static bool IsAssignableFrom(this TypeReference baseType, TypeReference type, Action<string>? logger = null)
         {
-            if (baseType == null)
+            if (baseType is null)
             {
                 throw new ArgumentNullException(nameof(baseType));
             }
 
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -113,7 +113,7 @@ namespace ReactiveUI.Fody
                     return true;
                 }
 
-                if (current.BaseType != null)
+                if (current.BaseType is not null)
                 {
                     queue.Enqueue(current.BaseType.Resolve());
                 }
@@ -137,7 +137,7 @@ namespace ReactiveUI.Fody
         /// </returns>
         public static bool IsDefined(this IMemberDefinition member, TypeReference attributeType)
         {
-            if (member == null)
+            if (member is null)
             {
                 throw new ArgumentNullException(nameof(member));
             }
@@ -153,7 +153,7 @@ namespace ReactiveUI.Fody
         /// <returns>The method bound to the generic type.</returns>
         public static MethodReference Bind(this MethodReference method, GenericInstanceType genericType)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -181,12 +181,12 @@ namespace ReactiveUI.Fody
         /// <returns>The field bound to the generic type.</returns>
         public static FieldReference BindDefinition(this FieldReference field, TypeReference genericTypeDefinition)
         {
-            if (field == null)
+            if (field is null)
             {
                 throw new ArgumentNullException(nameof(field));
             }
 
-            if (genericTypeDefinition == null)
+            if (genericTypeDefinition is null)
             {
                 throw new ArgumentNullException(nameof(genericTypeDefinition));
             }
@@ -212,14 +212,16 @@ namespace ReactiveUI.Fody
         /// <param name="currentModule">The current module.</param>
         /// <param name="assemblyName">Name of the assembly.</param>
         /// <returns>The assembly if found, null if not.</returns>
-        public static AssemblyNameReference FindAssembly(this ModuleDefinition currentModule, string assemblyName)
+        public static AssemblyNameReference? FindAssembly(this ModuleDefinition currentModule, string assemblyName)
         {
-            if (currentModule == null)
+            if (currentModule is null)
             {
                 throw new ArgumentNullException(nameof(currentModule));
             }
 
-            return currentModule.AssemblyReferences.SingleOrDefault(x => x.Name == assemblyName);
+            var assemblyReferences = currentModule.AssemblyReferences;
+
+            return assemblyReferences.SingleOrDefault(x => x.Name == assemblyName);
         }
 
         /// <summary>
@@ -233,7 +235,7 @@ namespace ReactiveUI.Fody
         /// <returns>The type reference.</returns>
         public static TypeReference FindType(this ModuleDefinition currentModule, string @namespace, string typeName, IMetadataScope? scope = null, params string[] typeParameters)
         {
-            if (typeParameters == null)
+            if (typeParameters is null)
             {
                 throw new ArgumentNullException(nameof(typeParameters));
             }
@@ -255,12 +257,12 @@ namespace ReactiveUI.Fody
         /// <returns>A value indicating the result of the comparison.</returns>
         public static bool CompareTo(this TypeReference type, TypeReference compareTo)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (compareTo == null)
+            if (compareTo is null)
             {
                 throw new ArgumentNullException(nameof(compareTo));
             }

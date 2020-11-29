@@ -14,20 +14,29 @@ namespace ReactiveUI
     /// </summary>
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
-        private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache = new MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?>(
-            (types, _) =>
-        {
-            // NB: String is a Magical Type(tm) to TypeConverters. If we are
-            // converting from string => int, we need the Int converter, not
-            // the string converter :-/
-            if (types.fromType == typeof(string))
-            {
-                types = (types.toType, types.fromType);
-            }
+        private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache =
+            new ((types, _) =>
+               {
+                   // NB: String is a Magical Type(tm) to TypeConverters. If we are
+                   // converting from string => int, we need the Int converter, not
+                   // the string converter :-/
+                   if (types.fromType == typeof(string))
+                   {
+                       types = (types.toType,
+                                   types.fromType);
+                   }
 
-            var converter = TypeDescriptor.GetConverter(types.fromType);
-            return converter.CanConvertTo(types.toType) ? converter : null;
-        }, RxApp.SmallCacheLimit);
+                   var converter =
+                       TypeDescriptor
+                           .GetConverter(types
+                               .fromType);
+                   return
+                       converter
+                           .CanConvertTo(types.toType)
+                           ? converter
+                           : null;
+               },
+               RxApp.SmallCacheLimit);
 
         /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType)
@@ -37,7 +46,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
+        public bool TryConvert(object? @from, Type toType, object? conversionHint, out object? result)
         {
             if (from is null)
             {

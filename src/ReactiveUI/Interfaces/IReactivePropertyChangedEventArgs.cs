@@ -19,7 +19,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the name of the property that has changed on Sender.
         /// </summary>
-        string PropertyName { get; }
+        string? PropertyName { get; }
 
         /// <summary>
         /// Gets the object that has raised the change.

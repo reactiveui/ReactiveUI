@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid90;tizen40</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299</TargetFrameworks>    
+    <TargetFrameworks>Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0;tizen40</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;uap10.0.16299</TargetFrameworks>    
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <PackageDescription>Provides Observable-based events API for Xamarin Native Platforms including Android, iOS, Mac, TVOS, Tizen, and UWP</PackageDescription>
@@ -13,7 +13,7 @@
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <PackageReference Include="Pharmacist.Common" Version="1.*" />
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">

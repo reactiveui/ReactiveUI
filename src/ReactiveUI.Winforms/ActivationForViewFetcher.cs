@@ -23,10 +23,7 @@ namespace ReactiveUI.Winforms
         private bool? _isDesignModeCache;
 
         /// <inheritdoc/>
-        public int GetAffinityForView(Type view)
-        {
-            return typeof(Control).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
-        }
+        public int GetAffinityForView(Type view) => typeof(Control).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
 
         /// <inheritdoc/>
         public IObservable<bool> GetActivationForView(IActivatableView view)
@@ -64,7 +61,7 @@ namespace ReactiveUI.Winforms
                     var formClosed = Observable.FromEvent<FormClosedEventHandler, bool>(
                         eventHandler =>
                         {
-                            void Handler(object sender, FormClosedEventArgs e) => eventHandler(control.Visible);
+                            void Handler(object? sender, FormClosedEventArgs e) => eventHandler(control.Visible);
                             return Handler;
                         },
                         h => form.FormClosed += h,
@@ -104,7 +101,7 @@ namespace ReactiveUI.Winforms
 
         private bool GetCachedIsDesignMode(Control control)
         {
-            if (_isDesignModeCache == null)
+            if (_isDesignModeCache is null)
             {
                 _isDesignModeCache = GetIsDesignMode(control);
             }

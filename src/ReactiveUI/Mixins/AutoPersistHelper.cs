@@ -26,7 +26,7 @@ namespace ReactiveUI
     /// </summary>
     public static class AutoPersistHelper
     {
-        private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new MemoizingMRUCache<Type, Dictionary<string, bool>>(
+        private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new (
             (type, _) =>
         {
             return type.GetTypeInfo().DeclaredProperties
@@ -34,11 +34,9 @@ namespace ReactiveUI
                 .ToDictionary(k => k.Name, v => true);
         }, RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<Type, bool> dataContractCheckCache = new MemoizingMRUCache<Type, bool>(
-            (t, _) =>
-        {
-            return t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Any();
-        }, RxApp.SmallCacheLimit);
+        private static readonly MemoizingMRUCache<Type, bool> dataContractCheckCache = new (
+            (t, _) => t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Any(),
+            RxApp.SmallCacheLimit);
 
         /// <summary>
         /// AutoPersist allows you to automatically call a method when an object
@@ -60,10 +58,8 @@ namespace ReactiveUI
         /// </param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
         public static IDisposable AutoPersist<T>(this T @this, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
-            where T : IReactiveObject
-        {
-            return @this.AutoPersist(doPersist, Observable<Unit>.Never, interval);
-        }
+            where T : IReactiveObject =>
+            @this.AutoPersist(doPersist, Observable<Unit>.Never, interval);
 
         /// <summary>
         /// AutoPersist allows you to automatically call a method when an object
@@ -91,7 +87,7 @@ namespace ReactiveUI
         public static IDisposable AutoPersist<T, TDontCare>(this T @this, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
             where T : IReactiveObject
         {
-            interval = interval ?? TimeSpan.FromSeconds(3.0);
+            interval ??= TimeSpan.FromSeconds(3.0);
 
             if (!dataContractCheckCache.Get(@this.GetType()))
             {
@@ -100,9 +96,7 @@ namespace ReactiveUI
 
             Dictionary<string, bool> persistableProperties = persistablePropertiesCache.Get(@this.GetType());
 
-            var saveHint = Observable.Merge(
-                @this.GetChangedObservable().Where(x => persistableProperties.ContainsKey(x.PropertyName)).Select(_ => Unit.Default),
-                manualSaveSignal.Select(_ => Unit.Default));
+            var saveHint = @this.GetChangedObservable().Where(x => x.PropertyName is not null && persistableProperties.ContainsKey(x.PropertyName)).Select(_ => Unit.Default).Merge(manualSaveSignal.Select(_ => Unit.Default));
 
             var autoSaver = saveHint
                 .Throttle(interval.Value, RxApp.TaskpoolScheduler)
@@ -142,10 +136,8 @@ namespace ReactiveUI
         /// </param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
         public static IDisposable AutoPersistCollection<TItem>(this ObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, TimeSpan? interval = null)
-            where TItem : IReactiveObject
-        {
-            return AutoPersistCollection(@this, doPersist, Observable<Unit>.Never, interval);
-        }
+            where TItem : IReactiveObject =>
+            AutoPersistCollection(@this, doPersist, Observable<Unit>.Never, interval);
 
         /// <summary>
         /// Apply AutoPersistence to all objects in a collection. Items that are
@@ -168,10 +160,8 @@ namespace ReactiveUI
         /// </param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
         public static IDisposable AutoPersistCollection<TItem, TDontCare>(this ObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
-            where TItem : IReactiveObject
-        {
-            return AutoPersistCollection<TItem, ObservableCollection<TItem>, TDontCare>(@this, doPersist, manualSaveSignal, interval);
-        }
+            where TItem : IReactiveObject =>
+            AutoPersistCollection<TItem, ObservableCollection<TItem>, TDontCare>(@this, doPersist, manualSaveSignal, interval);
 
         /// <summary>
         /// Apply AutoPersistence to all objects in a collection. Items that are
@@ -194,10 +184,8 @@ namespace ReactiveUI
         /// </param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
         public static IDisposable AutoPersistCollection<TItem, TDontCare>(this ReadOnlyObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
-            where TItem : IReactiveObject
-        {
-            return AutoPersistCollection<TItem, ReadOnlyObservableCollection<TItem>, TDontCare>(@this, doPersist, manualSaveSignal, interval);
-        }
+            where TItem : IReactiveObject =>
+            AutoPersistCollection<TItem, ReadOnlyObservableCollection<TItem>, TDontCare>(@this, doPersist, manualSaveSignal, interval);
 
         /// <summary>
         /// Apply AutoPersistence to all objects in a collection. Items that are
@@ -266,10 +254,8 @@ namespace ReactiveUI
         /// </param>
         /// <returns>A Disposable that deactivates this behavior.</returns>
         public static IDisposable ActOnEveryObject<TItem>(this ObservableCollection<TItem> @this, Action<TItem> onAdd, Action<TItem> onRemove)
-            where TItem : IReactiveObject
-        {
-            return ActOnEveryObject<TItem, ObservableCollection<TItem>>(@this, onAdd, onRemove);
-        }
+            where TItem : IReactiveObject =>
+            ActOnEveryObject<TItem, ObservableCollection<TItem>>(@this, onAdd, onRemove);
 
         /// <summary>
         /// Call methods 'onAdd' and 'onRemove' whenever an object is added or
@@ -288,10 +274,8 @@ namespace ReactiveUI
         /// </param>
         /// <returns>A Disposable that deactivates this behavior.</returns>
         public static IDisposable ActOnEveryObject<TItem>(this ReadOnlyObservableCollection<TItem> @this, Action<TItem> onAdd, Action<TItem> onRemove)
-            where TItem : IReactiveObject
-        {
-            return ActOnEveryObject<TItem, ReadOnlyObservableCollection<TItem>>(@this, onAdd, onRemove);
-        }
+            where TItem : IReactiveObject =>
+            ActOnEveryObject<TItem, ReadOnlyObservableCollection<TItem>>(@this, onAdd, onRemove);
 
         /// <summary>
         /// Call methods 'onAdd' and 'onRemove' whenever an object is added or
@@ -361,9 +345,8 @@ namespace ReactiveUI
         /// </param>
         /// <returns>A Disposable that deactivates this behavior.</returns>
         public static IDisposable ActOnEveryObject<TItem>(this IObservable<IChangeSet<TItem>> @this, Action<TItem> onAdd, Action<TItem> onRemove)
-            where TItem : IReactiveObject
-        {
-            return @this.Subscribe(changeSet =>
+            where TItem : IReactiveObject =>
+            @this.Subscribe(changeSet =>
             {
                 foreach (var change in changeSet)
                 {
@@ -415,6 +398,5 @@ namespace ReactiveUI
                     }
                 }
             });
-        }
     }
 }

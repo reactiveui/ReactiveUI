@@ -31,7 +31,7 @@ namespace ReactiveUI
             get
             {
                 var ret = Locator.Current.GetService<IViewLocator>();
-                if (ret == null)
+                if (ret is null)
                 {
                     throw new ViewLocatorNotFoundException("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
                 }

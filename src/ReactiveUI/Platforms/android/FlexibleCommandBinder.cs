@@ -37,7 +37,7 @@ namespace ReactiveUI
                 .OrderByDescending(x => _config[x].Affinity)
                 .FirstOrDefault();
 
-            if (match == null)
+            if (match is null)
             {
                 return 0;
             }
@@ -49,7 +49,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
-            if (target == null)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -61,7 +61,7 @@ namespace ReactiveUI
                 .OrderByDescending(x => _config[x].Affinity)
                 .FirstOrDefault();
 
-            if (match == null)
+            if (match is null)
             {
                 throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
             }
@@ -92,7 +92,7 @@ namespace ReactiveUI
         [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
         protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, PropertyInfo enabledProperty)
         {
-            if (command == null)
+            if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
@@ -110,8 +110,8 @@ namespace ReactiveUI
                 }
             });
 
-            Action<object, object?, object[]?>? enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
-            if (enabledSetter == null)
+            var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
+            if (enabledSetter is null)
             {
                 return actionDisp;
             }
@@ -141,10 +141,7 @@ namespace ReactiveUI
         /// <param name="type">Type.</param>
         /// <param name="affinity">The affinity for the type.</param>
         /// <param name="createBinding">Creates the binding.</param>
-        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding)
-        {
-            _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
-        }
+        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding) => _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
 
         private class CommandBindingInfo
         {

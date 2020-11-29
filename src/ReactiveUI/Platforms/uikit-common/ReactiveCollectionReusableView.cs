@@ -94,7 +94,7 @@ namespace ReactiveUI
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             var handler = PropertyChanging;
-            if (handler != null)
+            if (handler is not null)
             {
                 handler(this, args);
             }
@@ -104,7 +104,7 @@ namespace ReactiveUI
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             var handler = PropertyChanged;
-            if (handler != null)
+            if (handler is not null)
             {
                 handler(this, args);
             }
@@ -117,10 +117,7 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         public override void WillMoveToSuperview(UIView? newsuper)

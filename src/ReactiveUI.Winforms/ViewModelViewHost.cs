@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Forms;
@@ -121,16 +122,10 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// Clean up any resources being used.
@@ -138,7 +133,7 @@ namespace ReactiveUI.Winforms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
+            if (disposing && components is not null)
             {
                 components.Dispose();
                 _disposables.Dispose();
@@ -150,7 +145,8 @@ namespace ReactiveUI.Winforms
         private IEnumerable<IDisposable> SetupBindings()
         {
             var viewChanges =
-                this.WhenAnyValue(x => x.Content)
+                this.WhenAnyValue(x => x!.Content)
+                    .WhereNotNull()
                     .OfType<Control>()
                     .Subscribe(x =>
                     {
@@ -158,13 +154,13 @@ namespace ReactiveUI.Winforms
                         SuspendLayout();
 
                         // clear out existing visible control view
-                        foreach (Control? c in Controls)
+                        foreach (Control c in Controls.OfType<Control>())
                         {
-                            c?.Dispose();
+                            c.Dispose();
                             Controls.Remove(c);
                         }
 
-                        x!.Dock = DockStyle.Fill;
+                        x.Dock = DockStyle.Fill;
                         Controls.Add(x);
                         ResumeLayout();
                     });
@@ -173,7 +169,7 @@ namespace ReactiveUI.Winforms
 
             yield return this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
             {
-                if (x != null)
+                if (x is not null)
                 {
                     Content = DefaultContent;
                 }
@@ -191,9 +187,9 @@ namespace ReactiveUI.Winforms
                 x =>
                 {
                     // set content to default when viewmodel is null
-                    if (ViewModel == null)
+                    if (ViewModel is null)
                     {
-                        if (DefaultContent != null)
+                        if (DefaultContent is not null)
                         {
                             Content = DefaultContent;
                         }
@@ -206,7 +202,7 @@ namespace ReactiveUI.Winforms
                         // when caching views, check the current viewmodel and type
                         var c = _content as IViewFor;
 
-                        if (c?.ViewModel != null && c.ViewModel.GetType() == x.ViewModel!.GetType())
+                        if (c?.ViewModel is not null && c.ViewModel.GetType() == x.ViewModel!.GetType())
                         {
                             c.ViewModel = x.ViewModel;
 
@@ -217,8 +213,8 @@ namespace ReactiveUI.Winforms
                     }
 
                     IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    IViewFor? view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                    if (view != null)
+                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                    if (view is not null)
                     {
                         view.ViewModel = x.ViewModel;
                         Content = view;

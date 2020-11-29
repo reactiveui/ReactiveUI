@@ -25,7 +25,7 @@ namespace ReactiveUI.Testing
         /// <returns>The return value of the function.</returns>
         public static TRet With<TRet>(this IMessageBus messageBus, Func<TRet> block)
         {
-            if (block == null)
+            if (block is null)
             {
                 throw new ArgumentNullException(nameof(block));
             }
@@ -65,7 +65,7 @@ namespace ReactiveUI.Testing
         /// <param name="block">The action to execute.</param>
         public static void With(this IMessageBus messageBus, Action block)
         {
-            if (block == null)
+            if (block is null)
             {
                 throw new ArgumentNullException(nameof(block));
             }

@@ -26,6 +26,11 @@ namespace ReactiveUI
         private readonly Handler _handler;
         private readonly long _looperId;
 
+        static HandlerScheduler()
+        {
+            MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper!), Looper.MainLooper?.Thread?.Id);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HandlerScheduler"/> class.
         /// </summary>
@@ -40,7 +45,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a common instance to avoid allocations to the MainThread for the HandlerScheduler.
         /// </summary>
-        public static IScheduler MainThreadScheduler { get; } = new HandlerScheduler(new Handler(Looper.MainLooper), Looper.MainLooper?.Thread?.Id);
+        public static IScheduler MainThreadScheduler { get; }
 
         /// <inheritdoc/>
         public DateTimeOffset Now => DateTimeOffset.Now;

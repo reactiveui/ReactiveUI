@@ -14,10 +14,7 @@ namespace ReactiveUI.Tests
 {
     public class FakeNestedViewModel : ReactiveObject
     {
-        public FakeNestedViewModel()
-        {
-            NestedCommand = ReactiveCommand.Create(() => { });
-        }
+        public FakeNestedViewModel() => NestedCommand = ReactiveCommand.Create(() => { });
 
         public ReactiveCommand<Unit, Unit> NestedCommand { get; protected set; }
     }

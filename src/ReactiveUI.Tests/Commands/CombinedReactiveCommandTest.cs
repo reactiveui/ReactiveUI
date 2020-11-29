@@ -76,23 +76,21 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ExceptionsAreDeliveredOnOutputScheduler()
-        {
+        public void ExceptionsAreDeliveredOnOutputScheduler() =>
             new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var child = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
-                                         var childCommands = new[] { child };
-                                         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);
-                                         Exception? exception = null;
-                                         fixture.ThrownExceptions.Subscribe(ex => exception = ex);
-                                         fixture.Execute().Subscribe(_ => { }, _ => { });
+                sched =>
+                {
+                    var child = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+                    var childCommands = new[] { child };
+                    var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);
+                    Exception? exception = null;
+                    fixture.ThrownExceptions.Subscribe(ex => exception = ex);
+                    fixture.Execute().Subscribe(_ => { }, _ => { });
 
-                                         Assert.Null(exception);
-                                         sched.Start();
-                                         Assert.IsType<InvalidOperationException>(exception);
-                                     });
-        }
+                    Assert.Null(exception);
+                    sched.Start();
+                    Assert.IsType<InvalidOperationException>(exception);
+                });
 
         [Fact]
         public void ExecuteExecutesAllChildCommands()
@@ -165,23 +163,21 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ResultIsTickedThroughSpecifiedScheduler()
-        {
+        public void ResultIsTickedThroughSpecifiedScheduler() =>
             new TestScheduler().With(
-                                     sched =>
-                                     {
-                                         var child1 = ReactiveCommand.Create(() => Observable.Return(1));
-                                         var child2 = ReactiveCommand.Create(() => Observable.Return(2));
-                                         var childCommands = new[] { child1, child2 };
-                                         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);
-                                         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
+                sched =>
+                {
+                    var child1 = ReactiveCommand.Create(() => Observable.Return(1));
+                    var child2 = ReactiveCommand.Create(() => Observable.Return(2));
+                    var childCommands = new[] { child1, child2 };
+                    var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);
+                    fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
-                                         fixture.Execute().Subscribe();
-                                         Assert.Empty(results);
+                    fixture.Execute().Subscribe();
+                    Assert.Empty(results);
 
-                                         sched.AdvanceByMs(1);
-                                         Assert.Equal(1, results.Count);
-                                     });
-        }
+                    sched.AdvanceByMs(1);
+                    Assert.Equal(1, results.Count);
+                });
     }
 }

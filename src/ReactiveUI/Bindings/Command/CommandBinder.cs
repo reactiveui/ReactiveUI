@@ -4,11 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reflection;
 using System.Windows.Input;
 using Splat;
 
@@ -19,14 +15,14 @@ namespace ReactiveUI
     /// </summary>
     public static class CommandBinder
     {
-        private static readonly ICommandBinderImplementation binderImplementation;
+        private static readonly ICommandBinderImplementation _binderImplementation;
 
         static CommandBinder()
         {
             RxApp.EnsureInitialized();
 
-            binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ??
-                new CommandBinderImplementation();
+            _binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ??
+                                    new CommandBinderImplementation();
         }
 
         /// <summary>
@@ -50,7 +46,7 @@ namespace ReactiveUI
         /// instead of the default.
         /// NOTE: If this parameter is used inside WhenActivated, it's
         /// important to dispose the binding when the view is deactivated.</param>
-        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> propertyName,
@@ -59,10 +55,8 @@ namespace ReactiveUI
                 string? toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
-            where TProp : ICommand
-        {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
-        }
+            where TProp : ICommand =>
+            _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
 
         /// <summary>
         /// Bind a command from the ViewModel to an explicitly specified control
@@ -82,7 +76,7 @@ namespace ReactiveUI
         /// instead of the default.
         /// NOTE: If this parameter is used inside WhenActivated, it's
         /// important to dispose the binding when the view is deactivated.</param>
-        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
+        public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> propertyName,
@@ -90,10 +84,8 @@ namespace ReactiveUI
                 string? toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
-            where TProp : ICommand
-        {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
-        }
+            where TProp : ICommand =>
+            _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
 
         /// <summary>
         /// Bind a command from the ViewModel to an explicitly specified control
@@ -116,7 +108,7 @@ namespace ReactiveUI
         /// instead of the default.
         /// NOTE: If this parameter is used inside WhenActivated, it's
         /// important to dispose the binding when the view is deactivated.</param>
-        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> propertyName,
@@ -127,7 +119,18 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
+            if (view is null)
+            {
+                throw new ArgumentNullException(nameof(view));
+            }
+
+            return _binderImplementation.BindCommand(
+                viewModel,
+                view,
+                propertyName,
+                controlName,
+                withParameter,
+                toEvent);
         }
     }
 }

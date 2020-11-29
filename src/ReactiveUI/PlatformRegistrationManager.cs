@@ -25,9 +25,6 @@ namespace ReactiveUI
         /// This needs to be set before the first call to <see cref="RxApp"/>.
         /// </summary>
         /// <param name="namespaces">The namespaces to register.</param>
-        public static void SetRegistrationNamespaces(params RegistrationNamespace[] namespaces)
-        {
-            NamespacesToRegister = namespaces;
-        }
+        public static void SetRegistrationNamespaces(params RegistrationNamespace[] namespaces) => NamespacesToRegister = namespaces;
     }
 }

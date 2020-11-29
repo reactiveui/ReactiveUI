@@ -164,38 +164,26 @@ namespace ReactiveUI.AndroidSupport
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <summary>
         /// Gets if change notifications via the INotifyPropertyChanged interface are being sent.
         /// </summary>
         /// <returns>A value indicating whether change notifications are enabled or not.</returns>
-        public bool AreChangeNotificationsEnabled()
-        {
-            return IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
-        }
+        public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (View != null)
+                if (View is not null)
                 {
                     View.ViewAttachedToWindow -= OnViewAttachedToWindow;
                     View.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
@@ -209,25 +197,14 @@ namespace ReactiveUI.AndroidSupport
         }
 
         [OnDeserialized]
-        private void SetupRxObj(StreamingContext sc)
-        {
-            SetupRxObj();
-        }
+        private void SetupRxObj(StreamingContext sc) => SetupRxObj();
 
-        private void SetupRxObj()
-        {
+        private void SetupRxObj() =>
             AllPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
-        }
 
-        private void OnViewAttachedToWindow(object sender, View.ViewAttachedToWindowEventArgs args)
-        {
-            _activated.OnNext(Unit.Default);
-        }
+        private void OnViewAttachedToWindow(object sender, View.ViewAttachedToWindowEventArgs args) => _activated.OnNext(Unit.Default);
 
-        private void OnViewDetachedFromWindow(object sender, View.ViewDetachedFromWindowEventArgs args)
-        {
-            _deactivated.OnNext(Unit.Default);
-        }
+        private void OnViewDetachedFromWindow(object sender, View.ViewDetachedFromWindowEventArgs args) => _deactivated.OnNext(Unit.Default);
     }
 }

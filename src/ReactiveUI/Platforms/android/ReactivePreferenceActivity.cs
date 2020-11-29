@@ -24,6 +24,7 @@ namespace ReactiveUI
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [Obsolete("This class is obsoleted in this android platform")]
     public class ReactivePreferenceActivity<TViewModel> : ReactivePreferenceActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
@@ -66,6 +67,7 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+    [Obsolete("This class is obsoleted in this android platform")]
     public class ReactivePreferenceActivity : PreferenceActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactivePreferenceActivity>, IHandleObservableErrors
     {
         private readonly Subject<Unit> _activated = new Subject<Unit>();
@@ -133,21 +135,15 @@ namespace ReactiveUI
         /// notifications (neither traditional nor Observable notifications)
         /// until the return value is disposed.
         /// </summary>
-        /// <returns>An object that, when disposed, reenables change
+        /// <returns>An object that, when disposed, re-enables change
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// Starts the activity for result asynchronously.

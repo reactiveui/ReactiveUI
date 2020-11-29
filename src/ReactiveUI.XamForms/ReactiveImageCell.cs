@@ -49,9 +49,6 @@ namespace ReactiveUI.XamForms
             ViewModel = BindingContext as TViewModel;
         }
 
-        private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue)
-        {
-            bindableObject.BindingContext = newValue;
-        }
+        private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) => bindableObject.BindingContext = newValue;
     }
 }

@@ -17,8 +17,7 @@ namespace ReactiveUI.Tests
     public class AutoPersistCollectionTests
     {
         [Fact]
-        public void AutoPersistCollectionSmokeTest()
-        {
+        public void AutoPersistCollectionSmokeTest() =>
             new TestScheduler().With(sched =>
             {
                 var manualSave = new Subject<Unit>();
@@ -75,11 +74,9 @@ namespace ReactiveUI.Tests
                 sched.AdvanceByMs(2 * 100);
                 Assert.Equal(3, timesSaved);
             });
-        }
 
         [Fact]
-        public void AutoPersistCollectionDisconnectsOnDispose()
-        {
+        public void AutoPersistCollectionDisconnectsOnDispose() =>
             new TestScheduler().With(sched =>
             {
                 var manualSave = new Subject<Unit>();
@@ -138,6 +135,5 @@ namespace ReactiveUI.Tests
                 sched.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
             });
-        }
     }
 }

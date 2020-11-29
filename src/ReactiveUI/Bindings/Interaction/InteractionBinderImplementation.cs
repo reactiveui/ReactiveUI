@@ -27,12 +27,12 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewFor
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            if (handler == null)
+            if (handler is null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }
@@ -44,7 +44,7 @@ namespace ReactiveUI
             var interactionDisposable = new SerialDisposable();
 
             return source
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
                 .Finally(() => interactionDisposable?.Dispose())
                 .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
@@ -59,12 +59,12 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewFor
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            if (handler == null)
+            if (handler is null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }
@@ -76,7 +76,7 @@ namespace ReactiveUI
             var interactionDisposable = new SerialDisposable();
 
             return source
-                .Where(x => x != null)
+                .Where(x => x is not null)
                 .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
                 .Finally(() => interactionDisposable?.Dispose())
                 .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));

@@ -44,14 +44,14 @@ namespace ReactiveUI
             return defaultEventsToBind.Any(x =>
             {
                 var ei = type.GetRuntimeEvent(x.name);
-                return ei != null;
+                return ei is not null;
             }) ? 3 : 0;
         }
 
         /// <inheritdoc/>
         public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
-            if (target == null)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -59,9 +59,9 @@ namespace ReactiveUI
             var type = target.GetType();
             var eventInfo = defaultEventsToBind
                 .Select(x => new { EventInfo = type.GetRuntimeEvent(x.name), Args = x.type })
-                .FirstOrDefault(x => x.EventInfo != null);
+                .FirstOrDefault(x => x.EventInfo is not null);
 
-            if (eventInfo == null)
+            if (eventInfo is null)
             {
                 throw new Exception(
                        $"Couldn't find a default event to bind to on {target.GetType().FullName}, specify an event explicitly");

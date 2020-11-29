@@ -19,14 +19,8 @@ namespace ReactiveUI
     {
         private Action<string, NSObject, NSDictionary> _block;
 
-        public BlockObserveValueDelegate(Action<string, NSObject, NSDictionary> block)
-        {
-            _block = block;
-        }
+        public BlockObserveValueDelegate(Action<string, NSObject, NSDictionary> block) => _block = block;
 
-        public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
-        {
-            _block(keyPath, ofObject, change);
-        }
+        public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context) => _block(keyPath, ofObject, change);
     }
 }

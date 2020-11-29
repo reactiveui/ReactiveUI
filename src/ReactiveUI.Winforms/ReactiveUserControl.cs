@@ -21,10 +21,7 @@ namespace ReactiveUI.Winforms
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
         /// </summary>
-        public ReactiveUserControl()
-        {
-            InitializeComponent();
-        }
+        public ReactiveUserControl() => InitializeComponent();
 
         /// <inheritdoc/>
         [Category("ReactiveUI")]
@@ -46,7 +43,7 @@ namespace ReactiveUI.Winforms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
+            if (disposing && components is not null)
             {
                 components.Dispose();
             }

@@ -38,7 +38,7 @@ namespace ReactiveUI
         {
             var inflater = LayoutInflater.FromContext(ctx);
 
-            if (inflater == null)
+            if (inflater is null)
             {
                 return;
             }

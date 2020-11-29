@@ -57,9 +57,6 @@ namespace ReactiveUI.Tests.Xaml
             }
         }
 
-        public void Dispose()
-        {
-            _resolver?.Dispose();
-        }
+        public void Dispose() => _resolver?.Dispose();
     }
 }

@@ -21,7 +21,6 @@ namespace ReactiveUI
     /// RoutingState manages the ViewModel Stack and allows ViewModels to
     /// navigate to other ViewModels.
     /// </summary>
-    [SuppressMessage("Usage", "CS8618: Non-nullable property is uninitialized", Justification = "Searialization restores values.")]
     [DataContract]
     public class RoutingState : ReactiveObject
     {
@@ -34,10 +33,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes static members of the <see cref="RoutingState"/> class.
         /// </summary>R
-        static RoutingState()
-        {
-            RxApp.EnsureInitialized();
-        }
+        static RoutingState() => RxApp.EnsureInitialized();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutingState"/> class.
@@ -108,7 +104,7 @@ namespace ReactiveUI
         /// Gets or sets the current view model which is to be shown for the Routing.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
+        public IObservable<IRoutableViewModel?> CurrentViewModel { get; protected set; }
 
         /// <summary>
         /// Gets or sets an observable which will signal when the Navigation changes.
@@ -117,14 +113,11 @@ namespace ReactiveUI
         public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; }
 
         [OnDeserialized]
-        private void SetupRx(StreamingContext sc)
-        {
-            SetupRx();
-        }
+        private void SetupRx(StreamingContext sc) => SetupRx();
 
         private void SetupRx()
         {
-            var navigateScheduler = _scheduler ?? RxApp.MainThreadScheduler;
+            var navigateScheduler = _scheduler;
 
             NavigationChanged = _navigationStack.ToObservableChangeSet();
 
@@ -144,7 +137,7 @@ namespace ReactiveUI
             Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(
                 vm =>
                 {
-                    if (vm == null)
+                    if (vm is null)
                     {
                         throw new Exception("Navigate must be called on an IRoutableViewModel");
                     }

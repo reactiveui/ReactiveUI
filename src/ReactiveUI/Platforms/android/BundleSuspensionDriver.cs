@@ -22,7 +22,7 @@ namespace ReactiveUI
             try
             {
                 // NB: Sometimes OnCreate gives us a null bundle
-                if (AutoSuspendHelper.LatestBundle == null)
+                if (AutoSuspendHelper.LatestBundle is null)
                 {
                     return Observable.Throw<object>(new Exception("New bundle, start from scratch"));
                 }

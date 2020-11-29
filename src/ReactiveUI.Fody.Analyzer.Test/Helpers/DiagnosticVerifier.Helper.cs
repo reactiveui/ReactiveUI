@@ -3,14 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
+
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -60,7 +62,7 @@ namespace TestHelper
                 var compilationWithAnalyzers = project.GetCompilationAsync().Result?.WithAnalyzers(ImmutableArray.Create(analyzer));
                 var diags = compilationWithAnalyzers?.GetAnalyzerDiagnosticsAsync().Result;
 
-                if (diags == null)
+                if (diags is null)
                 {
                     continue;
                 }
@@ -97,10 +99,7 @@ namespace TestHelper
         /// <param name="source">Classes in the form of a string.</param>
         /// <param name="language">The language the source code is in.</param>
         /// <returns>A Document created from the source string.</returns>
-        protected static Document? CreateDocument(string source, string language = LanguageNames.CSharp)
-        {
-            return CreateProject(new[] { source }, language)?.Documents.First();
-        }
+        protected static Document? CreateDocument(string source, string language = LanguageNames.CSharp) => CreateProject(new[] { source }, language)?.Documents.First();
 
         /// <summary>
         /// Given classes in the form of strings, their language, and an IDiagnosticAnalyzer to apply to it, return the diagnostics found in the string after converting it to a document.
@@ -109,20 +108,14 @@ namespace TestHelper
         /// <param name="language">The language the source classes are in.</param>
         /// <param name="analyzer">The analyzer to be run on the sources.</param>
         /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location.</returns>
-        private static Diagnostic[] GetSortedDiagnostics(string[] sources, string language, DiagnosticAnalyzer analyzer)
-        {
-            return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources, language));
-        }
+        private static Diagnostic[] GetSortedDiagnostics(string[] sources, string language, DiagnosticAnalyzer analyzer) => GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources, language));
 
         /// <summary>
         /// Sort diagnostics by location in source document.
         /// </summary>
         /// <param name="diagnostics">The list of Diagnostics to be sorted.</param>
         /// <returns>An IEnumerable containing the Diagnostics in order of Location.</returns>
-        private static Diagnostic[] SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
-        {
-            return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
-        }
+        private static Diagnostic[] SortDiagnostics(IEnumerable<Diagnostic> diagnostics) => diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 
         /// <summary>
         /// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.

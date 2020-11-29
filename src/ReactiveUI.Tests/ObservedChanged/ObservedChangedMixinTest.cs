@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
@@ -21,22 +22,25 @@ namespace ReactiveUI.Tests
             var input = new[] { "Foo", "Bar", "Baz" };
             var output = new List<string>();
 
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture();
 
                 // ...whereas ObservableForProperty *is* guaranteed to.
-                fixture.ObservableForProperty(x => x.IsOnlyOneWord).Subscribe(x =>
-                {
-                    output.Add(x.GetValue()!);
-                });
+                fixture.ObservableForProperty(x => x.IsOnlyOneWord)
+                    .Select(x => x.GetValue())
+                    .WhereNotNull()
+                    .Subscribe(x =>
+                    {
+                        output.Add(x);
+                    });
 
                 foreach (var v in input)
                 {
                     fixture.IsOnlyOneWord = v;
                 }
 
-                sched.AdvanceToMs(1000);
+                scheduler.AdvanceToMs(1000);
 
                 input.AssertAreEqual(output);
             });
@@ -51,7 +55,7 @@ namespace ReactiveUI.Tests
             };
 
             Expression<Func<HostTestFixture, string>> expression = x => x!.Child!.IsNotNullString!;
-            var fixture = new ObservedChange<HostTestFixture, string>(input, expression.Body);
+            var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, default);
 
             Assert.Equal("Foo", fixture.GetValue());
         }
@@ -65,18 +69,17 @@ namespace ReactiveUI.Tests
             };
 
             Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord!;
-            var fixture = new ObservedChange<TestFixture, string>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body);
+            var fixture = new ObservedChange<TestFixture, string?>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body, default);
 
             fixture.SetValueToProperty(output, x => x.Child!.IsNotNullString);
             Assert.Equal("Bar", output.Child.IsNotNullString);
         }
 
         [Fact]
-        public void BindToSmokeTest()
-        {
-            new TestScheduler().With(sched =>
+        public void BindToSmokeTest() =>
+            new TestScheduler().With(scheduler =>
             {
-                var input = new ScheduledSubject<string>(sched);
+                var input = new ScheduledSubject<string>(scheduler);
                 var fixture = new HostTestFixture { Child = new TestFixture() };
 
                 input.BindTo(fixture, x => x.Child!.IsNotNullString);
@@ -84,21 +87,19 @@ namespace ReactiveUI.Tests
                 Assert.Null(fixture.Child.IsNotNullString);
 
                 input.OnNext("Foo");
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
 
                 input.OnNext("Bar");
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal("Bar", fixture.Child.IsNotNullString);
             });
-        }
 
         [Fact]
-        public void DisposingDisconnectsTheBindTo()
-        {
-            new TestScheduler().With(sched =>
+        public void DisposingDisconnectsTheBindTo() =>
+            new TestScheduler().With(scheduler =>
             {
-                var input = new ScheduledSubject<string>(sched);
+                var input = new ScheduledSubject<string>(scheduler);
                 var fixture = new HostTestFixture { Child = new TestFixture() };
 
                 var subscription = input.BindTo(fixture, x => x.Child!.IsNotNullString);
@@ -106,23 +107,21 @@ namespace ReactiveUI.Tests
                 Assert.Null(fixture.Child.IsNotNullString);
 
                 input.OnNext("Foo");
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
 
                 subscription.Dispose();
 
                 input.OnNext("Bar");
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
             });
-        }
 
         [Fact]
-        public void BindToIsNotFooledByIntermediateObjectSwitching()
-        {
-            new TestScheduler().With(sched =>
+        public void BindToIsNotFooledByIntermediateObjectSwitching() =>
+            new TestScheduler().With(scheduler =>
             {
-                var input = new ScheduledSubject<string>(sched);
+                var input = new ScheduledSubject<string>(scheduler);
                 var fixture = new HostTestFixture { Child = new TestFixture() };
 
                 input.BindTo(fixture, x => x.Child!.IsNotNullString);
@@ -130,18 +129,17 @@ namespace ReactiveUI.Tests
                 Assert.Null(fixture.Child.IsNotNullString);
 
                 input.OnNext("Foo");
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
 
                 fixture.Child = new TestFixture();
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
 
                 input.OnNext("Bar");
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal("Bar", fixture.Child.IsNotNullString);
             });
-        }
 
         [Fact]
         public void BindToStackOverFlowTest()
@@ -154,14 +152,14 @@ namespace ReactiveUI.Tests
             //
             // If this test executes through without hanging then
             // the problem has been fixed.
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(_ =>
             {
-                var fixturea = new TestFixture();
-                var fixtureb = new TestFixture();
+                var fixtureA = new TestFixture();
+                var fixtureB = new TestFixture();
 
                 var source = new BehaviorSubject<List<string>>(new List<string>());
 
-                source.BindTo(fixturea, x => x.StackOverflowTrigger);
+                source.BindTo(fixtureA, x => x.StackOverflowTrigger);
             });
         }
     }

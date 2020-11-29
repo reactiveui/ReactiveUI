@@ -35,8 +35,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void AutoPersistHelperShouldntTriggerOnNonPersistableProperties()
-        {
+        public void AutoPersistHelperShouldntTriggerOnNonPersistableProperties() =>
             new TestScheduler().With(sched =>
             {
                 var fixture = new TestFixture();
@@ -61,11 +60,9 @@ namespace ReactiveUI.Tests
                 sched.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);
             });
-        }
 
         [Fact]
-        public void AutoPersistHelperSavesOnInterval()
-        {
+        public void AutoPersistHelperSavesOnInterval() =>
             new TestScheduler().With(sched =>
             {
                 var fixture = new TestFixture();
@@ -102,11 +99,9 @@ namespace ReactiveUI.Tests
                 sched.AdvanceByMs(2 * 100);
                 Assert.Equal(3, timesSaved);
             });
-        }
 
         [Fact]
-        public void AutoPersistHelperDisconnects()
-        {
+        public void AutoPersistHelperDisconnects() =>
             new TestScheduler().With(sched =>
             {
                 var fixture = new TestFixture();
@@ -143,6 +138,5 @@ namespace ReactiveUI.Tests
                 sched.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
             });
-        }
     }
 }
