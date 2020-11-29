@@ -105,7 +105,7 @@ namespace System.Reactive.Concurrency
                         // the exception to the Application.UnhandledException event (as of W8RP)
                         // as our users have come to expect from previous XAML stacks using Rx.
                         //
-                        // If we wouldn't do this, there'd be an observable behavioral difference
+                        // If we wouldn't do this, there be an observable behavioral difference
                         // between scheduling with TimeSpan.Zero or using this overload.
                         //
                         // For scheduler implementation guidance rules, see TaskPoolScheduler.cs
@@ -115,7 +115,7 @@ namespace System.Reactive.Concurrency
                         {
                             Interval = TimeSpan.Zero
                         };
-                        timer.Tick += (o, e) =>
+                        timer.Tick += (_, _) =>
                         {
                             timer.Stop();
                             ExceptionDispatchInfo.Capture(ex).Throw();
@@ -163,7 +163,7 @@ namespace System.Reactive.Concurrency
 
             var timer = new DispatcherTimer();
 
-            timer.Tick += (o, e) =>
+            timer.Tick += (_, _) =>
             {
                 var t = Interlocked.Exchange(ref timer, null);
                 if (t != null)
@@ -191,7 +191,7 @@ namespace System.Reactive.Concurrency
                 if (t != null)
                 {
                     t.Stop();
-                    action = (_, __) => Disposable.Empty;
+                    action = (_, _) => Disposable.Empty;
                 }
             });
 
@@ -228,7 +228,7 @@ namespace System.Reactive.Concurrency
 
             var state1 = state;
 
-            timer.Tick += (o, e) =>
+            timer.Tick += (_, _) =>
             {
                 state1 = action(state1);
             };

@@ -114,7 +114,7 @@ namespace ReactiveUI
             var router = item.HostScreen.Router;
             var navigationStackChanged = router.NavigationChanged.CountChanged();
             var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
-            var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel?[2], (previous, current) => new[] { previous[1], router.GetCurrentViewModel() });
+            var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel?[2], (previous, _) => new[] { previous[1], router.GetCurrentViewModel() });
 
             return viewModelsChanged
                 .Where(x => x[0] == item)

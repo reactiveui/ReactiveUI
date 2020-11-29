@@ -63,7 +63,7 @@ namespace ReactiveUI
 
             return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
-                var handler = new EventHandler((o, e) =>
+                var handler = new EventHandler((_, _) =>
                 {
                     subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
                 });

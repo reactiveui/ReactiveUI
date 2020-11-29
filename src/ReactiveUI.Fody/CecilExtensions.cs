@@ -98,7 +98,7 @@ namespace ReactiveUI.Fody
                 throw new ArgumentNullException(nameof(baseType));
             }
 
-            logger ??= x => { };
+            logger ??= _ => { };
 
             Queue<TypeDefinition> queue = new ();
             queue.Enqueue(type);

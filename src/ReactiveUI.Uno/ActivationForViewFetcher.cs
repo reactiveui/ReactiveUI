@@ -38,7 +38,7 @@ namespace ReactiveUI.Uno
 #else
             var viewLoaded = Observable.FromEvent<TypedEventHandler<DependencyObject, object>, bool>(
 #endif
-                eventHandler => (_, __) => eventHandler(true),
+                eventHandler => (_, _) => eventHandler(true),
                 x => fe.Loading += x,
                 x => fe.Loading -= x);
 

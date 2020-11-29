@@ -87,7 +87,7 @@ namespace ReactiveUI
             var commandCanExecuteChanged = commandObs
                 .Select(command => command is null ? Observable<ICommand>.Empty : Observable
                     .FromEvent<EventHandler, ICommand>(
-                        eventHandler => (sender, e) => eventHandler(command),
+                        eventHandler => (_, _) => eventHandler(command),
                         h => command.CanExecuteChanged += h,
                         h => command.CanExecuteChanged -= h)
                     .StartWith(command))

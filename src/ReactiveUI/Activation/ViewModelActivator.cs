@@ -75,8 +75,8 @@ namespace ReactiveUI
         {
             if (Interlocked.Increment(ref _refCount) == 1)
             {
-                var disp = new CompositeDisposable(_blocks.SelectMany(x => x()));
-                Interlocked.Exchange(ref _activationHandle, disp).Dispose();
+                var disposable = new CompositeDisposable(_blocks.SelectMany(x => x()));
+                Interlocked.Exchange(ref _activationHandle, disposable).Dispose();
                 _activated.OnNext(Unit.Default);
             }
 

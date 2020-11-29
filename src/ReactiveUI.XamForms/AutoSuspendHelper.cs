@@ -56,7 +56,7 @@ namespace ReactiveUI.XamForms
         /// <summary>
         /// Initializes static members of the <see cref="AutoSuspendHelper"/> class.
         /// </summary>
-        static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException += (o, e) => UntimelyDemise.OnNext(Unit.Default);
+        static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException += (_, _) => UntimelyDemise.OnNext(Unit.Default);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.

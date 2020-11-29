@@ -96,7 +96,7 @@ namespace ReactiveUI.Winforms
             ret.Add(commandParameter.Subscribe(x => latestParameter = x));
 
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
-            ret.Add(evt.Subscribe(ea =>
+            ret.Add(evt.Subscribe(_ =>
             {
                 if (command.CanExecute(latestParameter))
                 {
@@ -118,7 +118,7 @@ namespace ReactiveUI.Winforms
                     ret.Add(commandParameter.Subscribe(x => latestParam = x));
 
                     ret.Add(Observable.FromEvent<EventHandler, bool>(
-                            eventHandler => (sender, e) => eventHandler(command.CanExecute(latestParam)),
+                            eventHandler => (_, _) => eventHandler(command.CanExecute(latestParam)),
                             x => command.CanExecuteChanged += x,
                             x => command.CanExecuteChanged -= x)
                         .StartWith(command.CanExecute(latestParam))

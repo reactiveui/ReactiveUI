@@ -34,7 +34,7 @@ namespace ReactiveUI
         /// Creates a comparer builder for the specified type. Note that the builder is not a comparer in itself,
         /// you need to use the OrderBy or OrderByDescending methods on the builder to get an actual comparer.
         /// If the type is known at compile time this method is nothing more than an alias for the generic
-        /// OrdedComparer class.
+        /// OrderedComparer class.
         /// </summary>
         /// <typeparam name="T">The comparison type.</typeparam>
         /// <returns>A comparer builder.</returns>

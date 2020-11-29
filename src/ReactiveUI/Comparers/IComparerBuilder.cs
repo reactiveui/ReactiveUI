@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Convienience interface for providing a starting point for chaining comparers.
+    /// Convenience interface for providing a starting point for chaining comparers.
     /// </summary>
     /// <typeparam name="T">The comparison type.</typeparam>
     public interface IComparerBuilder<T>

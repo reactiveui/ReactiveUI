@@ -86,7 +86,7 @@ namespace ReactiveUI
 
             ret.Add(commandParameter.Subscribe(x => latestParameter = x));
 
-            ret.Add(evt.Subscribe(ea =>
+            ret.Add(evt.Subscribe(_ =>
             {
                 if (command.CanExecute(latestParameter))
                 {

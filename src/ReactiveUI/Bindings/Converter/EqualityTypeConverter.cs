@@ -17,10 +17,7 @@ namespace ReactiveUI
     public class EqualityTypeConverter : IBindingTypeConverter
     {
         private static readonly MemoizingMRUCache<Type, MethodInfo> _referenceCastCache = new (
-              (t, _) =>
-              {
-                  return _methodInfo ??= typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast));
-              }, RxApp.SmallCacheLimit);
+              (_, _) => _methodInfo ??= typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast)), RxApp.SmallCacheLimit);
 
         private static MethodInfo? _methodInfo;
 

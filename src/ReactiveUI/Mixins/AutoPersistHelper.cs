@@ -31,7 +31,7 @@ namespace ReactiveUI
         {
             return type.GetTypeInfo().DeclaredProperties
                 .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
-                .ToDictionary(k => k.Name, v => true);
+                .ToDictionary(k => k.Name, _ => true);
         }, RxApp.SmallCacheLimit);
 
         private static readonly MemoizingMRUCache<Type, bool> dataContractCheckCache = new (
@@ -214,7 +214,7 @@ namespace ReactiveUI
         {
             var disposerList = new Dictionary<TItem, IDisposable>();
 
-            var disp = @this.ActOnEveryObject<TItem, TCollection>(
+            var disposable = @this.ActOnEveryObject<TItem, TCollection>(
                 x =>
                 {
                     if (disposerList.ContainsKey(x))
@@ -232,7 +232,7 @@ namespace ReactiveUI
 
             return Disposable.Create(() =>
             {
-                disp.Dispose();
+                disposable.Dispose();
                 disposerList.Values.ForEach(x => x.Dispose());
             });
         }

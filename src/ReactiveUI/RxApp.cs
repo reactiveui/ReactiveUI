@@ -204,7 +204,7 @@ namespace ReactiveUI
         public static bool SuppressViewCommandBindingMessage { get; set; }
 
         /// <summary>
-        /// Gets or sets the Observer which signalled whenever an object that has a
+        /// Gets or sets the Observer which signaled whenever an object that has a
         /// ThrownExceptions property doesn't Subscribe to that Observable. Use
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.

@@ -53,12 +53,12 @@ namespace ReactiveUI
                 {
                     return obs.Where(x => string.IsNullOrEmpty(x)
                         || (x?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true))
-                        .Select(x => new ObservedChange<object, object?>(sender, expression, default));
+                        .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
                 }
 
                 return obs.Where(x => string.IsNullOrEmpty(x)
                     || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                .Select(x => new ObservedChange<object, object?>(sender, expression, default));
+                    .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
             }
             else
             {

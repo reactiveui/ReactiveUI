@@ -27,18 +27,6 @@ namespace ReactiveUI
 #pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
 
         /// <summary>
-        /// Casts an observable to the specified value.
-        /// This version allows for nullability.
-        /// </summary>
-        /// <typeparam name="TFrom">The type to convert from.</typeparam>
-        /// <typeparam name="TTo">The type to convert to.</typeparam>
-        /// <param name="observable">The observable which as nullability.</param>
-        /// <returns>The new observable.</returns>
-        public static IObservable<TTo> Cast<TFrom, TTo>(this IObservable<object> observable)
-            where TFrom : notnull =>
-            observable.Select(x => (TTo)x);
-
-        /// <summary>
         /// Returns only values that are not null.
         /// Converts the nullability.
         /// </summary>

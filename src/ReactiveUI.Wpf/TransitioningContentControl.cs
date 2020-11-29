@@ -301,7 +301,7 @@ namespace ReactiveUI
                 startingTransitionName = $"Transition_{Transition}{Direction}Out";
                 Storyboard transitionOut = GetTransitionStoryboardByName(startingTransitionName);
 
-                transitionOut.Completed += (sender, args) => VisualStateManager.GoToState(
+                transitionOut.Completed += (_, _) => VisualStateManager.GoToState(
                     this,
                     transitionInName,
                     false);
@@ -353,7 +353,7 @@ namespace ReactiveUI
         /// </summary>
         private void SetTransitionDefaultValues()
         {
-            // Do some special handling of particular transitions so that we get nice smooth transitions that utilise the size of the content.
+            // Do some special handling of particular transitions so that we get nice smooth transitions that utilize the size of the content.
             switch (Transition)
             {
                 case TransitionType.Fade:

@@ -25,7 +25,4 @@ namespace ReactiveUI
             return inputList.Take(inputList.Count - count);
         }
     }
-
-    // according to spouliot, this is just a string match, and will cause the
-    // linker to be ok with everything.
 }

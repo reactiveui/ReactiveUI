@@ -15,13 +15,12 @@ namespace ReactiveUI
     /// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
     /// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
     /// </summary>
-    public sealed class DefaultViewLocator : IViewLocator, IEnableLogger
+    public sealed class DefaultViewLocator : IViewLocator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
         /// </summary>
         /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
-        [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
         internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) => ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
 
         /// <summary>

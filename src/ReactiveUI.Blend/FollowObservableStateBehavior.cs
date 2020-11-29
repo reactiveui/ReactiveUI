@@ -117,7 +117,7 @@ namespace ReactiveUI.Blend
                     }
 #endif
                 },
-                ex =>
+                _ =>
                 {
                     if (!item.AutoResubscribeOnError)
                     {

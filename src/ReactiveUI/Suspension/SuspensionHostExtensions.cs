@@ -78,7 +78,7 @@ namespace ReactiveUI
                         .Subscribe(_ => item.Log().Info("Persisted application state")));
 
             ret.Add(item.IsResuming.Merge(item.IsLaunchingNew)
-                        .SelectMany(x => driver.LoadState())
+                        .SelectMany(_ => driver.LoadState())
                         .LoggedCatch(
                             item,
                             Observable.Defer(() => Observable.Return(item.CreateNewAppState?.Invoke())),

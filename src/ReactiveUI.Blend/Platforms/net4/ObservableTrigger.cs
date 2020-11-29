@@ -57,7 +57,7 @@ namespace ReactiveUI.Blend
 
             triggerItem._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
                 x => triggerItem.InvokeActions(x),
-                ex =>
+                _ =>
                 {
                     if (!triggerItem.AutoResubscribeOnError)
                     {

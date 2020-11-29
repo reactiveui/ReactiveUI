@@ -383,11 +383,11 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(view));
             }
 
-            Func<IObservedChange<object, object?>[]> vmFetcher = () =>
+            IObservedChange<object, object?>[] VmFetcher()
             {
                 Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
                 return fetchedValues;
-            };
+            }
 
             var vFetcher = new Func<IObservedChange<object, object?>[]>(() =>
             {
@@ -396,7 +396,7 @@ namespace ReactiveUI
             });
 
             var shouldBind = hooks.Aggregate(true, (acc, x) =>
-                acc && x.ExecuteHook(viewModel, view, vmFetcher!, vFetcher!, direction));
+                acc && x.ExecuteHook(viewModel, view, VmFetcher!, vFetcher!, direction));
 
             if (!shouldBind)
             {

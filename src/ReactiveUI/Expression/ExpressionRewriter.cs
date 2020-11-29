@@ -128,7 +128,5 @@ namespace ReactiveUI
 
             return base.VisitIndex(node);
         }
-
-        protected override Expression VisitMember(MemberExpression node) => base.VisitMember(node);
     }
 }

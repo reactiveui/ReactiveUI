@@ -148,7 +148,7 @@ namespace ReactiveUI
             where TView : class, IViewFor
             where TProp : ICommand
         {
-            IDisposable disp = Disposable.Empty;
+            IDisposable disposable = Disposable.Empty;
 
             var bindInfo = source.CombineLatest(
                 view.SubscribeToExpressionChain<TView, object?>(controlExpression, false, false, RxApp.SuppressViewCommandBindingMessage).Select(x => x.Value),
@@ -158,15 +158,15 @@ namespace ReactiveUI
                 .Where(x => x.host is not null)
                 .Subscribe(x =>
                 {
-                    disp.Dispose();
+                    disposable.Dispose();
                     if (x is null)
                     {
-                        disp = Disposable.Empty;
+                        disposable = Disposable.Empty;
                         return;
                     }
 
                     var cmd = commandFixuper is not null ? commandFixuper(x.val) : x.val;
-                    disp = toEvent is not null ?
+                    disposable = toEvent is not null ?
                                CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent) :
                                CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!));
                 });
@@ -174,7 +174,7 @@ namespace ReactiveUI
             return Disposable.Create(() =>
             {
                 propSub.Dispose();
-                disp.Dispose();
+                disposable.Dispose();
             });
         }
     }

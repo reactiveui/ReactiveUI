@@ -51,7 +51,7 @@ namespace ReactiveUI.Winforms
             return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
                 bool completed = false;
-                var handler = new EventHandler((o, e) =>
+                var handler = new EventHandler((_, _) =>
                 {
                     if (completed)
                     {

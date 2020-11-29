@@ -130,7 +130,7 @@ namespace ReactiveUI.XamForms.Tests
             var childViewModel = await _navigationViewModel.Navigate(nameof(ChildViewModel));
             var childPage = fixture.CurrentPage;
 
-            var viewModel = await _navigationViewModel.NavigateToChild("Testing");
+            await _navigationViewModel.NavigateToChild("Testing");
             await _navigationViewModel.NavigateBack();
 
             var currentPage = fixture.CurrentPage;

@@ -37,15 +37,7 @@ namespace ReactiveUI.XamForms
             return activation.DistinctUntilChanged();
         }
 
-        private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate)
-        {
-            if (canActivate is null)
-            {
-                return null;
-            }
-
-            return canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
-        }
+        private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) => canActivate?.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
 
         private static IObservable<bool>? GetActivationFor(Page? page)
         {

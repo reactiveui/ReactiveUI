@@ -27,7 +27,7 @@ namespace ReactiveUI.Winforms
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
 
-            if (!(lastViewProperty?.Sender is Panel itemsControl))
+            if (lastViewProperty?.Sender is not Panel)
             {
                 return true;
             }

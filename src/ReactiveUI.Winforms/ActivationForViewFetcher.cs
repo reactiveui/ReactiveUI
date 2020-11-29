@@ -14,7 +14,7 @@ using Splat;
 namespace ReactiveUI.Winforms
 {
     /// <summary>
-    /// ActiveationForViewFetcher is how ReactiveUI determine when a
+    /// ActivationForViewFetcher is how ReactiveUI determine when a
     /// View is activated or deactivated. This is usually only used when porting
     /// ReactiveUI to a new UI framework.
     /// </summary>
@@ -39,17 +39,17 @@ namespace ReactiveUI.Winforms
                 }
 
                 var handleDestroyed = Observable.FromEvent<EventHandler, bool>(
-                    eventHandler => (sender, e) => eventHandler(false),
+                    eventHandler => (_, _) => eventHandler(false),
                     h => control.HandleDestroyed += h,
                     h => control.HandleDestroyed -= h);
 
                 var handleCreated = Observable.FromEvent<EventHandler, bool>(
-                    eventHandler => (sender, e) => eventHandler(true),
+                    eventHandler => (_, _) => eventHandler(true),
                     h => control.HandleCreated += h,
                     h => control.HandleCreated -= h);
 
                 var visibleChanged = Observable.FromEvent<EventHandler, bool>(
-                    eventHandler => (sender, e) => eventHandler(control.Visible),
+                    eventHandler => (_, _) => eventHandler(control.Visible),
                     h => control.VisibleChanged += h,
                     h => control.VisibleChanged -= h);
 

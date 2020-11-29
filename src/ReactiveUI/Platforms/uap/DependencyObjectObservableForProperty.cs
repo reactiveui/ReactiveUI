@@ -85,7 +85,7 @@ namespace ReactiveUI
 
             return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
-                var handler = new DependencyPropertyChangedCallback((o, e) =>
+                var handler = new DependencyPropertyChangedCallback((_, _) =>
                 {
                     subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
                 });
