@@ -84,7 +84,7 @@ namespace ReactiveUI
             var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
 
             return navigationStackChanged
-                .Where(_ => router?.GetCurrentViewModel() == item)
+                .Where(_ => router.GetCurrentViewModel() == item)
                 .Select(_ => Unit.Default)
                 .TakeUntil(itemRemoved);
         }

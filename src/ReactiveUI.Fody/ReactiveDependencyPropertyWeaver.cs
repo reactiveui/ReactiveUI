@@ -180,7 +180,7 @@ namespace ReactiveUI.Fody
                         if (fieldAssignment is not null)
                         {
                             // Replace field assignment with a property set (the stack semantics are the same for both,
-                            // so happily we don't have to manipulate the bytecode any further.)
+                            // so happily we don't have to manipulate the byte code any further.)
                             var setterCall = constructor.Body.GetILProcessor().Create(facadeProperty.SetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, facadeProperty.SetMethod);
                             constructor.Body.GetILProcessor().Replace(fieldAssignment, setterCall);
                         }

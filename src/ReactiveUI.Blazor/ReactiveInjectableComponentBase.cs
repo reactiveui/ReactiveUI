@@ -12,7 +12,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor
@@ -133,8 +132,8 @@ namespace ReactiveUI.Blazor
             {
                 if (disposing)
                 {
-                    _initSubject?.Dispose();
-                    _compositeDisposable?.Dispose();
+                    _initSubject.Dispose();
+                    _compositeDisposable.Dispose();
                     _deactivateSubject.OnNext(Unit.Default);
                 }
 

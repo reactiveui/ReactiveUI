@@ -26,14 +26,14 @@ namespace ReactiveUI.Tests
             var input = new[] { 1, 2, 3, 3, 4 }.ToObservable();
             var output = new List<int>();
 
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new ObservableAsPropertyHelper<int>(
                     input,
                     x => output.Add(x),
                     -5);
 
-                sched.Start();
+                scheduler.Start();
 
                 Assert.Equal(input.LastAsync().Wait(), fixture.Value);
 
@@ -49,14 +49,14 @@ namespace ReactiveUI.Tests
             var input = new[] { 1, 2, 3 }.ToObservable();
             var output = new List<int>();
 
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new ObservableAsPropertyHelper<int>(
                     input,
                     x => output.Add(x),
                     1);
 
-                sched.Start();
+                scheduler.Start();
 
                 Assert.Equal(input.LastAsync().Wait(), fixture.Value);
 
@@ -69,7 +69,7 @@ namespace ReactiveUI.Tests
         {
             var output = new List<int>();
 
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new ObservableAsPropertyHelper<int>(
                     Observable<int>.Never,
@@ -83,23 +83,23 @@ namespace ReactiveUI.Tests
         [Fact]
         public void OAPHShouldProvideLatestValue()
         {
-            var sched = new TestScheduler();
+            var scheduler = new TestScheduler();
             var input = new Subject<int>();
 
             var fixture = new ObservableAsPropertyHelper<int>(
                 input,
                 _ => { },
                 -5,
-                scheduler: sched);
+                scheduler: scheduler);
 
             Assert.Equal(-5, fixture.Value);
             new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
-            sched.Start();
+            scheduler.Start();
             Assert.Equal(4, fixture.Value);
 
             input.OnCompleted();
-            sched.Start();
+            scheduler.Start();
             Assert.Equal(4, fixture.Value);
         }
 
@@ -272,9 +272,9 @@ namespace ReactiveUI.Tests
         public void OAPHShouldRethrowErrors()
         {
             var input = new Subject<int>();
-            var sched = new TestScheduler();
+            var scheduler = new TestScheduler();
 
-            var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: sched);
+            var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: scheduler);
             var errors = new List<Exception>();
 
             Assert.Equal(-5, fixture.Value);
@@ -282,13 +282,13 @@ namespace ReactiveUI.Tests
 
             fixture.ThrownExceptions.Subscribe(errors.Add);
 
-            sched.Start();
+            scheduler.Start();
 
             Assert.Equal(4, fixture.Value);
 
             input.OnError(new Exception("Die!"));
 
-            sched.Start();
+            scheduler.Start();
 
             Assert.Equal(4, fixture.Value);
             Assert.Equal(1, errors.Count);
@@ -296,7 +296,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void NoThrownExceptionsSubscriberEqualsOAPHDeath() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var input = new Subject<int>();
                 var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: ImmediateScheduler.Instance);
@@ -309,7 +309,7 @@ namespace ReactiveUI.Tests
                 var failed = true;
                 try
                 {
-                    sched.Start();
+                    scheduler.Start();
                 }
                 catch (Exception ex)
                 {
@@ -421,7 +421,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new OAPHIndexerTestFixture();
                 var propertiesChanged = new List<string>();

@@ -76,8 +76,8 @@ namespace ReactiveUI.AndroidX
         {
             if (disposing)
             {
-                _inner?.Dispose();
-                _list?.Dispose();
+                _inner.Dispose();
+                _list.Dispose();
             }
 
             base.Dispose(disposing);

@@ -160,8 +160,6 @@ namespace ReactiveUI
                 notifier = notifier.Skip(1);
             }
 
-            notifier = notifier.Where(x => x.Sender is not null);
-
             var r = notifier.Select(x =>
             {
                 // ensure cast to TValue will succeed, throw useful exception otherwise

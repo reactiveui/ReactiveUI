@@ -22,7 +22,7 @@ namespace ReactiveUI
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
     public class PropertyBinderImplementation : IPropertyBinderImplementation
     {
-        private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?>(
+        private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new (
             (types, _) =>
             {
                 return Locator.Current.GetServices<IBindingTypeConverter?>()
@@ -33,7 +33,7 @@ namespace ReactiveUI
                     }).currentBinding;
             }, RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?> _setMethodCache = new MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?>(
+        private static readonly MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?> _setMethodCache = new (
             (type, _) =>
             {
                 return Locator.Current.GetServices<ISetMethodBindingConverter>()
@@ -383,22 +383,11 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(view));
             }
 
-            Func<IObservedChange<object, object?>[]> vmFetcher;
-            if (vmExpression is not null)
+            Func<IObservedChange<object, object?>[]> vmFetcher = () =>
             {
-                vmFetcher = () =>
-                {
-                    Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
-                    return fetchedValues;
-                };
-            }
-            else
-            {
-                vmFetcher = () => new IObservedChange<object, object?>[]
-                {
-                    new ObservedChange<object, object?>(null!, null!, viewModel)
-                };
-            }
+                Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
+                return fetchedValues;
+            };
 
             var vFetcher = new Func<IObservedChange<object, object?>[]>(() =>
             {

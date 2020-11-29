@@ -5,7 +5,6 @@
 
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Input;
 using Splat;
@@ -71,7 +70,7 @@ namespace ReactiveUI
 
             var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
             var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
-            mi = mi.MakeGenericMethod(new[] { eventArgsType });
+            mi = mi.MakeGenericMethod(eventArgsType);
 
             var ret = (IDisposable)mi.Invoke(binder, new[] { command, target, commandParameter, eventName })!;
             if (ret is null)

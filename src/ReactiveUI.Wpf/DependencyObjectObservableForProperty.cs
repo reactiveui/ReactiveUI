@@ -4,14 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using Splat;
 
@@ -42,9 +39,19 @@ namespace ReactiveUI
             }
 
             var type = sender.GetType();
-            var dpd = DependencyPropertyDescriptor.FromProperty(GetDependencyProperty(type, propertyName), type);
 
-            if (dpd is null)
+            var dependencyProperty = GetDependencyProperty(type, propertyName);
+
+            if (dependencyProperty is null)
+            {
+                throw new ArgumentException(
+                    $"The property {propertyName} does not have a dependency property.",
+                    nameof(propertyName));
+            }
+
+            var dependencyPropertyDescriptor = DependencyPropertyDescriptor.FromProperty(dependencyProperty, type);
+
+            if (dependencyPropertyDescriptor is null)
             {
                 if (!suppressWarnings)
                 {
@@ -61,8 +68,8 @@ namespace ReactiveUI
                     subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
                 });
 
-                dpd.AddValueChanged(sender, handler);
-                return Disposable.Create(() => dpd.RemoveValueChanged(sender, handler));
+                dependencyPropertyDescriptor.AddValueChanged(sender, handler);
+                return Disposable.Create(() => dependencyPropertyDescriptor.RemoveValueChanged(sender, handler));
             });
         }
 

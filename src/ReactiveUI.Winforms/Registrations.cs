@@ -7,7 +7,6 @@ using System;
 using System.Reactive.Concurrency;
 using System.Windows.Forms;
 
-using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI.Winforms

@@ -30,8 +30,7 @@ namespace ReactiveUI.XamForms
             nameof(Router),
             typeof(RoutingState),
             typeof(RoutedViewHost),
-            default(RoutingState),
-            BindingMode.OneWay);
+            default(RoutingState));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.

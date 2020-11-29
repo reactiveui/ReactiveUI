@@ -360,7 +360,7 @@ namespace ReactiveUI
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             where TObj : class, IReactiveObject
-            => ToProperty<TObj, TRet>(target, source, property, () => initialValue, deferSubscription, scheduler);
+            => ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
 
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and

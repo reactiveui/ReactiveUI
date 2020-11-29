@@ -115,8 +115,8 @@ namespace ReactiveUI.AndroidSupport
         {
             if (disposing)
             {
-                _activated?.Dispose();
-                _deactivated?.Dispose();
+                _activated.Dispose();
+                _deactivated.Dispose();
             }
 
             base.Dispose(disposing);

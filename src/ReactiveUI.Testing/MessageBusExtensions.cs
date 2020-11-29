@@ -50,7 +50,7 @@ namespace ReactiveUI.Testing
             var origMessageBus = MessageBus.Current;
 
             Monitor.Enter(mbGate);
-            MessageBus.Current = messageBus ?? new MessageBus();
+            MessageBus.Current = messageBus;
             return Disposable.Create(() =>
             {
                 MessageBus.Current = origMessageBus;

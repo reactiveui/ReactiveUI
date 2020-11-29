@@ -89,10 +89,10 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging = null!;
+        public event PropertyChangingEventHandler? PropertyChanging;
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged = null!;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Gets an observable that signals that this ViewHolder has been selected.
@@ -183,14 +183,11 @@ namespace ReactiveUI.AndroidSupport
         {
             if (disposing)
             {
-                if (View is not null)
-                {
-                    View.ViewAttachedToWindow -= OnViewAttachedToWindow;
-                    View.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
-                }
+                View.ViewAttachedToWindow -= OnViewAttachedToWindow;
+                View.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
 
-                _activated?.Dispose();
-                _deactivated?.Dispose();
+                _activated.Dispose();
+                _deactivated.Dispose();
             }
 
             base.Dispose(disposing);

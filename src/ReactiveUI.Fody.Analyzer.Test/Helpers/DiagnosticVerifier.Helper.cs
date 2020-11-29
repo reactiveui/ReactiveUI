@@ -60,27 +60,27 @@ namespace TestHelper
             foreach (var project in projects)
             {
                 var compilationWithAnalyzers = project.GetCompilationAsync().Result?.WithAnalyzers(ImmutableArray.Create(analyzer));
-                var diags = compilationWithAnalyzers?.GetAnalyzerDiagnosticsAsync().Result;
+                var currentDiagnostics = compilationWithAnalyzers?.GetAnalyzerDiagnosticsAsync().Result;
 
-                if (diags is null)
+                if (currentDiagnostics is null)
                 {
                     continue;
                 }
 
-                foreach (var diag in diags)
+                foreach (var diagnostic in currentDiagnostics)
                 {
-                    if (diag.Location == Location.None || diag.Location.IsInMetadata)
+                    if (diagnostic.Location == Location.None || diagnostic.Location.IsInMetadata)
                     {
-                        diagnostics.Add(diag);
+                        diagnostics.Add(diagnostic);
                     }
                     else
                     {
                         foreach (var document in documents)
                         {
                             var tree = document.GetSyntaxTreeAsync().Result;
-                            if (tree == diag.Location.SourceTree)
+                            if (tree == diagnostic.Location.SourceTree)
                             {
-                                diagnostics.Add(diag);
+                                diagnostics.Add(diagnostic);
                             }
                         }
                     }

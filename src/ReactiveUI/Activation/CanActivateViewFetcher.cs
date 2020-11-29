@@ -4,8 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 
@@ -18,7 +16,7 @@ namespace ReactiveUI
     public class CanActivateViewFetcher : IActivationForViewFetcher
     {
         /// <summary>
-        /// Returns a positive integer for derivates of the <see cref="ICanActivate"/> interface.
+        /// Returns a positive integer for derived instances of the <see cref="ICanActivate"/> interface.
         /// </summary>
         /// <param name="view">The source type to check.</param>
         /// <returns>

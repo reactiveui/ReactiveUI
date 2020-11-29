@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -46,7 +45,7 @@ namespace ReactiveUI
             return source
                 .WhereNotNull()
                 .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
-                .Finally(() => interactionDisposable?.Dispose())
+                .Finally(() => interactionDisposable.Dispose())
                 .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
         }
 
@@ -78,7 +77,7 @@ namespace ReactiveUI
             return source
                 .Where(x => x is not null)
                 .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
-                .Finally(() => interactionDisposable?.Dispose())
+                .Finally(() => interactionDisposable.Dispose())
                 .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
         }
     }

@@ -120,10 +120,10 @@ namespace ReactiveUI.XamForms
 
             if (disposing)
             {
-                _onLaunchingNew?.Dispose();
-                _onResume?.Dispose();
-                _onStart?.Dispose();
-                _onSleep?.Dispose();
+                _onLaunchingNew.Dispose();
+                _onResume.Dispose();
+                _onStart.Dispose();
+                _onSleep.Dispose();
             }
 
             _disposedValue = true;

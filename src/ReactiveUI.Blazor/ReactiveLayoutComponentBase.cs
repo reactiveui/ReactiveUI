@@ -6,12 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor
@@ -118,7 +116,7 @@ namespace ReactiveUI.Blazor
             {
                 if (disposing)
                 {
-                    _initSubject?.Dispose();
+                    _initSubject.Dispose();
                 }
 
                 _disposedValue = true;

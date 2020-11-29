@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
@@ -12,7 +11,7 @@ using System.Windows;
 namespace ReactiveUI
 {
     /// <summary>
-    /// ActiveationForViewFetcher is how ReactiveUI determine when a
+    /// ActivationForViewFetcher is how ReactiveUI determine when a
     /// View is activated or deactivated. This is usually only used when porting
     /// ReactiveUI to a new UI framework.
     /// </summary>

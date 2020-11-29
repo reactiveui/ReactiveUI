@@ -46,7 +46,7 @@ namespace ReactiveUI.Winforms
                         this.WhenAnyObservable(x => x.ViewContractObservable!),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-            Control viewLastAdded = null!;
+            Control? viewLastAdded = null!;
             _disposables.Add(vmAndContract.Subscribe(
                 x =>
             {

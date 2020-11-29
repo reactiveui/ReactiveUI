@@ -133,7 +133,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void SendMessage<T>(T message, string? contract = null) => SetupSubjectIfNecessary<T>(contract)?.OnNext(message);
+        public void SendMessage<T>(T message, string? contract = null) => SetupSubjectIfNecessary<T>(contract).OnNext(message);
 
         private ISubject<T> SetupSubjectIfNecessary<T>(string? contract)
         {

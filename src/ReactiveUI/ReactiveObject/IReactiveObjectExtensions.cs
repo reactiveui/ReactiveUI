@@ -5,8 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -360,7 +358,7 @@ namespace ReactiveUI
 
                 if (_changing.IsValueCreated)
                 {
-                    NotifyObservable(_sender, changing, _changing?.Value.subject);
+                    NotifyObservable(_sender, changing, _changing.Value.subject);
                 }
             }
 

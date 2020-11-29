@@ -10,7 +10,6 @@ using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Windows.Forms;
 using Splat;
 
 namespace ReactiveUI.Winforms

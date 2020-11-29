@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using Splat;
@@ -101,7 +100,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public bool TryConvert(object? @from, Type toType, object? conversionHint, out object? result)
+        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
         {
             if (toType is null)
             {

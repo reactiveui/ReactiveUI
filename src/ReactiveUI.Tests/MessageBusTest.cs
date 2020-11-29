@@ -22,7 +22,7 @@ namespace ReactiveUI.Tests
         {
             var input = new[] { 1, 2, 3, 4 };
 
-            var result = new TestScheduler().With(sched =>
+            var result = new TestScheduler().With(scheduler =>
             {
                 var source = new Subject<int>();
                 var fixture = new MessageBus();
@@ -35,7 +35,7 @@ namespace ReactiveUI.Tests
 
                 input.Run(source.OnNext);
 
-                sched.Start();
+                scheduler.Start();
                 return output;
             });
 
@@ -71,21 +71,21 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void GCShouldNotKillMessageService()
+        public void GcShouldNotKillMessageService()
         {
             var bus = new MessageBus();
 
-            var recieved_message = false;
-            var dispose = bus.Listen<int>().Subscribe(x => recieved_message = true);
+            var receivedMessage = false;
+            var dispose = bus.Listen<int>().Subscribe(x => receivedMessage = true);
             bus.SendMessage(1);
-            Assert.True(recieved_message);
+            Assert.True(receivedMessage);
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            recieved_message = false;
+            receivedMessage = false;
             bus.SendMessage(2);
-            Assert.True(recieved_message);
+            Assert.True(receivedMessage);
         }
 
         [Fact]
@@ -94,25 +94,25 @@ namespace ReactiveUI.Tests
             var bus = new MessageBus();
             var source1 = new Subject<int>();
             var source2 = new Subject<int>();
-            var recieved_message1 = false;
-            var recieved_message2 = false;
+            var receivedMessage1 = false;
+            var receivedMessage2 = false;
 
             bus.RegisterMessageSource(source1);
-            bus.Listen<int>().Subscribe(x => recieved_message1 = true);
+            bus.Listen<int>().Subscribe(x => receivedMessage1 = true);
 
             bus.RegisterMessageSource(source2);
-            bus.Listen<int>().Subscribe(x => recieved_message2 = true);
+            bus.Listen<int>().Subscribe(x => receivedMessage2 = true);
 
             source1.OnNext(1);
-            Assert.True(recieved_message1);
-            Assert.True(recieved_message2);
+            Assert.True(receivedMessage1);
+            Assert.True(receivedMessage2);
 
-            recieved_message1 = false;
-            recieved_message2 = false;
+            receivedMessage1 = false;
+            receivedMessage2 = false;
 
             source2.OnNext(2);
-            Assert.True(recieved_message1);
-            Assert.True(recieved_message2);
+            Assert.True(receivedMessage1);
+            Assert.True(receivedMessage2);
         }
 
         [Fact]

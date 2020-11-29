@@ -23,9 +23,7 @@ namespace ReactiveUI.XamForms
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
             nameof(ViewModel),
             typeof(object),
-            typeof(ViewModelViewHost),
-            default(object),
-            BindingMode.OneWay);
+            typeof(ViewModelViewHost));
 
         /// <summary>
         /// Identifies the <see cref="DefaultContent"/> property.
@@ -34,8 +32,7 @@ namespace ReactiveUI.XamForms
             nameof(DefaultContent),
             typeof(View),
             typeof(ViewModelViewHost),
-            default(View),
-            BindingMode.OneWay);
+            default(View));
 
         /// <summary>
         /// Identifies the <see cref="ViewContractObservable"/> property.
@@ -44,8 +41,7 @@ namespace ReactiveUI.XamForms
             nameof(ViewContractObservable),
             typeof(IObservable<string>),
             typeof(ViewModelViewHost),
-            Observable<string>.Never,
-            BindingMode.OneWay);
+            Observable<string>.Never);
 
         private string? _viewContract;
 
@@ -82,7 +78,7 @@ namespace ReactiveUI.XamForms
                         }
 
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
+                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel);
 
                         if (view is null)
                         {

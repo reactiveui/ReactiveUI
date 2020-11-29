@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 
@@ -104,9 +103,9 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public void Dispose()
         {
-            _activationHandle?.Dispose();
-            _activated?.Dispose();
-            _deactivated?.Dispose();
+            _activationHandle.Dispose();
+            _activated.Dispose();
+            _deactivated.Dispose();
         }
 
         /// <summary>

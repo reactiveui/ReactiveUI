@@ -25,12 +25,12 @@ namespace ReactiveUI.Tests
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.False(fixture.GetAffinityForObject(input.GetType(), false) > 0);
 
-            var disp = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
+            var disposable = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
             input.IsNotNullString = "Foo";
             Assert.True(wasCalled);
 
             wasCalled = false;
-            disp.Dispose();
+            disposable.Dispose();
             input.IsNotNullString = "Bar";
             Assert.False(wasCalled);
         }

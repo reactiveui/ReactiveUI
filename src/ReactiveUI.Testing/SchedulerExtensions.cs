@@ -10,7 +10,6 @@ using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Reactive.Testing;
-using ReactiveUI;
 
 namespace ReactiveUI.Testing
 {
@@ -18,7 +17,7 @@ namespace ReactiveUI.Testing
     public static class SchedulerExtensions
 #pragma warning restore SA1600 // Elements should be documented
     {
-        private static readonly AutoResetEvent schedGate = new (true);
+        private static readonly AutoResetEvent schedulerGate = new (true);
 
         /// <summary>
         /// WithScheduler overrides the default Deferred and Taskpool schedulers
@@ -31,7 +30,7 @@ namespace ReactiveUI.Testing
         /// schedulers.</returns>
         public static IDisposable WithScheduler(IScheduler scheduler)
         {
-            schedGate.WaitOne();
+            schedulerGate.WaitOne();
             var prevDef = RxApp.MainThreadScheduler;
             var prevTask = RxApp.TaskpoolScheduler;
 
@@ -42,7 +41,7 @@ namespace ReactiveUI.Testing
             {
                 RxApp.MainThreadScheduler = prevDef;
                 RxApp.TaskpoolScheduler = prevTask;
-                schedGate.Set();
+                schedulerGate.Set();
             });
         }
 
@@ -182,7 +181,7 @@ namespace ReactiveUI.Testing
         public static Recorded<Notification<T>> OnNextAt<T>(this TestScheduler scheduler, double milliseconds, T value) =>
             new (
                 scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
-                Notification.CreateOnNext<T>(value));
+                Notification.CreateOnNext(value));
 
         /// <summary>
         /// OnErrorAt is a method to help create simulated input Observables in

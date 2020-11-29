@@ -118,11 +118,11 @@ namespace ReactiveUI
         {
             if (disposing)
             {
-                _isLaunchingNew?.Dispose();
-                _isResuming?.Dispose();
-                _isUnpausing?.Dispose();
-                _shouldPersistState?.Dispose();
-                _shouldInvalidateState?.Dispose();
+                _isLaunchingNew.Dispose();
+                _isResuming.Dispose();
+                _isUnpausing.Dispose();
+                _shouldPersistState.Dispose();
+                _shouldInvalidateState.Dispose();
             }
         }
     }

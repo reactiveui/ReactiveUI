@@ -112,7 +112,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new HostTestFixture
                               {
@@ -124,24 +124,24 @@ namespace ReactiveUI.Tests
                        .Subscribe();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.Child = new TestFixture
                                 {
                                     IsOnlyOneWord = "Bar"
                                 };
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
             });
 
         [Fact]
         public void OFPNamedPropertyTest() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture();
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord)
@@ -150,19 +150,19 @@ namespace ReactiveUI.Tests
                        .Subscribe();
 
                 fixture.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.IsOnlyOneWord = "Baz";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 fixture.IsOnlyOneWord = "Baz";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -172,7 +172,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void OFPNamedPropertyTestBeforeChange() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture
                               {
@@ -183,15 +183,15 @@ namespace ReactiveUI.Tests
                        .Bind(out var changes)
                        .Subscribe();
 
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(0, changes.Count);
 
                 fixture.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -201,7 +201,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void OFPNamedPropertyTestNoSkipInitial() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture
                               {
@@ -212,11 +212,11 @@ namespace ReactiveUI.Tests
                        .Bind(out var changes)
                        .Subscribe();
 
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -226,7 +226,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void OFPNamedPropertyTestRepeats() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture();
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord)
@@ -235,19 +235,19 @@ namespace ReactiveUI.Tests
                        .Subscribe();
 
                 fixture.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -257,7 +257,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void OFPReplacingTheHostShouldResubscribeTheObservable() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new HostTestFixture
                               {
@@ -269,30 +269,30 @@ namespace ReactiveUI.Tests
                        .Subscribe();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 // Tricky! This is a change too, because from the perspective
                 // of the binding, we've went from "Bar" to null
                 fixture.Child = new TestFixture();
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 // Here we've set the value but it shouldn't change
                 fixture.Child.IsOnlyOneWord = null!;
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Baz";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(4, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Baz";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(4, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -302,7 +302,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new HostTestFixture
                               {
@@ -314,22 +314,22 @@ namespace ReactiveUI.Tests
                        .Subscribe();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 // Oops, now the child is Null, we may now blow up
                 fixture.Child = null!;
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 // Tricky! This is a change too, because from the perspective
                 // of the binding, we've went from "Bar" to null
                 fixture.Child = new TestFixture();
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -339,7 +339,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void OFPShouldWorkWithINPCObjectsToo() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new NonReactiveINPCObject
                               {
@@ -351,21 +351,21 @@ namespace ReactiveUI.Tests
                        .Subscribe();
 
                 fixture.InpcProperty = new TestFixture();
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.InpcProperty.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.InpcProperty.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
             });
 
         [Fact]
         public void OFPSimpleChildPropertyTest() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new HostTestFixture
                               {
@@ -377,19 +377,19 @@ namespace ReactiveUI.Tests
                        .Subscribe();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Baz";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Baz";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -399,7 +399,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void OFPSimplePropertyTest() =>
-            new TestScheduler().With(sched =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture();
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord)
@@ -408,19 +408,19 @@ namespace ReactiveUI.Tests
                        .Subscribe();
 
                 fixture.IsOnlyOneWord = "Foo";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.IsOnlyOneWord = "Bar";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.IsOnlyOneWord = "Baz";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 fixture.IsOnlyOneWord = "Baz";
-                sched.Start();
+                scheduler.Start();
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -446,7 +446,7 @@ namespace ReactiveUI.Tests
             var tid = Thread.CurrentThread.ManagedThreadId;
 
             TaskPoolScheduler.Default.With(
-                                           sched =>
+                                           scheduler =>
                                            {
                                                var whenAnyTid = 0;
                                                var fixture = new TestFixture
@@ -573,7 +573,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnySmokeTest() =>
             new TestScheduler().With(
-                sched =>
+                scheduler =>
                 {
                     var fixture = new HostTestFixture
                                   {
@@ -598,7 +598,7 @@ namespace ReactiveUI.Tests
                             output2.Add(x.nns!);
                         });
 
-                    sched.Start();
+                    scheduler.Start();
                     Assert.Equal(1, output1.Count);
                     Assert.Equal(1, output2.Count);
                     Assert.Equal(fixture, output1[0].Sender);
@@ -607,7 +607,7 @@ namespace ReactiveUI.Tests
                     Assert.Equal("Foo", output2[0].Value);
 
                     fixture.SomeOtherParam = 10;
-                    sched.Start();
+                    scheduler.Start();
                     Assert.Equal(2, output1.Count);
                     Assert.Equal(2, output2.Count);
                     Assert.Equal(fixture, output1[1].Sender);
@@ -616,7 +616,7 @@ namespace ReactiveUI.Tests
                     Assert.Equal("Foo", output2[1].Value);
 
                     fixture.Child.IsNotNullString = "Bar";
-                    sched.Start();
+                    scheduler.Start();
                     Assert.Equal(3, output1.Count);
                     Assert.Equal(3, output2.Count);
                     Assert.Equal(fixture, output1[2].Sender);
@@ -649,7 +649,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueSmokeTest() =>
             new TestScheduler().With(
-                sched =>
+                scheduler =>
                 {
                     var fixture = new HostTestFixture
                                   {
@@ -674,21 +674,21 @@ namespace ReactiveUI.Tests
                             output2.Add(x.nns!);
                         });
 
-                    sched.Start();
+                    scheduler.Start();
                     Assert.Equal(1, output1.Count);
                     Assert.Equal(1, output2.Count);
                     Assert.Equal(5, output1[0]);
                     Assert.Equal("Foo", output2[0]);
 
                     fixture.SomeOtherParam = 10;
-                    sched.Start();
+                    scheduler.Start();
                     Assert.Equal(2, output1.Count);
                     Assert.Equal(2, output2.Count);
                     Assert.Equal(10, output1[1]);
                     Assert.Equal("Foo", output2[1]);
 
                     fixture.Child.IsNotNullString = "Bar";
-                    sched.Start();
+                    scheduler.Start();
                     Assert.Equal(3, output1.Count);
                     Assert.Equal(3, output2.Count);
                     Assert.Equal(10, output1[2]);

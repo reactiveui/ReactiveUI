@@ -18,11 +18,11 @@ namespace TestHelper
     /// Diagnostic Producer class with extra methods dealing with applying code fixes
     /// All methods are static.
     /// </summary>
-    public abstract partial class CodeFixVerifier : DiagnosticVerifier
+    public abstract class CodeFixVerifier : DiagnosticVerifier
     {
         /// <summary>
         /// Apply the inputted CodeAction to the inputted document.
-        /// Meant to be used to apply codefixes.
+        /// Meant to be used to apply code fixes.
         /// </summary>
         /// <param name="document">The Document to apply the fix on.</param>
         /// <param name="codeAction">A CodeAction that will be applied to the Document.</param>

@@ -41,8 +41,8 @@ namespace ReactiveUI.Tests
 
         public void Dispose()
         {
-            Loaded?.Dispose();
-            Unloaded?.Dispose();
+            Loaded.Dispose();
+            Unloaded.Dispose();
         }
     }
 }

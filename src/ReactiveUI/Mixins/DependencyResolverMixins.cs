@@ -56,7 +56,7 @@ namespace ReactiveUI
 
             var fdr = typeof(DependencyResolverMixins);
 
-            var assemblyName = new AssemblyName(fdr?.AssemblyQualifiedName?.Replace(fdr?.FullName + ", ", string.Empty)!);
+            var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName?.Replace(fdr?.FullName + ", ", string.Empty)!);
 
             foreach (var ns in extraNs)
             {

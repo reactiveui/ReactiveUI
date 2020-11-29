@@ -19,7 +19,11 @@ namespace ReactiveUI
             }
         }
 
-        internal static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count) => @this.Take(@this.Count() - count);
+        internal static IEnumerable<T> SkipLast<T>(this IEnumerable<T> enumerable, int count)
+        {
+            var inputList = enumerable.ToList();
+            return inputList.Take(inputList.Count - count);
+        }
     }
 
     // according to spouliot, this is just a string match, and will cause the

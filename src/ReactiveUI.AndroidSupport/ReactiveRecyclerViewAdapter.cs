@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reactive.Linq;
 using Android.Support.V7.Widget;
 using Android.Views;
 using DynamicData;
@@ -80,8 +79,8 @@ namespace ReactiveUI.AndroidSupport
         {
             if (disposing)
             {
-                _inner?.Dispose();
-                _list?.Dispose();
+                _inner.Dispose();
+                _list.Dispose();
             }
 
             base.Dispose(disposing);

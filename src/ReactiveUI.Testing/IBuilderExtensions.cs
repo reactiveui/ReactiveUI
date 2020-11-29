@@ -29,7 +29,7 @@ namespace ReactiveUI.Testing
         /// <param name="field">The field.</param>
         /// <param name="value">The value.</param>
         /// <returns>The builder.</returns>
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref TField field, TField value)
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, out TField field, TField value)
             where TBuilder : IBuilder
         {
             field = value;
@@ -56,14 +56,7 @@ namespace ReactiveUI.Testing
                 throw new System.ArgumentNullException(nameof(field));
             }
 
-            if (values is null)
-            {
-                field = null;
-            }
-            else
-            {
-                field.AddRange(values);
-            }
+            field.AddRange(values);
 
             return builder;
         }

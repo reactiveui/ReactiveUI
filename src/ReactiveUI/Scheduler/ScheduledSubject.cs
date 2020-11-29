@@ -69,7 +69,7 @@ namespace ReactiveUI
                 _subject.ObserveOn(_scheduler).Subscribe(observer),
                 Disposable.Create(() =>
                 {
-                    if (Interlocked.Decrement(ref _observerRefCount) <= 0 && _defaultObserver is not null)
+                    if (Interlocked.Decrement(ref _observerRefCount) <= 0)
                     {
                         _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
                     }
@@ -89,7 +89,7 @@ namespace ReactiveUI
                     disposable.Dispose();
                 }
 
-                _defaultObserverSub?.Dispose();
+                _defaultObserverSub.Dispose();
             }
         }
     }

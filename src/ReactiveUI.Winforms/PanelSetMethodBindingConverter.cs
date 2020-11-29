@@ -4,11 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
@@ -35,7 +32,6 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc />
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Valid syntax.")]
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments)
         {
             if (toTarget is null)

@@ -77,7 +77,7 @@ namespace ReactiveUI.Winforms
             this.Log().Warn(
                             CultureInfo.InvariantCulture,
                             "Expected a view of type System.Windows.Forms.Control but it is {0}.\r\nYou need to implement your own IActivationForViewFetcher for {0}.",
-                            view?.GetType());
+                            view.GetType());
 
             return Observable<bool>.Empty;
         }

@@ -13,7 +13,7 @@ namespace ReactiveUI.Fody
 {
     /// <summary>
     /// Weaver that replaces properties marked with `[DataMember]` on subclasses of `ReactiveObject` with an
-    /// implementation that invokes `RaisePropertyChanged` as is required for reaciveui.
+    /// implementation that invokes `RaisePropertyChanged` as is required for ReactiveUI.
     /// </summary>
     public class ReactiveUIPropertyWeaver
     {

@@ -38,7 +38,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
             if (target is null)
             {

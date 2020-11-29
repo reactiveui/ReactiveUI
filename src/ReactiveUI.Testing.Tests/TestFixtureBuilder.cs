@@ -36,7 +36,7 @@ namespace ReactiveUI.Testing.Tests
         /// </summary>
         /// <param name="count">The count.</param>
         /// <returns>The builder.</returns>
-        public TestFixtureBuilder WithCount(int count) => this.With(ref _count, count);
+        public TestFixtureBuilder WithCount(int count) => this.With(out _count, count);
 
         /// <summary>
         /// Adds the dictionary to the builder.
@@ -65,7 +65,7 @@ namespace ReactiveUI.Testing.Tests
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>The builder.</returns>
-        public TestFixtureBuilder WithName(string name) => this.With(ref _name, name);
+        public TestFixtureBuilder WithName(string name) => this.With(out _name, name);
 
         /// <summary>
         /// Adds a test to the builder.

@@ -60,7 +60,7 @@ namespace ReactiveUI
         {
             if (isDisposing)
             {
-                _bindingDisposable?.Dispose();
+                _bindingDisposable.Dispose();
             }
         }
     }

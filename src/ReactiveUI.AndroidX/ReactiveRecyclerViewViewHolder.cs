@@ -183,14 +183,11 @@ namespace ReactiveUI.AndroidX
         {
             if (disposing)
             {
-                if (View is not null)
-                {
-                    View.ViewAttachedToWindow -= OnViewAttachedToWindow;
-                    View.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
-                }
+                View.ViewAttachedToWindow -= OnViewAttachedToWindow;
+                View.ViewDetachedFromWindow -= OnViewDetachedFromWindow;
 
-                _activated?.Dispose();
-                _deactivated?.Dispose();
+                _activated.Dispose();
+                _deactivated.Dispose();
             }
 
             base.Dispose(disposing);

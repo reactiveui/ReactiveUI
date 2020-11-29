@@ -7,13 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Input;
-using ReactiveUI;
 
 namespace ReactiveUI.Winforms
 {
@@ -78,7 +76,7 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        public IDisposable? BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
         {
             if (command is null)
             {

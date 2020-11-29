@@ -5,7 +5,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Runtime.Serialization;
 using System.Threading;

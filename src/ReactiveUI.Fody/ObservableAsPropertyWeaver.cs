@@ -110,7 +110,7 @@ namespace ReactiveUI.Fody
                         property.SetMethod.Body = new MethodBody(property.SetMethod);
                         property.SetMethod.Body.Emit(il =>
                         {
-                            il.Emit(OpCodes.Ldstr, "Never call the setter of an ObservabeAsPropertyHelper property.");
+                            il.Emit(OpCodes.Ldstr, "Never call the setter of an ObservableAsPropertyHelper property.");
                             il.Emit(OpCodes.Newobj, exceptionConstructor);
                             il.Emit(OpCodes.Throw);
                             il.Emit(OpCodes.Ret);

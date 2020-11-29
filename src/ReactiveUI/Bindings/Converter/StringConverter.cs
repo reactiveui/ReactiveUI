@@ -17,7 +17,7 @@ namespace ReactiveUI
         public int GetAffinityForObjects(Type fromType, Type toType) => toType == typeof(string) ? 2 : 0;
 
         /// <inheritdoc/>
-        public bool TryConvert(object? @from, Type toType, object? conversionHint, out object? result)
+        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
         {
             // XXX: All Of The Localization
             result = from?.ToString();
