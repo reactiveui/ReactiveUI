@@ -112,7 +112,7 @@ namespace ReactiveUI.Fody
                     targetType.Fields.Add(field);
 
                     // Remove old field (the generated backing field for the auto property)
-                    var oldField = (FieldReference)property.GetMethod.Body.Instructions.Where(x => x.Operand is FieldReference).Single().Operand;
+                    var oldField = (FieldReference)property.GetMethod.Body.Instructions.Single(x => x.Operand is FieldReference).Operand;
                     var oldFieldDefinition = oldField.Resolve();
                     targetType.Fields.Remove(oldFieldDefinition);
 

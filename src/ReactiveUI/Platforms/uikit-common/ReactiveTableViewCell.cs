@@ -24,8 +24,8 @@ namespace ReactiveUI
     [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged<ReactiveTableViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        private Subject<Unit> _activated = new Subject<Unit>();
-        private Subject<Unit> _deactivated = new Subject<Unit>();
+        private Subject<Unit> _activated = new ();
+        private Subject<Unit> _deactivated = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.

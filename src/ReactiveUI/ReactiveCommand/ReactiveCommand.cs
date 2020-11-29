@@ -273,7 +273,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(childCommands));
             }
 
-            return new (childCommands, canExecute ?? Observables.True, outputScheduler ?? RxApp.MainThreadScheduler);
+            return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observables.True, outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>

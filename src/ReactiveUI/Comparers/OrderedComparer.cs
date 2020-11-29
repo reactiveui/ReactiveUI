@@ -42,7 +42,7 @@ namespace ReactiveUI
 
         private sealed class OrderedComparerTypeWrapper<T> : IComparerBuilder<T>
         {
-            public static readonly OrderedComparerTypeWrapper<T> Instance = new OrderedComparerTypeWrapper<T>();
+            public static readonly OrderedComparerTypeWrapper<T> Instance = new ();
 
             public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector) => OrderedComparer<T>.OrderBy(selector);
 

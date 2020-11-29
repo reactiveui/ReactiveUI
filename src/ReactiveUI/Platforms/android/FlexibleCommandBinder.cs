@@ -22,7 +22,7 @@ namespace ReactiveUI
         /// <summary>
         /// Configuration map.
         /// </summary>
-        private readonly Dictionary<Type, CommandBindingInfo> _config = new Dictionary<Type, CommandBindingInfo>();
+        private readonly Dictionary<Type, CommandBindingInfo> _config = new ();
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, bool hasEventTarget)
@@ -97,7 +97,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(command));
             }
 
-            commandParameter = commandParameter ?? Observable.Return(target);
+            commandParameter ??= Observable.Return(target);
 
             object? latestParam = null;
             var ctl = target;

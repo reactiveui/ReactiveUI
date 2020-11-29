@@ -19,7 +19,7 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
     {
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _disposables = new ();
         private Control? _defaultContent;
         private IObservable<string>? _viewContractObservable;
         private object? _viewModel;

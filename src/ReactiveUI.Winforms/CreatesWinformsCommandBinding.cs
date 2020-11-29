@@ -23,7 +23,7 @@ namespace ReactiveUI.Winforms
     public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     {
         // NB: These are in priority order
-        private static readonly List<(string name, Type type)> defaultEventsToBind = new List<(string name, Type type)>
+        private static readonly List<(string name, Type type)> defaultEventsToBind = new List<(string, Type)>
         {
             ("Click", typeof(EventArgs)),
             ("MouseUp", typeof(System.Windows.Forms.MouseEventArgs)),

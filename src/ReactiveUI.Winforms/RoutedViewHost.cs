@@ -17,7 +17,7 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _disposables = new ();
         private RoutingState? _router;
         private Control? _defaultContent;
         private IObservable<string>? _viewContractObservable;
@@ -80,7 +80,11 @@ namespace ReactiveUI.Winforms
                     viewLastAdded = InitView((Control)view);
                 }
 
-                Controls.Add(viewLastAdded);
+                if (viewLastAdded is not null)
+                {
+                    Controls.Add(viewLastAdded);
+                }
+
                 ResumeLayout();
             }, RxApp.DefaultExceptionHandler!.OnNext));
         }

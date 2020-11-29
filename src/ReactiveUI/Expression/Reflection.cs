@@ -72,7 +72,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new ();
 
             foreach (Expression exp in expression.GetExpressionChain())
             {
@@ -172,14 +172,12 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(member));
             }
 
-            var field = member as FieldInfo;
-            if (field is not null)
+            if (member is FieldInfo field)
             {
                 return (obj, val, _) => field.SetValue(obj, val);
             }
 
-            var property = member as PropertyInfo;
-            if (property is not null)
+            if (member is PropertyInfo property)
             {
                 return property.SetValue;
             }
@@ -381,7 +379,7 @@ namespace ReactiveUI
 
             Type ti = type;
             var ei = ti.GetRuntimeEvent(eventName);
-            if (ei is null || ei.EventHandlerType is null)
+            if (ei?.EventHandlerType is null)
             {
                 throw new Exception($"Couldn't find {type.FullName}.{eventName}");
             }

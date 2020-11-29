@@ -26,9 +26,9 @@ namespace ReactiveUI
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
-        private readonly Subject<IDisposable> _shouldPersistState = new Subject<IDisposable>();
-        private readonly Subject<Unit> _isResuming = new Subject<Unit>();
-        private readonly Subject<Unit> _isUnpausing = new Subject<Unit>();
+        private readonly Subject<IDisposable> _shouldPersistState = new ();
+        private readonly Subject<Unit> _isResuming = new ();
+        private readonly Subject<Unit> _isUnpausing = new ();
 
         private bool _isDisposed;
 

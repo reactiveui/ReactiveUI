@@ -9,7 +9,7 @@ namespace ReactiveUI.Tests
 {
     public class RaceConditionNameOfFixture : ReactiveObject
     {
-        private ObservableAsPropertyHelper<bool> _A;
+        private readonly ObservableAsPropertyHelper<bool> _A;
 
         public RaceConditionNameOfFixture() =>
 

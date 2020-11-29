@@ -169,14 +169,9 @@ namespace ReactiveUI
                     }
 
                     var cmd = commandFixuper is not null ? commandFixuper(x.val) : x.val;
-                    if (toEvent is not null)
-                    {
-                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent);
-                    }
-                    else
-                    {
-                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!));
-                    }
+                    disp = toEvent is not null ?
+                               CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent) :
+                               CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!));
                 });
 
             return Disposable.Create(() =>

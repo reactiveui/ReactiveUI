@@ -19,7 +19,7 @@ namespace ReactiveUI
     public static class ViewForMixins
     {
         private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> activationFetcherCache =
-            new MemoizingMRUCache<Type, IActivationForViewFetcher?>(
+            new (
                (t, _) =>
                    Locator.Current
                           .GetServices<IActivationForViewFetcher?>()

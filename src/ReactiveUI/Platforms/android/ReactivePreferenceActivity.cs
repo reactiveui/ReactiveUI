@@ -70,9 +70,9 @@ namespace ReactiveUI
     [Obsolete("This class is obsoleted in this android platform")]
     public class ReactivePreferenceActivity : PreferenceActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactivePreferenceActivity>, IHandleObservableErrors
     {
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-        private readonly Subject<(int requestCode, Result resultCode, Intent? intent)> _activityResult = new Subject<(int requestCode, Result resultCode, Intent? intent)>();
+        private readonly Subject<Unit> _activated = new ();
+        private readonly Subject<Unit> _deactivated = new ();
+        private readonly Subject<(int requestCode, Result resultCode, Intent? intent)> _activityResult = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactivePreferenceActivity"/> class.

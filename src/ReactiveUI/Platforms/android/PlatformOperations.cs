@@ -24,12 +24,8 @@ namespace ReactiveUI
             }
 
             var disp = wm.DefaultDisplay;
-            if (disp is null)
-            {
-                return null;
-            }
 
-            return disp.Rotation.ToString();
+            return disp?.Rotation.ToString();
         }
     }
 }

@@ -75,11 +75,12 @@ namespace TestHelper
         private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
         {
             int expectedCount = expectedResults.Length;
-            int actualCount = actualResults.Count();
+            var actualCountList = actualResults.ToList();
+            int actualCount = actualCountList.Count;
 
             if (expectedCount != actualCount)
             {
-                string diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, actualResults.ToArray()) : "    NONE.";
+                string diagnosticsOutput = actualCountList.Any() ? FormatDiagnostics(analyzer, actualCountList.ToArray()) : "    NONE.";
 
                 Assert.True(
                     false,
@@ -88,7 +89,7 @@ namespace TestHelper
 
             for (int i = 0; i < expectedResults.Length; i++)
             {
-                var actual = actualResults.ElementAt(i);
+                var actual = actualCountList[i];
                 var expected = expectedResults[i];
 
                 if (expected.Line == -1 && expected.Column == -1)

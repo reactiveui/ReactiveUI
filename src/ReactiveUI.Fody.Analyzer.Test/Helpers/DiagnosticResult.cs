@@ -23,15 +23,7 @@ namespace TestHelper
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Deliberate usage.")]
         public IList<DiagnosticResultLocation> Locations
         {
-            get
-            {
-                if (_locations is null)
-                {
-                    _locations = Array.Empty<DiagnosticResultLocation>();
-                }
-
-                return _locations;
-            }
+            get => _locations ??= Array.Empty<DiagnosticResultLocation>();
 
             set => _locations = value;
         }

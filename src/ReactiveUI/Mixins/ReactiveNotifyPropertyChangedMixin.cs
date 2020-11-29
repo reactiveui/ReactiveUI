@@ -19,7 +19,7 @@ namespace ReactiveUI
     public static class ReactiveNotifyPropertyChangedMixin
     {
         private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> notifyFactoryCache =
-            new MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>(
+            new (
                 (t, _) =>
                 {
                     return Locator.Current.GetServices<ICreatesObservableForProperty>()

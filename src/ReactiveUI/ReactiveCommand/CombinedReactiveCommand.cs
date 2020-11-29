@@ -79,9 +79,9 @@ namespace ReactiveUI
 
             _exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
 
-            var canChildrenExecute = Observable
-                .CombineLatest(childCommandsArray.Select(x => x.CanExecute))
-                .Select(x => x.All(y => y));
+            var canChildrenExecute = childCommandsArray.Select(x => x.CanExecute)
+                                                       .CombineLatest()
+                                                       .Select(x => x.All(y => y));
             var combinedCanExecute = canExecute
                 .Catch<bool, Exception>(ex =>
                 {
@@ -94,16 +94,15 @@ namespace ReactiveUI
                 .Replay(1)
                 .RefCount();
 
-            _exceptionsSubscription = Observable
-                .Merge(childCommandsArray.Select(x => x.ThrownExceptions))
-                .Subscribe(ex => _exceptions.OnNext(ex));
+            _exceptionsSubscription = childCommandsArray.Select(x => x.ThrownExceptions)
+                                                        .Merge()
+                                                        .Subscribe(ex => _exceptions.OnNext(ex));
 
             _innerCommand = new ReactiveCommand<TParam, IList<TResult>>(
                 param =>
-                    Observable
-                        .CombineLatest(
-                            childCommandsArray
-                                .Select(x => x.Execute(param))),
+                    childCommandsArray
+                        .Select(x => x.Execute(param))
+                        .CombineLatest(),
                 combinedCanExecute,
                 outputScheduler);
 

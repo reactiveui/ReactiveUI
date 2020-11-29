@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -129,7 +130,7 @@ namespace ReactiveUI.Tests.Winforms
             var disp2 = view.Bind(vm, x => x.SomeDouble, x => x.Property3.Text);
             vm.SomeDouble = 123.4;
 
-            Assert.Equal(vm.SomeDouble.ToString(), view.Property3.Text);
+            Assert.Equal(vm.SomeDouble.ToString(CultureInfo.InvariantCulture), view.Property3.Text);
         }
 
         [Fact]

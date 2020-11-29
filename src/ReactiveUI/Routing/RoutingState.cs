@@ -121,9 +121,7 @@ namespace ReactiveUI
 
             NavigationChanged = _navigationStack.ToObservableChangeSet();
 
-            var countAsBehavior = Observable.Concat(
-                                                    Observable.Defer(() => Observable.Return(NavigationStack.Count)),
-                                                    NavigationChanged.CountChanged().Select(_ => NavigationStack.Count));
+            var countAsBehavior = Observable.Defer(() => Observable.Return(NavigationStack.Count)).Concat(NavigationChanged.CountChanged().Select(_ => NavigationStack.Count));
             NavigateBack =
                 ReactiveCommand.CreateFromObservable(
                     () =>

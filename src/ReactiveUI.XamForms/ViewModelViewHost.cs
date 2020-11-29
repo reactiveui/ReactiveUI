@@ -63,8 +63,7 @@ namespace ReactiveUI.XamForms
 
             ViewContractObservable = Observable<string>.Default;
 
-            var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.ViewModel),
+            var vmAndContract = this.WhenAnyValue(x => x.ViewModel).CombineLatest(
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 

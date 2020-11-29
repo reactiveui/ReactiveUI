@@ -67,8 +67,7 @@ namespace ReactiveUI
                     x => app.Exit += x,
                     x => app.Exit -= x);
 
-            RxApp.SuspensionHost.ShouldPersistState = Observable.Merge(
-                exit,
+            RxApp.SuspensionHost.ShouldPersistState = exit.Merge(
                 deactivated
                     .SelectMany(_ => Observable.Timer(IdleTimeout, RxApp.TaskpoolScheduler))
                     .TakeUntil(RxApp.SuspensionHost.IsUnpausing)

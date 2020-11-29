@@ -22,7 +22,7 @@ namespace ReactiveUI.Winforms
     /// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
     public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> eventInfoCache = new MemoizingMRUCache<(Type type, string name), EventInfo?>(
+        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> eventInfoCache = new (
             (pair, _) => pair.type.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
                 .FirstOrDefault(x => x.Name == pair.name + "Changed"), RxApp.SmallCacheLimit);
 

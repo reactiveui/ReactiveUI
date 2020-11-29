@@ -110,12 +110,7 @@ namespace ReactiveUI
 
             public override void OnReceive(Context? context, Intent? intent)
             {
-                if (intent is null)
-                {
-                    return;
-                }
-
-                if (!(intent.GetParcelableExtra(UsbManager.ExtraAccessory) is UsbAccessory extraAccessory))
+                if (intent?.GetParcelableExtra(UsbManager.ExtraAccessory) is not UsbAccessory extraAccessory)
                 {
                     return;
                 }

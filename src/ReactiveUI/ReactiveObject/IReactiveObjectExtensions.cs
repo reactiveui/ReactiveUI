@@ -24,7 +24,7 @@ namespace ReactiveUI
     [Preserve(AllMembers = true)]
     public static class IReactiveObjectExtensions
     {
-        private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>>();
+        private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new ();
 
         /// <summary>
         /// Contains the state information about the current status of a Reactive Object.
@@ -262,8 +262,8 @@ namespace ReactiveUI
         private class ExtensionState<TSender> : IExtensionState<TSender>
             where TSender : IReactiveObject
         {
-            private readonly Lazy<ISubject<Exception>> _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler));
-            private readonly Lazy<Subject<Unit>> _startOrStopDelayingChangeNotifications = new Lazy<Subject<Unit>>();
+            private readonly Lazy<ISubject<Exception>> _thrownExceptions = new (() => new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler));
+            private readonly Lazy<Subject<Unit>> _startOrStopDelayingChangeNotifications = new ();
             private readonly TSender _sender;
             private readonly Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> subject, IObservable<IReactivePropertyChangedEventArgs<TSender>> observable)> _changing;
             private readonly Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> subject, IObservable<IReactivePropertyChangedEventArgs<TSender>> observable)> _changed;
@@ -386,25 +386,6 @@ namespace ReactiveUI
                 }
             }
 
-            internal void NotifyObservable<T>(TSender rxObj, T item, ISubject<T>? subject)
-            {
-                try
-                {
-                    subject?.OnNext(item);
-                }
-                catch (Exception ex)
-                {
-                    rxObj.Log().Error(ex, "ReactiveObject Subscriber threw exception");
-                    if (_thrownExceptions.IsValueCreated)
-                    {
-                        _thrownExceptions.Value.OnNext(ex);
-                        return;
-                    }
-
-                    throw;
-                }
-            }
-
             /// <summary>
             /// Filter a list of change notifications, returning the last change for each PropertyName in original order.
             /// </summary>
@@ -432,8 +413,26 @@ namespace ReactiveUI
                 return uniqueEvents;
             }
 
+            private void NotifyObservable<T>(TSender rxObj, T item, ISubject<T>? subject)
+            {
+                try
+                {
+                    subject?.OnNext(item);
+                }
+                catch (Exception ex)
+                {
+                    rxObj.Log().Error(ex, "ReactiveObject Subscriber threw exception");
+                    if (!_thrownExceptions.IsValueCreated)
+                    {
+                        throw;
+                    }
+
+                    _thrownExceptions.Value.OnNext(ex);
+                }
+            }
+
             private Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> changeSubject, IObservable<IReactivePropertyChangedEventArgs<TSender>> changeObservable)> CreateLazyDelayableSubjectAndObservable() =>
-                new Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>>, IObservable<IReactivePropertyChangedEventArgs<TSender>>)>(() =>
+                new (() =>
                 {
                     var changeSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
                     var changeObservable = changeSubject
@@ -448,7 +447,7 @@ namespace ReactiveUI
 
             private Lazy<ISubject<TEventArgs>> CreateLazyDelayableEventSubject<TEventArgs>(Action<TEventArgs> raiseEvent)
                 where TEventArgs : IReactivePropertyChangedEventArgs<TSender> =>
-                new Lazy<ISubject<TEventArgs>>(() =>
+                new (() =>
                 {
                     var changeSubject = new Subject<TEventArgs>();
                     changeSubject

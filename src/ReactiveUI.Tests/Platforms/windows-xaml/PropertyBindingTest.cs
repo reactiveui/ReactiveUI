@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using DynamicData.Binding;
@@ -28,11 +29,11 @@ namespace ReactiveUI.Tests.Xaml
             var fixture = new PropertyBinderImplementation();
 
             vm.JustADecimal = 123.45m;
-            Assert.NotEqual(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
+            Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
 
             var disp = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, d => d.ToString(), decimal.Parse);
 
-            Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
+            Assert.Equal(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
             Assert.Equal(123.45m, vm.JustADecimal);
 
             view.SomeTextBox.Text = "567.89";
@@ -101,10 +102,10 @@ namespace ReactiveUI.Tests.Xaml
             vm.JustADecimal = 17.2m;
             var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
-            Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
+            Assert.Equal(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
             Assert.Equal(17.2m, vm.JustADecimal);
 
-            view.SomeTextBox.Text = 42.3m.ToString();
+            view.SomeTextBox.Text = 42.3m.ToString(CultureInfo.InvariantCulture);
             Assert.Equal(42.3m, vm.JustADecimal);
 
             // Bad formatting.
@@ -259,7 +260,7 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
 
             view.ViewModel = vm;
-            Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
+            Assert.Equal(vm.JustADouble.ToString(CultureInfo.InvariantCulture), view.FakeControl.NullHatingString);
         }
 
         [Fact]
@@ -466,7 +467,7 @@ namespace ReactiveUI.Tests.Xaml
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = vm };
 
-            view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(), decimal.Parse);
+            view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(CultureInfo.InvariantCulture), decimal.Parse);
         }
 
         [Fact]

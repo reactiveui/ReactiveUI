@@ -39,14 +39,14 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The updated add.</returns>
-        public static Update CreateAdd(int index) => new Update(UpdateType.Add, index);
+        public static Update CreateAdd(int index) => new (UpdateType.Add, index);
 
         /// <summary>
         /// Creates an update for the the deleted index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The updated delete.</returns>
-        public static Update CreateDelete(int index) => new Update(UpdateType.Delete, index);
+        public static Update CreateDelete(int index) => new (UpdateType.Delete, index);
 
         /// <summary>
         /// Creates an update of the specified type.
@@ -54,7 +54,7 @@ namespace ReactiveUI
         /// <param name="type">The type.</param>
         /// <param name="index">The index.</param>
         /// <returns>And update.</returns>
-        public static Update Create(UpdateType type, int index) => new Update(type, index);
+        public static Update Create(UpdateType type, int index) => new (type, index);
 
         /// <inheritdoc/>
         public override string ToString() => Type.ToString()[0] + Index.ToString(CultureInfo.InvariantCulture);
@@ -63,6 +63,6 @@ namespace ReactiveUI
         /// Created a duplicate update.
         /// </summary>
         /// <returns>The duplicate update.</returns>
-        public Update AsDuplicate() => new Update(Type, Index, isDuplicate: true);
+        public Update AsDuplicate() => new (Type, Index, isDuplicate: true);
     }
 }

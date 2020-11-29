@@ -52,8 +52,8 @@ namespace ReactiveUI.AndroidX
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveDialogFragment : global::AndroidX.Fragment.App.DialogFragment, IReactiveNotifyPropertyChanged<ReactiveDialogFragment>, IReactiveObject, IHandleObservableErrors
     {
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+        private readonly Subject<Unit> _activated = new ();
+        private readonly Subject<Unit> _deactivated = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveDialogFragment"/> class.

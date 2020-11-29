@@ -44,9 +44,7 @@ namespace ReactiveUI.XamForms
                 return null;
             }
 
-            return Observable.Merge(
-                canActivate.Activated.Select(_ => true),
-                canActivate.Deactivated.Select(_ => false));
+            return canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
         }
 
         private static IObservable<bool>? GetActivationFor(Page? page)
@@ -74,7 +72,7 @@ namespace ReactiveUI.XamForms
                 x => page.Disappearing += x,
                 x => page.Disappearing -= x);
 
-            return Observable.Merge(appearing, disappearing);
+            return appearing.Merge(disappearing);
         }
 
         private static IObservable<bool>? GetActivationFor(View? view)
@@ -124,7 +122,7 @@ namespace ReactiveUI.XamForms
                     x => cell.Disappearing += x,
                     x => cell.Disappearing -= x);
 
-            return Observable.Merge(appearing, disappearing);
+            return appearing.Merge(disappearing);
         }
     }
 }

@@ -100,7 +100,7 @@ namespace ReactiveUI.Fody
 
             logger ??= x => { };
 
-            Queue<TypeDefinition> queue = new Queue<TypeDefinition>();
+            Queue<TypeDefinition> queue = new ();
             queue.Enqueue(type);
 
             while (queue.Any())

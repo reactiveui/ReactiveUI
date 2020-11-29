@@ -9,7 +9,7 @@ namespace ReactiveUI.XamForms.Tests
 {
     public sealed class RoutedViewHostTest : IDisposable
     {
-        private readonly NavigationViewModel _navigationViewModel = new NavigationViewModel();
+        private readonly NavigationViewModel _navigationViewModel = new ();
 
         public RoutedViewHostTest()
         {

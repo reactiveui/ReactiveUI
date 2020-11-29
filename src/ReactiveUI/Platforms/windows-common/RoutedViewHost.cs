@@ -98,8 +98,7 @@ namespace ReactiveUI
                 .StartWith(platformGetter())
                 .Select(x => x);
 
-            var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel!),
+            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel!).CombineLatest(
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (viewModel, contract) => (viewModel, contract));
 

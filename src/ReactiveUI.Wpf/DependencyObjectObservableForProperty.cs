@@ -71,12 +71,7 @@ namespace ReactiveUI
             var fi = type.GetTypeInfo().GetFields(BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public)
                 .FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
 
-            if (fi is not null)
-            {
-                return (DependencyProperty?)fi.GetValue(null);
-            }
-
-            return null;
+            return (DependencyProperty?)fi?.GetValue(null);
         }
     }
 }

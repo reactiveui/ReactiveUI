@@ -26,7 +26,7 @@ namespace ReactiveUI
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
-        private readonly ReplaySubject<IActivatedEventArgs> _activated = new ReplaySubject<IActivatedEventArgs>(1);
+        private readonly ReplaySubject<IActivatedEventArgs> _activated = new (1);
 
         private bool _isDisposed;
 

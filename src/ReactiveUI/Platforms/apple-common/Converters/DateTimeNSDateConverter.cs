@@ -13,7 +13,7 @@ namespace ReactiveUI
     /// </summary>
     public class DateTimeNSDateConverter : IBindingTypeConverter
     {
-        internal static Lazy<DateTimeNSDateConverter> Instance { get; } = new Lazy<DateTimeNSDateConverter>();
+        internal static Lazy<DateTimeNSDateConverter> Instance { get; } = new ();
 
         /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType) =>

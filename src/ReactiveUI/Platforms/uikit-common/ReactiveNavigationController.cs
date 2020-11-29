@@ -22,8 +22,8 @@ namespace ReactiveUI
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveNavigationController : UINavigationController, IReactiveNotifyPropertyChanged<ReactiveNavigationController>, IHandleObservableErrors, IReactiveObject, ICanActivate, IActivatableView
     {
-        private Subject<Unit> _activated = new Subject<Unit>();
-        private Subject<Unit> _deactivated = new Subject<Unit>();
+        private Subject<Unit> _activated = new ();
+        private Subject<Unit> _deactivated = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.

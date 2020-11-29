@@ -27,9 +27,9 @@ namespace ReactiveUI
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
-        private readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
-        private readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
-        private readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
+        private readonly Subject<UIApplication> _finishedLaunching = new ();
+        private readonly Subject<UIApplication> _activated = new ();
+        private readonly Subject<UIApplication> _backgrounded = new ();
 
         private bool _isDisposed;
 

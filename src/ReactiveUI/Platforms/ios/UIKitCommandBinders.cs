@@ -28,6 +28,6 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the UIKitCommandBinders instance.
         /// </summary>
-        public static Lazy<UIKitCommandBinders> Instance { get; } = new Lazy<UIKitCommandBinders>();
+        public static Lazy<UIKitCommandBinders> Instance { get; } = new ();
     }
 }

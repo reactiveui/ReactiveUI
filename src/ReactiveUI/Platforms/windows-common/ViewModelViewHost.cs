@@ -61,8 +61,8 @@ namespace ReactiveUI
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, ViewContractChanged));
 
-        private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
-        private readonly Subject<Unit> _updateViewContract = new Subject<Unit>();
+        private readonly Subject<Unit> _updateViewModel = new ();
+        private readonly Subject<Unit> _updateViewContract = new ();
         private string? _viewContract;
         private bool _isDisposed;
 

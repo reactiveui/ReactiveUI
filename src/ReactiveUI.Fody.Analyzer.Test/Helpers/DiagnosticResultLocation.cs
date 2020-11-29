@@ -10,7 +10,7 @@ namespace TestHelper
     /// <summary>
     /// Location where the diagnostic appears, as determined by path, line number, and column number.
     /// </summary>
-    public struct DiagnosticResultLocation : IEquatable<DiagnosticResultLocation>
+    public readonly struct DiagnosticResultLocation : IEquatable<DiagnosticResultLocation>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DiagnosticResultLocation"/> struct.

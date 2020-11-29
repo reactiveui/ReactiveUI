@@ -33,9 +33,9 @@ namespace ReactiveUI.AndroidX
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]>? AllPublicProperties;
 
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
+        private readonly Subject<Unit> _activated = new ();
 
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+        private readonly Subject<Unit> _deactivated = new ();
 
         private TViewModel? _viewModel;
 

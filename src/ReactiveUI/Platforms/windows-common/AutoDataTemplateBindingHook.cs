@@ -34,7 +34,7 @@ namespace ReactiveUI
         /// Gets the default item template.
         /// </summary>
         [SuppressMessage("Design", "CA1307: Use the currency locale settings", Justification = "Not available on all platforms.")]
-        public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new Lazy<DataTemplate>(() =>
+        public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new (() =>
         {
 #if NETFX_CORE || HAS_UNO
             const string template =

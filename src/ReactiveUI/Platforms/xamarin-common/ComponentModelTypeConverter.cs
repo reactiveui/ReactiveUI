@@ -14,7 +14,7 @@ namespace ReactiveUI
     /// </summary>
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
-        private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache = new MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?>(
+        private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache = new (
             (types, _) =>
         {
             // NB: String is a Magical Type(tm) to TypeConverters. If we are
@@ -74,12 +74,12 @@ namespace ReactiveUI
                 // convert empty strings with some/all? converters
                 if (e.InnerException is IndexOutOfRangeException ||
                     e.InnerException is FormatException)
-                    {
+                {
                     result = null;
                     return false;
                 }
 
-                throw new Exception($"Can't convert from {@from.GetType()} to {toType}.", e);
+                throw new Exception($"Can't convert from {from.GetType()} to {toType}.", e);
             }
         }
     }

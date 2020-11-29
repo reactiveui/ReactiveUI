@@ -23,8 +23,8 @@ namespace ReactiveUI
     public abstract class ReactiveCollectionViewController : UICollectionViewController,
         IReactiveNotifyPropertyChanged<ReactiveCollectionViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        private Subject<Unit> _activated = new Subject<Unit>();
-        private Subject<Unit> _deactivated = new Subject<Unit>();
+        private Subject<Unit> _activated = new ();
+        private Subject<Unit> _deactivated = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewController"/> class.

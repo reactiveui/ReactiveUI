@@ -145,10 +145,10 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            Func<InteractionContext<TInput, TOutput>, IObservable<Unit>> unitHandler = context => handler(context).Select(_ => Unit.Default);
+            IObservable<Unit> ContentHandler(InteractionContext<TInput, TOutput> context) => handler(context).Select(_ => Unit.Default);
 
-            AddHandler(unitHandler);
-            return Disposable.Create(() => RemoveHandler(unitHandler));
+            AddHandler(ContentHandler);
+            return Disposable.Create(() => RemoveHandler(ContentHandler));
         }
 
         /// <summary>

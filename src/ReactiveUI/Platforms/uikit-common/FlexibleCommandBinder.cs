@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// Configuration map.
         /// </summary>
         private readonly Dictionary<Type, CommandBindingInfo> _config =
-            new Dictionary<Type, CommandBindingInfo>();
+            new ();
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, bool hasEventTarget)

@@ -23,7 +23,7 @@ namespace ReactiveUI.Blazor
     public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, INotifyPropertyChanged, ICanActivate, IDisposable
         where T : class, INotifyPropertyChanged
     {
-        private readonly Subject<Unit> _initSubject = new Subject<Unit>();
+        private readonly Subject<Unit> _initSubject = new ();
 
         private T? _viewModel;
 
