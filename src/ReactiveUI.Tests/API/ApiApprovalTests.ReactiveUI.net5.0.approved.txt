@@ -9,7 +9,9 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.XamForms")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.7.2", FrameworkDisplayName=".NET Framework 4.7.2")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.19041.0")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v5.0", FrameworkDisplayName="")]
+[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.19041.0")]
 namespace ReactiveUI
 {
     public static class AutoPersistHelper
@@ -197,12 +199,10 @@ namespace ReactiveUI
     {
         System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
         System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
     }
     public interface IMessageBus : Splat.IEnableLogger
     {
@@ -232,26 +232,21 @@ namespace ReactiveUI
                 "isViewModel"})]
         ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
         [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "view",
                 "isViewModel"})]
         ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
         System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue>> propertyExpression, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
-            where TTarget :  class
-        ;
+            where TTarget :  class;
         ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
         ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
     }
     public interface IPropertyBindingHook
     {

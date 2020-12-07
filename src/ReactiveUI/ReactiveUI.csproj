@@ -1,13 +1,22 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0;tizen40</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;uap10.0.16299;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;net472;uap10.0.16299;netcoreapp3.1;net5.0-windows;net5.0-windows10.0.19041</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
     <PackageId>ReactiveUI</PackageId>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework) == 'net5.0-windows'">
+    <UseWpf>true</UseWpf>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net47' or $(TargetFramework) == 'net471' or $(TargetFramework) == 'net5.0-windows'">
+    <DefineConstants>$(DefineConstants);HAS_WPF</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +38,13 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
     <Compile Include="Platforms\net4\**\*.cs" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net5.0-windows' ">
+    <Compile Include="Platforms\net4Desktop\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard2')) ">
@@ -41,7 +57,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Package" Condition=" $(TargetFramework.StartsWith('uap')) ">
-  	<None Include="Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
+    <None Include="Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
@@ -63,7 +79,7 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\tvos\**\*.cs" />
-    <Compile Include="Platforms\uikit-common\**\*.cs" />	
+    <Compile Include="Platforms\uikit-common\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>

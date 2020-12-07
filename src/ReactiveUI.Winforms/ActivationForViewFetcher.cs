@@ -73,11 +73,20 @@ namespace ReactiveUI.Winforms
                 return controlActivation;
             }
 
-            // Show a friendly warning in the log that this view will never be activated
-            this.Log().Warn(
-                            CultureInfo.InvariantCulture,
-                            "Expected a view of type System.Windows.Forms.Control but it is {0}.\r\nYou need to implement your own IActivationForViewFetcher for {0}.",
-                            view.GetType());
+            if (view is null)
+            {
+                this.Log().Warn(
+                                CultureInfo.InvariantCulture,
+                                "Expected a view of type System.Windows.Forms.Control it was null");
+            }
+            else
+            {
+                // Show a friendly warning in the log that this view will never be activated
+                this.Log().Warn(
+                                CultureInfo.InvariantCulture,
+                                "Expected a view of type System.Windows.Forms.Control but it is {0}.\r\nYou need to implement your own IActivationForViewFetcher for {0}.",
+                                view.GetType());
+            }
 
             return Observable<bool>.Empty;
         }

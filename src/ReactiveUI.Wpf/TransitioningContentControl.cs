@@ -226,7 +226,11 @@ namespace ReactiveUI
                 return default!;
             }
 
+#if NET461
+            var dpiScale = new DpiScale(1, 1);
+#else
             var dpiScale = VisualTreeHelper.GetDpi(uiElement);
+#endif
 
             var renderTargetBitmap = new RenderTargetBitmap(
                                                             Convert.ToInt32(uiElement.RenderSize.Width * dpiScale.DpiScaleX),
@@ -357,112 +361,146 @@ namespace ReactiveUI
             switch (Transition)
             {
                 case TransitionType.Fade:
-                {
-                    if (CompletingTransition is null)
                     {
-                        return;
+                        if (CompletingTransition is null)
+                        {
+                            return;
+                        }
+
+                        var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                        completingDoubleAnimation.Duration = Duration;
+                        var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
+                        startingDoubleAnimation.Duration = Duration;
+
+                        break;
                     }
-
-                    var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                    completingDoubleAnimation.Duration = Duration;
-                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
-                    startingDoubleAnimation.Duration = Duration;
-
-                    break;
-                }
 
                 case TransitionType.Slide:
-                {
-                    if (CompletingTransition is null)
                     {
-                        return;
+                        if (CompletingTransition is null)
+                        {
+                            return;
+                        }
+
+                        var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                        startingDoubleAnimation.Duration = Duration;
+
+                        startingDoubleAnimation.From = Direction switch
+                        {
+                            TransitionDirection.Down => -ActualHeight,
+                            TransitionDirection.Up => ActualHeight,
+                            TransitionDirection.Right => -ActualWidth,
+                            TransitionDirection.Left => ActualWidth,
+                            _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
+                        };
+
+                        break;
                     }
-
-                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                    startingDoubleAnimation.Duration = Duration;
-
-                    startingDoubleAnimation.From = Direction switch
-                    {
-                        TransitionDirection.Down => -ActualHeight,
-                        TransitionDirection.Up => ActualHeight,
-                        TransitionDirection.Right => -ActualWidth,
-                        TransitionDirection.Left => ActualWidth,
-                        _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
-                    };
-
-                    break;
-                }
 
                 case TransitionType.Move:
-                {
-                    if (CompletingTransition is null)
                     {
-                        return;
+                        if (CompletingTransition is null)
+                        {
+                            return;
+                        }
+
+                        var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
+                        var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
+                        startingDoubleAnimation.Duration = Duration;
+                        completingDoubleAnimation.Duration = Duration;
+
+                        switch (Direction)
+                        {
+                            case TransitionDirection.Down:
+                                startingDoubleAnimation.To = ActualHeight;
+                                completingDoubleAnimation.From = -ActualHeight;
+
+                                break;
+                            case TransitionDirection.Up:
+                                startingDoubleAnimation.To = -ActualHeight;
+                                completingDoubleAnimation.From = ActualHeight;
+
+                                break;
+                            case TransitionDirection.Right:
+                                startingDoubleAnimation.To = ActualWidth;
+                                completingDoubleAnimation.From = -ActualWidth;
+
+                                break;
+                            case TransitionDirection.Left:
+                                startingDoubleAnimation.To = -ActualWidth;
+                                completingDoubleAnimation.From = ActualWidth;
+
+                                break;
+                            default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
+                        }
+
+                        break;
                     }
-
-                    var completingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[0];
-                    var startingDoubleAnimation = (DoubleAnimation)CompletingTransition.Children[1];
-                    startingDoubleAnimation.Duration = Duration;
-                    completingDoubleAnimation.Duration = Duration;
-
-                    switch (Direction)
-                    {
-                        case TransitionDirection.Down:
-                            startingDoubleAnimation.To = ActualHeight;
-                            completingDoubleAnimation.From = -ActualHeight;
-
-                            break;
-                        case TransitionDirection.Up:
-                            startingDoubleAnimation.To = -ActualHeight;
-                            completingDoubleAnimation.From = ActualHeight;
-
-                            break;
-                        case TransitionDirection.Right:
-                            startingDoubleAnimation.To = ActualWidth;
-                            completingDoubleAnimation.From = -ActualWidth;
-
-                            break;
-                        case TransitionDirection.Left:
-                            startingDoubleAnimation.To = -ActualWidth;
-                            completingDoubleAnimation.From = ActualWidth;
-
-                            break;
-                        default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
-                    }
-
-                    break;
-                }
 
                 case TransitionType.Bounce:
-                {
-                    if (CompletingTransition is not null)
                     {
-                        var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
-                        completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;
+                        if (CompletingTransition is not null)
+                        {
+                            var completingDoubleAnimation = (DoubleAnimationUsingKeyFrames)CompletingTransition.Children[0];
+                            completingDoubleAnimation.KeyFrames[1].Value = ActualHeight;
+                        }
+
+                        if (StartingTransition is null)
+                        {
+                            return;
+                        }
+
+                        var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
+
+                        startingDoubleAnimation.To = Direction switch
+                        {
+                            TransitionDirection.Down => ActualHeight,
+                            TransitionDirection.Up => -ActualHeight,
+                            TransitionDirection.Right => ActualWidth,
+                            TransitionDirection.Left => -ActualWidth,
+                            _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
+                        };
+
+                        break;
                     }
-
-                    if (StartingTransition is null)
-                    {
-                        return;
-                    }
-
-                    var startingDoubleAnimation = (DoubleAnimation)StartingTransition.Children[0];
-
-                    startingDoubleAnimation.To = Direction switch
-                    {
-                        TransitionDirection.Down => ActualHeight,
-                        TransitionDirection.Up => -ActualHeight,
-                        TransitionDirection.Right => ActualWidth,
-                        TransitionDirection.Left => -ActualWidth,
-                        _ => throw new ArgumentOutOfRangeException(nameof(TransitionDirection))
-                    };
-
-                    break;
-                }
 
                 case TransitionType.Drop: break;
                 default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
             }
         }
+
+#if NET461
+        private struct DpiScale
+        {
+            /// <summary>Initializes a new instance of the <see cref="DpiScale" /> structure.</summary>
+            /// <param name="dpiScaleX">The DPI scale on the X axis.</param>
+            /// <param name="dpiScaleY">The DPI scale on the Y axis. </param>
+            public DpiScale(double dpiScaleX, double dpiScaleY)
+            {
+                DpiScaleX = dpiScaleX;
+                DpiScaleY = dpiScaleY;
+            }
+
+            /// <summary>Gets the DPI scale on the X axis.</summary>
+            /// <returns>The DPI scale for the X axis.</returns>
+            public double DpiScaleX { get; }
+
+            /// <summary>Gets the DPI scale on the Yaxis.</summary>
+            /// <returns>The DPI scale for the Y axis.</returns>
+            public double DpiScaleY { get; }
+
+            /// <summary>Gets the PixelsPerDip at which the text should be rendered.</summary>
+            /// <returns>The current <see cref="DpiScale.PixelsPerDip" /> value.</returns>
+            public double PixelsPerDip => DpiScaleY;
+
+            /// <summary>Gets the DPI along X axis.</summary>
+            /// <returns>The DPI along the X axis.</returns>
+            public double PixelsPerInchX => 96.0 * DpiScaleX;
+
+            /// <summary>Gets the DPI along Y axis.</summary>
+            /// <returns>The DPI along the Y axis.</returns>
+            public double PixelsPerInchY => 96.0 * DpiScaleY;
+        }
+#endif
     }
 }

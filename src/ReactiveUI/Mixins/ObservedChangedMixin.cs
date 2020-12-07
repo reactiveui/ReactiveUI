@@ -61,6 +61,33 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Returns the current value of a property given a notification that
+        /// it has changed.
+        /// </summary>
+        /// <typeparam name="TSender">The sender.</typeparam>
+        /// <typeparam name="TValue">The changed value.</typeparam>
+        /// <param name="item">
+        /// The <see cref="IObservedChange{TSender, TValue}"/> instance to get the value of.
+        /// </param>
+        /// <returns>
+        /// The current value of the property.
+        /// </returns>
+        public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item)
+        {
+            if (item is null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (!item.TryGetValue(out var returnValue))
+            {
+                return default;
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
         /// Given a stream of notification changes, this method will convert
         /// the property changes to the current value of the property.
         /// </summary>

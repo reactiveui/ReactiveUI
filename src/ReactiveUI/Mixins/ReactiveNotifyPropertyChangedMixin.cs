@@ -163,7 +163,7 @@ namespace ReactiveUI
             var r = notifier.Select(x =>
             {
                 // ensure cast to TValue will succeed, throw useful exception otherwise
-                var val = x.GetValue();
+                var val = x.GetValueOrDefault();
 
                 if (val is null)
                 {
