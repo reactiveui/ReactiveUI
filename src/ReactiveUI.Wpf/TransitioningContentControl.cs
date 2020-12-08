@@ -221,7 +221,7 @@ namespace ReactiveUI
 
         private static RenderTargetBitmap GetRenderTargetBitmapFromUiElement(UIElement uiElement)
         {
-            if (uiElement.RenderSize.Height == 0)
+            if (uiElement.RenderSize.Height == 0 || uiElement.RenderSize.Width == 0)
             {
                 return default!;
             }
