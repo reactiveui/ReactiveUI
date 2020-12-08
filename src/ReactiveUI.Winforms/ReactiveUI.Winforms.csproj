@@ -28,11 +28,6 @@
       <SubType>UserControl</SubType>
       <DependentUpon>RoutedViewHost.cs</DependentUpon>
     </Compile>
-    <Compile Update="ViewModelViewHost.Designer.cs">
-      <SubType>UserControl</SubType>
-      <DependentUpon>ViewModelViewHost.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Update="ReactiveUserControl.Designer.cs">
       <SubType>UserControl</SubType>
       <DependentUpon>ReactiveUserControl.cs</DependentUpon>

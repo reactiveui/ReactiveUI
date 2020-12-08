@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net461;net462;net47;net471;net472;net48;netcoreapp3.1;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net461;net462;net47;net471;net472;net48;netcoreapp3.1;net5.0-windows;net5.0-windows10.0.19041</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <PackageDescription> Provides Observable-based events API for Win Forms UI controls &amp;	event handlers</PackageDescription>
@@ -47,7 +47,7 @@
     <Compile Include="Events_netcoreapp3.1.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework) == 'net5.0-windows' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net5.0')) ">
     <Compile Include="Events_net5.0.cs" />
   </ItemGroup>
   
