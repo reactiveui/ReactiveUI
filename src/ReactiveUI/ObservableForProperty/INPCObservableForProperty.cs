@@ -33,15 +33,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            var before = sender as INotifyPropertyChanging;
-            var after = sender as INotifyPropertyChanged;
-
-            if (beforeChanged ? before == null : after == null)
-            {
-                return Observable<IObservedChange<object, object?>>.Never;
-            }
-
-            if (beforeChanged)
+            if (beforeChanged && sender is INotifyPropertyChanging before)
             {
                 var obs = Observable.FromEvent<PropertyChangingEventHandler, string?>(
                     eventHandler =>
@@ -63,7 +55,7 @@ namespace ReactiveUI
                     || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
                 .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
             }
-            else
+            else if (sender is INotifyPropertyChanged after)
             {
                 var obs = Observable.FromEvent<PropertyChangedEventHandler, string?>(
                     eventHandler =>
@@ -84,6 +76,10 @@ namespace ReactiveUI
                 return obs.Where(x => string.IsNullOrEmpty(x)
                     || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
                 .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
+            }
+            else
+            {
+                return Observable<IObservedChange<object, object?>>.Never;
             }
         }
     }

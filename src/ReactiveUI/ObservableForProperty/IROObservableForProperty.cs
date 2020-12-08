@@ -21,7 +21,7 @@ namespace ReactiveUI
             // NB: Since every IReactiveObject is also an INPC, we need to bind more
             // tightly than INPCObservableForProperty, so we return 10 here
             // instead of one
-            return typeof(IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 0 : 0;
+            return typeof(IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
         }
 
         /// <inheritdoc/>

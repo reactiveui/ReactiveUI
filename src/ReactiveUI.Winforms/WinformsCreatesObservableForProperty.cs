@@ -23,12 +23,8 @@ namespace ReactiveUI.Winforms
     /// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
     public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> eventInfoCache = new(
-            (pair, _) =>
-            {
-                return pair.type.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
-                    .FirstOrDefault(x => x.Name == pair.name + "Changed");
-            },
+        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> EventInfoCache = new(
+            (pair, _) => pair.type.GetEvent(pair.name + "Changed", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public),
             RxApp.SmallCacheLimit);
 
         /// <inheritdoc/>
@@ -40,7 +36,7 @@ namespace ReactiveUI.Winforms
                 return 0;
             }
 
-            var ei = eventInfoCache.Get((type, propertyName));
+            var ei = EventInfoCache.Get((type, propertyName));
             return !beforeChanged && ei != null ? 8 : 0;
         }
 
@@ -52,7 +48,7 @@ namespace ReactiveUI.Winforms
                 throw new ArgumentNullException(nameof(sender));
             }
 
-            var ei = eventInfoCache.Get((sender.GetType(), propertyName));
+            var ei = EventInfoCache.Get((sender.GetType(), propertyName));
 
             if (ei is null)
             {
