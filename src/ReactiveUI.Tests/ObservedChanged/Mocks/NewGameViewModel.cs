@@ -42,7 +42,7 @@ namespace ReactiveUI.Tests
             AddPlayer = ReactiveCommand.Create(
                                                () =>
                                                {
-                                                   if (NewPlayerName == null)
+                                                   if (NewPlayerName is null)
                                                    {
                                                        throw new InvalidOperationException("NewPlayerName is null");
                                                    }

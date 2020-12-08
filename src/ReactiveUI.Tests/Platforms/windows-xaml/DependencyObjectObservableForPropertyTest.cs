@@ -7,8 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reactive.Concurrency;
-using System.Windows;
+using System.Reactive.Linq;
 
 using DynamicData;
 using Xunit;
@@ -17,8 +16,8 @@ using Xunit;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
-using FactAttribute = Xunit.WpfFactAttribute;
 using System.Windows.Controls;
+using FactAttribute = Xunit.WpfFactAttribute;
 #endif
 
 namespace ReactiveUI.Tests.Xaml
@@ -33,11 +32,17 @@ namespace ReactiveUI.Tests.Xaml
             Assert.NotEqual(0, binder.GetAffinityForObject(typeof(DepObjFixture), "TestString"));
             Assert.Equal(0, binder.GetAffinityForObject(typeof(DepObjFixture), "DoesntExist"));
 
-            var results = new List<IObservedChange<object, object>>();
+            var results = new List<IObservedChange<object, object?>>();
             Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
-            var propertyName = expression.Body.GetMemberInfo().Name;
-            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).Subscribe(results.Add);
-            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).Subscribe(results.Add);
+            var propertyName = expression.Body.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("There is no valid property name");
+            }
+
+            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
 
             fixture.TestString = "Foo";
             fixture.TestString = "Bar";
@@ -56,11 +61,17 @@ namespace ReactiveUI.Tests.Xaml
             Assert.NotEqual(0, binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "TestString"));
             Assert.Equal(0, binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "DoesntExist"));
 
-            var results = new List<IObservedChange<object, object>>();
+            var results = new List<IObservedChange<object, object?>>();
             Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
-            var propertyName = expression.Body.GetMemberInfo().Name;
-            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).Subscribe(results.Add);
-            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).Subscribe(results.Add);
+            var propertyName = expression.Body.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("There is no valid property name");
+            }
+
+            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
 
             fixture.TestString = "Foo";
             fixture.TestString = "Bar";

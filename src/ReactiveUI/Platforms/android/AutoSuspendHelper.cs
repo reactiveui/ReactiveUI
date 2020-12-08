@@ -25,20 +25,17 @@ namespace ReactiveUI
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
-        private readonly Subject<Bundle?> _onCreate = new Subject<Bundle?>();
-        private readonly Subject<Unit> _onRestart = new Subject<Unit>();
-        private readonly Subject<Unit> _onPause = new Subject<Unit>();
-        private readonly Subject<Bundle?> _onSaveInstanceState = new Subject<Bundle?>();
+        private readonly Subject<Bundle?> _onCreate = new();
+        private readonly Subject<Unit> _onRestart = new();
+        private readonly Subject<Unit> _onPause = new();
+        private readonly Subject<Bundle?> _onSaveInstanceState = new();
 
         private bool _disposedValue; // To detect redundant calls
 
         /// <summary>
         /// Initializes static members of the <see cref="AutoSuspendHelper"/> class.
         /// </summary>
-        static AutoSuspendHelper()
-        {
-            AppDomain.CurrentDomain.UnhandledException += (o, e) => UntimelyDemise.OnNext(Unit.Default);
-        }
+        static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException += (o, e) => UntimelyDemise.OnNext(Unit.Default);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
@@ -46,17 +43,17 @@ namespace ReactiveUI
         /// <param name="hostApplication">The host application.</param>
         public AutoSuspendHelper(Application hostApplication)
         {
-            if (hostApplication == null)
+            if (hostApplication is null)
             {
                 throw new ArgumentNullException(nameof(hostApplication));
             }
 
             hostApplication.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
 
-            Observable.Merge(_onCreate, _onSaveInstanceState).Subscribe(x => LatestBundle = x);
+            _onCreate.Merge(_onSaveInstanceState).Subscribe(x => LatestBundle = x);
 
-            RxApp.SuspensionHost.IsLaunchingNew = _onCreate.Where(x => x == null).Select(_ => Unit.Default);
-            RxApp.SuspensionHost.IsResuming = _onCreate.Where(x => x != null).Select(_ => Unit.Default);
+            RxApp.SuspensionHost.IsLaunchingNew = _onCreate.Where(x => x is null).Select(_ => Unit.Default);
+            RxApp.SuspensionHost.IsResuming = _onCreate.Where(x => x is not null).Select(_ => Unit.Default);
             RxApp.SuspensionHost.IsUnpausing = _onRestart;
             RxApp.SuspensionHost.ShouldPersistState = _onPause.Select(_ => Disposable.Empty);
             RxApp.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
@@ -65,7 +62,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a subject to indicate whether the application has untimely dismised.
         /// </summary>
-        public static Subject<Unit> UntimelyDemise { get; } = new Subject<Unit>();
+        public static Subject<Unit> UntimelyDemise { get; } = new();
 
         /// <summary>
         /// Gets or sets the latest bundle.
@@ -106,37 +103,22 @@ namespace ReactiveUI
         {
             private readonly AutoSuspendHelper _this;
 
-            public ObservableLifecycle(AutoSuspendHelper @this)
-            {
-                _this = @this;
-            }
+            public ObservableLifecycle(AutoSuspendHelper @this) => _this = @this;
 
-            public void OnActivityCreated(Activity? activity, Bundle? savedInstanceState)
-            {
-                _this._onCreate.OnNext(savedInstanceState);
-            }
+            public void OnActivityCreated(Activity? activity, Bundle? savedInstanceState) => _this._onCreate.OnNext(savedInstanceState);
 
-            public void OnActivityResumed(Activity? activity)
-            {
-                _this._onRestart.OnNext(Unit.Default);
-            }
+            public void OnActivityResumed(Activity? activity) => _this._onRestart.OnNext(Unit.Default);
 
             public void OnActivitySaveInstanceState(Activity? activity, Bundle? outState)
             {
                 // NB: This is so that we always have a bundle on OnCreate, so that
                 // we can tell the difference between created from scratch and resume.
-                if (outState != null)
-                {
-                    outState.PutString("___dummy_value_please_create_a_bundle", "VeryYes");
-                }
+                outState?.PutString("___dummy_value_please_create_a_bundle", "VeryYes");
 
                 _this._onSaveInstanceState.OnNext(outState);
             }
 
-            public void OnActivityPaused(Activity? activity)
-            {
-                _this._onPause.OnNext(Unit.Default);
-            }
+            public void OnActivityPaused(Activity? activity) => _this._onPause.OnNext(Unit.Default);
 
             public void OnActivityDestroyed(Activity? activity)
             {

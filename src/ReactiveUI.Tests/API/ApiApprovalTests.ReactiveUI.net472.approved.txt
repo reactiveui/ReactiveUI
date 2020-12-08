@@ -1,3 +1,4 @@
+[assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/reactiveui/reactiveui")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidSupport")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidX")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor")]
@@ -8,7 +9,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.XamForms")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.6.1", FrameworkDisplayName=".NET Framework 4.6.1")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.7.2", FrameworkDisplayName=".NET Framework 4.7.2")]
 namespace ReactiveUI
 {
     public static class AutoPersistHelper
@@ -61,20 +62,21 @@ namespace ReactiveUI
         public override System.IObservable<bool> IsExecuting { get; }
         public override System.IObservable<System.Exception> ThrownExceptions { get; }
         protected override void Dispose(bool disposing) { }
-        public override System.IObservable<System.Collections.Generic.IList<TResult>> Execute(TParam parameter = default) { }
+        public override System.IObservable<System.Collections.Generic.IList<TResult>> Execute() { }
+        public override System.IObservable<System.Collections.Generic.IList<TResult>> Execute(TParam parameter) { }
         public override System.IDisposable Subscribe(System.IObserver<System.Collections.Generic.IList<TResult>> observer) { }
     }
     public static class CommandBinder
     {
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, string? toEvent = null)
+        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.IObservable<TParam> withParameter, string? toEvent = null)
+        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.IObservable<TParam> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam>> withParameter, string? toEvent = null)
+        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam>> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
@@ -82,11 +84,11 @@ namespace ReactiveUI
     public class CommandBinderImplementation : Splat.IEnableLogger
     {
         public CommandBinderImplementation() { }
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Func<TParam> withParameter, string? toEvent = null)
+        public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Func<TParam> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam> withParameter, string? toEvent = null)
+        public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
@@ -107,7 +109,7 @@ namespace ReactiveUI
     public class CreatesCommandBindingViaCommandParameter : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesCommandBindingViaCommandParameter() { }
-        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter) { }
+        public System.IDisposable BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter) { }
         public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
@@ -144,10 +146,10 @@ namespace ReactiveUI
     }
     public static class ExpressionMixins
     {
-        public static object[]? GetArgumentsArray(this System.Linq.Expressions.Expression expression) { }
+        public static object?[]? GetArgumentsArray(this System.Linq.Expressions.Expression expression) { }
         public static System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> GetExpressionChain(this System.Linq.Expressions.Expression expression) { }
-        public static System.Reflection.MemberInfo GetMemberInfo(this System.Linq.Expressions.Expression expression) { }
-        public static System.Linq.Expressions.Expression GetParent(this System.Linq.Expressions.Expression expression) { }
+        public static System.Reflection.MemberInfo? GetMemberInfo(this System.Linq.Expressions.Expression expression) { }
+        public static System.Linq.Expressions.Expression? GetParent(this System.Linq.Expressions.Expression expression) { }
     }
     public interface IActivatableView { }
     public interface IActivatableViewModel
@@ -185,7 +187,7 @@ namespace ReactiveUI
     public interface ICreatesObservableForProperty : Splat.IEnableLogger
     {
         int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false);
-        System.IObservable<ReactiveUI.IObservedChange<object, object>>? GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
+        System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
     }
     public interface IHandleObservableErrors
     {
@@ -215,7 +217,7 @@ namespace ReactiveUI
     {
         public INPCObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>>? GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
     public interface IObservedChange<out TSender, out TValue>
     {
@@ -228,25 +230,25 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
         [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "view",
                 "isViewModel"})]
-        ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
+        ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
         System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue>> propertyExpression, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget :  class
         ;
-        ReactiveUI.IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
+        ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
-        ReactiveUI.IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+        ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
@@ -259,19 +261,15 @@ namespace ReactiveUI
     {
         public IROObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>>? GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
-    public interface IReactiveBinding<out TView, out TViewModel, out TValue> : System.IDisposable
+    public interface IReactiveBinding<out TView, out TValue> : System.IDisposable
         where out TView : ReactiveUI.IViewFor
-        where out TViewModel :  class
     {
-        System.IObservable<TValue> Changed { get; }
+        System.IObservable<TValue?> Changed { get; }
         ReactiveUI.BindingDirection Direction { get; }
         TView View { get; }
         System.Linq.Expressions.Expression ViewExpression { get; }
-        [System.Obsolete("This property has been deprecated. Refer to ViewModelExpression for a representat" +
-            "ion of the bound view model.")]
-        TViewModel ViewModel { get; }
         System.Linq.Expressions.Expression ViewModelExpression { get; }
     }
     public interface IReactiveCommand : ReactiveUI.IHandleObservableErrors, System.IDisposable
@@ -301,7 +299,7 @@ namespace ReactiveUI
     }
     public interface IReactivePropertyChangedEventArgs<out TSender>
     {
-        string PropertyName { get; }
+        string? PropertyName { get; }
         TSender Sender { get; }
     }
     public interface IRoutableViewModel : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
@@ -316,7 +314,7 @@ namespace ReactiveUI
     public interface ISetMethodBindingConverter : Splat.IEnableLogger
     {
         int GetAffinityForObjects(System.Type fromType, System.Type toType);
-        object PerformSet(object? toTarget, object? newValue, object[]? arguments);
+        object? PerformSet(object? toTarget, object? newValue, object?[]? arguments);
     }
     public interface ISuspensionDriver
     {
@@ -395,21 +393,27 @@ namespace ReactiveUI
     }
     public static class OAPHCreationHelperMixin
     {
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
         public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
         public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, TRet initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
         public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
         public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
-            where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
     }
     public sealed class ObservableAsPropertyHelper<T> : ReactiveUI.IHandleObservableErrors, Splat.IEnableLogger, System.IDisposable
@@ -425,7 +429,7 @@ namespace ReactiveUI
     }
     public static class ObservableLoggingMixin
     {
-        public static System.IObservable<T> Log<T, TObj>(this System.IObservable<T> @this, TObj klass, string? message = null, System.Func<T, string>? stringifier = null)
+        public static System.IObservable<T> Log<T, TObj>(this System.IObservable<T> @this, TObj logObject, string? message = null, System.Func<T, string>? stringifier = null)
             where TObj : Splat.IEnableLogger { }
         public static System.IObservable<T> LoggedCatch<T, TObj>(this System.IObservable<T> @this, TObj klass, System.IObservable<T>? next = null, string? message = null)
             where TObj : Splat.IEnableLogger { }
@@ -433,9 +437,14 @@ namespace ReactiveUI
             where TObj : Splat.IEnableLogger
             where TException : System.Exception { }
     }
+    public static class ObservableMixins
+    {
+        public static System.IObservable<T> Cast<T>(this System.IObservable<object?> observable) { }
+        public static System.IObservable<T> WhereNotNull<T>(this System.IObservable<T?> observable) { }
+    }
     public class ObservedChange<TSender, TValue> : ReactiveUI.IObservedChange<TSender, TValue>
     {
-        public ObservedChange(TSender sender, System.Linq.Expressions.Expression expression, TValue value = default) { }
+        public ObservedChange(TSender sender, System.Linq.Expressions.Expression expression, TValue value) { }
         public System.Linq.Expressions.Expression Expression { get; }
         public TSender Sender { get; }
         public TValue Value { get; }
@@ -444,6 +453,7 @@ namespace ReactiveUI
     {
         public static string GetPropertyName<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
         public static TValue GetValue<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
+        public static TValue? GetValueOrDefault<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
         public static System.IObservable<TValue> Value<TSender, TValue>(this System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> item) { }
     }
     public static class OrderedComparer
@@ -462,7 +472,7 @@ namespace ReactiveUI
     {
         public POCOObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>>? GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
     public static class PlatformRegistrationManager
     {
@@ -479,21 +489,21 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        public ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "view",
                 "isViewModel"})]
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
+        public ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         public System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue>> propertyExpression, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget :  class { }
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
+        public ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
-        public ReactiveUI.IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+        public ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
@@ -502,33 +512,33 @@ namespace ReactiveUI
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
+        public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
+        public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "view",
                 "isViewModel"})]
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
+        public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
         public static System.IDisposable BindTo<TValue, TTarget, TTValue>(this System.IObservable<TValue> @this, TTarget target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue>> property, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget :  class { }
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
+        public static ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
-        public static ReactiveUI.IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+        public static ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
@@ -558,8 +568,9 @@ namespace ReactiveUI
         public abstract System.IObservable<System.Exception> ThrownExceptions { get; }
         public void Dispose() { }
         protected abstract void Dispose(bool disposing);
-        public abstract System.IObservable<TResult> Execute(TParam parameter = default);
-        protected virtual bool ICommandCanExecute(object parameter) { }
+        public abstract System.IObservable<TResult> Execute();
+        public abstract System.IObservable<TResult> Execute(TParam parameter);
+        protected virtual bool ICommandCanExecute(object? parameter) { }
         protected virtual void ICommandExecute(object? parameter) { }
         protected void OnCanExecuteChanged(bool newValue) { }
         public abstract System.IDisposable Subscribe(System.IObserver<TResult> observer);
@@ -580,7 +591,8 @@ namespace ReactiveUI
         public override System.IObservable<bool> IsExecuting { get; }
         public override System.IObservable<System.Exception> ThrownExceptions { get; }
         protected override void Dispose(bool disposing) { }
-        public override System.IObservable<TResult> Execute(TParam parameter = default) { }
+        public override System.IObservable<TResult> Execute() { }
+        public override System.IObservable<TResult> Execute(TParam parameter) { }
         public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
     }
     public static class ReactiveNotifyPropertyChangedMixin
@@ -600,8 +612,8 @@ namespace ReactiveUI
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.IObservable<System.Exception> ThrownExceptions { get; }
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
         public bool AreChangeNotificationsEnabled() { }
         public System.IDisposable DelayChangeNotifications() { }
         public System.IDisposable SuppressChangeNotifications() { }
@@ -613,17 +625,17 @@ namespace ReactiveUI
     }
     public class ReactivePropertyChangingEventArgs<TSender> : System.ComponentModel.PropertyChangingEventArgs, ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
     {
-        public ReactivePropertyChangingEventArgs(TSender sender, string propertyName) { }
+        public ReactivePropertyChangingEventArgs(TSender sender, string? propertyName) { }
         public TSender Sender { get; }
     }
     public static class Reflection
     {
         public static string ExpressionToPropertyNames(System.Linq.Expressions.Expression expression) { }
         public static System.Type GetEventArgsTypeForEvent(System.Type type, string eventName) { }
-        public static System.Func<object, object[]?, object?>? GetValueFetcherForProperty(System.Reflection.MemberInfo member) { }
-        public static System.Func<object, object[]?, object?> GetValueFetcherOrThrow(System.Reflection.MemberInfo member) { }
-        public static System.Action<object, object?, object[]?> GetValueSetterForProperty(System.Reflection.MemberInfo member) { }
-        public static System.Action<object, object?, object[]?>? GetValueSetterOrThrow(System.Reflection.MemberInfo member) { }
+        public static System.Func<object, object?[]?, object?>? GetValueFetcherForProperty(System.Reflection.MemberInfo? member) { }
+        public static System.Func<object, object?[]?, object?> GetValueFetcherOrThrow(System.Reflection.MemberInfo? member) { }
+        public static System.Action<object, object?, object?[]?> GetValueSetterForProperty(System.Reflection.MemberInfo? member) { }
+        public static System.Action<object, object?, object?[]?>? GetValueSetterOrThrow(System.Reflection.MemberInfo? member) { }
         public static bool IsStatic(this System.Reflection.PropertyInfo item) { }
         public static System.Type? ReallyFindType(string? type, bool throwOnFailure) { }
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression expression) { }
@@ -658,7 +670,7 @@ namespace ReactiveUI
         public RoutingState() { }
         public RoutingState(System.Reactive.Concurrency.IScheduler scheduler) { }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; set; }
+        public System.IObservable<ReactiveUI.IRoutableViewModel?> CurrentViewModel { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> Navigate { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
@@ -674,9 +686,9 @@ namespace ReactiveUI
     }
     public static class RoutingStateMixins
     {
-        public static T FindViewModelInStack<T>(this ReactiveUI.RoutingState item)
+        public static T? FindViewModelInStack<T>(this ReactiveUI.RoutingState item)
             where T : ReactiveUI.IRoutableViewModel { }
-        public static ReactiveUI.IRoutableViewModel GetCurrentViewModel(this ReactiveUI.RoutingState item) { }
+        public static ReactiveUI.IRoutableViewModel? GetCurrentViewModel(this ReactiveUI.RoutingState item) { }
     }
     public static class RxApp
     {
@@ -808,7 +820,7 @@ namespace ReactiveUI
         public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, System.Linq.Expressions.Expression property1, System.Linq.Expressions.Expression property2, System.Linq.Expressions.Expression property3, System.Linq.Expressions.Expression property4, System.Linq.Expressions.Expression property5, System.Linq.Expressions.Expression property6, System.Linq.Expressions.Expression property7, System.Linq.Expressions.Expression property8, System.Linq.Expressions.Expression property9, System.Linq.Expressions.Expression property10, System.Func<ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, TRet> selector) { }
         public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, System.Linq.Expressions.Expression property1, System.Linq.Expressions.Expression property2, System.Linq.Expressions.Expression property3, System.Linq.Expressions.Expression property4, System.Linq.Expressions.Expression property5, System.Linq.Expressions.Expression property6, System.Linq.Expressions.Expression property7, System.Linq.Expressions.Expression property8, System.Linq.Expressions.Expression property9, System.Linq.Expressions.Expression property10, System.Linq.Expressions.Expression property11, System.Func<ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, TRet> selector) { }
         public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, System.Linq.Expressions.Expression property1, System.Linq.Expressions.Expression property2, System.Linq.Expressions.Expression property3, System.Linq.Expressions.Expression property4, System.Linq.Expressions.Expression property5, System.Linq.Expressions.Expression property6, System.Linq.Expressions.Expression property7, System.Linq.Expressions.Expression property8, System.Linq.Expressions.Expression property9, System.Linq.Expressions.Expression property10, System.Linq.Expressions.Expression property11, System.Linq.Expressions.Expression property12, System.Func<ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, ReactiveUI.IObservedChange<TSender, object>, TRet> selector) { }
-        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet>(this TSender This, System.Linq.Expressions.Expression<System.Func<TSender, TRet>> property1) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet>(this TSender source, System.Linq.Expressions.Expression<System.Func<TSender, TRet>> property1) { }
         public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(this TSender This, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Func<T1, TRet> selector) { }
         public static System.IObservable<System.ValueTuple<T1, T2>> WhenAnyValue<TSender, T1, T2>(this TSender This, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2) { }
         public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2>(this TSender This, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Func<T1, T2, TRet> selector) { }

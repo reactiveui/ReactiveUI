@@ -23,9 +23,7 @@ namespace ReactiveUI.XamForms
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
             nameof(ViewModel),
             typeof(object),
-            typeof(ViewModelViewHost),
-            default(object),
-            BindingMode.OneWay);
+            typeof(ViewModelViewHost));
 
         /// <summary>
         /// Identifies the <see cref="DefaultContent"/> property.
@@ -34,8 +32,7 @@ namespace ReactiveUI.XamForms
             nameof(DefaultContent),
             typeof(View),
             typeof(ViewModelViewHost),
-            default(View),
-            BindingMode.OneWay);
+            default(View));
 
         /// <summary>
         /// Identifies the <see cref="ViewContractObservable"/> property.
@@ -44,8 +41,7 @@ namespace ReactiveUI.XamForms
             nameof(ViewContractObservable),
             typeof(IObservable<string>),
             typeof(ViewModelViewHost),
-            Observable<string>.Never,
-            BindingMode.OneWay);
+            Observable<string>.Never);
 
         private string? _viewContract;
 
@@ -63,8 +59,7 @@ namespace ReactiveUI.XamForms
 
             ViewContractObservable = Observable<string>.Default;
 
-            var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.ViewModel),
+            var vmAndContract = this.WhenAnyValue(x => x.ViewModel).CombineLatest(
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
@@ -76,23 +71,21 @@ namespace ReactiveUI.XamForms
                     {
                         _viewContract = x.Contract;
 
-                        if (x.ViewModel == null)
+                        if (x.ViewModel is null)
                         {
                             Content = DefaultContent;
                             return;
                         }
 
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
+                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel);
 
-                        if (view == null)
+                        if (view is null)
                         {
                             throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
                         }
 
-                        var castView = view as View;
-
-                        if (castView == null)
+                        if (!(view is View castView))
                         {
                             throw new Exception($"View '{view.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
                         }

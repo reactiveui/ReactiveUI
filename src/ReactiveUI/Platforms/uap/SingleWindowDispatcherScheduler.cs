@@ -43,7 +43,7 @@ namespace ReactiveUI
                 return;
             }
 
-            CoreDispatcher? coreDispatcher = TryGetDispatcher();
+            var coreDispatcher = TryGetDispatcher();
 
             Interlocked.CompareExchange(ref _dispatcher, coreDispatcher, null);
         }
@@ -58,10 +58,7 @@ namespace ReactiveUI
         /// <exception cref="System.ArgumentNullException">
         /// dispatcher - To override the scheduler you must supply a non-null instance of CoreDispatcher.
         /// </exception>
-        public SingleWindowDispatcherScheduler(CoreDispatcher dispatcher)
-        {
-            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher), "To override the scheduler you must supply a non-null instance of CoreDispatcher.");
-        }
+        public SingleWindowDispatcherScheduler(CoreDispatcher dispatcher) => _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher), "To override the scheduler you must supply a non-null instance of CoreDispatcher.");
 
         /// <inheritdoc/>
         public DateTimeOffset Now => SystemClock.UtcNow;
@@ -85,7 +82,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            if (action == null)
+            if (action is null)
             {
                 throw new ArgumentNullException(nameof(action));
             }
@@ -134,10 +131,10 @@ namespace ReactiveUI
         /// <param name="ex">The exception.</param>
         private static void RaiseUnhandledException(Exception ex)
         {
-            DispatcherTimer? timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.Zero
-            };
+            var timer = new DispatcherTimer
+                        {
+                            Interval = TimeSpan.Zero
+                        };
 
             timer.Tick += RaiseToDispatcher;
 
@@ -174,7 +171,7 @@ namespace ReactiveUI
             try
             {
                 // if _dispatcher is still null (and only then) CompareExchange it with the dispatcher from the first view found
-                if (_dispatcher == null)
+                if (_dispatcher is null)
                 {
                     var dispatcher = TryGetDispatcher();
                     Interlocked.CompareExchange(ref _dispatcher, dispatcher, null);
@@ -185,7 +182,7 @@ namespace ReactiveUI
                 // Ignore
             }
 
-            if (_dispatcher == null || _dispatcher.HasThreadAccess)
+            if (_dispatcher is null || _dispatcher.HasThreadAccess)
             {
                 return action(this, state);
             }
@@ -222,12 +219,14 @@ namespace ReactiveUI
             // --
             // Because, we can't guarantee that DispatcherTimer will dispatch to the correct CoreDispatcher if there are multiple
             // so we dispatch explicitly from our own method.
-            ThreadPoolTimer? timer = ThreadPoolTimer.CreateTimer(_ => d.Disposable = ScheduleOnDispatcherNow(state, action), dueTime);
+            var timer = ThreadPoolTimer.CreateTimer(_ => d.Disposable = ScheduleOnDispatcherNow(state, action), dueTime);
 
             d.Disposable = Disposable.Create(() =>
             {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 var t = Interlocked.Exchange(ref timer, null);
-                if (t != null)
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                if (t is not null)
                 {
                     t.Cancel();
                     action = (_, __) => Disposable.Empty;

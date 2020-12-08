@@ -27,9 +27,8 @@ namespace ReactiveUI
         /// <param name="manager">The UsbManager system service.</param>
         /// <param name="context">The Context to request the permission from.</param>
         /// <param name="device">The UsbDevice to request permission for.</param>
-        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbDevice device)
-        {
-            return Observable.Create<bool>(observer =>
+        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbDevice device) =>
+            Observable.Create<bool>(observer =>
             {
                 var usbPermissionReceiver = new UsbDevicePermissionReceiver(observer, device);
                 context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
@@ -39,7 +38,6 @@ namespace ReactiveUI
 
                 return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
             });
-        }
 
         /// <summary>
         /// Requests temporary permission for the given package to access the accessory.
@@ -49,9 +47,8 @@ namespace ReactiveUI
         /// <param name="manager">The UsbManager system service.</param>
         /// <param name="context">The Context to request the permission from.</param>
         /// <param name="accessory">The UsbAccessory to request permission for.</param>
-        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbAccessory accessory)
-        {
-            return Observable.Create<bool>(observer =>
+        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbAccessory accessory) =>
+            Observable.Create<bool>(observer =>
             {
                 var usbPermissionReceiver = new UsbAccessoryPermissionReceiver(observer, accessory);
                 context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
@@ -61,7 +58,6 @@ namespace ReactiveUI
 
                 return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
             });
-        }
 
         /// <summary>
         /// Private implementation of BroadcastReceiver to handle device permission requests.
@@ -114,14 +110,7 @@ namespace ReactiveUI
 
             public override void OnReceive(Context? context, Intent? intent)
             {
-                if (intent is null)
-                {
-                    return;
-                }
-
-                var extraAccessory = intent.GetParcelableExtra(UsbManager.ExtraAccessory) as UsbAccessory;
-
-                if (extraAccessory == null)
+                if (intent?.GetParcelableExtra(UsbManager.ExtraAccessory) is not UsbAccessory extraAccessory)
                 {
                     return;
                 }

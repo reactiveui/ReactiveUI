@@ -31,7 +31,7 @@ namespace ReactiveUI
 
             return updatesList
                 .Select((x, i) => x.IsDuplicate ? null : Update.Create(x.Type, CalculateUpdateIndex(updatesList, i)))
-                .Where(x => x != null)
+                .Where(x => x is not null)
                 .ToList();
         }
 

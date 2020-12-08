@@ -17,15 +17,9 @@ namespace ReactiveUI.Fody.Tests
         private readonly BaseModel _model;
 
         // Testing ctor
-        public DecoratorModel()
-        {
-            _model = new BaseModel();
-        }
+        public DecoratorModel() => _model = new BaseModel();
 
-        public DecoratorModel(BaseModel baseModel)
-        {
-            _model = baseModel;
-        }
+        public DecoratorModel(BaseModel baseModel) => _model = baseModel;
 
         [Reactive]
         public string? SomeCoolNewProperty { get; set; }
@@ -45,9 +39,6 @@ namespace ReactiveUI.Fody.Tests
             }
         }
 
-        public void UpdateCoolProperty(string coolNewProperty)
-        {
-            SomeCoolNewProperty = coolNewProperty;
-        }
+        public void UpdateCoolProperty(string coolNewProperty) => SomeCoolNewProperty = coolNewProperty;
     }
 }

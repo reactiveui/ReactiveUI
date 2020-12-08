@@ -12,7 +12,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor
@@ -24,10 +23,10 @@ namespace ReactiveUI.Blazor
     public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPropertyChanged, ICanActivate, IDisposable
         where T : class, INotifyPropertyChanged
     {
-        private readonly Subject<Unit> _initSubject = new Subject<Unit>();
+        private readonly Subject<Unit> _initSubject = new();
         [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
-        private readonly Subject<Unit> _deactivateSubject = new Subject<Unit>();
-        private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
+        private readonly Subject<Unit> _deactivateSubject = new();
+        private readonly CompositeDisposable _compositeDisposable = new();
 
         private T? _viewModel;
 
@@ -89,7 +88,7 @@ namespace ReactiveUI.Blazor
                 // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
                 var viewModelChanged =
                     this.WhenAnyValue(x => x.ViewModel)
-                        .Where(x => x != null)
+                        .Where(x => x is not null)
                         .Publish()
                         .RefCount(2);
 
@@ -98,16 +97,17 @@ namespace ReactiveUI.Blazor
                     .DisposeWith(_compositeDisposable);
 
                 viewModelChanged
+                    .WhereNotNull()
                     .Select(x =>
                         Observable
-                            .FromEvent<PropertyChangedEventHandler, Unit>(
+                            .FromEvent<PropertyChangedEventHandler?, Unit>(
                                 eventHandler =>
                                 {
-                                    void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                                    void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
                                     return Handler;
                                 },
-                                eh => x!.PropertyChanged += eh,
-                                eh => x!.PropertyChanged -= eh))
+                                eh => x.PropertyChanged += eh,
+                                eh => x.PropertyChanged -= eh))
                     .Switch()
                     .Subscribe(_ => InvokeAsync(StateHasChanged))
                     .DisposeWith(_compositeDisposable);
@@ -120,10 +120,7 @@ namespace ReactiveUI.Blazor
         /// Invokes the property changed event.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Cleans up the managed resources of the object.
@@ -135,8 +132,8 @@ namespace ReactiveUI.Blazor
             {
                 if (disposing)
                 {
-                    _initSubject?.Dispose();
-                    _compositeDisposable?.Dispose();
+                    _initSubject.Dispose();
+                    _compositeDisposable.Dispose();
                     _deactivateSubject.OnNext(Unit.Default);
                 }
 

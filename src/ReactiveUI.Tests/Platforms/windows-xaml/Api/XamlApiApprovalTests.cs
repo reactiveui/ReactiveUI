@@ -14,9 +14,6 @@ namespace ReactiveUI.Tests.Xaml
     public class XamlApiApprovalTests : ApiApprovalBase
     {
         [Fact]
-        public void Blend()
-        {
-            CheckApproval(typeof(Blend.FollowObservableStateBehavior).Assembly);
-        }
+        public void Blend() => CheckApproval(typeof(Blend.FollowObservableStateBehavior).Assembly);
     }
 }

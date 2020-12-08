@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using Splat;
@@ -17,11 +16,8 @@ namespace ReactiveUI
     /// </summary>
     public class EqualityTypeConverter : IBindingTypeConverter
     {
-        private static readonly MemoizingMRUCache<Type, MethodInfo> _referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>(
-              (t, _) =>
-              {
-                  return _methodInfo ??= typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast));
-              }, RxApp.SmallCacheLimit);
+        private static readonly MemoizingMRUCache<Type, MethodInfo> _referenceCastCache = new(
+              (_, _) => _methodInfo ??= typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast)), RxApp.SmallCacheLimit);
 
         private static MethodInfo? _methodInfo;
 
@@ -37,9 +33,9 @@ namespace ReactiveUI
         {
             var backingNullableType = Nullable.GetUnderlyingType(targetType);
 
-            if (backingNullableType == null)
+            if (backingNullableType is null)
             {
-                if (from == null)
+                if (from is null)
                 {
                     if (targetType.GetTypeInfo().IsValueType)
                     {
@@ -57,7 +53,7 @@ namespace ReactiveUI
                 throw new InvalidCastException();
             }
 
-            if (from == null)
+            if (from is null)
             {
                 return null;
             }
@@ -86,13 +82,13 @@ namespace ReactiveUI
             }
 
             var realType = Nullable.GetUnderlyingType(fromType);
-            if (realType != null)
+            if (realType is not null)
             {
                 return GetAffinityForObjects(realType, toType);
             }
 
             realType = Nullable.GetUnderlyingType(toType);
-            if (realType != null)
+            if (realType is not null)
             {
                 return GetAffinityForObjects(fromType, realType);
             }
@@ -101,9 +97,9 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public bool TryConvert(object? @from, Type toType, object? conversionHint, out object? result)
+        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
         {
-            if (toType == null)
+            if (toType is null)
             {
                 throw new ArgumentNullException(nameof(toType));
             }
@@ -126,12 +122,12 @@ namespace ReactiveUI
 
         private static bool IsInstanceOfType(object from, Type targetType)
         {
-            if (from == null)
+            if (from is null)
             {
                 throw new ArgumentNullException(nameof(from));
             }
 
-            if (targetType == null)
+            if (targetType is null)
             {
                 throw new ArgumentNullException(nameof(targetType));
             }

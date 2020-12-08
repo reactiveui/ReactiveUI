@@ -34,7 +34,7 @@ namespace ReactiveUI.Blend
                 return;
             }
 
-            if (AssociatedObject != null)
+            if (AssociatedObject is not null)
             {
                 throw new InvalidOperationException("Cannot attach multiple objects.");
             }
@@ -44,10 +44,7 @@ namespace ReactiveUI.Blend
         }
 
         /// <inheritdoc/>
-        public virtual void Detach()
-        {
-            OnDetaching();
-        }
+        public virtual void Detach() => OnDetaching();
 
         /// <summary>
         /// Called when [attached].

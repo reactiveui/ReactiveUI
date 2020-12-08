@@ -13,14 +13,12 @@ namespace ReactiveUI
     /// </summary>
     public class DateTimeNSDateConverter : IBindingTypeConverter
     {
-        internal static Lazy<DateTimeNSDateConverter> Instance { get; } = new Lazy<DateTimeNSDateConverter>();
+        internal static Lazy<DateTimeNSDateConverter> Instance { get; } = new();
 
         /// <inheritdoc/>
-        public int GetAffinityForObjects(Type fromType, Type toType)
-        {
-            return (fromType == typeof(DateTime) && toType == typeof(NSDate)) ||
-                (toType == typeof(DateTime) && fromType == typeof(NSDate)) ? 4 : -1;
-        }
+        public int GetAffinityForObjects(Type fromType, Type toType) =>
+            (fromType == typeof(DateTime) && toType == typeof(NSDate)) ||
+            (toType == typeof(DateTime) && fromType == typeof(NSDate)) ? 4 : -1;
 
         /// <inheritdoc/>
         public bool TryConvert(object? val, Type toType, object? conversionHint, out object? result)

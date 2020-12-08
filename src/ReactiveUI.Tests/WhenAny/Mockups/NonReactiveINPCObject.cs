@@ -9,7 +9,7 @@ namespace ReactiveUI.Tests
 {
     public class NonReactiveINPCObject : INotifyPropertyChanged
     {
-        private TestFixture _inpcProperty = new TestFixture();
+        private TestFixture _inpcProperty = new();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

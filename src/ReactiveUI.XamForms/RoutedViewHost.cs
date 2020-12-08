@@ -30,8 +30,7 @@ namespace ReactiveUI.XamForms
             nameof(Router),
             typeof(RoutingState),
             typeof(RoutedViewHost),
-            default(RoutingState),
-            BindingMode.OneWay);
+            default(RoutingState));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
@@ -45,7 +44,7 @@ namespace ReactiveUI.XamForms
                 bool popToRootPending = false;
                 bool userInstigated = false;
 
-                this.WhenAnyObservable(x => x.Router.NavigationChanged!)
+                this.WhenAnyObservable(x => x.Router.NavigationChanged)
                     .Where(_ => Router.NavigationStack.Count == 0)
                     .Select(x =>
                     {
@@ -100,7 +99,7 @@ namespace ReactiveUI.XamForms
                             finally
                             {
                                 currentlyPopping = false;
-                                if (CurrentPage is IViewFor page && x.CurrentViewModel != null)
+                                if (CurrentPage is IViewFor page && x.CurrentViewModel is not null)
                                 {
                                     page.ViewModel = x.CurrentViewModel;
                                 }
@@ -119,7 +118,7 @@ namespace ReactiveUI.XamForms
                     {
                         bool animated = true;
                         var attribute = page.GetType().GetCustomAttribute<DisableAnimationAttribute>();
-                        if (attribute != null)
+                        if (attribute is not null)
                         {
                             animated = false;
                         }
@@ -143,7 +142,7 @@ namespace ReactiveUI.XamForms
                 var poppingEvent = Observable.FromEvent<EventHandler<NavigationEventArgs>, Unit>(
                     eventHandler =>
                     {
-                        void Handler(object sender, NavigationEventArgs e) => eventHandler(Unit.Default);
+                        void Handler(object? sender, NavigationEventArgs e) => eventHandler(Unit.Default);
                         return Handler;
                     },
                     x => Popped += x,
@@ -152,7 +151,7 @@ namespace ReactiveUI.XamForms
                 // NB: Catch when the user hit back as opposed to the application
                 // requesting Back via NavigateBack
                 poppingEvent
-                    .Where(_ => !currentlyPopping && Router != null)
+                    .Where(_ => !currentlyPopping && Router is not null)
                     .Subscribe(_ =>
                     {
                         userInstigated = true;
@@ -167,7 +166,7 @@ namespace ReactiveUI.XamForms
                         }
 
                         var vm = Router?.GetCurrentViewModel();
-                        if (CurrentPage is IViewFor page && vm != null)
+                        if (CurrentPage is IViewFor page && vm is not null)
                         {
                             // don't replace view model if vm is null
                             page.ViewModel = vm;
@@ -177,7 +176,7 @@ namespace ReactiveUI.XamForms
             });
 
             var screen = Locator.Current.GetService<IScreen>();
-            if (screen == null)
+            if (screen is null)
             {
                 throw new Exception("You *must* register an IScreen class representing your App's main Screen");
             }
@@ -194,7 +193,7 @@ namespace ReactiveUI.XamForms
                         .Finally(() =>
                         {
                             var vm = router.GetCurrentViewModel();
-                            if (vm == null)
+                            if (vm is null)
                             {
                                 return;
                             }
@@ -221,15 +220,15 @@ namespace ReactiveUI.XamForms
         /// <param name="vm">The vm.</param>
         /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
         [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
-        protected IObservable<Page> PageForViewModel(IRoutableViewModel vm)
+        protected IObservable<Page> PageForViewModel(IRoutableViewModel? vm)
         {
-            if (vm == null)
+            if (vm is null)
             {
                 return Observable<Page>.Empty;
             }
 
             var ret = ViewLocator.Current.ResolveView(vm);
-            if (ret == null)
+            if (ret is null)
             {
                 var msg = $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{vm.GetType().Name}>";
 

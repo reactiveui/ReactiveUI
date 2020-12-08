@@ -1,10 +1,10 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid90;tizen40</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;uap10.0.16299</TargetFrameworks>    
+    <TargetFrameworks>Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0;tizen4.0;tizen5.0;tizen6.0;tizen7.0;tizen8.0;Xamarin.WATCHOS10</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.16299;uap10.0.17134;uap10.0.17763;uap10.0.18362;uap10.0.19041</TargetFrameworks>    
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
-    <PackageDescription>Provides Observable-based events API for Xamarin Native Platforms including Android, iOS, Mac, TVOS, Tizen, and UWP</PackageDescription>
+    <PackageDescription>Provides Observable-based events API for Xamarin Native Platforms including Android, iOS, Mac, TVOS, WatchOS, Tizen, and UWP</PackageDescription>
     <PackageId>ReactiveUI.Events</PackageId>
     <NoWarn>$(NoWarn);CS1570;CA1812</NoWarn>
   </PropertyGroup>
@@ -13,39 +13,108 @@
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <PackageReference Include="Pharmacist.Common" Version="1.*" />
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="  $(TargetFramework.StartsWith('uap')) ">
+  <ItemGroup Condition=" $(TargetFramework) == 'uap10.0.16299' ">
     <SDKReference Include="WindowsDesktop, Version=10.0.16299.0">	
       <Name>Windows Desktop Extensions for the UWP</Name>	
     </SDKReference>	
     <SDKReference Include="WindowsMobile, Version=10.0.16299.0"> 	
       <Name>Windows Mobile Extensions for the UWP</Name> 	
     </SDKReference> 
-    <Compile Include="Events_uwp.cs" Condition="Exists('Events_uwp.cs')" />
+    <Compile Include="Events_uap10.0.16299.cs" Condition="Exists('Events_uap10.0.16299.cs')" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'uap10.0.17134' ">
+    <SDKReference Include="WindowsDesktop, Version=10.0.17134.0">	
+      <Name>Windows Desktop Extensions for the UWP</Name>	
+    </SDKReference>	
+    <SDKReference Include="WindowsMobile, Version=10.0.17134.0"> 	
+      <Name>Windows Mobile Extensions for the UWP</Name> 	
+    </SDKReference> 
+    <Compile Include="Events_uap10.0.17134.cs" Condition="Exists('Events_uap10.0.17134.cs')" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'uap10.0.17763' ">
+    <SDKReference Include="WindowsDesktop, Version=10.0.17763.0">	
+      <Name>Windows Desktop Extensions for the UWP</Name>	
+    </SDKReference>	
+    <SDKReference Include="WindowsMobile, Version=10.0.17763.0"> 	
+      <Name>Windows Mobile Extensions for the UWP</Name> 	
+    </SDKReference> 
+    <Compile Include="Events_uap10.0.17763.cs" Condition="Exists('Events_uap10.0.17763.cs')" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'uap10.0.18362' ">
+    <SDKReference Include="WindowsDesktop, Version=10.0.18362.0">	
+      <Name>Windows Desktop Extensions for the UWP</Name>	
+    </SDKReference>	
+    <SDKReference Include="WindowsMobile, Version=10.0.18362.0"> 	
+      <Name>Windows Mobile Extensions for the UWP</Name> 	
+    </SDKReference> 
+    <Compile Include="Events_uap10.0.18362.cs" Condition="Exists('Events_uap10.0.18362.cs')" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'uap10.0.19041' ">
+    <SDKReference Include="WindowsDesktop, Version=10.0.19041.0">	
+      <Name>Windows Desktop Extensions for the UWP</Name>	
+    </SDKReference>	
+    <SDKReference Include="WindowsMobile, Version=10.0.19041.0"> 	
+      <Name>Windows Mobile Extensions for the UWP</Name> 	
+    </SDKReference> 
+    <Compile Include="Events_uap10.0.19041.cs" Condition="Exists('Events_uap10.0.19041.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-    <Compile Include="Events_IOS.cs" Condition="Exists('Events_IOS.cs')" />
+    <Compile Include="Events_xamarin.ios10.cs" Condition="Exists('Events_xamarin.ios10.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
     <Reference Include="netstandard" />
-    <Compile Include="Events_mac.cs" Condition="Exists('Events_mac.cs')" />
+    <Compile Include="Events_xamarin.mac20.cs" Condition="Exists('Events_xamarin.mac20.cs')" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <Compile Include="Events_android.cs" Condition="Exists('Events_android.cs')" />
+  <ItemGroup Condition=" $(TargetFramework) == 'MonoAndroid10.0' ">
+    <Compile Include="Events_monoandroid10.0.cs" Condition="Exists('Events_monoandroid10.0.cs')" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
-    <PackageReference Include="Tizen.NET.API4" Version="4.*" />
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+  <ItemGroup Condition=" $(TargetFramework) == 'MonoAndroid11.0' ">
+    <Compile Include="Events_monoandroid11.0.cs" Condition="Exists('Events_monoandroid11.0.cs')" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
     <Reference Include="netstandard" />
-    <Compile Include="Events_tvos.cs" Condition="Exists('Events_tvos.cs')" />
+    <Compile Include="Events_xamarin.tvos10.cs" Condition="Exists('Events_xamarin.tvos10.cs')" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.WATCHOS')) ">
+    <Reference Include="netstandard" />
+    <Compile Include="Events_xamarin.watchos10" Condition="Exists('Events_xamarin.watchos10')" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'tizen40' ">
+    <PackageReference Include="Tizen.NET.API4" Version="4.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'tizen50' ">
+    <PackageReference Include="Tizen.NET.API4" Version="5.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'tizen60' ">
+    <PackageReference Include="Tizen.NET.API4" Version="6.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'tizen70' ">
+    <PackageReference Include="Tizen.NET.API4" Version="7.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'tizen80' ">
+    <PackageReference Include="Tizen.NET.API4" Version="8.*" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
   </ItemGroup>
 </Project>

@@ -56,7 +56,7 @@ namespace ReactiveUI.Fody.Tests
         }
 
         [Fact]
-        public void FacadeIntPropertyChangedEventFiresOnAssignementTest()
+        public void FacadeIntPropertyChangedEventFiresOnAssignmentTest()
         {
             var expectedPropertyChanged = "IntProperty";
             var resultPropertyChanged = string.Empty;
@@ -72,7 +72,7 @@ namespace ReactiveUI.Fody.Tests
         }
 
         [Fact]
-        public void FacadeAnotherStringPropertyChangedEventFiresOnAssignementTest()
+        public void FacadeAnotherStringPropertyChangedEventFiresOnAssignmentTest()
         {
             var expectedPropertyChanged = "AnotherStringProperty";
             var resultPropertyChanged = string.Empty;

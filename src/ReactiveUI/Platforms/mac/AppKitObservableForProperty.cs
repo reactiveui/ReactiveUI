@@ -35,6 +35,6 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the App Kit ObservableForProperty instance.
         /// </summary>
-        public static Lazy<AppKitObservableForProperty> Instance { get; } = new Lazy<AppKitObservableForProperty>();
+        public static Lazy<AppKitObservableForProperty> Instance { get; } = new();
     }
 }

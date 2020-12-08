@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests.Xaml
         public static void DoEvents()
         {
 #if !NETFX_CORE
-            DispatcherFrame frame = new DispatcherFrame();
+            DispatcherFrame frame = new();
             Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
             Dispatcher.PushFrame(frame);
 #endif

@@ -81,7 +81,7 @@ namespace ReactiveUI
 
             Locator.RegisterResolverCallbackChanged(() =>
             {
-                if (Locator.CurrentMutable == null)
+                if (Locator.CurrentMutable is null)
                 {
                     return;
                 }
@@ -124,7 +124,7 @@ namespace ReactiveUI
 
             LogHost.Default.Info("Initializing to normal mode");
 
-            if (_mainThreadScheduler == null)
+            if (_mainThreadScheduler is null)
             {
                 _mainThreadScheduler = DefaultScheduler.Instance;
             }
@@ -189,7 +189,7 @@ namespace ReactiveUI
                 if (ModeDetector.InUnitTestRunner())
                 {
                     _unitTestTaskpoolScheduler = value;
-                    _taskpoolScheduler = _taskpoolScheduler ?? value;
+                    _taskpoolScheduler ??= value;
                 }
                 else
                 {
@@ -204,7 +204,7 @@ namespace ReactiveUI
         public static bool SuppressViewCommandBindingMessage { get; set; }
 
         /// <summary>
-        /// Gets or sets the Observer which signalled whenever an object that has a
+        /// Gets or sets the Observer which signaled whenever an object that has a
         /// ThrownExceptions property doesn't Subscribe to that Observable. Use
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.
@@ -249,10 +249,7 @@ namespace ReactiveUI
                 return _unitTestMainThreadScheduler;
             }
 
-            set
-            {
-                _unitTestMainThreadScheduler = value;
-            }
+            set => _unitTestMainThreadScheduler = value;
         }
 
         [MethodImpl(MethodImplOptions.NoOptimization)]

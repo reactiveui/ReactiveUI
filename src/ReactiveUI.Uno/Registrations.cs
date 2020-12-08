@@ -6,7 +6,6 @@
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.PlatformServices;
-using Splat;
 
 namespace ReactiveUI.Uno
 {

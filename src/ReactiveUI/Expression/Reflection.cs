@@ -84,22 +84,20 @@ namespace ReactiveUI
                 if (exp.NodeType != ExpressionType.Parameter)
                 {
                     // Indexer expression
-                    if (exp.NodeType == ExpressionType.Index)
+                    if (exp.NodeType == ExpressionType.Index && exp is IndexExpression indexExpression && indexExpression.Indexer is not null)
                     {
-                        var ie = (IndexExpression)exp;
-                        sb.Append(ie.Indexer.Name).Append('[');
+                        sb.Append(indexExpression.Indexer.Name).Append('[');
 
-                        foreach (var argument in ie.Arguments)
+                        foreach (var argument in indexExpression.Arguments)
                         {
                             sb.Append(((ConstantExpression)argument).Value).Append(',');
                         }
 
                         sb.Replace(',', ']', sb.Length - 1, 1);
                     }
-                    else if (exp.NodeType == ExpressionType.MemberAccess)
+                    else if (exp.NodeType == ExpressionType.MemberAccess && exp is MemberExpression memberExpression)
                     {
-                        var me = (MemberExpression)exp;
-                        sb.Append(me.Member.Name);
+                        sb.Append(memberExpression.Member.Name);
                     }
                 }
 
@@ -120,9 +118,12 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[]?, object?>? GetValueFetcherForProperty(MemberInfo member)
+        public static Func<object, object?[]?, object?>? GetValueFetcherForProperty(MemberInfo? member)
         {
-            Contract.Requires(member != null);
+            if (member is null)
+            {
+                throw new ArgumentNullException(nameof(member));
+            }
 
             FieldInfo? field = member as FieldInfo;
             if (field != null)
@@ -147,7 +148,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
-        public static Func<object, object[]?, object?> GetValueFetcherOrThrow(MemberInfo member)
+        public static Func<object, object?[]?, object?> GetValueFetcherOrThrow(MemberInfo? member)
         {
             if (member is null)
             {
@@ -172,9 +173,12 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-        public static Action<object, object?, object[]?> GetValueSetterForProperty(MemberInfo member)
+        public static Action<object, object?, object?[]?> GetValueSetterForProperty(MemberInfo? member)
         {
-            Contract.Requires(member != null);
+            if (member is null)
+            {
+                throw new ArgumentNullException(nameof(member));
+            }
 
             FieldInfo? field = member as FieldInfo;
             if (field != null)
@@ -199,7 +203,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="member">The member info to convert.</param>
         /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-        public static Action<object, object?, object[]?>? GetValueSetterOrThrow(MemberInfo member)
+        public static Action<object, object?, object?[]?>? GetValueSetterOrThrow(MemberInfo? member)
         {
             if (member is null)
             {
@@ -284,7 +288,7 @@ namespace ReactiveUI
                 var sender = current;
                 current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
 #pragma warning disable CS8604 // Possible null reference argument.
-                changeValues[currentIndex] = new ObservedChange<object, object>(sender, expression, current);
+                changeValues[currentIndex] = new ObservedChange<object, object?>(sender, expression, current);
 #pragma warning restore CS8604 // Possible null reference argument.
                 currentIndex++;
             }
@@ -297,7 +301,7 @@ namespace ReactiveUI
 
             Expression lastExpression = expressions.Last();
 #pragma warning disable CS8604 // Possible null reference argument.
-            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray()));
+            changeValues[currentIndex] = new ObservedChange<object, object?>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray()));
 #pragma warning restore CS8604 // Possible null reference argument.
 
             return true;
@@ -337,7 +341,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressions.Last();
-            Action<object, object?, object[]?>? setter = shouldThrow ?
+            Action<object, object?, object?[]?>? setter = shouldThrow ?
                 GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
                 GetValueSetterForProperty(lastExpression.GetMemberInfo());
 

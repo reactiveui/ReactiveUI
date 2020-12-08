@@ -9,10 +9,7 @@ namespace ReactiveUI.Tests
 {
     public class FooThatThrowsView : IFooView
     {
-        public FooThatThrowsView()
-        {
-            throw new InvalidOperationException("This is a test failure.");
-        }
+        public FooThatThrowsView() => throw new InvalidOperationException("This is a test failure.");
 
         object? IViewFor.ViewModel
         {

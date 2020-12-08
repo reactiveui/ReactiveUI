@@ -17,7 +17,7 @@ namespace ReactiveUI
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-    public class TableSectionInformation<TSource> : ISectionInformation<TSource, UITableView, UITableViewCell>
+    public class TableSectionInformation<TSource> : ISectionInformation<UITableViewCell>
     {
         /// <inheritdoc/>
         public INotifyCollectionChanged? Collection { get; protected set; }
@@ -68,7 +68,7 @@ namespace ReactiveUI
             Collection = collection;
             SizeHint = sizeHint;
             CellKeySelector = cellKeySelector;
-            if (initializeCellAction != null)
+            if (initializeCellAction is not null)
             {
                 InitializeCellAction = cell => initializeCellAction((TCell)cell);
             }

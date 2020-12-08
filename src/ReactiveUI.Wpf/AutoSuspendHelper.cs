@@ -4,16 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI
@@ -45,7 +40,7 @@ namespace ReactiveUI
 
             RxApp.SuspensionHost.IsUnpausing =
                 Observable.FromEvent<EventHandler, Unit>(
-                    eventHandler => (sender, e) => eventHandler(Unit.Default),
+                    eventHandler => (_, _) => eventHandler(Unit.Default),
                     x => app.Activated += x,
                     x => app.Activated -= x);
 
@@ -54,7 +49,7 @@ namespace ReactiveUI
             // NB: No way to tell OS that we need time to suspend, we have to
             // do it in-process
             var deactivated = Observable.FromEvent<EventHandler, Unit>(
-                    eventHandler => (sender, e) => eventHandler(Unit.Default),
+                    eventHandler => (_, _) => eventHandler(Unit.Default),
                     x => app.Deactivated += x,
                     x => app.Deactivated -= x);
 
@@ -67,8 +62,7 @@ namespace ReactiveUI
                     x => app.Exit += x,
                     x => app.Exit -= x);
 
-            RxApp.SuspensionHost.ShouldPersistState = Observable.Merge(
-                exit,
+            RxApp.SuspensionHost.ShouldPersistState = exit.Merge(
                 deactivated
                     .SelectMany(_ => Observable.Timer(IdleTimeout, RxApp.TaskpoolScheduler))
                     .TakeUntil(RxApp.SuspensionHost.IsUnpausing)
@@ -76,7 +70,7 @@ namespace ReactiveUI
                     .Select(_ => Disposable.Empty));
 
             var untimelyDeath = new Subject<Unit>();
-            AppDomain.CurrentDomain.UnhandledException += (o, e) => untimelyDeath.OnNext(Unit.Default);
+            AppDomain.CurrentDomain.UnhandledException += (_, _) => untimelyDeath.OnNext(Unit.Default);
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
         }
 

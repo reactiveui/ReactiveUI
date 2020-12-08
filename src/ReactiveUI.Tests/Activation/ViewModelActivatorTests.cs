@@ -6,7 +6,6 @@
 using System;
 using System.Reactive.Concurrency;
 using DynamicData;
-using DynamicData.Binding;
 using Xunit;
 
 namespace ReactiveUI.Tests

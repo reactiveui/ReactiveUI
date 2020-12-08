@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using ReactiveUI;
 using Xamarin.Forms;
 
 namespace ReactiveUI.XamForms
@@ -54,9 +52,6 @@ namespace ReactiveUI.XamForms
             ViewModel = BindingContext as TViewModel;
         }
 
-        private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue)
-        {
-            bindableObject.BindingContext = newValue;
-        }
+        private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) => bindableObject.BindingContext = newValue;
     }
 }

@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests
             fixture.Activator.Deactivate();
             Assert.Equal(1, fixture.IsActiveCount);
 
-            // Refcount drops to zero
+            // RefCount drops to zero
             fixture.Activator.Deactivate();
             Assert.Equal(0, fixture.IsActiveCount);
         }

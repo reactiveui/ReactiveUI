@@ -53,10 +53,7 @@ namespace ReactiveUI.AndroidSupport
         public override int Count => _list.Count;
 
         /// <inheritdoc/>
-        public override bool IsViewFromObject(View view, Object @object)
-        {
-            return (View)@object == view;
-        }
+        public override bool IsViewFromObject(View view, Object @object) => (View)@object == view;
 
         /// <inheritdoc/>
         public override Object InstantiateItem(ViewGroup container, int position)
@@ -71,8 +68,7 @@ namespace ReactiveUI.AndroidSupport
             // NB: PagerAdapter does not recycle itself.
             var theView = _viewCreator(data, container);
 
-            var ivf = theView.GetViewHost() as IViewFor<TViewModel>;
-            if (ivf != null)
+            if (theView.GetViewHost() is IViewFor<TViewModel> ivf)
             {
                 ivf.ViewModel = data;
             }
@@ -86,12 +82,12 @@ namespace ReactiveUI.AndroidSupport
         /// <inheritdoc/>
         public override void DestroyItem(ViewGroup container, int position, Object item)
         {
-            if (container == null)
+            if (container is null)
             {
                 throw new ArgumentNullException(nameof(container));
             }
 
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -109,8 +105,8 @@ namespace ReactiveUI.AndroidSupport
         {
             if (disposing)
             {
-                _inner?.Dispose();
-                _list?.Dispose();
+                _inner.Dispose();
+                _list.Dispose();
             }
 
             base.Dispose(disposing);

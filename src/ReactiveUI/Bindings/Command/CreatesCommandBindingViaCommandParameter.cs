@@ -33,14 +33,14 @@ namespace ReactiveUI
             return propsToFind.All(x =>
             {
                 var pi = type.GetRuntimeProperty(x.Name);
-                return pi != null;
+                return pi is not null;
             }) ? 5 : 0;
         }
 
         /// <inheritdoc/>
-        public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
-            if (target == null)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }

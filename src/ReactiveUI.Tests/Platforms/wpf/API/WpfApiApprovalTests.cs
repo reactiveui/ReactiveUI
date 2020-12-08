@@ -17,9 +17,6 @@ namespace ReactiveUI.Tests.Wpf
     public class WpfApiApprovalTests : ApiApprovalBase
     {
         [Fact(Skip = "Need to resolve GeneratedInternalTypeHelper")]
-        public void Wpf()
-        {
-            CheckApproval(typeof(ReactiveWindow<>).Assembly);
-        }
+        public void Wpf() => CheckApproval(typeof(ReactiveWindow<>).Assembly);
     }
 }

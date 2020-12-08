@@ -9,7 +9,7 @@ namespace ReactiveUI.XamForms.Tests
 {
     public sealed class RoutedViewHostTest : IDisposable
     {
-        private readonly NavigationViewModel _navigationViewModel = new NavigationViewModel();
+        private readonly NavigationViewModel _navigationViewModel = new();
 
         public RoutedViewHostTest()
         {
@@ -130,7 +130,7 @@ namespace ReactiveUI.XamForms.Tests
             var childViewModel = await _navigationViewModel.Navigate(nameof(ChildViewModel));
             var childPage = fixture.CurrentPage;
 
-            var viewModel = await _navigationViewModel.NavigateToChild("Testing");
+            await _navigationViewModel.NavigateToChild("Testing");
             await _navigationViewModel.NavigateBack();
 
             var currentPage = fixture.CurrentPage;
@@ -283,14 +283,11 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal("Child view: C1", currentPage.Title);
         }
 
-        public void Dispose()
-        {
-            Locator.SetLocator(new ModernDependencyResolver());
-        }
+        public void Dispose() => Locator.SetLocator(new ModernDependencyResolver());
 
         private RoutedViewHost CreateRoutedViewHost(string? initialViewModel = nameof(MainViewModel))
         {
-            if (initialViewModel != null)
+            if (initialViewModel is not null)
             {
                 var mainViewModel = Locator.Current.GetService<IRoutableViewModel>(initialViewModel);
                 _navigationViewModel.Router.NavigationStack.Add(mainViewModel);

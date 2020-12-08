@@ -25,7 +25,7 @@ namespace ReactiveUI.Blazor
 
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
-            if (Type.GetType("Mono.Runtime") != null)
+            if (Type.GetType("Mono.Runtime") is not null)
             {
                 PlatformEnlightenmentProvider.Current.EnableWasm();
             }

@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests
 {
     internal class ProductionMode : IModeDetector, IPlatformModeDetector
     {
-        private static ProductionMode Instance = new ProductionMode();
+        private static readonly ProductionMode Instance = new();
 
         public static IDisposable Set()
         {
@@ -24,14 +24,8 @@ namespace ReactiveUI.Tests
             });
         }
 
-        public bool? InUnitTestRunner()
-        {
-            return false;
-        }
+        public bool? InUnitTestRunner() => false;
 
-        public bool? InDesignMode()
-        {
-            return false;
-        }
+        public bool? InDesignMode() => false;
     }
 }

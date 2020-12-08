@@ -24,12 +24,12 @@ namespace ReactiveUI
         /// <returns>A disposable.</returns>
         public static IDisposable BindToTarget(this ICommand item, UIControl control, UIControlEvent events)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }

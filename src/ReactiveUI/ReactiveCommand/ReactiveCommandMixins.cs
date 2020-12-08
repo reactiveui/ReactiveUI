@@ -38,7 +38,7 @@ namespace ReactiveUI
                 h => command.CanExecuteChanged -= h)
                 .StartWith(Unit.Default);
 
-            return WithLatestFromFixed(item, canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
+            return WithLatestFromFixed(item, canExecuteChanged, (value, _) => new InvokeCommandInfo<ICommand, T>(command, command.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => command.Execute(ii.Value))
                 .Subscribe();
@@ -57,12 +57,12 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult> command)
         {
-            if (command == null)
+            if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            return WithLatestFromFixed(item, command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
+            return WithLatestFromFixed(item, command.CanExecute, (value, canExecute) => new InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>(command, canExecute, value))
                 .Where(ii => ii.CanExecute)
                 .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
@@ -85,15 +85,15 @@ namespace ReactiveUI
         {
             var commandObs = target.WhenAnyValue(commandProperty);
             var commandCanExecuteChanged = commandObs
-                .Select(command => command == null ? Observable<ICommand>.Empty : Observable
+                .Select(command => command is null ? Observable<ICommand>.Empty : Observable
                     .FromEvent<EventHandler, ICommand>(
-                        eventHandler => (sender, e) => eventHandler(command),
+                        eventHandler => (_, _) => eventHandler(command),
                         h => command.CanExecuteChanged += h,
                         h => command.CanExecuteChanged -= h)
                     .StartWith(command))
                 .Switch();
 
-            return WithLatestFromFixed(item, commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
+            return WithLatestFromFixed(item, commandCanExecuteChanged, (value, cmd) => new InvokeCommandInfo<ICommand, T>(cmd, cmd.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => ii.Command.Execute(ii.Value))
                 .Subscribe();
@@ -117,10 +117,12 @@ namespace ReactiveUI
         {
             var command = target.WhenAnyValue(commandProperty);
             var invocationInfo = command
-                .Select(cmd => cmd == null ? Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty : cmd
-                    .CanExecute
-                    .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T)!)))
-                .Switch();
+                .Select(cmd => cmd is null ?
+                                   Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty :
+                                   cmd
+                                    .CanExecute
+                                    .Select(canExecute => new InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>(cmd, canExecute)))
+                                    .Switch();
 
             return WithLatestFromFixed(item, invocationInfo, (value, ii) => ii.WithValue(value))
                 .Where(ii => ii.CanExecute)
@@ -143,13 +145,20 @@ namespace ReactiveUI
                                             .Select(b => resultSelector(b, a)))
                                 .Switch());
 
-        private struct InvokeCommandInfo<TCommand, TValue>
+        private readonly struct InvokeCommandInfo<TCommand, TValue>
         {
-            public InvokeCommandInfo(TCommand command, bool canExecute, TValue value = default)
+            public InvokeCommandInfo(TCommand command, bool canExecute, TValue value)
             {
                 Command = command;
                 CanExecute = canExecute;
-                Value = value;
+                Value = value!;
+            }
+
+            public InvokeCommandInfo(TCommand command, bool canExecute)
+            {
+                Command = command;
+                CanExecute = canExecute;
+                Value = default!;
             }
 
             public TCommand Command { get; }
@@ -159,13 +168,7 @@ namespace ReactiveUI
             public TValue Value { get; }
 
             public InvokeCommandInfo<TCommand, TValue> WithValue(TValue value) =>
-                new InvokeCommandInfo<TCommand, TValue>(Command, CanExecute, value);
-        }
-
-        private static class InvokeCommandInfo
-        {
-            public static InvokeCommandInfo<TCommand, TValue> From<TCommand, TValue>(TCommand command, bool canExecute, TValue value) =>
-                new InvokeCommandInfo<TCommand, TValue>(command, canExecute, value);
+                new(Command, CanExecute, value);
         }
     }
 }

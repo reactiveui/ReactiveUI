@@ -26,19 +26,15 @@ namespace ReactiveUI
     /// </typeparam>
     public sealed class InteractionContext<TInput, TOutput>
     {
-        private readonly TInput _input;
         private TOutput _output = default!;
         private int _outputSet;
 
-        internal InteractionContext(TInput input)
-        {
-            _input = input;
-        }
+        internal InteractionContext(TInput input) => Input = input;
 
         /// <summary>
         /// Gets the input for the interaction.
         /// </summary>
-        public TInput Input => _input;
+        public TInput Input { get; }
 
         /// <summary>
         /// Gets a value indicating whether the interaction is handled. That is, whether the output has been set.

@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
     <AssemblyName>ReactiveUI.Fody.Analyzer</AssemblyName>
     <RootNamespace>ReactiveUI.Fody.Analyzer</RootNamespace>
     <PackageDescription>Rosyln extension that checks correct usage of the Fody extension.</PackageDescription>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net461;uwp;tizen;unoplatform;fody;</PackageTags>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net472;uwp;tizen;unoplatform;fody;</PackageTags>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
 

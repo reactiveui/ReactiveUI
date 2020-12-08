@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 
@@ -76,8 +75,8 @@ namespace ReactiveUI
         {
             if (Interlocked.Increment(ref _refCount) == 1)
             {
-                var disp = new CompositeDisposable(_blocks.SelectMany(x => x()));
-                Interlocked.Exchange(ref _activationHandle, disp).Dispose();
+                var disposable = new CompositeDisposable(_blocks.SelectMany(x => x()));
+                Interlocked.Exchange(ref _activationHandle, disposable).Dispose();
                 _activated.OnNext(Unit.Default);
             }
 
@@ -104,9 +103,9 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public void Dispose()
         {
-            _activationHandle?.Dispose();
-            _activated?.Dispose();
-            _deactivated?.Dispose();
+            _activationHandle.Dispose();
+            _activated.Dispose();
+            _deactivated.Dispose();
         }
 
         /// <summary>
@@ -114,9 +113,6 @@ namespace ReactiveUI
         /// on activation, then disposed on deactivation.
         /// </summary>
         /// <param name="block">The block to add.</param>
-        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block)
-        {
-            _blocks.Add(block);
-        }
+        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block) => _blocks.Add(block);
     }
 }

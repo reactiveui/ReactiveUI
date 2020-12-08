@@ -6,10 +6,8 @@
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
 using DynamicData.Binding;
 using NSViewController = UIKit.UIViewController;
 
@@ -23,7 +21,7 @@ namespace ReactiveUI
     public class RoutedViewHost : ReactiveNavigationController
     {
         private readonly SerialDisposable _titleUpdater;
-        private RoutingState _router = null!;
+        private RoutingState? _router;
         private IObservable<string?>? _viewContractObservable;
         private bool _routerInstigated;
 
@@ -40,18 +38,18 @@ namespace ReactiveUI
                 {
                     d(this
                         .WhenAnyValue(x => x.Router)
-                        .Where(x => x != null && x.NavigationStack.Count > 0 && ViewControllers != null && ViewControllers.Length == 0)
+                        .Where(x => x is not null && x.NavigationStack.Count > 0 && ViewControllers is not null && ViewControllers.Length == 0)
                         .Subscribe(x =>
                         {
                             _routerInstigated = true;
                             NSViewController? view = null;
 
-                            if (Router != null && x != null)
+                            if (Router is not null && x is not null)
                             {
                                 foreach (var viewModel in x.NavigationStack)
                                 {
                                     view = ResolveView(Router.GetCurrentViewModel(), null);
-                                    if (view == null)
+                                    if (view is null)
                                     {
                                         throw new NullReferenceException(nameof(view));
                                     }
@@ -59,10 +57,10 @@ namespace ReactiveUI
                                     PushViewController(view, false);
                                 }
 
-                                if (view != null)
+                                if (view is not null)
                                 {
                                     _titleUpdater.Disposable = Router.GetCurrentViewModel()
-                                        .WhenAnyValue(y => y.UrlPathSegment)
+                                        .WhenAnyValue(y => y!.UrlPathSegment)
                                         .Subscribe(y => view.NavigationItem.Title = y);
                                 }
                             }
@@ -71,8 +69,8 @@ namespace ReactiveUI
                         }));
 
                     var navigationStackChanged = this.WhenAnyValue(x => x.Router)
-                        .Where(x => x != null)
-                        .Select(x => x?.NavigationStack.ObserveCollectionChanges())
+                        .Where(x => x is not null)
+                        .Select(x => x!.NavigationStack.ObserveCollectionChanges())
                         .Switch();
 
                     d(navigationStackChanged
@@ -80,15 +78,15 @@ namespace ReactiveUI
                         .Select(_ => new { View = ResolveView(Router?.GetCurrentViewModel(), null), Animate = Router?.NavigationStack.Count > 1 })
                         .Subscribe(x =>
                         {
-                            if (_routerInstigated || Router == null)
+                            if (_routerInstigated || Router is null)
                             {
                                 return;
                             }
 
-                            if (x != null && x.View != null)
+                            if (x?.View is not null)
                             {
                                 _titleUpdater.Disposable = Router.GetCurrentViewModel()
-                                    .WhenAnyValue(y => y.UrlPathSegment)
+                                    .WhenAnyValue(y => y!.UrlPathSegment)
                                     .Subscribe(y => x.View.NavigationItem.Title = y);
                             }
 
@@ -112,7 +110,7 @@ namespace ReactiveUI
 
                     d(this
                         .WhenAnyObservable(x => x.Router!.NavigateBack!)
-                        .Subscribe(x =>
+                        .Subscribe(_ =>
                         {
                             _routerInstigated = true;
                             PopViewController(true);
@@ -124,7 +122,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
         /// </summary>
-        public RoutingState Router
+        public RoutingState? Router
         {
             get => _router;
             set => this.RaiseAndSetIfChanged(ref _router, value);
@@ -147,7 +145,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override void PushViewController(NSViewController? viewController, bool animated)
         {
-            if (viewController == null)
+            if (viewController is null)
             {
                 throw new ArgumentNullException(nameof(viewController));
             }
@@ -160,7 +158,7 @@ namespace ReactiveUI
                 // TODO: what should we _actually_ do here? Soft-check the view and VM type and ignore if they're not IViewFor/IRoutableViewModel?
                 var view = (IViewFor)viewController;
                 var viewModel = (IRoutableViewModel?)view.ViewModel;
-                if (viewModel != null)
+                if (viewModel is not null)
                 {
                     Router?.NavigationStack.Add(viewModel);
                 }
@@ -184,7 +182,7 @@ namespace ReactiveUI
         {
             if (disposing)
             {
-                _titleUpdater?.Dispose();
+                _titleUpdater.Dispose();
             }
 
             base.Dispose(disposing);
@@ -192,7 +190,7 @@ namespace ReactiveUI
 
         private NSViewController? ResolveView(IRoutableViewModel? viewModel, string? contract)
         {
-            if (viewModel == null)
+            if (viewModel is null)
             {
                 return null;
             }
@@ -200,7 +198,7 @@ namespace ReactiveUI
             var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
             var view = viewLocator.ResolveView(viewModel, contract);
 
-            if (view == null)
+            if (view is null)
             {
                 throw new Exception($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
             }

@@ -16,17 +16,17 @@ namespace ReactiveUI
     /// </summary>
     internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     {
-        private readonly ReplaySubject<IObservable<Unit>> _isLaunchingNew = new ReplaySubject<IObservable<Unit>>(1);
+        private readonly ReplaySubject<IObservable<Unit>> _isLaunchingNew = new(1);
 
-        private readonly ReplaySubject<IObservable<Unit>> _isResuming = new ReplaySubject<IObservable<Unit>>(1);
+        private readonly ReplaySubject<IObservable<Unit>> _isResuming = new(1);
 
-        private readonly ReplaySubject<IObservable<Unit>> _isUnpausing = new ReplaySubject<IObservable<Unit>>(1);
+        private readonly ReplaySubject<IObservable<Unit>> _isUnpausing = new(1);
 
         private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState =
-            new ReplaySubject<IObservable<IDisposable>>(1);
+            new(1);
 
         private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState =
-            new ReplaySubject<IObservable<Unit>>(1);
+            new(1);
 
         private object? _appState;
 
@@ -118,11 +118,11 @@ namespace ReactiveUI
         {
             if (disposing)
             {
-                _isLaunchingNew?.Dispose();
-                _isResuming?.Dispose();
-                _isUnpausing?.Dispose();
-                _shouldPersistState?.Dispose();
-                _shouldInvalidateState?.Dispose();
+                _isLaunchingNew.Dispose();
+                _isResuming.Dispose();
+                _isUnpausing.Dispose();
+                _shouldPersistState.Dispose();
+                _shouldInvalidateState.Dispose();
             }
         }
     }

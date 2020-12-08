@@ -36,7 +36,7 @@ namespace ReactiveUI
             _defaultObserver = defaultObserver ?? new Subject<T>();
             _subject = defaultSubject ?? new Subject<T>();
 
-            if (defaultObserver != null)
+            if (defaultObserver is not null)
             {
                 _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
             }
@@ -50,22 +50,13 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public void OnCompleted()
-        {
-            _subject.OnCompleted();
-        }
+        public void OnCompleted() => _subject.OnCompleted();
 
         /// <inheritdoc/>
-        public void OnError(Exception error)
-        {
-            _subject.OnError(error);
-        }
+        public void OnError(Exception error) => _subject.OnError(error);
 
         /// <inheritdoc/>
-        public void OnNext(T value)
-        {
-            _subject.OnNext(value);
-        }
+        public void OnNext(T value) => _subject.OnNext(value);
 
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<T> observer)
@@ -78,7 +69,7 @@ namespace ReactiveUI
                 _subject.ObserveOn(_scheduler).Subscribe(observer),
                 Disposable.Create(() =>
                 {
-                    if (Interlocked.Decrement(ref _observerRefCount) <= 0 && _defaultObserver != null)
+                    if (Interlocked.Decrement(ref _observerRefCount) <= 0)
                     {
                         _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
                     }
@@ -98,7 +89,7 @@ namespace ReactiveUI
                     disposable.Dispose();
                 }
 
-                _defaultObserverSub?.Dispose();
+                _defaultObserverSub.Dispose();
             }
         }
     }

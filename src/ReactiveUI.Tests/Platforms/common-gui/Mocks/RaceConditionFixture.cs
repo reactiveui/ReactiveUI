@@ -9,7 +9,7 @@ namespace ReactiveUI.Tests
 {
     public class RaceConditionFixture : ReactiveObject
     {
-        private ObservableAsPropertyHelper<bool> _A;
+        private readonly ObservableAsPropertyHelper<bool> _A;
 
         public RaceConditionFixture()
         {
@@ -18,10 +18,7 @@ namespace ReactiveUI.Tests
             // This triggers the property change firing
             // upon subscription in the ObservableAsPropertyHelper
             // constructor.
-            Observables
-                .True
-                .Do(_ => Count++)
-                .ToProperty(this, x => x.A, out _A);
+            Observables.True.Do(_ => Count++).ToProperty(this, x => x.A, out _A);
         }
 
         public int Count { get; set; }

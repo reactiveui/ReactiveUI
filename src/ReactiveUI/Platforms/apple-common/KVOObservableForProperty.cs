@@ -25,61 +25,58 @@ namespace ReactiveUI
     /// </summary>
     public class KVOObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> declaredInNSObject;
+        private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> DeclaredInNSObject;
 
         static KVOObservableForProperty()
         {
             var monotouchAssemblyName = typeof(NSObject).Assembly.FullName;
 
-            declaredInNSObject = new MemoizingMRUCache<(Type type, string propertyName), bool>(
+            DeclaredInNSObject = new MemoizingMRUCache<(Type type, string propertyName), bool>(
                 (pair, _) =>
-            {
-                var thisType = pair.type;
-
-                // Types that aren't NSObjects at all are uninteresting to us
-                if (typeof(NSObject).IsAssignableFrom(thisType) == false)
                 {
-                    return false;
-                }
+                    var thisType = pair.type;
 
-                while (thisType != null)
-                {
-                    if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.propertyName))
+                    // Types that aren't NSObjects at all are uninteresting to us
+                    if (typeof(NSObject).IsAssignableFrom(thisType) == false)
                     {
-                        // NB: This is a not-completely correct way to detect if
-                        // an object is defined in an Obj-C class (it will fail if
-                        // you're using a binding to a 3rd-party Obj-C library).
-                        return thisType.Assembly.FullName == monotouchAssemblyName;
+                        return false;
                     }
 
-                    thisType = thisType.BaseType;
-                }
+                    while (thisType is not null)
+                    {
+                        if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.propertyName))
+                        {
+                            // NB: This is a not-completely correct way to detect if
+                            // an object is defined in an Obj-C class (it will fail if
+                            // you're using a binding to a 3rd-party Obj-C library).
+                            return thisType.Assembly.FullName == monotouchAssemblyName;
+                        }
 
-                // The property doesn't exist at all
-                return false;
-            }, RxApp.BigCacheLimit);
+                        thisType = thisType.BaseType;
+                    }
+
+                    // The property doesn't exist at all
+                    return false;
+                },
+                RxApp.BigCacheLimit);
         }
 
         /// <inheritdoc/>
-        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
-        {
-            return declaredInNSObject.Get((type, propertyName)) ? 15 : 0;
-        }
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => DeclaredInNSObject.Get((type, propertyName)) ? 15 : 0;
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>>? GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            var obj = sender as NSObject;
-            if (obj == null)
+            if (sender is not NSObject obj)
             {
                 throw new ArgumentException("Sender isn't an NSObject");
             }
 
-            return Observable.Create<IObservedChange<object, object>>(subj =>
+            return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
                 var bobs = new BlockObserveValueDelegate((key, s, _) =>
                 {
-                    subj.OnNext(new ObservedChange<object, object>(s, expression));
+                    subj.OnNext(new ObservedChange<object, object?>(s, expression, default));
                 });
                 var pin = GCHandle.Alloc(bobs);
 
@@ -100,7 +97,7 @@ namespace ReactiveUI
             bool propIsBoolean = false;
 
             var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(x => !x.IsStatic());
-            if (pi == null)
+            if (pi is null)
             {
                 goto attemptGuess;
             }
@@ -111,13 +108,13 @@ namespace ReactiveUI
             }
 
             var mi = pi.GetGetMethod();
-            if (mi == null)
+            if (mi is null)
             {
                 goto attemptGuess;
             }
 
-            var attr = mi.GetCustomAttributes(true).Select(x => x as ExportAttribute).FirstOrDefault(x => x != null);
-            if (attr == null)
+            var attr = mi.GetCustomAttributes(true).OfType<ExportAttribute?>().FirstOrDefault();
+            if (attr is null)
             {
                 goto attemptGuess;
             }

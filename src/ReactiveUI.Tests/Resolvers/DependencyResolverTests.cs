@@ -122,7 +122,7 @@ namespace ReactiveUI.Tests
         private static IEnumerable<string> GetServiceRegistrationTypeNames(
             IEnumerable<RegistrationNamespace> registrationNamespaces)
         {
-            foreach (RegistrationNamespace registrationNamespace in registrationNamespaces)
+            foreach (var registrationNamespace in registrationNamespaces)
             {
                 if (registrationNamespace == RegistrationNamespace.Wpf)
                 {
@@ -143,7 +143,7 @@ namespace ReactiveUI.Tests
 
         private static Dictionary<Type, List<Type>> GetServicesThatShouldBeRegistered(IReadOnlyList<RegistrationNamespace> onlyNamespaces)
         {
-            Dictionary<Type, List<Type>> serviceTypeToImplementationTypes = new Dictionary<Type, List<Type>>();
+            Dictionary<Type, List<Type>> serviceTypeToImplementationTypes = new();
 
             new Registrations().Register((factory, serviceType) =>
             {
@@ -185,7 +185,7 @@ namespace ReactiveUI.Tests
         private static void GetRegistrationsForPlatform(string typeName, Dictionary<Type, List<Type>> serviceTypeToImplementationTypes)
         {
             var platformRegistrationsType = Type.GetType(typeName);
-            if (platformRegistrationsType != null)
+            if (platformRegistrationsType is not null)
             {
                 var platformRegistrations = Activator.CreateInstance(platformRegistrationsType);
                 var register = platformRegistrationsType.GetMethod("Register");

@@ -4,23 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
 using System.Reactive.Linq;
 
 namespace ReactiveUI.Tests
 {
     public class ActivatingViewFetcher : IActivationForViewFetcher
     {
-        public int GetAffinityForView(Type view)
-        {
-            return view == typeof(ActivatingView) ? 100 : 0;
-        }
+        public int GetAffinityForView(Type view) => view == typeof(ActivatingView) ? 100 : 0;
 
         public IObservable<bool> GetActivationForView(IActivatableView view)
         {
-            var av = view as ActivatingView;
-
-            if (av == null)
+            if (!(view is ActivatingView av))
             {
                 throw new ArgumentNullException(nameof(view));
             }

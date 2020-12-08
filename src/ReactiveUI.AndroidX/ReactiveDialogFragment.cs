@@ -52,8 +52,8 @@ namespace ReactiveUI.AndroidX
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveDialogFragment : global::AndroidX.Fragment.App.DialogFragment, IReactiveNotifyPropertyChanged<ReactiveDialogFragment>, IReactiveObject, IHandleObservableErrors
     {
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveDialogFragment"/> class.
@@ -88,22 +88,13 @@ namespace ReactiveUI.AndroidX
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveDialogFragment>> Changed => this.GetChangedObservable();
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <inheritdoc />
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         public override void OnPause()
@@ -124,8 +115,8 @@ namespace ReactiveUI.AndroidX
         {
             if (disposing)
             {
-                _activated?.Dispose();
-                _deactivated?.Dispose();
+                _activated.Dispose();
+                _deactivated.Dispose();
             }
 
             base.Dispose(disposing);

@@ -58,9 +58,9 @@ namespace ReactiveUI.AndroidX
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
     {
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-        private readonly Subject<(int requestCode, Result result, Intent? intent)> _activityResult = new Subject<(int requestCode, Result result, Intent? intent)>();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
+        private readonly Subject<(int requestCode, Result result, Intent? intent)> _activityResult = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
@@ -119,22 +119,13 @@ namespace ReactiveUI.AndroidX
         public IObservable<(int requestCode, Result result, Intent? intent)> ActivityResult => _activityResult.AsObservable();
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <inheritdoc/>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <summary>
         /// Starts the activity for result asynchronously.
@@ -202,9 +193,9 @@ namespace ReactiveUI.AndroidX
         {
             if (disposing)
             {
-                _activated?.Dispose();
-                _deactivated?.Dispose();
-                _activityResult?.Dispose();
+                _activated.Dispose();
+                _deactivated.Dispose();
+                _activityResult.Dispose();
             }
 
             base.Dispose(disposing);

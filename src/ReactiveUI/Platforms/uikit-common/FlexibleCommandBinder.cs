@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// Configuration map.
         /// </summary>
         private readonly Dictionary<Type, CommandBindingInfo> _config =
-            new Dictionary<Type, CommandBindingInfo>();
+            new();
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, bool hasEventTarget)
@@ -39,7 +39,7 @@ namespace ReactiveUI
                 .OrderByDescending(x => _config[x].Affinity)
                 .FirstOrDefault();
 
-            if (match == null)
+            if (match is null)
             {
                 return 0;
             }
@@ -51,7 +51,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
-            if (target == null)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -63,7 +63,7 @@ namespace ReactiveUI
                 .OrderByDescending(x => _config[x].Affinity)
                 .FirstOrDefault();
 
-            if (match == null)
+            if (match is null)
             {
                 throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
             }
@@ -75,10 +75,8 @@ namespace ReactiveUI
 
         /// <inheritdoc/>
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-            where TEventArgs : EventArgs
-        {
+            where TEventArgs : EventArgs =>
             throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Creates a commands binding from event and a property.
@@ -91,7 +89,7 @@ namespace ReactiveUI
         /// <param name="enabledProperty">Enabled Property.</param>
         protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, PropertyInfo enabledProperty)
         {
-            if (command == null)
+            if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
@@ -110,7 +108,7 @@ namespace ReactiveUI
             });
 
             var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
-            if (enabledSetter == null)
+            if (enabledSetter is null)
             {
                 return actionDisp;
             }
@@ -142,7 +140,7 @@ namespace ReactiveUI
         /// <returns>Returns a disposable.</returns>
         protected static IDisposable ForTargetAction(ICommand command, object target, IObservable<object> commandParameter, PropertyInfo enabledProperty)
         {
-            if (command == null)
+            if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
@@ -153,8 +151,7 @@ namespace ReactiveUI
 
             IDisposable actionDisposable = Disposable.Empty;
 
-            var ctl = target as UIControl;
-            if (ctl != null)
+            if (target is UIControl ctl)
             {
                 var eh = new EventHandler((o, e) =>
                 {
@@ -169,7 +166,7 @@ namespace ReactiveUI
             }
 
             var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
-            if (enabledSetter == null)
+            if (enabledSetter is null)
             {
                 return actionDisposable;
             }
@@ -197,10 +194,7 @@ namespace ReactiveUI
         /// <param name="type">The type.</param>
         /// <param name="affinity">The affinity.</param>
         /// <param name="createBinding">The create binding.</param>
-        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding)
-        {
-            _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
-        }
+        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding) => _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
 
         private class CommandBindingInfo
         {

@@ -27,9 +27,9 @@ namespace ReactiveUI
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
-        private readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
-        private readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
-        private readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
+        private readonly Subject<UIApplication> _finishedLaunching = new();
+        private readonly Subject<UIApplication> _activated = new();
+        private readonly Subject<UIApplication> _backgrounded = new();
 
         private bool _isDisposed;
 
@@ -86,7 +86,7 @@ namespace ReactiveUI
         /// <param name="launchOptions">The launch options.</param>
         public void FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            if (launchOptions != null)
+            if (launchOptions is not null)
             {
                 LaunchOptions = launchOptions.Keys.ToDictionary(k => k.ToString(), v => launchOptions[v].ToString());
             }
@@ -104,19 +104,13 @@ namespace ReactiveUI
         /// Advances the on activated observable.
         /// </summary>
         /// <param name="application">The application.</param>
-        public void OnActivated(UIApplication application)
-        {
-            _activated.OnNext(application);
-        }
+        public void OnActivated(UIApplication application) => _activated.OnNext(application);
 
         /// <summary>
         /// Advances the enter background observable.
         /// </summary>
         /// <param name="application">The application.</param>
-        public void DidEnterBackground(UIApplication application)
-        {
-            _backgrounded.OnNext(application);
-        }
+        public void DidEnterBackground(UIApplication application) => _backgrounded.OnNext(application);
 
         /// <inheritdoc />
         public void Dispose()

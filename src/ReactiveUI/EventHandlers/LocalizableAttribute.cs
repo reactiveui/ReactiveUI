@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Specialized;
 
 #if PORTABLE || NETFX_CORE || ANDROID
 namespace ReactiveUI
@@ -19,10 +18,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="LocalizableAttribute"/> class.
         /// </summary>
         /// <param name="isLocalizable">If the target is localizable or not.</param>
-        public LocalizableAttribute(bool isLocalizable)
-        {
-            IsLocalizable = isLocalizable;
-        }
+        public LocalizableAttribute(bool isLocalizable) => IsLocalizable = isLocalizable;
 
         /// <summary>
         /// Gets a value indicating whether the target is localizable.

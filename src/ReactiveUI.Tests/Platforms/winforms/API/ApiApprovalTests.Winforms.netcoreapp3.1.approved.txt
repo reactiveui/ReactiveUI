@@ -1,3 +1,4 @@
+[assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/reactiveui/reactiveui")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v3.1", FrameworkDisplayName="")]
 namespace ReactiveUI.Winforms
 {
@@ -16,14 +17,14 @@ namespace ReactiveUI.Winforms
     {
         public CreatesWinformsCommandBinding() { }
         public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter) { }
-        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
+        public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
     public class PanelSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger
     {
         public PanelSetMethodBindingConverter() { }
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
-        public object PerformSet(object? toTarget, object? newValue, object[]? arguments) { }
+        public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
     public class PlatformOperations
     {
@@ -68,7 +69,7 @@ namespace ReactiveUI.Winforms
     {
         public TableContentSetMethodBindingConverter() { }
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
-        public object PerformSet(object? toTarget, object? newValue, object[]? arguments) { }
+        public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
     public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
@@ -104,6 +105,6 @@ namespace ReactiveUI.Winforms
     {
         public WinformsCreatesObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
 }

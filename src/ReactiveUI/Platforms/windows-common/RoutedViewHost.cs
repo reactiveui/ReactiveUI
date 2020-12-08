@@ -98,8 +98,7 @@ namespace ReactiveUI
                 .StartWith(platformGetter())
                 .Select(x => x);
 
-            var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel!),
+            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel!).CombineLatest(
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (viewModel, contract) => (viewModel, contract));
 
@@ -118,7 +117,7 @@ namespace ReactiveUI
                         }
 
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                        var view = viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel, null);
+                        var view = viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel);
 
                         if (view == null)
                         {
@@ -127,7 +126,8 @@ namespace ReactiveUI
 
                         view.ViewModel = x.viewModel;
                         Content = view;
-                    }, ex => RxApp.DefaultExceptionHandler?.OnNext(ex)));
+                    },
+                    ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
             });
         }
 
@@ -146,7 +146,7 @@ namespace ReactiveUI
         /// </summary>
         public object DefaultContent
         {
-            get => (object)GetValue(DefaultContentProperty);
+            get => GetValue(DefaultContentProperty);
             set => SetValue(DefaultContentProperty, value);
         }
 

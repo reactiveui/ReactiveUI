@@ -17,9 +17,8 @@ namespace ReactiveUI.Tests
     public class AutoPersistCollectionTests
     {
         [Fact]
-        public void AutoPersistCollectionSmokeTest()
-        {
-            new TestScheduler().With(sched =>
+        public void AutoPersistCollectionSmokeTest() =>
+            new TestScheduler().With(scheduler =>
             {
                 var manualSave = new Subject<Unit>();
 
@@ -36,51 +35,49 @@ namespace ReactiveUI.Tests
                     manualSave,
                     TimeSpan.FromMilliseconds(100));
 
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);
 
                 // By being added to collection, AutoPersist is enabled for item
                 item.IsNotNullString = "Foo";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Removed from collection = no save
                 fixture.Clear();
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Item isn't in the collection, it doesn't get persisted anymore
                 item.IsNotNullString = "Bar";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Added back item gets saved
                 fixture.Add(item);
-                sched.AdvanceByMs(100);  // Compensate for scheduling
+                scheduler.AdvanceByMs(100);  // Compensate for scheduling
                 item.IsNotNullString = "Baz";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(2, timesSaved);
 
                 // Even if we issue a reset
                 fixture.SuspendNotifications().Dispose(); // Will cause a reset.
 
-                sched.AdvanceByMs(100);  // Compensate for scheduling
+                scheduler.AdvanceByMs(100);  // Compensate for scheduling
                 item.IsNotNullString = "Bamf";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(3, timesSaved);
 
                 // Remove by hand = no save
                 fixture.RemoveAt(0);
                 item.IsNotNullString = "Blomf";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(3, timesSaved);
             });
-        }
 
         [Fact]
-        public void AutoPersistCollectionDisconnectsOnDispose()
-        {
-            new TestScheduler().With(sched =>
+        public void AutoPersistCollectionDisconnectsOnDispose() =>
+            new TestScheduler().With(scheduler =>
             {
                 var manualSave = new Subject<Unit>();
 
@@ -97,12 +94,12 @@ namespace ReactiveUI.Tests
                     manualSave,
                     TimeSpan.FromMilliseconds(100));
 
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);
 
                 // By being added to collection, AutoPersist is enabled for item
                 item.IsNotNullString = "Foo";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Dispose = no save
@@ -110,34 +107,33 @@ namespace ReactiveUI.Tests
 
                 // Removed from collection = no save
                 fixture.Clear();
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Item isn't in the collection, it doesn't get persisted anymore
                 item.IsNotNullString = "Bar";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Added back item + dispose = no save
                 fixture.Add(item);
-                sched.AdvanceByMs(100);  // Compensate for scheduling
+                scheduler.AdvanceByMs(100);  // Compensate for scheduling
                 item.IsNotNullString = "Baz";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Even if we issue a reset, no save
                 fixture.SuspendNotifications().Dispose(); // Will trigger a reset.
-                sched.AdvanceByMs(100);  // Compensate for scheduling
+                scheduler.AdvanceByMs(100);  // Compensate for scheduling
                 item.IsNotNullString = "Bamf";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Remove by hand = no save
                 fixture.RemoveAt(0);
                 item.IsNotNullString = "Blomf";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
             });
-        }
     }
 }

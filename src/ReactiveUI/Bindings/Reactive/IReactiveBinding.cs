@@ -15,20 +15,12 @@ namespace ReactiveUI
     /// actually care about this object, just that it is disposable).
     /// </summary>
     /// <typeparam name="TView">The view type.</typeparam>
-    /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <typeparam name="TValue">The value type.</typeparam>
-    public interface IReactiveBinding<out TView, out TViewModel, out TValue> : IDisposable
-        where TViewModel : class
+    public interface IReactiveBinding<out TView, out TValue> : IDisposable
         where TView : IViewFor
     {
         /// <summary>
-        /// Gets the instance of the view model this binding is applied to.
-        /// </summary>
-        [Obsolete("This property has been deprecated. Refer to ViewModelExpression for a representation of the bound view model.")]
-        TViewModel? ViewModel { get; }
-
-        /// <summary>
-        /// Gets an expression representing the propertyon the viewmodel bound to the view.
+        /// Gets an expression representing the property on the viewmodel bound to the view.
         /// This can be a child property, for example x.Foo.Bar.Baz in which case
         /// that will be the expression.
         /// </summary>
@@ -49,7 +41,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets an observable representing changed values for the binding.
         /// </summary>
-        IObservable<TValue> Changed { get; }
+        IObservable<TValue?> Changed { get; }
 
         /// <summary>
         /// Gets the direction of the binding.

@@ -7,7 +7,7 @@ namespace ReactiveUI.Tests
 {
     public class ObjChain3 : ReactiveObject
     {
-        private HostTestFixture _model = new HostTestFixture();
+        private HostTestFixture _model = new();
 
         public HostTestFixture Model
         {

@@ -31,7 +31,7 @@ namespace ReactiveUI.Tests.Xaml
 
             var fixture = new HostTestView();
 
-            var output = new List<string>();
+            var output = new List<string?>();
 
             Assert.Equal(0, output.Count);
             Assert.Null(fixture.ViewModel);

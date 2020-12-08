@@ -15,7 +15,7 @@ namespace ReactiveUI
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
         private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache =
-            new MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?>(
+            new(
                                                                                (types, _) =>
                                                                                {
                                                                                    // NB: String is a Magical Type(tm) to TypeConverters. If we are
@@ -42,13 +42,13 @@ namespace ReactiveUI
         public int GetAffinityForObjects(Type fromType, Type toType)
         {
             var converter = _typeConverterCache.Get((fromType, toType));
-            return converter != null ? 10 : 0;
+            return converter is not null ? 10 : 0;
         }
 
         /// <inheritdoc/>
         public bool TryConvert(object? @from, Type toType, object? conversionHint, out object? result)
         {
-            if (from == null)
+            if (from is null)
             {
                 result = null;
                 return true;
@@ -57,7 +57,7 @@ namespace ReactiveUI
             var fromType = from.GetType();
             var converter = _typeConverterCache.Get((fromType, toType));
 
-            if (converter == null)
+            if (converter is null)
             {
                 throw new ArgumentException($"Can't convert {fromType} to {toType}. To fix this, register a IBindingTypeConverter");
             }

@@ -13,15 +13,9 @@ namespace ReactiveUI.Legacy
         private IDisposable? _inner;
         private int _refCount = 1;
 
-        public RefcountDisposeWrapper(IDisposable inner)
-        {
-            _inner = inner;
-        }
+        public RefcountDisposeWrapper(IDisposable inner) => _inner = inner;
 
-        public void AddRef()
-        {
-            Interlocked.Increment(ref _refCount);
-        }
+        public void AddRef() => Interlocked.Increment(ref _refCount);
 
         public void Release()
         {

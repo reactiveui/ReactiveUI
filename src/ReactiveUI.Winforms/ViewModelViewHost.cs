@@ -150,7 +150,8 @@ namespace ReactiveUI.Winforms
         private IEnumerable<IDisposable> SetupBindings()
         {
             var viewChanges =
-                this.WhenAnyValue(x => x.Content)
+                this.WhenAnyValue(x => x!.Content)
+                    .WhereNotNull()
                     .OfType<Control>()
                     .Subscribe(x =>
                     {
@@ -169,9 +170,9 @@ namespace ReactiveUI.Winforms
                         ResumeLayout();
                     });
 
-            yield return viewChanges;
+            yield return viewChanges!;
 
-            yield return this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
+            yield return this.WhenAnyValue(x => x.DefaultContent).Subscribe(x =>
             {
                 if (x != null)
                 {
@@ -179,10 +180,10 @@ namespace ReactiveUI.Winforms
                 }
             });
 
-            ViewContractObservable = Observable<string>.Default;
+            ViewContractObservable = Observable.Return(string.Empty);
 
             var vmAndContract =
-                this.WhenAny(x => x.ViewModel, x => x.Value)
+                this.WhenAnyValue(x => x.ViewModel)
                     .CombineLatest(
                         this.WhenAnyObservable(x => x.ViewContractObservable!),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
@@ -223,7 +224,8 @@ namespace ReactiveUI.Winforms
                         view.ViewModel = x.ViewModel;
                         Content = view;
                     }
-                }, RxApp.DefaultExceptionHandler!.OnNext);
+                },
+                RxApp.DefaultExceptionHandler!.OnNext);
         }
     }
 }

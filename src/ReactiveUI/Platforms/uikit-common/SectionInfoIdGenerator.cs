@@ -9,9 +9,6 @@ namespace ReactiveUI
     {
         private static int nextSectionInfoId;
 
-        public static int Generate()
-        {
-            return nextSectionInfoId++;
-        }
+        public static int Generate() => nextSectionInfoId++;
     }
 }

@@ -16,7 +16,7 @@ namespace ReactiveUI.Tests
     {
         public static string? Serialize<T>(T serializeObject)
         {
-            if (serializeObject == null)
+            if (serializeObject is null)
             {
                 return null;
             }
@@ -32,14 +32,9 @@ namespace ReactiveUI.Tests
         {
             var obj = Activator.CreateInstance<T>();
 
-            if (obj == null)
-            {
-                return default;
-            }
-
             var ms = new MemoryStream(Encoding.Unicode.GetBytes(json));
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
-            obj = (T)serializer.ReadObject(ms);
+            obj = serializer.ReadObject(ms) as T;
             ms.Close();
             return obj;
         }

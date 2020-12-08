@@ -77,19 +77,17 @@ namespace ReactiveUI
             NSString cellKey,
             Action<TCell>? initializeCellAction = null,
             Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
-            where TCell : UICollectionViewCell
-        {
-            return sourceObservable
+            where TCell : UICollectionViewCell =>
+            sourceObservable
                 .Select(
                     src => new[]
-                    {
-                        new CollectionViewSectionInformation<TSource, TCell>(
-                            src,
-                            cellKey,
-                            initializeCellAction)
-                    })
+                           {
+                               new CollectionViewSectionInformation<TSource, TCell>(
+                                   src,
+                                   cellKey,
+                                   initializeCellAction)
+                           })
                 .BindTo(collectionView, initSource);
-        }
 
         /// <summary>
         /// Extension method that binds an observable of a collection
@@ -112,7 +110,7 @@ namespace ReactiveUI
             Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UICollectionViewCell
         {
-            if (collectionView == null)
+            if (collectionView is null)
             {
                 throw new ArgumentNullException(nameof(collectionView));
             }

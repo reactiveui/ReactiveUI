@@ -4,9 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using Splat;
 
 namespace ReactiveUI
@@ -36,7 +33,6 @@ namespace ReactiveUI
         /// <param name="newValue">The value to set on the new object.</param>
         /// <param name="arguments">The arguments required. Used for indexer based values.</param>
         /// <returns>The value that was set.</returns>
-        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:ClosingSquareBracketsMustBeSpacedCorrectly", Justification = "Reviewed.")]
-        object PerformSet(object? toTarget, object? newValue, object[]? arguments);
+        object? PerformSet(object? toTarget, object? newValue, object?[]? arguments);
     }
 }

@@ -6,12 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor
@@ -23,7 +21,7 @@ namespace ReactiveUI.Blazor
     public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, INotifyPropertyChanged, ICanActivate, IDisposable
         where T : class, INotifyPropertyChanged
     {
-        private readonly Subject<Unit> _initSubject = new Subject<Unit>();
+        private readonly Subject<Unit> _initSubject = new();
 
         private T? _viewModel;
 
@@ -83,20 +81,20 @@ namespace ReactiveUI.Blazor
             {
                 this.WhenAnyValue(x => x.ViewModel)
                     .Skip(1)
-                    .Where(x => x != null)
+                    .WhereNotNull()
                     .Subscribe(_ => InvokeAsync(StateHasChanged));
             }
 
             this.WhenAnyValue(x => x.ViewModel)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
                     eventHandler =>
                     {
-                        void Handler(object sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                        void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
                         return Handler;
                     },
-                    eh => x!.PropertyChanged += eh,
-                    eh => x!.PropertyChanged -= eh))
+                    eh => x.PropertyChanged += eh,
+                    eh => x.PropertyChanged -= eh))
                 .Switch()
                 .Do(_ => InvokeAsync(StateHasChanged))
                 .Subscribe();
@@ -106,10 +104,7 @@ namespace ReactiveUI.Blazor
         /// Invokes the property changed event.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Cleans up the managed resources of the object.
@@ -121,7 +116,7 @@ namespace ReactiveUI.Blazor
             {
                 if (disposing)
                 {
-                    _initSubject?.Dispose();
+                    _initSubject.Dispose();
                 }
 
                 _disposedValue = true;

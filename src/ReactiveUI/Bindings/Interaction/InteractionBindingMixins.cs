@@ -40,14 +40,12 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
                 Func<InteractionContext<TInput, TOutput>, Task> handler)
             where TViewModel : class
-            where TView : class, IViewFor
-        {
-            return binderImplementation.BindInteraction(
+            where TView : class, IViewFor =>
+            binderImplementation.BindInteraction(
                 viewModel,
                 view,
                 propertyName,
                 handler);
-        }
 
         /// <summary>
         /// Binds the <see cref="Interaction{TInput, TOutput}"/> on a ViewModel to the specified handler.
@@ -68,13 +66,11 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
                 Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
             where TViewModel : class
-            where TView : class, IViewFor
-        {
-            return binderImplementation.BindInteraction(
+            where TView : class, IViewFor =>
+            binderImplementation.BindInteraction(
                 viewModel,
                 view,
                 propertyName,
                 handler);
-        }
     }
 }

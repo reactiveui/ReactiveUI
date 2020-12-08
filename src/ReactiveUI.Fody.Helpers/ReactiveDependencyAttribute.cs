@@ -4,8 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ReactiveUI.Fody.Helpers
 {
@@ -16,21 +14,16 @@ namespace ReactiveUI.Fody.Helpers
     [AttributeUsage(AttributeTargets.Property)]
     public class ReactiveDependencyAttribute : Attribute
     {
-        private readonly string _targetName;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveDependencyAttribute"/> class.
         /// </summary>
         /// <param name="targetName">Name of the target.</param>
-        public ReactiveDependencyAttribute(string targetName)
-        {
-            _targetName = targetName;
-        }
+        public ReactiveDependencyAttribute(string targetName) => Target = targetName;
 
         /// <summary>
         /// Gets the name of the backing property.
         /// </summary>
-        public string Target => _targetName;
+        public string Target { get; }
 
         /// <summary>
         /// Gets or sets the target property on the backing property.

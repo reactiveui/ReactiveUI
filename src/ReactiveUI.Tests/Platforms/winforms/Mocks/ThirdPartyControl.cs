@@ -27,9 +27,6 @@ namespace AThirdPartyNamespace
             }
         }
 
-        protected virtual void OnValueChanged()
-        {
-            ValueChanged?.Invoke(this, EventArgs.Empty);
-        }
+        protected virtual void OnValueChanged() => ValueChanged?.Invoke(this, EventArgs.Empty);
     }
 }

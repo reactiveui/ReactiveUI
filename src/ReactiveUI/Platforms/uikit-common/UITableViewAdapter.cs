@@ -56,10 +56,7 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(FinishReloadData);
         }
 
-        public void BeginUpdates()
-        {
-            _view.BeginUpdates();
-        }
+        public void BeginUpdates() => _view.BeginUpdates();
 
         public void PerformUpdates(Action updates, Action completion)
         {
@@ -75,55 +72,25 @@ namespace ReactiveUI
             }
         }
 
-        public void EndUpdates()
-        {
-            _view.EndUpdates();
-        }
+        public void EndUpdates() => _view.EndUpdates();
 
-        public void InsertSections(NSIndexSet indexes)
-        {
-            _view.InsertSections(indexes, InsertSectionsAnimation);
-        }
+        public void InsertSections(NSIndexSet indexes) => _view.InsertSections(indexes, InsertSectionsAnimation);
 
-        public void DeleteSections(NSIndexSet indexes)
-        {
-            _view.DeleteSections(indexes, DeleteSectionsAnimation);
-        }
+        public void DeleteSections(NSIndexSet indexes) => _view.DeleteSections(indexes, DeleteSectionsAnimation);
 
-        public void ReloadSections(NSIndexSet indexes)
-        {
-            _view.ReloadSections(indexes, ReloadSectionsAnimation);
-        }
+        public void ReloadSections(NSIndexSet indexes) => _view.ReloadSections(indexes, ReloadSectionsAnimation);
 
-        public void MoveSection(int fromIndex, int toIndex)
-        {
-            _view.MoveSection(fromIndex, toIndex);
-        }
+        public void MoveSection(int fromIndex, int toIndex) => _view.MoveSection(fromIndex, toIndex);
 
-        public void InsertItems(NSIndexPath[] paths)
-        {
-            _view.InsertRows(paths, InsertRowsAnimation);
-        }
+        public void InsertItems(NSIndexPath[] paths) => _view.InsertRows(paths, InsertRowsAnimation);
 
-        public void DeleteItems(NSIndexPath[] paths)
-        {
-            _view.DeleteRows(paths, DeleteRowsAnimation);
-        }
+        public void DeleteItems(NSIndexPath[] paths) => _view.DeleteRows(paths, DeleteRowsAnimation);
 
-        public void ReloadItems(NSIndexPath[] paths)
-        {
-            _view.ReloadRows(paths, ReloadRowsAnimation);
-        }
+        public void ReloadItems(NSIndexPath[] paths) => _view.ReloadRows(paths, ReloadRowsAnimation);
 
-        public void MoveItem(NSIndexPath path, NSIndexPath newPath)
-        {
-            _view.MoveRow(path, newPath);
-        }
+        public void MoveItem(NSIndexPath path, NSIndexPath newPath) => _view.MoveRow(path, newPath);
 
-        public UITableViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path)
-        {
-            return _view.DequeueReusableCell(cellKey, path);
-        }
+        public UITableViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path) => _view.DequeueReusableCell(cellKey, path);
 
         public void Dispose()
         {

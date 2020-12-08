@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -51,18 +52,22 @@ namespace ReactiveUI.Tests
 
             fixture.Navigate.Execute(new TestViewModel { SomeProp = "B" });
             Assert.Equal(3, output.Count);
-            Assert.Equal("B", ((TestViewModel)output.Last()).SomeProp);
+            Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
 
             fixture.NavigateBack.Execute();
             Assert.Equal(4, output.Count);
-            Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
+            Assert.Equal("A", (output.Last() as TestViewModel)?.SomeProp);
         }
 
         [Fact]
         public void CurrentViewModelObservableIsAccurateViaWhenAnyObservable()
         {
             var fixture = new TestScreen();
-            fixture.WhenAnyObservable(x => x.Router!.CurrentViewModel).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
+            fixture.WhenAnyObservable(x => x.Router!.CurrentViewModel)
+                   .ToObservableChangeSet(ImmediateScheduler.Instance)
+                   .Bind(out var output)
+                   .Subscribe();
+
             fixture.Router = new RoutingState();
 
             Assert.Equal(1, output.Count);
@@ -72,11 +77,11 @@ namespace ReactiveUI.Tests
 
             fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "B" });
             Assert.Equal(3, output.Count);
-            Assert.Equal("B", ((TestViewModel)output.Last()).SomeProp);
+            Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
 
             fixture.Router.NavigateBack.Execute();
             Assert.Equal(4, output.Count);
-            Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
+            Assert.Equal("A", (output.Last() as TestViewModel)?.SomeProp);
         }
 
         [Fact]

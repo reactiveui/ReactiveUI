@@ -31,17 +31,12 @@ namespace ReactiveUI
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
-
+    [SuppressMessage("Design", "CA1063: Remove IDisposable from the list of interfaces implemented", Justification = "Deliberate usage")]
     public
 #if HAS_UNO
         partial
 #endif
-        class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
-#if !HAS_UNO
-#pragma warning disable SA1001 // Commas should be spaced correctly
-        , IDisposable
-#pragma warning restore SA1001 // Commas should be spaced correctly
-#endif
+        class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger, IDisposable
     {
         /// <summary>
         /// The default content dependency property.
@@ -61,8 +56,8 @@ namespace ReactiveUI
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, ViewContractChanged));
 
-        private readonly Subject<Unit> _updateViewModel = new Subject<Unit>();
-        private readonly Subject<Unit> _updateViewContract = new Subject<Unit>();
+        private readonly Subject<Unit> _updateViewModel = new();
+        private readonly Subject<Unit> _updateViewContract = new();
         private string? _viewContract;
         private bool _isDisposed;
 
@@ -110,7 +105,7 @@ namespace ReactiveUI
             ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
                 eventHandler =>
                 {
-                    void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter()!);
+                    void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter()!);
                     return Handler;
                 },
                 x => SizeChanged += x,
@@ -160,7 +155,7 @@ namespace ReactiveUI
         /// </summary>
         public IViewLocator? ViewLocator { get; set; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
@@ -180,8 +175,8 @@ namespace ReactiveUI
 
             if (isDisposing)
             {
-                _updateViewModel?.Dispose();
-                _updateViewContract?.Dispose();
+                _updateViewModel.Dispose();
+                _updateViewContract.Dispose();
             }
 
             _isDisposed = true;
@@ -206,7 +201,7 @@ namespace ReactiveUI
             }
 
             var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-            var viewInstance = viewLocator.ResolveView(viewModel, contract) ?? viewLocator.ResolveView(viewModel, null);
+            var viewInstance = viewLocator.ResolveView(viewModel, contract) ?? viewLocator.ResolveView(viewModel);
 
             if (viewInstance == null)
             {

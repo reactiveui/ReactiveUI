@@ -59,7 +59,7 @@ namespace ReactiveUI.Tests
         public string NullHatingString {
             get { return _NullHatingString; }
             set {
-                if (value == null) throw new ArgumentNullException("No nulls! I get confused!");
+                if (value is null) throw new ArgumentNullException("No nulls! I get confused!");
                 this.RaiseAndSetIfChanged(ref _NullHatingString, value);
             }
         }
