@@ -87,19 +87,14 @@ namespace ReactiveUI.Blend
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
-        protected static void OnStateObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        protected static void OnStateObservableChanged(DependencyObject? sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e == null)
-            {
-                throw new ArgumentNullException(nameof(e));
-            }
-
-            if (!(sender is FollowObservableStateBehavior item))
+            if (sender is not FollowObservableStateBehavior item)
             {
                 throw new ArgumentException("Sender must be of type " + nameof(FollowObservableStateBehavior), nameof(sender));
             }
 
-            if (item._watcher != null)
+            if (item._watcher is not null)
             {
                 item._watcher.Dispose();
                 item._watcher = null;
@@ -122,7 +117,7 @@ namespace ReactiveUI.Blend
                     }
 #endif
                 },
-                ex =>
+                _ =>
                 {
                     if (!item.AutoResubscribeOnError)
                     {
@@ -136,7 +131,7 @@ namespace ReactiveUI.Blend
         /// <inheritdoc/>
         protected override void OnDetaching()
         {
-            if (_watcher != null)
+            if (_watcher is not null)
             {
                 _watcher.Dispose();
                 _watcher = null;

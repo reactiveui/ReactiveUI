@@ -18,10 +18,10 @@ namespace ReactiveUI
         /// <typeparam name="T">The view model type.</typeparam>
         /// <param name="item">The routing state.</param>
         /// <returns>The matching ViewModel or null if none exists.</returns>
-        public static T FindViewModelInStack<T>(this RoutingState item)
+        public static T? FindViewModelInStack<T>(this RoutingState item)
             where T : IRoutableViewModel
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new System.ArgumentNullException(nameof(item));
             }
@@ -34,9 +34,9 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="item">The routing state.</param>
         /// <returns>The matching ViewModel or null if none exists.</returns>
-        public static IRoutableViewModel GetCurrentViewModel(this RoutingState item)
+        public static IRoutableViewModel? GetCurrentViewModel(this RoutingState item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new System.ArgumentNullException(nameof(item));
             }

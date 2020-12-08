@@ -7,7 +7,6 @@ using System;
 using System.Reactive.Concurrency;
 using System.Windows.Forms;
 
-using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI.Winforms
@@ -21,7 +20,7 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
-            if (registerFunction == null)
+            if (registerFunction is null)
             {
                 throw new ArgumentNullException(nameof(registerFunction));
             }

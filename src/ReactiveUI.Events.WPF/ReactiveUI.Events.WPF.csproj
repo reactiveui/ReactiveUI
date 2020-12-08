@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <TargetFrameworks>net461;net462;net47;net471;net472;net48;netcoreapp3.1;net5.0-windows</TargetFrameworks>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
     <PackageDescription>Provides Observable-based events API for WPF UI controls &amp; event handlers</PackageDescription>
     <PackageId>ReactiveUI.Events.WPF</PackageId>
@@ -16,11 +16,39 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="System.Reactive" Version="4.4.1" />
+      <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="Events_WPF.cs" />
+  <ItemGroup Condition=" $(TargetFramework) == 'net461' ">
+    <Compile Include="Events_net461.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'net462' ">
+    <Compile Include="Events_net462.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'net47' ">
+    <Compile Include="Events_net47.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'net471' ">
+    <Compile Include="Events_net471.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'net472' ">
+    <Compile Include="Events_net472.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'net48' ">
+    <Compile Include="Events_net48.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'netcoreapp3.1' ">
+    <Compile Include="Events_netcoreapp3.1.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework) == 'net5.0-windows' ">
+    <Compile Include="Events_net5.0.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">

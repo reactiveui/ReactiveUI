@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+
 using Splat;
 
 namespace ReactiveUI
@@ -22,7 +23,7 @@ namespace ReactiveUI
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
     public class PropertyBinderImplementation : IPropertyBinderImplementation
     {
-        private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?>(
+        private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new(
             (types, _) =>
             {
                 return Locator.Current.GetServices<IBindingTypeConverter?>()
@@ -31,9 +32,10 @@ namespace ReactiveUI
                         var score = x?.GetAffinityForObjects(types.fromType, types.toType) ?? -1;
                         return score > acc.currentAffinity && score > 0 ? (score, x) : acc;
                     }).currentBinding;
-            }, RxApp.SmallCacheLimit);
+            },
+            RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?> _setMethodCache = new MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?>(
+        private static readonly MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?> _setMethodCache = new(
             (type, _) =>
             {
                 return Locator.Current.GetServices<ISetMethodBindingConverter>()
@@ -42,7 +44,8 @@ namespace ReactiveUI
                         var score = x.GetAffinityForObjects(type.fromType, type.toType);
                         return score > acc.currentAffinity && score > 0 ? (score, x) : acc;
                     }).currentBinding;
-            }, RxApp.SmallCacheLimit);
+            },
+            RxApp.SmallCacheLimit);
 
         static PropertyBinderImplementation()
         {
@@ -52,7 +55,7 @@ namespace ReactiveUI
         private delegate bool OutFunc<in T1, T2>(T1 t1, out T2 t2);
 
         /// <inheritdoc />
-        public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -99,7 +102,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
-        public IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -146,7 +149,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc />
-        public IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        public IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -179,7 +182,7 @@ namespace ReactiveUI
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret)
             {
-                return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewExpression, vmExpression, Observable.Empty<TVProp>(), BindingDirection.OneWay, Disposable.Empty);
+                return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, Observable.Empty<TVProp>(), BindingDirection.OneWay, Disposable.Empty);
             }
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
@@ -195,11 +198,11 @@ namespace ReactiveUI
 
             var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
 
-            return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+            return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
         }
 
         /// <inheritdoc />
-        public IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
+        public IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
             TViewModel? viewModel,
             TView view,
             Expression<Func<TViewModel, TProp>> vmProperty,
@@ -223,14 +226,14 @@ namespace ReactiveUI
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret)
             {
-                return new ReactiveBinding<TView, TViewModel, TOut>(view, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
+                return new ReactiveBinding<TView, TOut>(view, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
             }
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>().Select(selector);
 
             var (disposable, obs) = BindToDirect<TView, TOut, TOut>(source, view, viewExpression);
 
-            return new ReactiveBinding<TView, TViewModel, TOut>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+            return new ReactiveBinding<TView, TOut>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
         }
 
         /// <inheritdoc />
@@ -287,7 +290,7 @@ namespace ReactiveUI
             return _typeConverterCache.Get((lhs, rhs));
         }
 
-        private static Func<object?, object?, object[]?, object>? GetSetConverter(Type? fromType, Type targetType)
+        private static Func<object?, object?, object?[]?, object?>? GetSetConverter(Type? fromType, Type targetType)
         {
             if (fromType == null)
             {
@@ -313,9 +316,9 @@ namespace ReactiveUI
             var defaultSetter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
 
-            object? SetThenGet(object paramTarget, object? paramValue, object[]? paramParams)
+            object? SetThenGet(object paramTarget, object? paramValue, object?[]? paramParams)
             {
-                Func<object?, object?, object[]?, object>? converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
+                var converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
 
                 if (defaultGetter == null)
                 {
@@ -334,7 +337,7 @@ namespace ReactiveUI
 
             IObservable<TValue> setObservable;
 
-            if (viewExpression.GetParent().NodeType == ExpressionType.Parameter)
+            if (viewExpression.GetParent()?.NodeType == ExpressionType.Parameter)
             {
                 setObservable = changeObservable.Select(x => (TValue)SetThenGet(target, x, viewExpression.GetArgumentsArray())!);
             }
@@ -408,7 +411,7 @@ namespace ReactiveUI
             return shouldBind;
         }
 
-        private IReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        private IReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             TViewModel? viewModel,
             TView view,
             Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -496,7 +499,7 @@ namespace ReactiveUI
             // want the ViewModel to win at first.
             signalInitialUpdate.OnNext(true);
 
-            return new ReactiveBinding<TView, TViewModel, (object? view, bool isViewModel)>(
+            return new ReactiveBinding<TView, (object? view, bool isViewModel)>(
                    view,
                    viewExpression,
                    vmExpression,

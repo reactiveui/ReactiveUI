@@ -29,7 +29,7 @@ namespace ReactiveUI.Testing
         /// <param name="field">The field.</param>
         /// <param name="value">The value.</param>
         /// <returns>The builder.</returns>
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref TField field, TField value)
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, out TField field, TField value)
             where TBuilder : IBuilder
         {
             field = value;
@@ -51,19 +51,12 @@ namespace ReactiveUI.Testing
                 IEnumerable<TField> values)
             where TBuilder : IBuilder
         {
-            if (field == null)
+            if (field is null)
             {
                 throw new System.ArgumentNullException(nameof(field));
             }
 
-            if (values == null)
-            {
-                field = null;
-            }
-            else
-            {
-                field.AddRange(values);
-            }
+            field.AddRange(values);
 
             return builder;
         }
@@ -80,7 +73,7 @@ namespace ReactiveUI.Testing
         public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField>? field, TField value)
             where TBuilder : IBuilder
         {
-            if (field == null)
+            if (field is null)
             {
                 throw new System.ArgumentNullException(nameof(field));
             }
@@ -106,7 +99,7 @@ namespace ReactiveUI.Testing
             where TBuilder : IBuilder
             where TKey : notnull
         {
-            if (dictionary == null)
+            if (dictionary is null)
             {
                 throw new System.ArgumentNullException(nameof(dictionary));
             }
@@ -134,7 +127,7 @@ namespace ReactiveUI.Testing
             where TBuilder : IBuilder
             where TKey : notnull
         {
-            if (dictionary == null)
+            if (dictionary is null)
             {
                 throw new System.ArgumentNullException(nameof(dictionary));
             }
@@ -159,7 +152,7 @@ namespace ReactiveUI.Testing
                 IDictionary<TKey, TField> keyValuePair)
             where TKey : notnull
         {
-            if (dictionary == null)
+            if (dictionary is null)
             {
                 throw new System.ArgumentNullException(nameof(dictionary));
             }

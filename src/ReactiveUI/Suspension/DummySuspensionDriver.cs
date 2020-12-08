@@ -17,21 +17,12 @@ namespace ReactiveUI
     public class DummySuspensionDriver : ISuspensionDriver
     {
         /// <inheritdoc/>
-        public IObservable<object> LoadState()
-        {
-            return Observable<object>.Default;
-        }
+        public IObservable<object> LoadState() => Observable<object>.Default;
 
         /// <inheritdoc/>
-        public IObservable<Unit> SaveState(object state)
-        {
-            return Observables.Unit;
-        }
+        public IObservable<Unit> SaveState(object state) => Observables.Unit;
 
         /// <inheritdoc/>
-        public IObservable<Unit> InvalidateState()
-        {
-            return Observables.Unit;
-        }
+        public IObservable<Unit> InvalidateState() => Observables.Unit;
     }
 }

@@ -77,7 +77,7 @@ namespace ReactiveUI
         private bool _canExecuteValue;
 
         /// <inheritdoc/>
-        event EventHandler ICommand.CanExecuteChanged
+        event EventHandler? ICommand.CanExecuteChanged
         {
             add => _canExecuteChanged += value;
             remove => _canExecuteChanged -= value;
@@ -129,16 +129,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        bool ICommand.CanExecute(object parameter)
-        {
-            return ICommandCanExecute(parameter);
-        }
+        bool ICommand.CanExecute(object? parameter) => ICommandCanExecute(parameter);
 
         /// <inheritdoc/>
-        void ICommand.Execute(object parameter)
-        {
-            ICommandExecute(parameter);
-        }
+        void ICommand.Execute(object? parameter) => ICommandExecute(parameter);
 
         /// <summary>
         /// Subscribes to execution results from this command.
@@ -179,7 +173,34 @@ namespace ReactiveUI
         /// <returns>
         /// An observable that will tick the single result value if and when it becomes available.
         /// </returns>
-        public abstract IObservable<TResult> Execute(TParam parameter = default(TParam));
+        public abstract IObservable<TResult> Execute(TParam parameter);
+
+        /// <summary>
+        /// Gets an observable that, when subscribed, executes this command.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Invoking this method will return a cold (lazy) observable that, when subscribed, will execute the logic
+        /// encapsulated by the command. It is worth restating that the returned observable is lazy. Nothing will
+        /// happen if you call <c>Execute</c> and neglect to subscribe (directly or indirectly) to the returned observable.
+        /// </para>
+        /// <para>
+        /// If no parameter value is provided, a default value of type <typeparamref name="TParam"/> will be passed into
+        /// the execution logic.
+        /// </para>
+        /// <para>
+        /// Any number of subscribers can subscribe to a given execution observable and the execution logic will only
+        /// run once. That is, the result is broadcast to those subscribers.
+        /// </para>
+        /// <para>
+        /// In those cases where execution fails, there will be no result value. Instead, the failure will tick through the
+        /// <see cref="ThrownExceptions"/> observable.
+        /// </para>
+        /// </remarks>
+        /// <returns>
+        /// An observable that will tick the single result value if and when it becomes available.
+        /// </returns>
+        public abstract IObservable<TResult> Execute();
 
         /// <summary>
         /// Disposes of the managed resources.
@@ -203,10 +224,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="parameter">The parameter being passed to the ICommand.</param>
         /// <returns>If the command can be executed.</returns>
-        protected virtual bool ICommandCanExecute(object parameter)
-        {
-            return _canExecuteValue;
-        }
+        protected virtual bool ICommandCanExecute(object? parameter) => _canExecuteValue;
 
         /// <summary>
         /// Will be called by the methods from the ICommand interface.
@@ -216,18 +234,17 @@ namespace ReactiveUI
         protected virtual void ICommandExecute(object? parameter)
         {
             // ensure that null is coerced to default(TParam) so that commands taking value types will use a sensible default if no parameter is supplied
-            if (parameter == null)
-            {
-                parameter = default(TParam);
-            }
+            parameter ??= default(TParam);
 
-            if (parameter != null && !(parameter is TParam))
+            if (parameter is not null && !(parameter is TParam))
             {
                 throw new InvalidOperationException(
                     $"Command requires parameters of type {typeof(TParam).FullName}, but received parameter of type {parameter.GetType().FullName}.");
             }
 
-            Execute((TParam)parameter!)
+            IObservable<TResult> result = parameter is null ? Execute() : Execute((TParam)parameter);
+
+            result
                 .Catch(Observable<TResult>.Empty)
                 .Subscribe();
         }

@@ -33,10 +33,7 @@ namespace ReactiveUI.Tests
         [IgnoreDataMember]
         private string? _usesExprRaiseSet;
 
-        public TestFixture()
-        {
-            TestCollection = new ObservableCollectionExtended<int>();
-        }
+        public TestFixture() => TestCollection = new ObservableCollectionExtended<int>();
 
         [DataMember]
         public string? IsNotNullString
@@ -76,7 +73,7 @@ namespace ReactiveUI.Tests
         public List<string>? StackOverflowTrigger
         {
             get => _stackOverflowTrigger;
-            set => this.RaiseAndSetIfChanged(ref _stackOverflowTrigger, value.ToList());
+            set => this.RaiseAndSetIfChanged(ref _stackOverflowTrigger, value?.ToList());
         }
 
         [DataMember]

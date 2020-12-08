@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -27,7 +28,14 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(TextBox), "Text"));
 
             Expression<Func<TextBox, string>> expression = x => x.Text;
-            var propertyName = expression.Body.GetMemberInfo().Name;
+
+            var propertyName = expression.Body.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("propertyName should not be null.");
+            }
+
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
@@ -51,7 +59,13 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"));
 
             Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
-            var propertyName = expression.Body.GetMemberInfo().Name;
+            var propertyName = expression.Body.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("propertyName should not be null.");
+            }
+
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
@@ -76,7 +90,13 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"));
 
             Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = x => x.Value;
-            var propertyName = expression.Body.GetMemberInfo().Name;
+            var propertyName = expression.Body.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("propertyName should not be null.");
+            }
+
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
@@ -110,7 +130,7 @@ namespace ReactiveUI.Tests.Winforms
             var disp2 = view.Bind(vm, x => x.SomeDouble, x => x.Property3.Text);
             vm.SomeDouble = 123.4;
 
-            Assert.Equal(vm.SomeDouble.ToString(), view.Property3.Text);
+            Assert.Equal(vm.SomeDouble.ToString(CultureInfo.InvariantCulture), view.Property3.Text);
         }
 
         [Fact]

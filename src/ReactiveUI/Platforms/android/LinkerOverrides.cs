@@ -41,7 +41,7 @@ namespace ReactiveUI
             var rb = new RatingBar(null);
             rb.Rating = rb.Rating;
 
-            var cv = new CalendarView(null);
+            var cv = new CalendarView(null!);
             cv.Date = cv.Date;
 
             var th = new TabHost(null);

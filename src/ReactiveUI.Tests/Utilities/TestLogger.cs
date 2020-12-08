@@ -25,24 +25,12 @@ namespace ReactiveUI.Tests
 
         public LogLevel Level { get; set; }
 
-        public void Write(Exception exception, string message, Type type, LogLevel logLevel)
-        {
-            Messages.Add((message, typeof(TestLogger), logLevel));
-        }
+        public void Write(Exception exception, string message, Type type, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
 
-        public void Write(string message, LogLevel logLevel)
-        {
-            Messages.Add((message, typeof(TestLogger), logLevel));
-        }
+        public void Write(string message, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
 
-        public void Write(Exception exception, string message, LogLevel logLevel)
-        {
-            Messages.Add((message, typeof(TestLogger), logLevel));
-        }
+        public void Write(Exception exception, string message, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
 
-        public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
-        {
-            Messages.Add((message, type, logLevel));
-        }
+        public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel) => Messages.Add((message, type, logLevel));
     }
 }

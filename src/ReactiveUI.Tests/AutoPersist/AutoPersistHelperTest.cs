@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests
             var shouldDie = true;
             try
             {
-                fixture.AutoPersist(x => Observables.Unit);
+                fixture.AutoPersist(_ => Observables.Unit);
             }
             catch (Exception)
             {
@@ -35,9 +35,8 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void AutoPersistHelperShouldntTriggerOnNonPersistableProperties()
-        {
-            new TestScheduler().With(sched =>
+        public void AutoPersistHelperShouldntTriggerOnNonPersistableProperties() =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture();
                 var manualSave = new Subject<Unit>();
@@ -53,20 +52,18 @@ namespace ReactiveUI.Tests
                     TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);
 
                 // Change to not serialized = no saving
                 fixture.NotSerialized = "Foo";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);
             });
-        }
 
         [Fact]
-        public void AutoPersistHelperSavesOnInterval()
-        {
-            new TestScheduler().With(sched =>
+        public void AutoPersistHelperSavesOnInterval() =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture();
                 var manualSave = new Subject<Unit>();
@@ -82,32 +79,30 @@ namespace ReactiveUI.Tests
                     TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);
 
                 // Change = one save
                 fixture.IsNotNullString = "Foo";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Two fast changes = one save
                 fixture.IsNotNullString = "Foo";
                 fixture.IsNotNullString = "Bar";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(2, timesSaved);
 
                 // Trigger save twice = one save
                 manualSave.OnNext(Unit.Default);
                 manualSave.OnNext(Unit.Default);
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(3, timesSaved);
             });
-        }
 
         [Fact]
-        public void AutoPersistHelperDisconnects()
-        {
-            new TestScheduler().With(sched =>
+        public void AutoPersistHelperDisconnects() =>
+            new TestScheduler().With(scheduler =>
             {
                 var fixture = new TestFixture();
                 var manualSave = new Subject<Unit>();
@@ -123,26 +118,25 @@ namespace ReactiveUI.Tests
                     TimeSpan.FromMilliseconds(100));
 
                 // No changes = no saving
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(0, timesSaved);
 
                 // Change = one save
                 fixture.IsNotNullString = "Foo";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Two changes after dispose = no save
                 disp.Dispose();
                 fixture.IsNotNullString = "Foo";
                 fixture.IsNotNullString = "Bar";
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
 
                 // Trigger save after dispose = no save
                 manualSave.OnNext(Unit.Default);
-                sched.AdvanceByMs(2 * 100);
+                scheduler.AdvanceByMs(2 * 100);
                 Assert.Equal(1, timesSaved);
             });
-        }
     }
 }

@@ -26,12 +26,12 @@ namespace ReactiveUI
         /// <returns>A disposable.</returns>
         public static IDisposable BindToTarget(this ICommand command, View control)
         {
-            if (command == null)
+            if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }

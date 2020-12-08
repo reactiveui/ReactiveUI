@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>MonoAndroid90</TargetFrameworks>
+    <TargetFrameworks>MonoAndroid10.0</TargetFrameworks>
     <PackageDescription>Provides ReactiveUI extensions for the Android Support Library</PackageDescription>
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
     <Nullable>enable</Nullable>

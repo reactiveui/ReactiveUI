@@ -25,7 +25,7 @@ namespace ReactiveUI
         /// </returns>
         public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -47,7 +47,7 @@ namespace ReactiveUI
         /// </returns>
         public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -55,6 +55,33 @@ namespace ReactiveUI
             if (!item.TryGetValue(out var returnValue))
             {
                 throw new Exception($"One of the properties in the expression '{item.GetPropertyName()}' was null");
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Returns the current value of a property given a notification that
+        /// it has changed.
+        /// </summary>
+        /// <typeparam name="TSender">The sender.</typeparam>
+        /// <typeparam name="TValue">The changed value.</typeparam>
+        /// <param name="item">
+        /// The <see cref="IObservedChange{TSender, TValue}"/> instance to get the value of.
+        /// </param>
+        /// <returns>
+        /// The current value of the property.
+        /// </returns>
+        public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item)
+        {
+            if (item is null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (!item.TryGetValue(out var returnValue))
+            {
+                return default;
             }
 
             return returnValue;
@@ -74,10 +101,8 @@ namespace ReactiveUI
         /// the given change notification stream.
         /// </returns>
         public static IObservable<TValue> Value<TSender, TValue>(
-            this IObservable<IObservedChange<TSender, TValue>> item)
-        {
-            return item.Select(GetValue);
-        }
+            this IObservable<IObservedChange<TSender, TValue>> item) =>
+            item.Select(GetValue);
 
         /// <summary>
         /// Attempts to return the current value of a property given a
@@ -97,11 +122,6 @@ namespace ReactiveUI
         /// </returns>
         internal static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item, out TValue changeValue)
         {
-            if (Equals(item.Sender, null))
-            {
-                throw new ArgumentNullException(nameof(item), "Sender of the item is null");
-            }
-
             if (!Equals(item.Value, default(TValue)))
             {
                 changeValue = item.Value;
@@ -135,7 +155,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            if (target != null)
+            if (target is not null)
             {
                 Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), item.GetValue());
             }

@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
@@ -31,8 +32,7 @@ namespace ReactiveUI
         /// <summary>
         /// Configuration map.
         /// </summary>
-        private readonly Dictionary<Type, Dictionary<string, ObservablePropertyInfo>> _config =
-            new Dictionary<Type, Dictionary<string, ObservablePropertyInfo>>();
+        private readonly Dictionary<Type, Dictionary<string, ObservablePropertyInfo>> _config = new();
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
@@ -48,7 +48,7 @@ namespace ReactiveUI
                                .OrderByDescending(x => x.Affinity)
                                .FirstOrDefault();
 
-            if (match == null)
+            if (match is null)
             {
                 return 0;
             }
@@ -57,10 +57,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>>? GetNotificationForProperty(
+        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
             object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            if (sender == null)
+            if (sender is null)
             {
                 throw new ArgumentNullException(nameof(sender));
             }
@@ -78,12 +78,12 @@ namespace ReactiveUI
                                .OrderByDescending(x => x.Affinity)
                                .FirstOrDefault();
 
-            if (match == null)
+            if (match is null)
             {
                 throw new NotSupportedException($"Notifications for {type.Name}.{propertyName} are not supported");
             }
 
-            return match.CreateObservable?.Invoke((NSObject)sender, expression);
+            return match.CreateObservable.Invoke((NSObject)sender, expression);
         }
 
 #if UIKIT
@@ -94,19 +94,17 @@ namespace ReactiveUI
         /// <param name="sender">The sender.</param>
         /// <param name="expression">The expression.</param>
         /// <param name="evt">The control event to listen for.</param>
-        protected static IObservable<IObservedChange<object, object>> ObservableFromUIControlEvent(NSObject sender, Expression expression, UIControlEvent evt)
-        {
-            return Observable.Create<IObservedChange<object, object>>(subj =>
+        protected static IObservable<IObservedChange<object, object?>> ObservableFromUIControlEvent(NSObject sender, Expression expression, UIControlEvent evt) =>
+            Observable.Create<IObservedChange<object, object?>>(subj =>
             {
                 var control = (UIControl)sender;
 
-                EventHandler handler = (s, e) => subj.OnNext(new ObservedChange<object, object>(sender, expression));
+                EventHandler handler = (s, e) => subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
 
                 control.AddTarget(handler, evt);
 
                 return Disposable.Create(() => control.RemoveTarget(handler, evt));
             });
-        }
 #endif
 
         /// <summary>
@@ -116,13 +114,12 @@ namespace ReactiveUI
         /// <param name="sender">Sender.</param>
         /// <param name="expression">Expression.</param>
         /// <param name="notification">Notification.</param>
-        protected static IObservable<IObservedChange<object, object>> ObservableFromNotification(NSObject sender, Expression expression, NSString notification)
-        {
-            return Observable.Create<IObservedChange<object, object>>(subj =>
+        protected static IObservable<IObservedChange<object, object?>> ObservableFromNotification(NSObject sender, Expression expression, NSString notification) =>
+            Observable.Create<IObservedChange<object, object?>>(subj =>
             {
                 var handle = NSNotificationCenter.DefaultCenter.AddObserver(
                     notification,
-                    _ => subj.OnNext(new ObservedChange<object, object>(sender, expression)),
+                    _ => subj.OnNext(new ObservedChange<object, object?>(sender, expression, default)),
                     sender);
 
                 return Disposable.Create(() =>
@@ -130,7 +127,6 @@ namespace ReactiveUI
                     NSNotificationCenter.DefaultCenter.RemoveObserver(handle);
                 });
             });
-        }
 
         /// <summary>
         /// Creates an Observable for a NSNotificationCenter notification.
@@ -139,16 +135,11 @@ namespace ReactiveUI
         /// <param name="sender">Sender.</param>
         /// <param name="expression">The expression.</param>
         /// <param name="eventName">The event name.</param>
-        protected static IObservable<IObservedChange<object, object>> ObservableFromEvent(NSObject sender, Expression expression, string eventName)
-        {
-            return Observable.Create<IObservedChange<object, object>>(subj =>
-            {
-                return Observable.FromEventPattern(sender, eventName).Subscribe((e) =>
+        protected static IObservable<IObservedChange<object, object?>> ObservableFromEvent(NSObject sender, Expression expression, string eventName) =>
+            Observable.Create<IObservedChange<object, object?>>(subj => Observable.FromEventPattern(sender, eventName).Subscribe(_ =>
                 {
-                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
-                });
-            });
-        }
+                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
+                }));
 
         /// <summary>
         /// Registers an observable factory for the specified type and property.
@@ -157,7 +148,7 @@ namespace ReactiveUI
         /// <param name="property">Property.</param>
         /// <param name="affinity">Affinity.</param>
         /// <param name="createObservable">Create observable.</param>
-        protected void Register(Type type, string property, int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object>>> createObservable)
+        protected void Register(Type type, string property, int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> createObservable)
         {
             if (!_config.TryGetValue(type, out Dictionary<string, ObservablePropertyInfo> typeProperties))
             {
@@ -165,14 +156,18 @@ namespace ReactiveUI
                 _config[type] = typeProperties;
             }
 
-            typeProperties[property] = new ObservablePropertyInfo { Affinity = affinity, CreateObservable = createObservable };
+            typeProperties[property] = new ObservablePropertyInfo(affinity, createObservable);
         }
 
-        internal class ObservablePropertyInfo
+        [SuppressMessage("Design", "SA1201:Should not follow method", Justification = "Stylecop not aware of records.")]
+        internal record ObservablePropertyInfo
         {
-            public int Affinity { get; set; }
+            public ObservablePropertyInfo(int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> createObservable) =>
+                (Affinity, CreateObservable) = (affinity, createObservable);
 
-            public Func<NSObject, Expression, IObservable<IObservedChange<object, object>>>? CreateObservable { get; set; }
+            public int Affinity { get; }
+
+            public Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> CreateObservable { get; }
         }
     }
 }

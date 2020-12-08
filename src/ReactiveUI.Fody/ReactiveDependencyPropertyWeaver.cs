@@ -52,39 +52,45 @@ namespace ReactiveUI.Fody
         /// </exception>
         public void Execute()
         {
-            var reactiveUI = ModuleDefinition?.AssemblyReferences.Where(x => x.Name == "ReactiveUI").OrderByDescending(x => x.Version).FirstOrDefault();
-            if (reactiveUI == null)
+            if (ModuleDefinition is null)
             {
-                LogInfo?.Invoke("Could not find assembly: ReactiveUI (" + string.Join(", ", ModuleDefinition?.AssemblyReferences.Select(x => x.Name)) + ")");
+                LogInfo?.Invoke("The module definition has not been defined.");
+                return;
+            }
+
+            var reactiveUI = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI").OrderByDescending(x => x.Version).FirstOrDefault();
+            if (reactiveUI is null)
+            {
+                LogInfo?.Invoke("Could not find assembly: ReactiveUI (" + string.Join(", ", ModuleDefinition.AssemblyReferences.Select(x => x.Name)) + ")");
                 return;
             }
 
             LogInfo?.Invoke($"{reactiveUI.Name} {reactiveUI.Version}");
-            var helpers = ModuleDefinition?.AssemblyReferences.Where(x => x.Name == "ReactiveUI.Fody.Helpers").OrderByDescending(x => x.Version).FirstOrDefault();
-            if (helpers == null)
+            var helpers = ModuleDefinition.AssemblyReferences.Where(x => x.Name == "ReactiveUI.Fody.Helpers").OrderByDescending(x => x.Version).FirstOrDefault();
+            if (helpers is null)
             {
-                LogInfo?.Invoke("Could not find assembly: ReactiveUI.Fody.Helpers (" + string.Join(", ", ModuleDefinition?.AssemblyReferences.Select(x => x.Name)) + ")");
+                LogInfo?.Invoke("Could not find assembly: ReactiveUI.Fody.Helpers (" + string.Join(", ", ModuleDefinition.AssemblyReferences.Select(x => x.Name)) + ")");
                 return;
             }
 
             LogInfo?.Invoke($"{helpers.Name} {helpers.Version}");
             var reactiveObject = new TypeReference("ReactiveUI", "IReactiveObject", ModuleDefinition, reactiveUI);
 
-            var targetTypes = ModuleDefinition.GetAllTypes().Where(x => x.BaseType != null && reactiveObject.IsAssignableFrom(x.BaseType)).ToArray();
+            var targetTypes = ModuleDefinition.GetAllTypes().Where(x => x.BaseType is not null && reactiveObject.IsAssignableFrom(x.BaseType)).ToArray();
             var reactiveObjectExtensions = new TypeReference("ReactiveUI", "IReactiveObjectExtensions", ModuleDefinition, reactiveUI).Resolve();
-            if (reactiveObjectExtensions == null)
+            if (reactiveObjectExtensions is null)
             {
                 throw new Exception("reactiveObjectExtensions is null");
             }
 
-            var raisePropertyChangedMethod = ModuleDefinition?.ImportReference(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaisePropertyChanged"));
-            if (raisePropertyChangedMethod == null)
+            var raisePropertyChangedMethod = ModuleDefinition.ImportReference(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaisePropertyChanged"));
+            if (raisePropertyChangedMethod is null)
             {
                 throw new Exception("raisePropertyChangedMethod is null");
             }
 
-            var reactiveDependencyAttribute = ModuleDefinition?.FindType("ReactiveUI.Fody.Helpers", "ReactiveDependencyAttribute", helpers);
-            if (reactiveDependencyAttribute == null)
+            var reactiveDependencyAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ReactiveDependencyAttribute", helpers);
+            if (reactiveDependencyAttribute is null)
             {
                 throw new Exception("reactiveDecoratorAttribute is null");
             }
@@ -119,11 +125,11 @@ namespace ReactiveUI.Fody
                     var objPropertyTarget = targetType.Properties.FirstOrDefault(x => x.Name == targetValue);
                     var objFieldTarget = targetType.Fields.FirstOrDefault(x => x.Name == targetValue);
 
-                    var objDependencyTargetType = objPropertyTarget != null
+                    var objDependencyTargetType = objPropertyTarget is not null
                         ? objPropertyTarget.PropertyType.Resolve()
                         : objFieldTarget?.FieldType.Resolve();
 
-                    if (objDependencyTargetType == null)
+                    if (objDependencyTargetType is null)
                     {
                         LogError?.Invoke("Couldn't result the dependency type");
                         continue;
@@ -148,14 +154,14 @@ namespace ReactiveUI.Fody
                     var destinationProperty = objDependencyTargetType.Properties.First(x => x.Name == destinationPropertyName);
 
                     // The property on the facade/decorator should have a setter
-                    if (facadeProperty.SetMethod == null)
+                    if (facadeProperty.SetMethod is null)
                     {
                         LogError?.Invoke($"Property {facadeProperty.DeclaringType.FullName}.{facadeProperty.Name} has no setter, therefore it is not possible for the property to change, and thus should not be marked with [ReactiveDecorator]");
                         continue;
                     }
 
                     // The property on the dependency should have a setter e.g. Dependency.SomeProperty = value;
-                    if (destinationProperty.SetMethod == null)
+                    if (destinationProperty.SetMethod is null)
                     {
                         LogError?.Invoke($"Dependency object's property {destinationProperty.DeclaringType.FullName}.{destinationProperty.Name} has no setter, therefore it is not possible for the property to change, and thus should not be marked with [ReactiveDecorator]");
                         continue;
@@ -171,10 +177,10 @@ namespace ReactiveUI.Fody
                     foreach (var constructor in constructors)
                     {
                         var fieldAssignment = constructor.Body.Instructions.SingleOrDefault(x => Equals(x.Operand, oldFieldDefinition) || Equals(x.Operand, oldField));
-                        if (fieldAssignment != null)
+                        if (fieldAssignment is not null)
                         {
                             // Replace field assignment with a property set (the stack semantics are the same for both,
-                            // so happily we don't have to manipulate the bytecode any further.)
+                            // so happily we don't have to manipulate the byte code any further.)
                             var setterCall = constructor.Body.GetILProcessor().Create(facadeProperty.SetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, facadeProperty.SetMethod);
                             constructor.Body.GetILProcessor().Replace(fieldAssignment, setterCall);
                         }
@@ -185,7 +191,7 @@ namespace ReactiveUI.Fody
                     facadeProperty.GetMethod.Body.Emit(il =>
                     {
                         il.Emit(OpCodes.Ldarg_0);
-                        if (objPropertyTarget != null)
+                        if (objPropertyTarget is not null)
                         {
                             il.Emit(objPropertyTarget.GetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, objPropertyTarget.GetMethod);
                         }
@@ -215,7 +221,7 @@ namespace ReactiveUI.Fody
                     facadeProperty.SetMethod.Body.Emit(il =>
                     {
                         il.Emit(OpCodes.Ldarg_0);
-                        if (objPropertyTarget != null)
+                        if (objPropertyTarget is not null)
                         {
                             il.Emit(objPropertyTarget.GetMethod.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, objPropertyTarget.GetMethod);
                         }

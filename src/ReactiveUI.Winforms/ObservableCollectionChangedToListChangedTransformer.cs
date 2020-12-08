@@ -19,37 +19,43 @@ namespace ReactiveUI.Winforms
         /// <returns>An enumerable of <see cref="ListChangedEventArgs"/>.</returns>
         internal static IEnumerable<ListChangedEventArgs> AsListChangedEventArgs(this NotifyCollectionChangedEventArgs ea)
         {
-            if (ea == null)
-            {
-                yield break;
-            }
-
             switch (ea.Action)
             {
-            case NotifyCollectionChangedAction.Reset:
-                yield return new ListChangedEventArgs(ListChangedType.Reset, -1);
-                break;
-            case NotifyCollectionChangedAction.Replace:
-                yield return new ListChangedEventArgs(ListChangedType.ItemChanged, ea.NewStartingIndex);
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                foreach (int index in Enumerable.Range(ea.OldStartingIndex, ea.OldItems.Count))
+                case NotifyCollectionChangedAction.Reset:
+                    yield return new ListChangedEventArgs(ListChangedType.Reset, -1);
+                    break;
+
+                case NotifyCollectionChangedAction.Replace:
+                    yield return new ListChangedEventArgs(ListChangedType.ItemChanged, ea.NewStartingIndex);
+                    break;
+
+                case NotifyCollectionChangedAction.Remove when ea.OldItems is not null:
                 {
-                    yield return new ListChangedEventArgs(ListChangedType.ItemDeleted, index);
+                    foreach (int index in Enumerable.Range(ea.OldStartingIndex, ea.OldItems.Count))
+                    {
+                        yield return new ListChangedEventArgs(ListChangedType.ItemDeleted, index);
+                    }
+
+                    break;
                 }
 
-                break;
-            case NotifyCollectionChangedAction.Add:
-                foreach (int index in Enumerable.Range(ea.NewStartingIndex, ea.NewItems.Count))
+                case NotifyCollectionChangedAction.Add when ea.NewItems is not null:
                 {
-                    yield return new ListChangedEventArgs(ListChangedType.ItemAdded, index);
+                    foreach (int index in Enumerable.Range(ea.NewStartingIndex, ea.NewItems.Count))
+                    {
+                        yield return new ListChangedEventArgs(ListChangedType.ItemAdded, index);
+                    }
+
+                    break;
                 }
 
-                break;
-            case NotifyCollectionChangedAction.Move:
-                // http://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
-                yield return new ListChangedEventArgs(ListChangedType.ItemMoved, ea.NewStartingIndex, ea.OldStartingIndex);
-                break;
+                case NotifyCollectionChangedAction.Move:
+                    // http://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
+                    yield return new ListChangedEventArgs(
+                        ListChangedType.ItemMoved,
+                        ea.NewStartingIndex,
+                        ea.OldStartingIndex);
+                    break;
             }
         }
     }

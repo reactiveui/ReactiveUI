@@ -17,7 +17,7 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _disposables = new();
         private RoutingState? _router;
         private Control? _defaultContent;
         private IObservable<string>? _viewContractObservable;
@@ -31,10 +31,10 @@ namespace ReactiveUI.Winforms
 
             _disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
             {
-                if (x != null && Controls.Count == 0)
+                if (x is not null && Controls.Count == 0)
                 {
                     Controls.Add(InitView(x));
-                    components.Add(DefaultContent);
+                    components?.Add(DefaultContent);
                 }
             }));
 
@@ -46,43 +46,48 @@ namespace ReactiveUI.Winforms
                         this.WhenAnyObservable(x => x.ViewContractObservable!),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-            Control viewLastAdded = null!;
+            Control? viewLastAdded = null!;
             _disposables.Add(vmAndContract.Subscribe(
                 x =>
-            {
-                // clear all hosted controls (view or default content)
-                SuspendLayout();
-                Controls.Clear();
-
-                if (viewLastAdded != null)
                 {
-                    viewLastAdded.Dispose();
-                }
+                    // clear all hosted controls (view or default content)
+                    SuspendLayout();
+                    Controls.Clear();
 
-                if (x.ViewModel == null)
-                {
-                    if (DefaultContent != null)
+                    if (viewLastAdded is not null)
                     {
-                        InitView(DefaultContent);
-                        Controls.Add(DefaultContent);
+                        viewLastAdded.Dispose();
+                    }
+
+                    if (x.ViewModel is null)
+                    {
+                        if (DefaultContent is not null)
+                        {
+                            InitView(DefaultContent);
+                            Controls.Add(DefaultContent);
+                        }
+
+                        ResumeLayout();
+                        return;
+                    }
+
+                    IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                    if (view is not null)
+                    {
+                        view.ViewModel = x.ViewModel;
+
+                        viewLastAdded = InitView((Control)view);
+                    }
+
+                    if (viewLastAdded is not null)
+                    {
+                        Controls.Add(viewLastAdded);
                     }
 
                     ResumeLayout();
-                    return;
-                }
-
-                IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                IViewFor? view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                if (view != null)
-                {
-                    view.ViewModel = x.ViewModel;
-
-                    viewLastAdded = InitView((Control)view);
-                }
-
-                Controls.Add(viewLastAdded);
-                ResumeLayout();
-            }, RxApp.DefaultExceptionHandler!.OnNext));
+                },
+                RxApp.DefaultExceptionHandler!.OnNext));
         }
 
         /// <inheritdoc/>
@@ -133,16 +138,10 @@ namespace ReactiveUI.Winforms
         public IViewLocator? ViewLocator { get; set; }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// Clean up any resources being used.
@@ -150,7 +149,7 @@ namespace ReactiveUI.Winforms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
+            if (disposing && components is not null)
             {
                 components.Dispose();
                 _disposables.Dispose();

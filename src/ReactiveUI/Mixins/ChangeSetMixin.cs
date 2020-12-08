@@ -21,7 +21,7 @@ namespace ReactiveUI
         /// <returns>If the change set is caused by the count being changed.</returns>
         public static bool HasCountChanged(this IChangeSet changeSet)
         {
-            if (changeSet == null)
+            if (changeSet is null)
             {
                 throw new ArgumentNullException(nameof(changeSet));
             }
@@ -34,10 +34,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="changeSet">The change list to evaluate.</param>
         /// <returns>An observable of changes that only have count changes.</returns>
-        public static IObservable<IChangeSet> CountChanged(this IObservable<IChangeSet> changeSet)
-        {
-            return changeSet.Where(HasCountChanged);
-        }
+        public static IObservable<IChangeSet> CountChanged(this IObservable<IChangeSet> changeSet) => changeSet.Where(HasCountChanged);
 
         /// <summary>
         /// Is the change set associated with a count change.
@@ -45,9 +42,6 @@ namespace ReactiveUI
         /// <typeparam name="T">The change set type.</typeparam>
         /// <param name="changeSet">The change list to evaluate.</param>
         /// <returns>An observable of changes that only have count changes.</returns>
-        public static IObservable<IChangeSet<T>> CountChanged<T>(this IObservable<IChangeSet<T>> changeSet)
-        {
-            return changeSet.Where(x => x.HasCountChanged());
-        }
+        public static IObservable<IChangeSet<T>> CountChanged<T>(this IObservable<IChangeSet<T>> changeSet) => changeSet.Where(x => x.HasCountChanged());
     }
 }

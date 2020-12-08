@@ -21,31 +21,31 @@ namespace ReactiveUI
         /// <typeparam name="T">The type.</typeparam>
         /// <typeparam name="TObj">The object type.</typeparam>
         /// <param name="this">The source observable to log to splat.</param>
-        /// <param name="klass">The hosting class, usually 'this'.</param>
+        /// <param name="logObject">The hosting class, usually 'this'.</param>
         /// <param name="message">An optional method.</param>
         /// <param name="stringifier">An optional Func to convert Ts to strings.</param>
         /// <returns>The same Observable.</returns>
         public static IObservable<T> Log<T, TObj>(
             this IObservable<T> @this,
-            TObj klass,
+            TObj logObject,
             string? message = null,
             Func<T, string>? stringifier = null)
             where TObj : IEnableLogger
         {
             message ??= string.Empty;
 
-            if (stringifier != null)
+            if (stringifier is not null)
             {
                 return @this.Do(
-                    x => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, stringifier(x)),
-                    ex => klass.Log().Warn(ex, message + " " + "OnError"),
-                    () => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
+                    x => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, stringifier(x)),
+                    ex => logObject.Log().Warn(ex, message + " " + "OnError"),
+                    () => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
             }
 
             return @this.Do(
-                x => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, x),
-                ex => klass.Log().Warn(ex, message + " " + "OnError"),
-                () => klass.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
+                x => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, x),
+                ex => logObject.Log().Warn(ex, message + " " + "OnError"),
+                () => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
         }
 
         /// <summary>
@@ -83,13 +83,11 @@ namespace ReactiveUI
         /// <returns>The same Observable.</returns>
         public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string? message = null)
             where TObj : IEnableLogger
-            where TException : Exception
-        {
-            return @this.Catch<T, TException>(ex =>
+            where TException : Exception =>
+            @this.Catch<T, TException>(ex =>
             {
                 klass.Log().Warn(ex, message ?? string.Empty);
                 return next(ex);
             });
-        }
     }
 }

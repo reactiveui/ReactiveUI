@@ -29,7 +29,7 @@ namespace ReactiveUI.Tests
 
         public override void After(MethodInfo methodUnderTest)
         {
-            if (_storedCulture != null)
+            if (_storedCulture is not null)
             {
                 Thread.CurrentThread.CurrentCulture = _storedCulture;
             }

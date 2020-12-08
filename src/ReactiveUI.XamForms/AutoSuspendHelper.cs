@@ -47,19 +47,16 @@ namespace ReactiveUI.XamForms
     /// </remarks>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
-        private readonly Subject<IDisposable> _onSleep = new Subject<IDisposable>();
-        private readonly Subject<Unit> _onLaunchingNew = new Subject<Unit>();
-        private readonly Subject<Unit> _onResume = new Subject<Unit>();
-        private readonly Subject<Unit> _onStart = new Subject<Unit>();
+        private readonly Subject<IDisposable> _onSleep = new();
+        private readonly Subject<Unit> _onLaunchingNew = new();
+        private readonly Subject<Unit> _onResume = new();
+        private readonly Subject<Unit> _onStart = new();
         private bool _disposedValue; // To detect redundant calls
 
         /// <summary>
         /// Initializes static members of the <see cref="AutoSuspendHelper"/> class.
         /// </summary>
-        static AutoSuspendHelper()
-        {
-            AppDomain.CurrentDomain.UnhandledException += (o, e) => UntimelyDemise.OnNext(Unit.Default);
-        }
+        static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException += (_, _) => UntimelyDemise.OnNext(Unit.Default);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
@@ -76,7 +73,7 @@ namespace ReactiveUI.XamForms
         /// <summary>
         /// Gets a subject to indicate whether the application has crashed.
         /// </summary>
-        public static Subject<Unit> UntimelyDemise { get; } = new Subject<Unit>();
+        public static Subject<Unit> UntimelyDemise { get; } = new();
 
         /// <summary>
         /// Call this method in the constructor of your Xamarin.Forms
@@ -123,10 +120,10 @@ namespace ReactiveUI.XamForms
 
             if (disposing)
             {
-                _onLaunchingNew?.Dispose();
-                _onResume?.Dispose();
-                _onStart?.Dispose();
-                _onSleep?.Dispose();
+                _onLaunchingNew.Dispose();
+                _onResume.Dispose();
+                _onStart.Dispose();
+                _onSleep.Dispose();
             }
 
             _disposedValue = true;

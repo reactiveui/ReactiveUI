@@ -24,8 +24,8 @@ namespace ReactiveUI
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged<ReactiveCollectionViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        private Subject<Unit> _activated = new Subject<Unit>();
-        private Subject<Unit> _deactivated = new Subject<Unit>();
+        private Subject<Unit> _activated = new();
+        private Subject<Unit> _deactivated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell"/> class.
@@ -93,16 +93,10 @@ namespace ReactiveUI
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -111,16 +105,13 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         public override void WillMoveToSuperview(UIView? newsuper)
         {
             base.WillMoveToSuperview(newsuper);
-            (newsuper != null ? _activated : _deactivated).OnNext(Unit.Default);
+            (newsuper is not null ? _activated : _deactivated).OnNext(Unit.Default);
         }
 
         /// <inheritdoc/>

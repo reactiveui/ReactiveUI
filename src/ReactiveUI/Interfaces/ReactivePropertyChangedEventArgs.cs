@@ -20,10 +20,8 @@ namespace ReactiveUI
         /// <param name="sender">The sender.</param>
         /// <param name="propertyName">Name of the property.</param>
         public ReactivePropertyChangedEventArgs(TSender sender, string propertyName)
-            : base(propertyName)
-        {
+            : base(propertyName) =>
             Sender = sender;
-        }
 
         /// <summary>
         /// Gets the sender which triggered the property changed event.

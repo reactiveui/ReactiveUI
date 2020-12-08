@@ -6,7 +6,7 @@ namespace ReactiveUI.XamForms.Tests.Mocks
 {
     public class NavigationViewModel : ReactiveObject, IScreen
     {
-        public RoutingState Router { get; } = new RoutingState();
+        public RoutingState Router { get; } = new();
 
         public IObservable<IRoutableViewModel> Navigate(string name)
         {
@@ -26,9 +26,6 @@ namespace ReactiveUI.XamForms.Tests.Mocks
             return Router.NavigateAndReset.Execute(viewModel);
         }
 
-        public IObservable<Unit> NavigateBack()
-        {
-            return Router.NavigateBack.Execute();
-        }
+        public IObservable<Unit> NavigateBack() => Router.NavigateBack.Execute();
     }
 }

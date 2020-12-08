@@ -50,7 +50,7 @@ namespace ReactiveUI
             }
 
             var source = new ReactiveTableViewSource<TSource>(tableView);
-            if (initSource != null)
+            if (initSource is not null)
             {
                 initSource(source);
             }
@@ -82,19 +82,17 @@ namespace ReactiveUI
             float sizeHint,
             Action<TCell>? initializeCellAction = null,
             Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
-            where TCell : UITableViewCell
-        {
-            return sourceObservable
+            where TCell : UITableViewCell =>
+            sourceObservable
                 .Select(src => new[]
-                {
-                    new TableSectionInformation<TSource, TCell>(
-                                                                src,
-                                                                cellKey,
-                                                                sizeHint,
-                                                                initializeCellAction),
-                })
+                               {
+                                   new TableSectionInformation<TSource, TCell>(
+                                       src,
+                                       cellKey,
+                                       sizeHint,
+                                       initializeCellAction),
+                               })
                 .BindTo(tableView, initSource);
-        }
 
         /// <summary>
         /// Extension method that binds an observable of a collection
@@ -119,7 +117,7 @@ namespace ReactiveUI
             Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
             where TCell : UITableViewCell
         {
-            if (tableView == null)
+            if (tableView is null)
             {
                 throw new ArgumentNullException(nameof(tableView));
             }

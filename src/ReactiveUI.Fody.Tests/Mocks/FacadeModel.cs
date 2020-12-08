@@ -16,15 +16,9 @@ namespace ReactiveUI.Fody.Tests
     {
         private BaseModel _dependency;
 
-        public FacadeModel()
-        {
-            _dependency = new BaseModel();
-        }
+        public FacadeModel() => _dependency = new BaseModel();
 
-        public FacadeModel(BaseModel dependency)
-        {
-            _dependency = dependency;
-        }
+        public FacadeModel(BaseModel dependency) => _dependency = dependency;
 
         public BaseModel Dependency
         {

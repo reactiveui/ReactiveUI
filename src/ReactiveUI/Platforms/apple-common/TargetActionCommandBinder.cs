@@ -68,12 +68,12 @@ namespace ReactiveUI
         [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
-            if (command == null)
+            if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            if (target == null)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -100,7 +100,7 @@ namespace ReactiveUI
             var actionDisp = Disposable.Create(() => targetSetter?.Invoke(target, null, null));
 
             Action<object, object, object[]?>? enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
-            if (enabledSetter == null)
+            if (enabledSetter is null)
             {
                 return actionDisp;
             }
@@ -130,35 +130,24 @@ namespace ReactiveUI
 
         /// <inheritdoc/>
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-            where TEventArgs : EventArgs
-        {
+            where TEventArgs : EventArgs =>
             throw new NotImplementedException();
-        }
 
         private class ControlDelegate : NSObject
         {
             private readonly Action<NSObject> _block;
 
-            public ControlDelegate(Action<NSObject> block)
-            {
-                _block = block;
-            }
+            public ControlDelegate(Action<NSObject> block) => _block = block;
 
             public bool IsEnabled { get; set; }
 
             [Export("theAction:")]
-            public void TheAction(NSObject sender)
-            {
-                _block(sender);
-            }
+            public void TheAction(NSObject sender) => _block(sender);
 
 #if !UIKIT
             [Export("validateMenuItem:")]
             [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
-            public bool ValidateMenuItem(NSMenuItem menuItem)
-            {
-                return IsEnabled;
-            }
+            public bool ValidateMenuItem(NSMenuItem menuItem) => IsEnabled;
 #endif
         }
     }

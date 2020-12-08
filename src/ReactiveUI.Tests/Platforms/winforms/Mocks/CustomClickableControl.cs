@@ -10,19 +10,10 @@ namespace ReactiveUI.Tests.Winforms
 {
     public class CustomClickableControl : Control
     {
-        public void PerformClick()
-        {
-            InvokeOnClick(this, EventArgs.Empty);
-        }
+        public void PerformClick() => InvokeOnClick(this, EventArgs.Empty);
 
-        public void RaiseMouseClickEvent(MouseEventArgs args)
-        {
-            OnMouseClick(args);
-        }
+        public void RaiseMouseClickEvent(MouseEventArgs args) => OnMouseClick(args);
 
-        public void RaiseMouseUpEvent(MouseEventArgs args)
-        {
-            OnMouseUp(args);
-        }
+        public void RaiseMouseUpEvent(MouseEventArgs args) => OnMouseUp(args);
     }
 }

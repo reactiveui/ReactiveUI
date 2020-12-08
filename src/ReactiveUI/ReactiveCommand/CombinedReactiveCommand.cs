@@ -55,17 +55,17 @@ namespace ReactiveUI
             IObservable<bool> canExecute,
             IScheduler outputScheduler)
         {
-            if (childCommands == null)
+            if (childCommands is null)
             {
                 throw new ArgumentNullException(nameof(childCommands));
             }
 
-            if (canExecute == null)
+            if (canExecute is null)
             {
                 throw new ArgumentNullException(nameof(canExecute));
             }
 
-            if (outputScheduler == null)
+            if (outputScheduler is null)
             {
                 throw new ArgumentNullException(nameof(outputScheduler));
             }
@@ -77,9 +77,11 @@ namespace ReactiveUI
                 throw new ArgumentException("No child commands provided.", nameof(childCommands));
             }
 
-            var canChildrenExecute = Observable
-                .CombineLatest(childCommandsArray.Select(x => x.CanExecute))
-                .Select(x => x.All(y => y));
+            _exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
+
+            var canChildrenExecute = childCommandsArray.Select(x => x.CanExecute)
+                                                       .CombineLatest()
+                                                       .Select(x => x.All(y => y));
             var combinedCanExecute = canExecute
                 .Catch<bool, Exception>(ex =>
                 {
@@ -91,16 +93,16 @@ namespace ReactiveUI
                 .DistinctUntilChanged()
                 .Replay(1)
                 .RefCount();
-            _exceptionsSubscription = Observable
-                .Merge(childCommandsArray.Select(x => x.ThrownExceptions))
-                .Subscribe(ex => _exceptions.OnNext(ex));
+
+            _exceptionsSubscription = childCommandsArray.Select(x => x.ThrownExceptions)
+                                                        .Merge()
+                                                        .Subscribe(ex => _exceptions.OnNext(ex));
 
             _innerCommand = new ReactiveCommand<TParam, IList<TResult>>(
                 param =>
-                    Observable
-                        .CombineLatest(
-                            childCommandsArray
-                                .Select(x => x.Execute(param))),
+                    childCommandsArray
+                        .Select(x => x.Execute(param))
+                        .CombineLatest(),
                 combinedCanExecute,
                 outputScheduler);
 
@@ -110,8 +112,6 @@ namespace ReactiveUI
             _innerCommand
                 .ThrownExceptions
                 .Subscribe();
-
-            _exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
 
             CanExecute.Subscribe(OnCanExecuteChanged);
         }
@@ -126,16 +126,13 @@ namespace ReactiveUI
         public override IObservable<Exception> ThrownExceptions => _exceptions;
 
         /// <inheritdoc/>
-        public override IDisposable Subscribe(IObserver<IList<TResult>> observer)
-        {
-            return _innerCommand.Subscribe(observer);
-        }
+        public override IDisposable Subscribe(IObserver<IList<TResult>> observer) => _innerCommand.Subscribe(observer);
 
         /// <inheritdoc/>
-        public override IObservable<IList<TResult>> Execute(TParam parameter = default(TParam))
-        {
-            return _innerCommand.Execute(parameter);
-        }
+        public override IObservable<IList<TResult>> Execute(TParam parameter) => _innerCommand.Execute(parameter);
+
+        /// <inheritdoc/>
+        public override IObservable<IList<TResult>> Execute() => _innerCommand.Execute();
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)

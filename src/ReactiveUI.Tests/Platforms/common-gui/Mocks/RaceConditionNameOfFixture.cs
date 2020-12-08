@@ -9,10 +9,10 @@ namespace ReactiveUI.Tests
 {
     public class RaceConditionNameOfFixture : ReactiveObject
     {
-        private ObservableAsPropertyHelper<bool> _A;
+        private readonly ObservableAsPropertyHelper<bool> _A;
 
-        public RaceConditionNameOfFixture()
-        {
+        public RaceConditionNameOfFixture() =>
+
             // We need to generate a value on subscription
             // which is different than the default value.
             // This triggers the property change firing
@@ -22,7 +22,6 @@ namespace ReactiveUI.Tests
                 .True
                 .Do(_ => Count++)
                 .ToProperty(this, nameof(A), out _A);
-        }
 
         public int Count { get; set; }
 

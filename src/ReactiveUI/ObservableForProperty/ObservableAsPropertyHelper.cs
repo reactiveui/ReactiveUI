@@ -10,6 +10,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+
 using Splat;
 
 namespace ReactiveUI
@@ -28,7 +29,7 @@ namespace ReactiveUI
         private readonly ISubject<T> _subject;
         private readonly Func<T> _getInitialValue;
         private T _lastValue;
-        private CompositeDisposable _disposable = new CompositeDisposable();
+        private CompositeDisposable _disposable = new();
         private int _activated;
 
         /// <summary>
@@ -137,11 +138,20 @@ namespace ReactiveUI
             bool deferSubscription = false,
             IScheduler? scheduler = null)
         {
-            Contract.Requires(observable != null);
-            Contract.Requires(onChanged != null);
+            if (observable is null)
+            {
+                throw new ArgumentNullException(nameof(observable));
+            }
 
-            scheduler = scheduler ?? CurrentThreadScheduler.Instance;
-            onChanging = onChanging ?? (_ => { });
+            if (onChanged is null)
+            {
+                throw new ArgumentNullException(nameof(onChanged));
+            }
+
+            scheduler ??= CurrentThreadScheduler.Instance;
+            onChanging ??= _ => { };
+
+            _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
 
             _subject = new ScheduledSubject<T>(scheduler);
             _subject.Subscribe(
@@ -154,8 +164,6 @@ namespace ReactiveUI
                 ex => _thrownExceptions.Value.OnNext(ex))
                 .DisposeWith(_disposable);
 
-            _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
-
 #pragma warning disable CS8603 // Possible null reference return.
             _getInitialValue = getInitialValue ?? (() => default);
 #pragma warning restore CS8603 // Possible null reference return.
@@ -163,7 +171,7 @@ namespace ReactiveUI
             if (deferSubscription)
             {
 #pragma warning disable CS8601 // Possible null reference assignment.
-                _lastValue = default;
+                _lastValue = default!;
 #pragma warning restore CS8601 // Possible null reference assignment.
                 Source = observable.DistinctUntilChanged();
             }
@@ -228,7 +236,7 @@ namespace ReactiveUI
         /// </param>
         /// <returns>A default property helper.</returns>
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default, IScheduler? scheduler = null) =>
-            new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue, false, scheduler);
+            new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue!, false, scheduler);
 
         /// <summary>
         /// Disposes this ObservableAsPropertyHelper.

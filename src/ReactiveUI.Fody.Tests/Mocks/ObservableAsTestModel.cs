@@ -15,10 +15,7 @@ namespace ReactiveUI.Fody.Tests
 {
     public class ObservableAsTestModel : ReactiveObject
     {
-        public ObservableAsTestModel()
-        {
-            Observable.Return("foo").ToPropertyEx(this, x => x.TestProperty);
-        }
+        public ObservableAsTestModel() => Observable.Return("foo").ToPropertyEx(this, x => x.TestProperty);
 
         [ObservableAsProperty]
         public string? TestProperty { get; private set; }

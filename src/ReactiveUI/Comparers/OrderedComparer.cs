@@ -28,47 +28,29 @@ namespace ReactiveUI
         /// <param name="enumerable">The enumerable.</param>
         /// <returns>A comparer builder.</returns>
         [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "Existing API")]
-        public static IComparerBuilder<T> For<T>(IEnumerable<T> enumerable)
-        {
-            return For<T>();
-        }
+        public static IComparerBuilder<T> For<T>(IEnumerable<T> enumerable) => For<T>();
 
         /// <summary>
         /// Creates a comparer builder for the specified type. Note that the builder is not a comparer in itself,
         /// you need to use the OrderBy or OrderByDescending methods on the builder to get an actual comparer.
         /// If the type is known at compile time this method is nothing more than an alias for the generic
-        /// OrdedComparer class.
+        /// OrderedComparer class.
         /// </summary>
         /// <typeparam name="T">The comparison type.</typeparam>
         /// <returns>A comparer builder.</returns>
-        public static IComparerBuilder<T> For<T>()
-        {
-            return OrderedComparerTypeWrapper<T>.Instance;
-        }
+        public static IComparerBuilder<T> For<T>() => OrderedComparerTypeWrapper<T>.Instance;
 
         private sealed class OrderedComparerTypeWrapper<T> : IComparerBuilder<T>
         {
-            public static readonly OrderedComparerTypeWrapper<T> Instance = new OrderedComparerTypeWrapper<T>();
+            public static readonly OrderedComparerTypeWrapper<T> Instance = new();
 
-            public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector)
-            {
-                return OrderedComparer<T>.OrderBy(selector);
-            }
+            public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector) => OrderedComparer<T>.OrderBy(selector);
 
-            public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer)
-            {
-                return OrderedComparer<T>.OrderBy(selector, comparer);
-            }
+            public IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer) => OrderedComparer<T>.OrderBy(selector, comparer);
 
-            public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector)
-            {
-                return OrderedComparer<T>.OrderByDescending(selector);
-            }
+            public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector) => OrderedComparer<T>.OrderByDescending(selector);
 
-            public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer)
-            {
-                return OrderedComparer<T>.OrderByDescending(selector, comparer);
-            }
+            public IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer) => OrderedComparer<T>.OrderByDescending(selector, comparer);
         }
     }
 
@@ -88,10 +70,7 @@ namespace ReactiveUI
         /// A function supplying the values for the comparer.
         /// </param>
         /// <returns>A comparer.</returns>
-        public static IComparer<T> OrderBy<TValue>(Func<T, TValue> selector)
-        {
-            return ComparerChainingExtensions.ThenBy<T, TValue>(null, selector);
-        }
+        public static IComparer<T> OrderBy<TValue>(Func<T, TValue> selector) => ComparerChainingExtensions.ThenBy(null, selector);
 
         /// <summary>
         /// Creates a comparer that will sort elements in ascending order based on the values returned by the provided
@@ -107,10 +86,7 @@ namespace ReactiveUI
         /// The default comparer for that type will be used if this parameter is null.
         /// </param>
         /// <returns>A comparer.</returns>
-        public static IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer)
-        {
-            return ComparerChainingExtensions.ThenBy<T, TValue>(null, selector, comparer);
-        }
+        public static IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer) => ComparerChainingExtensions.ThenBy(null, selector, comparer);
 
         /// <summary>
         /// Creates a comparer that will sort elements in descending order based on the values returned by the provided
@@ -121,10 +97,7 @@ namespace ReactiveUI
         /// A function supplying the values for the comparer.
         /// </param>
         /// <returns>A comparer.</returns>
-        public static IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector)
-        {
-            return ComparerChainingExtensions.ThenByDescending<T, TValue>(null, selector);
-        }
+        public static IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector) => ComparerChainingExtensions.ThenByDescending(null, selector);
 
         /// <summary>
         /// Creates a comparer that will sort elements in descending order based on the values returned by the provided
@@ -140,9 +113,6 @@ namespace ReactiveUI
         /// The default comparer for that type will be used if this parameter is null.
         /// </param>
         /// <returns>A comparer.</returns>
-        public static IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer)
-        {
-            return ComparerChainingExtensions.ThenByDescending<T, TValue>(null, selector, comparer);
-        }
+        public static IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer) => ComparerChainingExtensions.ThenByDescending(null, selector, comparer);
     }
 }

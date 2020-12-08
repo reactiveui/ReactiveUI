@@ -4,8 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Reactive.Concurrency;
-using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI.Drawing
@@ -19,7 +17,7 @@ namespace ReactiveUI.Drawing
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
-            if (registerFunction == null)
+            if (registerFunction is null)
             {
                 throw new ArgumentNullException(nameof(registerFunction));
             }

@@ -19,12 +19,10 @@ namespace ReactiveUI
             }
         }
 
-        internal static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count)
+        internal static IEnumerable<T> SkipLast<T>(this IEnumerable<T> enumerable, int count)
         {
-            return @this.Take(@this.Count() - count);
+            var inputList = enumerable.ToList();
+            return inputList.Take(inputList.Count - count);
         }
     }
-
-    // according to spouliot, this is just a string match, and will cause the
-    // linker to be ok with everything.
 }

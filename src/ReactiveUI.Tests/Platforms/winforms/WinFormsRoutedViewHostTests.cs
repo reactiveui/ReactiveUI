@@ -37,7 +37,7 @@ namespace ReactiveUI.Tests.Winforms
         public void ShouldSetDefaultContentWhenViewModelIsNull()
         {
             var defaultContent = new Control();
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var router = new RoutingState();
             var target = new WinFormsRoutedViewHost
             {

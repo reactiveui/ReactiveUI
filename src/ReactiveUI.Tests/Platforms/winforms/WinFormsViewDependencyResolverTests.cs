@@ -48,10 +48,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
-        public void Dispose()
-        {
-            _resolver?.Dispose();
-        }
+        public void Dispose() => _resolver?.Dispose();
 
         [Fact]
         public void ContractRegistrationsShouldResolveCorrectly()

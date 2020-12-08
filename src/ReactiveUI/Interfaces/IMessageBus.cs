@@ -26,7 +26,7 @@ namespace ReactiveUI
         /// runtime, and the contract.
         /// </summary>
         /// <remarks>If a scheduler is already registered for the specified
-        /// runtime and contract, this will overrwrite the existing
+        /// runtime and contract, this will overwrite the existing
         /// registration.</remarks>
         /// <typeparam name="T">The type of the message to listen to.</typeparam>
         /// <param name="scheduler">The scheduler on which to post the

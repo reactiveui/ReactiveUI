@@ -41,18 +41,13 @@ namespace ReactiveUI
         /// <param name="attachToRoot">if set to <c>true</c> [attach to root].</param>
         /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wireup].</param>
         protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
-            : base(ctx, layoutId, parent, attachToRoot, performAutoWireup)
-        {
+            : base(ctx, layoutId, parent, attachToRoot, performAutoWireup) =>
             SetupRxObj();
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.
         /// </summary>
-        protected ReactiveViewHost()
-        {
-            SetupRxObj();
-        }
+        protected ReactiveViewHost() => SetupRxObj();
 
         /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -63,39 +58,30 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public TViewModel? ViewModel
         {
-            get { return _viewModel; }
-            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
         /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
-            get { return _viewModel; }
-            set { _viewModel = (TViewModel?)value!; }
+            get => _viewModel;
+            set => _viewModel = (TViewModel?)value!;
         }
 
         /// <inheritdoc />
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changing
-        {
-            get { return this.GetChangingObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changing => this.GetChangingObservable();
 
         /// <inheritdoc />
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changed
-        {
-            get { return this.GetChangedObservable(); }
-        }
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changed => this.GetChangedObservable();
 
         /// <summary>
         /// Gets the thrown exceptions.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<Exception> ThrownExceptions
-        {
-            get { return this.GetThrownExceptionsObservable(); }
-        }
+        public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -104,42 +90,25 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <summary>
         /// Gets a value indicating if change notifications are enabled.
         /// </summary>
         /// <returns>A value indicating if change notifications are on or off.</returns>
-        public bool AreChangeNotificationsEnabled()
-        {
-            return IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
-        }
+        public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         [OnDeserialized]
-        private void SetupRxObj(StreamingContext sc)
-        {
-            SetupRxObj();
-        }
+        private void SetupRxObj(StreamingContext sc) => SetupRxObj();
 
-        private void SetupRxObj()
-        {
+        private void SetupRxObj() =>
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
-        }
     }
 }

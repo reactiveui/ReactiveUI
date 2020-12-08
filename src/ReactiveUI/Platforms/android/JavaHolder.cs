@@ -17,9 +17,6 @@ namespace ReactiveUI
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Used for interop purposes")]
         public readonly object Instance;
 
-        public JavaHolder(object instance)
-        {
-            Instance = instance;
-        }
+        public JavaHolder(object instance) => Instance = instance;
     }
 }

@@ -15,17 +15,13 @@ namespace ReactiveUI
     /// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
     /// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
     /// </summary>
-    public sealed class DefaultViewLocator : IViewLocator, IEnableLogger
+    public sealed class DefaultViewLocator : IViewLocator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
         /// </summary>
         /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
-        [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
-        internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null)
-        {
-            ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
-        }
+        internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) => ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
 
         /// <summary>
         /// Gets or sets a function that is used to convert a view model name to a proposed view name.
@@ -102,28 +98,28 @@ namespace ReactiveUI
 
             var view = AttemptViewResolutionFor(viewModel.GetType(), contract);
 
-            if (view != null)
+            if (view is not null)
             {
                 return view;
             }
 
             view = AttemptViewResolutionFor(typeof(T), contract);
 
-            if (view != null)
+            if (view is not null)
             {
                 return view;
             }
 
             view = AttemptViewResolutionFor(ToggleViewModelType(viewModel?.GetType()), contract);
 
-            if (view != null)
+            if (view is not null)
             {
                 return view;
             }
 
             view = AttemptViewResolutionFor(ToggleViewModelType(typeof(T)), contract);
 
-            if (view != null)
+            if (view is not null)
             {
                 return view;
             }
@@ -134,14 +130,14 @@ namespace ReactiveUI
 
         private static Type? ToggleViewModelType(Type? viewModelType)
         {
-            if (viewModelType == null)
+            if (viewModelType is null)
             {
                 return null;
             }
 
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
 
-            if (viewModelTypeName == null)
+            if (viewModelTypeName is null)
             {
                 return null;
             }
@@ -179,14 +175,14 @@ namespace ReactiveUI
 
         private IViewFor? AttemptViewResolutionFor(Type? viewModelType, string? contract)
         {
-            if (viewModelType == null)
+            if (viewModelType is null)
             {
                 return null;
             }
 
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
 
-            if (viewModelTypeName == null)
+            if (viewModelTypeName is null)
             {
                 return null;
             }
@@ -194,7 +190,7 @@ namespace ReactiveUI
             var proposedViewTypeName = ViewModelToViewFunc(viewModelTypeName);
             var view = AttemptViewResolution(proposedViewTypeName, contract);
 
-            if (view != null)
+            if (view is not null)
             {
                 return view;
             }
@@ -202,7 +198,7 @@ namespace ReactiveUI
             proposedViewTypeName = typeof(IViewFor<>).MakeGenericType(viewModelType).AssemblyQualifiedName;
             view = AttemptViewResolution(proposedViewTypeName, contract);
 
-            if (view != null)
+            if (view is not null)
             {
                 return view;
             }
@@ -215,19 +211,18 @@ namespace ReactiveUI
             try
             {
                 var viewType = Reflection.ReallyFindType(viewTypeName, throwOnFailure: false);
-                if (viewType == null)
+                if (viewType is null)
                 {
                     return null;
                 }
 
                 var service = Locator.Current.GetService(viewType, contract);
-                if (service == null)
+                if (service is null)
                 {
                     return null;
                 }
 
-                var view = service as IViewFor;
-                if (view == null)
+                if (!(service is IViewFor view))
                 {
                     return null;
                 }

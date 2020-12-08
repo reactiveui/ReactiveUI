@@ -57,9 +57,9 @@ namespace ReactiveUI.AndroidX
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveFragmentActivity>, IHandleObservableErrors
     {
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
-        private readonly Subject<(int requestCode, Result result, Intent intent)> _activityResult = new Subject<(int requestCode, Result result, Intent intent)>();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
+        private readonly Subject<(int requestCode, Result result, Intent intent)> _activityResult = new();
 
         /// <inheritdoc/>
         public event PropertyChangingEventHandler? PropertyChanging;
@@ -77,12 +77,12 @@ namespace ReactiveUI.AndroidX
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <summary>
-        /// Gets a singal when the activity fragment is activated.
+        /// Gets a signal when the activity fragment is activated.
         /// </summary>
         public IObservable<Unit> Activated => _activated.AsObservable();
 
         /// <summary>
-        /// Gets a singal when the activity fragment is deactivated.
+        /// Gets a signal when the activity fragment is deactivated.
         /// </summary>
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
@@ -92,16 +92,10 @@ namespace ReactiveUI.AndroidX
         public IObservable<(int requestCode, Result result, Intent intent)> ActivityResult => _activityResult.AsObservable();
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <inheritdoc />
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
@@ -177,9 +171,9 @@ namespace ReactiveUI.AndroidX
         {
             if (disposing)
             {
-                _activated?.Dispose();
-                _deactivated?.Dispose();
-                _activityResult?.Dispose();
+                _activated.Dispose();
+                _deactivated.Dispose();
+                _activityResult.Dispose();
             }
 
             base.Dispose(disposing);

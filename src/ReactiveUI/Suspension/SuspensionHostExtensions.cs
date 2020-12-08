@@ -24,9 +24,14 @@ namespace ReactiveUI
         public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
             where T : class
         {
+            if (item is null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
             return item.WhenAny(suspensionHost => suspensionHost.AppState, observedChange => observedChange.Value)
-                        .Where(x => x != null)
-                        .Cast<T>();
+                       .WhereNotNull()
+                       .Cast<T>();
         }
 
         /// <summary>
@@ -37,7 +42,7 @@ namespace ReactiveUI
         /// <returns>The app state.</returns>
         public static T GetAppState<T>(this ISuspensionHost item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -54,7 +59,7 @@ namespace ReactiveUI
         /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
         public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -63,22 +68,22 @@ namespace ReactiveUI
             driver ??= Locator.Current.GetService<ISuspensionDriver>();
 
             ret.Add(item.ShouldInvalidateState
-                         .SelectMany(_ => driver.InvalidateState())
-                         .LoggedCatch(item, Observables.Unit, "Tried to invalidate app state")
-                         .Subscribe(_ => item.Log().Info("Invalidated app state")));
+                        .SelectMany(_ => driver.InvalidateState())
+                        .LoggedCatch(item, Observables.Unit, "Tried to invalidate app state")
+                        .Subscribe(_ => item.Log().Info("Invalidated app state")));
 
             ret.Add(item.ShouldPersistState
-                         .SelectMany(x => driver.SaveState(item.AppState!).Finally(x.Dispose))
-                         .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
-                         .Subscribe(_ => item.Log().Info("Persisted application state")));
+                        .SelectMany(x => driver.SaveState(item.AppState!).Finally(x.Dispose))
+                        .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
+                        .Subscribe(_ => item.Log().Info("Persisted application state")));
 
-            ret.Add(Observable.Merge(item.IsResuming, item.IsLaunchingNew)
-                              .SelectMany(x => driver.LoadState())
-                              .LoggedCatch(
-                                  item,
-                                  Observable.Defer(() => Observable.Return(item.CreateNewAppState?.Invoke())),
-                                  "Failed to restore app state from storage, creating from scratch")
-                                  .Subscribe(x => item.AppState = x ?? item.CreateNewAppState?.Invoke()));
+            ret.Add(item.IsResuming.Merge(item.IsLaunchingNew)
+                        .SelectMany(_ => driver.LoadState())
+                        .LoggedCatch(
+                            item,
+                            Observable.Defer(() => Observable.Return(item.CreateNewAppState?.Invoke())),
+                            "Failed to restore app state from storage, creating from scratch")
+                        .Subscribe(x => item.AppState = x ?? item.CreateNewAppState?.Invoke()));
 
             return ret;
         }

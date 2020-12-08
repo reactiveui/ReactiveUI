@@ -4,14 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using Splat;
 
@@ -30,21 +27,31 @@ namespace ReactiveUI
                 return 0;
             }
 
-            return GetDependencyProperty(type, propertyName) != null ? 4 : 0;
+            return GetDependencyProperty(type, propertyName) is not null ? 4 : 0;
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            if (sender == null)
+            if (sender is null)
             {
                 throw new ArgumentNullException(nameof(sender));
             }
 
             var type = sender.GetType();
-            var dpd = DependencyPropertyDescriptor.FromProperty(GetDependencyProperty(type, propertyName), type);
 
-            if (dpd == null)
+            var dependencyProperty = GetDependencyProperty(type, propertyName);
+
+            if (dependencyProperty is null)
+            {
+                throw new ArgumentException(
+                    $"The property {propertyName} does not have a dependency property.",
+                    nameof(propertyName));
+            }
+
+            var dependencyPropertyDescriptor = DependencyPropertyDescriptor.FromProperty(dependencyProperty, type);
+
+            if (dependencyPropertyDescriptor is null)
             {
                 if (!suppressWarnings)
                 {
@@ -54,15 +61,15 @@ namespace ReactiveUI
                 throw new NullReferenceException("Couldn't find dependency property " + propertyName + " on " + type.Name);
             }
 
-            return Observable.Create<IObservedChange<object, object>>(subj =>
+            return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
-                var handler = new EventHandler((o, e) =>
+                var handler = new EventHandler((_, _) =>
                 {
-                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
+                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
                 });
 
-                dpd.AddValueChanged(sender, handler);
-                return Disposable.Create(() => dpd.RemoveValueChanged(sender, handler));
+                dependencyPropertyDescriptor.AddValueChanged(sender, handler);
+                return Disposable.Create(() => dependencyPropertyDescriptor.RemoveValueChanged(sender, handler));
             });
         }
 
@@ -71,12 +78,7 @@ namespace ReactiveUI
             var fi = type.GetTypeInfo().GetFields(BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public)
                 .FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
 
-            if (fi != null)
-            {
-                return (DependencyProperty?)fi.GetValue(null);
-            }
-
-            return null;
+            return (DependencyProperty?)fi?.GetValue(null);
         }
     }
 }

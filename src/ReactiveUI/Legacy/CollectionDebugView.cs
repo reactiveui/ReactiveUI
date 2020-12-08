@@ -13,10 +13,7 @@ namespace ReactiveUI.Legacy
     {
         private readonly ICollection<T> _collection;
 
-        public CollectionDebugView(ICollection<T> collection)
-        {
-            _collection = collection ?? throw new ArgumentNullException(nameof(collection), "collection is null.");
-        }
+        public CollectionDebugView(ICollection<T> collection) => _collection = collection ?? throw new ArgumentNullException(nameof(collection), "collection is null.");
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public T[] Items

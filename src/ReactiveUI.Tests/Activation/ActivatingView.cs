@@ -14,18 +14,16 @@ namespace ReactiveUI.Tests
     {
         private ActivatingViewModel? _viewModel;
 
-        public ActivatingView()
-        {
+        public ActivatingView() =>
             this.WhenActivated(d =>
             {
                 IsActiveCount++;
                 d(Disposable.Create(() => IsActiveCount--));
             });
-        }
 
-        public Subject<Unit> Loaded { get; } = new Subject<Unit>();
+        public Subject<Unit> Loaded { get; } = new();
 
-        public Subject<Unit> Unloaded { get; } = new Subject<Unit>();
+        public Subject<Unit> Unloaded { get; } = new();
 
         public ActivatingViewModel? ViewModel
         {
@@ -43,8 +41,8 @@ namespace ReactiveUI.Tests
 
         public void Dispose()
         {
-            Loaded?.Dispose();
-            Unloaded?.Dispose();
+            Loaded.Dispose();
+            Unloaded.Dispose();
         }
     }
 }

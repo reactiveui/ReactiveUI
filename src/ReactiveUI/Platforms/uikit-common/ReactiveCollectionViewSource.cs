@@ -9,7 +9,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 using Foundation;
-using Splat;
 using UIKit;
 
 namespace ReactiveUI
@@ -21,23 +20,21 @@ namespace ReactiveUI
     /// View items are animated in and out as items are added.
     /// </summary>
     /// <typeparam name="TSource">The source type.</typeparam>
-    public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IEnableLogger, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
+    public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         private readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> _commonSource;
-        private readonly Subject<object> _elementSelected = new Subject<object>();
+        private readonly Subject<object> _elementSelected = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
         /// </summary>
         /// <param name="collectionView">The ui collection view.</param>
-        /// <param name="collection">The notify collection chaged.</param>
+        /// <param name="collection">The notify collection changed.</param>
         /// <param name="cellKey">The cell key.</param>
         /// <param name="initializeCellAction">The cell initialization action.</param>
         public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell>? initializeCellAction = null)
-            : this(collectionView)
-        {
+            : this(collectionView) =>
             Data = new[] { new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction) };
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
@@ -46,10 +43,8 @@ namespace ReactiveUI
         /// <param name="sectionInformation">The section information.</param>
         [Obsolete("Please bind your view model to the Data property.")]
         public ReactiveCollectionViewSource(UICollectionView collectionView, IReadOnlyList<CollectionViewSectionInformation<TSource>> sectionInformation)
-            : this(collectionView)
-        {
+            : this(collectionView) =>
             Data = sectionInformation;
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
@@ -80,7 +75,7 @@ namespace ReactiveUI
             get => _commonSource.SectionInfo;
             set
             {
-                if (_commonSource.SectionInfo == value)
+                if (Equals(_commonSource.SectionInfo, value))
                 {
                     return;
                 }
@@ -113,7 +108,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
         {
-            if (indexPath == null)
+            if (indexPath is null)
             {
                 throw new ArgumentNullException(nameof(indexPath));
             }
@@ -122,21 +117,15 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public override nint NumberOfSections(UICollectionView collectionView)
-        {
-            return _commonSource.NumberOfSections();
-        }
+        public override nint NumberOfSections(UICollectionView collectionView) => _commonSource.NumberOfSections();
 
         /// <inheritdoc/>
-        public override nint GetItemsCount(UICollectionView collectionView, nint section)
-        {
-            return _commonSource.RowsInSection((int)section);
-        }
+        public override nint GetItemsCount(UICollectionView collectionView, nint section) => _commonSource.RowsInSection((int)section);
 
         /// <inheritdoc/>
         public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
-            if (indexPath == null)
+            if (indexPath is null)
             {
                 throw new ArgumentNullException(nameof(indexPath));
             }
@@ -151,7 +140,7 @@ namespace ReactiveUI
         /// <returns>The object at the specified index.</returns>
         public object ItemAt(NSIndexPath indexPath)
         {
-            if (indexPath == null)
+            if (indexPath is null)
             {
                 throw new ArgumentNullException(nameof(indexPath));
             }
@@ -160,36 +149,27 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
         /// until the return value is disposed.
         /// </summary>
-        /// <returns>An object that, when disposed, reenables change
+        /// <returns>An object that, when disposed, re-enables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
-            return IReactiveObjectExtensions.SuppressChangeNotifications(this);
-        }
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _commonSource?.Dispose();
-                _elementSelected?.Dispose();
+                _commonSource.Dispose();
+                _elementSelected.Dispose();
             }
 
             base.Dispose(disposing);

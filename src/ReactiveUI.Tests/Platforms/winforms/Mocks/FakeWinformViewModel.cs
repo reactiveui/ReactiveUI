@@ -16,10 +16,7 @@ namespace ReactiveUI.Tests.Winforms
         private string? _property3;
         private string? _property4;
 
-        public FakeWinformViewModel(IScreen? screen = null)
-        {
-            HostScreen = screen ?? new TestScreen();
-        }
+        public FakeWinformViewModel(IScreen? screen = null) => HostScreen = screen ?? new TestScreen();
 
         public string UrlPathSegment => "fake";
 

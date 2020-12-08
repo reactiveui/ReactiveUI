@@ -56,7 +56,7 @@ namespace ReactiveUI.Tests
                     continue;
                 }
 
-                if (lastValue == null)
+                if (lastValue is null)
                 {
                     continue;
                 }

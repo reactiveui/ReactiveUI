@@ -38,26 +38,17 @@ namespace ReactiveUI
         public DateTimeOffset Now => AttemptToCreateScheduler().Now;
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
-        {
-            return AttemptToCreateScheduler().Schedule(state, action);
-        }
+        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action) => AttemptToCreateScheduler().Schedule(state, action);
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
-        {
-            return AttemptToCreateScheduler().Schedule(state, dueTime, action);
-        }
+        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action) => AttemptToCreateScheduler().Schedule(state, dueTime, action);
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
-        {
-            return AttemptToCreateScheduler().Schedule(state, dueTime, action);
-        }
+        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) => AttemptToCreateScheduler().Schedule(state, dueTime, action);
 
         private IScheduler AttemptToCreateScheduler()
         {
-            if (_scheduler != null)
+            if (_scheduler is not null)
             {
                 return _scheduler;
             }

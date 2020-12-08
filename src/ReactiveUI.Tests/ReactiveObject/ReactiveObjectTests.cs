@@ -20,15 +20,15 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ChangingShouldAlwaysArriveBeforeChanged()
         {
-            var before_set = "Foo";
-            var after_set = "Bar";
+            var beforeSet = "Foo";
+            var afterSet = "Bar";
 
             var fixture = new TestFixture
             {
-                IsOnlyOneWord = before_set
+                IsOnlyOneWord = beforeSet
             };
 
-            var before_fired = false;
+            var beforeFired = false;
             fixture.Changing.Subscribe(
                                        x =>
                                        {
@@ -37,23 +37,23 @@ namespace ReactiveUI.Tests
                                            // being set - we have to enable 1st-chance exceptions
                                            // to see the real error
                                            Assert.Equal("IsOnlyOneWord", x.PropertyName);
-                                           Assert.Equal(fixture.IsOnlyOneWord, before_set);
-                                           before_fired = true;
+                                           Assert.Equal(fixture.IsOnlyOneWord, beforeSet);
+                                           beforeFired = true;
                                        });
 
-            var after_fired = false;
+            var afterFired = false;
             fixture.Changed.Subscribe(
                                       x =>
                                       {
                                           Assert.Equal("IsOnlyOneWord", x.PropertyName);
-                                          Assert.Equal(fixture.IsOnlyOneWord, after_set);
-                                          after_fired = true;
+                                          Assert.Equal(fixture.IsOnlyOneWord, afterSet);
+                                          afterFired = true;
                                       });
 
-            fixture.IsOnlyOneWord = after_set;
+            fixture.IsOnlyOneWord = afterSet;
 
-            Assert.True(before_fired);
-            Assert.True(after_fired);
+            Assert.True(beforeFired);
+            Assert.True(afterFired);
         }
 
         [Fact]
@@ -133,7 +133,9 @@ namespace ReactiveUI.Tests
                 IsOnlyOneWord = "Baz"
             };
             var output = new List<IObservedChange<TestFixture, string?>>();
-            fixture.ObservableForProperty(x => x.IsNotNullString).Subscribe(x => { output.Add(x!); });
+            fixture.ObservableForProperty(x => x.IsNotNullString)
+                   .WhereNotNull()
+                   .Subscribe(x => output.Add(x));
 
             fixture.IsNotNullString = "Bar";
             fixture.IsNotNullString = "Baz";
@@ -161,7 +163,10 @@ namespace ReactiveUI.Tests
                 IsOnlyOneWord = "Baz"
             };
             var output = new List<string>();
-            fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
+            fixture.Changed
+                   .Where(x => x.PropertyName is not null)
+                   .Select(x => x.PropertyName!)
+                   .Subscribe(x => output.Add(x));
 
             fixture.UsesExprRaiseSet = "Foo";
             fixture.UsesExprRaiseSet = "Foo"; // This one shouldn't raise a change notification
@@ -181,6 +186,11 @@ namespace ReactiveUI.Tests
             };
             string? json = JSONHelper.Serialize(fixture);
 
+            if (json is null)
+            {
+                throw new InvalidOperationException("JSON string should not be null");
+            }
+
             // Should look something like:
             // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
             Assert.True(json.Count(x => x == ',') == 6);
@@ -191,12 +201,18 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ReactiveObjectSmokeTest()
         {
-            var output_changing = new List<string>();
+            var outputChanging = new List<string>();
             var output = new List<string>();
             var fixture = new TestFixture();
 
-            fixture.Changing.Subscribe(x => output_changing.Add(x.PropertyName));
-            fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
+            fixture.Changing
+                   .Where(x => x.PropertyName is not null)
+                   .Select(x => x.PropertyName!)
+                   .Subscribe(x => outputChanging.Add(x));
+            fixture.Changed
+                   .Where(x => x.PropertyName is not null)
+                   .Select(x => x.PropertyName!)
+                   .Subscribe(x => output.Add(x));
 
             fixture.IsNotNullString = "Foo Bar Baz";
             fixture.IsOnlyOneWord = "Foo";
@@ -208,7 +224,7 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(results.Length, output.Count);
 
-            output.AssertAreEqual(output_changing);
+            output.AssertAreEqual(outputChanging);
             results.AssertAreEqual(output);
         }
 

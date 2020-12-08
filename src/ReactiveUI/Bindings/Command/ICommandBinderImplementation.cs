@@ -4,11 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reflection;
 using System.Windows.Input;
 using Splat;
 
@@ -34,7 +30,7 @@ namespace ReactiveUI
         /// <typeparam name="TControl">The type of control on the view.</typeparam>
         /// <typeparam name="TParam">The type of the parameter to pass to the ICommand.</typeparam>
         /// <returns>A reactive binding. Often only used for disposing the binding.</returns>
-        IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> propertyName,
@@ -60,7 +56,7 @@ namespace ReactiveUI
         /// <typeparam name="TControl">The type of control on the view.</typeparam>
         /// <typeparam name="TParam">The type of the parameter to pass to the ICommand.</typeparam>
         /// <returns>A reactive binding. Often only used for disposing the binding.</returns>
-        IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> propertyName,

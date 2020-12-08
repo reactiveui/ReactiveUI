@@ -38,16 +38,16 @@ namespace ReactiveUI
         /// <param name="sender">The object to observe.</param>
         /// <param name="expression">The expression on the object to observe.
         ///     This will be either a MemberExpression or an IndexExpression
-        ///     dependending on the property.
+        ///     depending on the property.
         /// </param>
         /// <param name="propertyName">The property of the type to query for.</param>
         /// <param name="beforeChanged">If true, signal just before the
         ///     property value actually changes. If false, signal after the
         ///     property changes.</param>
         /// <param name="suppressWarnings">If true, no warnings should be logged.</param>
-        /// <returns>An IObservable which is signalled whenever the specified
+        /// <returns>An IObservable which is signaled whenever the specified
         /// property on the object changes. If this cannot be done for a
         /// specified value of beforeChanged, return Observable.Never.</returns>
-        IObservable<IObservedChange<object, object>>? GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
+        IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
     }
 }

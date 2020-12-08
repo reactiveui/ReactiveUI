@@ -20,7 +20,7 @@ namespace ReactiveUI.Fody.Analyzer
     {
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
-        private static DiagnosticDescriptor InheritanceRule = new DiagnosticDescriptor(
+        private static readonly DiagnosticDescriptor InheritanceRule = new(
             "RUI_0001",
             "Type must implement IReactiveObject",
             "Type '{0}' does not implement IReactiveObject",
@@ -29,7 +29,7 @@ namespace ReactiveUI.Fody.Analyzer
             isEnabledByDefault: true,
             description: "[Reactive] may only be applied to a IReactiveObject");
 
-        private static DiagnosticDescriptor AutoPropertyRule = new DiagnosticDescriptor(
+        private static readonly DiagnosticDescriptor AutoPropertyRule = new(
             "RUI_0002",
             "[Reactive] properties should be an auto property",
             "Property '{0}' on '{1}' should be an auto property",
@@ -78,7 +78,7 @@ namespace ReactiveUI.Fody.Analyzer
                 return;
             }
 
-            if (context.ContainingSymbol != null)
+            if (context.ContainingSymbol is not null)
             {
                 var reactiveObject = context.ContainingSymbol.ContainingType;
                 if (!reactiveObject.AllInterfaces.Any(interfaceTypeSymbol => interfaceTypeSymbol.ToDisplayString() == "ReactiveUI.IReactiveObject"))
@@ -94,7 +94,7 @@ namespace ReactiveUI.Fody.Analyzer
             if (HasBackingField(property))
             {
                 var propertySymbol = context.ContainingSymbol;
-                if (propertySymbol != null)
+                if (propertySymbol is not null)
                 {
                     context.ReportDiagnostic(
                                              Diagnostic.Create(
@@ -111,9 +111,9 @@ namespace ReactiveUI.Fody.Analyzer
             var getter = property.AccessorList?.Accessors.FirstOrDefault(x => x.IsKind(SyntaxKind.GetAccessorDeclaration));
             var setter = property.AccessorList?.Accessors.FirstOrDefault(x => x.IsKind(SyntaxKind.SetAccessorDeclaration));
 
-            if (setter?.Body == null || getter?.Body == null)
+            if (setter?.Body is null || getter?.Body is null)
             {
-                return setter?.ExpressionBody != null && getter?.ExpressionBody != null;
+                return setter?.ExpressionBody is not null && getter?.ExpressionBody is not null;
             }
 
             bool setterHasBodyStatements = setter.Body.Statements.Any();

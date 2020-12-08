@@ -18,39 +18,44 @@ namespace ReactiveUI
     /// </summary>
     internal class ExpressionRewriter : ExpressionVisitor
     {
-        public override Expression Visit(Expression node)
+        public override Expression Visit(Expression? node)
         {
+            if (node is null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             switch (node.NodeType)
             {
-            case ExpressionType.ArrayIndex:
-                return VisitBinary((BinaryExpression)node);
-            case ExpressionType.ArrayLength:
-                return VisitUnary((UnaryExpression)node);
-            case ExpressionType.Call:
-                return VisitMethodCall((MethodCallExpression)node);
-            case ExpressionType.Index:
-                return VisitIndex((IndexExpression)node);
-            case ExpressionType.MemberAccess:
-                return VisitMember((MemberExpression)node);
-            case ExpressionType.Parameter:
-                return VisitParameter((ParameterExpression)node);
-            case ExpressionType.Constant:
-                return VisitConstant((ConstantExpression)node);
-            case ExpressionType.Convert:
-                return VisitUnary((UnaryExpression)node);
-            default:
-                var errorMessageBuilder = new StringBuilder($"Unsupported expression of type '{node.NodeType}' {node}.");
+                case ExpressionType.ArrayIndex:
+                    return VisitBinary((BinaryExpression)node);
+                case ExpressionType.ArrayLength:
+                    return VisitUnary((UnaryExpression)node);
+                case ExpressionType.Call:
+                    return VisitMethodCall((MethodCallExpression)node);
+                case ExpressionType.Index:
+                    return VisitIndex((IndexExpression)node);
+                case ExpressionType.MemberAccess:
+                    return VisitMember((MemberExpression)node);
+                case ExpressionType.Parameter:
+                    return VisitParameter((ParameterExpression)node);
+                case ExpressionType.Constant:
+                    return VisitConstant((ConstantExpression)node);
+                case ExpressionType.Convert:
+                    return VisitUnary((UnaryExpression)node);
+                default:
+                    var errorMessageBuilder = new StringBuilder($"Unsupported expression of type '{node.NodeType}' {node}.");
 
-                if (node is BinaryExpression binaryExpression)
-                {
-                    errorMessageBuilder.Append(" Did you meant to use expressions '")
-                        .Append(binaryExpression.Left)
-                        .Append("' and '")
-                        .Append(binaryExpression.Right)
-                        .Append("'?");
-                }
+                    if (node is BinaryExpression binaryExpression)
+                    {
+                        errorMessageBuilder.Append(" Did you meant to use expressions '")
+                            .Append(binaryExpression.Left)
+                            .Append("' and '")
+                            .Append(binaryExpression.Right)
+                            .Append("'?");
+                    }
 
-                throw new NotSupportedException(errorMessageBuilder.ToString());
+                    throw new NotSupportedException(errorMessageBuilder.ToString());
             }
         }
 
@@ -70,20 +75,31 @@ namespace ReactiveUI
 
         protected override Expression VisitUnary(UnaryExpression node)
         {
-            if (node.NodeType == ExpressionType.ArrayLength)
+            if (node.NodeType == ExpressionType.ArrayLength && node.Operand is not null)
             {
                 Expression expression = Visit(node.Operand);
 
+                var memberInfo = expression.Type.GetRuntimeProperty("Length");
+
+                if (memberInfo is null)
+                {
+                    throw new InvalidOperationException("Could not find valid information for the array length operator.");
+                }
+
                 // translate arraylength into normal member expression
-                return Expression.MakeMemberAccess(expression, expression.Type.GetRuntimeProperty("Length"));
+                return Expression.MakeMemberAccess(expression, memberInfo);
             }
-            else if (node.NodeType == ExpressionType.Convert)
+            else if (node.NodeType == ExpressionType.Convert && node.Operand is not null)
             {
                 return Visit(node.Operand);
             }
+            else if (node.Operand is not null)
+            {
+                return node.Update(Visit(node?.Operand));
+            }
             else
             {
-                return node.Update(Visit(node.Operand));
+                throw new ArgumentException("Could not find a valid operand for the node.", nameof(node));
             }
         }
 
@@ -93,6 +109,11 @@ namespace ReactiveUI
             if (node.Arguments.Any(e => !(e is ConstantExpression)) || !node.Method.IsSpecialName)
             {
                 throw new NotSupportedException("Index expressions are only supported with constants.");
+            }
+
+            if (node.Object is null)
+            {
+                throw new ArgumentException("The Method call does not point towards an object.", nameof(node));
             }
 
             Expression instance = Visit(node.Object);
@@ -110,11 +131,6 @@ namespace ReactiveUI
             }
 
             return base.VisitIndex(node);
-        }
-
-        protected override Expression VisitMember(MemberExpression node)
-        {
-            return base.VisitMember(node);
         }
     }
 }

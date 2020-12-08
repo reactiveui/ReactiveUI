@@ -36,9 +36,6 @@ namespace ReactiveUI.Tests.Wpf
             }
         }
 
-        public void Dispose()
-        {
-            _resolver?.Dispose();
-        }
+        public void Dispose() => _resolver?.Dispose();
     }
 }

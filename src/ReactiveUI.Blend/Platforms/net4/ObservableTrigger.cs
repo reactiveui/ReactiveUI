@@ -4,10 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows;
 using Microsoft.Xaml.Behaviors;
 
@@ -52,7 +49,7 @@ namespace ReactiveUI.Blend
                 throw new ArgumentException("Sender must be of type " + nameof(ObservableTrigger), nameof(sender));
             }
 
-            if (triggerItem._watcher != null)
+            if (triggerItem._watcher is not null)
             {
                 triggerItem._watcher.Dispose();
                 triggerItem._watcher = null;
@@ -60,7 +57,7 @@ namespace ReactiveUI.Blend
 
             triggerItem._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
                 x => triggerItem.InvokeActions(x),
-                ex =>
+                _ =>
                 {
                     if (!triggerItem.AutoResubscribeOnError)
                     {

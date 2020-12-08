@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 
 using Xunit;
@@ -39,8 +40,16 @@ namespace ReactiveUI.Tests
             Expression<Func<TestClassChanged, string?>> expr = x => x!.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
-            var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false).Subscribe(c => changes.Add(c));
+            var changes = new List<IObservedChange<object, object?>>();
+
+            var propertyName = exp.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("propertyName should not be null");
+            }
+
+            instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.Property1 = "test1";
             testClass.Property1 = "test2";
@@ -61,8 +70,16 @@ namespace ReactiveUI.Tests
             Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
-            var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, true).Subscribe(c => changes.Add(c));
+            var changes = new List<IObservedChange<object, object?>>();
+
+            var propertyName = exp.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("propertyName should not be null");
+            }
+
+            instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.Property1 = "test1";
             testClass.Property1 = "test2";
@@ -83,8 +100,16 @@ namespace ReactiveUI.Tests
             Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
-            var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false).Subscribe(c => changes.Add(c));
+            var changes = new List<IObservedChange<object, object?>>();
+
+            var propertyName = exp.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("propertyName should not be null");
+            }
+
+            instance.GetNotificationForProperty(testClass, exp, propertyName, false).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.OnPropertyChanged(null);
             testClass.OnPropertyChanged(string.Empty);
@@ -105,8 +130,16 @@ namespace ReactiveUI.Tests
             Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
-            var changes = new List<IObservedChange<object, object>>();
-            instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, true).Subscribe(c => changes.Add(c));
+            var changes = new List<IObservedChange<object, object?>>();
+
+            var propertyName = exp.GetMemberInfo()?.Name;
+
+            if (propertyName is null)
+            {
+                throw new InvalidOperationException("propertyName should not be null");
+            }
+
+            instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.OnPropertyChanging(null);
             testClass.OnPropertyChanging(string.Empty);
@@ -145,10 +178,7 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+            public void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private class TestClassChanging : INotifyPropertyChanging

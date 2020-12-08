@@ -4,20 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.ComponentModel;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Windows;
 using Xunit;
 
 #if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
-using FactAttribute = Xunit.WpfFactAttribute;
 using System.Windows.Controls;
 using System.Windows.Input;
+using FactAttribute = Xunit.WpfFactAttribute;
 #endif
 
 namespace ReactiveUI.Tests.Xaml

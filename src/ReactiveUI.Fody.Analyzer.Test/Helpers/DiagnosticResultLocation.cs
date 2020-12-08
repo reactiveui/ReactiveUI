@@ -10,7 +10,7 @@ namespace TestHelper
     /// <summary>
     /// Location where the diagnostic appears, as determined by path, line number, and column number.
     /// </summary>
-    public struct DiagnosticResultLocation : IEquatable<DiagnosticResultLocation>
+    public readonly struct DiagnosticResultLocation : IEquatable<DiagnosticResultLocation>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DiagnosticResultLocation"/> struct.
@@ -56,35 +56,23 @@ namespace TestHelper
         /// <param name="left">Left.</param>
         /// <param name="right">Right.</param>
         /// <returns>Are Equal.</returns>
-        public static bool operator ==(DiagnosticResultLocation left, DiagnosticResultLocation right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(DiagnosticResultLocation left, DiagnosticResultLocation right) => left.Equals(right);
 
-        public static bool operator !=(DiagnosticResultLocation left, DiagnosticResultLocation right)
-        {
-            return !left.Equals(right);
-        }
+        public static bool operator !=(DiagnosticResultLocation left, DiagnosticResultLocation right) => !left.Equals(right);
 
         /// <summary>
         /// Compares two DiagnosticResultLocation for Equality.
         /// </summary>
         /// <param name="other">Other object to compare to.</param>
         /// <returns>Are Equal.</returns>
-        public bool Equals(DiagnosticResultLocation other)
-        {
-            return string.Equals(Path, other.Path, StringComparison.InvariantCultureIgnoreCase) && Line == other.Line && Column == other.Column;
-        }
+        public bool Equals(DiagnosticResultLocation other) => string.Equals(Path, other.Path, StringComparison.InvariantCultureIgnoreCase) && Line == other.Line && Column == other.Column;
 
         /// <summary>
         /// Compares two DiagnosticResultLocation for Equality.
         /// </summary>
         /// <param name="obj">Other object to compare to.</param>
         /// <returns>Are Equal.</returns>
-        public override bool Equals(object? obj)
-        {
-            return obj is DiagnosticResultLocation other && Equals(other);
-        }
+        public override bool Equals(object? obj) => obj is DiagnosticResultLocation other && Equals(other);
 
         /// <summary>
         /// Gets HashCode.
@@ -95,7 +83,7 @@ namespace TestHelper
         {
             unchecked
             {
-                var hashCode = Path != null ? Path.GetHashCode() : 0;
+                var hashCode = Path is not null ? Path.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ Line;
                 hashCode = (hashCode * 397) ^ Column;
                 return hashCode;

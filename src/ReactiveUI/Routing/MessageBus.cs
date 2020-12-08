@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -27,10 +26,10 @@ namespace ReactiveUI
     public class MessageBus : IMessageBus
     {
         private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus =
-            new Dictionary<(Type type, string? contract), NotAWeakReference>();
+            new();
 
-        private readonly IDictionary<(Type type, string? contract), IScheduler> _schedulerMappings =
-            new Dictionary<(Type type, string? contract), IScheduler>();
+        private readonly Dictionary<(Type type, string? contract), IScheduler> _schedulerMappings =
+            new();
 
         /// <summary>
         /// Gets or sets the Current MessageBus.
@@ -47,10 +46,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void RegisterScheduler<T>(IScheduler scheduler, string? contract = null)
-        {
-            _schedulerMappings[(typeof(T), contract)] = scheduler;
-        }
+        public void RegisterScheduler<T>(IScheduler scheduler, string? contract = null) => _schedulerMappings[(typeof(T), contract)] = scheduler;
 
         /// <summary>
         /// Listen provides an Observable that will fire whenever a Message is
@@ -83,7 +79,7 @@ namespace ReactiveUI
         {
             this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
-            return SetupSubjectIfNecessary<T>(contract) ?? Observable.Create<T>(observer => observer.OnCompleted);
+            return SetupSubjectIfNecessary<T>(contract);
         }
 
         /// <summary>
@@ -118,12 +114,12 @@ namespace ReactiveUI
             IObservable<T> source,
             string? contract = null)
         {
-            if (source == null)
+            if (source is null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return source.Subscribe(SetupSubjectIfNecessary<T>(contract)!);
+            return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
         }
 
         /// <summary>
@@ -137,18 +133,15 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void SendMessage<T>(T message, string? contract = null)
-        {
-            SetupSubjectIfNecessary<T>(contract)?.OnNext(message);
-        }
+        public void SendMessage<T>(T message, string? contract = null) => SetupSubjectIfNecessary<T>(contract).OnNext(message);
 
-        private ISubject<T>? SetupSubjectIfNecessary<T>(string? contract)
+        private ISubject<T> SetupSubjectIfNecessary<T>(string? contract)
         {
             ISubject<T>? ret = null;
 
             WithMessageBus(typeof(T), contract, (mb, item) =>
             {
-                if (mb.TryGetValue(item, out NotAWeakReference? subjRef) && subjRef.IsAlive)
+                if (mb.TryGetValue(item, out var subjRef) && subjRef.IsAlive)
                 {
                     ret = (ISubject<T>)subjRef.Target;
                     return;
@@ -158,7 +151,7 @@ namespace ReactiveUI
                 mb[item] = new NotAWeakReference(ret);
             });
 
-            return ret;
+            return ret!;
         }
 
         private void WithMessageBus(
@@ -179,7 +172,7 @@ namespace ReactiveUI
 
         private IScheduler GetScheduler((Type type, string? contract) item)
         {
-            _schedulerMappings.TryGetValue(item, out IScheduler? scheduler);
+            _schedulerMappings.TryGetValue(item, out var scheduler);
             return scheduler ?? CurrentThreadScheduler.Instance;
         }
     }

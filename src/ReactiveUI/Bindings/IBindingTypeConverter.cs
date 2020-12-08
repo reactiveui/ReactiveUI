@@ -37,6 +37,6 @@ namespace ReactiveUI
         ///     usually to specify things like locale awareness.</param>
         /// <param name="result">An object that is of the type <paramref name="toType"/>.</param>
         /// <returns>True if conversion was successful.</returns>
-        bool TryConvert(object? @from, Type toType, object? conversionHint, out object? result);
+        bool TryConvert(object? from, Type toType, object? conversionHint, out object? result);
     }
 }

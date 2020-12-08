@@ -35,7 +35,7 @@ namespace ReactiveUI.Tests
         public void NotificationPocoErrorOnBind()
         {
             // Use same logger, when the test is executed multiple times in the same AndroidRunner/AppDomain/AssemblyLoadContext
-            if (_testLoggerForNotificationPocoErrorOnBind == null)
+            if (_testLoggerForNotificationPocoErrorOnBind is null)
             {
                 _testLoggerForNotificationPocoErrorOnBind = new TestLogger();
             }
@@ -54,7 +54,14 @@ namespace ReactiveUI.Tests
                     Expression<Func<PocoType, string>> expr = x => x.Property1!;
                     var exp = Reflection.Rewrite(expr.Body);
 
-                    instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false).Subscribe(_ => { });
+                    var propertyName = exp.GetMemberInfo()?.Name;
+
+                    if (propertyName is null)
+                    {
+                        throw new InvalidOperationException("propertyName should not be null");
+                    }
+
+                    instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(_ => { });
 
                     Assert.True(testLogger.LastMessages.Count > 0);
 
@@ -85,7 +92,14 @@ namespace ReactiveUI.Tests
                 Expression<Func<PocoType, string>> expr = x => x.Property1!;
                 var exp = Reflection.Rewrite(expr.Body);
 
-                instance.GetNotificationForProperty(testClass, exp, exp.GetMemberInfo().Name, false, true).Subscribe(_ => { });
+                var propertyName = exp.GetMemberInfo()?.Name;
+
+                if (propertyName is null)
+                {
+                    throw new InvalidOperationException("propertyName should not be null");
+                }
+
+                instance.GetNotificationForProperty(testClass, exp, propertyName, false, true).Subscribe(_ => { });
 
                 testLogger.LastMessages.Should().NotContain(m => m.Contains(nameof(POCOObservableForProperty)));
             }
@@ -109,34 +123,22 @@ namespace ReactiveUI.Tests
 
         private class TestLogger : ILogger
         {
-            public List<string> LastMessages { get; } = new List<string>();
+            public List<string> LastMessages { get; } = new();
 
             public LogLevel Level => LogLevel.Debug;
 
-            public void Write(Exception exception, string message, Type type, LogLevel logLevel)
-            {
-                LastMessages.Add(message);
-            }
+            public void Write(Exception exception, string message, Type type, LogLevel logLevel) => LastMessages.Add(message);
 
-            public void Write(string message, LogLevel logLevel)
-            {
-                LastMessages.Add(message);
-            }
+            public void Write(string message, LogLevel logLevel) => LastMessages.Add(message);
 
-            public void Write(Exception exception, string message, LogLevel logLevel)
-            {
-                LastMessages.Add(message);
-            }
+            public void Write(Exception exception, string message, LogLevel logLevel) => LastMessages.Add(message);
 
-            public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
-            {
-                LastMessages.Add(message);
-            }
+            public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel) => LastMessages.Add(message);
         }
 
         private sealed class TestLoggerRegistration : IDisposable
         {
-            private List<ILogger> _originalLoggers;
+            private readonly List<ILogger> _originalLoggers;
 
             public TestLoggerRegistration()
                 : this(null)

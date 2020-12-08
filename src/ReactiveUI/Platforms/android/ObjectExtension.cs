@@ -15,7 +15,7 @@ namespace ReactiveUI
     {
         public static TObject ToNetObject<TObject>(this Object value)
         {
-            if (value == null)
+            if (value is null)
             {
                 return default!;
             }
@@ -30,7 +30,7 @@ namespace ReactiveUI
 
         public static Object? ToJavaObject<TObject>(this TObject value)
         {
-            if (value == null)
+            if (value is null)
             {
                 return null;
             }

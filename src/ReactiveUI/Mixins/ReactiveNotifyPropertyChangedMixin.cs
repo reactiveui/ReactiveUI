@@ -19,7 +19,7 @@ namespace ReactiveUI
     public static class ReactiveNotifyPropertyChangedMixin
     {
         private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> notifyFactoryCache =
-            new MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>(
+            new(
                 (t, _) =>
                 {
                     return Locator.Current.GetServices<ICreatesObservableForProperty>()
@@ -30,10 +30,7 @@ namespace ReactiveUI
                                   }).binding;
                 }, RxApp.BigCacheLimit);
 
-        static ReactiveNotifyPropertyChangedMixin()
-        {
-            RxApp.EnsureInitialized();
-        }
+        static ReactiveNotifyPropertyChangedMixin() => RxApp.EnsureInitialized();
 
         /// <summary>
         /// ObservableForProperty returns an Observable representing the
@@ -59,12 +56,12 @@ namespace ReactiveUI
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (property == null)
+            if (property is null)
             {
                 throw new ArgumentNullException(nameof(property));
             }
@@ -116,7 +113,7 @@ namespace ReactiveUI
                 bool beforeChange = false)
             where TSender : class
         {
-            if (selector == null)
+            if (selector is null)
             {
                 throw new ArgumentNullException(nameof(property));
             }
@@ -145,6 +142,11 @@ namespace ReactiveUI
             bool skipInitial = true,
             bool suppressWarnings = false)
         {
+            if (source is null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
             IObservable<IObservedChange<object?, object?>> notifier =
                 Observable.Return(new ObservedChange<object?, object?>(null, null!, source));
 
@@ -175,13 +177,13 @@ namespace ReactiveUI
             return r.DistinctUntilChanged(x => x.Value);
         }
 
-        private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
+        private static IObservable<IObservedChange<object, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
         {
-            // Make sure a change at a root node propogates events down
-            IObservedChange<object?, object> kicker = new ObservedChange<object?, object>(sourceChange.Value, expression);
+            // Make sure a change at a root node propagates events down
+            var kicker = new ObservedChange<object, object?>(sourceChange.Value!, expression, default);
 
             // Handle null values in the chain
-            if (sourceChange.Value == null)
+            if (sourceChange.Value is null)
             {
                 return Observable.Return(kicker);
             }
@@ -189,15 +191,26 @@ namespace ReactiveUI
             // Handle non null values in the chain
             return NotifyForProperty(sourceChange.Value, expression, beforeChange, suppressWarnings)
                 .StartWith(kicker)
-                .Select(x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValue()));
+                .Select(x => new ObservedChange<object, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
         }
 
-        private static IObservable<IObservedChange<object, object>>? NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
+        private static IObservable<IObservedChange<object, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
         {
-            var propertyName = expression.GetMemberInfo().Name;
+            if (expression is null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            var memberInfo = expression.GetMemberInfo();
+            if (memberInfo is null)
+            {
+                throw new ArgumentException("The expression does not have valid member info", nameof(expression));
+            }
+
+            var propertyName = memberInfo.Name;
             var result = notifyFactoryCache.Get((sender.GetType(), propertyName, beforeChange));
 
-            if (result == null)
+            if (result is null)
             {
                 throw new Exception($"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
             }

@@ -22,10 +22,7 @@ namespace ReactiveUI
         /// <param name="context">The Context to bind the Service from.</param>
         /// <param name="intent">Identifies the service to connect to. The Intent may specify either an explicit component name, or a logical description (action, category, etc) to match an IntentFilter published by a service.</param>
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
-        public static IObservable<IBinder?> ServiceBound(this Context context, Intent intent, Bind flags = Bind.None)
-        {
-            return ServiceBound<IBinder>(context, intent, flags);
-        }
+        public static IObservable<IBinder?> ServiceBound(this Context context, Intent intent, Bind flags = Bind.None) => ServiceBound<IBinder>(context, intent, flags);
 
         /// <summary>
         /// Binds the service.
@@ -36,9 +33,8 @@ namespace ReactiveUI
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
         /// <typeparam name="TBinder">The type of the returned service binder.</typeparam>
         public static IObservable<TBinder?> ServiceBound<TBinder>(this Context context, Intent intent, Bind flags = Bind.None)
-            where TBinder : class, IBinder
-        {
-            return Observable.Create<TBinder?>(observer =>
+            where TBinder : class, IBinder =>
+            Observable.Create<TBinder?>(observer =>
             {
                 var connection = new ServiceConnection<TBinder>(context, observer);
                 try
@@ -55,7 +51,6 @@ namespace ReactiveUI
 
                 return connection;
             });
-        }
 
         /// <summary>
         /// A private implementation of IServiceConnection and IDisposable.
@@ -75,16 +70,12 @@ namespace ReactiveUI
                 _observer = observer;
             }
 
-            void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? binder)
-            {
-                _observer.OnNext((TBinder?)binder);
-            }
+            void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? binder) => _observer.OnNext((TBinder?)binder);
 
-            void IServiceConnection.OnServiceDisconnected(ComponentName? name)
-            {
+            void IServiceConnection.OnServiceDisconnected(ComponentName? name) =>
+
                 // lost connection to the remote service but it may be revived
                 _observer.OnNext(null);
-            }
 
             protected override void Dispose(bool disposing)
             {

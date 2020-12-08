@@ -32,7 +32,7 @@ namespace ReactiveUI
         /// earlier than normal.</returns>
         public static IDisposable WhenNavigatedTo(this IRoutableViewModel item, Func<IDisposable> onNavigatedTo)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -40,7 +40,7 @@ namespace ReactiveUI
             IDisposable? inner = null;
 
             var router = item.HostScreen.Router;
-            var navigationStackChanged = router.NavigationChanged?.CountChanged();
+            var navigationStackChanged = router.NavigationChanged.CountChanged();
             return navigationStackChanged.Subscribe(_ =>
             {
                 if (router.GetCurrentViewModel() == item)
@@ -74,17 +74,17 @@ namespace ReactiveUI
         /// navigation stack.</returns>
         public static IObservable<Unit> WhenNavigatedToObservable(this IRoutableViewModel item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
             var router = item.HostScreen.Router;
-            var navigationStackChanged = router.NavigationChanged?.CountChanged();
+            var navigationStackChanged = router.NavigationChanged.CountChanged();
             var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
 
             return navigationStackChanged
-                .Where(_ => router?.GetCurrentViewModel() == item)
+                .Where(_ => router.GetCurrentViewModel() == item)
                 .Select(_ => Unit.Default)
                 .TakeUntil(itemRemoved);
         }
@@ -106,15 +106,15 @@ namespace ReactiveUI
         /// stack.</returns>
         public static IObservable<Unit> WhenNavigatingFromObservable(this IRoutableViewModel item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
             var router = item.HostScreen.Router;
-            var navigationStackChanged = router.NavigationChanged?.CountChanged();
+            var navigationStackChanged = router.NavigationChanged.CountChanged();
             var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
-            var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel[2], (previous, current) => new[] { previous[1], router.GetCurrentViewModel() });
+            var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel?[2], (previous, _) => new[] { previous[1], router.GetCurrentViewModel() });
 
             return viewModelsChanged
                 .Where(x => x[0] == item)
@@ -122,16 +122,10 @@ namespace ReactiveUI
                 .TakeUntil(itemRemoved);
         }
 
-        private static bool WasItemRemoved(IChangeSet<IRoutableViewModel> changeSet, IRoutableViewModel item)
-        {
-            return changeSet
+        private static bool WasItemRemoved(IChangeSet<IRoutableViewModel> changeSet, IRoutableViewModel item) =>
+            changeSet
                 .Any(
-                    change =>
-                    {
-                        return
-                            change.Reason == ListChangeReason.Clear ||
-                            (NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item);
-                    });
-        }
+                    change => change.Reason == ListChangeReason.Clear ||
+                              (NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item));
     }
 }

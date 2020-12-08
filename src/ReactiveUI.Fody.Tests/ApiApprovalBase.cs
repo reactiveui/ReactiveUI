@@ -23,7 +23,7 @@ namespace ReactiveUI.Fody.Tests
     [ExcludeFromCodeCoverage]
     public abstract class ApiApprovalBase
     {
-        private static readonly Regex _removeCoverletSectionRegex = new Regex(@"^namespace Coverlet\.Core\.Instrumentation\.Tracker.*?^}", RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.Compiled);
+        private static readonly Regex _removeCoverletSectionRegex = new(@"^namespace Coverlet\.Core\.Instrumentation\.Tracker.*?^}", RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.Compiled);
 
         protected static void CheckApproval(Assembly assembly, [CallerMemberName]string? memberName = null, [CallerFilePath]string? filePath = null)
         {
@@ -31,7 +31,7 @@ namespace ReactiveUI.Fody.Tests
 
             var sourceDirectory = Path.GetDirectoryName(filePath);
 
-            if (sourceDirectory != null)
+            if (sourceDirectory is not null)
             {
                 var approvedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.approved.txt");
                 var receivedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.received.txt");
@@ -43,7 +43,7 @@ namespace ReactiveUI.Fody.Tests
                     approvedPublicApi = File.ReadAllText(approvedFileName);
                 }
 
-                var receivedPublicApi = Filter(ApiGenerator.GeneratePublicApi(assembly, new ApiGeneratorOptions()));
+                var receivedPublicApi = Filter(assembly.GeneratePublicApi(new ApiGeneratorOptions()));
 
                 if (!string.Equals(receivedPublicApi, approvedPublicApi, StringComparison.InvariantCulture))
                 {
@@ -62,7 +62,8 @@ namespace ReactiveUI.Fody.Tests
                 new[]
                 {
                     Environment.NewLine
-                }, StringSplitOptions.RemoveEmptyEntries)
+                },
+                StringSplitOptions.RemoveEmptyEntries)
                     .Where(l =>
                     !l.StartsWith("[assembly: AssemblyVersion(", StringComparison.InvariantCulture) &&
                     !l.StartsWith("[assembly: AssemblyFileVersion(", StringComparison.InvariantCulture) &&

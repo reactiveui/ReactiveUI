@@ -21,9 +21,6 @@ namespace ReactiveUI.Tests
             }
         }
 
-        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count)
-        {
-            return @this.Take(@this.Count() - count);
-        }
+        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count) => @this.Take(@this.Count() - count);
     }
 }

@@ -5,7 +5,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -38,18 +37,20 @@ namespace ReactiveUI
                                                         {
                                                             this.SubscribePropertyChangingEvents();
                                                             return Unit.Default;
-                                                        }, LazyThreadSafetyMode.PublicationOnly);
+                                                        },
+                                                        LazyThreadSafetyMode.PublicationOnly);
             _propertyChangedEventsSubscribed = new Lazy<Unit>(
                                                         () =>
                                                         {
                                                             this.SubscribePropertyChangedEvents();
                                                             return Unit.Default;
-                                                        }, LazyThreadSafetyMode.PublicationOnly);
+                                                        },
+                                                        LazyThreadSafetyMode.PublicationOnly);
             _thrownExceptions = new Lazy<IObservable<Exception>>(this.GetThrownExceptionsObservable, LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler PropertyChanging
+        public event PropertyChangingEventHandler? PropertyChanging
         {
             add
             {
@@ -60,7 +61,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangedEventHandler PropertyChanged
+        public event PropertyChangedEventHandler? PropertyChanged
         {
             add
             {

@@ -9,14 +9,12 @@ namespace ReactiveUI.Tests
 {
     public class DerivedActivatingViewModel : ActivatingViewModel
     {
-        public DerivedActivatingViewModel()
-        {
+        public DerivedActivatingViewModel() =>
             this.WhenActivated(d =>
             {
                 IsActiveCountAlso++;
                 d(Disposable.Create(() => IsActiveCountAlso--));
             });
-        }
 
         public int IsActiveCountAlso { get; protected set; }
     }

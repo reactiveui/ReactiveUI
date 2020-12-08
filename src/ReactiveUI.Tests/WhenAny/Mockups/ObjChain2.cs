@@ -7,7 +7,7 @@ namespace ReactiveUI.Tests
 {
     public class ObjChain2 : ReactiveObject
     {
-        private ObjChain3 _model = new ObjChain3();
+        private ObjChain3 _model = new();
 
         public ObjChain3 Model
         {

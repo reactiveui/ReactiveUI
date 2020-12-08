@@ -48,16 +48,12 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
     <PackageReference Include="Xunit.StaFact" Version="1.0.37" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.4.1" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="10.2.0" />
-    <PackageReference Include="DiffEngine" Version="6.1.4" />
+    <PackageReference Include="DiffEngine" Version="6.4.6" />
     <PackageReference Include="coverlet.msbuild" Version="2.9.0" PrivateAssets="All" />
   </ItemGroup>
   
-  <ItemGroup Condition="$(IsTestProject)">
-    <Compile Include="$(MSBuildThisFileDirectory)ApiGeneratorGlobalSuppressions.cs" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" /> 
   </ItemGroup>
@@ -75,8 +71,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.205" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" PrivateAssets="all" />
+    <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.304" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.1" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" Version="3.0.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>

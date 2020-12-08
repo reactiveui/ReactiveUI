@@ -3,25 +3,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
+
 namespace TestHelper
 {
     /// <summary>
-    /// Diagnostic Producer class with extra methods dealing with applying codefixes
+    /// Diagnostic Producer class with extra methods dealing with applying code fixes
     /// All methods are static.
     /// </summary>
-    public abstract partial class CodeFixVerifier : DiagnosticVerifier
+    public abstract class CodeFixVerifier : DiagnosticVerifier
     {
         /// <summary>
         /// Apply the inputted CodeAction to the inputted document.
-        /// Meant to be used to apply codefixes.
+        /// Meant to be used to apply code fixes.
         /// </summary>
         /// <param name="document">The Document to apply the fix on.</param>
         /// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
@@ -68,10 +69,7 @@ namespace TestHelper
         /// </summary>
         /// <param name="document">The Document to run the compiler diagnostic analyzers on.</param>
         /// <returns>The compiler diagnostics that were found in the code.</returns>
-        private static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document? document)
-        {
-            return document?.GetSemanticModelAsync()?.Result?.GetDiagnostics() ?? Enumerable.Empty<Diagnostic>();
-        }
+        private static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document? document) => document?.GetSemanticModelAsync()?.Result?.GetDiagnostics() ?? Enumerable.Empty<Diagnostic>();
 
         /// <summary>
         /// Given a document, turn it into a string based on the syntax root.

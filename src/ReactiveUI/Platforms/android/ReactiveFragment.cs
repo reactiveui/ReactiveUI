@@ -66,8 +66,8 @@ namespace ReactiveUI
     [Obsolete("This class was deprecated in API level 28. Use the ReactiveFragment in ReactiveUI.AndroidX (recommended) or ReactiveUI.AndroidSupport for consistent behavior across all devices and access to Lifecycle.", false)]
     public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
     {
-        private readonly Subject<Unit> _activated = new Subject<Unit>();
-        private readonly Subject<Unit> _deactivated = new Subject<Unit>();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveFragment"/> class.
@@ -118,16 +118,10 @@ namespace ReactiveUI
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            PropertyChanging?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(this, args);
-        }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -139,6 +133,7 @@ namespace ReactiveUI
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
+        [Obsolete("deprecated")]
         public override void OnPause()
         {
             base.OnPause();
@@ -146,6 +141,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
+        [Obsolete("deprecated")]
         public override void OnResume()
         {
             base.OnResume();

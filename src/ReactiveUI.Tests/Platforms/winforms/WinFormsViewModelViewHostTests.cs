@@ -14,10 +14,7 @@ namespace ReactiveUI.Tests.Winforms
 {
     public class WinFormsViewModelViewHostTests
     {
-        public WinFormsViewModelViewHostTests()
-        {
-            WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
-        }
+        public WinFormsViewModelViewHostTests() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
 
         [Fact]
         public void SettingViewModelShouldAddTheViewtoItsControls()
@@ -35,7 +32,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldDisposePreviousView()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var target = new WinFormsViewModelViewHost
             {
                 CacheViews = false
@@ -57,7 +54,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldSetDefaultContentWhenViewModelIsNull()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var defaultContent = new Control();
             var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator };
 
@@ -68,7 +65,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldCacheViewWhenEnabled()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var defaultContent = new Control();
             var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = true };
 
@@ -81,7 +78,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldNotCacheViewWhenDisabled()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var defaultContent = new Control();
             var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = false };
 

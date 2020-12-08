@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -27,12 +26,12 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewFor
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            if (handler == null)
+            if (handler is null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }
@@ -44,9 +43,9 @@ namespace ReactiveUI
             var interactionDisposable = new SerialDisposable();
 
             return source
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
-                .Finally(() => interactionDisposable?.Dispose())
+                .Finally(() => interactionDisposable.Dispose())
                 .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
         }
 
@@ -59,12 +58,12 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewFor
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            if (handler == null)
+            if (handler is null)
             {
                 throw new ArgumentNullException(nameof(handler));
             }
@@ -76,9 +75,9 @@ namespace ReactiveUI
             var interactionDisposable = new SerialDisposable();
 
             return source
-                .Where(x => x != null)
+                .Where(x => x is not null)
                 .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
-                .Finally(() => interactionDisposable?.Dispose())
+                .Finally(() => interactionDisposable.Dispose())
                 .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
         }
     }

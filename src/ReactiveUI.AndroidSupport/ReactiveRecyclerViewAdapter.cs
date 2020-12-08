@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reactive.Linq;
 using Android.Support.V7.Widget;
 using Android.Views;
 using DynamicData;
@@ -48,10 +47,7 @@ namespace ReactiveUI.AndroidSupport
         public override int ItemCount => _list.Count;
 
         /// <inheritdoc/>
-        public override int GetItemViewType(int position)
-        {
-            return GetItemViewType(position, GetViewModelByPosition(position));
-        }
+        public override int GetItemViewType(int position) => GetItemViewType(position, GetViewModelByPosition(position));
 
         /// <summary>
         /// Determine the View that will be used/re-used in lists where
@@ -60,15 +56,12 @@ namespace ReactiveUI.AndroidSupport
         /// <param name="position">The position of the current view in the list.</param>
         /// <param name="viewModel">The ViewModel associated with the current View.</param>
         /// <returns>An ID to be used in OnCreateViewHolder.</returns>
-        public virtual int GetItemViewType(int position, TViewModel? viewModel)
-        {
-            return base.GetItemViewType(position);
-        }
+        public virtual int GetItemViewType(int position, TViewModel? viewModel) => base.GetItemViewType(position);
 
         /// <inheritdoc/>
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            if (holder == null)
+            if (holder is null)
             {
                 throw new ArgumentNullException(nameof(holder));
             }
@@ -86,17 +79,14 @@ namespace ReactiveUI.AndroidSupport
         {
             if (disposing)
             {
-                _inner?.Dispose();
-                _list?.Dispose();
+                _inner.Dispose();
+                _list.Dispose();
             }
 
             base.Dispose(disposing);
         }
 
-        private TViewModel? GetViewModelByPosition(int position)
-        {
-            return position >= _list.Count ? null : _list.Items.ElementAt(position);
-        }
+        private TViewModel? GetViewModelByPosition(int position) => position >= _list.Count ? null : _list.Items.ElementAt(position);
 
         private void UpdateBindings(Change<TViewModel> change)
         {
