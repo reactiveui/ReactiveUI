@@ -17,7 +17,7 @@ namespace ReactiveUI.Testing
     public static class SchedulerExtensions
 #pragma warning restore SA1600 // Elements should be documented
     {
-        private static readonly AutoResetEvent schedulerGate = new (true);
+        private static readonly AutoResetEvent schedulerGate = new(true);
 
         /// <summary>
         /// WithScheduler overrides the default Deferred and Taskpool schedulers
@@ -179,7 +179,7 @@ namespace ReactiveUI.Testing
         /// <returns>A recorded notification that can be provided to
         /// TestScheduler.CreateHotObservable.</returns>
         public static Recorded<Notification<T>> OnNextAt<T>(this TestScheduler scheduler, double milliseconds, T value) =>
-            new (
+            new(
                 scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
                 Notification.CreateOnNext(value));
 
@@ -196,7 +196,7 @@ namespace ReactiveUI.Testing
         /// <returns>A recorded notification that can be provided to
         /// TestScheduler.CreateHotObservable.</returns>
         public static Recorded<Notification<T>> OnErrorAt<T>(this TestScheduler scheduler, double milliseconds, Exception ex) =>
-            new (
+            new(
                 scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
                 Notification.CreateOnError<T>(ex));
 
@@ -211,7 +211,7 @@ namespace ReactiveUI.Testing
         /// <returns>A recorded notification that can be provided to
         /// TestScheduler.CreateHotObservable.</returns>
         public static Recorded<Notification<T>> OnCompletedAt<T>(this TestScheduler scheduler, double milliseconds) =>
-            new (
+            new(
                 scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
                 Notification.CreateOnCompleted<T>());
 

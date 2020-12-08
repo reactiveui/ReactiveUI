@@ -19,7 +19,7 @@ namespace ReactiveUI
     public static class ViewForMixins
     {
         private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> activationFetcherCache =
-            new (
+            new(
                (t, _) =>
                    Locator.Current
                           .GetServices<IActivationForViewFetcher?>()
@@ -203,7 +203,8 @@ namespace ReactiveUI
                     var ret = new List<IDisposable>();
                     block(ret.Add);
                     return ret;
-                }, view);
+                },
+                view);
 
         /// <summary>
         /// WhenActivated allows you to register a Func to be called when a
@@ -228,7 +229,8 @@ namespace ReactiveUI
                     var d = new CompositeDisposable();
                     block(d);
                     return new[] { d };
-                }, view);
+                },
+                view);
 
         private static IDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
         {

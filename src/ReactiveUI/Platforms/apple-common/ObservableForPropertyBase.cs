@@ -32,7 +32,7 @@ namespace ReactiveUI
         /// <summary>
         /// Configuration map.
         /// </summary>
-        private readonly Dictionary<Type, Dictionary<string, ObservablePropertyInfo>> _config = new ();
+        private readonly Dictionary<Type, Dictionary<string, ObservablePropertyInfo>> _config = new();
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)

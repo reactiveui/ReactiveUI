@@ -26,10 +26,10 @@ namespace ReactiveUI
     public class MessageBus : IMessageBus
     {
         private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus =
-            new ();
+            new();
 
         private readonly Dictionary<(Type type, string? contract), IScheduler> _schedulerMappings =
-            new ();
+            new();
 
         /// <summary>
         /// Gets or sets the Current MessageBus.

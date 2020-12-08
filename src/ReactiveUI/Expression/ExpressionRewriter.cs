@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
@@ -21,40 +22,40 @@ namespace ReactiveUI
         {
             if (node is null)
             {
-                throw new InvalidOperationException("The expression has a null instance in it.");
+                throw new ArgumentNullException(nameof(node));
             }
 
             switch (node.NodeType)
             {
-            case ExpressionType.ArrayIndex:
-                return VisitBinary((BinaryExpression)node);
-            case ExpressionType.ArrayLength:
-                return VisitUnary((UnaryExpression)node);
-            case ExpressionType.Call:
-                return VisitMethodCall((MethodCallExpression)node);
-            case ExpressionType.Index:
-                return VisitIndex((IndexExpression)node);
-            case ExpressionType.MemberAccess:
-                return VisitMember((MemberExpression)node);
-            case ExpressionType.Parameter:
-                return VisitParameter((ParameterExpression)node);
-            case ExpressionType.Constant:
-                return VisitConstant((ConstantExpression)node);
-            case ExpressionType.Convert:
-                return VisitUnary((UnaryExpression)node);
-            default:
-                var errorMessageBuilder = new StringBuilder($"Unsupported expression of type '{node.NodeType}' {node}.");
+                case ExpressionType.ArrayIndex:
+                    return VisitBinary((BinaryExpression)node);
+                case ExpressionType.ArrayLength:
+                    return VisitUnary((UnaryExpression)node);
+                case ExpressionType.Call:
+                    return VisitMethodCall((MethodCallExpression)node);
+                case ExpressionType.Index:
+                    return VisitIndex((IndexExpression)node);
+                case ExpressionType.MemberAccess:
+                    return VisitMember((MemberExpression)node);
+                case ExpressionType.Parameter:
+                    return VisitParameter((ParameterExpression)node);
+                case ExpressionType.Constant:
+                    return VisitConstant((ConstantExpression)node);
+                case ExpressionType.Convert:
+                    return VisitUnary((UnaryExpression)node);
+                default:
+                    var errorMessageBuilder = new StringBuilder($"Unsupported expression of type '{node.NodeType}' {node}.");
 
-                if (node is BinaryExpression binaryExpression)
-                {
-                    errorMessageBuilder.Append(" Did you meant to use expressions '")
-                        .Append(binaryExpression.Left)
-                        .Append("' and '")
-                        .Append(binaryExpression.Right)
-                        .Append("'?");
-                }
+                    if (node is BinaryExpression binaryExpression)
+                    {
+                        errorMessageBuilder.Append(" Did you meant to use expressions '")
+                            .Append(binaryExpression.Left)
+                            .Append("' and '")
+                            .Append(binaryExpression.Right)
+                            .Append("'?");
+                    }
 
-                throw new NotSupportedException(errorMessageBuilder.ToString());
+                    throw new NotSupportedException(errorMessageBuilder.ToString());
             }
         }
 
@@ -68,39 +69,37 @@ namespace ReactiveUI
             Expression left = Visit(node.Left);
             Expression right = Visit(node.Right);
 
-            // Translate array index into normal index expression
+            // Translate arrayindex into normal index expression
             return Expression.MakeIndex(left, left.Type.GetRuntimeProperty("Item"), new[] { right });
         }
 
         protected override Expression VisitUnary(UnaryExpression node)
         {
-            if (node is null)
+            if (node.NodeType == ExpressionType.ArrayLength && node.Operand is not null)
             {
-                throw new ArgumentNullException(nameof(node));
-            }
+                Expression expression = Visit(node.Operand);
 
-            switch (node.NodeType)
-            {
-                case ExpressionType.ArrayLength:
+                var memberInfo = expression.Type.GetRuntimeProperty("Length");
+
+                if (memberInfo is null)
                 {
-                    Expression expression = Visit(node.Operand);
-
-                    var lengthProperty = expression.Type.GetRuntimeProperty("Length");
-
-                    if (lengthProperty is null)
-                    {
-                        throw new InvalidOperationException(
-                            "There is a unary expression pointing to an array which does not have a length");
-                    }
-
-                    // translate array length into normal member expression
-                    return Expression.MakeMemberAccess(expression, lengthProperty);
+                    throw new InvalidOperationException("Could not find valid information for the array length operator.");
                 }
 
-                case ExpressionType.Convert:
-                    return Visit(node.Operand);
-                default:
-                    return node.Update(Visit(node.Operand));
+                // translate arraylength into normal member expression
+                return Expression.MakeMemberAccess(expression, memberInfo);
+            }
+            else if (node.NodeType == ExpressionType.Convert && node.Operand is not null)
+            {
+                return Visit(node.Operand);
+            }
+            else if (node.Operand is not null)
+            {
+                return node.Update(Visit(node?.Operand));
+            }
+            else
+            {
+                throw new ArgumentException("Could not find a valid operand for the node.", nameof(node));
             }
         }
 
@@ -110,6 +109,11 @@ namespace ReactiveUI
             if (node.Arguments.Any(e => !(e is ConstantExpression)) || !node.Method.IsSpecialName)
             {
                 throw new NotSupportedException("Index expressions are only supported with constants.");
+            }
+
+            if (node.Object is null)
+            {
+                throw new ArgumentException("The Method call does not point towards an object.", nameof(node));
             }
 
             Expression instance = Visit(node.Object);

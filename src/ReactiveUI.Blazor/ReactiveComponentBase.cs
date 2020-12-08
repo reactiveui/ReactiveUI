@@ -23,10 +23,10 @@ namespace ReactiveUI.Blazor
     public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPropertyChanged, ICanActivate, IDisposable
         where T : class, INotifyPropertyChanged
     {
-        private readonly Subject<Unit> _initSubject = new ();
+        private readonly Subject<Unit> _initSubject = new();
         [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
-        private readonly Subject<Unit> _deactivateSubject = new ();
-        private readonly CompositeDisposable _compositeDisposable = new ();
+        private readonly Subject<Unit> _deactivateSubject = new();
+        private readonly CompositeDisposable _compositeDisposable = new();
 
         private T? _viewModel;
 

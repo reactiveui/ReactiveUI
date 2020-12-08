@@ -6,7 +6,7 @@ namespace ReactiveUI.XamForms.Tests.Mocks
 {
     public class NavigationViewModel : ReactiveObject, IScreen
     {
-        public RoutingState Router { get; } = new ();
+        public RoutingState Router { get; } = new();
 
         public IObservable<IRoutableViewModel> Navigate(string name)
         {

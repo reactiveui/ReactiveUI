@@ -25,7 +25,7 @@ namespace ReactiveUI
     public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         private readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> _commonSource;
-        private readonly Subject<object> _elementSelected = new ();
+        private readonly Subject<object> _elementSelected = new();
         private readonly UITableViewAdapter _adapter;
 
         /// <summary>

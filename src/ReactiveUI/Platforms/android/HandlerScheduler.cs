@@ -79,14 +79,15 @@ namespace ReactiveUI
 
             _handler.PostDelayed(
                 () =>
-            {
-                if (isCancelled)
                 {
-                    return;
-                }
+                    if (isCancelled)
+                    {
+                        return;
+                    }
 
-                innerDisp.Disposable = action(this, state);
-            }, dueTime.Ticks / 10 / 1000);
+                    innerDisp.Disposable = action(this, state);
+                },
+                dueTime.Ticks / 10 / 1000);
 
             return new CompositeDisposable(
                 Disposable.Create(() => isCancelled = true),

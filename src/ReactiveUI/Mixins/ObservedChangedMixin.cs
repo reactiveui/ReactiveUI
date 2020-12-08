@@ -122,11 +122,6 @@ namespace ReactiveUI
         /// </returns>
         internal static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item, out TValue changeValue)
         {
-            if (Equals(item.Sender, null))
-            {
-                throw new ArgumentNullException(nameof(item), "Sender of the item is null");
-            }
-
             if (!Equals(item.Value, default(TValue)))
             {
                 changeValue = item.Value;

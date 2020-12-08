@@ -234,7 +234,7 @@ namespace ReactiveUI.Tests
 
         private class TestScreen : IScreen
         {
-            public RoutingState Router { get; } = new ();
+            public RoutingState Router { get; } = new();
         }
 
         private class RoutableViewModel : ReactiveObject, IRoutableViewModel

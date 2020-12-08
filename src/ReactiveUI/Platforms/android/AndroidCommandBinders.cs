@@ -28,6 +28,6 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the static instance of <see cref="AndroidCommandBinders"/>.
         /// </summary>
-        public static Lazy<AndroidCommandBinders> Instance { get; } = new ();
+        public static Lazy<AndroidCommandBinders> Instance { get; } = new();
     }
 }

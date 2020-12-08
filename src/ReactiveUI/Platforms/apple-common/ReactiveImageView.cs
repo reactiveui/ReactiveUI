@@ -32,8 +32,8 @@ namespace ReactiveUI
     [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-        private Subject<Unit> _activated = new ();
-        private Subject<Unit> _deactivated = new ();
+        private Subject<Unit> _activated = new();
+        private Subject<Unit> _deactivated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.

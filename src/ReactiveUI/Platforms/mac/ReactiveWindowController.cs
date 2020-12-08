@@ -18,8 +18,8 @@ namespace ReactiveUI
     /// </summary>
     public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged<ReactiveWindowController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        private readonly Subject<Unit> _activated = new ();
-        private readonly Subject<Unit> _deactivated = new ();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.

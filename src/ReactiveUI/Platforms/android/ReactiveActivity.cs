@@ -68,9 +68,9 @@ namespace ReactiveUI
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
     {
-        private readonly Subject<Unit> _activated = new ();
-        private readonly Subject<Unit> _deactivated = new ();
-        private readonly Subject<(int requestCode, Result resultCode, Intent? intent)> _activityResult = new ();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
+        private readonly Subject<(int requestCode, Result resultCode, Intent? intent)> _activityResult = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveActivity"/> class.

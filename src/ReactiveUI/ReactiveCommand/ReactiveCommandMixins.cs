@@ -168,7 +168,7 @@ namespace ReactiveUI
             public TValue Value { get; }
 
             public InvokeCommandInfo<TCommand, TValue> WithValue(TValue value) =>
-                new (Command, CanExecute, value);
+                new(Command, CanExecute, value);
         }
     }
 }

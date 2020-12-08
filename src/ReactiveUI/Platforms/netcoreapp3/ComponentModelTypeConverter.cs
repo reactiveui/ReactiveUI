@@ -15,7 +15,7 @@ namespace ReactiveUI
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
         private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache =
-            new (
+            new(
                                                                                (types, _) =>
                                                                                {
                                                                                    // NB: String is a Magical Type(tm) to TypeConverters. If we are

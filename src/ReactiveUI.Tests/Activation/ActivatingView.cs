@@ -21,9 +21,9 @@ namespace ReactiveUI.Tests
                 d(Disposable.Create(() => IsActiveCount--));
             });
 
-        public Subject<Unit> Loaded { get; } = new ();
+        public Subject<Unit> Loaded { get; } = new();
 
-        public Subject<Unit> Unloaded { get; } = new ();
+        public Subject<Unit> Unloaded { get; } = new();
 
         public ActivatingViewModel? ViewModel
         {

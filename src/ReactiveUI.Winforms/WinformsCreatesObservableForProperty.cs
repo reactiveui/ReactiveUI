@@ -10,6 +10,8 @@ using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
+using System.Windows.Forms;
+
 using Splat;
 
 namespace ReactiveUI.Winforms
@@ -21,9 +23,13 @@ namespace ReactiveUI.Winforms
     /// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
     public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> eventInfoCache = new (
-            (pair, _) => pair.type.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
-                .FirstOrDefault(x => x.Name == pair.name + "Changed"), RxApp.SmallCacheLimit);
+        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> eventInfoCache = new(
+            (pair, _) =>
+            {
+                return pair.type.GetEvents(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public)
+                    .FirstOrDefault(x => x.Name == pair.name + "Changed");
+            },
+            RxApp.SmallCacheLimit);
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
@@ -35,23 +41,28 @@ namespace ReactiveUI.Winforms
             }
 
             var ei = eventInfoCache.Get((type, propertyName));
-            return beforeChanged == false && ei is not null ? 8 : 0;
+            return !beforeChanged && ei != null ? 8 : 0;
         }
 
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            if (sender is null)
+            if (sender == null)
             {
                 throw new ArgumentNullException(nameof(sender));
             }
 
             var ei = eventInfoCache.Get((sender.GetType(), propertyName));
 
+            if (ei is null)
+            {
+                throw new InvalidOperationException("Could not find a valid event for expression.");
+            }
+
             return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
                 bool completed = false;
-                var handler = new EventHandler((_, _) =>
+                var handler = new EventHandler((o, e) =>
                 {
                     if (completed)
                     {
@@ -69,14 +80,7 @@ namespace ReactiveUI.Winforms
                     }
                 });
 
-                if (ei is null)
-                {
-                    subj.OnError(new InvalidOperationException("There is no valid event information found."));
-                    return Disposable.Empty;
-                }
-
                 ei.AddEventHandler(sender, handler);
-
                 return Disposable.Create(() => ei.RemoveEventHandler(sender, handler));
             });
         }

@@ -47,10 +47,10 @@ namespace ReactiveUI.XamForms
     /// </remarks>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
-        private readonly Subject<IDisposable> _onSleep = new ();
-        private readonly Subject<Unit> _onLaunchingNew = new ();
-        private readonly Subject<Unit> _onResume = new ();
-        private readonly Subject<Unit> _onStart = new ();
+        private readonly Subject<IDisposable> _onSleep = new();
+        private readonly Subject<Unit> _onLaunchingNew = new();
+        private readonly Subject<Unit> _onResume = new();
+        private readonly Subject<Unit> _onStart = new();
         private bool _disposedValue; // To detect redundant calls
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace ReactiveUI.XamForms
         /// <summary>
         /// Gets a subject to indicate whether the application has crashed.
         /// </summary>
-        public static Subject<Unit> UntimelyDemise { get; } = new ();
+        public static Subject<Unit> UntimelyDemise { get; } = new();
 
         /// <summary>
         /// Call this method in the constructor of your Xamarin.Forms

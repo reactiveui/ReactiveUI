@@ -33,31 +33,32 @@ namespace ReactiveUI
 
             DeclaredInNSObject = new MemoizingMRUCache<(Type type, string propertyName), bool>(
                 (pair, _) =>
-            {
-                var thisType = pair.type;
-
-                // Types that aren't NSObjects at all are uninteresting to us
-                if (typeof(NSObject).IsAssignableFrom(thisType) == false)
                 {
-                    return false;
-                }
+                    var thisType = pair.type;
 
-                while (thisType is not null)
-                {
-                    if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.propertyName))
+                    // Types that aren't NSObjects at all are uninteresting to us
+                    if (typeof(NSObject).IsAssignableFrom(thisType) == false)
                     {
-                        // NB: This is a not-completely correct way to detect if
-                        // an object is defined in an Obj-C class (it will fail if
-                        // you're using a binding to a 3rd-party Obj-C library).
-                        return thisType.Assembly.FullName == monotouchAssemblyName;
+                        return false;
                     }
 
-                    thisType = thisType.BaseType;
-                }
+                    while (thisType is not null)
+                    {
+                        if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.propertyName))
+                        {
+                            // NB: This is a not-completely correct way to detect if
+                            // an object is defined in an Obj-C class (it will fail if
+                            // you're using a binding to a 3rd-party Obj-C library).
+                            return thisType.Assembly.FullName == monotouchAssemblyName;
+                        }
 
-                // The property doesn't exist at all
-                return false;
-            }, RxApp.BigCacheLimit);
+                        thisType = thisType.BaseType;
+                    }
+
+                    // The property doesn't exist at all
+                    return false;
+                },
+                RxApp.BigCacheLimit);
         }
 
         /// <inheritdoc/>

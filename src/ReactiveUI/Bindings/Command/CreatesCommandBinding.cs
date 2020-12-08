@@ -16,7 +16,7 @@ namespace ReactiveUI
     internal class CreatesCommandBinding
     {
         private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> bindCommandCache =
-            new (
+            new(
                 (t, _) =>
             {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
@@ -28,7 +28,7 @@ namespace ReactiveUI
             }, RxApp.SmallCacheLimit);
 
         private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> bindCommandEventCache =
-            new (
+            new(
                 (t, _) =>
             {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()

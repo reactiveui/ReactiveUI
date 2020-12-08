@@ -413,15 +413,14 @@ namespace ReactiveUI
     }
     public sealed class ObservableAsPropertyHelper<T> : ReactiveUI.IHandleObservableErrors, Splat.IEnableLogger, System.IDisposable
     {
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Func<T> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, T initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T>? onChanging, System.Func<T>? getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T>? onChanging, T initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, T initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T>? onChanging = null, System.Func<T>? getInitialValue = null, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T>? onChanging = null, T initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         public bool IsSubscribed { get; }
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public T Value { get; }
         public void Dispose() { }
-        public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T initialValue, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T initialValue = default, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
     }
     public static class ObservableLoggingMixin
     {
@@ -449,6 +448,7 @@ namespace ReactiveUI
     {
         public static string GetPropertyName<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
         public static TValue GetValue<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
+        public static TValue? GetValueOrDefault<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
         public static System.IObservable<TValue> Value<TSender, TValue>(this System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> item) { }
     }
     public static class OrderedComparer
@@ -498,7 +498,7 @@ namespace ReactiveUI
         public ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
-        public ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TViewModelProperty, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TViewModelProperty>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+        public ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
@@ -630,7 +630,7 @@ namespace ReactiveUI
         public static System.Func<object, object?[]?, object?>? GetValueFetcherForProperty(System.Reflection.MemberInfo? member) { }
         public static System.Func<object, object?[]?, object?> GetValueFetcherOrThrow(System.Reflection.MemberInfo? member) { }
         public static System.Action<object, object?, object?[]?> GetValueSetterForProperty(System.Reflection.MemberInfo? member) { }
-        public static System.Action<object, object?, object?[]?> GetValueSetterOrThrow(System.Reflection.MemberInfo? member) { }
+        public static System.Action<object, object?, object?[]?>? GetValueSetterOrThrow(System.Reflection.MemberInfo? member) { }
         public static bool IsStatic(this System.Reflection.PropertyInfo item) { }
         public static System.Type? ReallyFindType(string? type, bool throwOnFailure) { }
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression expression) { }

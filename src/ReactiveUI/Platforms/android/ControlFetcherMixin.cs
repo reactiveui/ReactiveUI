@@ -22,10 +22,10 @@ namespace ReactiveUI
    public static partial class ControlFetcherMixin
     {
         private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds
-            = new ();
+            = new();
 
         private static readonly ConditionalWeakTable<object, Dictionary<string?, View?>> viewCache
-            = new ();
+            = new();
 
         /// <summary>
         /// Gets the control from an activity.

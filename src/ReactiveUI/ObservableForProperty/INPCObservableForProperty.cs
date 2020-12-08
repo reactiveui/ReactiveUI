@@ -28,64 +28,62 @@ namespace ReactiveUI
         [SuppressMessage("Roslynator", "RCS1211", Justification = "Neater with else clause.")]
         public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            if (expression is null)
+            if (expression == null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }
 
+            var before = sender as INotifyPropertyChanging;
+            var after = sender as INotifyPropertyChanged;
+
+            if (beforeChanged ? before == null : after == null)
+            {
+                return Observable<IObservedChange<object, object?>>.Never;
+            }
+
             if (beforeChanged)
             {
-                if (sender is not INotifyPropertyChanging before)
-                {
-                    return Observable<IObservedChange<object, object?>>.Never;
-                }
-
                 var obs = Observable.FromEvent<PropertyChangingEventHandler, string?>(
                     eventHandler =>
                     {
-                        void Handler(object? eventSender, PropertyChangingEventArgs? e) => eventHandler(e?.PropertyName);
+                        void Handler(object? eventSender, PropertyChangingEventArgs e) => eventHandler(e.PropertyName);
                         return Handler;
                     },
-                    x => before.PropertyChanging += x,
-                    x => before.PropertyChanging -= x);
+                    x => before!.PropertyChanging += x,
+                    x => before!.PropertyChanging -= x);
 
                 if (expression.NodeType == ExpressionType.Index)
                 {
                     return obs.Where(x => string.IsNullOrEmpty(x)
-                        || (x?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true))
-                        .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
+                        || x?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
+                        .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
                 }
 
                 return obs.Where(x => string.IsNullOrEmpty(x)
                     || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                    .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
+                .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
             }
             else
             {
-                if (sender is not INotifyPropertyChanged after)
-                {
-                    return Observable<IObservedChange<object, object?>>.Never;
-                }
-
                 var obs = Observable.FromEvent<PropertyChangedEventHandler, string?>(
                     eventHandler =>
                     {
-                        void Handler(object? eventSender, PropertyChangedEventArgs? e) => eventHandler(e?.PropertyName);
+                        void Handler(object? eventSender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
                         return Handler;
                     },
-                    x => after.PropertyChanged += x,
-                    x => after.PropertyChanged -= x);
+                    x => after!.PropertyChanged += x,
+                    x => after!.PropertyChanged -= x);
 
                 if (expression.NodeType == ExpressionType.Index)
                 {
-                    return obs.Where(x => string.IsNullOrWhiteSpace(x)
+                    return obs.Where(x => string.IsNullOrEmpty(x)
                         || x?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                    .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
+                    .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
                 }
 
                 return obs.Where(x => string.IsNullOrEmpty(x)
                     || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
+                .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
             }
         }
     }

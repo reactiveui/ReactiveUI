@@ -37,13 +37,15 @@ namespace ReactiveUI
                                                         {
                                                             this.SubscribePropertyChangingEvents();
                                                             return Unit.Default;
-                                                        }, LazyThreadSafetyMode.PublicationOnly);
+                                                        },
+                                                        LazyThreadSafetyMode.PublicationOnly);
             _propertyChangedEventsSubscribed = new Lazy<Unit>(
                                                         () =>
                                                         {
                                                             this.SubscribePropertyChangedEvents();
                                                             return Unit.Default;
-                                                        }, LazyThreadSafetyMode.PublicationOnly);
+                                                        },
+                                                        LazyThreadSafetyMode.PublicationOnly);
             _thrownExceptions = new Lazy<IObservable<Exception>>(this.GetThrownExceptionsObservable, LazyThreadSafetyMode.PublicationOnly);
         }
 

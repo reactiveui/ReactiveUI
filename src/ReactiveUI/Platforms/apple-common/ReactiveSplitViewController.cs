@@ -29,8 +29,8 @@ namespace ReactiveUI
     [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveSplitViewController : NSSplitViewController, IReactiveNotifyPropertyChanged<ReactiveSplitViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        private readonly Subject<Unit> _activated = new ();
-        private readonly Subject<Unit> _deactivated = new ();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
 
 #if UIKIT
         /// <summary>

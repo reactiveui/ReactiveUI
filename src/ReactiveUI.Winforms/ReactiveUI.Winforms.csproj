@@ -30,7 +30,8 @@
     </Compile>
     <Compile Update="ViewModelViewHost.Designer.cs">
       <SubType>UserControl</SubType>
-      <DependentUpon>ViewModelViewHost.cs</DependentUpon>
+      <DependentUpon>ViewModelViewHost.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Update="ReactiveUserControl.Designer.cs">
       <SubType>UserControl</SubType>

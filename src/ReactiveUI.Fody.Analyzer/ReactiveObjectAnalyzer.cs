@@ -20,7 +20,7 @@ namespace ReactiveUI.Fody.Analyzer
     {
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
-        private static readonly DiagnosticDescriptor InheritanceRule = new (
+        private static readonly DiagnosticDescriptor InheritanceRule = new(
             "RUI_0001",
             "Type must implement IReactiveObject",
             "Type '{0}' does not implement IReactiveObject",
@@ -29,7 +29,7 @@ namespace ReactiveUI.Fody.Analyzer
             isEnabledByDefault: true,
             description: "[Reactive] may only be applied to a IReactiveObject");
 
-        private static readonly DiagnosticDescriptor AutoPropertyRule = new (
+        private static readonly DiagnosticDescriptor AutoPropertyRule = new(
             "RUI_0002",
             "[Reactive] properties should be an auto property",
             "Property '{0}' on '{1}' should be an auto property",

@@ -57,9 +57,9 @@ namespace ReactiveUI.AndroidSupport
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveFragmentActivity>, IHandleObservableErrors
     {
-        private readonly Subject<Unit> _activated = new ();
-        private readonly Subject<Unit> _deactivated = new ();
-        private readonly Subject<(int requestCode, Result result, Intent? intent)> _activityResult = new ();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
+        private readonly Subject<(int requestCode, Result result, Intent? intent)> _activityResult = new();
 
         /// <inheritdoc/>
         public event PropertyChangingEventHandler? PropertyChanging;

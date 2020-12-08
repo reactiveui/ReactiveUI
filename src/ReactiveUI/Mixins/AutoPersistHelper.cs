@@ -26,7 +26,7 @@ namespace ReactiveUI
     /// </summary>
     public static class AutoPersistHelper
     {
-        private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new (
+        private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new(
             (type, _) =>
         {
             return type.GetTypeInfo().DeclaredProperties
@@ -34,7 +34,7 @@ namespace ReactiveUI
                 .ToDictionary(k => k.Name, _ => true);
         }, RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<Type, bool> dataContractCheckCache = new (
+        private static readonly MemoizingMRUCache<Type, bool> dataContractCheckCache = new(
             (t, _) => t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Any(),
             RxApp.SmallCacheLimit);
 

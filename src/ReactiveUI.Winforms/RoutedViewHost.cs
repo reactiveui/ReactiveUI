@@ -17,7 +17,7 @@ namespace ReactiveUI.Winforms
     [DefaultProperty("ViewModel")]
     public partial class RoutedControlHost : UserControl, IReactiveObject
     {
-        private readonly CompositeDisposable _disposables = new ();
+        private readonly CompositeDisposable _disposables = new();
         private RoutingState? _router;
         private Control? _defaultContent;
         private IObservable<string>? _viewContractObservable;
@@ -49,44 +49,45 @@ namespace ReactiveUI.Winforms
             Control? viewLastAdded = null!;
             _disposables.Add(vmAndContract.Subscribe(
                 x =>
-            {
-                // clear all hosted controls (view or default content)
-                SuspendLayout();
-                Controls.Clear();
-
-                if (viewLastAdded is not null)
                 {
-                    viewLastAdded.Dispose();
-                }
+                    // clear all hosted controls (view or default content)
+                    SuspendLayout();
+                    Controls.Clear();
 
-                if (x.ViewModel is null)
-                {
-                    if (DefaultContent is not null)
+                    if (viewLastAdded is not null)
                     {
-                        InitView(DefaultContent);
-                        Controls.Add(DefaultContent);
+                        viewLastAdded.Dispose();
+                    }
+
+                    if (x.ViewModel is null)
+                    {
+                        if (DefaultContent is not null)
+                        {
+                            InitView(DefaultContent);
+                            Controls.Add(DefaultContent);
+                        }
+
+                        ResumeLayout();
+                        return;
+                    }
+
+                    IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                    if (view is not null)
+                    {
+                        view.ViewModel = x.ViewModel;
+
+                        viewLastAdded = InitView((Control)view);
+                    }
+
+                    if (viewLastAdded is not null)
+                    {
+                        Controls.Add(viewLastAdded);
                     }
 
                     ResumeLayout();
-                    return;
-                }
-
-                IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                if (view is not null)
-                {
-                    view.ViewModel = x.ViewModel;
-
-                    viewLastAdded = InitView((Control)view);
-                }
-
-                if (viewLastAdded is not null)
-                {
-                    Controls.Add(viewLastAdded);
-                }
-
-                ResumeLayout();
-            }, RxApp.DefaultExceptionHandler!.OnNext));
+                },
+                RxApp.DefaultExceptionHandler!.OnNext));
         }
 
         /// <inheritdoc/>

@@ -189,7 +189,7 @@ namespace ReactiveUI
                 if (ModeDetector.InUnitTestRunner())
                 {
                     _unitTestTaskpoolScheduler = value;
-                    _taskpoolScheduler = _taskpoolScheduler ?? value;
+                    _taskpoolScheduler ??= value;
                 }
                 else
                 {

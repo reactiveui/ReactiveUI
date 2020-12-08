@@ -30,8 +30,8 @@ namespace ReactiveUI
     [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-        private Subject<Unit> _deactivated = new ();
-        private Subject<Unit> _activated = new ();
+        private Subject<Unit> _deactivated = new();
+        private Subject<Unit> _activated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveControl"/> class.

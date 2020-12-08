@@ -126,7 +126,8 @@ namespace ReactiveUI
 
                         view.ViewModel = x.viewModel;
                         Content = view;
-                    }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
+                    },
+                    ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
             });
         }
 

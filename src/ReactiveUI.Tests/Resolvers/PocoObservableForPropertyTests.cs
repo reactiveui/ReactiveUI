@@ -123,7 +123,7 @@ namespace ReactiveUI.Tests
 
         private class TestLogger : ILogger
         {
-            public List<string> LastMessages { get; } = new ();
+            public List<string> LastMessages { get; } = new();
 
             public LogLevel Level => LogLevel.Debug;
 

@@ -23,7 +23,7 @@ namespace ReactiveUI
     public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         private readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> _commonSource;
-        private readonly Subject<object> _elementSelected = new ();
+        private readonly Subject<object> _elementSelected = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.

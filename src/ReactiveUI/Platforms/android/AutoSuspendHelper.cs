@@ -25,10 +25,10 @@ namespace ReactiveUI
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
-        private readonly Subject<Bundle?> _onCreate = new ();
-        private readonly Subject<Unit> _onRestart = new ();
-        private readonly Subject<Unit> _onPause = new ();
-        private readonly Subject<Bundle?> _onSaveInstanceState = new ();
+        private readonly Subject<Bundle?> _onCreate = new();
+        private readonly Subject<Unit> _onRestart = new();
+        private readonly Subject<Unit> _onPause = new();
+        private readonly Subject<Bundle?> _onSaveInstanceState = new();
 
         private bool _disposedValue; // To detect redundant calls
 
@@ -62,7 +62,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a subject to indicate whether the application has untimely dismised.
         /// </summary>
-        public static Subject<Unit> UntimelyDemise { get; } = new ();
+        public static Subject<Unit> UntimelyDemise { get; } = new();
 
         /// <summary>
         /// Gets or sets the latest bundle.

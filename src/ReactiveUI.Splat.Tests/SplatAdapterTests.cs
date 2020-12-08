@@ -33,6 +33,7 @@ namespace ReactiveUI.Splat.Tests
             // Invoke RxApp which initializes the ReactiveUI platform.
             var container = new Container();
             container.UseDryIocDependencyResolver();
+            Locator.CurrentMutable.InitializeReactiveUI();
 
             var converters = container.Resolve<IEnumerable<IBindingTypeConverter>>().ToList();
 
@@ -50,6 +51,7 @@ namespace ReactiveUI.Splat.Tests
             // Invoke RxApp which initializes the ReactiveUI platform.
             var container = new Container();
             container.UseDryIocDependencyResolver();
+            Locator.CurrentMutable.InitializeReactiveUI();
 
             var converters = container.Resolve<IEnumerable<ICreatesCommandBinding>>().ToList();
 
@@ -106,6 +108,7 @@ namespace ReactiveUI.Splat.Tests
             // Invoke RxApp which initializes the ReactiveUI platform.
             var container = new StandardKernel();
             container.UseNinjectDependencyResolver();
+            Locator.CurrentMutable.InitializeReactiveUI();
 
             var converters = container.GetAll<IBindingTypeConverter>().ToList();
 
@@ -123,6 +126,7 @@ namespace ReactiveUI.Splat.Tests
             // Invoke RxApp which initializes the ReactiveUI platform.
             var container = new StandardKernel();
             container.UseNinjectDependencyResolver();
+            Locator.CurrentMutable.InitializeReactiveUI();
 
             var converters = container.GetAll<ICreatesCommandBinding>().ToList();
 

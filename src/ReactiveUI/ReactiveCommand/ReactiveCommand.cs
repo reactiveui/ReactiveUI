@@ -801,12 +801,12 @@ namespace ReactiveUI
 
             public TResult Result { get; }
 
-            public static ExecutionInfo CreateBegin() => new (ExecutionDemarcation.Begin, default!);
+            public static ExecutionInfo CreateBegin() => new(ExecutionDemarcation.Begin, default!);
 
             public static ExecutionInfo CreateResult(TResult result) =>
-                new (ExecutionDemarcation.Result, result);
+                new(ExecutionDemarcation.Result, result);
 
-            public static ExecutionInfo CreateEnd() => new (ExecutionDemarcation.End, default!);
+            public static ExecutionInfo CreateEnd() => new(ExecutionDemarcation.End, default!);
         }
     }
 }

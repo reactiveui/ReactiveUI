@@ -254,10 +254,10 @@ namespace ReactiveUI.Tests.Xaml
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = null };
 
+            Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
+
             view.WhenAnyValue(x => x.ViewModel!.JustADouble)
                 .BindTo(view, x => x.FakeControl.NullHatingString);
-
-            Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
 
             view.ViewModel = vm;
             Assert.Equal(vm.JustADouble.ToString(CultureInfo.InvariantCulture), view.FakeControl.NullHatingString);

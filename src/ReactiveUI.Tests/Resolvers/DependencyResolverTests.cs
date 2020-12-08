@@ -143,7 +143,7 @@ namespace ReactiveUI.Tests
 
         private static Dictionary<Type, List<Type>> GetServicesThatShouldBeRegistered(IReadOnlyList<RegistrationNamespace> onlyNamespaces)
         {
-            Dictionary<Type, List<Type>> serviceTypeToImplementationTypes = new ();
+            Dictionary<Type, List<Type>> serviceTypeToImplementationTypes = new();
 
             new Registrations().Register((factory, serviceType) =>
             {

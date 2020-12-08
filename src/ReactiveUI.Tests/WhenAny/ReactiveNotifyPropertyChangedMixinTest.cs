@@ -308,10 +308,13 @@ namespace ReactiveUI.Tests
                               {
                                   Child = new TestFixture()
                               };
-                fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord)
+                var fixtureProp = fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord);
+                fixtureProp
                        .ToObservableChangeSet(ImmediateScheduler.Instance)
                        .Bind(out var changes)
                        .Subscribe();
+
+                fixtureProp.Subscribe(x => Console.WriteLine(x.Value));
 
                 fixture.Child.IsOnlyOneWord = "Foo";
                 scheduler.Start();
