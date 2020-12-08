@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Xamarin.Essentials" Version="1.*" />
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="2.*" PrivateAssets="all" />
     <PackageReference Include="Pharmacist.Common" Version="2.*" />
   </ItemGroup>
 </Project>

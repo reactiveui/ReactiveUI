@@ -95,26 +95,26 @@
 
   <ItemGroup Condition=" $(TargetFramework) == 'tizen40' ">
     <PackageReference Include="Tizen.NET.API4" Version="4.*" />
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="2.*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework) == 'tizen50' ">
     <PackageReference Include="Tizen.NET.API4" Version="5.*" />
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="2.*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework) == 'tizen60' ">
     <PackageReference Include="Tizen.NET.API4" Version="6.*" />
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="2.*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework) == 'tizen70' ">
     <PackageReference Include="Tizen.NET.API4" Version="7.*" />
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="2.*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework) == 'tizen80' ">
     <PackageReference Include="Tizen.NET.API4" Version="8.*" />
-    <PackageReference Include="Pharmacist.MsBuild" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="Pharmacist.MsBuild" Version="2.*" PrivateAssets="all" />
   </ItemGroup>
 </Project>
