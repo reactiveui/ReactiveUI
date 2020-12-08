@@ -12,7 +12,7 @@
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
-    <PackageReference Include="Pharmacist.Common" Version="1.*" />
+    <PackageReference Include="Pharmacist.Common" Version="2.*" />
   </ItemGroup>
 
   <ItemGroup>
