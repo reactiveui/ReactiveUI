@@ -23,7 +23,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Xunit.StaFact" Version="1.0.37" />
-    <PackageReference Include="FluentAssertions" Version="5.6.0" />
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="ReactiveUI.Testing" Version="*" />
   </ItemGroup>
 
