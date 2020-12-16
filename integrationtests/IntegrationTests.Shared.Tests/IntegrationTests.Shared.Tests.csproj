@@ -22,7 +22,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Xunit.StaFact" Version="0.3.18" />
+    <PackageReference Include="Xunit.StaFact" Version="1.0.37" />
     <PackageReference Include="FluentAssertions" Version="5.6.0" />
     <PackageReference Include="ReactiveUI.Testing" Version="*" />
   </ItemGroup>
