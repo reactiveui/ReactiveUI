@@ -32,7 +32,7 @@
   <ItemGroup>
     <PackageReference Include="stylecop.analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" PrivateAssets="all" />
-    <PackageReference Include="Roslynator.Analyzers" Version="2.1.0" PrivateAssets="All" />
+    <PackageReference Include="Roslynator.Analyzers" Version="3.0.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
