@@ -16,7 +16,7 @@
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -62,6 +62,9 @@
     <PackageReference Include="Xamarin.Android.Support.Compat" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.Collections" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.*" />
+    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.2.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.1.1.6" />
+    <PackageReference Include="Xamarin.AndroidX.Palette" Version="1.0.0.6" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

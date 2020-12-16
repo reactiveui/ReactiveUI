@@ -367,3 +367,6 @@ src/Tools/
 **/Android/**/[Rr]esource.[Dd]esigner.cs
 **/Droid/**/[Rr]esource.[Dd]esigner.cs
 **/[Rr]esources/[Rr]esource.[Dd]esigner.cs
+
+# MSBuild generator editor configs
+**/*.GeneratedMSBuildEditorConfig.editorconfig

@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MahApps.Metro" Version="1.*" />
+    <PackageReference Include="MahApps.Metro" Version="2.*" />
     <PackageReference Include="ReactiveUI.Events.WPF" Version="*" />
     <PackageReference Include="ReactiveUI.WPF" Version="*" />
   </ItemGroup>

@@ -1,14 +1,24 @@
-﻿using System;
+﻿// Copyright (c) 2020 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+
 using DynamicData;
+
+using FluentAssertions;
+
 using Microsoft.Reactive.Testing;
+
 using ReactiveUI;
 using ReactiveUI.Testing;
-using Shouldly;
+
 using Xunit;
 
 namespace IntegrationTests.Shared.Tests.Features.Login
@@ -33,13 +43,13 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
 
-            sut.Login.Subscribe(x => x.ShouldBe(true));
+            sut.Login.Subscribe(x => x.Should().Be(true));
 
             Observable
                 .Return(Unit.Default)
                 .InvokeCommand(sut.Login);
 
-            sut.Cancel.CanExecute.Subscribe(x => x.ShouldBe(true));
+            sut.Cancel.CanExecute.Subscribe(x => x.Should().Be(true));
 
             scheduler.AdvanceByMs(1000);
 
@@ -69,22 +79,22 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             Observable.Return(Unit.Default).InvokeCommand(sut.Login);
 
-            actual.ShouldBe(false);
+            actual.Should().Be(false);
 
             // 50ms
             scheduler.AdvanceByMs(50);
 
-            actual.ShouldBe(true);
+            actual.Should().Be(true);
 
             // 1sec 50ms
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).TotalMilliseconds);
 
-            actual.ShouldBe(true);
+            actual.Should().Be(true);
 
             // 2sec 50sms
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).TotalMilliseconds);
 
-            actual.ShouldBe(false);
+            actual.Should().Be(false);
         }
 
         /// <summary>
@@ -96,7 +106,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         {
             LoginViewModel sut = new LoginViewModelBuilder();
 
-            (await sut.Cancel.CanExecute.FirstAsync()).ShouldBe(false);
+            (await sut.Cancel.CanExecute.FirstAsync()).Should().Be(false);
         }
 
         /// <summary>
@@ -117,7 +127,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(5).TotalMilliseconds);
 
-            collection.ToList().ShouldBe(new[] { false, true, false });
+            collection.ToList().Should().BeEquivalentTo(new[] { false, true, false });
         }
 
         /// <summary>
@@ -130,7 +140,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
             LoginViewModel sut = new LoginViewModelBuilder();
 
             var result = await sut.Login.CanExecute.FirstAsync();
-            result.ShouldBe(false);
+            result.Should().Be(false);
         }
 
         /// <summary>
@@ -152,7 +162,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName(userName)
                 .WithPassword(password);
 
-            (await sut.Login.CanExecute.FirstAsync()).ShouldBe(false);
+            (await sut.Login.CanExecute.FirstAsync()).Should().Be(false);
         }
 
         /// <summary>
@@ -169,7 +179,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName(userName)
                 .WithPassword(password);
 
-            (await sut.Login.CanExecute.FirstAsync()).ShouldBe(true);
+            (await sut.Login.CanExecute.FirstAsync()).Should().Be(true);
         }
 
         /// <summary>
@@ -191,7 +201,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
 
-            value.ShouldBe(true);
+            value.Should().Be(true);
         }
 
         /// <summary>
@@ -213,7 +223,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
 
-            value.ShouldBe(false);
+            value.Should().Be(false);
         }
     }
 }
