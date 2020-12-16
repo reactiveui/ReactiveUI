@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="27.0.*" />
+    <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.*" />
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.*" />
     <PackageReference Include="Xamarin.Android.Support.v7.Preference" Version="27.0.*" />
