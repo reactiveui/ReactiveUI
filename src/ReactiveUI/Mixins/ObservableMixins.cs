@@ -14,19 +14,6 @@ namespace ReactiveUI
     public static class ObservableMixins
     {
         /// <summary>
-        /// Casts an observable to the specified value.
-        /// This version allows for nullability.
-        /// </summary>
-        /// <typeparam name="T">The type to convert to.</typeparam>
-        /// <param name="observable">The observable which as nullability.</param>
-        /// <returns>The new observable.</returns>
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-#pragma warning disable CS8605 // Unboxing possible null value
-        public static IObservable<T> Cast<T>(this IObservable<object?> observable) => observable.Select(x => (T)x);
-#pragma warning restore CS8605 // Unboxing possible null value
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
-
-        /// <summary>
         /// Returns only values that are not null.
         /// Converts the nullability.
         /// </summary>
