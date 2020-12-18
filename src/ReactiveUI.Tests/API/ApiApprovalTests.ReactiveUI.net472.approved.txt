@@ -439,7 +439,6 @@ namespace ReactiveUI
     }
     public static class ObservableMixins
     {
-        public static System.IObservable<T> Cast<T>(this System.IObservable<object?> observable) { }
         public static System.IObservable<T> WhereNotNull<T>(this System.IObservable<T?> observable) { }
     }
     public class ObservedChange<TSender, TValue> : ReactiveUI.IObservedChange<TSender, TValue>
