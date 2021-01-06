@@ -395,23 +395,10 @@ This project exists thanks to all the people who have contributed to the code ba
 
 The core team members, ReactiveUI contributors and contributors in the ecosystem do this open-source work in their free time. If you use ReactiveUI, a serious task, and you'd like us to invest more time on it, please donate. This project increases your income/productivity too. It makes development and applications faster and it reduces the required bandwidth.
 
+[Become a sponsor](https://github.com/sponsors/reactivemarbles).
+
 This is how we use the donations:
 
 * Allow the core team to work on ReactiveUI
 * Thank contributors if they invested a large amount of time in contributing
-* Support projects in the ecosystem that are of great value for users
-* Support projects that are voted most (work in progress)
-* Infrastructure cost
-* Fees for money handling
-
-<h2>Sponsors</h2>
-
-[Become a sponsor](https://opencollective.com/reactiveui#sponsor) and get your logo on our README on Github with a link to your site.
-
-<a href="https://opencollective.com/reactiveui#sponsor"><img src="https://opencollective.com/reactiveui/sponsor.svg?width=890&avatarHeight=50&button=false"></a>
-
-<h2>Backers</h2>
-
-[Become a backer](https://opencollective.com/reactiveui#backer) and get your image on our README on Github with a link to your site.
-
-<a href="https://opencollective.com/reactiveui#backer"><img src="https://opencollective.com/reactiveui/backer.svg?width=890&avatarHeight=50&button=false"></a>
+* Support projects in the ecosystem
