@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.7.*" />
+    <PackageReference Include="Xamarin.Forms" Version="4.8.*" />
     <PackageReference Include="Pharmacist.MsBuild" Version="2.*" PrivateAssets="all" />
     <PackageReference Include="Pharmacist.Common" Version="2.*" />
    </ItemGroup>
