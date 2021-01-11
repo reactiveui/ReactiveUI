@@ -207,6 +207,6 @@ The following have been core team members in the past.
   </tbody>
 </table>
 
-<h2>.NET Foundation</h2>
+## .NET Foundation
 
 ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). Other projects that are associated with the foundation include the Microsoft .NET Compiler Platform ("Roslyn") as well as the Microsoft ASP.NET family of projects, Microsoft .NET Core & Xamarin Forms.
