@@ -2,7 +2,7 @@
 [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI)
 [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=reactiveui/ReactiveUI)](https://dependabot.com)
-[![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack)
+[![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack) [![Meercode CI Score](https://meercode.io/badge/reactiveui/ReactiveUI?type=ci-score&branch=main)](https://meercode.io/reactiveui/ReactiveUI)
 
 <br>
 <a href="https://github.com/reactiveui/reactiveui">
