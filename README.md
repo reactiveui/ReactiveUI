@@ -1,30 +1,25 @@
 ![Build](https://github.com/reactiveui/ReactiveUI/workflows/Build/badge.svg) 
- [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
+[![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI)
+[![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=reactiveui/ReactiveUI)](https://dependabot.com)
-<br>
-<a href="https://www.nuget.org/packages/reactiveui">
-        <img src="https://img.shields.io/nuget/dt/reactiveui.svg">
-</a>
+[![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack)
 
-<a href="https://reactiveui.net/slack">
-        <img src="https://img.shields.io/badge/chat-slack-blue.svg">
-</a>
-<br>
 <br>
 <a href="https://github.com/reactiveui/reactiveui">
   <img width="160" heigth="160" src="https://raw.githubusercontent.com/reactiveui/styleguide/master/logo/main.png">
 </a>
 <br>
-<h1>What is ReactiveUI?</h1>
 
-<a href="https://reactiveui.net/">ReactiveUI</a> is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming, which is a paradigm that allows you to <a href="https://www.youtube.com/watch?v=3HwEytvngXk">abstract mutable state away from your user interfaces and express the idea around a feature in one readable place</a> and improve the testability of your application. 
+# What is ReactiveUI?
 
-<a href="https://reactiveui.net/docs/getting-started/">🔨 Get Started</a> <a href="https://reactiveui.net/docs/getting-started/installation/">🛍 Install Packages</a> <a href="https://reactiveui.net/docs/resources/videos">🎞 Watch Videos</a> <a href="https://reactiveui.net/docs/resources/samples/">🎓 View Samples</a> <a href="https://reactiveui.net/slack">🎤 Discuss ReactiveUI</a>
+[ReactiveUI](https://reactiveui.net/) is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming, which is a paradigm that allows you to [abstract mutable state away from your user interfaces and express the idea around a feature in one readable place](https://www.youtube.com/watch?v=3HwEytvngXk) and improve the testability of your application.
 
-<h2>Book</h2>
-There has been an excellent <a href="https://kent-boogaart.com/you-i-and-reactiveui/">book</a> written by our Alumni maintainer Kent Boogart.
- 
-<h2>NuGet Packages</h2>
+[🔨 Get Started](https://reactiveui.net/docs/getting-started/) [🛍 Install Packages](https://reactiveui.net/docs/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/docs/resources/videos) [🎓 View Samples](https://reactiveui.net/docs/resources/samples/) [🎤 Discuss ReactiveUI](https://reactiveui.net/slack)
+
+## Book
+There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveui/) written by our Alumni maintainer Kent Boogart.
+
+## NuGet Packages
 
 Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific packages are required. This means your app won't perform as expected until you install the packages properly. See the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
 
@@ -106,7 +101,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [ValBadge]: https://img.shields.io/nuget/v/ReactiveUI.Validation.svg
 [ValDocs]: https://reactiveui.net/docs/handbook/user-input-validation/
 
-<h2>Sponsorship</h2>
+## Sponsorship
 
 The core team members, ReactiveUI contributors and contributors in the ecosystem do this open-source work in their free time. If you use ReactiveUI, a serious task, and you'd like us to invest more time on it, please donate. This project increases your income/productivity too. It makes development and applications faster and it reduces the required bandwidth.
 
@@ -118,7 +113,7 @@ This is how we use the donations:
 * Thank contributors if they invested a large amount of time in contributing
 * Support projects in the ecosystem
 
-<h2>Support</h2>
+## Support
 
 If you have a question, please see if any discussions in our [GitHub issues](https://github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
 
@@ -126,13 +121,13 @@ If you want to discuss something or just need help, here is our [Slack room](htt
 
 Please do not open GitHub issues for support requests.
 
-<h2>Contribute</h2>
+## Contribute
 
 ReactiveUI is developed under an OSI-approved open source license, making it freely usable and distributable, even for commercial use. 
 
 If you want to submit pull requests please first open a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose) to discuss. We are first time PR contributors friendly.
 
-<h2>Core Team</h2>
+## Core Team
 
 <table>
   <tbody>
@@ -165,7 +160,7 @@ If you want to submit pull requests please first open a [GitHub issue](https://g
   </tbody>
 </table>
 
-<h2>Alumni Core Team</h2>
+## Alumni Core Team
 
 The following have been core team members in the past.
 
