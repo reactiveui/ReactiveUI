@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net5')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
