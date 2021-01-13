@@ -4,7 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
+#endif
 
 namespace ReactiveUI
 {

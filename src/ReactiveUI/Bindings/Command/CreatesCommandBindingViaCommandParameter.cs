@@ -7,7 +7,11 @@ using System;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reflection;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
+#endif
 
 namespace ReactiveUI
 {

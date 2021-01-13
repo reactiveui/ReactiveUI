@@ -6,7 +6,11 @@
 using System;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
+#endif
 
 namespace ReactiveUI
 {

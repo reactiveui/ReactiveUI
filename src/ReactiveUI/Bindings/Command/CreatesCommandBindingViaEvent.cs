@@ -9,9 +9,13 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
 #if NETFX_CORE
 using Windows.UI.Xaml.Input;
+#endif
 #endif
 
 namespace ReactiveUI

@@ -254,7 +254,7 @@ namespace ReactiveUI
             Expression lastExpression = expressions.Last();
 #pragma warning disable CS8601 // Possible null reference assignment.
 #pragma warning disable CS8605 // Unboxing a possibly null value.
-            changeValue = (TValue)GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray());
+            changeValue = (TValue)GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray())!;
 #pragma warning restore CS8605 // Unboxing a possibly null value.
 #pragma warning restore CS8601 // Possible null reference assignment.
             return true;

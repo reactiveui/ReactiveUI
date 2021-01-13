@@ -2,7 +2,7 @@
   <Library Name="ReactiveUI">
     <Assembly Name="ReactiveUI" Activate="Required All" Browse="Required All" Serialize="Required All" Dynamic="Required All" />
     <!-- See https://github.com/reactiveui/ReactiveUI/issues/1330 -->
-    <Namespace Name="Windows.UI.Xaml.Controls" Dynamic="Required All" />
-    <Namespace Name="Windows.UI.Xaml" Dynamic="Required All" />
+    <Namespace Name="Microsoft.UI.Xaml.Controls" Dynamic="Required All" />
+    <Namespace Name="Microsoft.UI.Xaml" Dynamic="Required All" />
   </Library>
 </Directives>

@@ -7,7 +7,11 @@ using System;
 using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Linq;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
+#endif
 
 namespace ReactiveUI
 {
@@ -28,6 +32,17 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> item, ICommand command)
         {
+#if WINUI3UWP
+            var canExecuteChanged = Observable.FromEvent<EventHandler<object>, Unit>(
+                eventHandler =>
+                {
+                    void Handler(object? sender, object e) => eventHandler(Unit.Default);
+                    return Handler;
+                },
+                h => command.CanExecuteChanged += h,
+                h => command.CanExecuteChanged -= h)
+                .StartWith(Unit.Default);
+#else
             var canExecuteChanged = Observable.FromEvent<EventHandler, Unit>(
                 eventHandler =>
                 {
@@ -37,7 +52,7 @@ namespace ReactiveUI
                 h => command.CanExecuteChanged += h,
                 h => command.CanExecuteChanged -= h)
                 .StartWith(Unit.Default);
-
+#endif
             return WithLatestFromFixed(item, canExecuteChanged, (value, _) => new InvokeCommandInfo<ICommand, T>(command, command.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
                 .Do(ii => command.Execute(ii.Value))
@@ -84,6 +99,16 @@ namespace ReactiveUI
             where TTarget : class
         {
             var commandObs = target.WhenAnyValue(commandProperty);
+#if WINUI3UWP
+            var commandCanExecuteChanged = commandObs
+                .Select(command => command is null ? Observable<ICommand>.Empty : Observable
+                    .FromEvent<EventHandler<object>, ICommand>(
+                        eventHandler => (_, _) => eventHandler(command),
+                        h => command.CanExecuteChanged += h,
+                        h => command.CanExecuteChanged -= h)
+                    .StartWith(command))
+                .Switch();
+#else
             var commandCanExecuteChanged = commandObs
                 .Select(command => command is null ? Observable<ICommand>.Empty : Observable
                     .FromEvent<EventHandler, ICommand>(
@@ -92,6 +117,7 @@ namespace ReactiveUI
                         h => command.CanExecuteChanged -= h)
                     .StartWith(command))
                 .Switch();
+#endif
 
             return WithLatestFromFixed(item, commandCanExecuteChanged, (value, cmd) => new InvokeCommandInfo<ICommand, T>(cmd, cmd.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)

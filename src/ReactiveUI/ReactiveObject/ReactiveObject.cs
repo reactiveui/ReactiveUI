@@ -4,10 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Data;
+#else
 using System.ComponentModel;
+#endif
 using System.Reactive;
 using System.Runtime.Serialization;
 using System.Threading;
+#if WINUI3UWP
+using System.Runtime.InteropServices.WindowsRuntime;
+#endif
 
 namespace ReactiveUI
 {
@@ -24,6 +31,11 @@ namespace ReactiveUI
         private readonly Lazy<Unit> _propertyChangingEventsSubscribed;
         private readonly Lazy<Unit> _propertyChangedEventsSubscribed;
         private readonly Lazy<IObservable<Exception>> _thrownExceptions;
+
+#if WINUI3UWP
+        private EventRegistrationTokenTable<PropertyChangedEventHandler>
+    _propChangedTokenTable = null;
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveObject"/> class.
@@ -50,7 +62,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public event PropertyChangingEventHandler? PropertyChanging
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging
         {
             add
             {
@@ -63,15 +75,28 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged
         {
+#if WINUI3UWP
+            add
+            {
+                _ = _propertyChangedEventsSubscribed.Value;
+                return EventRegistrationTokenTable<PropertyChangedEventHandler>
+                     .GetOrCreateEventRegistrationTokenTable(ref _propChangedTokenTable)
+                     .AddEventHandler(value);
+            }
+            remove => EventRegistrationTokenTable<PropertyChangedEventHandler>
+                   .GetOrCreateEventRegistrationTokenTable(ref _propChangedTokenTable)
+                   .RemoveEventHandler(value);
+#else
             add
             {
                 _ = _propertyChangedEventsSubscribed.Value;
                 PropertyChangedHandler += value;
             }
             remove => PropertyChangedHandler -= value;
+#endif
         }
 
-        private event PropertyChangingEventHandler? PropertyChangingHandler;
+        private event System.ComponentModel.PropertyChangingEventHandler? PropertyChangingHandler;
 
         private event PropertyChangedEventHandler? PropertyChangedHandler;
 
@@ -88,7 +113,7 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedHandler?.Invoke(this, args);

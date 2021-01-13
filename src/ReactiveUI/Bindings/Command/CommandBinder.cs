@@ -5,7 +5,11 @@
 
 using System;
 using System.Linq.Expressions;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
+#endif
 using Splat;
 
 namespace ReactiveUI

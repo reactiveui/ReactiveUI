@@ -7,7 +7,11 @@ using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
+#endif
 
 namespace ReactiveUI
 {
@@ -73,15 +77,23 @@ namespace ReactiveUI
     /// </typeparam>
     public abstract class ReactiveCommandBase<TParam, TResult> : IObservable<TResult>, ICommand, IReactiveCommand
     {
+#if WINUI3UWP
+        private EventHandler<object>? _canExecuteChanged;
+#else
         private EventHandler? _canExecuteChanged;
+#endif
         private bool _canExecuteValue;
 
         /// <inheritdoc/>
+#if WINUI3UWP
+        public event EventHandler<object> CanExecuteChanged;
+#else
         event EventHandler? ICommand.CanExecuteChanged
         {
             add => _canExecuteChanged += value;
             remove => _canExecuteChanged -= value;
         }
+#endif
 
         /// <summary>
         /// Gets an observable whose value indicates whether the command can currently execute.

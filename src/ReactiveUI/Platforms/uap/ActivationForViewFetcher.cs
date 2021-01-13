@@ -8,7 +8,11 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
 using Windows.Foundation;
+#if WINUI3UWP
+using Microsoft.UI.Xaml;
+#else
 using Windows.UI.Xaml;
+#endif
 
 namespace ReactiveUI
 {

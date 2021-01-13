@@ -6,8 +6,9 @@
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
     <PackageId>ReactiveUI</PackageId>
-    <Nullable>enable</Nullable>
+    <Nullable>warnings</Nullable>
     <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) == 'net5.0-windows'">
@@ -18,6 +19,19 @@
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net47' or $(TargetFramework) == 'net471' or $(TargetFramework) == 'net5.0-windows'">
     <DefineConstants>$(DefineConstants);HAS_WPF</DefineConstants>
   </PropertyGroup>
+
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <DefineConstants>$(DefineConstants);WINUI3UWP</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview3.201113.0" />
+    <PackageReference Include="Microsoft.VCRTForwarders.140" Version="1.0.7" />
+  </ItemGroup>
+  
+  <ItemGroup Label="Package" Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <None Include="Platforms\uap\ReactiveUIWINUI3.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
@@ -56,9 +70,11 @@
     <Compile Include="Platforms\uap\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Label="Package" Condition=" $(TargetFramework.StartsWith('uap')) ">
+  <!--<ItemGroup Label="Package" Condition=" $(TargetFramework.StartsWith('uap')) ">
     <None Include="Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
-  </ItemGroup>
+  </ItemGroup>-->
+
+
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
     <Compile Include="Platforms\apple-common\**\*.cs" />

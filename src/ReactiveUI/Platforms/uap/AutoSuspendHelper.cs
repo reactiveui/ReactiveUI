@@ -13,8 +13,11 @@ using System.Threading.Tasks;
 using Splat;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+#if WINUI3UWP
+using Microsoft.UI.Xaml;
+#else
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+#endif
 
 namespace ReactiveUI
 {

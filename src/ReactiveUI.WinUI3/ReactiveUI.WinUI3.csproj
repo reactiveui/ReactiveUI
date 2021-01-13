@@ -1,0 +1,43 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras">
+
+  <PropertyGroup>
+    <TargetFrameworks>uap10.0.16299</TargetFrameworks>
+    <PackageId>ReactiveUI.WinUI3</PackageId>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions and namespace transformations for WinUI3</PackageDescription>
+    <DefineConstants>WINUI3</DefineConstants>
+    <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
+    <Nullable>warnings</Nullable>
+    <LangVersion>latest</LangVersion>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;net;winui;winui3</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VCRTForwarders.140" Version="1.0.7" />
+    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview3.201113.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI\Platforms\uap\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI\Platforms\uap" />
+    <!--<Compile Include="..\ReactiveUI\Platforms\uap\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI\Platforms\uap" />-->
+    <!--<Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" LinkBase="ReactiveUI\Platforms\windows-common" />-->
+    <!--<None Include="..\ReactiveUI\Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />-->
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+     <!--UAP is just here for convenience with namespaces, don't need to duplicate up the scheduler/registrations--> 
+    <Compile Remove=".\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="TransitioningContentControlOLD.Empty.cs">
+      <SubType>Code</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Compile>
+  </ItemGroup>
+
+</Project>

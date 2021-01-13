@@ -4,27 +4,16 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-#if WINUI3UWP
 using Microsoft.UI.Xaml.Controls;
-#else
-using Windows.UI.Xaml.Controls;
-#endif
 
-#if HAS_UNO
-namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
+namespace ReactiveUI.WinUI3
 {
     /// <summary>
     /// A control with a single transition.
     /// </summary>
     [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
     public
-#if HAS_UNO
-        partial
-#endif
-        class TransitioningContentControl : ContentControl
+    class TransitioningContentControlOLD : ContentControl
     {
     }
 }

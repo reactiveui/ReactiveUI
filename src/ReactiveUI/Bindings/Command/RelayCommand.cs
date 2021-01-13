@@ -4,7 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
+#endif
 
 namespace ReactiveUI
 {
@@ -23,7 +27,11 @@ namespace ReactiveUI
             _execute = execute ?? (_ => { });
         }
 
+#if WINUI3UWP
+        public event EventHandler<object>? CanExecuteChanged;
+#else
         public event EventHandler? CanExecuteChanged;
+#endif
 
         public bool CanExecute(object? parameter)
         {

@@ -7,7 +7,11 @@ using System;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+#if WINUI3UWP
+using Microsoft.UI.Xaml.Input;
+#else
 using System.Windows.Input;
+#endif
 
 namespace ReactiveUI
 {
@@ -167,8 +171,8 @@ namespace ReactiveUI
 
                     var cmd = commandFixuper is not null ? commandFixuper(x.val) : x.val;
                     disposable = toEvent is not null ?
-                               CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent) :
-                               CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!));
+                               CreatesCommandBinding.BindCommandToObject(cmd, x.host!, withParameter.Select(y => (object)y!), toEvent) :
+                               CreatesCommandBinding.BindCommandToObject(cmd, x.host!, withParameter.Select(y => (object)y!));
                 });
 
             return Disposable.Create(() =>

@@ -13,7 +13,11 @@ using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.System.Threading;
 using Windows.UI.Core;
+#if WINUI3UWP
+using Microsoft.UI.Xaml;
+#else
 using Windows.UI.Xaml;
+#endif
 
 namespace ReactiveUI
 {

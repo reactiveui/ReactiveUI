@@ -12,7 +12,10 @@ using System.Reactive.Subjects;
 using System.Windows;
 using Splat;
 
-#if NETFX_CORE || HAS_UNO
+#if WINUI3UWP
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+#elif NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else

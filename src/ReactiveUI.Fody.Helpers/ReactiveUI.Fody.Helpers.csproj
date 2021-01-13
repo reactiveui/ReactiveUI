@@ -8,7 +8,7 @@
     <!-- Override FodyPackaging since project is named differently than expected -->
     <PackageId>ReactiveUI.Fody</PackageId>
     <WeaverDirPath>..\$(PackageId)\bin\$(Configuration)\</WeaverDirPath>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
     <!-- Due to fody insisting on having .net 4 classes, we can't pack on non-windows -->
     <IsPackable Condition=" '$(OS)' != 'Windows_NT' ">false</IsPackable>

@@ -12,7 +12,11 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
 using Splat;
+#if WINUI3UWP
+using Microsoft.UI.Xaml;
+#else
 using Windows.UI.Xaml;
+#endif
 
 #if HAS_UNO
 namespace ReactiveUI.Uno
