@@ -13,6 +13,7 @@ using System.Reactive;
 using System.Runtime.Serialization;
 using System.Threading;
 #if WINUI3UWP
+
 using System.Runtime.InteropServices.WindowsRuntime;
 #endif
 
@@ -98,7 +99,10 @@ namespace ReactiveUI
 
         private event System.ComponentModel.PropertyChangingEventHandler? PropertyChangingHandler;
 
+#if WINUI3UWP
+#else
         private event PropertyChangedEventHandler? PropertyChangedHandler;
+#endif
 
         /// <inheritdoc />
         [IgnoreDataMember]
@@ -116,7 +120,11 @@ namespace ReactiveUI
         void IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
+#if WINUI3UWP
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => _propChangedTokenTable?.InvocationList.Invoke(this, args);
+#else
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedHandler?.Invoke(this, args);
+#endif
 
         /// <inheritdoc/>
         public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
