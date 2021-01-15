@@ -37,7 +37,7 @@
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="Splat" Version="9.*" />
-    <PackageReference Include="DynamicData" Version="7.1.5-ga031aa63f8" />
+    <PackageReference Include="DynamicData" Version="7.1.7-gee23b0c9b4" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
