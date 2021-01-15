@@ -24,7 +24,11 @@ namespace ReactiveUI
     public class RoutingState : ReactiveObject
     {
         [DataMember]
+#if WINUI3UWP
+        private readonly DynamicData.Binding.WinUI3UWP.ObservableCollection<IRoutableViewModel> _navigationStack;
+#else
         private readonly ObservableCollection<IRoutableViewModel> _navigationStack;
+#endif
 
         [IgnoreDataMember]
         private IScheduler _scheduler;
@@ -49,7 +53,11 @@ namespace ReactiveUI
         public RoutingState(IScheduler scheduler)
         {
             _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
+#if WINUI3UWP
+            _navigationStack = new DynamicData.Binding.WinUI3UWP.ObservableCollection<IRoutableViewModel>();
+#else
             _navigationStack = new ObservableCollection<IRoutableViewModel>();
+#endif
             SetupRx();
         }
 
@@ -58,7 +66,11 @@ namespace ReactiveUI
         /// collection being the currently visible ViewModel.
         /// </summary>
         [IgnoreDataMember]
+#if WINUI3UWP
+        public DynamicData.Binding.WinUI3UWP.ObservableCollection<IRoutableViewModel> NavigationStack => _navigationStack;
+#else
         public ObservableCollection<IRoutableViewModel> NavigationStack => _navigationStack;
+#endif
 
         /// <summary>
         /// Gets or sets the scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.

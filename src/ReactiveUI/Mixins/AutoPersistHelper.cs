@@ -5,8 +5,13 @@
 
 using System;
 using System.Collections.Generic;
+#if WINUI3UWP
+using DynamicData.Binding.WinUI3UWP;
+using Microsoft.UI.Xaml.Interop;
+#else
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+#endif
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
