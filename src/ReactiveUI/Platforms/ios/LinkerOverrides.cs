@@ -62,6 +62,11 @@ namespace ReactiveUI.Cocoa
             bbi.Clicked += eh;
             bbi.Clicked -= eh;
 
+            // UISwitch
+            var sw = new UISwitch();
+            sw.ValueChanged += eh;
+            sw.On = true;
+
             eh.Invoke(null, null);
         }
     }
