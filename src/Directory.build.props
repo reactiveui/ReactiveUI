@@ -1,12 +1,9 @@
 <Project>
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591;1701;1702;1705;VSX1000</NoWarn>
     <Platform>AnyCPU</Platform>
     <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
     <DebugType>embedded</DebugType>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)analyzers.ruleset</CodeAnalysisRuleSet>
-
     <Authors>.NET Foundation and Contributors</Authors>
     <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -36,9 +33,8 @@
     <DebugType>Full</DebugType>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(IsTestProject)">
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)analyzers.tests.ruleset</CodeAnalysisRuleSet>  	
-    <IsPackable>false</IsPackable>	
+  <PropertyGroup Condition="'$(IsTestProject)' != ''">
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   
   <ItemGroup Condition="$(IsTestProject)">

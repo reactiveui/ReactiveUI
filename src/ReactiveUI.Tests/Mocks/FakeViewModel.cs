@@ -12,10 +12,19 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Fake view model.
+    /// </summary>
     public class FakeViewModel : ReactiveObject
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeViewModel"/> class.
+        /// </summary>
         public FakeViewModel() => Cmd = ReactiveCommand.Create(() => { });
 
+        /// <summary>
+        /// Gets or sets the command.
+        /// </summary>
         public ReactiveCommand<Unit, Unit> Cmd { get; protected set; }
     }
 }

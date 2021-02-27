@@ -12,8 +12,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the ordered comparer.
+    /// </summary>
     public class OrderedComparerTests
     {
+        /// <summary>
+        /// A general smoke test.
+        /// </summary>
         [Fact]
         public void SmokeTest()
         {
@@ -45,6 +51,9 @@ namespace ReactiveUI.Tests
             Assert.True(employees.SequenceEqual(new[] { adam, carol, xavier, bob, alice }));
         }
 
+        /// <summary>
+        /// A test which determines if customer comparers work.
+        /// </summary>
         [Fact]
         public void CustomComparerTest()
         {
@@ -63,6 +72,9 @@ namespace ReactiveUI.Tests
             Assert.True(items.SequenceEqual(new[] { "AAA", "AAA", "abb", "aaaa" }, StringComparer.OrdinalIgnoreCase));
         }
 
+        /// <summary>
+        /// Test for checking that chaining the onto regular IComparable works.
+        /// </summary>
         [Fact]
         public void ChainOntoRegularIComparables()
         {
@@ -76,6 +88,9 @@ namespace ReactiveUI.Tests
             Assert.True(items.SequenceEqual(new[] { "aaa", "AAA", "aaaa", "abb" }, StringComparer.Ordinal));
         }
 
+        /// <summary>
+        /// Test that checks it works with anonymous types.
+        /// </summary>
         [Fact]
         public void WorksWithAnonymousTypes()
         {

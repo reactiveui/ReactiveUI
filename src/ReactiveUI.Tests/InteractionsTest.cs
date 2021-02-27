@@ -15,8 +15,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests interactions.
+    /// </summary>
     public class InteractionsTest
     {
+        /// <summary>
+        /// Tests that registers null handler should cause exception.
+        /// </summary>
         [Fact]
         public void RegisterNullHandlerShouldCauseException()
         {
@@ -27,6 +33,9 @@ namespace ReactiveUI.Tests
             Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<InteractionContext<Unit, Unit>, IObservable<Unit>>)null!));
         }
 
+        /// <summary>
+        /// Tests that unhandled interactions should cause exception.
+        /// </summary>
         [Fact]
         public void UnhandledInteractionsShouldCauseException()
         {
@@ -42,6 +51,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("bar", ex.Input);
         }
 
+        /// <summary>
+        /// Test that attempting to set interaction output more than once should cause exception.
+        /// </summary>
         [Fact]
         public void AttemptingToSetInteractionOutputMoreThanOnceShouldCauseException()
         {
@@ -57,6 +69,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("Output has already been set.", ex.Message);
         }
 
+        /// <summary>
+        /// Test that attempting to get interaction output before it has been set should cause exception.
+        /// </summary>
         [Fact]
         public void AttemptingToGetInteractionOutputBeforeItHasBeenSetShouldCauseException()
         {
@@ -71,6 +86,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("Output has not been set.", ex.Message);
         }
 
+        /// <summary>
+        /// Tests that Handled interactions should not cause exception.
+        /// </summary>
         [Fact]
         public void HandledInteractionsShouldNotCauseException()
         {
@@ -80,6 +98,9 @@ namespace ReactiveUI.Tests
             interaction.Handle(Unit.Default).FirstAsync().Wait();
         }
 
+        /// <summary>
+        /// Tests that Handlers are executed on handler scheduler.
+        /// </summary>
         [Fact]
         public void HandlersAreExecutedOnHandlerScheduler() =>
             new TestScheduler().With(scheduler =>
@@ -100,6 +121,9 @@ namespace ReactiveUI.Tests
                 }
             });
 
+        /// <summary>
+        /// Test that Nested handlers are executed in reverse order of subscription.
+        /// </summary>
         [Fact]
         public void NestedHandlersAreExecutedInReverseOrderOfSubscription()
         {
@@ -125,6 +149,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that handlers can opt not to handle the interaction.
+        /// </summary>
         [Fact]
         public void HandlersCanOptNotToHandleTheInteraction()
         {
@@ -161,6 +188,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Test that handlers can contain asynchronous code.
+        /// </summary>
         [Fact]
         public void HandlersCanContainAsynchronousCode()
         {
@@ -200,6 +230,9 @@ namespace ReactiveUI.Tests
             Assert.False(handler1AWasCalled);
         }
 
+        /// <summary>
+        /// Test that handlers can contain asynchronous code via tasks.
+        /// </summary>
         [Fact]
         public void HandlersCanContainAsynchronousCodeViaTasks()
         {
@@ -217,6 +250,9 @@ namespace ReactiveUI.Tests
                 .Subscribe(r => result = r);
         }
 
+        /// <summary>
+        /// Tests that handlers returning observables can return any kind of observable.
+        /// </summary>
         [Fact]
         public void HandlersReturningObservablesCanReturnAnyKindOfObservable()
         {

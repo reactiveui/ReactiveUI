@@ -5,16 +5,21 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A ancestor view.
+    /// </summary>
     public class InteractionAncestorView : ReactiveObject, IViewFor<InteractionAncestorViewModel>
     {
         private InteractionAncestorViewModel? _viewModel;
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (InteractionAncestorViewModel?)value;
         }
 
+        /// <inheritdoc/>
         public InteractionAncestorViewModel? ViewModel
         {
             get => _viewModel;

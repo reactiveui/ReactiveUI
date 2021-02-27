@@ -14,9 +14,11 @@ using Xunit.Sdk;
 
 namespace ReactiveUI.Tests
 {
-    // The UIApplicationDelegate for the application. This class is responsible for launching the 
-    // User Interface of the application, as well as listening (and optionally responding) to 
-    // application events from iOS.
+    /// <summary>
+    /// The UIApplicationDelegate for the application. This class is responsible for launching the 
+    /// User Interface of the application, as well as listening (and optionally responding) to 
+    /// application events from iOS.
+    /// </summary>
     [Foundation.Register("AppDelegate")]
     public partial class AppDelegate : UIApplicationDelegate
     {
@@ -31,6 +33,8 @@ namespace ReactiveUI.Tests
         //
         // You have 17 seconds to return from this method, or iOS will terminate your application.
         //
+
+        /// <inheritdoc />
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             // create a new window instance based on the screen size

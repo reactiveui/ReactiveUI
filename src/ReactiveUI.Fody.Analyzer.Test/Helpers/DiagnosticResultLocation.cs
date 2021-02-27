@@ -58,6 +58,14 @@ namespace TestHelper
         /// <returns>Are Equal.</returns>
         public static bool operator ==(DiagnosticResultLocation left, DiagnosticResultLocation right) => left.Equals(right);
 
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static bool operator !=(DiagnosticResultLocation left, DiagnosticResultLocation right) => !left.Equals(right);
 
         /// <summary>

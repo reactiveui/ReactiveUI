@@ -14,8 +14,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the ObservedChangedMixin.
+    /// </summary>
     public class ObservedChangedMixinTest
     {
+        /// <summary>
+        /// Tests that getting the value should actually return the value.
+        /// </summary>
         [Fact]
         public void GetValueShouldActuallyReturnTheValue()
         {
@@ -46,6 +52,9 @@ namespace ReactiveUI.Tests
             });
         }
 
+        /// <summary>
+        /// Tests that getting the value should return the value from a path.
+        /// </summary>
         [Fact]
         public void GetValueShouldReturnTheValueFromAPath()
         {
@@ -60,6 +69,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("Foo", fixture.GetValue());
         }
 
+        /// <summary>
+        /// Runs a smoke test that sets the value path.
+        /// </summary>
         [Fact]
         public void SetValuePathSmokeTest()
         {
@@ -75,6 +87,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("Bar", output.Child.IsNotNullString);
         }
 
+        /// <summary>
+        /// Runs a smoke test for the BindTo functionality.
+        /// </summary>
         [Fact]
         public void BindToSmokeTest() =>
             new TestScheduler().With(scheduler =>
@@ -95,6 +110,9 @@ namespace ReactiveUI.Tests
                 Assert.Equal("Bar", fixture.Child.IsNotNullString);
             });
 
+        /// <summary>
+        /// Tests to make sure that Disposing disconnects BindTo and updates are no longer pushed.
+        /// </summary>
         [Fact]
         public void DisposingDisconnectsTheBindTo() =>
             new TestScheduler().With(scheduler =>
@@ -117,6 +135,9 @@ namespace ReactiveUI.Tests
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
             });
 
+        /// <summary>
+        /// Tests to make sure that BindTo can handle intermediate object switching.
+        /// </summary>
         [Fact]
         public void BindToIsNotFooledByIntermediateObjectSwitching() =>
             new TestScheduler().With(scheduler =>
@@ -141,6 +162,9 @@ namespace ReactiveUI.Tests
                 Assert.Equal("Bar", fixture.Child.IsNotNullString);
             });
 
+        /// <summary>
+        /// Tests to make sure that BindTo can handle Stack Overflow conditions.
+        /// </summary>
         [Fact]
         public void BindToStackOverFlowTest()
         {

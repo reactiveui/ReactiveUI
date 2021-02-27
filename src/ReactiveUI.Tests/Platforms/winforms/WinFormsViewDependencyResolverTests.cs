@@ -48,6 +48,7 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
+        /// <inheritdoc/>
         public void Dispose() => _resolver?.Dispose();
 
         [Fact]

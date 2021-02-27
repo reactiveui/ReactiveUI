@@ -1,20 +1,38 @@
-﻿// Copyright (c) 2019 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+
+using FluentAssertions;
+
 using ReactiveUI.Fody.Helpers;
 
 namespace ReactiveUI.Fody.Tests.Issues
 {
-    public static class Issue47Tests
+    /// <summary>
+    /// A set of tests to make sure that they produce valid numeric values for different types.
+    /// </summary>
+    public class NumericValueWorkTests
     {
+        /// <summary>
+        /// A test to make sure that all the default values are kept after generation.
+        /// </summary>
+        public void KeepsDefaultValuesTest()
+        {
+            var testModel = new TestModel();
+
+            testModel.DoubleProperty.Should().Be(default(double));
+            testModel.IntProperty.Should().Be(default(int));
+            testModel.FloatProperty.Should().Be(default(float));
+            testModel.LongProperty.Should().Be(default(long));
+        }
+
         /// <summary>
         /// The "test" here is simply for these to compile
         /// Tests ObservableAsPropertyWeaver.EmitDefaultValue.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1812: Avoid uninstantiated internal classes", Justification = "Purpose is just to be compiled.")]
         private class TestModel : ReactiveObject
         {
             [ObservableAsProperty]

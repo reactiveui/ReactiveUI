@@ -24,20 +24,24 @@ namespace ReactiveUI.Tests
 
         public List<(Action action, TimeSpan? dueTime)> ScheduledItems { get; }
 
+        /// <inheritdoc/>
         public DateTimeOffset Now => InnerScheduler.Now;
 
+        /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
         {
             ScheduledItems.Add((() => action(this, state), null));
             return InnerScheduler.Schedule(state, dueTime, action);
         }
 
+        /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
             ScheduledItems.Add((() => action(this, state), dueTime));
             return InnerScheduler.Schedule(state, dueTime, action);
         }
 
+        /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
             ScheduledItems.Add((() => action(this, state), null));

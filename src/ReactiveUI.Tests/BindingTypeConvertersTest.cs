@@ -9,8 +9,14 @@ namespace ReactiveUI.Tests
 {
     using System;
 
+    /// <summary>
+    /// Tests for binding type converters.
+    /// </summary>
     public class BindingTypeConvertersTest
     {
+        /// <summary>
+        /// Tests that equality type converter do reference cast should convert null nullable values.
+        /// </summary>
         [Fact]
         public void EqualityTypeConverterDoReferenceCastShouldConvertNullNullableValues()
         {
@@ -20,6 +26,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(expected, result);
         }
 
+        /// <summary>
+        /// Tests that equality type converter do reference cast should convert nullable values.
+        /// </summary>
         [Fact]
         public void EqualityTypeConverterDoReferenceCastShouldConvertNullableValues()
         {
@@ -29,6 +38,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(expected, result);
         }
 
+        /// <summary>
+        /// Tests that equality type converter do reference cast should throw when converting from null nullable to value.
+        /// </summary>
         [Fact]
         public void EqualityTypeConverterDoReferenceCastShouldThrowWhenConvertingFromNullNullableToValueType()
         {
@@ -36,6 +48,9 @@ namespace ReactiveUI.Tests
             Assert.Throws<InvalidCastException>(() => EqualityTypeConverter.DoReferenceCast(nullDouble, typeof(double)));
         }
 
+        /// <summary>
+        /// Tests that equality type converter do reference cast nullable to value.
+        /// </summary>
         [Fact]
         public void EqualityTypeConverterDoReferenceCastNullableToValueType()
         {
@@ -45,6 +60,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(expected, result);
         }
 
+        /// <summary>
+        /// Tests that equality type converter do reference cast should convert value types.
+        /// </summary>
         [Fact]
         public void EqualityTypeConverterDoReferenceCastShouldConvertValueTypes()
         {

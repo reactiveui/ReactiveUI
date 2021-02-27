@@ -12,10 +12,19 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A fake nested view model.
+    /// </summary>
     public class FakeNestedViewModel : ReactiveObject
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeNestedViewModel"/> class.
+        /// </summary>
         public FakeNestedViewModel() => NestedCommand = ReactiveCommand.Create(() => { });
 
+        /// <summary>
+        /// Gets or sets the nested command.
+        /// </summary>
         public ReactiveCommand<Unit, Unit> NestedCommand { get; protected set; }
     }
 }

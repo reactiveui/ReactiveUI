@@ -21,8 +21,10 @@ namespace ReactiveUI.Tests
             set => this.RaiseAndSetIfChanged(ref _someProp, value);
         }
 
+        /// <inheritdoc/>
         public string UrlPathSegment => "Test";
 
+        /// <inheritdoc/>
         public IScreen HostScreen { get; } = new TestScreen();
     }
 }

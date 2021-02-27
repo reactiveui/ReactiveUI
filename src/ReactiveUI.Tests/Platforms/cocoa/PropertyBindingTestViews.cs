@@ -16,6 +16,9 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A test view.
+    /// </summary>
     public class PropertyBindView : ReactiveViewController, IViewFor<PropertyBindViewModel>
     {
         PropertyBindViewModel _ViewModel;

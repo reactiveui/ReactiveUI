@@ -19,11 +19,20 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// A dependency object fixture.
+    /// </summary>
     public class DepObjFixture : FrameworkElement
     {
+        /// <summary>
+        /// The test string property.
+        /// </summary>
         public static readonly DependencyProperty TestStringProperty =
             DependencyProperty.Register("TestString", typeof(string), typeof(DepObjFixture), new PropertyMetadata(null));
 
+        /// <summary>
+        /// Gets or sets the test string.
+        /// </summary>
         public string TestString
         {
             get => (string)GetValue(TestStringProperty);

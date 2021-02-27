@@ -12,25 +12,42 @@ using ReactiveUI.Fody.Helpers;
 
 namespace ReactiveUI.Fody.Tests
 {
+    /// <summary>
+    /// A model which is facading another object.
+    /// </summary>
     public class FacadeModel : ReactiveObject
     {
         private BaseModel _dependency;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FacadeModel"/> class.
+        /// </summary>
         public FacadeModel() => _dependency = new BaseModel();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FacadeModel"/> class.
+        /// </summary>
+        /// <param name="dependency">The dependency to base again.</param>
         public FacadeModel(BaseModel dependency) => _dependency = dependency;
 
+        /// <summary>
+        /// Gets the base dependency.
+        /// </summary>
         public BaseModel Dependency
         {
             get => _dependency;
             private set => _dependency = value;
         }
 
-        // Property with the same name, will look for a like for like name on the named dependency
+        /// <summary>
+        /// Gets or sets a property with the same name in the dependency.
+        /// </summary>
         [ReactiveDependency(nameof(Dependency))]
         public int IntProperty { get; set; }
 
-        // Property named differently to that on the dependency but still pass through value
+        /// <summary>
+        /// Gets or sets a string value that will be generated to pass through and from the dependency.
+        /// </summary>
         [ReactiveDependency(nameof(Dependency), TargetProperty = "StringProperty")]
         public string? AnotherStringProperty { get; set; }
     }

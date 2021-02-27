@@ -12,8 +12,16 @@ namespace ReactiveUI.Tests
     using ReactiveUI;
     using Xunit;
 
+    /// <summary>
+    /// Tests for the different indexes on the cocoa platform.
+    /// </summary>
     public class IndexNormalizerTest
     {
+        /// <summary>
+        /// Tests to make sure that the index updates are correctly normalized.
+        /// </summary>
+        /// <param name="inputUpdatesString">The input updates string.</param>
+        /// <param name="expectedOutputUpdatesString">The expected output updates string.</param>
         [Theory]
         [InlineData("", "")]
         [InlineData("D0:D0", "D0:D1")]

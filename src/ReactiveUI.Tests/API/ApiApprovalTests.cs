@@ -10,12 +10,21 @@ using Xunit;
 
 namespace ReactiveUI.Tests.API
 {
+    /// <summary>
+    /// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class ApiApprovalTests : ApiApprovalBase
     {
+        /// <summary>
+        /// Generates public API for the ReactiveUI.Testing API.
+        /// </summary>
         [Fact]
         public void Testing() => CheckApproval(typeof(Testing.SchedulerExtensions).Assembly);
 
+        /// <summary>
+        /// Generates public API for the ReactiveUI API.
+        /// </summary>
         [Fact]
         public void ReactiveUI() => CheckApproval(typeof(RxApp).Assembly);
     }

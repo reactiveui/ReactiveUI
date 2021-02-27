@@ -15,6 +15,7 @@ namespace ReactiveUI.Tests
     {
         private RoutingState? _router;
 
+        /// <inheritdoc/>
         public RoutingState? Router
         {
 #pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).

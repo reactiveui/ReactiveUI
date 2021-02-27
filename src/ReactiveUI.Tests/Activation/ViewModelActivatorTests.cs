@@ -10,10 +10,16 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the view model activator.
+    /// </summary>
     public class ViewModelActivatorTests
     {
+        /// <summary>
+        /// Tests the activating ticks activated observable.
+        /// </summary>
         [Fact]
-        public void ActivatingTicksActivatedObservable()
+        public void TestActivatingTicksActivatedObservable()
         {
             var viewModelActivator = new ViewModelActivator();
             viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
@@ -23,8 +29,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, activated.Count);
         }
 
+        /// <summary>
+        /// Tests the deactivating ignoring reference count ticks deactivated observable.
+        /// </summary>
         [Fact]
-        public void DeactivatingIgnoringRefCountTicksDeactivatedObservable()
+        public void TestDeactivatingIgnoringRefCountTicksDeactivatedObservable()
         {
             var viewModelActivator = new ViewModelActivator();
             viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
@@ -34,8 +43,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, deactivated.Count);
         }
 
+        /// <summary>
+        /// Tests the deactivating count doesnt tick deactivated observable.
+        /// </summary>
         [Fact]
-        public void DeactivatingCountDoesntTickDeactivatedObservable()
+        public void TestDeactivatingCountDoesntTickDeactivatedObservable()
         {
             var viewModelActivator = new ViewModelActivator();
             viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
@@ -45,8 +57,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, deactivated.Count);
         }
 
+        /// <summary>
+        /// Tests the deactivating following activating ticks deactivated observable.
+        /// </summary>
         [Fact]
-        public void DeactivatingFollowingActivatingTicksDeactivatedObservable()
+        public void TestDeactivatingFollowingActivatingTicksDeactivatedObservable()
         {
             var viewModelActivator = new ViewModelActivator();
             viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
@@ -57,8 +72,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, deactivated.Count);
         }
 
+        /// <summary>
+        /// Tests the disposing after activation deactivates view model.
+        /// </summary>
         [Fact]
-        public void DisposingAfterActivationDeactivatesViewModel()
+        public void TestDisposingAfterActivationDeactivatesViewModel()
         {
             var viewModelActivator = new ViewModelActivator();
             viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();

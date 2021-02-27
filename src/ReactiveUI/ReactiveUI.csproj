@@ -117,7 +117,7 @@
 
   <ItemGroup>
     <None Update="VariadicTemplates.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="VariadicTemplates.cs" />
-    <Compile Update="VariadicTemplates.cs" DesignTime="true" AutoGen="true" DependentUpon="VariadicTemplates.tt" />
+    <Compile Update="VariadicTemplates.cs" DesignTime="True" AutoGen="true" DependentUpon="VariadicTemplates.tt" />
   </ItemGroup>
 
   <ItemGroup>

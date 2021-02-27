@@ -9,8 +9,14 @@ using Xunit;
 
 namespace ReactiveUI.Fody.Tests
 {
+    /// <summary>
+    /// Tests for the ReactiveDependencyAttribute.
+    /// </summary>
     public class ReactiveDependencyTests
     {
+        /// <summary>
+        /// Tests to make sure that the facade returns the same valid as the dependency for the int property.
+        /// </summary>
         [Fact]
         public void IntPropertyOnWeavedFacadeReturnsBaseModelIntPropertyDefaultValueTest()
         {
@@ -22,6 +28,9 @@ namespace ReactiveUI.Fody.Tests
             Assert.Equal(expectedResult, facade.IntProperty);
         }
 
+        /// <summary>
+        /// Tests to make sure that the facade returns the same valid as the dependency for the string property.
+        /// </summary>
         [Fact]
         public void AnotherStringPropertyOnFacadeReturnsBaseModelStringPropertyDefaultValueTest()
         {
@@ -33,6 +42,9 @@ namespace ReactiveUI.Fody.Tests
             Assert.Equal(expectedResult, facade.AnotherStringProperty);
         }
 
+        /// <summary>
+        /// Tests to make sure that the facade returns the same valid as the dependency for the string property after being updated.
+        /// </summary>
         [Fact]
         public void SettingAnotherStringPropertyUpdatesTheDependencyStringProperty()
         {
@@ -44,6 +56,9 @@ namespace ReactiveUI.Fody.Tests
             Assert.Equal(expectedResult, facade.Dependency.StringProperty);
         }
 
+        /// <summary>
+        /// Tests to make sure that the facade returns the same valid as the dependency for the int property after being updated.
+        /// </summary>
         [Fact]
         public void SettingFacadeIntPropertyUpdatesDependencyIntProperty()
         {
@@ -55,6 +70,9 @@ namespace ReactiveUI.Fody.Tests
             Assert.Equal(expectedResult, facade.Dependency.IntProperty);
         }
 
+        /// <summary>
+        /// Checks to make sure that the property changed event is fired after first assignment.
+        /// </summary>
         [Fact]
         public void FacadeIntPropertyChangedEventFiresOnAssignmentTest()
         {
@@ -71,6 +89,9 @@ namespace ReactiveUI.Fody.Tests
             Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
         }
 
+        /// <summary>
+        /// Checks to make sure that the property changed event is fired after first assignment.
+        /// </summary>
         [Fact]
         public void FacadeAnotherStringPropertyChangedEventFiresOnAssignmentTest()
         {
@@ -87,6 +108,9 @@ namespace ReactiveUI.Fody.Tests
             Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
         }
 
+        /// <summary>
+        /// Checks to make sure that the facade and the decorate return the same value.
+        /// </summary>
         [Fact]
         public void StringPropertyOnWeavedDecoratorReturnsBaseModelDefaultStringValue()
         {
@@ -98,6 +122,9 @@ namespace ReactiveUI.Fody.Tests
             Assert.Equal(expectedResult, decorator.StringProperty);
         }
 
+        /// <summary>
+        /// Checks to make sure that the decorator property changed is fired.
+        /// </summary>
         [Fact]
         public void DecoratorStringPropertyRaisesPropertyChanged()
         {
@@ -114,6 +141,9 @@ namespace ReactiveUI.Fody.Tests
             Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
         }
 
+        /// <summary>
+        /// Checks to make sure that the decorator property changed is fired.
+        /// </summary>
         [Fact]
         public void DecoratorReactiveStringPropertyRaisesPropertyChanged()
         {

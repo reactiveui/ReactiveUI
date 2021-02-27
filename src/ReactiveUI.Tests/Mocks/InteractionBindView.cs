@@ -5,16 +5,21 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A bind view.
+    /// </summary>
     public class InteractionBindView : ReactiveObject, IViewFor<InteractionBindViewModel>
     {
         private InteractionBindViewModel? _viewModel;
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (InteractionBindViewModel?)value;
         }
 
+        /// <inheritdoc/>
         public InteractionBindViewModel? ViewModel
         {
             get => _viewModel;

@@ -15,8 +15,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the ReactiveCommand Combined functionality.
+    /// </summary>
     public class CombinedReactiveCommandTest
     {
+        /// <summary>
+        /// Tests that determines whether this instance [can execute is false if any child cannot execute].
+        /// </summary>
         [Fact]
         public void CanExecuteIsFalseIfAnyChildCannotExecute()
         {
@@ -30,6 +36,9 @@ namespace ReactiveUI.Tests
             Assert.False(canExecute[0]);
         }
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute is false if parent can execute is false].
+        /// </summary>
         [Fact]
         public void CanExecuteIsFalseIfParentCanExecuteIsFalse()
         {
@@ -43,6 +52,9 @@ namespace ReactiveUI.Tests
             Assert.False(canExecute[0]);
         }
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute ticks failures in child can execute through thrown exceptions].
+        /// </summary>
         [Fact]
         public void CanExecuteTicksFailuresInChildCanExecuteThroughThrownExceptions()
         {
@@ -59,6 +71,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("oops", thrownExceptions[0].Message);
         }
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute ticks failures through thrown exceptions].
+        /// </summary>
         [Fact]
         public void CanExecuteTicksFailuresThroughThrownExceptions()
         {
@@ -75,6 +90,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("oops", thrownExceptions[0].Message);
         }
 
+        /// <summary>
+        /// A test that checks that all the exceptions that were delivered through the output scheduler.
+        /// </summary>
         [Fact]
         public void ExceptionsAreDeliveredOnOutputScheduler() =>
             new TestScheduler().With(
@@ -92,6 +110,9 @@ namespace ReactiveUI.Tests
                     Assert.IsType<InvalidOperationException>(exception);
                 });
 
+        /// <summary>
+        /// A test that executes the executes all child commands.
+        /// </summary>
         [Fact]
         public void ExecuteExecutesAllChildCommands()
         {
@@ -129,6 +150,9 @@ namespace ReactiveUI.Tests
             Assert.False(child3IsExecuting[2]);
         }
 
+        /// <summary>
+        /// Test that executes the ticks errors in any child command through thrown exceptions.
+        /// </summary>
         [Fact]
         public void ExecuteTicksErrorsInAnyChildCommandThroughThrownExceptions()
         {
@@ -144,6 +168,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("oops", thrownExceptions[0].Message);
         }
 
+        /// <summary>
+        /// Test that executes the ticks through the results.
+        /// </summary>
         [Fact]
         public void ExecuteTicksThroughTheResults()
         {
@@ -162,6 +189,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, results[0][1]);
         }
 
+        /// <summary>
+        /// Test that checks that results is ticked through specified scheduler.
+        /// </summary>
         [Fact]
         public void ResultIsTickedThroughSpecifiedScheduler() =>
             new TestScheduler().With(

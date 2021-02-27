@@ -23,8 +23,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the ReactiveCommand class.
+    /// </summary>
     public class ReactiveCommandTest
     {
+        /// <summary>
+        /// A test that determines whether this instance [can execute changed is available via ICommand].
+        /// </summary>
         [Fact]
         public void CanExecuteChangedIsAvailableViaICommand()
         {
@@ -41,6 +47,9 @@ namespace ReactiveUI.Tests
             Assert.False(canExecuteChanged[1]);
         }
 
+        /// <summary>
+        /// A test that determines whether this instance [can execute is available via ICommand].
+        /// </summary>
         [Fact]
         public void CanExecuteIsAvailableViaICommand()
         {
@@ -56,6 +65,9 @@ namespace ReactiveUI.Tests
             Assert.False(fixture.CanExecute(null));
         }
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute is behavioral].
+        /// </summary>
         [Fact]
         public void CanExecuteIsBehavioral()
         {
@@ -66,6 +78,9 @@ namespace ReactiveUI.Tests
             Assert.True(canExecute[0]);
         }
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute is false if already executing].
+        /// </summary>
         [Fact]
         public void CanExecuteIsFalseIfAlreadyExecuting() =>
             new TestScheduler().With(
@@ -87,6 +102,9 @@ namespace ReactiveUI.Tests
                     Assert.True(canExecute[2]);
                 });
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute is false if caller dictates as such].
+        /// </summary>
         [Fact]
         public void CanExecuteIsFalseIfCallerDictatesAsSuch()
         {
@@ -103,6 +121,9 @@ namespace ReactiveUI.Tests
             Assert.False(canExecute[2]);
         }
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute is unsubscribed after command disposal].
+        /// </summary>
         [Fact]
         public void CanExecuteIsUnsubscribedAfterCommandDisposal()
         {
@@ -116,6 +137,9 @@ namespace ReactiveUI.Tests
             Assert.False(canExecuteSubject.HasObservers);
         }
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute only ticks distinct values].
+        /// </summary>
         [Fact]
         public void CanExecuteOnlyTicksDistinctValues()
         {
@@ -135,6 +159,9 @@ namespace ReactiveUI.Tests
             Assert.True(canExecute[1]);
         }
 
+        /// <summary>
+        /// Test that determines whether this instance [can execute ticks failures through thrown exceptions].
+        /// </summary>
         [Fact]
         public void CanExecuteTicksFailuresThroughThrownExceptions()
         {
@@ -148,6 +175,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("oops", thrownExceptions[0].Message);
         }
 
+        /// <summary>
+        /// Creates the task facilitates TPL integration.
+        /// </summary>
         [Fact]
         public void CreateTaskFacilitatesTPLIntegration()
         {
@@ -160,6 +190,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(13, results[0]);
         }
 
+        /// <summary>
+        /// Creates the task facilitates TPL integration with parameter.
+        /// </summary>
         [Fact]
         public void CreateTaskFacilitatesTPLIntegrationWithParameter()
         {
@@ -174,6 +207,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, results[1]);
         }
 
+        /// <summary>
+        /// Creates the throws if execution parameter is null.
+        /// </summary>
         [Fact]
         public void CreateThrowsIfExecutionParameterIsNull()
         {
@@ -191,6 +227,9 @@ namespace ReactiveUI.Tests
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
+        /// <summary>
+        /// Exceptions the are delivered on output scheduler.
+        /// </summary>
         [Fact]
         public void ExceptionsAreDeliveredOnOutputScheduler() =>
             new TestScheduler().With(
@@ -206,6 +245,9 @@ namespace ReactiveUI.Tests
                     Assert.IsType<InvalidOperationException>(exception);
                 });
 
+        /// <summary>
+        /// Executes the can be cancelled.
+        /// </summary>
         [Fact]
         public void ExecuteCanBeCancelled() =>
             new TestScheduler().With(
@@ -228,6 +270,9 @@ namespace ReactiveUI.Tests
                     Assert.False(fixture.IsExecuting.FirstAsync().Wait());
                 });
 
+        /// <summary>
+        /// Executes the can tick through multiple results.
+        /// </summary>
         [Fact]
         public void ExecuteCanTickThroughMultipleResults()
         {
@@ -242,6 +287,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(3, results[2]);
         }
 
+        /// <summary>
+        /// Executes the facilitates any number of in flight executions.
+        /// </summary>
         [Fact]
         public void ExecuteFacilitatesAnyNumberOfInFlightExecutions() =>
             new TestScheduler().With(
@@ -276,6 +324,9 @@ namespace ReactiveUI.Tests
                     Assert.False(fixture.IsExecuting.FirstAsync().Wait());
                 });
 
+        /// <summary>
+        /// Executes the is available via ICommand.
+        /// </summary>
         [Fact]
         public void ExecuteIsAvailableViaICommand()
         {
@@ -292,6 +343,9 @@ namespace ReactiveUI.Tests
             Assert.True(executed);
         }
 
+        /// <summary>
+        /// Executes the passes through parameter.
+        /// </summary>
         [Fact]
         public void ExecutePassesThroughParameter()
         {
@@ -314,6 +368,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(348, parameters[2]);
         }
 
+        /// <summary>
+        /// Executes the reenables execution even after failure.
+        /// </summary>
         [Fact]
         public void ExecuteReenablesExecutionEvenAfterFailure()
         {
@@ -332,6 +389,9 @@ namespace ReactiveUI.Tests
             Assert.True(canExecute[2]);
         }
 
+        /// <summary>
+        /// Executes the result is delivered on specified scheduler.
+        /// </summary>
         [Fact]
         public void ExecuteResultIsDeliveredOnSpecifiedScheduler() =>
             new TestScheduler().With(
@@ -348,6 +408,9 @@ namespace ReactiveUI.Tests
                     Assert.True(executed);
                 });
 
+        /// <summary>
+        /// Executes the ticks any exception.
+        /// </summary>
         [Fact]
         public void ExecuteTicksAnyException()
         {
@@ -359,6 +422,9 @@ namespace ReactiveUI.Tests
             Assert.IsType<InvalidOperationException>(exception);
         }
 
+        /// <summary>
+        /// Executes the ticks any lambda exception.
+        /// </summary>
         [Fact]
         public void ExecuteTicksAnyLambdaException()
         {
@@ -370,6 +436,9 @@ namespace ReactiveUI.Tests
             Assert.IsType<InvalidOperationException>(exception);
         }
 
+        /// <summary>
+        /// Executes the ticks errors through thrown exceptions.
+        /// </summary>
         [Fact]
         public void ExecuteTicksErrorsThroughThrownExceptions()
         {
@@ -382,6 +451,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("oops", thrownExceptions[0].Message);
         }
 
+        /// <summary>
+        /// Executes the ticks lambda errors through thrown exceptions.
+        /// </summary>
         [Fact]
         public void ExecuteTicksLambdaErrorsThroughThrownExceptions()
         {
@@ -395,6 +467,9 @@ namespace ReactiveUI.Tests
             Assert.True(fixture.CanExecute.FirstAsync().Wait());
         }
 
+        /// <summary>
+        /// Executes the ticks through the result.
+        /// </summary>
         [Fact]
         public void ExecuteTicksThroughTheResult()
         {
@@ -415,6 +490,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(30, results[2]);
         }
 
+        /// <summary>
+        /// Executes via ICommand throws if parameter type is incorrect.
+        /// </summary>
         [Fact]
         public void ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
         {
@@ -427,6 +505,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("Command requires parameters of type System.String, but received parameter of type System.Int32.", ex.Message);
         }
 
+        /// <summary>
+        /// Executes via ICommand works with nullable types.
+        /// </summary>
         [Fact]
         public void ExecuteViaICommandWorksWithNullableTypes()
         {
@@ -440,6 +521,9 @@ namespace ReactiveUI.Tests
             Assert.Null(value);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand in target invokes the command.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandInTargetInvokesTheCommand()
         {
@@ -456,6 +540,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, executionCount);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand in target passes the specified value to can execute and execute.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandInTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
         {
@@ -470,6 +557,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, command.ExecuteParameter);
         }
 
+        /// <summary>
+        /// Test that invokes the command against i command in target respects can execute.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandInTargetRespectsCanExecute()
         {
@@ -488,6 +578,9 @@ namespace ReactiveUI.Tests
             Assert.True(executed);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand in target respects can execute window.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandInTargetRespectsCanExecuteWindow()
         {
@@ -507,6 +600,9 @@ namespace ReactiveUI.Tests
             Assert.False(executed);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand in target swallows exceptions.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandInTargetSwallowsExceptions()
         {
@@ -530,6 +626,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, count);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand invokes the command.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandInvokesTheCommand()
         {
@@ -545,6 +644,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, executionCount);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand passes the specified value to can execute and execute.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandPassesTheSpecifiedValueToCanExecuteAndExecute()
         {
@@ -557,6 +659,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, fixture.ExecuteParameter);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand respects can execute.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandRespectsCanExecute()
         {
@@ -574,6 +679,9 @@ namespace ReactiveUI.Tests
             Assert.True(executed);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand respects can execute window.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandRespectsCanExecuteWindow()
         {
@@ -592,6 +700,9 @@ namespace ReactiveUI.Tests
             Assert.False(executed);
         }
 
+        /// <summary>
+        /// Test that invokes the command against ICommand swallows exceptions.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstICommandSwallowsExceptions()
         {
@@ -613,6 +724,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, count);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command in target invokes the command.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandInTargetInvokesTheCommand()
         {
@@ -629,6 +743,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, executionCount);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command in target passes the specified value to execute.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandInTargetPassesTheSpecifiedValueToExecute()
         {
@@ -642,6 +759,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, executeReceived);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command in target respects can execute.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecute()
         {
@@ -660,6 +780,9 @@ namespace ReactiveUI.Tests
             Assert.True(executed);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command in target respects can execute window.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecuteWindow()
         {
@@ -679,6 +802,9 @@ namespace ReactiveUI.Tests
             Assert.False(executed);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command in target swallows exceptions.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandInTargetSwallowsExceptions()
         {
@@ -703,6 +829,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, count);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command invokes the command.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandInvokesTheCommand()
         {
@@ -718,6 +847,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, executionCount);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command passes the specified value to execute.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandPassesTheSpecifiedValueToExecute()
         {
@@ -730,6 +862,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, executeReceived);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command respects can execute.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandRespectsCanExecute()
         {
@@ -747,6 +882,9 @@ namespace ReactiveUI.Tests
             Assert.True(executed);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command respects can execute window.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandRespectsCanExecuteWindow()
         {
@@ -765,6 +903,9 @@ namespace ReactiveUI.Tests
             Assert.False(executed);
         }
 
+        /// <summary>
+        /// Test that invokes the command against reactive command swallows exceptions.
+        /// </summary>
         [Fact]
         public void InvokeCommandAgainstReactiveCommandSwallowsExceptions()
         {
@@ -786,6 +927,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, count);
         }
 
+        /// <summary>
+        /// Test that invokes the command works even if the source is cold.
+        /// </summary>
         [Fact]
         public void InvokeCommandWorksEvenIfTheSourceIsCold()
         {
@@ -797,6 +941,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, executionCount);
         }
 
+        /// <summary>
+        /// Test that determines whether [is executing is behavioral].
+        /// </summary>
         [Fact]
         public void IsExecutingIsBehavioral()
         {
@@ -807,6 +954,9 @@ namespace ReactiveUI.Tests
             Assert.False(isExecuting[0]);
         }
 
+        /// <summary>
+        /// Test that determines whether [is executing remains true as long as execution pipeline has not completed].
+        /// </summary>
         [Fact]
         public void IsExecutingRemainsTrueAsLongAsExecutionPipelineHasNotCompleted()
         {
@@ -827,6 +977,9 @@ namespace ReactiveUI.Tests
             Assert.False(fixture.IsExecuting.FirstAsync().Wait());
         }
 
+        /// <summary>
+        /// Test that determines whether [is executing ticks as executions progress].
+        /// </summary>
         [Fact]
         public void IsExecutingTicksAsExecutionsProgress() =>
             new TestScheduler().With(
@@ -849,6 +1002,9 @@ namespace ReactiveUI.Tests
                     Assert.False(isExecuting[2]);
                 });
 
+        /// <summary>
+        /// Results the is ticked through specified scheduler.
+        /// </summary>
         [Fact]
         public void ResultIsTickedThroughSpecifiedScheduler() =>
             new TestScheduler().With(
@@ -864,6 +1020,9 @@ namespace ReactiveUI.Tests
                     Assert.Equal(1, results.Count);
                 });
 
+        /// <summary>
+        /// Synchronouses the command execute lazily.
+        /// </summary>
         [Fact]
         public void SynchronousCommandExecuteLazily()
         {
@@ -904,6 +1063,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, executionCount);
         }
 
+        /// <summary>
+        /// Synchronouses the commands fail correctly.
+        /// </summary>
         [Fact]
         public void SynchronousCommandsFailCorrectly()
         {

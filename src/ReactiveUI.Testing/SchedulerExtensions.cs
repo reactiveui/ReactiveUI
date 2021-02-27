@@ -13,11 +13,12 @@ using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Testing
 {
-#pragma warning disable SA1600 // Elements should be documented
+    /// <summary>
+    /// Extension methods for the test based schedulers.
+    /// </summary>
     public static class SchedulerExtensions
-#pragma warning restore SA1600 // Elements should be documented
     {
-        private static readonly AutoResetEvent schedulerGate = new(true);
+        private static readonly AutoResetEvent _schedulerGate = new(true);
 
         /// <summary>
         /// WithScheduler overrides the default Deferred and Taskpool schedulers
@@ -30,7 +31,7 @@ namespace ReactiveUI.Testing
         /// schedulers.</returns>
         public static IDisposable WithScheduler(IScheduler scheduler)
         {
-            schedulerGate.WaitOne();
+            _schedulerGate.WaitOne();
             var prevDef = RxApp.MainThreadScheduler;
             var prevTask = RxApp.TaskpoolScheduler;
 
@@ -41,7 +42,7 @@ namespace ReactiveUI.Testing
             {
                 RxApp.MainThreadScheduler = prevDef;
                 RxApp.TaskpoolScheduler = prevTask;
-                schedulerGate.Set();
+                _schedulerGate.Set();
             });
         }
 

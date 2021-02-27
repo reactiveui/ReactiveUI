@@ -11,10 +11,19 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Fody.Tests
 {
+    /// <summary>
+    /// A base model for the mocks.
+    /// </summary>
     public class BaseModel : ReactiveObject
     {
+        /// <summary>
+        /// Gets or sets a integer property with a initial value.
+        /// </summary>
         public virtual int IntProperty { get; set; } = 5;
 
+        /// <summary>
+        /// Gets or sets a string property with a initial value.
+        /// </summary>
         public virtual string? StringProperty { get; set; } = "Initial Value";
     }
 }

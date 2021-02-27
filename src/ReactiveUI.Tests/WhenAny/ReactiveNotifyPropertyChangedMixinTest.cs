@@ -22,8 +22,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests the reactive notify property changed.
+    /// </summary>
     public class ReactiveNotifyPropertyChangedMixinTest
     {
+        /// <summary>
+        /// Gets or sets the dummy.
+        /// </summary>
         public string? Dummy { get; set; }
 
         [Fact]

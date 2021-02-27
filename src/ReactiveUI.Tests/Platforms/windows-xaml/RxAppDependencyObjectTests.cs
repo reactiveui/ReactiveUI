@@ -13,8 +13,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// Checks RxApp dependency objects.
+    /// </summary>
     public class RxAppDependencyObjectTests
     {
+        /// <summary>
+        /// Tests that Dependency Property notifiers should be found.
+        /// </summary>
         [Fact]
         public void DepPropNotifierShouldBeFound()
         {

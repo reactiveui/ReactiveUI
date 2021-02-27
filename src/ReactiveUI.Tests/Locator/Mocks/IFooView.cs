@@ -5,6 +5,9 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A interface mock view.
+    /// </summary>
     public interface IFooView : IViewFor<IFooViewModel>
     {
     }

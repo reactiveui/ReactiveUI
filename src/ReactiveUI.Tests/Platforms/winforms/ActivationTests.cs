@@ -10,8 +10,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// Tests to make sure the activation works correctly.
+    /// </summary>
     public class ActivationTests
     {
+        /// <summary>
+        /// Tests activations for view fetcher supports default winforms components.
+        /// </summary>
         [Fact]
         public void ActivationForViewFetcherSupportsDefaultWinformsComponents()
         {
@@ -24,6 +30,9 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
+        /// <summary>
+        /// Tests that determines whether this instance [can fetch activator for form].
+        /// </summary>
         [Fact]
         public void CanFetchActivatorForForm()
         {
@@ -34,6 +43,9 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotNull(formActivator);
         }
 
+        /// <summary>
+        /// Tests that determines whether this instance [can fetch activator for control].
+        /// </summary>
         [Fact]
         public void CanFetchActivatorForControl()
         {
@@ -44,6 +56,9 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotNull(activator);
         }
 
+        /// <summary>
+        /// Smokes the test windows form.
+        /// </summary>
         [Fact]
         public void SmokeTestWindowsForm()
         {
@@ -83,6 +98,9 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
+        /// <summary>
+        /// Smokes the test user control.
+        /// </summary>
         [Fact]
         public void SmokeTestUserControl()
         {

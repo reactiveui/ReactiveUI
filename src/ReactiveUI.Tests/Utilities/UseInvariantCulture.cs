@@ -21,12 +21,14 @@ namespace ReactiveUI.Tests
     {
         private CultureInfo? _storedCulture;
 
+        /// <inheritdoc/>
         public override void Before(MethodInfo methodUnderTest)
         {
             _storedCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         }
 
+        /// <inheritdoc/>
         public override void After(MethodInfo methodUnderTest)
         {
             if (_storedCulture is not null)

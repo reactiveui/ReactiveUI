@@ -16,8 +16,14 @@ using System.Windows.Threading;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// Helper utility to handle dispatcher in tests.
+    /// </summary>
     public static class DispatcherUtilities
     {
+        /// <summary>
+        /// Makes the dispatcher perform the events to keep it running.
+        /// </summary>
         public static void DoEvents()
         {
 #if !NETFX_CORE
@@ -27,6 +33,11 @@ namespace ReactiveUI.Tests.Xaml
 #endif
         }
 
+        /// <summary>
+        /// Gets the frame to exit.
+        /// </summary>
+        /// <param name="f">Unused frame object..</param>
+        /// <returns>Unused return value.</returns>
         [SuppressMessage("Design", "CA1801: Parameter never used", Justification = "Used on some platforms.")]
         public static object? ExitFrame(object f)
         {

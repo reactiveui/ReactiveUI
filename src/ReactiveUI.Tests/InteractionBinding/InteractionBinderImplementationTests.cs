@@ -15,10 +15,17 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the Interaction bindings.
+    /// </summary>
     public class InteractionBinderImplementationTests
     {
+        /// <summary>
+        /// Tests that make sure that the we receive output from task handler.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task ShouldReceiveOutputFromTaskHandler()
+        public async Task ReceiveOutputFromTaskHandler()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -37,8 +44,12 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Test that we receive output from the observable handler.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task ShouldReceiveOutputFromObservableHandler()
+        public async Task ReceiveOutputFromObservableHandler()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -57,8 +68,12 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Test that checks that the receive output from task handler when view model was initially null.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task ShouldReceiveOutputFromTaskHandlerWhenViewModelWasInitiallyNull()
+        public async Task ReceiveOutputFromTaskHandlerWhenViewModelWasInitiallyNull()
         {
             InteractionBindViewModel? vm = null;
             var view = new InteractionBindView { ViewModel = vm };
@@ -79,8 +94,12 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Test that checks that the receive output from observable handler when view model was initially null.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task ShouldReceiveOutputFromObservableHandlerWhenViewModelWasInitiallyNull()
+        public async Task ReceiveOutputFromObservableHandlerWhenViewModelWasInitiallyNull()
         {
             InteractionBindViewModel? vm = null;
             var view = new InteractionBindView { ViewModel = vm };
@@ -101,8 +120,11 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Tests to make sure that it unregisters the task handler when view model is set to null.
+        /// </summary>
         [Fact]
-        public void ShouldUnregisterTaskHandlerWhenViewModelIsSetToNull()
+        public void UnregisterTaskHandlerWhenViewModelIsSetToNull()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -121,8 +143,11 @@ namespace ReactiveUI.Tests
             _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
         }
 
+        /// <summary>
+        /// Tests to make sure that it unregisters the observable handler when view model is set to null.
+        /// </summary>
         [Fact]
-        public void ShouldUnregisterObservableHandlerWhenViewModelIsSetToNull()
+        public void UnregisterObservableHandlerWhenViewModelIsSetToNull()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -141,8 +166,11 @@ namespace ReactiveUI.Tests
             _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
         }
 
+        /// <summary>
+        /// Tests to make sure that it unregisters the task handler from overwritten view model.
+        /// </summary>
         [Fact]
-        public void ShouldUnregisterTaskHandlerFromOverwrittenViewModel()
+        public void UnregisterTaskHandlerFromOverwrittenViewModel()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -161,8 +189,11 @@ namespace ReactiveUI.Tests
             _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
         }
 
+        /// <summary>
+        /// Tests to make sure that it unregisters the observable handler from overwritten view model.
+        /// </summary>
         [Fact]
-        public void ShouldUnregisterObservableHandlerFromOverwrittenViewModel()
+        public void UnregisterObservableHandlerFromOverwrittenViewModel()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -181,8 +212,12 @@ namespace ReactiveUI.Tests
             _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
         }
 
+        /// <summary>
+        /// Tests to make sure that it registers the task handler to newly assigned view model.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task ShouldRegisterTaskHandlerToNewlyAssignedViewModel()
+        public async Task RegisterTaskHandlerToNewlyAssignedViewModel()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -203,8 +238,12 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Tests to make sure that it registers the observable handler to newly assigned view model.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task ShouldRegisterObservableHandlerToNewlyAssignedViewModel()
+        public async Task RegisterObservableHandlerToNewlyAssignedViewModel()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -225,6 +264,10 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Tests to confirm nested interaction should receive output from task handler.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NestedInteractionShouldReceiveOutputFromTaskHandler()
         {
@@ -245,6 +288,10 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Tests to confirm nested interaction should receive output from observable handler.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NestedInteractionShouldReceiveOutputFromObservableHandler()
         {
@@ -265,8 +312,11 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Test to confirm that unregistering the task handler from overwritten nested view model.
+        /// </summary>
         [Fact]
-        public void ShouldUnregisterTaskHandlerFromOverwrittenNestedViewModel()
+        public void UnregisterTaskHandlerFromOverwrittenNestedViewModel()
         {
             var firstInteractionVm = new InteractionBindViewModel();
             var vm = new InteractionAncestorViewModel();
@@ -286,8 +336,11 @@ namespace ReactiveUI.Tests
             _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => firstInteractionVm.Interaction1.Handle("123").ToTask());
         }
 
+        /// <summary>
+        /// Tests to make sure that it unregisters the observable handler from overwritten nested view model.
+        /// </summary>
         [Fact]
-        public void ShouldUnregisterObservableHandlerFromOverwrittenNestedViewModel()
+        public void UnregisterObservableHandlerFromOverwrittenNestedViewModel()
         {
             var firstInteractionVm = new InteractionBindViewModel();
             var vm = new InteractionAncestorViewModel();
@@ -307,8 +360,12 @@ namespace ReactiveUI.Tests
             _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => firstInteractionVm.Interaction1.Handle("123").ToTask());
         }
 
+        /// <summary>
+        /// Tests to make sure that it registers the task handler to newly assigned nested view model.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task ShouldRegisterTaskHandlerToNewlyAssignedNestedViewModel()
+        public async Task RegisterTaskHandlerToNewlyAssignedNestedViewModel()
         {
             var vm = new InteractionAncestorViewModel()
             {
@@ -332,8 +389,12 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Tests to make sure that it registers the observable handler to newly assigned nested view model.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
-        public async Task ShouldRegisterObservableHandlerToNewlyAssignedNestedViewModel()
+        public async Task RegisterObservableHandlerToNewlyAssignedNestedViewModel()
         {
             var vm = new InteractionAncestorViewModel()
             {
@@ -357,8 +418,11 @@ namespace ReactiveUI.Tests
             isDeletionConfirmed.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Tests to make sure that it unregisters the task handler when binding is disposed.
+        /// </summary>
         [Fact]
-        public void ShouldUnregisterTaskHandlerWhenBindingIsDisposed()
+        public void UnregisterTaskHandlerWhenBindingIsDisposed()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -377,8 +441,11 @@ namespace ReactiveUI.Tests
             _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
         }
 
+        /// <summary>
+        /// Tests to make sure that it unregisters the observable handler when binding is disposed.
+        /// </summary>
         [Fact]
-        public void ShouldUnregisterObservableHandlerWhenBindingIsDisposed()
+        public void UnregisterObservableHandlerWhenBindingIsDisposed()
         {
             var vm = new InteractionBindViewModel();
             var view = new InteractionBindView { ViewModel = vm };
@@ -397,6 +464,9 @@ namespace ReactiveUI.Tests
             _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
         }
 
+        /// <summary>
+        /// Test that confirms the view model should be garbage collected when overwritten.
+        /// </summary>
         [Fact]
         public void ViewModelShouldBeGarbageCollectedWhenOverwritten()
         {
@@ -426,6 +496,9 @@ namespace ReactiveUI.Tests
             Assert.False(weakRef.IsAlive);
         }
 
+        /// <summary>
+        /// Test that confirms nested view model should be garbage collected when overwritten.
+        /// </summary>
         [Fact]
         public void NestedViewModelShouldBeGarbageCollectedWhenOverwritten()
         {

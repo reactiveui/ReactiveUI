@@ -9,8 +9,14 @@ using Xunit;
 
 namespace ReactiveUI.Fody.Tests.Issues
 {
-    public class Issue10Tests
+    /// <summary>
+    /// Makes sure that uninitialized values, which don't have ToPropertyEx called work.
+    /// </summary>
+    public class UninitializedValuesWorkTests
     {
+        /// <summary>
+        /// Test to make sure that properties without PropertyHelper return the correct value.
+        /// </summary>
         [Fact]
         public void UninitializedObservableAsPropertyHelperDoesntThrowAndReturnsDefaultValue()
         {

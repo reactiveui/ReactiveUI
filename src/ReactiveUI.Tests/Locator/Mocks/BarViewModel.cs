@@ -5,6 +5,9 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A mock view.
+    /// </summary>
     public class BarViewModel : ReactiveObject, IBarViewModel
     {
     }

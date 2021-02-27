@@ -1,17 +1,18 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
-  <PropertyGroup>    
+  <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;net5.0-windows10.0.19041</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
@@ -26,17 +27,17 @@
   <Choose>
     <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.1')) AND '$(OS)' == 'Windows_NT'">
       <PropertyGroup>
-          <UseWpf>true</UseWpf>
-          <UseWindowsForms>true</UseWindowsForms>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
       </PropertyGroup>
       <ItemGroup>
-          <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
-          <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
-          <Compile Include="Platforms\common-gui\**\*.cs" />
-          <Compile Include="Platforms\wpf\**\*.cs" />
-          <Compile Include="Platforms\Winforms\**\*.cs" />
-          <Compile Include="Platforms\windows-xaml\**\*.cs" />
-          <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
+        <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+        <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+        <Compile Include="Platforms\common-gui\**\*.cs" />
+        <Compile Include="Platforms\wpf\**\*.cs" />
+        <Compile Include="Platforms\Winforms\**\*.cs" />
+        <Compile Include="Platforms\windows-xaml\**\*.cs" />
+        <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
       </ItemGroup>
     </When>
     <When Condition=" $(TargetFramework.StartsWith('net5')) AND '$(OS)' == 'Windows_NT'">

@@ -9,10 +9,17 @@ using Splat;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Detects if we are in production mode or not.
+    /// </summary>
     internal class ProductionMode : IModeDetector, IPlatformModeDetector
     {
         private static readonly ProductionMode Instance = new();
 
+        /// <summary>
+        /// Sets the platform mode.
+        /// </summary>
+        /// <returns>A disposable to revert to the previous state.</returns>
         public static IDisposable Set()
         {
             PlatformModeDetector.OverrideModeDetector(Instance);
@@ -24,8 +31,16 @@ namespace ReactiveUI.Tests
             });
         }
 
+        /// <summary>
+        /// Value indicating whether we are in the unit test runner.
+        /// </summary>
+        /// <returns>If we are in test mode.</returns>
         public bool? InUnitTestRunner() => false;
 
+        /// <summary>
+        /// Value indicating whether we are in the design mode.
+        /// </summary>
+        /// <returns>If we are in design mode.</returns>
         public bool? InDesignMode() => false;
     }
 }

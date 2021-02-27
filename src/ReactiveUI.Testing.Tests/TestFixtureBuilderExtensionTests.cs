@@ -152,6 +152,10 @@ namespace ReactiveUI.Testing.Tests
             builder.Count.Should().Be(count);
         }
 
+        /// <summary>
+        /// A test to verify the <see cref="TestFixture"/> name.
+        /// </summary>
+        /// <param name="name">The name.</param>
         [Theory]
         [InlineData("ReactiveUI")]
         [InlineData("Splat")]

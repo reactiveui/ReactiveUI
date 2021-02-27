@@ -14,8 +14,14 @@ using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// Tests that WhenAny dependency objects.
+    /// </summary>
     public class WhenAnyThroughDependencyObjectTests
     {
+        /// <summary>
+        /// Tests that WhenAny through a view shouldn't give null values.
+        /// </summary>
         [Fact]
         public void WhenAnyThroughAViewShouldntGiveNullValues()
         {

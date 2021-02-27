@@ -22,6 +22,9 @@ using Xunit;
 
 namespace ReactiveUI.Splat.Tests
 {
+    /// <summary>
+    /// Tests for checking the various adapters in splat.
+    /// </summary>
     public class SplatAdapterTests
     {
         /// <summary>

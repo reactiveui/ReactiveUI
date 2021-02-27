@@ -28,6 +28,9 @@ namespace ReactiveUI.Tests.Xaml
     {
         private readonly IDependencyResolver _resolver;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XamlViewDependencyResolverTests"/> class.
+        /// </summary>
         public XamlViewDependencyResolverTests()
         {
             _resolver = new ModernDependencyResolver();
@@ -36,6 +39,9 @@ namespace ReactiveUI.Tests.Xaml
             _resolver.RegisterViewsForViewModels(GetType().Assembly);
         }
 
+        /// <summary>
+        /// Test that register views for view model should register all views.
+        /// </summary>
         [Fact]
         public void RegisterViewsForViewModelShouldRegisterAllViews()
         {
@@ -48,6 +54,9 @@ namespace ReactiveUI.Tests.Xaml
             }
         }
 
+        /// <summary>
+        /// Test that register views for view model should include contracts.
+        /// </summary>
         [Fact]
         public void RegisterViewsForViewModelShouldIncludeContracts()
         {
@@ -57,6 +66,7 @@ namespace ReactiveUI.Tests.Xaml
             }
         }
 
+        /// <inheritdoc/>
         public void Dispose() => _resolver?.Dispose();
     }
 }

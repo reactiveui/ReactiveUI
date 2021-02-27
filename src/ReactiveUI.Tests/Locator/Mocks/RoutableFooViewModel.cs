@@ -5,10 +5,15 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A routable view model.
+    /// </summary>
     public class RoutableFooViewModel : ReactiveObject, IRoutableFooViewModel
     {
+        /// <inheritdoc/>
         public IScreen HostScreen { get; set; } = new TestScreen();
 
+        /// <inheritdoc/>
         public string? UrlPathSegment { get; set; }
     }
 }

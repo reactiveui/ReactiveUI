@@ -16,9 +16,13 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// The main activity for the tests.
+    /// </summary>
     [Activity(Label = "xUnit Android Runner", MainLauncher = true)]
     public class MainActivity : RunnerActivity
     {
+        /// <inheritdoc />
         protected override void OnCreate(Bundle bundle)
         {
             // tests can be inside the main assembly

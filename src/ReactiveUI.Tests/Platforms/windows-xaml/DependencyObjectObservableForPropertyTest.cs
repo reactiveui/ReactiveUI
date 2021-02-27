@@ -22,8 +22,14 @@ using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// Tests for the dependency object property binding.
+    /// </summary>
     public class DependencyObjectObservableForPropertyTest
     {
+        /// <summary>
+        /// Runs a smoke test for dependency object observables for property.
+        /// </summary>
         [Fact]
         public void DependencyObjectObservableForPropertySmokeTest()
         {
@@ -53,6 +59,9 @@ namespace ReactiveUI.Tests.Xaml
             disp2.Dispose();
         }
 
+        /// <summary>
+        /// Runs a smoke test for derived dependency object observables for property.
+        /// </summary>
         [Fact]
         public void DerivedDependencyObjectObservableForPropertySmokeTest()
         {
@@ -82,6 +91,9 @@ namespace ReactiveUI.Tests.Xaml
             disp2.Dispose();
         }
 
+        /// <summary>
+        /// Tests WhenAny with dependency object test.
+        /// </summary>
         [Fact]
         public void WhenAnyWithDependencyObjectTest()
         {
@@ -96,6 +108,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.True(inputs.Zip(outputs.Skip(1), (expected, actual) => expected == actual).All(x => x));
         }
 
+        /// <summary>
+        /// Tests ListBoxes the selected item test.
+        /// </summary>
         [Fact]
         public void ListBoxSelectedItemTest()
         {

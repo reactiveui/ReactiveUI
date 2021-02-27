@@ -14,8 +14,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests to make sure that the auto persist collection works.
+    /// </summary>
     public class AutoPersistCollectionTests
     {
+        /// <summary>
+        /// Test the automatic persist collection smoke test.
+        /// </summary>
         [Fact]
         public void AutoPersistCollectionSmokeTest() =>
             new TestScheduler().With(scheduler =>
@@ -75,6 +81,9 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, timesSaved);
             });
 
+        /// <summary>
+        /// Test the automatic persist collection disconnects on dispose.
+        /// </summary>
         [Fact]
         public void AutoPersistCollectionDisconnectsOnDispose() =>
             new TestScheduler().With(scheduler =>

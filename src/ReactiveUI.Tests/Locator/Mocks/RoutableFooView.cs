@@ -5,14 +5,19 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A routable view.
+    /// </summary>
     public class RoutableFooView : IViewFor<IRoutableFooViewModel>
     {
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (IRoutableFooViewModel?)value;
         }
 
+        /// <inheritdoc/>
         public IRoutableFooViewModel? ViewModel { get; set; }
     }
 }

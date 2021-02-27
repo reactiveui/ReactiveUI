@@ -11,18 +11,30 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A collection model.
+    /// </summary>
     public class FakeCollectionModel : ReactiveObject
     {
         private bool _isHidden;
 
         private int _someNumber;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is hidden.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is hidden; otherwise, <c>false</c>.
+        /// </value>
         public bool IsHidden
         {
             get => _isHidden;
             set => this.RaiseAndSetIfChanged(ref _isHidden, value);
         }
 
+        /// <summary>
+        /// Gets or sets some number.
+        /// </summary>
         public int SomeNumber
         {
             get => _someNumber;

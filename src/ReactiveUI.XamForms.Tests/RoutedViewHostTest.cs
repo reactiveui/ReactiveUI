@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using ReactiveUI.XamForms.Tests.Mocks;
@@ -7,10 +12,17 @@ using Xunit;
 
 namespace ReactiveUI.XamForms.Tests
 {
+    /// <summary>
+    /// Tests the RoutedView hosting.
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public sealed class RoutedViewHostTest : IDisposable
     {
         private readonly NavigationViewModel _navigationViewModel = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RoutedViewHostTest"/> class.
+        /// </summary>
         public RoutedViewHostTest()
         {
             Locator.CurrentMutable.Register<IViewFor<MainViewModel>>(() => new MainView());
@@ -21,6 +33,9 @@ namespace ReactiveUI.XamForms.Tests
             Locator.CurrentMutable.Register<IRoutableViewModel>(() => new ChildViewModel(), nameof(ChildViewModel));
         }
 
+        /// <summary>
+        /// Tests that creating a new RoutedView without a view model that it has no current page.
+        /// </summary>
         [Fact]
         public void NewRoutedViewHostHasNoCurrentPage()
         {
@@ -30,6 +45,9 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(0, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Tests that creating a new RoutedView with a view model that it has the main view as the current page.
+        /// </summary>
         [Fact]
         public void NewRoutedViewHostHasMainViewCurrentPage()
         {
@@ -45,6 +63,10 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(1, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Tests that creating a new RoutedView can navigate to a page from a initial no page.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NavigateToMainViewFromNoPage()
         {
@@ -64,6 +86,10 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(1, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate to child views.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NavigateToChildView()
         {
@@ -83,6 +109,10 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(2, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate to second child view.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NavigateToSecondChildView()
         {
@@ -103,6 +133,10 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(3, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate back from child view.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NavigateBackFromChildView()
         {
@@ -122,6 +156,10 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(1, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate back from second child view.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NavigateBackFromSecondChildView()
         {
@@ -143,6 +181,10 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(2, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate back twice from a child view.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NavigateBackFromChildView2Times()
         {
@@ -164,6 +206,10 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(1, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate back twice from the main view.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NavigateBackFromMainView()
         {
@@ -182,6 +228,10 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(1, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate back from the main view then to the child view.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task NavigateBackFromMainViewAndThenToChildView()
         {
@@ -202,6 +252,11 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(1, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate to a child view then reset.
+        /// </summary>
+        /// <param name="stackDepthBefore">The stack depth before the reset.</param>
+        /// <returns>A task to monitor the progress.</returns>
         [Theory]
         [InlineData(0)]
         [InlineData(1)]
@@ -229,6 +284,12 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal(1, fixture.StackDepth);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate back from a child view.
+        /// </summary>
+        /// <param name="animated">If we should navigated animated.</param>
+        /// <param name="fast">If we should navigate fast.</param>
+        /// <returns>A task to monitor the progress.</returns>
         [Theory]
         [InlineData(false, false)]
         [InlineData(false, true)]
@@ -255,6 +316,12 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal("Main view", currentPage.Title);
         }
 
+        /// <summary>
+        /// Test that makes sure that you can navigate back from a second child view.
+        /// </summary>
+        /// <param name="animated">If we should navigated animated.</param>
+        /// <param name="fast">If we should navigate fast.</param>
+        /// <returns>A task to monitor the progress.</returns>
         [Theory]
         [InlineData(false, false)]
         [InlineData(false, true)]
@@ -283,6 +350,9 @@ namespace ReactiveUI.XamForms.Tests
             Assert.Equal("Child view: C1", currentPage.Title);
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
         public void Dispose() => Locator.SetLocator(new ModernDependencyResolver());
 
         private RoutedViewHost CreateRoutedViewHost(string? initialViewModel = nameof(MainViewModel))

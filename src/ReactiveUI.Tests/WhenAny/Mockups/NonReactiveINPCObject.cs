@@ -11,6 +11,7 @@ namespace ReactiveUI.Tests
     {
         private TestFixture _inpcProperty = new();
 
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public TestFixture InpcProperty

@@ -7,8 +7,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests associated with activating view models.
+    /// </summary>
     public class ActivatingViewModelTests
     {
+        /// <summary>
+        /// Tests for the activation to make sure it activates the appropriate number of times.
+        /// </summary>
         [Fact]
         public void ActivationsGetRefCounted()
         {
@@ -29,6 +35,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, fixture.IsActiveCount);
         }
 
+        /// <summary>
+        /// Tests to make sure the activations of derived classes don't get stomped.
+        /// </summary>
         [Fact]
         public void DerivedActivationsDontGetStomped()
         {

@@ -11,8 +11,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests the WaitForDispatcherSchedulerClass.
+    /// </summary>
     public class WaitForDispatcherSchedulerTests
     {
+        /// <summary>
+        /// Tests call scheduler factory on creation.
+        /// </summary>
         [Fact]
         public void CallSchedulerFactoryOnCreation()
         {
@@ -29,6 +35,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, schedulerFactoryCalls);
         }
 
+        /// <summary>
+        /// Calls that factories throws argument null exception falls back to current thread.
+        /// </summary>
         [Fact]
         public void FactoryThrowsArgumentNullException_FallsBackToCurrentThread()
         {
@@ -49,6 +58,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(CurrentThreadScheduler.Instance, schedulerExecutedOn);
         }
 
+        /// <summary>
+        /// Tests that factories throws exception re calls on schedule.
+        /// </summary>
         [Fact]
         public void FactoryThrowsException_ReCallsOnSchedule()
         {
@@ -66,6 +78,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, schedulerFactoryCalls);
         }
 
+        /// <summary>
+        /// Tests that factories throws invalid operation exception falls back to current thread.
+        /// </summary>
         [Fact]
         public void FactoryThrowsInvalidOperationException_FallsBackToCurrentThread()
         {
@@ -84,6 +99,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(CurrentThreadScheduler.Instance, schedulerExecutedOn);
         }
 
+        /// <summary>
+        /// Tests that factory uses cached scheduler.
+        /// </summary>
         [Fact]
         public void SuccessfulFactory_UsesCachedScheduler()
         {

@@ -16,11 +16,20 @@ using Windows.UI.Xaml;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// A derived dependency object.
+    /// </summary>
     public class DerivedDepObjFixture : DepObjFixture
     {
+        /// <summary>
+        /// Another test string property.
+        /// </summary>
         public static readonly DependencyProperty AnotherTestStringProperty =
             DependencyProperty.Register("AnotherTestString", typeof(string), typeof(DerivedDepObjFixture), new PropertyMetadata(null));
 
+        /// <summary>
+        /// Gets or sets another test string.
+        /// </summary>
         public string AnotherTestString
         {
             get => (string)GetValue(AnotherTestStringProperty);
