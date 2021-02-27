@@ -10,14 +10,9 @@
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)analyzers.ruleset</CodeAnalysisRuleSet>
     <Platform>AnyCPU</Platform>
     <SourceLinkEnabled></SourceLinkEnabled>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)..\src\analyzers.ruleset</CodeAnalysisRuleSet>  	
     <IsPackable>false</IsPackable>	
   </PropertyGroup>
 
@@ -29,7 +24,7 @@
     <SolutionDir Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)</SolutionDir>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.312" PrivateAssets="all" />
+    <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.321" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" Version="3.1.0" PrivateAssets="All" />
   </ItemGroup>
