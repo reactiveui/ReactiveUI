@@ -14,8 +14,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests the awaiters.
+    /// </summary>
     public class AwaiterTest
     {
+        /// <summary>
+        /// A smoke test for Awaiters.
+        /// </summary>
         [Fact]
         public void AwaiterSmokeTest()
         {

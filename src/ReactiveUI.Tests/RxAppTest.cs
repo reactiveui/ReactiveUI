@@ -11,8 +11,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests the RxApp class.
+    /// </summary>
     public class RxAppTest
     {
+        /// <summary>
+        /// Tests that schedulers should be current thread in test runner.
+        /// </summary>
         [Fact]
         public void SchedulerShouldBeCurrentThreadInTestRunner()
         {

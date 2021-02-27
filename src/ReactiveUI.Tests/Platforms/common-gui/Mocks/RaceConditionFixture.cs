@@ -7,10 +7,17 @@ using System.Reactive.Linq;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A fixture for demonstrating race conditions.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.ReactiveObject" />
     public class RaceConditionFixture : ReactiveObject
     {
         private readonly ObservableAsPropertyHelper<bool> _A;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RaceConditionFixture"/> class.
+        /// </summary>
         public RaceConditionFixture()
         {
             // We need to generate a value on subscription
@@ -21,8 +28,17 @@ namespace ReactiveUI.Tests
             Observables.True.Do(_ => Count++).ToProperty(this, x => x.A, out _A);
         }
 
+        /// <summary>
+        /// Gets or sets the count.
+        /// </summary>
         public int Count { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="RaceConditionFixture"/> is a.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a; otherwise, <c>false</c>.
+        /// </value>
         public bool A => _A.Value;
     }
 }

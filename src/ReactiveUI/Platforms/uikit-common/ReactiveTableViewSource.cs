@@ -40,10 +40,13 @@ namespace ReactiveUI
             : this(tableView) =>
             Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction) };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
+        /// </summary>
+        /// <param name="tableView">The table view.</param>
+        /// <param name="sectionInformation">A read only list of table section information.</param>
         [Obsolete("Please bind your view model to the Data property.")]
-#pragma warning disable SA1600 // Elements should be documented
         public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation<TSource>> sectionInformation)
-#pragma warning restore SA1600 // Elements should be documented
             : this(tableView)
         {
             Data = sectionInformation;

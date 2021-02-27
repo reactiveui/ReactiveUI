@@ -23,12 +23,14 @@ namespace ReactiveUI.Tests.Wpf
             Command2 = new Image();
         }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (CommandBindingViewModel?)value;
         }
 
+        /// <inheritdoc/>
         public CommandBindingViewModel? ViewModel
         {
             get => _viewModel;

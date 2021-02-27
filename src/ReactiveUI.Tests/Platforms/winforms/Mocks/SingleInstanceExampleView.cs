@@ -5,11 +5,20 @@
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// A signle instance example view.
+    /// </summary>
     [SingleInstanceView]
     public class SingleInstanceExampleView : ReactiveUI.Winforms.ReactiveUserControl<SingleInstanceExampleViewModel>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SingleInstanceExampleView"/> class.
+        /// </summary>
         public SingleInstanceExampleView() => Instances++;
 
+        /// <summary>
+        /// Gets the instances.
+        /// </summary>
         public static int Instances { get; private set; }
     }
 }

@@ -9,12 +9,21 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for a sample game.
+    /// </summary>
     public class NewGameViewModelTests
     {
         private readonly NewGameViewModel _viewmodel;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewGameViewModelTests"/> class.
+        /// </summary>
         public NewGameViewModelTests() => _viewmodel = new NewGameViewModel();
 
+        /// <summary>
+        /// Tests that determines whether this instance [can add up to seven players].
+        /// </summary>
         [Fact]
         public void CanAddUpToSevenPlayers()
         {

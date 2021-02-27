@@ -14,8 +14,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests the AutoPersistHelper.
+    /// </summary>
     public class AutoPersistHelperTest
     {
+        /// <summary>
+        /// Test the automatic persist doesnt work on non data contract classes.
+        /// </summary>
         [Fact]
         public void AutoPersistDoesntWorkOnNonDataContractClasses()
         {
@@ -34,6 +40,9 @@ namespace ReactiveUI.Tests
             Assert.False(shouldDie);
         }
 
+        /// <summary>
+        /// Test the automatic persist helper shouldnt trigger on non persistable properties.
+        /// </summary>
         [Fact]
         public void AutoPersistHelperShouldntTriggerOnNonPersistableProperties() =>
             new TestScheduler().With(scheduler =>
@@ -61,6 +70,9 @@ namespace ReactiveUI.Tests
                 Assert.Equal(0, timesSaved);
             });
 
+        /// <summary>
+        /// Tests the automatic persist helper saves on interval.
+        /// </summary>
         [Fact]
         public void AutoPersistHelperSavesOnInterval() =>
             new TestScheduler().With(scheduler =>
@@ -100,6 +112,9 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, timesSaved);
             });
 
+        /// <summary>
+        /// Tests the automatic persist helper disconnects.
+        /// </summary>
         [Fact]
         public void AutoPersistHelperDisconnects() =>
             new TestScheduler().With(scheduler =>

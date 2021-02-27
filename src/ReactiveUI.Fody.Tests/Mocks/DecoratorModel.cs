@@ -12,23 +12,39 @@ using ReactiveUI.Fody.Helpers;
 
 namespace ReactiveUI.Fody.Tests
 {
+    /// <summary>
+    /// A view model that is decorated with rx fody attributes.
+    /// </summary>
     public class DecoratorModel : BaseModel
     {
         private readonly BaseModel _model;
 
-        // Testing ctor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DecoratorModel"/> class.
+        /// </summary>
         public DecoratorModel() => _model = new BaseModel();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DecoratorModel"/> class.
+        /// </summary>
+        /// <param name="baseModel">The base model which to do ReactiveDependency off.</param>
         public DecoratorModel(BaseModel baseModel) => _model = baseModel;
 
+        /// <summary>
+        /// Gets or sets a property decorated with the ReactiveAttribute.
+        /// </summary>
         [Reactive]
         public string? SomeCoolNewProperty { get; set; }
 
-        // Works with private fields
+        /// <summary>
+        /// Gets or sets a property decorated with the ReactiveDependencyAttribute.
+        /// </summary>
         [ReactiveDependency(nameof(_model))]
         public override string? StringProperty { get; set; }
 
-        // Can't be attributed as has additional functionality in the decorated get
+        /// <summary>
+        /// Gets or sets a property which interacts with the base model.
+        /// </summary>
         public override int IntProperty
         {
             get => _model.IntProperty * 2;
@@ -39,6 +55,10 @@ namespace ReactiveUI.Fody.Tests
             }
         }
 
+        /// <summary>
+        /// Sets the string. This is independent of the fody generation.
+        /// </summary>
+        /// <param name="coolNewProperty">The new value to set.</param>
         public void UpdateCoolProperty(string coolNewProperty) => SomeCoolNewProperty = coolNewProperty;
     }
 }

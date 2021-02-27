@@ -5,14 +5,19 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A mock view.
+    /// </summary>
     public class FooView : IFooView
     {
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (IFooViewModel?)value;
         }
 
+        /// <inheritdoc/>
         public IFooViewModel? ViewModel { get; set; }
     }
 }

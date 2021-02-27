@@ -25,8 +25,14 @@ using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// Tests for XAML and commands.
+    /// </summary>
     public class XamlViewCommandTests
     {
+        /// <summary>
+        /// Test that event binder binds to explicit inherited event.
+        /// </summary>
         [Fact]
         public void EventBinderBindsToExplicitInheritedEvent()
         {
@@ -34,6 +40,9 @@ namespace ReactiveUI.Tests.Xaml
             fixture.BindCommand(fixture!.ViewModel!, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
         }
 
+        /// <summary>
+        /// Test that event binder binds to implicit event.
+        /// </summary>
         [Fact]
         public void EventBinderBindsToImplicitEvent()
         {

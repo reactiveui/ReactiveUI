@@ -17,8 +17,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// Tests default propery binding.
+    /// </summary>
     public class DefaultPropertyBindingTests
     {
+        /// <summary>
+        /// Tests Winforms creates observable for property works for textboxes.
+        /// </summary>
         [Fact]
         public void WinformsCreatesObservableForPropertyWorksForTextboxes()
         {
@@ -50,6 +56,9 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(1, output.Count);
         }
 
+        /// <summary>
+        /// Tests that Winform creates observable for property works for components.
+        /// </summary>
         [Fact]
         public void WinformsCreatesObservableForPropertyWorksForComponents()
         {
@@ -81,6 +90,9 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(1, output.Count);
         }
 
+        /// <summary>
+        /// Tests that winforms creates observable for property works for third party controls.
+        /// </summary>
         [Fact]
         public void WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
         {
@@ -111,6 +123,9 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(1, output.Count);
         }
 
+        /// <summary>
+        /// Tests that Winforms controled can bind to View Model.
+        /// </summary>
         [Fact]
         public void CanBindViewModelToWinformControls()
         {
@@ -133,6 +148,9 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(vm.SomeDouble.ToString(CultureInfo.InvariantCulture), view.Property3.Text);
         }
 
+        /// <summary>
+        /// Smoke tests the WinForm controls.
+        /// </summary>
         [Fact]
         public void SmokeTestWinformControls()
         {

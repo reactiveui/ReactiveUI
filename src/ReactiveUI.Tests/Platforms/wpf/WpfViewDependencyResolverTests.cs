@@ -15,10 +15,17 @@ using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Wpf
 {
+    /// <summary>
+    /// Tests for the WPF View Resolver.
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public sealed class WpfViewDependencyResolverTests : IDisposable
     {
         private readonly IDependencyResolver _resolver;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WpfViewDependencyResolverTests"/> class.
+        /// </summary>
         public WpfViewDependencyResolverTests()
         {
             _resolver = new ModernDependencyResolver();
@@ -27,6 +34,9 @@ namespace ReactiveUI.Tests.Wpf
             _resolver.RegisterViewsForViewModels(GetType().Assembly);
         }
 
+        /// <summary>
+        /// Tests that  Register views for view model should register all views.
+        /// </summary>
         [Fact]
         public void RegisterViewsForViewModelShouldRegisterAllViews()
         {
@@ -36,6 +46,7 @@ namespace ReactiveUI.Tests.Wpf
             }
         }
 
+        /// <inheritdoc/>
         public void Dispose() => _resolver?.Dispose();
     }
 }

@@ -14,18 +14,24 @@ using Xunit;
 
 namespace ReactiveUI.Fody.Tests.Issues
 {
-    public class Issue13Tests
+    /// <summary>
+    /// Tests for determining if a chain expression works.
+    /// </summary>
+    public class ChainExpressionTests
     {
+        /// <summary>
+        /// Checks to make sure that if double property chaining doesn't cause a exception.
+        /// </summary>
         [Fact]
         public void AccessingAChainedObservableAsPropertyOfDoubleDoesntThrow()
         {
-            var vm = new VM();
+            var vm = new TestModel();
             Assert.Equal(0.0, vm.P2);
         }
 
-        private class VM : ReactiveObject
+        private class TestModel : ReactiveObject
         {
-            public VM()
+            public TestModel()
             {
                 Observable.Return(0.0).ToPropertyEx(this, vm => vm.P1);
                 this.WhenAnyValue(vm => vm.P1).ToPropertyEx(this, vm => vm.P2);

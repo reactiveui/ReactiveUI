@@ -11,10 +11,17 @@ using DynamicData.Binding;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A sample view model that implements a game.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.ReactiveObject" />
     public class NewGameViewModel : ReactiveObject
     {
         private string? _newPlayerName;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewGameViewModel"/> class.
+        /// </summary>
         public NewGameViewModel()
         {
             Players = new ObservableCollectionExtended<string>();
@@ -53,16 +60,34 @@ namespace ReactiveUI.Tests
                                                canAddPlayer);
         }
 
+        /// <summary>
+        /// Gets the players collection.
+        /// </summary>
         public ObservableCollectionExtended<string> Players { get; }
 
+        /// <summary>
+        /// Gets the add player command.
+        /// </summary>
         public ReactiveCommand<Unit, Unit> AddPlayer { get; }
 
+        /// <summary>
+        /// Gets the remove player command.
+        /// </summary>
         public ReactiveCommand<string, Unit> RemovePlayer { get; }
 
+        /// <summary>
+        /// Gets the start game command.
+        /// </summary>
         public ReactiveCommand<Unit, Unit> StartGame { get; }
 
+        /// <summary>
+        /// Gets the randomize order command.
+        /// </summary>
         public ReactiveCommand<Unit, Unit> RandomizeOrder { get; }
 
+        /// <summary>
+        /// Gets or sets the new player name.
+        /// </summary>
         public string? NewPlayerName
         {
             get => _newPlayerName;

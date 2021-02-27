@@ -5,11 +5,20 @@
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// A view that is never used.
+    /// </summary>
     [SingleInstanceView]
     public class NeverUsedView : ReactiveUI.Winforms.ReactiveUserControl<NeverUsedViewModel>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NeverUsedView"/> class.
+        /// </summary>
         public NeverUsedView() => Instances++;
 
+        /// <summary>
+        /// Gets the instances.
+        /// </summary>
         public static int Instances { get; private set; }
     }
 }

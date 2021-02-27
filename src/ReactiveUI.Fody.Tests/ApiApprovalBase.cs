@@ -20,11 +20,20 @@ using Xunit;
 
 namespace ReactiveUI.Fody.Tests
 {
+    /// <summary>
+    /// Tests for API approvals.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public abstract class ApiApprovalBase
     {
         private static readonly Regex _removeCoverletSectionRegex = new(@"^namespace Coverlet\.Core\.Instrumentation\.Tracker.*?^}", RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.Compiled);
 
+        /// <summary>
+        /// Checks the assembly to detect the public API. Generates a received/approved version of the API.
+        /// </summary>
+        /// <param name="assembly">The assembly to check.</param>
+        /// <param name="memberName">Auto populated member name.</param>
+        /// <param name="filePath">Auto populated file path.</param>
         protected static void CheckApproval(Assembly assembly, [CallerMemberName]string? memberName = null, [CallerFilePath]string? filePath = null)
         {
             var targetFrameworkName = Assembly.GetExecutingAssembly().GetTargetFrameworkName();
@@ -61,7 +70,7 @@ namespace ReactiveUI.Fody.Tests
             return string.Join(Environment.NewLine, text.Split(
                 new[]
                 {
-                    Environment.NewLine
+                    Environment.NewLine,
                 },
                 StringSplitOptions.RemoveEmptyEntries)
                     .Where(l =>

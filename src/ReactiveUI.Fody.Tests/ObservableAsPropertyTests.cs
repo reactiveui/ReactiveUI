@@ -9,8 +9,14 @@ using Xunit;
 
 namespace ReactiveUI.Fody.Tests
 {
+    /// <summary>
+    /// Tests for the ObservableAsPropertyAttribute.
+    /// </summary>
     public class ObservableAsPropertyTests
     {
+        /// <summary>
+        /// Confirms the mock generated class returns the correct value.
+        /// </summary>
         [Fact]
         public void TestPropertyReturnsFoo()
         {

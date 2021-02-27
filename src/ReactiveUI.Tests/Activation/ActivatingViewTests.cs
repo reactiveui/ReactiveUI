@@ -9,8 +9,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for activating views.
+    /// </summary>
     public class ActivatingViewTests
     {
+        /// <summary>
+        /// Tests to make sure that views generally activate.
+        /// </summary>
         [Fact]
         public void ActivatingViewSmokeTest()
         {
@@ -38,8 +44,11 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests for making sure nulling the view model deactivate it.
+        /// </summary>
         [Fact]
-        public void NullingViewModelShouldDeactivateIt()
+        public void NullingViewModelDeactivateIt()
         {
             var locator = new ModernDependencyResolver();
             locator.InitializeSplat();
@@ -64,8 +73,11 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests switching the view model deactivates it.
+        /// </summary>
         [Fact]
-        public void SwitchingViewModelShouldDeactivateIt()
+        public void SwitchingViewModelDeactivatesIt()
         {
             var locator = new ModernDependencyResolver();
             locator.InitializeSplat();
@@ -94,8 +106,11 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests setting the view model after loaded loads it.
+        /// </summary>
         [Fact]
-        public void SettingViewModelAfterLoadedShouldLoadIt()
+        public void SettingViewModelAfterLoadedLoadsIt()
         {
             var locator = new ModernDependencyResolver();
             locator.InitializeSplat();
@@ -123,6 +138,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests the can unload and load view again.
+        /// </summary>
         [Fact]
         public void CanUnloadAndLoadViewAgain()
         {

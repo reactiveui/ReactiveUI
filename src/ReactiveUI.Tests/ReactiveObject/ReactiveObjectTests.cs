@@ -15,8 +15,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the reactive object.
+    /// </summary>
     public class ReactiveObjectTests
     {
+        /// <summary>
+        /// Test that changing values should always arrive before changed.
+        /// </summary>
         [Fact]
         public void ChangingShouldAlwaysArriveBeforeChanged()
         {
@@ -56,6 +62,9 @@ namespace ReactiveUI.Tests
             Assert.True(afterFired);
         }
 
+        /// <summary>
+        /// Test that deferring the notifications dont show up until undeferred.
+        /// </summary>
         [Fact]
         public void DeferredNotificationsDontShowUpUntilUndeferred()
         {
@@ -109,6 +118,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(expectedEventProperties, propertyChangedEvents.Select(e => e.PropertyName));
         }
 
+        /// <summary>
+        /// Test that exceptions thrown in subscribers should marshal to thrown exceptions.
+        /// </summary>
         [Fact]
         public void ExceptionsThrownInSubscribersShouldMarshalToThrownExceptions()
         {
@@ -124,6 +136,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, exceptionList.Count);
         }
 
+        /// <summary>
+        /// Tests that ObservableForProperty using expression.
+        /// </summary>
         [Fact]
         public void ObservableForPropertyUsingExpression()
         {
@@ -154,6 +169,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("Baz", output[1].Value);
         }
 
+        /// <summary>
+        /// Test raises and set using expression.
+        /// </summary>
         [Fact]
         public void RaiseAndSetUsingExpression()
         {
@@ -176,6 +194,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("UsesExprRaiseSet", output[0]);
         }
 
+        /// <summary>
+        /// Test that ReactiveObject shouldn't serialize anything extra.
+        /// </summary>
         [Fact]
         public void ReactiveObjectShouldntSerializeAnythingExtra()
         {
@@ -198,6 +219,9 @@ namespace ReactiveUI.Tests
             Assert.True(json.Count(x => x == '"') == 18);
         }
 
+        /// <summary>
+        /// Performs a ReactiveObject smoke test.
+        /// </summary>
         [Fact]
         public void ReactiveObjectSmokeTest()
         {
@@ -228,6 +252,9 @@ namespace ReactiveUI.Tests
             results.AssertAreEqual(output);
         }
 
+        /// <summary>
+        /// Tests to make sure that ReactiveObject doesn't rethrow exceptions.
+        /// </summary>
         [Fact]
         public void ReactiveObjectShouldRethrowException()
         {

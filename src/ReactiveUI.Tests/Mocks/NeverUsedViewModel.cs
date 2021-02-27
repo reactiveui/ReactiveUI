@@ -5,6 +5,9 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A view model that is never used.
+    /// </summary>
     public class NeverUsedViewModel : ReactiveObject
     {
     }

@@ -5,17 +5,25 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A ancestor view model.
+    /// </summary>
+    /// <seealso cref="ReactiveUI.ReactiveObject" />
     public class InteractionAncestorViewModel : ReactiveObject
     {
         private InteractionBindViewModel _interactionBindViewModel;
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InteractionAncestorViewModel"/> class.
+        /// </summary>
         public InteractionAncestorViewModel()
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
-            InteractionViewModel = new InteractionBindViewModel();
+            _interactionBindViewModel = new InteractionBindViewModel();
         }
 
+        /// <summary>
+        /// Gets or sets the interaction view model.
+        /// </summary>
         public InteractionBindViewModel InteractionViewModel
         {
             get => _interactionBindViewModel;

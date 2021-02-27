@@ -8,8 +8,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// OAPH mode tests.
+    /// </summary>
     public class ObservableAsPropertyHelperModeTests
     {
+        /// <summary>
+        /// Tests that ToProperty should only subscribe only once.
+        /// </summary>
         [Fact]
         public void ToPropertyShouldSubscribeOnlyOnce()
         {
@@ -30,6 +36,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests to make sure that ToProperty overload with the nameof only subscribes once.
+        /// </summary>
         [Fact]
         public void ToProperty_NameOf_ShouldSubscribeOnlyOnce()
         {

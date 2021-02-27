@@ -12,8 +12,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the CreateCommand binding.
+    /// </summary>
     public class CreatesCommandBindingTests
     {
+        /// <summary>
+        /// Test that makes sure events binder binds to explicit event.
+        /// </summary>
         [Fact]
         public void EventBinderBindsToExplicitEvent()
         {

@@ -18,22 +18,33 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// A fake view.
+    /// </summary>
     public class FakeView : IViewFor<FakeViewModel>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeView"/> class.
+        /// </summary>
         public FakeView()
         {
             TheTextBox = new TextBox();
             ViewModel = new FakeViewModel();
         }
 
+        /// <summary>
+        /// Gets or sets the text box.
+        /// </summary>
         public TextBox TheTextBox { get; protected set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (FakeViewModel?)value;
         }
 
+        /// <inheritdoc/>
         public FakeViewModel? ViewModel { get; set; }
     }
 }

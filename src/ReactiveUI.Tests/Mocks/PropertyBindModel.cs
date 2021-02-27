@@ -11,10 +11,19 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A property bind model.
+    /// </summary>
     public class PropertyBindModel
     {
+        /// <summary>
+        /// Gets or sets a thing.
+        /// </summary>
         public int AThing { get; set; }
 
+        /// <summary>
+        /// Gets or sets another thing.
+        /// </summary>
         public string? AnotherThing { get; set; }
     }
 }

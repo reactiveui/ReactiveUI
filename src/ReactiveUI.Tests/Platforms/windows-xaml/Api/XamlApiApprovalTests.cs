@@ -10,9 +10,15 @@ using Xunit;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// API approvals for the xaml project.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class XamlApiApprovalTests : ApiApprovalBase
     {
+        /// <summary>
+        /// Generates the public API for the blend project.
+        /// </summary>
         [Fact]
         public void Blend() => CheckApproval(typeof(Blend.FollowObservableStateBehavior).Assembly);
     }

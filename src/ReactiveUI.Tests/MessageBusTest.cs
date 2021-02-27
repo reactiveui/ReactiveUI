@@ -15,8 +15,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests the MessageBus class.
+    /// </summary>
     public class MessageBusTest
     {
+        /// <summary>
+        /// Smoke tests the MessageBus.
+        /// </summary>
         [Fact]
         public void MessageBusSmokeTest()
         {
@@ -42,6 +48,9 @@ namespace ReactiveUI.Tests
             input.AssertAreEqual(result);
         }
 
+        /// <summary>
+        /// Tests that explicits send message should work even after registering source.
+        /// </summary>
         [Fact]
         public void ExplicitSendMessageShouldWorkEvenAfterRegisteringSource()
         {
@@ -55,6 +64,9 @@ namespace ReactiveUI.Tests
             Assert.True(messageReceived);
         }
 
+        /// <summary>
+        /// Tests that listening before registering a source should work.
+        /// </summary>
         [Fact]
         public void ListeningBeforeRegisteringASourceShouldWork()
         {
@@ -70,6 +82,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, result);
         }
 
+        /// <summary>
+        /// Tests that the Garbage Collector should not kill message service.
+        /// </summary>
         [Fact]
         public void GcShouldNotKillMessageService()
         {
@@ -88,6 +103,9 @@ namespace ReactiveUI.Tests
             Assert.True(receivedMessage);
         }
 
+        /// <summary>
+        /// Tests that Registering the second message source should merge both sources.
+        /// </summary>
         [Fact]
         public void RegisteringSecondMessageSourceShouldMergeBothSources()
         {
@@ -115,6 +133,9 @@ namespace ReactiveUI.Tests
             Assert.True(receivedMessage2);
         }
 
+        /// <summary>
+        /// Tests the MessageBus threading.
+        /// </summary>
         [Fact]
         public void MessageBusThreadingTest()
         {

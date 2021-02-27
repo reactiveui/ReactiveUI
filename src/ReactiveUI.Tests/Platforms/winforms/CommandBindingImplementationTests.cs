@@ -9,8 +9,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// Checks the command bindings.
+    /// </summary>
     public class CommandBindingImplementationTests
     {
+        /// <summary>
+        /// Tests the command bind by name wireup.
+        /// </summary>
         [Fact]
         public void CommandBindByNameWireup()
         {
@@ -36,6 +42,9 @@ namespace ReactiveUI.Tests.Winforms
             disp.Dispose();
         }
 
+        /// <summary>
+        /// Tests the command bind explicit event wire up.
+        /// </summary>
         [Fact]
         public void CommandBindToExplicitEventWireup()
         {

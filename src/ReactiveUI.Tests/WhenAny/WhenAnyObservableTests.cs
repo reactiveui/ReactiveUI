@@ -16,8 +16,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests WhenAnyObservable.
+    /// </summary>
     public class WhenAnyObservableTests
     {
+        /// <summary>
+        /// Tests that null observables do not cause exceptions.
+        /// </summary>
         [Fact]
         public void NullObservablesDoNotCauseExceptions()
         {
@@ -52,6 +58,10 @@ namespace ReactiveUI.Tests
 #pragma warning restore CS8603 // Possible null reference return.
         }
 
+        /// <summary>
+        /// Performs a smoke test on combining WhenAnyObservable.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task WhenAnyObservableSmokeTestCombining()
         {
@@ -84,6 +94,10 @@ namespace ReactiveUI.Tests
                                                                        }).All(x => x.expected == x.actual));
         }
 
+        /// <summary>
+        /// Performs a smoke test testing WhenAnyObservable merging results.
+        /// </summary>
+        /// <returns>A task to monitor the progress.</returns>
         [Fact]
         public async Task WhenAnyObservableSmokeTestMerging()
         {
@@ -115,6 +129,9 @@ namespace ReactiveUI.Tests
                                                }).All(x => x.expected == x.actual));
         }
 
+        /// <summary>
+        /// Tests WhenAnyObservable with null object should update when object isnt null anymore.
+        /// </summary>
         [Fact]
         public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
         {

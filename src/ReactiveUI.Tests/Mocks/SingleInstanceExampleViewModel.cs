@@ -5,7 +5,10 @@
 
 namespace ReactiveUI.Tests
 {
-    public class SingleInstanceExampleViewModel : ReactiveObject
+    /// <summary>
+    /// A single instance example view model.
+    /// </summary>
+public class SingleInstanceExampleViewModel : ReactiveObject
     {
     }
 }

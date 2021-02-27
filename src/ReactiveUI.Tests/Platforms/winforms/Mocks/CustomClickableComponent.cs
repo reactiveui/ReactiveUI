@@ -8,10 +8,19 @@ using System.ComponentModel;
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// A custom clickable component.
+    /// </summary>
     public class CustomClickableComponent : Component
     {
+        /// <summary>
+        /// Occurs when the click.
+        /// </summary>
         public event EventHandler? Click;
 
+        /// <summary>
+        /// Performs the click.
+        /// </summary>
         public void PerformClick() => Click?.Invoke(this, EventArgs.Empty);
     }
 }

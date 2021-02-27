@@ -7,16 +7,25 @@ using System;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A mock view which throws.
+    /// </summary>
     public class FooThatThrowsView : IFooView
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FooThatThrowsView"/> class.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">This is a test failure.</exception>
         public FooThatThrowsView() => throw new InvalidOperationException("This is a test failure.");
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (IFooViewModel?)value;
         }
 
+        /// <inheritdoc/>
         public IFooViewModel? ViewModel { get; set; }
     }
 }

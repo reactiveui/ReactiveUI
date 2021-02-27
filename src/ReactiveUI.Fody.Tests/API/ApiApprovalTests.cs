@@ -12,9 +12,18 @@ using Xunit;
 
 namespace ReactiveUI.Fody.Tests.API
 {
+    /// <summary>
+    /// Tests for checking if the Fody public API is not changing.
+    /// We have a file checked into the repository with the approved public API.
+    /// If it is changing you'll need to override to make it obvious the API has changed
+    /// for version changing reasons.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class ApiApprovalTests : ApiApprovalBase
     {
+        /// <summary>
+        /// Checks the version API.
+        /// </summary>
         [Fact]
         public void ReactiveUIFody() => CheckApproval(typeof(ReactiveAttribute).Assembly);
     }

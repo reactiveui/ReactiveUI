@@ -5,6 +5,9 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A mock view model.
+    /// </summary>
     public class ExampleViewModel : ReactiveObject
     {
     }

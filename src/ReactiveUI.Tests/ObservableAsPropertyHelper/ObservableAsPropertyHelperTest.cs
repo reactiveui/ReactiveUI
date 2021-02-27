@@ -18,8 +18,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the observable as property helper.
+    /// </summary>
     public class ObservableAsPropertyHelperTest
     {
+        /// <summary>
+        /// Tests that Observable As Property Helpers should fire change notifications.
+        /// </summary>
         [Fact]
         public void OAPHShouldFireChangeNotifications()
         {
@@ -43,6 +49,9 @@ namespace ReactiveUI.Tests
             });
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers should skip first value if it matches the initial value.
+        /// </summary>
         [Fact]
         public void OAPHShouldSkipFirstValueIfItMatchesTheInitialValue()
         {
@@ -64,6 +73,9 @@ namespace ReactiveUI.Tests
             });
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers should provide initial value immediately regardless of scheduler.
+        /// </summary>
         [Fact]
         public void OAPHShouldProvideInitialValueImmediatelyRegardlessOfScheduler()
         {
@@ -80,6 +92,9 @@ namespace ReactiveUI.Tests
             });
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers should provide latest value.
+        /// </summary>
         [Fact]
         public void OAPHShouldProvideLatestValue()
         {
@@ -103,6 +118,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, fixture.Value);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers should subscribe immediately to source.
+        /// </summary>
         [Fact]
         public void OAPHShouldSubscribeImmediatelyToSource()
         {
@@ -123,6 +141,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, fixture.Value);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers defer subscription parameter defers subscription to source.
+        /// </summary>
         [Fact]
         public void OAPHDeferSubscriptionParameterDefersSubscriptionToSource()
         {
@@ -144,6 +165,9 @@ namespace ReactiveUI.Tests
             Assert.True(isSubscribed);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers defer subscription parameter is subscribed is not true initially.
+        /// </summary>
         [Fact]
         public void OAPHDeferSubscriptionParameterIsSubscribedIsNotTrueInitially()
         {
@@ -162,6 +186,9 @@ namespace ReactiveUI.Tests
             Assert.True(fixture.IsSubscribed);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers defer subscription should not throw if disposed.
+        /// </summary>
         [Fact]
         public void OAPHDeferSubscriptionShouldNotThrowIfDisposed()
         {
@@ -181,6 +208,10 @@ namespace ReactiveUI.Tests
             Assert.Null(ex);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers defer subscription with initial value should not emit initial value.
+        /// </summary>
+        /// <param name="initialValue">The initial value.</param>
         [Theory]
         [InlineData(default(int))]
         [InlineData(42)]
@@ -198,6 +229,9 @@ namespace ReactiveUI.Tests
             Assert.False(fixture.IsSubscribed);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers defer subscription with initial function value should not emit initial value nor access function.
+        /// </summary>
         [Fact]
         public void OAPHDeferSubscriptionWithInitialFuncValueShouldNotEmitInitialValueNorAccessFunc()
         {
@@ -214,6 +248,10 @@ namespace ReactiveUI.Tests
             Assert.False(fixture.IsSubscribed);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers defer subscription with initial value emit initial value when subscribed.
+        /// </summary>
+        /// <param name="initialValue">The initial value.</param>
         [Theory]
         [InlineData(default(int))]
         [InlineData(42)]
@@ -230,6 +268,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(initialValue, result);
         }
 
+        /// <summary>
+        /// Test that Observable As Property Helpers defers subscription with initial function value emit initial value when subscribed.
+        /// </summary>
         [Fact]
         public void OAPHDeferSubscriptionWithInitialFuncValueEmitInitialValueWhenSubscribed()
         {
@@ -252,6 +293,10 @@ namespace ReactiveUI.Tests
             Assert.Equal(42, result);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers initial value should emit initial value.
+        /// </summary>
+        /// <param name="initialValue">The initial value.</param>
         [Theory]
         [InlineData(default(int))]
         [InlineData(42)]
@@ -268,6 +313,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(initialValue, emittedValue);
         }
 
+        /// <summary>
+        /// Tests that Observable As Property Helpers should rethrow errors.
+        /// </summary>
         [Fact]
         public void OAPHShouldRethrowErrors()
         {
@@ -294,6 +342,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, errors.Count);
         }
 
+        /// <summary>
+        /// Test that no thrown exceptions subscriber equals Observable As Property Helper death.
+        /// </summary>
         [Fact]
         public void NoThrownExceptionsSubscriberEqualsOAPHDeath() =>
             new TestScheduler().With(scheduler =>
@@ -320,6 +371,9 @@ namespace ReactiveUI.Tests
                 Assert.Equal(4, fixture.Value);
             });
 
+        /// <summary>
+        /// Tests that the ToProperty should fire both changing and changed events.
+        /// </summary>
         [Fact]
         public void ToPropertyShouldFireBothChangingAndChanged()
         {
@@ -349,6 +403,9 @@ namespace ReactiveUI.Tests
             Assert.Equal("Baz", resultChanged[1].Value);
         }
 
+        /// <summary>
+        /// Tests that the ToProperty nameof override should fire both changing and changed events.
+        /// </summary>
         [Fact]
         public void ToProperty_NameOf_ShouldFireBothChangingAndChanged()
         {
@@ -369,6 +426,12 @@ namespace ReactiveUI.Tests
             Assert.True(changed);
         }
 
+        /// <summary>
+        /// Test to make sure that the ToProperty nameof override produces valid values.
+        /// </summary>
+        /// <param name="testWords">The test words.</param>
+        /// <param name="first3Letters">The first3 letters.</param>
+        /// <param name="last3Letters">The last3 letters.</param>
         [Theory]
         [InlineData(new string[] { "FooBar", "Bazz" }, new string[] { "Foo", "Baz" }, new string[] { "Bar", "azz" })]
         public void ToProperty_NameOf_ValidValuesProduced(string[] testWords, string[] first3Letters, string[] last3Letters)
@@ -419,6 +482,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
+        /// </summary>
         [Fact]
         public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName() =>
             new TestScheduler().With(scheduler =>

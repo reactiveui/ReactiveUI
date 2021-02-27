@@ -12,8 +12,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Tests for the default view locators.
+    /// </summary>
     public class DefaultViewLocatorTests
     {
+        /// <summary>
+        /// Tests that the the default name of the view model is replaced with view when determining the service.
+        /// </summary>
         [Fact]
         public void ByDefaultViewModelIsReplacedWithViewWhenDeterminingTheServiceName()
         {
@@ -33,6 +39,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that the runtime type of the view model is used to resolve the view.
+        /// </summary>
         [Fact]
         public void TheRuntimeTypeOfTheViewModelIsUsedToResolveTheView()
         {
@@ -52,6 +61,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that the view model to view naming convention can be customized.
+        /// </summary>
         [Fact]
         [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in all platforms.")]
         public void ViewModelToViewNamingConventionCanBeCustomized()
@@ -74,6 +86,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that makes sure that this instance [can resolve view from view model class using class registration].
+        /// </summary>
         [Fact]
         public void CanResolveViewFromViewModelClassUsingClassRegistration()
         {
@@ -93,6 +108,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that make sure this instance [can resolve view from view model class using interface registration].
+        /// </summary>
         [Fact]
         public void CanResolveViewFromViewModelClassUsingInterfaceRegistration()
         {
@@ -112,6 +130,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Test that makes sure that this instance [can resolve view from view model class using IView for registration].
+        /// </summary>
         [Fact]
         public void CanResolveViewFromViewModelClassUsingIViewForRegistration()
         {
@@ -131,6 +152,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that this instance [can resolve view from view model interface using class registration].
+        /// </summary>
         [Fact]
         public void CanResolveViewFromViewModelInterfaceUsingClassRegistration()
         {
@@ -150,6 +174,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that this instance [can resolve view from view model interface using interface registration].
+        /// </summary>
         [Fact]
         public void CanResolveViewFromViewModelInterfaceUsingInterfaceRegistration()
         {
@@ -169,6 +196,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that this instance [can resolve view from view model interface using i view for registration].
+        /// </summary>
         [Fact]
         public void CanResolveViewFromViewModelInterfaceUsingIViewForRegistration()
         {
@@ -188,6 +218,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that contracts is used when resolving view.
+        /// </summary>
         [Fact]
         public void ContractIsUsedWhenResolvingView()
         {
@@ -214,6 +247,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that no errors are raised if a type cannot be found.
+        /// </summary>
         [Fact]
         public void NoErrorIsRaisedIfATypeCannotBeFound()
         {
@@ -234,6 +270,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that no errors are raised if a service cannot be found.
+        /// </summary>
         [Fact]
         public void NoErrorIsRaisedIfAServiceCannotBeFound()
         {
@@ -252,6 +291,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that no errors are raised if the service does not implement IViewFor.
+        /// </summary>
         [Fact]
         public void NoErrorIsRaisedIfTheServiceDoesNotImplementIViewFor()
         {
@@ -271,6 +313,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that no errors are raised if the creation of the view fails.
+        /// </summary>
         [Fact]
         public void AnErrorIsRaisedIfTheCreationOfTheViewFails()
         {
@@ -290,6 +335,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that with odd interface name doesnt throw exception.
+        /// </summary>
         [Fact]
         public void WithOddInterfaceNameDoesntThrowException()
         {
@@ -308,6 +356,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that whether this instance [can resolve view from view model with IRoutableViewModel].
+        /// </summary>
         [Fact]
         public void CanResolveViewFromViewModelWithIRoutableViewModelType()
         {
@@ -327,6 +378,9 @@ namespace ReactiveUI.Tests
             }
         }
 
+        /// <summary>
+        /// Tests that make sure this instance [can override name resolution function].
+        /// </summary>
         [Fact]
         [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in all frameworks.")]
         public void CanOverrideNameResolutionFunc()

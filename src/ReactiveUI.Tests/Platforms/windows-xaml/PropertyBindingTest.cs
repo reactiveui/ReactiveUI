@@ -18,8 +18,14 @@ using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// Tests property bindings.
+    /// </summary>
     public class PropertyBindingTest
     {
+        /// <summary>
+        /// Performs a smoke test with two way binding with func converter.
+        /// </summary>
         [Fact]
         [UseInvariantCulture]
         public void TwoWayBindWithFuncConvertersSmokeTest()
@@ -46,6 +52,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal("567.89", view.SomeTextBox.Text);
         }
 
+        /// <summary>
+        /// Performs a smoke test with two way binding.
+        /// </summary>
         [Fact]
         public void TwoWayBindSmokeTest()
         {
@@ -71,6 +80,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.NotEqual(vm.Property1, view.SomeTextBox.Text);
         }
 
+        /// <summary>
+        /// Performs a smoke test with two way binding with a type converter.
+        /// </summary>
         [Fact]
         public void TypeConvertedTwoWayBindSmokeTest()
         {
@@ -134,6 +146,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(13, vm.JustAInt32);
         }
 
+        /// <summary>
+        /// Tests binding into model objects.
+        /// </summary>
         [Fact]
         public void BindingIntoModelObjects()
         {
@@ -144,6 +159,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal("Baz", view.SomeTextBox.Text);
         }
 
+        /// <summary>
+        /// Tests the view model nullable to view non nullable.
+        /// </summary>
         [Fact]
         public void ViewModelNullableToViewNonNullable()
         {
@@ -163,6 +181,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(0.0, view.FakeControl.JustADouble);
         }
 
+        /// <summary>
+        /// Tests the view model non-nullable to view nullable.
+        /// </summary>
         [Fact]
         public void ViewModelNonNullableToViewNullable()
         {
@@ -182,6 +203,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(0.0, vm.JustADouble);
         }
 
+        /// <summary>
+        /// Tests the view model nullable to view nullable.
+        /// </summary>
         [Fact]
         public void ViewModelNullableToViewNullable()
         {
@@ -201,6 +225,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(0.0, vm.NullableDouble);
         }
 
+        /// <summary>
+        /// Tests the view model indexer to view.
+        /// </summary>
         [Fact]
         public void ViewModelIndexerToView()
         {
@@ -211,6 +238,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal("Foo", view.SomeTextBox.Text);
         }
 
+        /// <summary>
+        /// Tests the view model indexer to view changes.
+        /// </summary>
         [Fact]
         public void ViewModelIndexerToViewChanges()
         {
@@ -225,6 +255,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal("Bar", view.SomeTextBox.Text);
         }
 
+        /// <summary>
+        /// Tests view model indexer property to view.
+        /// </summary>
         [Fact]
         public void ViewModelIndexerPropertyToView()
         {
@@ -235,6 +268,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal("3", view.SomeTextBox.Text);
         }
 
+        /// <summary>
+        /// Tests when OneWayBind shouldn't initially be set to null.
+        /// </summary>
         [Fact]
         public void OneWayBindShouldntInitiallySetToNull()
         {
@@ -248,6 +284,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(vm!.Model!.AnotherThing, view.FakeControl.NullHatingString);
         }
 
+        /// <summary>
+        /// Perform a BindTo type conversion smoke test.
+        /// </summary>
         [Fact]
         public void BindToTypeConversionSmokeTest()
         {
@@ -263,6 +302,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(vm.JustADouble.ToString(CultureInfo.InvariantCulture), view.FakeControl.NullHatingString);
         }
 
+        /// <summary>
+        /// Tests that BindTo null should throw a helpful error.
+        /// </summary>
         [Fact]
         public void BindToNullShouldThrowHelpfulError()
         {
@@ -273,6 +315,9 @@ namespace ReactiveUI.Tests.Xaml
                      .BindTo(view!.ViewModel!, x => x!.Property1));
         }
 
+        /// <summary>
+        /// Tests that BindTo two-way selected item of ItemControl.
+        /// </summary>
         [Fact]
         public void TwoWayBindToSelectedItemOfItemsControl()
         {
@@ -292,6 +337,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal("bbb", view.FakeItemsControl.SelectedItem);
         }
 
+        /// <summary>
+        /// Tests that ItemControl get a DataTemplate if none is set.
+        /// </summary>
         [Fact]
         public void ItemsControlShouldGetADataTemplate()
         {
@@ -304,6 +352,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.NotNull(view.FakeItemsControl.ItemTemplate);
         }
 
+        /// <summary>
+        /// Tests that ItemControl display member path doesn't set a DataTemplate.
+        /// </summary>
         [Fact]
         public void ItemsControlWithDisplayMemberPathSetShouldNotGetADataTemplate()
         {
@@ -317,6 +368,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Null(view.FakeItemsControl.ItemTemplate);
         }
 
+        /// <summary>
+        /// Tests that ItemControl get a DataTemplate if none is set with BindTo.
+        /// </summary>
         [Fact]
         public void ItemsControlShouldGetADataTemplateInBindTo()
         {
@@ -333,6 +387,9 @@ namespace ReactiveUI.Tests.Xaml
                 .BindTo(vm, x => x.Property1);
         }
 
+        /// <summary>
+        /// Tests that ItemControl OneWayBind.
+        /// </summary>
         [Fact]
         public void BindingToItemsControl()
         {
@@ -345,6 +402,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.True(itemsSourceValue.OfType<string>().Count() > 1);
         }
 
+        /// <summary>
+        /// Tests OneWayBind and a converter.
+        /// </summary>
         [Fact]
         public void OneWayBindConverter()
         {
@@ -355,6 +415,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.False(view.SomeTextBox.IsEnabled);
         }
 
+        /// <summary>
+        /// Tests OneWayBind and a converter with a null starting value, and tests it against a non-null value.
+        /// </summary>
         [Fact]
         public void OneWayBindWithNullStartingValueToNonNullValue()
         {
@@ -368,6 +431,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal("Baz", view.SomeTextBox.Text);
         }
 
+        /// <summary>
+        /// Tests OneWayBind and a converter with a non-null starting value, and tests it against a null value.
+        /// </summary>
         [Fact]
         public void OneWayBindWithNonNullStartingValueToNullValue()
         {
@@ -383,6 +449,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
         }
 
+        /// <summary>
+        /// Tests OneWayBind and a converter with a non-null starting value, and tests it against a non-null value.
+        /// </summary>
         [Fact]
         public void OneWayBindWithSelectorAndNonNullStartingValueToNullValue()
         {
@@ -396,6 +465,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
         }
 
+        /// <summary>
+        /// Tests OneWayBind initial view model should be garbage collected when overwritten.
+        /// </summary>
         [Fact]
         public void OneWayBindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
         {
@@ -418,6 +490,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.False(weakRef.IsAlive);
         }
 
+        /// <summary>
+        /// Tests BindTo  with a null starting value, and tests it against a non-null value.
+        /// </summary>
         [Fact]
         public void BindToWithNullStartingValueToNonNullValue()
         {
@@ -432,6 +507,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal("Baz", view.SomeTextBox.Text);
         }
 
+        /// <summary>
+        /// Tests BindTo  with a non-null starting value, and tests it against a null value.
+        /// </summary>
         [Fact]
         public void BindToWithNonNullStartingValueToNullValue()
         {
@@ -448,6 +526,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
         }
 
+        /// <summary>
+        /// Tests BindTo with a converter is not null.
+        /// </summary>
         [Fact]
         public void BindExpectsConverterFuncsToNotBeNull()
         {
@@ -461,6 +542,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, s => s, nullFunc));
         }
 
+        /// <summary>
+        /// Tests the BindWith func's should work as extension methods.
+        /// </summary>
         [Fact]
         public void BindWithFuncShouldWorkAsExtensionMethodSmokeTest()
         {
@@ -470,6 +554,9 @@ namespace ReactiveUI.Tests.Xaml
             view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(CultureInfo.InvariantCulture), decimal.Parse);
         }
 
+        /// <summary>
+        /// Tests that bind initial view model should be garbage collected when overwritten.
+        /// </summary>
         [Fact]
         public void BindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
         {

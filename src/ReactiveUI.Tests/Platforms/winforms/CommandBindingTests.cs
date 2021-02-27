@@ -12,8 +12,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// Command binding tests.
+    /// </summary>
     public class CommandBindingTests
     {
+        /// <summary>
+        /// Tests that the command binder binds to button.
+        /// </summary>
         [Fact]
         public void CommandBinderBindsToButton()
         {
@@ -40,6 +46,9 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
+        /// <summary>
+        /// Tests that the command binder binds to custom control.
+        /// </summary>
         [Fact]
         public void CommandBinderBindsToCustomControl()
         {
@@ -66,6 +75,9 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
+        /// <summary>
+        /// Tests that the command binder binds to custom component.
+        /// </summary>
         [Fact]
         public void CommandBinderBindsToCustomComponent()
         {
@@ -92,6 +104,9 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
+        /// <summary>
+        /// Tests that the command binder affects enabled.
+        /// </summary>
         [Fact]
         public void CommandBinderAffectsEnabledState()
         {
@@ -112,6 +127,9 @@ namespace ReactiveUI.Tests.Winforms
             }
         }
 
+        /// <summary>
+        /// Tests that the command binder affects enabled state for components.
+        /// </summary>
         [Fact]
         public void CommandBinderAffectsEnabledStateForComponents()
         {

@@ -5,6 +5,9 @@
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// A view model that is contracted.
+    /// </summary>
     [ViewContract("contract")]
     public class ContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>
     {

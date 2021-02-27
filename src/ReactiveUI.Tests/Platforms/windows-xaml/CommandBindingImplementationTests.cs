@@ -19,8 +19,14 @@ using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// Tests with the command binding implementation.
+    /// </summary>
     public class CommandBindingImplementationTests
     {
+        /// <summary>
+        /// Tests the command bind by name wireup.
+        /// </summary>
         [Fact]
         public void CommandBindByNameWireup()
         {
@@ -40,6 +46,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Null(view.Command1.Command);
         }
 
+        /// <summary>
+        /// Tests the command bind nested command wireup.
+        /// </summary>
         [Fact]
         public void CommandBindNestedCommandWireup()
         {
@@ -55,6 +64,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(vm.NestedViewModel.NestedCommand, view.Command1.Command);
         }
 
+        /// <summary>
+        /// Tests the command bind sets initial enabled state true.
+        /// </summary>
         [Fact]
         public void CommandBindSetsInitialEnabledState_True()
         {
@@ -69,6 +81,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.True(view.Command1.IsEnabled);
         }
 
+        /// <summary>
+        /// Tests the command bind sets disables command when can execute changed.
+        /// </summary>
         [Fact]
         public void CommandBindSetsDisablesCommandWhenCanExecuteChanged()
         {
@@ -87,6 +102,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.False(view.Command1.IsEnabled);
         }
 
+        /// <summary>
+        /// Tests the command bind sets initial enabled state false.
+        /// </summary>
         [Fact]
         public void CommandBindSetsInitialEnabledState_False()
         {
@@ -101,6 +119,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.False(view.Command1.IsEnabled);
         }
 
+        /// <summary>
+        /// Tests the command bind raises can execute changed on bind.
+        /// </summary>
         [Fact]
         public void CommandBindRaisesCanExecuteChangedOnBind()
         {
@@ -121,6 +142,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.False(view.Command1.IsEnabled);
         }
 
+        /// <summary>
+        /// Tests the command bind with parameter expression.
+        /// </summary>
         [Fact]
         public void CommandBindWithParameterExpression()
         {
@@ -142,6 +166,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(13, received);
         }
 
+        /// <summary>
+        /// Tests the command bind with delay set vm parameter expression.
+        /// </summary>
         [Fact]
         public void CommandBindWithDelaySetVMParameterExpression()
         {
@@ -165,6 +192,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(13, received);
         }
 
+        /// <summary>
+        /// Tests the command bind with delay set vm parameter no inpc expression.
+        /// </summary>
         [Fact]
         public void CommandBindWithDelaySetVMParameterNoINPCExpression()
         {
@@ -188,6 +218,9 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(0, received);
         }
 
+        /// <summary>
+        /// Tests the command bind with parameter observable.
+        /// </summary>
         [Fact]
         public void CommandBindWithParameterObservable()
         {

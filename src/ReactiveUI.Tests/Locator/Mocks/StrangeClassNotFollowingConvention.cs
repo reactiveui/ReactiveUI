@@ -5,6 +5,9 @@
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A strange class.
+    /// </summary>
     public class StrangeClassNotFollowingConvention : IStrangeInterfaceNotFollowingConvention
     {
     }

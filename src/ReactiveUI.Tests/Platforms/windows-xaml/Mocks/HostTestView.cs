@@ -13,16 +13,24 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Xaml
 {
+    /// <summary>
+    /// A host test view.
+    /// </summary>
     public class HostTestView : Control, IViewFor<HostTestFixture>
     {
+        /// <summary>
+        /// The view model property.
+        /// </summary>
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
 
+        /// <inheritdoc/>
         public HostTestFixture? ViewModel
         {
             get => (HostTestFixture)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;

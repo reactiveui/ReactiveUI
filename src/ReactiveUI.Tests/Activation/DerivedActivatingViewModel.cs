@@ -7,8 +7,14 @@ using System.Reactive.Disposables;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// A activating view model which is derived from another ActivatingViewModel.
+    /// </summary>
     public class DerivedActivatingViewModel : ActivatingViewModel
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DerivedActivatingViewModel"/> class.
+        /// </summary>
         public DerivedActivatingViewModel() =>
             this.WhenActivated(d =>
             {
@@ -16,6 +22,9 @@ namespace ReactiveUI.Tests
                 d(Disposable.Create(() => IsActiveCountAlso--));
             });
 
+        /// <summary>
+        /// Gets or sets the active count.
+        /// </summary>
         public int IsActiveCountAlso { get; protected set; }
     }
 }

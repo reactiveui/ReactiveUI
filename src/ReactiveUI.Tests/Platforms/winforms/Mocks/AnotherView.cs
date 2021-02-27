@@ -5,6 +5,9 @@
 
 namespace ReactiveUI.Tests.Winforms
 {
+    /// <summary>
+    /// Another view.
+    /// </summary>
     public class AnotherView : ReactiveUI.Winforms.ReactiveUserControl<AnotherViewModel>
     {
     }
