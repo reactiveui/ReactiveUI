@@ -225,6 +225,10 @@ namespace ReactiveUI
         TSender Sender { get; }
         TValue Value { get; }
     }
+    public interface IPlatformOperations
+    {
+        string? GetOrientation();
+    }
     public interface IPropertyBinderImplementation : Splat.IEnableLogger
     {
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
