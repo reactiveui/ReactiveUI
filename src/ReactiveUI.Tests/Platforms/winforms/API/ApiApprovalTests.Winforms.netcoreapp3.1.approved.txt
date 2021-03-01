@@ -26,7 +26,7 @@ namespace ReactiveUI.Winforms
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
-    public class PlatformOperations
+    public class PlatformOperations : ReactiveUI.IPlatformOperations
     {
         public PlatformOperations() { }
         public string? GetOrientation() { }
