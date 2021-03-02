@@ -462,7 +462,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(execute));
             }
 
-            return CreateFromObservable(() => Observable.StartAsync(execute), canExecute, outputScheduler);
+            return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
         }
 
         /// <summary>
@@ -534,7 +534,7 @@ namespace ReactiveUI
             }
 
             return CreateFromObservable<TParam, TResult>(
-                param => Observable.StartAsync(ct => execute(param, ct)),
+                param => Observable.FromAsync(ct => execute(param, ct)),
                 canExecute,
                 outputScheduler);
         }
@@ -602,7 +602,7 @@ namespace ReactiveUI
             }
 
             return CreateFromObservable<TParam, Unit>(
-                param => Observable.StartAsync(ct => execute(param, ct)),
+                param => Observable.FromAsync(ct => execute(param, ct)),
                 canExecute,
                 outputScheduler);
         }
