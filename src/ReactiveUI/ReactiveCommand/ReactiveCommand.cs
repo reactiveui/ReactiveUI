@@ -406,7 +406,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(execute));
             }
 
-            return CreateFromObservable(() => Observable.StartAsync(execute), canExecute, outputScheduler);
+            return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
         }
 
         /// <summary>
