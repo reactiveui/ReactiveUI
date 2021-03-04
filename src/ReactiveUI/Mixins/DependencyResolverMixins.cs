@@ -41,7 +41,7 @@ namespace ReactiveUI
 
             if (registrationNamespaces.Length == 0)
             {
-                registrationNamespaces = PlatformRegistrationManager.DefaultRegistrationNamespaces;
+                registrationNamespaces = PlatformRegistrationManager.NamespacesToRegister;
             }
 
             var extraNs =
