@@ -1,7 +1,10 @@
 {
-  "version": "13.2-prerelease",
+  "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/master/src/NerdBank.GitVersioning/version.schema.json",
+  "version": "3.4-alpha",
+  "assemblyVersion": {
+    "precision": "revision"
+  },
   "publicReleaseRefSpec": [
-    "^refs/heads/master$", // we release out of master
     "^refs/heads/main$",
     "^refs/heads/latest$",
     "^refs/heads/preview/.*", // we release previews
