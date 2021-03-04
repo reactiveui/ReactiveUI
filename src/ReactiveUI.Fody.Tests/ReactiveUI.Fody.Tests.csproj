@@ -4,6 +4,7 @@
     <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
