@@ -38,6 +38,11 @@ namespace ReactiveUI
         /// <summary>
         /// Drawing.
         /// </summary>
-        Drawing
+        Drawing,
+
+        /// <summary>
+        /// Avalonia.
+        /// </summary>
+        Avalonia
     }
 }
