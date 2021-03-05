@@ -655,6 +655,7 @@ namespace ReactiveUI
         Uno = 3,
         Blazor = 4,
         Drawing = 5,
+        Avalonia = 6,
     }
     public class Registrations
     {
