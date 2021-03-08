@@ -160,7 +160,7 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Acr.UserDialogs" Version="7.1.0.475" />
+    <PackageReference Include="Acr.UserDialogs" Version="7.1.0.481" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.XamarinForms\IntegrationTests.XamarinForms.csproj">
