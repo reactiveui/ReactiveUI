@@ -17,7 +17,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.3.0" PrivateAssets="None" />
+    <PackageReference Include="Fody" Version="6.4.0" PrivateAssets="None" />
     <PackageReference Include="FodyPackaging" Version="6.3.0" PrivateAssets="All" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
