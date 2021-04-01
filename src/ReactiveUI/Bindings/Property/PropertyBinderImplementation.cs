@@ -82,7 +82,7 @@ namespace ReactiveUI
                 var result = vmToViewConverter.TryConvert(vmValue, typeof(TVProp), conversionHint, out object? tmp);
 
 #pragma warning disable CS8605 // Unboxing a possibly null value.
-                vValue = result ? (TVProp)tmp : default;
+                vValue = result && tmp != null ? (TVProp)tmp : default;
 #pragma warning restore CS8605 // Unboxing a possibly null value.
                 return result;
             }
@@ -92,7 +92,7 @@ namespace ReactiveUI
                 var result = viewToVMConverter.TryConvert(vValue, typeof(TVMProp), conversionHint, out object? tmp);
 
 #pragma warning disable CS8605 // Unboxing a possibly null value.
-                vmValue = result ? (TVMProp)tmp : default;
+                vmValue = result && tmp != null ? (TVMProp)tmp : default;
 #pragma warning restore CS8605 // Unboxing a possibly null value.
                 return result;
             }
