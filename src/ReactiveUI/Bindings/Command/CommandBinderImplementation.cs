@@ -155,9 +155,13 @@ namespace ReactiveUI
                 (val, host) => new { val, host });
 
             var propSub = bindInfo
-                .Where(x => x.host is not null)
                 .Subscribe(x =>
                 {
+                    if (x.host is null)
+                    {
+                        return;
+                    }
+
                     disposable.Dispose();
                     if (x is null)
                     {

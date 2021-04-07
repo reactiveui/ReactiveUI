@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Acr.UserDialogs" Version="7.1.0.475" />
+    <PackageReference Include="Acr.UserDialogs" Version="7.1.0.483" />
     <PackageReference Include="ReactiveUI.XamForms" Version="*" />
     <PackageReference Include="Xamarin.Forms" Version="4.8.*" />
   </ItemGroup>

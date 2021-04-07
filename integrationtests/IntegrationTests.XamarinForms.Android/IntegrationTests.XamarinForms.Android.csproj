@@ -50,7 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Acr.UserDialogs" Version="7.1.0.475" />
+    <PackageReference Include="Acr.UserDialogs" Version="7.1.0.483" />
     <PackageReference Include="ReactiveUI.AndroidSupport" Version="*" />
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.*" />
