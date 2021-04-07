@@ -22,7 +22,7 @@
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
-    <PackageReference Include="Splat" Version="10.*" />
+    <PackageReference Include="Splat" Version="11.*" />
     <PackageReference Include="DynamicData" Version="7.*" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
