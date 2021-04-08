@@ -67,6 +67,12 @@ namespace ReactiveUI
             var ret = new CompositeDisposable();
             driver ??= Locator.Current.GetService<ISuspensionDriver>();
 
+            if (driver is null)
+            {
+                item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
+                return Disposable.Empty;
+            }
+
             ret.Add(item.ShouldInvalidateState
                         .SelectMany(_ => driver.InvalidateState())
                         .LoggedCatch(item, Observables.Unit, "Tried to invalidate app state")

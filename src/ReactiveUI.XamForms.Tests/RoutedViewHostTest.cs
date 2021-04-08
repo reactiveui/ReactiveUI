@@ -360,6 +360,12 @@ namespace ReactiveUI.XamForms.Tests
             if (initialViewModel is not null)
             {
                 var mainViewModel = Locator.Current.GetService<IRoutableViewModel>(initialViewModel);
+
+                if (mainViewModel is null)
+                {
+                    throw new InvalidOperationException("There should be a valid view model.");
+                }
+
                 _navigationViewModel.Router.NavigationStack.Add(mainViewModel);
             }
 
