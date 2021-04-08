@@ -58,7 +58,9 @@ namespace ReactiveUI
         public ObservableAsPropertyHelper(
             IObservable<T> observable,
             Action<T> onChanged,
+#pragma warning disable CS8601 // Possible null reference assignment.
             T initialValue = default,
+#pragma warning restore CS8601 // Possible null reference assignment.
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             : this(observable, onChanged, null, initialValue, deferSubscription, scheduler)
@@ -96,7 +98,9 @@ namespace ReactiveUI
             IObservable<T> observable,
             Action<T> onChanged,
             Action<T>? onChanging = null,
+#pragma warning disable CS8601 // Possible null reference assignment.
             T initialValue = default,
+#pragma warning restore CS8601 // Possible null reference assignment.
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             : this(observable, onChanged, onChanging, () => initialValue, deferSubscription, scheduler)
@@ -235,7 +239,9 @@ namespace ReactiveUI
         /// normally be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>A default property helper.</returns>
+#pragma warning disable CS8601 // Possible null reference assignment.
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default, IScheduler? scheduler = null) =>
+#pragma warning restore CS8601 // Possible null reference assignment.
             new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue!, false, scheduler);
 
         /// <summary>
