@@ -48,7 +48,7 @@ namespace ReactiveUI
         /// important to dispose the binding when the view is deactivated.</param>
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 IObservable<TParam> withParameter,
@@ -78,7 +78,7 @@ namespace ReactiveUI
         /// important to dispose the binding when the view is deactivated.</param>
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this TView view,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 string? toEvent = null)
@@ -110,7 +110,7 @@ namespace ReactiveUI
         /// important to dispose the binding when the view is deactivated.</param>
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,

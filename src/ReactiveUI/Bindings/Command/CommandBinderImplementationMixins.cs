@@ -17,7 +17,7 @@ namespace ReactiveUI
     {
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this ICommandBinderImplementation @this,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
@@ -29,7 +29,7 @@ namespace ReactiveUI
 
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this ICommandBinderImplementation @this,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
