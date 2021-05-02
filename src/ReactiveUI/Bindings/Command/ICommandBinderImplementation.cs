@@ -31,7 +31,7 @@ namespace ReactiveUI
         /// <typeparam name="TParam">The type of the parameter to pass to the ICommand.</typeparam>
         /// <returns>A reactive binding. Often only used for disposing the binding.</returns>
         IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
@@ -57,7 +57,7 @@ namespace ReactiveUI
         /// <typeparam name="TParam">The type of the parameter to pass to the ICommand.</typeparam>
         /// <returns>A reactive binding. Often only used for disposing the binding.</returns>
         IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,

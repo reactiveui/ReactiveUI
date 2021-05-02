@@ -38,7 +38,7 @@ namespace ReactiveUI
         /// <returns>A class representing the binding. Dispose it to disconnect
         /// the binding.</returns>
         public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TControl>> controlProperty,
@@ -103,7 +103,7 @@ namespace ReactiveUI
         /// NOTE: If this parameter is used inside WhenActivated, it's
         /// important to dispose the binding when the view is deactivated.</param>
         public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TControl>> controlProperty,
