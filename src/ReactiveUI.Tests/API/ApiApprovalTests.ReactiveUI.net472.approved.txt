@@ -631,6 +631,32 @@ namespace ReactiveUI
         public ReactivePropertyChangingEventArgs(TSender sender, string? propertyName) { }
         public TSender Sender { get; }
     }
+    [System.Runtime.Serialization.DataContract]
+    public class ReactiveRecord : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging, System.IEquatable<ReactiveUI.ReactiveRecord>
+    {
+        public ReactiveRecord() { }
+        protected ReactiveRecord(ReactiveUI.ReactiveRecord original) { }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
+        protected virtual System.Type EqualityContract { get; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<System.Exception> ThrownExceptions { get; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
+        public virtual ReactiveUI.ReactiveRecord <Clone>$() { }
+        public bool AreChangeNotificationsEnabled() { }
+        public System.IDisposable DelayChangeNotifications() { }
+        public virtual bool Equals(ReactiveUI.ReactiveRecord? other) { }
+        public override bool Equals(object? obj) { }
+        public override int GetHashCode() { }
+        protected virtual bool PrintMembers(System.Text.StringBuilder builder) { }
+        public System.IDisposable SuppressChangeNotifications() { }
+        public override string ToString() { }
+        public static bool operator !=(ReactiveUI.ReactiveRecord? r1, ReactiveUI.ReactiveRecord? r2) { }
+        public static bool operator ==(ReactiveUI.ReactiveRecord? r1, ReactiveUI.ReactiveRecord? r2) { }
+    }
     public static class Reflection
     {
         public static string ExpressionToPropertyNames(System.Linq.Expressions.Expression expression) { }
