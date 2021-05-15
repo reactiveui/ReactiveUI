@@ -19,7 +19,7 @@ namespace ReactiveUI
                 this ICommandBinderImplementation @this,
                 TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TProp>> propertyName,
+                Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 string? toEvent = null)
             where TViewModel : class
@@ -31,7 +31,7 @@ namespace ReactiveUI
                 this ICommandBinderImplementation @this,
                 TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TProp>> propertyName,
+                Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string? toEvent = null)
