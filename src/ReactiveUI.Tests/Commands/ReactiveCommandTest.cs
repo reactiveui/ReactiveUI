@@ -558,6 +558,23 @@ namespace ReactiveUI.Tests
         }
 
         /// <summary>
+        /// Test that invokes the command against ICommand in target passes the specified value to can execute and execute.
+        /// </summary>
+        [Fact]
+        public void InvokeCommandAgainstICommandInNullableTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
+        {
+            ICommandHolder? fixture = new();
+            Subject<int> source = new();
+            source.InvokeCommand(fixture, x => x.TheCommand);
+            FakeCommand command = new();
+            fixture.TheCommand = command;
+
+            source.OnNext(42);
+            Assert.Equal(42, command.CanExecuteParameter);
+            Assert.Equal(42, command.ExecuteParameter);
+        }
+
+        /// <summary>
         /// Test that invokes the command against i command in target respects can execute.
         /// </summary>
         [Fact]
@@ -568,6 +585,27 @@ namespace ReactiveUI.Tests
             ICommandHolder fixture = new();
             Subject<Unit> source = new();
             source.InvokeCommand(fixture, x => x.TheCommand!);
+            fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
+
+            source.OnNext(Unit.Default);
+            Assert.False(executed);
+
+            canExecute.OnNext(true);
+            source.OnNext(Unit.Default);
+            Assert.True(executed);
+        }
+
+        /// <summary>
+        /// Test that invokes the command against i command in target respects can execute.
+        /// </summary>
+        [Fact]
+        public void InvokeCommandAgainstICommandInNullableTargetRespectsCanExecute()
+        {
+            bool executed = false;
+            BehaviorSubject<bool> canExecute = new(false);
+            ICommandHolder? fixture = new();
+            Subject<Unit> source = new();
+            source.InvokeCommand(fixture, x => x.TheCommand);
             fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
 
             source.OnNext(Unit.Default);
@@ -634,6 +672,24 @@ namespace ReactiveUI.Tests
         {
             int executionCount = 0;
             ICommand fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
+            Subject<Unit> source = new();
+            source.InvokeCommand(fixture);
+
+            source.OnNext(Unit.Default);
+            Assert.Equal(1, executionCount);
+
+            source.OnNext(Unit.Default);
+            Assert.Equal(2, executionCount);
+        }
+
+        /// <summary>
+        /// Test that invokes the command against ICommand invokes the command.
+        /// </summary>
+        [Fact]
+        public void InvokeCommandAgainstNullableICommandInvokesTheCommand()
+        {
+            int executionCount = 0;
+            ICommand? fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
             Subject<Unit> source = new();
             source.InvokeCommand(fixture);
 

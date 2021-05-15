@@ -26,7 +26,7 @@ namespace ReactiveUI
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T>(this IObservable<T> item, ICommand command)
+        public static IDisposable InvokeCommand<T>(this IObservable<T> item, ICommand? command)
         {
             var canExecuteChanged = Observable.FromEvent<EventHandler, Unit>(
                 eventHandler =>
@@ -34,13 +34,13 @@ namespace ReactiveUI
                     void Handler(object? sender, EventArgs e) => eventHandler(Unit.Default);
                     return Handler;
                 },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+                h => command!.CanExecuteChanged += h,
+                h => command!.CanExecuteChanged -= h)
                 .StartWith(Unit.Default);
 
-            return WithLatestFromFixed(item, canExecuteChanged, (value, _) => new InvokeCommandInfo<ICommand, T>(command, command.CanExecute(value), value))
+            return WithLatestFromFixed(item, canExecuteChanged, (value, _) => new InvokeCommandInfo<ICommand?, T>(command, command!.CanExecute(value), value))
                 .Where(ii => ii.CanExecute)
-                .Do(ii => command.Execute(ii.Value))
+                .Do(ii => command?.Execute(ii.Value))
                 .Subscribe();
         }
 
@@ -55,7 +55,7 @@ namespace ReactiveUI
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult> command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult>? command)
         {
             if (command is null)
             {
@@ -80,10 +80,10 @@ namespace ReactiveUI
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> item, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
+        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ICommand?>> commandProperty)
             where TTarget : class
         {
-            var commandObs = target.WhenAnyValue(commandProperty);
+            var commandObs = target.WhenAnyValue(commandProperty!);
             var commandCanExecuteChanged = commandObs
                 .Select(command => command is null ? Observable<ICommand>.Empty : Observable
                     .FromEvent<EventHandler, ICommand>(
@@ -112,10 +112,10 @@ namespace ReactiveUI
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> item, TTarget target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>?>> commandProperty)
             where TTarget : class
         {
-            var command = target.WhenAnyValue(commandProperty);
+            var command = target.WhenAnyValue(commandProperty!);
             var invocationInfo = command
                 .Select(cmd => cmd is null ?
                                    Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty :

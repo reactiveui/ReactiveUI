@@ -49,7 +49,7 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view,
                 TViewModel? viewModel,
-                Expression<Func<TViewModel, TProp>> propertyName,
+                Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 IObservable<TParam> withParameter,
                 string? toEvent = null)
@@ -79,7 +79,7 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this TView view,
                 TViewModel? viewModel,
-                Expression<Func<TViewModel, TProp>> propertyName,
+                Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 string? toEvent = null)
             where TViewModel : class
@@ -111,7 +111,7 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view,
                 TViewModel? viewModel,
-                Expression<Func<TViewModel, TProp>> propertyName,
+                Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string? toEvent = null)
