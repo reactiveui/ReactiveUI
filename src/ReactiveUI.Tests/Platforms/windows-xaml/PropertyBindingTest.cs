@@ -30,7 +30,7 @@ namespace ReactiveUI.Tests.Xaml
         [UseInvariantCulture]
         public void TwoWayBindWithFuncConvertersSmokeTest()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
             var fixture = new PropertyBinderImplementation();
 
@@ -58,7 +58,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void TwoWayBindSmokeTest()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
             var fixture = new PropertyBinderImplementation();
 
@@ -86,7 +86,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void TypeConvertedTwoWayBindSmokeTest()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
             var fixture = new PropertyBinderImplementation();
 
@@ -152,10 +152,10 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void BindingIntoModelObjects()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
-            view.OneWayBind(view.ViewModel, x => x!.Model!.AnotherThing, x => x.SomeTextBox.Text);
+            view.OneWayBind(view.ViewModel, x => x.Model!.AnotherThing, x => x.SomeTextBox.Text);
             Assert.Equal("Baz", view.SomeTextBox.Text);
         }
 
@@ -165,7 +165,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ViewModelNullableToViewNonNullable()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.JustADouble);
@@ -187,7 +187,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ViewModelNonNullableToViewNullable()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.Bind(view.ViewModel, x => x.JustADouble, x => x.FakeControl.NullableDouble);
@@ -209,7 +209,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ViewModelNullableToViewNullable()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.NullableDouble);
@@ -231,7 +231,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ViewModelIndexerToView()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0], x => x.SomeTextBox.Text);
@@ -244,7 +244,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ViewModelIndexerToViewChanges()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0], x => x.SomeTextBox.Text);
@@ -261,7 +261,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ViewModelIndexerPropertyToView()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0].Length, x => x.SomeTextBox.Text);
@@ -274,14 +274,14 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void OneWayBindShouldntInitiallySetToNull()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = null };
 
-            view.OneWayBind(vm, x => x!.Model!.AnotherThing, x => x.FakeControl.NullHatingString);
+            view.OneWayBind(vm, x => x.Model!.AnotherThing, x => x.FakeControl.NullHatingString);
             Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
 
             view.ViewModel = vm;
-            Assert.Equal(vm!.Model!.AnotherThing, view.FakeControl.NullHatingString);
+            Assert.Equal(vm.Model!.AnotherThing, view.FakeControl.NullHatingString);
         }
 
         /// <summary>
@@ -290,7 +290,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void BindToTypeConversionSmokeTest()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = null };
 
             Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
@@ -312,7 +312,7 @@ namespace ReactiveUI.Tests.Xaml
 
             Assert.Throws<ArgumentNullException>(() =>
                  view.WhenAnyValue(x => x.FakeControl!.NullHatingString!)
-                     .BindTo(view!.ViewModel!, x => x!.Property1));
+                     .BindTo(view.ViewModel, x => x.Property1));
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void TwoWayBindToSelectedItemOfItemsControl()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
             view.FakeItemsControl.ItemsSource = new ObservableCollectionExtended<string>(new[] { "aaa", "bbb", "ccc" });
 
@@ -343,7 +343,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ItemsControlShouldGetADataTemplate()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             Assert.Null(view.FakeItemsControl.ItemTemplate);
@@ -358,7 +358,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ItemsControlWithDisplayMemberPathSetShouldNotGetADataTemplate()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
             view.FakeItemsControl.DisplayMemberPath = "Bla";
 
@@ -374,7 +374,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void ItemsControlShouldGetADataTemplateInBindTo()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             Assert.Null(view.FakeItemsControl.ItemTemplate);
@@ -393,7 +393,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void BindingToItemsControl()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
@@ -408,7 +408,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void OneWayBindConverter()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
             var fixture = new PropertyBinderImplementation();
             fixture.OneWayBind(vm, view, x => x.JustABoolean, x => x.SomeTextBox.IsEnabled, s => s);
@@ -421,7 +421,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void OneWayBindWithNullStartingValueToNonNullValue()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.OneWayBind(vm, x => x.Property1, x => x.SomeTextBox.Text);
@@ -437,7 +437,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void OneWayBindWithNonNullStartingValueToNullValue()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             vm.Property1 = "Baz";
@@ -455,7 +455,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void OneWayBindWithSelectorAndNonNullStartingValueToNullValue()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.OneWayBind(vm, x => x.Model, x => x.SomeTextBox.Text, x => x?.AnotherThing);
@@ -473,7 +473,7 @@ namespace ReactiveUI.Tests.Xaml
         {
             static (IDisposable?, WeakReference) GetWeakReference()
             {
-                var vm = new PropertyBindViewModel();
+                PropertyBindViewModel? vm = new();
                 var view = new PropertyBindView { ViewModel = vm };
                 var weakRef = new WeakReference(vm);
                 var disp = view.OneWayBind(vm, x => x.Property1, x => x.SomeTextBox.Text);
@@ -496,7 +496,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void BindToWithNullStartingValueToNonNullValue()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.WhenAnyValue(x => x.ViewModel!.Property1)
@@ -513,7 +513,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void BindToWithNonNullStartingValueToNullValue()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             vm.Property1 = "Baz";
@@ -532,7 +532,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void BindExpectsConverterFuncsToNotBeNull()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
             var fixture = new PropertyBinderImplementation();
 
@@ -548,7 +548,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void BindWithFuncShouldWorkAsExtensionMethodSmokeTest()
         {
-            var vm = new PropertyBindViewModel();
+            PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
             view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(CultureInfo.InvariantCulture), decimal.Parse);
@@ -562,7 +562,7 @@ namespace ReactiveUI.Tests.Xaml
         {
             static (IDisposable?, WeakReference) GetWeakReference()
             {
-                var vm = new PropertyBindViewModel();
+                PropertyBindViewModel? vm = new();
                 var view = new PropertyBindView { ViewModel = vm };
                 var weakRef = new WeakReference(vm);
                 var disp = view.Bind(vm, x => x.Property1, x => x.SomeTextBox.Text);

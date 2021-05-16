@@ -60,7 +60,7 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel? viewModel,
-                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 object? conversionHint = null,
                 IBindingTypeConverter? vmToViewConverterOverride = null,
@@ -125,7 +125,7 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 this TView view,
                 TViewModel? viewModel,
-                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare>? signalViewUpdate,
                 object? conversionHint = null,
@@ -169,10 +169,10 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
             this TView view,
             TViewModel? viewModel,
-            Expression<Func<TViewModel, TVMProp>> vmProperty,
+            Expression<Func<TViewModel, TVMProp?>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
-            Func<TVMProp, TVProp> vmToViewConverter,
-            Func<TVProp, TVMProp> viewToVmConverter)
+            Func<TVMProp?, TVProp> vmToViewConverter,
+            Func<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class
             where TView : class, IViewFor => binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>?)null, vmToViewConverter, viewToVmConverter);
 
@@ -219,11 +219,11 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             this TView view,
             TViewModel? viewModel,
-            Expression<Func<TViewModel, TVMProp>> vmProperty,
+            Expression<Func<TViewModel, TVMProp?>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
             IObservable<TDontCare>? signalViewUpdate,
-            Func<TVMProp, TVProp> vmToViewConverter,
-            Func<TVProp, TVMProp> viewToVmConverter)
+            Func<TVMProp?, TVProp> vmToViewConverter,
+            Func<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class
             where TView : class, IViewFor =>
             binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter);
@@ -267,7 +267,7 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel? viewModel,
-                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 object? conversionHint = null,
                 IBindingTypeConverter? vmToViewConverterOverride = null)
@@ -314,9 +314,9 @@ namespace ReactiveUI
         public static IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel? viewModel,
-                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TViewModel, TProp?>> vmProperty,
                 Expression<Func<TView, TOut>> viewProperty,
-                Func<TProp, TOut> selector)
+                Func<TProp?, TOut> selector)
             where TViewModel : class
             where TView : class, IViewFor =>
             binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
@@ -347,8 +347,8 @@ namespace ReactiveUI
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         public static IDisposable BindTo<TValue, TTarget, TTValue>(
             this IObservable<TValue> @this,
-            TTarget target,
-            Expression<Func<TTarget, TTValue>> property,
+            TTarget? target,
+            Expression<Func<TTarget, TTValue?>> property,
             object? conversionHint = null,
             IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class =>
