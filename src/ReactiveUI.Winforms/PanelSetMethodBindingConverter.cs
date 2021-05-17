@@ -18,11 +18,19 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc />
         public int GetAffinityForObjects(Type? fromType, Type? toType)
         {
-            return toType != typeof(Control.ControlCollection)
-                ? 0
-                : fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control))) ?? false
-                ? 10
-                : 0;
+            if (toType != typeof(Control.ControlCollection))
+            {
+                return 0;
+            }
+
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if (fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control))) ?? false)
+#pragma warning restore IDE0046 // Convert to conditional expression
+            {
+                return 10;
+            }
+
+            return 0;
         }
 
         /// <inheritdoc />
@@ -33,7 +41,7 @@ namespace ReactiveUI.Winforms
                 throw new ArgumentNullException(nameof(toTarget));
             }
 
-            if (!(newValue is IEnumerable<Control> newValueEnumerable))
+            if (newValue is not IEnumerable<Control> newValueEnumerable)
             {
                 throw new ArgumentException($"newValue must be {nameof(newValue)}", nameof(newValue));
             }
