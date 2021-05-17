@@ -94,7 +94,7 @@ namespace ReactiveUI
                 throw new ArgumentException("AutoPersist can only be applied to objects with [DataContract]");
             }
 
-            Dictionary<string, bool> persistableProperties = persistablePropertiesCache.Get(@this.GetType());
+            var persistableProperties = persistablePropertiesCache.Get(@this.GetType());
 
             var saveHint = @this.GetChangedObservable().Where(x => x.PropertyName is not null && persistableProperties.ContainsKey(x.PropertyName)).Select(_ => Unit.Default).Merge(manualSaveSignal.Select(_ => Unit.Default));
 

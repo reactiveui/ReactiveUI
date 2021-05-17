@@ -224,8 +224,8 @@ namespace ReactiveUI
 
         /// <summary>
         /// BindTo takes an Observable stream and applies it to a target
-        /// property. Conceptually it is similar to <c>Subscribe(x =&gt;
-        /// target.property = x)</c>, but allows you to use child properties
+        /// property. Conceptually it is similar to. <code>Subscribe(x =&gt;
+        /// target.property = x)</code>, but allows you to use child properties
         /// without the null checks.
         /// </summary>
         /// <typeparam name="TValue">The value type.</typeparam>

@@ -116,8 +116,8 @@ namespace ReactiveUI.Fody.Analyzer
                 return setter?.ExpressionBody is not null && getter?.ExpressionBody is not null;
             }
 
-            bool setterHasBodyStatements = setter.Body.Statements.Any();
-            bool getterHasBodyStatements = getter.Body.Statements.Any();
+            var setterHasBodyStatements = setter.Body.Statements.Any();
+            var getterHasBodyStatements = getter.Body.Statements.Any();
 
             return setterHasBodyStatements && getterHasBodyStatements;
         }

@@ -27,11 +27,10 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NullObservablesDoNotCauseExceptions()
         {
-            var fixture = new TestWhenAnyObsViewModel();
+            TestWhenAnyObsViewModel? fixture = new();
             fixture.Command1 = null;
 
             // these are the overloads of WhenAnyObservable that perform a Merge
-#pragma warning disable CS8603 // Possible null reference return.
             fixture.WhenAnyObservable(x => x.Command1).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
@@ -45,6 +44,7 @@ namespace ReactiveUI.Tests
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
 
             // these are the overloads of WhenAnyObservable that perform a CombineLatest
+#pragma warning disable RCS1163 // Unused parameter.
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, (zero, one) => Unit.Default).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two) => Unit.Default).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three) => Unit.Default).Subscribe();
@@ -55,7 +55,7 @@ namespace ReactiveUI.Tests
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight) => Unit.Default).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight, nine) => Unit.Default).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight, nine, ten) => Unit.Default).Subscribe();
-#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore RCS1163 // Unused parameter.
         }
 
         /// <summary>
@@ -65,13 +65,10 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task WhenAnyObservableSmokeTestCombining()
         {
-            var fixture = new TestWhenAnyObsViewModel();
+            TestWhenAnyObsViewModel? fixture = new();
 
-            var list = new List<string>();
-#pragma warning disable CS8603 // Possible null reference return.
+            var list = new List<string?>();
             fixture.WhenAnyObservable(x => x.Command3, x => x.Command1, (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-#pragma warning restore CS8603 // Possible null reference return.
-
             Assert.Equal(0, list.Count);
 
             await fixture.Command1!.Execute(1);
@@ -101,13 +98,10 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task WhenAnyObservableSmokeTestMerging()
         {
-            var fixture = new TestWhenAnyObsViewModel();
+            TestWhenAnyObsViewModel fixture = new();
 
             var list = new List<int>();
-#pragma warning disable CS8603 // Possible null reference return.
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-#pragma warning restore CS8603 // Possible null reference return.
-
             Assert.Equal(0, list.Count);
 
             await fixture.Command1!.Execute(1);
@@ -135,11 +129,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
         {
-            var fixture = new TestWhenAnyObsViewModel();
-#pragma warning disable CS8603 // Possible null reference return.
-            fixture.WhenAnyObservable(x => x.Changes).Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
-#pragma warning restore CS8603  // Possible null reference return.
-
+            TestWhenAnyObsViewModel? fixture = new();
+            fixture!.WhenAnyObservable(x => x.Changes)!.Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
             Assert.Equal(0, output.Count);
 
             fixture.MyListOfInts = new ObservableCollectionExtended<int>();

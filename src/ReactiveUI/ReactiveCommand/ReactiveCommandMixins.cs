@@ -55,18 +55,13 @@ namespace ReactiveUI
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult>? command)
-        {
-            if (command is null)
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
-
-            return WithLatestFromFixed(item, command.CanExecute, (value, canExecute) => new InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>(command, canExecute, value))
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult>? command) =>
+            command is null
+                ? throw new ArgumentNullException(nameof(command))
+                : WithLatestFromFixed(item, command.CanExecute, (value, canExecute) => new InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>(command, canExecute, value))
                 .Where(ii => ii.CanExecute)
                 .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
-        }
 
         /// <summary>
         /// A utility method that will pipe an Observable to an ICommand (i.e.
@@ -83,7 +78,7 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ICommand?>> commandProperty)
             where TTarget : class
         {
-            var commandObs = target.WhenAnyValue(commandProperty!);
+            var commandObs = target.WhenAnyValue(commandProperty);
             var commandCanExecuteChanged = commandObs
                 .Select(command => command is null ? Observable<ICommand>.Empty : Observable
                     .FromEvent<EventHandler, ICommand>(
@@ -115,7 +110,7 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>?>> commandProperty)
             where TTarget : class
         {
-            var command = target.WhenAnyValue(commandProperty!);
+            var command = target.WhenAnyValue(commandProperty);
             var invocationInfo = command
                 .Select(cmd => cmd is null ?
                                    Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty :

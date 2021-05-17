@@ -35,7 +35,7 @@ namespace ReactiveUI.Tests.Xaml
                 },
             };
 
-            var fixture = new HostTestView();
+            HostTestView? fixture = new();
 
             var output = new List<string?>();
 

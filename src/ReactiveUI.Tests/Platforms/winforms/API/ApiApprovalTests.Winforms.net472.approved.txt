@@ -23,7 +23,7 @@ namespace ReactiveUI.Winforms
     public class PanelSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger
     {
         public PanelSetMethodBindingConverter() { }
-        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
     public class PlatformOperations : ReactiveUI.IPlatformOperations
@@ -68,7 +68,7 @@ namespace ReactiveUI.Winforms
     public class TableContentSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger
     {
         public TableContentSetMethodBindingConverter() { }
-        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]

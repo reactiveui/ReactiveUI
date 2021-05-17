@@ -16,19 +16,13 @@ namespace ReactiveUI.Winforms
     public class PanelSetMethodBindingConverter : ISetMethodBindingConverter
     {
         /// <inheritdoc />
-        public int GetAffinityForObjects(Type fromType, Type toType)
+        public int GetAffinityForObjects(Type? fromType, Type? toType)
         {
-            if (toType != typeof(Control.ControlCollection))
-            {
-                return 0;
-            }
-
-            if (fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments().First().IsSubclassOf(typeof(Control))) ?? false)
-            {
-                return 10;
-            }
-
-            return 0;
+            return toType != typeof(Control.ControlCollection)
+                ? 0
+                : fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control))) ?? false
+                ? 10
+                : 0;
         }
 
         /// <inheritdoc />

@@ -25,7 +25,7 @@ namespace ReactiveUI
                           .GetServices<IActivationForViewFetcher?>()
                           .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher?)), (acc, x) =>
                           {
-                              int score = x?.GetAffinityForView(t) ?? 0;
+                              var score = x?.GetAffinityForView(t) ?? 0;
                               return score > acc.count ? (score, x) : acc;
                           }).viewFetcher, RxApp.SmallCacheLimit);
 

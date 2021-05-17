@@ -41,7 +41,7 @@ namespace ReactiveUI.Tests
             }
 
             // Run test twice and verify that POCO message is logged only once.
-            for (int i = 0; i < 2; i++)
+            for (var i = 0; i < 2; i++)
             {
                 using (var testLoggerRegistration = new TestLoggerRegistration(_testLoggerForNotificationPocoErrorOnBind))
                 {

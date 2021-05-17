@@ -149,7 +149,7 @@ namespace ReactiveUI
 
             object? latestParam = null;
 
-            IDisposable actionDisposable = Disposable.Empty;
+            var actionDisposable = Disposable.Empty;
 
             if (target is UIControl ctl)
             {

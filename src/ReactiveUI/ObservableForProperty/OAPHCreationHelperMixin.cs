@@ -643,7 +643,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(property));
             }
 
-            Expression expression = Reflection.Rewrite(property.Body);
+            var expression = Reflection.Rewrite(property.Body);
 
             var parent = expression.GetParent();
 
@@ -664,7 +664,7 @@ namespace ReactiveUI
                 throw new ArgumentException("The property expression does not point towards a valid member.", nameof(property));
             }
 
-            string name = memberInfo.Name;
+            var name = memberInfo.Name;
             if (expression is IndexExpression)
             {
                 name += "[]";
@@ -702,7 +702,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(property));
             }
 
-            Expression expression = Reflection.Rewrite(property.Body);
+            var expression = Reflection.Rewrite(property.Body);
 
             var parent = expression.GetParent();
 
@@ -723,7 +723,7 @@ namespace ReactiveUI
                 throw new ArgumentException("The property expression does not point towards a valid member.", nameof(property));
             }
 
-            string name = memberInfo.Name;
+            var name = memberInfo.Name;
             if (expression is IndexExpression)
             {
                 name += "[]";

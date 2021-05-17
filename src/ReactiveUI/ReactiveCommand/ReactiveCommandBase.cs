@@ -242,7 +242,7 @@ namespace ReactiveUI
                     $"Command requires parameters of type {typeof(TParam).FullName}, but received parameter of type {parameter.GetType().FullName}.");
             }
 
-            IObservable<TResult> result = parameter is null ? Execute() : Execute((TParam)parameter);
+            var result = parameter is null ? Execute() : Execute((TParam)parameter);
 
             result
                 .Catch(Observable<TResult>.Empty)

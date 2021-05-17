@@ -48,7 +48,7 @@ namespace ReactiveUI
                  "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
              "</DataTemplate>";
 
-            string? assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
+            var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
             assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
 
             return (DataTemplate)XamlReader.Parse(template.Replace("__ASSEMBLYNAME__", assemblyName));

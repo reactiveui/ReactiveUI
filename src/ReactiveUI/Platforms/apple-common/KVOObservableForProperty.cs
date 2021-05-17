@@ -94,7 +94,7 @@ namespace ReactiveUI
 
         private static string FindCocoaNameFromNetName(Type senderType, string propertyName)
         {
-            bool propIsBoolean = false;
+            var propIsBoolean = false;
 
             var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(x => !x.IsStatic());
             if (pi is null)

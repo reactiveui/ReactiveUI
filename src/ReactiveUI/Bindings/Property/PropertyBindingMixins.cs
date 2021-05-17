@@ -33,12 +33,12 @@ namespace ReactiveUI
         /// <param name="viewModel">The instance of the view model to bind.</param>
         /// <param name="vmProperty">
         /// An expression indicating the property that is bound on the view model.
-        /// This can be a chain of properties of the form. <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>vm =&gt; vm.Foo.Bar.Baz</c>
         /// and the binder will attempt to subscribe to changes on each recursively.
         /// </param>
         /// <param name="viewProperty">
         /// The property on the view that is to be bound.
-        /// This can be a chain of properties of the form. <code>view => view.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>view => view.Foo.Bar.Baz</c>
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
         /// <param name="conversionHint">
@@ -93,12 +93,12 @@ namespace ReactiveUI
         /// <param name="viewModel">The instance of the view model to bind.</param>
         /// <param name="vmProperty">
         /// An expression indicating the property that is bound on the view model.
-        /// This can be a chain of properties of the form. <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>vm =&gt; vm.Foo.Bar.Baz</c>
         /// and the binder will attempt to subscribe to changes on each recursively.
         /// </param>
         /// <param name="viewProperty">
         /// The property on the view that is to be bound.
-        /// This can be a chain of properties of the form. <code>view => view.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>view => view.Foo.Bar.Baz</c>
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
         /// <param name="signalViewUpdate">
@@ -146,12 +146,12 @@ namespace ReactiveUI
         /// <param name="viewModel">The instance of the view model to bind.</param>
         /// <param name="vmProperty">
         /// An expression indicating the property that is bound on the view model.
-        /// This can be a chain of properties of the form. <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>vm =&gt; vm.Foo.Bar.Baz</c>
         /// and the binder will attempt to subscribe to changes on each recursively.
         /// </param>
         /// <param name="viewProperty">
         /// The property on the view that is to be bound.
-        /// This can be a chain of properties of the form. <code>view => view.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>view => view.Foo.Bar.Baz</c>
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
         /// <param name="vmToViewConverter">
@@ -191,12 +191,12 @@ namespace ReactiveUI
         /// <param name="viewModel">The instance of the view model to bind.</param>
         /// <param name="vmProperty">
         /// An expression indicating the property that is bound on the view model.
-        /// This can be a chain of properties of the form. <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>vm =&gt; vm.Foo.Bar.Baz</c>
         /// and the binder will attempt to subscribe to changes on each recursively.
         /// </param>
         /// <param name="viewProperty">
         /// The property on the view that is to be bound.
-        /// This can be a chain of properties of the form. <code>view => view.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>view => view.Foo.Bar.Baz</c>
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
         /// <param name="signalViewUpdate">
@@ -236,7 +236,7 @@ namespace ReactiveUI
         /// <typeparam name="TVMProp">The type of view model property.</typeparam>
         /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
         /// <param name="view">
-        /// The instance of the view object which is bound. Usually, it is the. <code>this</code>
+        /// The instance of the view object which is bound. Usually, it is the. <c>this</c>
         /// instance.
         /// </param>
         /// <param name="viewModel">
@@ -244,12 +244,12 @@ namespace ReactiveUI
         /// It is usually set to the <see cref="IViewFor.ViewModel"/> property of the <paramref name="view"/>.</param>
         /// <param name="vmProperty">
         /// An expression indicating the property that is bound on the view model.
-        /// This can be a chain of properties of the form. <code>vm => vm.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>vm => vm.Foo.Bar.Baz</c>
         /// and the binder will attempt to subscribe to changes on each recursively.
         /// </param>
         /// <param name="viewProperty">
         /// The property on the view that is to be bound.
-        /// This can be a chain of properties of the form. <code>view => view.Foo.Bar.Baz</code>
+        /// This can be a chain of properties of the form. <c>view => view.Foo.Bar.Baz</c>
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
         /// <param name="conversionHint">
@@ -323,8 +323,8 @@ namespace ReactiveUI
 
         /// <summary>
         /// BindTo takes an Observable stream and applies it to a target
-        /// property. Conceptually it is similar to <c>Subscribe(x =&gt;
-        /// target.property = x)</c>, but allows you to use child properties
+        /// property. Conceptually it is similar to. <code>Subscribe(x =&gt;
+        /// target.property = x)</code>, but allows you to use child properties
         /// without the null checks.
         /// </summary>
         /// <typeparam name="TValue">The source type.</typeparam>

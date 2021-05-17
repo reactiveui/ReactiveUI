@@ -62,7 +62,7 @@ namespace ReactiveUI
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent ?? string.Empty, cmd =>
+            var bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent ?? string.Empty, cmd =>
             {
                 if (!(cmd is IReactiveCommand rc))
                 {
@@ -127,7 +127,7 @@ namespace ReactiveUI
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            IDisposable bindingDisposable = BindCommandInternal(source, view, controlExpression, withParameter, toEvent);
+            var bindingDisposable = BindCommandInternal(source, view, controlExpression, withParameter, toEvent);
 
             return new ReactiveBinding<TView, TProp>(
                  view,
@@ -148,7 +148,7 @@ namespace ReactiveUI
             where TView : class, IViewFor
             where TProp : ICommand
         {
-            IDisposable disposable = Disposable.Empty;
+            var disposable = Disposable.Empty;
 
             var bindInfo = source.CombineLatest(
                 view.SubscribeToExpressionChain<TView, object?>(controlExpression, false, false, RxApp.SuppressViewCommandBindingMessage).Select(x => x.Value),

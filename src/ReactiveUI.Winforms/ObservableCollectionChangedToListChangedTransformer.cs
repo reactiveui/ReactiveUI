@@ -31,7 +31,7 @@ namespace ReactiveUI.Winforms
 
                 case NotifyCollectionChangedAction.Remove when ea.OldItems is not null:
                 {
-                    foreach (int index in Enumerable.Range(ea.OldStartingIndex, ea.OldItems.Count))
+                    foreach (var index in Enumerable.Range(ea.OldStartingIndex, ea.OldItems.Count))
                     {
                         yield return new ListChangedEventArgs(ListChangedType.ItemDeleted, index);
                     }
@@ -41,7 +41,7 @@ namespace ReactiveUI.Winforms
 
                 case NotifyCollectionChangedAction.Add when ea.NewItems is not null:
                 {
-                    foreach (int index in Enumerable.Range(ea.NewStartingIndex, ea.NewItems.Count))
+                    foreach (var index in Enumerable.Range(ea.NewStartingIndex, ea.NewItems.Count))
                     {
                         yield return new ListChangedEventArgs(ListChangedType.ItemAdded, index);
                     }

@@ -16,23 +16,14 @@ namespace ReactiveUI.Winforms
     public class TableContentSetMethodBindingConverter : ISetMethodBindingConverter
     {
         /// <inheritdoc />
-        public int GetAffinityForObjects(Type fromType, Type toType)
-        {
-            if (toType != typeof(TableLayoutControlCollection))
-            {
-                return 0;
-            }
-
-            if (fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments().First().IsSubclassOf(typeof(Control))) ?? false)
-            {
-                return 15;
-            }
-
-            return 0;
-        }
+        public int GetAffinityForObjects(Type? fromType, Type? toType) =>
+            toType != typeof(TableLayoutControlCollection)
+                ? 0
+                : fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control))) ?? false
+                ? 15
+                : 0;
 
         /// <inheritdoc />
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Valid syntax.")]
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments)
         {
             if (toTarget is null)
@@ -40,12 +31,12 @@ namespace ReactiveUI.Winforms
                 throw new ArgumentNullException(nameof(toTarget));
             }
 
-            if (!(toTarget is TableLayoutControlCollection targetCollection))
+            if (toTarget is not TableLayoutControlCollection targetCollection)
             {
                 throw new ArgumentException($"{nameof(toTarget)} must be of type {nameof(TableLayoutControlCollection)}", nameof(toTarget));
             }
 
-            if (!(newValue is IEnumerable<Control> newValueEnumerable))
+            if (newValue is not IEnumerable<Control> newValueEnumerable)
             {
                 throw new ArgumentException($"newValue must be {nameof(newValue)}", nameof(newValue));
             }

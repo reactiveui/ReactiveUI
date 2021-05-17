@@ -23,15 +23,10 @@ namespace ReactiveUI
         /// <returns>
         /// The name of the property which has changed.
         /// </returns>
-        public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> item)
-        {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            return Reflection.ExpressionToPropertyNames(item.Expression);
-        }
+        public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
+            item is null
+            ? throw new ArgumentNullException(nameof(item))
+            : Reflection.ExpressionToPropertyNames(item.Expression);
 
         /// <summary>
         /// Returns the current value of a property given a notification that
@@ -45,20 +40,12 @@ namespace ReactiveUI
         /// <returns>
         /// The current value of the property.
         /// </returns>
-        public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item)
-        {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            if (!item.TryGetValue(out var returnValue))
-            {
-                throw new Exception($"One of the properties in the expression '{item.GetPropertyName()}' was null");
-            }
-
-            return returnValue;
-        }
+        public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
+            item is null
+                ? throw new ArgumentNullException(nameof(item))
+                : !item.TryGetValue(out var returnValue)
+                ? throw new Exception($"One of the properties in the expression '{item.GetPropertyName()}' was null")
+                : returnValue;
 
         /// <summary>
         /// Returns the current value of a property given a notification that
@@ -72,20 +59,8 @@ namespace ReactiveUI
         /// <returns>
         /// The current value of the property.
         /// </returns>
-        public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item)
-        {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            if (!item.TryGetValue(out var returnValue))
-            {
-                return default;
-            }
-
-            return returnValue;
-        }
+        public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
+            item is null ? throw new ArgumentNullException(nameof(item)) : !item.TryGetValue(out var returnValue) ? default : returnValue;
 
         /// <summary>
         /// Given a stream of notification changes, this method will convert
@@ -128,7 +103,7 @@ namespace ReactiveUI
                 return true;
             }
 
-            return Reflection.TryGetValueForPropertyChain(out changeValue, item.Sender, item.Expression.GetExpressionChain());
+            return Reflection.TryGetValueForPropertyChain(out changeValue, item.Sender, item.Expression!.GetExpressionChain());
         }
 
         /// <summary>

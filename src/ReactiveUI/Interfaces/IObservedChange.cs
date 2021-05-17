@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the expression of the member that has changed on Sender.
         /// </summary>
-        Expression Expression { get; }
+        Expression? Expression { get; }
 
         /// <summary>
         /// Gets the value of the property that has changed. IMPORTANT NOTE: This

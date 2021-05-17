@@ -71,7 +71,7 @@ namespace ReactiveUI.Winforms
                         return;
                     }
 
-                    IViewLocator viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                     var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
                     if (view is not null)
                     {

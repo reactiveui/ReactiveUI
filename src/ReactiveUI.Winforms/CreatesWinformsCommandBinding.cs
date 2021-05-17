@@ -30,7 +30,7 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, bool hasEventTarget)
         {
-            bool isWinformControl = typeof(Control).IsAssignableFrom(type);
+            var isWinformControl = typeof(Control).IsAssignableFrom(type);
 
             if (isWinformControl)
             {
@@ -91,7 +91,7 @@ namespace ReactiveUI.Winforms
             var ret = new CompositeDisposable();
 
             object? latestParameter = null;
-            Type targetType = target.GetType();
+            var targetType = target.GetType();
 
             ret.Add(commandParameter.Subscribe(x => latestParameter = x));
 

@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// <param name="toType">The target type to convert to.</param>
         /// <returns>A positive integer if PerformSet is supported,
         /// zero or a negative value otherwise.</returns>
-        int GetAffinityForObjects(Type fromType, Type toType);
+        int GetAffinityForObjects(Type? fromType, Type? toType);
 
         /// <summary>
         /// Convert a given object to the specified type.

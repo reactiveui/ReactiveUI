@@ -27,7 +27,7 @@ namespace ReactiveUI
         public static IEnumerable<Expression> GetExpressionChain(this Expression expression)
         {
             var expressions = new List<Expression>();
-            Expression? node = expression;
+            var node = expression;
 
             while (node is not null && node.NodeType != ExpressionType.Parameter)
             {
