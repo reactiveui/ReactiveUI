@@ -62,6 +62,6 @@ namespace ReactiveUI.XamForms.Tests.Mocks
         /// Navigates back.
         /// </summary>
         /// <returns>An observable.</returns>
-        public IObservable<Unit> NavigateBack() => Router.NavigateBack.Execute();
+        public IObservable<IRoutableViewModel?> NavigateBack() => Router.NavigateBack.Execute();
     }
 }

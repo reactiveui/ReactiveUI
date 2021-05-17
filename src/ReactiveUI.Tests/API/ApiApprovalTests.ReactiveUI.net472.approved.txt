@@ -706,7 +706,7 @@ namespace ReactiveUI
         [System.Runtime.Serialization.IgnoreDataMember]
         public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> NavigateAndReset { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> NavigateBack { get; set; }
+        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel?> NavigateBack { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]

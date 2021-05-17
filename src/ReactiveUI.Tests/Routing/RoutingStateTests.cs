@@ -34,29 +34,57 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, fixture.NavigationStack.Count);
             Assert.True(await fixture.NavigateBack.CanExecute.FirstAsync());
 
-            await fixture.NavigateBack.Execute();
-
+            var navigatedTo = await fixture.NavigateBack.Execute();
+            Assert.Equal(navigatedTo.GetType(), input.GetType());
             Assert.Equal(1, fixture.NavigationStack.Count);
         }
 
         [Fact]
-        public void CurrentViewModelObservableIsAccurate()
+        public async Task CurrentViewModelObservableIsAccurate()
         {
             var fixture = new RoutingState();
             fixture.CurrentViewModel.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
             Assert.Equal(1, output.Count);
 
-            fixture.Navigate.Execute(new TestViewModel { SomeProp = "A" });
+            await fixture.Navigate.Execute(new TestViewModel { SomeProp = "A" });
             Assert.Equal(2, output.Count);
 
-            fixture.Navigate.Execute(new TestViewModel { SomeProp = "B" });
+            await fixture.Navigate.Execute(new TestViewModel { SomeProp = "B" });
             Assert.Equal(3, output.Count);
             Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
 
-            fixture.NavigateBack.Execute();
+            var navigatedTo = await fixture.NavigateBack.Execute();
+            Assert.Equal(navigatedTo?.GetType(), output.Last()?.GetType());
             Assert.Equal(4, output.Count);
             Assert.Equal("A", (output.Last() as TestViewModel)?.SomeProp);
+            Assert.Equal((navigatedTo as TestViewModel)?.SomeProp, (output.Last() as TestViewModel)?.SomeProp);
+
+            await fixture.Navigate.Execute(new TestViewModel { SomeProp = "B" });
+            Assert.Equal(5, output.Count);
+            Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
+
+            await fixture.Navigate.Execute(new TestViewModel { SomeProp = "C" });
+            Assert.Equal(6, output.Count);
+            Assert.Equal("C", (output.Last() as TestViewModel)?.SomeProp);
+
+            navigatedTo = await fixture.NavigateBack.Execute();
+            Assert.Equal(navigatedTo?.GetType(), output.Last()?.GetType());
+            Assert.Equal(7, output.Count);
+            Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
+            Assert.Equal((navigatedTo as TestViewModel)?.SomeProp, (output.Last() as TestViewModel)?.SomeProp);
+
+            navigatedTo = await fixture.NavigateBack.Execute();
+            Assert.Equal(navigatedTo?.GetType(), output.Last()?.GetType());
+            Assert.Equal(8, output.Count);
+            Assert.Equal("A", (output.Last() as TestViewModel)?.SomeProp);
+            Assert.Equal((navigatedTo as TestViewModel)?.SomeProp, (output.Last() as TestViewModel)?.SomeProp);
+
+            navigatedTo = await fixture.NavigateBack.Execute();
+            Assert.Equal(navigatedTo?.GetType(), output.Last()?.GetType());
+            Assert.Equal(9, output.Count);
+            Assert.Equal(null, (output.Last() as TestViewModel)?.SomeProp);
+            Assert.Equal(null, (navigatedTo as TestViewModel)?.SomeProp);
         }
 
         [Fact]

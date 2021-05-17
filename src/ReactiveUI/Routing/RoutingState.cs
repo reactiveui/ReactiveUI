@@ -81,7 +81,7 @@ namespace ReactiveUI
         /// Gets or sets a command which will navigate back to the previous element in the stack.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand<Unit, Unit> NavigateBack { get; protected set; }
+        public ReactiveCommand<Unit, IRoutableViewModel?> NavigateBack { get; protected set; }
 
         /// <summary>
         /// Gets or sets a command that navigates to the a new element in the stack - the Execute parameter
@@ -122,11 +122,11 @@ namespace ReactiveUI
 
             var countAsBehavior = Observable.Defer(() => Observable.Return(NavigationStack.Count)).Concat(NavigationChanged.CountChanged().Select(_ => NavigationStack.Count));
             NavigateBack =
-                ReactiveCommand.CreateFromObservable(
+                ReactiveCommand.CreateFromObservable<IRoutableViewModel?>(
                     () =>
                     {
                         _navigationStack.RemoveAt(NavigationStack.Count - 1);
-                        return Observables.Unit;
+                        return Observable.Return(NavigationStack.Count > 0 ? _navigationStack[NavigationStack.Count - 1] : default);
                     },
                     countAsBehavior.Select(x => x > 1),
                     navigateScheduler);
