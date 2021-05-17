@@ -99,7 +99,7 @@ namespace ReactiveUI
             targetSetter?.Invoke(target, ctlDelegate, null);
             var actionDisp = Disposable.Create(() => targetSetter?.Invoke(target, null, null));
 
-            Action<object, object, object[]?>? enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
+            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
             if (enabledSetter is null)
             {
                 return actionDisp;

@@ -398,7 +398,7 @@ namespace ReactiveUI
                 var seen = new HashSet<string>();
                 var uniqueEvents = new Stack<TEventArgs>(events.Count);
 
-                for (int i = events.Count - 1; i >= 0; i--)
+                for (var i = events.Count - 1; i >= 0; i--)
                 {
                     var propertyName = events[i].PropertyName;
                     if (propertyName is not null && seen.Add(propertyName))

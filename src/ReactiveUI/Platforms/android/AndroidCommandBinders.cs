@@ -21,7 +21,7 @@ namespace ReactiveUI
         /// </summary>
         public AndroidCommandBinders()
         {
-            Type view = typeof(View);
+            var view = typeof(View);
             Register(view, 9, (cmd, t, cp) => ForEvent(cmd, t, cp, "Click", view.GetRuntimeProperty("Enabled")));
         }
 

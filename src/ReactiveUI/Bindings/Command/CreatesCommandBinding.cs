@@ -22,7 +22,7 @@ namespace ReactiveUI
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
                     {
-                        int score = x.GetAffinityForObject(t, false);
+                        var score = x.GetAffinityForObject(t, false);
                         return (score > acc.score) ? (score, x) : acc;
                     }).binding;
             }, RxApp.SmallCacheLimit);
@@ -34,7 +34,7 @@ namespace ReactiveUI
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
                     {
-                        int score = x.GetAffinityForObject(t, true);
+                        var score = x.GetAffinityForObject(t, true);
                         return (score > acc.score) ? (score, x) : acc;
                     }).binding;
             }, RxApp.SmallCacheLimit);

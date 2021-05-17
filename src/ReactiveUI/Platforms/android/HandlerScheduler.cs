@@ -53,7 +53,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            bool isCancelled = false;
+            var isCancelled = false;
             var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
 
             _handler.Post(() =>
@@ -74,7 +74,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            bool isCancelled = false;
+            var isCancelled = false;
             var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
 
             _handler.PostDelayed(

@@ -39,7 +39,7 @@ namespace ReactiveUI.Tests
                         return Task.CompletedTask;
                     });
 
-            bool isDeletionConfirmed = await vm.Interaction1.Handle("123");
+            var isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -63,7 +63,7 @@ namespace ReactiveUI.Tests
                     return Observable.Return(Unit.Default);
                 });
 
-            bool isDeletionConfirmed = await vm.Interaction1.Handle("123");
+            var isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -89,7 +89,7 @@ namespace ReactiveUI.Tests
 
             view.ViewModel = new InteractionBindViewModel();
 
-            bool isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
+            var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -115,7 +115,7 @@ namespace ReactiveUI.Tests
 
             view.ViewModel = new InteractionBindViewModel();
 
-            bool isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
+            var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -233,7 +233,7 @@ namespace ReactiveUI.Tests
 
             view.ViewModel = new InteractionBindViewModel();
 
-            bool isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
+            var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -259,7 +259,7 @@ namespace ReactiveUI.Tests
 
             view.ViewModel = new InteractionBindViewModel();
 
-            bool isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
+            var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -283,7 +283,7 @@ namespace ReactiveUI.Tests
                     return Task.CompletedTask;
                 });
 
-            bool isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
+            var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -307,7 +307,7 @@ namespace ReactiveUI.Tests
                     return Observable.Return(Unit.Default);
                 });
 
-            bool isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
+            var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -384,7 +384,7 @@ namespace ReactiveUI.Tests
 
             vm.InteractionViewModel = new InteractionBindViewModel();
 
-            bool isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
+            var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }
@@ -413,7 +413,7 @@ namespace ReactiveUI.Tests
 
             vm.InteractionViewModel = new InteractionBindViewModel();
 
-            bool isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
+            var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
             isDeletionConfirmed.Should().BeTrue();
         }

@@ -92,7 +92,7 @@ namespace ReactiveUI
         /// <returns>True if messages have been posted for this message Type.</returns>
         public bool IsRegistered(Type type, string? contract = null)
         {
-            bool ret = false;
+            var ret = false;
             WithMessageBus(type, contract, (mb, item) => { ret = mb.ContainsKey(item) && mb[item].IsAlive; });
 
             return ret;

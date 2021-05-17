@@ -303,7 +303,7 @@ namespace ReactiveUI
 
                 // Wire up the first transition to start the second transition when it's complete.
                 startingTransitionName = $"Transition_{Transition}{Direction}Out";
-                Storyboard transitionOut = GetTransitionStoryboardByName(startingTransitionName);
+                var transitionOut = GetTransitionStoryboardByName(startingTransitionName);
 
                 transitionOut.Completed += (_, _) => VisualStateManager.GoToState(
                     this,

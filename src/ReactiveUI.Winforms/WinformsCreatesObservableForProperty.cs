@@ -30,7 +30,7 @@ namespace ReactiveUI.Winforms
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            bool supportsTypeBinding = typeof(Component).IsAssignableFrom(type);
+            var supportsTypeBinding = typeof(Component).IsAssignableFrom(type);
             if (!supportsTypeBinding)
             {
                 return 0;
@@ -57,7 +57,7 @@ namespace ReactiveUI.Winforms
 
             return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
-                bool completed = false;
+                var completed = false;
                 var handler = new EventHandler((o, e) =>
                 {
                     if (completed)

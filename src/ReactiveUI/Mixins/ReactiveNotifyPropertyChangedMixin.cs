@@ -25,7 +25,7 @@ namespace ReactiveUI
                     return Locator.Current.GetServices<ICreatesObservableForProperty>()
                                   .Aggregate((score: 0, binding: (ICreatesObservableForProperty?)null), (acc, x) =>
                                   {
-                                      int score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
+                                      var score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
                                       return score > acc.score ? (score, x) : acc;
                                   }).binding;
                 }, RxApp.BigCacheLimit);
@@ -50,9 +50,9 @@ namespace ReactiveUI
         /// with the initial value.</param>
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
-        public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
-                this TSender item,
-                Expression<Func<TSender, TValue>> property,
+        public static IObservable<IObservedChange<TSender, TValue?>> ObservableForProperty<TSender, TValue>(
+                this TSender? item,
+                Expression<Func<TSender, TValue?>> property,
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
@@ -81,7 +81,7 @@ namespace ReactiveUI
              *  Resubscribe to new Baz, publish to Subject
              */
 
-            return SubscribeToExpressionChain<TSender, TValue>(
+            return SubscribeToExpressionChain<TSender, TValue?>(
                 item,
                 property.Body,
                 beforeChange,
@@ -107,9 +107,9 @@ namespace ReactiveUI
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
-                this TSender item,
-                Expression<Func<TSender, TValue>> property,
-                Func<TValue, TRet> selector,
+                this TSender? item,
+                Expression<Func<TSender, TValue?>> property,
+                Func<TValue?, TRet> selector,
                 bool beforeChange = false)
             where TSender : class
         {
@@ -136,8 +136,8 @@ namespace ReactiveUI
         /// <returns>A observable which notifies about observed changes.</returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
-            this TSender source,
-            Expression expression,
+            this TSender? source,
+            Expression? expression,
             bool beforeChange = false,
             bool skipInitial = true,
             bool suppressWarnings = false)
@@ -150,7 +150,7 @@ namespace ReactiveUI
             IObservable<IObservedChange<object?, object?>> notifier =
                 Observable.Return(new ObservedChange<object?, object?>(null, null!, source));
 
-            IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
+            var chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n
                 .Select(y => NestedObservedChanges(expr, y, beforeChange, suppressWarnings))
                 .Switch());

@@ -60,7 +60,7 @@ namespace ReactiveUI
                                 if (view is not null)
                                 {
                                     _titleUpdater.Disposable = Router.GetCurrentViewModel()
-                                        .WhenAnyValue(y => y!.UrlPathSegment)
+                                        .WhenAnyValue(y => y.UrlPathSegment)
                                         .Subscribe(y => view.NavigationItem.Title = y);
                                 }
                             }
@@ -86,7 +86,7 @@ namespace ReactiveUI
                             if (x?.View is not null)
                             {
                                 _titleUpdater.Disposable = Router.GetCurrentViewModel()
-                                    .WhenAnyValue(y => y!.UrlPathSegment)
+                                    .WhenAnyValue(y => y.UrlPathSegment)
                                     .Subscribe(y => x.View.NavigationItem.Title = y);
                             }
 
@@ -205,12 +205,9 @@ namespace ReactiveUI
 
             view.ViewModel = viewModel;
 
-            if (!(view is NSViewController viewController))
-            {
-                throw new Exception($"View type {view.GetType().Name} for view model type {viewModel.GetType().Name} is not a UIViewController");
-            }
-
-            return viewController;
+            return view is not NSViewController viewController
+                ? throw new Exception($"View type {view.GetType().Name} for view model type {viewModel.GetType().Name} is not a UIViewController")
+                : viewController;
         }
     }
 }

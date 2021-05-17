@@ -151,15 +151,15 @@ namespace ReactiveUI.Tests
 
                 input.OnNext("Foo");
                 scheduler.Start();
-                Assert.Equal("Foo", fixture.Child.IsNotNullString);
+                Assert.Equal("Foo", fixture.Child!.IsNotNullString);
 
                 fixture.Child = new TestFixture();
                 scheduler.Start();
-                Assert.Equal("Foo", fixture.Child.IsNotNullString);
+                Assert.Equal("Foo", fixture.Child!.IsNotNullString);
 
                 input.OnNext("Bar");
                 scheduler.Start();
-                Assert.Equal("Bar", fixture.Child.IsNotNullString);
+                Assert.Equal("Bar", fixture.Child!.IsNotNullString);
             });
 
         /// <summary>

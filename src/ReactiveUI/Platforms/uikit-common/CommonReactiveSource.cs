@@ -146,7 +146,7 @@ namespace ReactiveUI
                     // When item at index 1 is removed item at index 2 is now at index 1 and so on down the line.
                     return Enumerable
                         .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
-                        .Select(x => Update.CreateDelete(pendingChange.OldStartingIndex));
+                        .Select(_ => Update.CreateDelete(pendingChange.OldStartingIndex));
                 case NotifyCollectionChangedAction.Move:
                     return Enumerable
                         .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
@@ -172,7 +172,7 @@ namespace ReactiveUI
             _sectionInfoDisposable.Disposable = null;
         }
 
-        private void SectionInfoChanged(IReadOnlyList<TSectionInfo> sectionInfo)
+        private void SectionInfoChanged(IReadOnlyList<TSectionInfo>? sectionInfo)
         {
             VerifyOnMainThread();
 
@@ -236,10 +236,9 @@ namespace ReactiveUI
                         .Do(y => this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] IsReloadingData = {1}", sectionInfoId, y))
                         .Publish();
 
-                    var anySectionChanged = Observable
-                        .Merge(
-                            sectionInfo
-                            .Select((y, index) => y.Collection!.ObserveCollectionChanges().Select(z => new { Section = index, Change = z })))
+                    var anySectionChanged = sectionInfo
+                            .Select((y, index) => y.Collection!.ObserveCollectionChanges().Select(z => new { Section = index, Change = z }))
+                        .Merge()
                         .Publish();
 
                     // since reloads are applied asynchronously, it is possible for data to change whilst the reload is occurring
@@ -269,7 +268,7 @@ namespace ReactiveUI
                             anySectionChanged,
                             _ => isReloading,
                             _ => Observable<Unit>.Empty,
-                            (reloading, changeDetails) => new { Change = changeDetails.Change, Section = changeDetails.Section })
+                            (_, changeDetails) => (changeDetails.Change, changeDetails.Section))
                         .Subscribe(
                             y =>
                         {
@@ -336,18 +335,18 @@ namespace ReactiveUI
                         {
                             this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] The pending changes (in order received) are:", sectionInfoId);
 
-                            foreach (var pendingSectionChange in _pendingChanges)
+                            foreach (var (section, pendingChange) in _pendingChanges)
                             {
                                 this.Log().Debug(
                                     CultureInfo.InvariantCulture,
                                     "[#{0}] Section {1}: Action = {2}, OldStartingIndex = {3}, NewStartingIndex = {4}, OldItems.Count = {5}, NewItems.Count = {6}",
                                     sectionInfoId,
-                                    pendingSectionChange.section,
-                                    pendingSectionChange.pendingChange.Action,
-                                    pendingSectionChange.pendingChange.OldStartingIndex,
-                                    pendingSectionChange.pendingChange.NewStartingIndex,
-                                    pendingSectionChange.pendingChange.OldItems is null ? "null" : pendingSectionChange.pendingChange.OldItems.Count.ToString(CultureInfo.InvariantCulture),
-                                    pendingSectionChange.pendingChange.NewItems is null ? "null" : pendingSectionChange.pendingChange.NewItems.Count.ToString(CultureInfo.InvariantCulture));
+                                    section,
+                                    pendingChange.Action,
+                                    pendingChange.OldStartingIndex,
+                                    pendingChange.NewStartingIndex,
+                                    pendingChange.OldItems is null ? "null" : pendingChange.OldItems.Count.ToString(CultureInfo.InvariantCulture),
+                                    pendingChange.NewItems is null ? "null" : pendingChange.NewItems.Count.ToString(CultureInfo.InvariantCulture));
                             }
                         }
 

@@ -35,7 +35,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void AnyChangeInExpressionListTriggersUpdate()
         {
-            var obj = new ObjChain1();
+            ObjChain1? obj = new();
             bool obsUpdated;
 
             obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe(_ => obsUpdated = true);
@@ -101,12 +101,7 @@ namespace ReactiveUI.Tests
                 {
                     var propertyName = y.GetMemberInfo()?.Name;
 
-                    if (propertyName is null)
-                    {
-                        throw new InvalidOperationException("propertyName should not be null.");
-                    }
-
-                    return propertyName;
+                    return propertyName ?? throw new InvalidOperationException("propertyName should not be null.");
                 }));
             }
 
@@ -120,7 +115,7 @@ namespace ReactiveUI.Tests
         public void OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new HostTestFixture
+                HostTestFixture? fixture = new()
                               {
                                   Child = new TestFixture()
                               };
@@ -180,7 +175,7 @@ namespace ReactiveUI.Tests
         public void OFPNamedPropertyTestBeforeChange() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new TestFixture
+                TestFixture? fixture = new()
                               {
                                   IsOnlyOneWord = "Pre"
                               };
@@ -209,7 +204,7 @@ namespace ReactiveUI.Tests
         public void OFPNamedPropertyTestNoSkipInitial() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new TestFixture
+                TestFixture? fixture = new()
                               {
                                   IsOnlyOneWord = "Pre"
                               };
@@ -234,7 +229,7 @@ namespace ReactiveUI.Tests
         public void OFPNamedPropertyTestRepeats() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new TestFixture();
+                TestFixture? fixture = new();
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord)
                        .ToObservableChangeSet(ImmediateScheduler.Instance)
                        .Bind(out var changes)
@@ -265,7 +260,7 @@ namespace ReactiveUI.Tests
         public void OFPReplacingTheHostShouldResubscribeTheObservable() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new HostTestFixture
+                HostTestFixture? fixture = new()
                               {
                                   Child = new TestFixture()
                               };
@@ -310,7 +305,7 @@ namespace ReactiveUI.Tests
         public void OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new HostTestFixture
+                HostTestFixture? fixture = new()
                               {
                                   Child = new TestFixture()
                               };
@@ -350,7 +345,7 @@ namespace ReactiveUI.Tests
         public void OFPShouldWorkWithINPCObjectsToo() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new NonReactiveINPCObject
+                NonReactiveINPCObject? fixture = new()
                               {
                                   InpcProperty = null!
                               };
@@ -376,7 +371,7 @@ namespace ReactiveUI.Tests
         public void OFPSimpleChildPropertyTest() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new HostTestFixture
+                HostTestFixture? fixture = new()
                               {
                                   Child = new TestFixture()
                               };
@@ -410,7 +405,7 @@ namespace ReactiveUI.Tests
         public void OFPSimplePropertyTest() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new TestFixture();
+                TestFixture? fixture = new();
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord)
                        .ToObservableChangeSet(ImmediateScheduler.Instance)
                        .Bind(out var changes)
@@ -440,7 +435,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void SubscriptionToWhenAnyShouldReturnCurrentValue()
         {
-            var obj = new HostTestFixture();
+            HostTestFixture? obj = new();
             var observedValue = 1;
             obj.WhenAnyValue(x => x.SomeOtherParam).Subscribe(x => observedValue = x);
 
@@ -455,7 +450,7 @@ namespace ReactiveUI.Tests
             var tid = Thread.CurrentThread.ManagedThreadId;
 
             TaskPoolScheduler.Default.With(
-                                           scheduler =>
+                                           _ =>
                                            {
                                                var whenAnyTid = 0;
                                                var fixture = new TestFixture
@@ -465,7 +460,7 @@ namespace ReactiveUI.Tests
                                                    PocoProperty = "Bamf"
                                                };
 
-                                               fixture.WhenAnyValue(x => x.IsNotNullString).Subscribe(x => { whenAnyTid = Thread.CurrentThread.ManagedThreadId; });
+                                               fixture.WhenAnyValue(x => x.IsNotNullString).Subscribe(__ => whenAnyTid = Thread.CurrentThread.ManagedThreadId);
 
                                                var timeout = 10;
                                                fixture.IsNotNullString = "Bar";
@@ -488,28 +483,28 @@ namespace ReactiveUI.Tests
                 PocoProperty = "Bamf"
             };
 
-            var output = new List<IObservedChange<TestFixture, string?>>();
+            var output = new List<IObservedChange<TestFixture, string?>?>();
             fixture.WhenAny(x => x.PocoProperty, x => x).Subscribe(output.Add);
             var output2 = new List<string?>();
             fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output2.Add);
-            var output3 = new List<IObservedChange<TestFixture, int?>>();
+            var output3 = new List<IObservedChange<TestFixture, int?>?>();
             fixture.WhenAny(x => x.NullableInt, x => x).Subscribe(output3.Add);
 
             var output4 = new List<int?>();
             fixture.WhenAnyValue(x => x.NullableInt).Subscribe(output4.Add);
 
             Assert.Equal(1, output.Count);
-            Assert.Equal(fixture, output[0].Sender);
-            Assert.Equal("PocoProperty", output[0].GetPropertyName());
-            Assert.Equal("Bamf", output[0].Value);
+            Assert.Equal(fixture, output[0]!.Sender);
+            Assert.Equal("PocoProperty", output[0]!.GetPropertyName());
+            Assert.Equal("Bamf", output[0]!.Value);
 
             Assert.Equal(1, output2.Count);
             Assert.Equal("Bamf", output2[0]);
 
             Assert.Equal(1, output3.Count);
-            Assert.Equal(fixture, output3[0].Sender);
-            Assert.Equal("NullableInt", output3[0].GetPropertyName());
-            Assert.Equal(null, output3[0].Value);
+            Assert.Equal(fixture, output3[0]!.Sender);
+            Assert.Equal("NullableInt", output3[0]!.GetPropertyName());
+            Assert.Equal(null, output3[0]!.Value);
 
             Assert.Equal(1, output4.Count);
             Assert.Equal(null, output4[0]);
@@ -584,7 +579,7 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(
                 scheduler =>
                 {
-                    var fixture = new HostTestFixture
+                    HostTestFixture? fixture = new()
                                   {
                                       Child = new TestFixture()
                                   };
@@ -603,7 +598,7 @@ namespace ReactiveUI.Tests
                                       }).Subscribe(
                         x =>
                         {
-                            output1.Add(x.sop);
+                            output1.Add(x!.sop);
                             output2.Add(x.nns!);
                         });
 
@@ -660,7 +655,7 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(
                 scheduler =>
                 {
-                    var fixture = new HostTestFixture
+                    HostTestFixture? fixture = new()
                                   {
                                       Child = new TestFixture()
                                   };
@@ -679,7 +674,7 @@ namespace ReactiveUI.Tests
                                       }).Subscribe(
                         x =>
                         {
-                            output1.Add(x.sop);
+                            output1.Add(x!.sop);
                             output2.Add(x.nns!);
                         });
 
@@ -764,7 +759,7 @@ namespace ReactiveUI.Tests
         {
             var fixture = new TestFixture();
             var exception = Assert.Throws<NotSupportedException>(
-                () => fixture.WhenAnyValue(x => Dummy).Subscribe());
+                () => fixture.WhenAnyValue(_ => Dummy).Subscribe());
 
             Assert.Equal("Unsupported expression of type 'Constant'. Did you miss the member access prefix in the expression?", exception.Message);
         }

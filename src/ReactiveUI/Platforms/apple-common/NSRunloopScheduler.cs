@@ -52,7 +52,7 @@ namespace ReactiveUI
         public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
             var innerDisp = Disposable.Empty;
-            bool isCancelled = false;
+            var isCancelled = false;
 
             var timer = NSTimer.CreateScheduledTimer(dueTime, _ =>
             {

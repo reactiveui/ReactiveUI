@@ -275,7 +275,7 @@ namespace ReactiveUI.Tests
         public void OAPHDeferSubscriptionWithInitialFuncValueEmitInitialValueWhenSubscribed()
         {
             var observable = Observable.Empty<int>();
-            bool wasAccessed = false;
+            var wasAccessed = false;
             Func<int> getInitialValue = () =>
             {
                 wasAccessed = true;
