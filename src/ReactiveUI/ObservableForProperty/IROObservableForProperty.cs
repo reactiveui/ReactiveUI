@@ -21,7 +21,9 @@ namespace ReactiveUI
             // NB: Since every IReactiveObject is also an INPC, we need to bind more
             // tightly than INPCObservableForProperty, so we return 10 here
             // instead of one
+#pragma warning disable IDE0022 // Use expression body for methods
             return typeof(IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
+#pragma warning restore IDE0022 // Use expression body for methods
         }
 
         /// <inheritdoc/>
@@ -32,8 +34,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            var iro = sender as IReactiveObject;
-            if (iro == null)
+            if (sender is not IReactiveObject iro)
             {
                 throw new ArgumentException("Sender doesn't implement IReactiveObject");
             }

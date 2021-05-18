@@ -34,8 +34,7 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetActionCommandBinder"/> class.
         /// </summary>
-        public TargetActionCommandBinder()
-        {
+        public TargetActionCommandBinder() =>
 #if UIKIT
             _validTypes = new[]
             {
@@ -51,7 +50,6 @@ namespace ReactiveUI
                 typeof(NSToolbarItem),
             };
 #endif
-        }
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, bool hasEventTarget)
@@ -65,8 +63,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
-        public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
         {
             if (command is null)
             {
@@ -78,11 +75,11 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(target));
             }
 
-            commandParameter = commandParameter ?? Observable.Return(target);
+            commandParameter ??= Observable.Return(target);
 
             object? latestParam = null;
             var ctlDelegate = new ControlDelegate(
-                x =>
+                _ =>
                 {
                     if (command.CanExecute(latestParam))
                     {
@@ -108,7 +105,7 @@ namespace ReactiveUI
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
 
-            var compDisp = new CompositeDisposable(
+            return new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEvent<EventHandler, bool>(
@@ -124,14 +121,14 @@ namespace ReactiveUI
                         enabledSetter(target, x, null);
                         ctlDelegate.IsEnabled = x;
                     }));
-
-            return compDisp;
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
             where TEventArgs : EventArgs =>
+#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
             throw new NotImplementedException();
+#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
 
         private class ControlDelegate : NSObject
         {
@@ -146,8 +143,11 @@ namespace ReactiveUI
 
 #if !UIKIT
             [Export("validateMenuItem:")]
-            [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
+#pragma warning disable RCS1163 // Unused parameter.
+#pragma warning disable IDE0060 // Remove unused parameter
             public bool ValidateMenuItem(NSMenuItem menuItem) => IsEnabled;
+#pragma warning restore IDE0060 // Remove unused parameter
+#pragma warning restore RCS1163 // Unused parameter.
 #endif
         }
     }

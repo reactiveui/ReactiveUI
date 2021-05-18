@@ -143,7 +143,6 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>An array of arguments.</returns>
-        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:ClosingSquareBracketsMustBeSpacedCorrectly", Justification = "Reviewed.")]
         public static object?[]? GetArgumentsArray(this Expression expression)
         {
             if (expression is null)

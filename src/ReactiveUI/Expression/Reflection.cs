@@ -12,7 +12,6 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Text;
-
 using Splat;
 
 namespace ReactiveUI
@@ -397,11 +396,9 @@ namespace ReactiveUI
             return method.IsStatic;
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
 #pragma warning disable RCS1163 // Unused parameter.
         internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel? viewModel, TView view, Expression? expression)
 #pragma warning restore RCS1163 // Unused parameter.
-#pragma warning restore IDE0060 // Remove unused parameter
             where TView : class, IViewFor
             where TViewModel : class =>
                     view.WhenAnyValue(x => x.ViewModel)

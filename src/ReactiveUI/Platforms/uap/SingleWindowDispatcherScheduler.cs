@@ -132,14 +132,16 @@ namespace ReactiveUI
         private static void RaiseUnhandledException(Exception ex)
         {
             var timer = new DispatcherTimer
-                        {
-                            Interval = TimeSpan.Zero
-                        };
+            {
+                Interval = TimeSpan.Zero
+            };
 
             timer.Tick += RaiseToDispatcher;
 
             timer.Start();
+#pragma warning disable RCS1163 // Unused parameter.
             void RaiseToDispatcher(object sender, object e)
+#pragma warning restore RCS1163 // Unused parameter.
             {
                 timer.Stop();
                 timer.Tick -= RaiseToDispatcher;
@@ -223,9 +225,7 @@ namespace ReactiveUI
 
             d.Disposable = Disposable.Create(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                var t = Interlocked.Exchange(ref timer, null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                var t = Interlocked.Exchange(ref timer, null!);
                 if (t is not null)
                 {
                     t.Cancel();

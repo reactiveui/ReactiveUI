@@ -44,8 +44,8 @@ namespace ReactiveUI
                 Expression<Func<TView, TControl>> controlProperty,
                 Func<TParam> withParameter,
                 string? toEvent = null)
-            where TViewModel : class
             where TView : class, IViewFor<TViewModel>
+            where TViewModel : class
             where TProp : ICommand
         {
             if (vmProperty is null)
@@ -64,7 +64,7 @@ namespace ReactiveUI
 
             var bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent ?? string.Empty, cmd =>
             {
-                if (!(cmd is IReactiveCommand rc))
+                if (cmd is not IReactiveCommand rc)
                 {
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 }
@@ -109,8 +109,8 @@ namespace ReactiveUI
                 Expression<Func<TView, TControl>> controlProperty,
                 IObservable<TParam> withParameter,
                 string? toEvent = null)
-            where TViewModel : class
             where TView : class, IViewFor<TViewModel>
+            where TViewModel : class
             where TProp : ICommand
         {
             if (vmProperty is null)

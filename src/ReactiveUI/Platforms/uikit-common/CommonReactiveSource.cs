@@ -131,38 +131,36 @@ namespace ReactiveUI
             _sectionInfoDisposable?.Dispose();
         }
 
-        private static IEnumerable<Update> GetUpdatesForEvent(PendingChange pendingChange)
-        {
-            switch (pendingChange.Action)
+        private static IEnumerable<Update> GetUpdatesForEvent(PendingChange pendingChange) =>
+            pendingChange.Action switch
             {
-                case NotifyCollectionChangedAction.Add:
-                    return Enumerable
+                NotifyCollectionChangedAction.Add =>
+                    Enumerable
                         .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
-                        .Select(Update.CreateAdd);
-                case NotifyCollectionChangedAction.Remove:
-                    // Use OldStartingIndex for each "Update.Index" because the batch update processes and removes items sequentially
-                    // opposed to as one Range operation.
-                    // For example if we are removing the items from indexes 1 to 5.
-                    // When item at index 1 is removed item at index 2 is now at index 1 and so on down the line.
-                    return Enumerable
+                        .Select(Update.CreateAdd),
+                NotifyCollectionChangedAction.Remove =>
+                    Enumerable
                         .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
-                        .Select(_ => Update.CreateDelete(pendingChange.OldStartingIndex));
-                case NotifyCollectionChangedAction.Move:
-                    return Enumerable
+                        .Select(_ => Update.CreateDelete(pendingChange.OldStartingIndex)),
+
+                // Use OldStartingIndex for each "Update.Index" because the batch update processes and removes items sequentially
+                // opposed to as one Range operation.
+                // For example if we are removing the items from indexes 1 to 5.
+                // When item at index 1 is removed item at index 2 is now at index 1 and so on down the line.
+                NotifyCollectionChangedAction.Move =>
+                    Enumerable
                         .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
                         .Select(Update.CreateDelete)
                         .Concat(
                             Enumerable
                             .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
-                            .Select(Update.CreateAdd));
-                case NotifyCollectionChangedAction.Replace:
-                    return Enumerable
+                            .Select(Update.CreateAdd)),
+                NotifyCollectionChangedAction.Replace =>
+                    Enumerable
                         .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
-                        .SelectMany(x => new[] { Update.CreateDelete(x), Update.CreateAdd(x) });
-                default:
-                    throw new NotSupportedException("Don't know how to deal with " + pendingChange.Action);
-            }
-        }
+                        .SelectMany(x => new[] { Update.CreateDelete(x), Update.CreateAdd(x) }),
+                _ => throw new NotSupportedException("Don't know how to deal with " + pendingChange.Action),
+            };
 
         private void SectionInfoChanging()
         {
@@ -396,9 +394,11 @@ namespace ReactiveUI
                                     case UpdateType.Add:
                                         DoUpdate(_adapter.InsertItems, new[] { normalizedUpdate.Index }, section);
                                         break;
+
                                     case UpdateType.Delete:
                                         DoUpdate(_adapter.DeleteItems, new[] { normalizedUpdate.Index }, section);
                                         break;
+
                                     default:
                                         throw new NotSupportedException();
                                 }

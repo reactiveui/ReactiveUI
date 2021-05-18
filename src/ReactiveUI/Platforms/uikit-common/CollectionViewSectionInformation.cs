@@ -16,7 +16,6 @@ namespace ReactiveUI
     /// and <see cref="UIKit.UICollectionViewCell"/>.
     /// </summary>
     /// <typeparam name="TSource">The type of the source.</typeparam>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class CollectionViewSectionInformation<TSource> : ISectionInformation<UICollectionViewCell>
     {
         /// <inheritdoc/>

@@ -14,26 +14,31 @@ using System.Threading;
 namespace ReactiveUI
 {
     /// <summary>
+    /// <para>
     /// ViewModelActivator is a helper class that you instantiate in your
     /// ViewModel classes in order to help with Activation. Views will internally
     /// call this class when the corresponding View comes on screen. This means
     /// you can set up resources such as subscriptions to global objects that
     /// should be cleaned up on exit. Once you instantiate this class, use the
     /// WhenActivated method to register what to do when activated.
-    ///
+    /// </para>
+    /// <para>
     /// View Activation is  **not** the same as being loaded / unloaded; Views
     /// are Activated when they *enter* the Visual Tree, and are Deactivated when
     /// they *leave* the Visual Tree. This is a critical difference when it comes
     /// to views that are recycled, such as UITableViews or Virtualizing
     /// ScrollViews.
-    ///
+    /// </para>
+    /// <para>
     /// Create this class solely in the **Base Class** of any classes that inherit
     /// from this class (i.e. if you create a FooViewModel that supports activation,
     /// the instance should be protected and a child BarViewModel should use the
     /// existing ViewModelActivator).
-    ///
+    /// </para>
+    /// <para>
     /// NOTE: You **must** set up Activation in the corresponding View when using
     /// ViewModel Activation.
+    /// </para>
     /// </summary>
     public sealed class ViewModelActivator : IDisposable
     {
@@ -60,7 +65,7 @@ namespace ReactiveUI
         public IObservable<Unit> Activated => _activated;
 
         /// <summary>
-        /// Gets a observable observable which will tick every time the Activator is deactivated.
+        /// Gets a observable which will tick every time the Activator is deactivated.
         /// </summary>
         /// <value>The deactivated.</value>
         public IObservable<Unit> Deactivated => _deactivated;

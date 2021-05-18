@@ -26,12 +26,11 @@ namespace ReactiveUI
     /// This is a UIControl that is both and UIControl and has a ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-        private Subject<Unit> _deactivated = new();
-        private Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
+        private readonly Subject<Unit> _activated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveControl"/> class.
@@ -94,16 +93,12 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a observable when the control is activated.
         /// </summary>
-#pragma warning disable CS0108 // member hides inherited member
         public IObservable<Unit> Activated => _activated.AsObservable();
-#pragma warning restore CS0108
 
         /// <summary>
         /// Gets a observable that occurs when the control is deactivated.
         /// </summary>
-#pragma warning disable CS0108 // member hides inherited member
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
-#pragma warning restore CS0108
 
 #if UIKIT
         /// <inheritdoc/>

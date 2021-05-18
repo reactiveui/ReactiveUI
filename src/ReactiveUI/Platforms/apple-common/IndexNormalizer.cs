@@ -3,13 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+
 namespace ReactiveUI
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-
     /// <summary> takes a batch of updates in their natural order (i.e. the order they occurred in the client code) and normalizes them to
     /// something iOS can consume when performing batch updates to a table or collection view
     /// iOS requires that all deletes be specified first with indexes relative to the source data *before* any insertions are applied
@@ -71,18 +71,15 @@ namespace ReactiveUI
         }
 
         // calculate the index for an update
-        private static int CalculateUpdateIndex(IList<Update> updates, int updateIndex)
-        {
-            switch (updates[updateIndex].Type)
+        private static int CalculateUpdateIndex(IList<Update> updates, int updateIndex) =>
+            updates[updateIndex].Type switch
             {
-                case UpdateType.Add:
-                    return CalculateAdditionIndex(updates, 0, updates.Count, updateIndex);
-                case UpdateType.Delete:
-                    return CalculateDeletionIndex(updates, 0, updateIndex, updates[updateIndex].Index);
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+                UpdateType.Add =>
+                    CalculateAdditionIndex(updates, 0, updates.Count, updateIndex),
+                UpdateType.Delete =>
+                    CalculateDeletionIndex(updates, 0, updateIndex, updates[updateIndex].Index),
+                _ => throw new NotSupportedException(),
+            };
 
         // calculate the index for an addition update
         // the formula is:

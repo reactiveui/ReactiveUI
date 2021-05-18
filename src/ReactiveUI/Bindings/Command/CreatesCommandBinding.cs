@@ -9,41 +9,35 @@ using System.Reflection;
 using System.Windows.Input;
 using Splat;
 
-#pragma warning disable RCS1102 // Make class static. Used as base class.
-
 namespace ReactiveUI
 {
+#pragma warning disable RCS1102 // Make class static. Used as base class.
     internal class CreatesCommandBinding
+#pragma warning restore RCS1102 // Make class static. Used as base class.
     {
-        private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> bindCommandCache =
+        private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> _bindCommandCache =
             new(
-                (t, _) =>
-            {
-                return Locator.Current.GetServices<ICreatesCommandBinding>()
+                (t, _) => Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
                     {
                         var score = x.GetAffinityForObject(t, false);
                         return (score > acc.score) ? (score, x) : acc;
-                    }).binding;
-            }, RxApp.SmallCacheLimit);
+                    }).binding, RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> bindCommandEventCache =
+        private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> _bindCommandEventCache =
             new(
-                (t, _) =>
-            {
-                return Locator.Current.GetServices<ICreatesCommandBinding>()
+                (t, _) => Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
                     {
                         var score = x.GetAffinityForObject(t, true);
                         return (score > acc.score) ? (score, x) : acc;
-                    }).binding;
-            }, RxApp.SmallCacheLimit);
+                    }).binding, RxApp.SmallCacheLimit);
 
-        public static IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object> commandParameter)
         {
-            var type = target.GetType();
+            var type = target!.GetType();
 
-            var binder = bindCommandCache.Get(type);
+            var binder = _bindCommandCache.Get(type);
 
             if (binder is null)
             {
@@ -59,10 +53,10 @@ namespace ReactiveUI
             return ret;
         }
 
-        public static IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object> commandParameter, string eventName)
         {
-            var type = target.GetType();
-            var binder = bindCommandEventCache.Get(type);
+            var type = target!.GetType();
+            var binder = _bindCommandEventCache.Get(type);
             if (binder is null)
             {
                 throw new Exception($"Couldn't find a Command Binder for {type.FullName} and event {eventName}");

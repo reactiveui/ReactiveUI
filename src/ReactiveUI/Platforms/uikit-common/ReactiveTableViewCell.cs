@@ -20,12 +20,11 @@ namespace ReactiveUI
     /// This is a UITableViewCell that is both an UITableViewCell and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged<ReactiveTableViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        private Subject<Unit> _activated = new();
-        private Subject<Unit> _deactivated = new();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
@@ -49,8 +48,9 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
+#pragma warning disable RCS1163 // Unused parameter.
         protected ReactiveTableViewCell(NSCoder coder)
+#pragma warning restore RCS1163 // Unused parameter.
             : base(NSObjectFlag.Empty)
         {
         }
@@ -181,8 +181,9 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
+#pragma warning disable RCS1163 // Unused parameter.
         protected ReactiveTableViewCell(NSCoder coder)
+#pragma warning restore RCS1163 // Unused parameter.
             : base(NSObjectFlag.Empty)
         {
         }

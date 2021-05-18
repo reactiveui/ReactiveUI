@@ -38,7 +38,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
         {
             if (target is null)
             {
@@ -66,14 +66,16 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable? BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
             where TEventArgs : EventArgs
 #endif
         {
             // NB: We should fall back to the generic Event-based handler if
             // an event target is specified
+#pragma warning disable IDE0022 // Use expression body for methods
             return null;
+#pragma warning restore IDE0022 // Use expression body for methods
         }
     }
 }

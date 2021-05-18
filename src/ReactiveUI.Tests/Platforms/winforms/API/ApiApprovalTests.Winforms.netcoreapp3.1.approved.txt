@@ -16,8 +16,8 @@ namespace ReactiveUI.Winforms
     public class CreatesWinformsCommandBinding : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesWinformsCommandBinding() { }
-        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter) { }
-        public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
+        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
+        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
     public class PanelSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger

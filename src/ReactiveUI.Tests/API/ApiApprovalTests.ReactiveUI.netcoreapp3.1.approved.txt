@@ -109,21 +109,21 @@ namespace ReactiveUI
     public class CreatesCommandBindingViaCommandParameter : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesCommandBindingViaCommandParameter() { }
-        public System.IDisposable BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter) { }
-        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
+        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
+        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
     public class CreatesCommandBindingViaEvent : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesCommandBindingViaEvent() { }
-        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter) { }
-        public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName) { }
+        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
+        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
     public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
     {
         public System.Func<string, string> ViewModelToViewFunc { get; set; }
-        public ReactiveUI.IViewFor? ResolveView<T>(T viewModel, string? contract = null) { }
+        public ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null) { }
     }
     public static class DependencyResolverMixins
     {
@@ -180,8 +180,8 @@ namespace ReactiveUI
     }
     public interface ICreatesCommandBinding
     {
-        System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter);
-        System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand command, object target, System.IObservable<object> commandParameter, string eventName);
+        System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter);
+        System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName);
         int GetAffinityForObject(System.Type type, bool hasEventTarget);
     }
     public interface ICreatesObservableForProperty : Splat.IEnableLogger
@@ -340,7 +340,7 @@ namespace ReactiveUI
     }
     public interface IViewLocator : Splat.IEnableLogger
     {
-        ReactiveUI.IViewFor? ResolveView<T>(T viewModel, string? contract = null);
+        ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
     }
     public class InteractionBinderImplementation : ReactiveUI.IInteractionBinderImplementation, Splat.IEnableLogger
     {
@@ -415,14 +415,14 @@ namespace ReactiveUI
     }
     public sealed class ObservableAsPropertyHelper<T> : ReactiveUI.IHandleObservableErrors, Splat.IEnableLogger, System.IDisposable
     {
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, T initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T>? onChanging = null, System.Func<T>? getInitialValue = null, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
-        public ObservableAsPropertyHelper(System.IObservable<T> observable, System.Action<T> onChanged, System.Action<T>? onChanging = null, T initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T?> observable, System.Action<T?> onChanged, T? initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T?> observable, System.Action<T?> onChanged, System.Action<T?>? onChanging = null, System.Func<T?>? getInitialValue = null, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T?> observable, System.Action<T?> onChanged, System.Action<T?>? onChanging = null, T? initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         public bool IsSubscribed { get; }
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public T Value { get; }
         public void Dispose() { }
-        public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T initialValue = default, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T? initialValue = default, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
     }
     public static class ObservableLoggingMixin
     {

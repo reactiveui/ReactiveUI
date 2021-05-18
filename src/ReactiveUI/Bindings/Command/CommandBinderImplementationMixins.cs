@@ -22,8 +22,8 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 string? toEvent = null)
-            where TViewModel : class
             where TView : class, IViewFor<TViewModel>
+            where TViewModel : class
             where TProp : ICommand =>
             @this.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
 
@@ -35,8 +35,8 @@ namespace ReactiveUI
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string? toEvent = null)
-            where TViewModel : class
             where TView : class, IViewFor<TViewModel>
+            where TViewModel : class
             where TProp : ICommand
         {
             if (withParameter is null)

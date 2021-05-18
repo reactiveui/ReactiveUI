@@ -265,7 +265,9 @@ namespace ReactiveUI
 
             var setter = _setMethodCache.Get((fromType, targetType));
 
+#pragma warning disable IDE0031 // Use null propagation
             return setter == null ? null : setter.PerformSet;
+#pragma warning restore IDE0031 // Use null propagation
         }
 
         private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(

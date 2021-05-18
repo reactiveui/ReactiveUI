@@ -22,7 +22,7 @@ namespace ReactiveUI
     public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     {
         // NB: These are in priority order
-        private static readonly List<(string name, Type type)> defaultEventsToBind = new List<(string name, Type type)>
+        private static readonly List<(string name, Type type)> _defaultEventsToBind = new()
         {
             ("Click", typeof(EventArgs)),
             ("TouchUpInside", typeof(EventArgs)),
@@ -41,7 +41,7 @@ namespace ReactiveUI
                 return 5;
             }
 
-            return defaultEventsToBind.Any(x =>
+            return _defaultEventsToBind.Any(x =>
             {
                 var ei = type.GetRuntimeEvent(x.name);
                 return ei is not null;
@@ -49,7 +49,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
         {
             if (target is null)
             {
@@ -57,7 +57,7 @@ namespace ReactiveUI
             }
 
             var type = target.GetType();
-            var eventInfo = defaultEventsToBind
+            var eventInfo = _defaultEventsToBind
                 .Select(x => new { EventInfo = type.GetRuntimeEvent(x.name), Args = x.type })
                 .FirstOrDefault(x => x.EventInfo is not null);
 
@@ -74,7 +74,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
             where TEventArgs : EventArgs
 #endif
@@ -82,13 +82,13 @@ namespace ReactiveUI
             var ret = new CompositeDisposable();
 
             object? latestParameter = null;
-            var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
+            var evt = Observable.FromEventPattern<TEventArgs>(target!, eventName);
 
             ret.Add(commandParameter.Subscribe(x => latestParameter = x));
 
             ret.Add(evt.Subscribe(_ =>
             {
-                if (command.CanExecute(latestParameter))
+                if (command!.CanExecute(latestParameter))
                 {
                     command.Execute(latestParameter);
                 }

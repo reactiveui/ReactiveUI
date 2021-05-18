@@ -21,7 +21,7 @@ namespace ReactiveUI.Winforms
     public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     {
         // NB: These are in priority order
-        private static readonly List<(string name, Type type)> defaultEventsToBind = new List<(string, Type)>
+        private static readonly List<(string name, Type type)> _defaultEventsToBind = new()
         {
             ("Click", typeof(EventArgs)),
             ("MouseUp", typeof(System.Windows.Forms.MouseEventArgs)),
@@ -42,7 +42,7 @@ namespace ReactiveUI.Winforms
                 return 6;
             }
 
-            return defaultEventsToBind.Any(x =>
+            return _defaultEventsToBind.Any(x =>
             {
                 var ei = type.GetEvent(x.name, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
                 return ei is not null;
@@ -50,7 +50,7 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
         {
             if (target is null)
             {
@@ -60,7 +60,7 @@ namespace ReactiveUI.Winforms
             const BindingFlags bf = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 
             var type = target.GetType();
-            var eventInfo = defaultEventsToBind
+            var eventInfo = _defaultEventsToBind
                 .Select(x => new { EventInfo = type.GetEvent(x.name, bf), Args = x.type })
                 .FirstOrDefault(x => x.EventInfo is not null);
 
@@ -76,7 +76,7 @@ namespace ReactiveUI.Winforms
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
         {
             if (command is null)
             {
@@ -122,10 +122,7 @@ namespace ReactiveUI.Winforms
                             x => command.CanExecuteChanged += x,
                             x => command.CanExecuteChanged -= x)
                         .StartWith(command.CanExecute(latestParam))
-                        .Subscribe(x =>
-                        {
-                            enabledProperty.SetValue(target, x, null);
-                        }));
+                        .Subscribe(x => enabledProperty.SetValue(target, x, null)));
                 }
             }
 
