@@ -66,14 +66,9 @@ namespace ReactiveUI
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
             var bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent, cmd =>
-            {
-                if (cmd is IReactiveCommand rc)
-                {
-                    return ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
-                }
-
-                return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
-            });
+            cmd is IReactiveCommand rc
+                    ? ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute)
+                    : new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter())));
 
             return new ReactiveBinding<TView, TProp>(
                 view,
