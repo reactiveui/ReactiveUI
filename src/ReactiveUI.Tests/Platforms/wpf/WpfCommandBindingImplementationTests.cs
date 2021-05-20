@@ -6,6 +6,7 @@
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -136,7 +137,7 @@ namespace ReactiveUI.Tests.Wpf
             var btn = new Button();
             var cmd = (btn as ICommand)!;
             var sub = new Subject<object>();
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.Throws<TargetInvocationException>(() =>
             {
                 var disp = CreatesCommandBinding.BindCommandToObject(cmd, view, sub, "PropertyChanged");
 
@@ -164,7 +165,7 @@ namespace ReactiveUI.Tests.Wpf
             var btn = new Button();
             var cmd = (btn as ICommand)!;
             var sub = new Subject<object>();
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.Throws<Exception>(() =>
             {
                 var disp = CreatesCommandBinding.BindCommandToObject(cmd, view, sub);
 
@@ -215,51 +216,51 @@ namespace ReactiveUI.Tests.Wpf
             Assert.Equal(2, invokeCount);
         }
 
-        /////// <summary>
-        /////// Commands the bind view model to view with function.
-        /////// </summary>
-        ////[Fact(Skip = "Need to resolve Func<T> to IObservable<T> bug exists if using this overload. Implimentation uses a ReactiveCommand for Parameter but does not reflect the required types")]
-        ////public void CommandBindViewModelToViewWithFunc()
-        ////{
-        ////    ////////////////////////////////////////////
-        ////    //// TEST FAILING NEED TO FIND RESOLVE /////
-        ////    ////////////////////////////////////////////
+        /// <summary>
+        /// Commands the bind view model to view with function.
+        /// </summary>
+        [Fact(Skip = "Need to resolve Func<T> to IObservable<T> bug exists if using this overload. Implimentation uses a ReactiveCommand for Parameter but does not reflect the required types")]
+        public void CommandBindViewModelToViewWithFunc()
+        {
+            ////////////////////////////////////////////
+            //// TEST FAILING NEED TO FIND RESOLVE /////
+            ////////////////////////////////////////////
 
-        ////    var vm = new CommandBindingViewModel();
-        ////    var view = new CommandBindingView { ViewModel = vm };
+            var vm = new CommandBindingViewModel();
+            var view = new CommandBindingView { ViewModel = vm };
 
-        ////    // Create a paramenter feed
-        ////    var invokeCount = 0;
-        ////    var func = new Func<int>(() => invokeCount);
-        ////    vm.Command2.Subscribe(_ =>
-        ////    {
-        ////        invokeCount++;
-        ////        func();
-        ////    });
-        ////    view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
+            // Create a paramenter feed
+            var invokeCount = 0;
+            var func = new Func<int>(() => invokeCount);
+            vm.Command2.Subscribe(_ =>
+            {
+                invokeCount++;
+                func();
+            });
+            view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
 
-        ////    // Bind the command and the Func<T> parameter.
-        ////    var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, func, "MouseUp");
-        ////    Assert.Equal(0, invokeCount);
+            // Bind the command and the Func<T> parameter.
+            var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, func, "MouseUp");
+            Assert.Equal(0, invokeCount);
 
-        ////    // Confirm that the values update as expected.
-        ////    var parameter = 0;
-        ////    vm.Command1.Subscribe(i => parameter = i);
-        ////    view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        ////    Assert.Equal(1, invokeCount);
-        ////    Assert.Equal(0, parameter);
+            // Confirm that the values update as expected.
+            var parameter = 0;
+            vm.Command1.Subscribe(i => parameter = i);
+            view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
+            Assert.Equal(1, invokeCount);
+            Assert.Equal(0, parameter);
 
-        ////    view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        ////    Assert.Equal(1, parameter);
+            view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
+            Assert.Equal(1, parameter);
 
-        ////    view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        ////    Assert.Equal(2, invokeCount);
-        ////    Assert.Equal(1, parameter);
+            view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
+            Assert.Equal(2, invokeCount);
+            Assert.Equal(1, parameter);
 
-        ////    view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        ////    Assert.Equal(2, parameter);
-        ////    Assert.Equal(2, invokeCount);
-        ////}
+            view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
+            Assert.Equal(2, parameter);
+            Assert.Equal(2, invokeCount);
+        }
 
         [Fact]
         public void BindCommandShouldNotWarnWhenBindingToFieldDeclaredInXaml()
