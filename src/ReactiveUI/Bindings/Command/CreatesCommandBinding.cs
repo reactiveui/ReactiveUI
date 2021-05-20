@@ -12,6 +12,7 @@ using Splat;
 namespace ReactiveUI
 {
 #pragma warning disable RCS1102 // Make class static. Used as base class.
+
     internal class CreatesCommandBinding
 #pragma warning restore RCS1102 // Make class static. Used as base class.
     {
@@ -53,7 +54,7 @@ namespace ReactiveUI
             return ret;
         }
 
-        public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object> commandParameter, string eventName)
+        public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object> commandParameter, string? eventName)
         {
             var type = target!.GetType();
             var binder = _bindCommandEventCache.Get(type);

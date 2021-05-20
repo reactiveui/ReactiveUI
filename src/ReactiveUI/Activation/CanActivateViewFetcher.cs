@@ -35,7 +35,7 @@ namespace ReactiveUI
         {
             if (view is not ICanActivate canActivate)
             {
-                return Observable.Empty(false);
+                return Observable.Return(false);
             }
 
             return canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));

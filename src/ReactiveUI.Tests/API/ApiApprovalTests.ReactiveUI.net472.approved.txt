@@ -660,7 +660,7 @@ namespace ReactiveUI
     public static class Reflection
     {
         public static string ExpressionToPropertyNames(System.Linq.Expressions.Expression? expression) { }
-        public static System.Type GetEventArgsTypeForEvent(System.Type type, string eventName) { }
+        public static System.Type GetEventArgsTypeForEvent(System.Type type, string? eventName) { }
         public static System.Func<object?, object?[]?, object?>? GetValueFetcherForProperty(System.Reflection.MemberInfo? member) { }
         public static System.Func<object?, object?[]?, object?> GetValueFetcherOrThrow(System.Reflection.MemberInfo? member) { }
         public static System.Action<object?, object?, object?[]?> GetValueSetterForProperty(System.Reflection.MemberInfo? member) { }

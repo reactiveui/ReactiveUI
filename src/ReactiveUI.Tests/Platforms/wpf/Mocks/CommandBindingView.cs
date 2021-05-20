@@ -21,6 +21,7 @@ namespace ReactiveUI.Tests.Wpf
         {
             Command1 = new CustomClickButton();
             Command2 = new Image();
+            Command3 = new Image();
         }
 
         /// <inheritdoc/>
@@ -40,5 +41,7 @@ namespace ReactiveUI.Tests.Wpf
         public CustomClickButton Command1 { get; protected set; }
 
         public Image Command2 { get; protected set; }
+
+        public Image Command3 { get; protected set; }
     }
 }

@@ -4,9 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows.Input;
 
 namespace ReactiveUI
@@ -62,14 +65,14 @@ namespace ReactiveUI
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            var bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent ?? string.Empty, cmd =>
+            var bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent, cmd =>
             {
-                if (cmd is not IReactiveCommand rc)
+                if (cmd is IReactiveCommand rc)
                 {
-                    return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
+                    return ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
                 }
 
-                return ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
+                return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
             });
 
             return new ReactiveBinding<TView, TProp>(
@@ -151,7 +154,7 @@ namespace ReactiveUI
             var disposable = Disposable.Empty;
 
             var bindInfo = source.CombineLatest(
-                view.SubscribeToExpressionChain<TView, object?>(controlExpression, false, false, RxApp.SuppressViewCommandBindingMessage).Select(x => x.Value),
+                view.SubscribeToExpressionChain<TView, object?>(controlExpression, false, false, RxApp.SuppressViewCommandBindingMessage).Select(x => x.GetValue()),
                 (val, host) => new { val, host });
 
             var propSub = bindInfo
@@ -170,7 +173,8 @@ namespace ReactiveUI
                     }
 
                     var cmd = commandFixuper is not null ? commandFixuper(x.val) : x.val;
-                    disposable = toEvent is not null ?
+
+                    disposable = !string.IsNullOrEmpty(toEvent) ?
                                CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent) :
                                CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!));
                 });
