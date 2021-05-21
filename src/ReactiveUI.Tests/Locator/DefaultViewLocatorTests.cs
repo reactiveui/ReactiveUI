@@ -65,7 +65,6 @@ namespace ReactiveUI.Tests
         /// Tests that the view model to view naming convention can be customized.
         /// </summary>
         [Fact]
-        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in all platforms.")]
         public void ViewModelToViewNamingConventionCanBeCustomized()
         {
             var resolver = new ModernDependencyResolver();
@@ -382,7 +381,6 @@ namespace ReactiveUI.Tests
         /// Tests that make sure this instance [can override name resolution function].
         /// </summary>
         [Fact]
-        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in all frameworks.")]
         public void CanOverrideNameResolutionFunc()
         {
             var resolver = new ModernDependencyResolver();

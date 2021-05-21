@@ -78,7 +78,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in NET472")]
         public void NotificationPocoSuppressErrorOnBind()
         {
             using (var testLoggerRegistration = new TestLoggerRegistration())
