@@ -218,7 +218,6 @@ namespace ReactiveUI.Tests.Wpf
         /// <summary>
         /// Commands the bind view model to view with function.
         /// </summary>
-
         [Fact]
         public void CommandBindViewModelToViewWithFunc()
         {
