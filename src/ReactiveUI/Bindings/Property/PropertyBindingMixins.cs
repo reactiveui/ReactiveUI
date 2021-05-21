@@ -14,12 +14,12 @@ namespace ReactiveUI
     /// </summary>
     public static class PropertyBindingMixins
     {
-        private static readonly IPropertyBinderImplementation binderImplementation;
+        private static readonly IPropertyBinderImplementation _binderImplementation;
 
         static PropertyBindingMixins()
         {
             RxApp.EnsureInitialized();
-            binderImplementation = new PropertyBinderImplementation();
+            _binderImplementation = new PropertyBinderImplementation();
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace ReactiveUI
                 IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor =>
-            binderImplementation.Bind(
+            _binderImplementation.Bind(
                 viewModel,
                 view,
                 vmProperty,
@@ -133,7 +133,7 @@ namespace ReactiveUI
                 IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor =>
-            binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, conversionHint, vmToViewConverterOverride, viewToVMConverterOverride);
+            _binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, conversionHint, vmToViewConverterOverride, viewToVMConverterOverride);
 
         /// <summary>
         /// Binds the specified view model property to the given view property.
@@ -174,7 +174,7 @@ namespace ReactiveUI
             Func<TVMProp?, TVProp> vmToViewConverter,
             Func<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class
-            where TView : class, IViewFor => binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>?)null, vmToViewConverter, viewToVmConverter);
+            where TView : class, IViewFor => _binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>?)null, vmToViewConverter, viewToVmConverter);
 
         /// <summary>
         /// Binds the specified view model property to the given view property.
@@ -226,7 +226,7 @@ namespace ReactiveUI
             Func<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class
             where TView : class, IViewFor =>
-            binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter);
+            _binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter);
 
         /// <summary>
         /// Binds the given property on the view model to a given property on the view in a one-way (view model to view) fashion.
@@ -273,7 +273,7 @@ namespace ReactiveUI
                 IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel : class
             where TView : class, IViewFor =>
-            binderImplementation.OneWayBind(
+            _binderImplementation.OneWayBind(
                 viewModel,
                 view,
                 vmProperty,
@@ -319,7 +319,7 @@ namespace ReactiveUI
                 Func<TProp?, TOut> selector)
             where TViewModel : class
             where TView : class, IViewFor =>
-            binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
+            _binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
 
         /// <summary>
         /// BindTo takes an Observable stream and applies it to a target
@@ -352,6 +352,6 @@ namespace ReactiveUI
             object? conversionHint = null,
             IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class =>
-            binderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
+            _binderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
     }
 }

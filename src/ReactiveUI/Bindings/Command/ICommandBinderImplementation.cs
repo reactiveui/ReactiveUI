@@ -20,8 +20,8 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="viewModel">The view model to bind to.</param>
         /// <param name="view">The view to bind to.</param>
-        /// <param name="propertyName">The name of the property on the View Model.</param>
-        /// <param name="controlName">The name of the control on the View.</param>
+        /// <param name="vmProperty">The name of the property on the View Model.</param>
+        /// <param name="controlProperty">The name of the control on the View.</param>
         /// <param name="withParameter">A function if we want to pass a parameter to the ICommand.</param>
         /// <param name="toEvent">A event on the view that will also trigger the command.</param>
         /// <typeparam name="TView">The type of the view.</typeparam>
@@ -33,12 +33,12 @@ namespace ReactiveUI
         IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TProp?>> propertyName,
-                Expression<Func<TView, TControl>> controlName,
+                Expression<Func<TViewModel, TProp?>> vmProperty,
+                Expression<Func<TView, TControl>> controlProperty,
                 Func<TParam> withParameter,
                 string? toEvent = null)
-            where TViewModel : class
             where TView : class, IViewFor<TViewModel>
+            where TViewModel : class
             where TProp : ICommand;
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="viewModel">The view model to bind to.</param>
         /// <param name="view">The view to bind to.</param>
-        /// <param name="propertyName">The name of the property on the View Model.</param>
-        /// <param name="controlName">The name of the control on the View.</param>
+        /// <param name="vmProperty">The name of the property on the View Model.</param>
+        /// <param name="controlProperty">The name of the control on the View.</param>
         /// <param name="withParameter">A observable if we want to pass a parameter to the ICommand.</param>
         /// <param name="toEvent">A event on the view that will also trigger the command.</param>
         /// <typeparam name="TView">The type of the view.</typeparam>
@@ -59,12 +59,12 @@ namespace ReactiveUI
         IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TProp?>> propertyName,
-                Expression<Func<TView, TControl>> controlName,
+                Expression<Func<TViewModel, TProp?>> vmProperty,
+                Expression<Func<TView, TControl>> controlProperty,
                 IObservable<TParam> withParameter,
                 string? toEvent = null)
-            where TViewModel : class
             where TView : class, IViewFor<TViewModel>
+            where TViewModel : class
             where TProp : ICommand;
     }
 }

@@ -72,7 +72,6 @@ namespace ReactiveUI
         /// Casts the LayoutViewHost to a View.
         /// </summary>
         /// <param name="layoutViewHost">The LayoutViewHost to cast.</param>
-        [SuppressMessage("Usage", "CA2225: Provide a method named ToView", Justification = "A property is already provided.")]
         public static implicit operator View?(LayoutViewHost layoutViewHost) => layoutViewHost?.View;
     }
 }

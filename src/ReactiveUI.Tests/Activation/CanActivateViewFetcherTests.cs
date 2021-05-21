@@ -6,7 +6,9 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
-
+using System.Threading.Tasks;
+using Microsoft.Reactive.Testing;
+using ReactiveUI.Tests.Winforms;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -16,6 +18,37 @@ namespace ReactiveUI.Tests
     /// </summary>
     public class CanActivateViewFetcherTests
     {
+        /// <summary>
+        /// Tests return negative for ICanActivate.
+        /// </summary>
+        [Fact]
+        public void CanNotFetchActivatorForNonCanActivateableForm()
+        {
+            var form = new TestFormNotCanActivate();
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            canActivateViewFetcher.GetActivationForView(form).AssertEqual(Observable.Return(false));
+        }
+
+        /// <summary>
+        /// Tests return positive for ICanActivate.
+        /// </summary>
+        [Fact]
+        public void CanGetActivationForViewForCanActivateableFormActivated()
+        {
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            canActivateViewFetcher.GetActivationForView(new TestForm(1)).FirstAsync().AssertEqual(Observable.Return(true));
+        }
+
+        /// <summary>
+        /// Tests return negative for ICanActivate.
+        /// </summary>
+        [Fact]
+        public void CanGetActivationForViewForCanActivateableFormDeactivated()
+        {
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            canActivateViewFetcher.GetActivationForView(new TestForm(2)).FirstAsync().AssertEqual(Observable.Return(false));
+        }
+
         /// <summary>
         /// Tests return positive for ICanActivate.
         /// </summary>
@@ -49,7 +82,8 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, affinity);
         }
 
-        #pragma warning disable CA1812 // Class is not instantiated
+#pragma warning disable CA1812 // Class is not instantiated
+
         private class CanActivateStub : ICanActivate
         {
             public IObservable<Unit> Activated { get; } = Observable.Empty<Unit>();

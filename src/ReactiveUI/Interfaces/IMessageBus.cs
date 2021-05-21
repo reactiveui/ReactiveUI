@@ -10,14 +10,17 @@ using Splat;
 namespace ReactiveUI
 {
     /// <summary>
+    /// <para>
     /// IMessageBus represents an object that can act as a "Message Bus", a
     /// simple way for ViewModels and other objects to communicate with each
     /// other in a loosely coupled way.
-    ///
+    /// </para>
+    /// <para>
     /// Specifying which messages go where is done via a combination of the Type
     /// of the message as well as an additional "Contract" parameter; this is a
     /// unique string used to distinguish between messages of the same Type, and
     /// is arbitrarily set by the client.
+    /// </para>
     /// </summary>
     public interface IMessageBus : IEnableLogger
     {

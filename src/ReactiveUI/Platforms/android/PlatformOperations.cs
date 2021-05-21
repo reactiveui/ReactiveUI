@@ -18,7 +18,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public string? GetOrientation()
         {
-            if (!(Application.Context.GetSystemService(Context.WindowService) is IWindowManager wm))
+            if (Application.Context.GetSystemService(Context.WindowService) is not IWindowManager wm)
             {
                 return null;
             }

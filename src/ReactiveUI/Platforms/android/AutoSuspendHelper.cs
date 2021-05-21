@@ -9,12 +9,9 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reflection;
 
 using Android.App;
 using Android.OS;
-
-using Java.Lang;
 
 using Splat;
 

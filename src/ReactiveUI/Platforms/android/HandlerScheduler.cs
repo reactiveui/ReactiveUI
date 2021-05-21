@@ -26,10 +26,8 @@ namespace ReactiveUI
         private readonly Handler _handler;
         private readonly long _looperId;
 
-        static HandlerScheduler()
-        {
+        static HandlerScheduler() =>
             MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper!), Looper.MainLooper?.Thread?.Id);
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HandlerScheduler"/> class.

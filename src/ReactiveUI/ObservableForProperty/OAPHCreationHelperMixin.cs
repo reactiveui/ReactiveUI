@@ -537,13 +537,11 @@ namespace ReactiveUI
                 throw new ArgumentException($"'{nameof(property)}' cannot be null or whitespace", nameof(property));
             }
 
-            var ret = source.ObservableToProperty(
+            result = source.ObservableToProperty(
                 target,
                 property,
                 deferSubscription,
                 scheduler);
-
-            result = ret;
 
             return result;
         }

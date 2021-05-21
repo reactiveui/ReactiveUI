@@ -25,19 +25,19 @@ namespace ReactiveUI
     /// </summary>
     public class KVOObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> DeclaredInNSObject;
+        private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> _declaredInNSObject;
 
         static KVOObservableForProperty()
         {
             var monotouchAssemblyName = typeof(NSObject).Assembly.FullName;
 
-            DeclaredInNSObject = new MemoizingMRUCache<(Type type, string propertyName), bool>(
+            _declaredInNSObject = new MemoizingMRUCache<(Type type, string propertyName), bool>(
                 (pair, _) =>
                 {
                     var thisType = pair.type;
 
                     // Types that aren't NSObjects at all are uninteresting to us
-                    if (typeof(NSObject).IsAssignableFrom(thisType) == false)
+                    if (!typeof(NSObject).IsAssignableFrom(thisType))
                     {
                         return false;
                     }
@@ -62,7 +62,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => DeclaredInNSObject.Get((type, propertyName)) ? 15 : 0;
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => _declaredInNSObject.Get((type, propertyName)) ? 15 : 0;
 
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
@@ -74,10 +74,9 @@ namespace ReactiveUI
 
             return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
-                var bobs = new BlockObserveValueDelegate((key, s, _) =>
-                {
-                    subj.OnNext(new ObservedChange<object, object?>(s, expression, default));
-                });
+                var bobs = new BlockObserveValueDelegate((__, s, _) =>
+                    subj.OnNext(new ObservedChange<object, object?>(s, expression, default)));
+
                 var pin = GCHandle.Alloc(bobs);
 
                 var keyPath = (NSString)FindCocoaNameFromNetName(sender.GetType(), propertyName);

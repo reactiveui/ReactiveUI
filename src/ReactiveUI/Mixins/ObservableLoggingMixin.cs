@@ -38,13 +38,13 @@ namespace ReactiveUI
             {
                 return @this.Do(
                     x => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, stringifier(x)),
-                    ex => logObject.Log().Warn(ex, message + " " + "OnError"),
+                    ex => logObject.Log().Warn(ex, message + " OnError"),
                     () => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
             }
 
             return @this.Do(
                 x => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, x),
-                ex => logObject.Log().Warn(ex, message + " " + "OnError"),
+                ex => logObject.Log().Warn(ex, message + " OnError"),
                 () => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
         }
 

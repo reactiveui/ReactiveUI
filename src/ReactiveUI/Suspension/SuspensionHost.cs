@@ -22,11 +22,9 @@ namespace ReactiveUI
 
         private readonly ReplaySubject<IObservable<Unit>> _isUnpausing = new(1);
 
-        private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState =
-            new(1);
+        private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState = new(1);
 
-        private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState =
-            new(1);
+        private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState = new(1);
 
         private object? _appState;
 
@@ -36,11 +34,11 @@ namespace ReactiveUI
         public SuspensionHost()
         {
 #if COCOA
-            var message = "Your AppDelegate class needs to use AutoSuspendHelper";
+            const string? message = "Your AppDelegate class needs to use AutoSuspendHelper";
 #elif ANDROID
-            var message = "You need to create an App class and use AutoSuspendHelper";
+            const string? message = "You need to create an App class and use AutoSuspendHelper";
 #else
-            var message = "Your App class needs to use AutoSuspendHelper";
+            const string? message = "Your App class needs to use AutoSuspendHelper";
 #endif
 
             IsLaunchingNew = IsResuming = IsUnpausing = ShouldInvalidateState =

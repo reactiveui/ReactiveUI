@@ -49,7 +49,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
         {
             if (target is null)
             {
@@ -74,9 +74,11 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
             where TEventArgs : EventArgs =>
+#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
             throw new NotImplementedException();
+#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
 
         /// <summary>
         /// Creates a commands binding from event and a property.
@@ -87,7 +89,7 @@ namespace ReactiveUI
         /// <param name="commandParameter">Command parameter.</param>
         /// <param name="eventName">Event name.</param>
         /// <param name="enabledProperty">Enabled Property.</param>
-        protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, PropertyInfo enabledProperty)
+        protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
         {
             if (command is null)
             {
@@ -97,9 +99,9 @@ namespace ReactiveUI
             commandParameter ??= Observable.Return(target);
 
             object? latestParam = null;
-            var ctl = target;
+            var ctl = target!;
 
-            var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe((e) =>
+            var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe((_) =>
             {
                 if (command.CanExecute(latestParam))
                 {
@@ -138,14 +140,14 @@ namespace ReactiveUI
         /// <param name="commandParameter">The command parameter.</param>
         /// <param name="enabledProperty">The enabled property.</param>
         /// <returns>Returns a disposable.</returns>
-        protected static IDisposable ForTargetAction(ICommand command, object target, IObservable<object> commandParameter, PropertyInfo enabledProperty)
+        protected static IDisposable ForTargetAction(ICommand? command, object? target, IObservable<object?> commandParameter, PropertyInfo enabledProperty)
         {
             if (command is null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            commandParameter = commandParameter ?? Observable.Return(target);
+            commandParameter ??= Observable.Return(target);
 
             object? latestParam = null;
 
@@ -194,13 +196,13 @@ namespace ReactiveUI
         /// <param name="type">The type.</param>
         /// <param name="affinity">The affinity.</param>
         /// <param name="createBinding">The create binding.</param>
-        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding) => _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
+        protected void Register(Type type, int affinity, Func<ICommand?, object?, IObservable<object?>, IDisposable> createBinding) => _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
 
         private class CommandBindingInfo
         {
             public int Affinity { get; set; }
 
-            public Func<ICommand, object, IObservable<object>, IDisposable>? CreateBinding { get; set; }
+            public Func<ICommand?, object?, IObservable<object?>, IDisposable>? CreateBinding { get; set; }
         }
     }
 }

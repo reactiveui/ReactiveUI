@@ -18,17 +18,14 @@ namespace ReactiveUI
     /// </summary>
     public static class ReactiveNotifyPropertyChangedMixin
     {
-        private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> notifyFactoryCache =
+        private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> _notifyFactoryCache =
             new(
-                (t, _) =>
-                {
-                    return Locator.Current.GetServices<ICreatesObservableForProperty>()
+                (t, _) => Locator.Current.GetServices<ICreatesObservableForProperty>()
                                   .Aggregate((score: 0, binding: (ICreatesObservableForProperty?)null), (acc, x) =>
                                   {
                                       var score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
                                       return score > acc.score ? (score, x) : acc;
-                                  }).binding;
-                }, RxApp.BigCacheLimit);
+                                  }).binding, RxApp.BigCacheLimit);
 
         static ReactiveNotifyPropertyChangedMixin() => RxApp.EnsureInitialized();
 
@@ -208,7 +205,7 @@ namespace ReactiveUI
             }
 
             var propertyName = memberInfo.Name;
-            var result = notifyFactoryCache.Get((sender.GetType(), propertyName, beforeChange));
+            var result = _notifyFactoryCache.Get((sender.GetType(), propertyName, beforeChange));
 
             if (result is null)
             {

@@ -22,7 +22,6 @@ namespace ReactiveUI
     {
         [field: NonSerialized]
         private readonly Interaction<TInput, TOutput>? _interaction;
-        private readonly TInput _input = default!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnhandledInteractionException{TInput, TOutput}"/> class.
@@ -33,7 +32,7 @@ namespace ReactiveUI
             : this("Failed to find a registration for a Interaction.")
         {
             _interaction = interaction;
-            _input = input;
+            Input = input;
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace ReactiveUI
         /// <param name="context">The serialization context.</param>
         protected UnhandledInteractionException(SerializationInfo info, StreamingContext context)
             : base(info, context) =>
-            _input = (TInput)info.GetValue(nameof(Input), typeof(TInput))!;
+            Input = (TInput)info.GetValue(nameof(Input), typeof(TInput))!;
 
         /// <summary>
         /// Gets the interaction that was not handled.
@@ -79,7 +78,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the input for the interaction that was not handled.
         /// </summary>
-        public TInput Input => _input;
+        public TInput Input { get; } = default!;
 
         /// <inheritdoc/>
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

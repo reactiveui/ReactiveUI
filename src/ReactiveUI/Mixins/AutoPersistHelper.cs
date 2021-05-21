@@ -26,16 +26,13 @@ namespace ReactiveUI
     /// </summary>
     public static class AutoPersistHelper
     {
-        private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new(
-            (type, _) =>
-        {
-            return type.GetTypeInfo().DeclaredProperties
+        private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> _persistablePropertiesCache = new(
+            (type, _) => type.GetTypeInfo().DeclaredProperties
                 .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
-                .ToDictionary(k => k.Name, _ => true);
-        }, RxApp.SmallCacheLimit);
+                .ToDictionary(k => k.Name, _ => true), RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<Type, bool> dataContractCheckCache = new(
-            (t, _) => t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Any(),
+        private static readonly MemoizingMRUCache<Type, bool> _dataContractCheckCache = new(
+            (t, _) => t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Length > 0,
             RxApp.SmallCacheLimit);
 
         /// <summary>
@@ -89,12 +86,12 @@ namespace ReactiveUI
         {
             interval ??= TimeSpan.FromSeconds(3.0);
 
-            if (!dataContractCheckCache.Get(@this.GetType()))
+            if (!_dataContractCheckCache.Get(@this.GetType()))
             {
                 throw new ArgumentException("AutoPersist can only be applied to objects with [DataContract]");
             }
 
-            var persistableProperties = persistablePropertiesCache.Get(@this.GetType());
+            var persistableProperties = _persistablePropertiesCache.Get(@this.GetType());
 
             var saveHint = @this.GetChangedObservable().Where(x => x.PropertyName is not null && persistableProperties.ContainsKey(x.PropertyName)).Select(_ => Unit.Default).Merge(manualSaveSignal.Select(_ => Unit.Default));
 
@@ -364,6 +361,7 @@ namespace ReactiveUI
                             }
 
                             break;
+
                         case ListChangeReason.Clear:
                             foreach (var item in change.Range)
                             {
@@ -371,9 +369,11 @@ namespace ReactiveUI
                             }
 
                             break;
+
                         case ListChangeReason.Add:
                             onAdd(change.Item.Current);
                             break;
+
                         case ListChangeReason.AddRange:
                             foreach (var item in change.Range)
                             {
@@ -381,13 +381,16 @@ namespace ReactiveUI
                             }
 
                             break;
+
                         case ListChangeReason.Replace:
                             onRemove(change.Item.Previous.Value);
                             onAdd(change.Item.Current);
                             break;
+
                         case ListChangeReason.Remove:
                             onRemove(change.Item.Current);
                             break;
+
                         case ListChangeReason.RemoveRange:
                             foreach (var item in change.Range)
                             {

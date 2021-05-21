@@ -28,12 +28,11 @@ namespace ReactiveUI
     /// This is an  ImageView that is both and ImageView and has a ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-        private Subject<Unit> _activated = new();
-        private Subject<Unit> _deactivated = new();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
@@ -109,14 +108,10 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
         /// <inheritdoc/>
-#pragma warning disable CS0108 // member hides inherited member
         public IObservable<Unit> Activated => _activated.AsObservable();
-#pragma warning restore CS0108
 
         /// <inheritdoc/>
-#pragma warning disable CS0108 // member hides inherited member
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();
-#pragma warning restore CS0108
 
         /// <inheritdoc />
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changing => this.GetChangingObservable();

@@ -4,13 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Windows;
 using Splat;
 using Windows.UI.Xaml;
 
@@ -49,9 +47,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(sender));
             }
 
-            var depSender = sender as DependencyObject;
-
-            if (depSender == null)
+            if (sender is not DependencyObject depSender)
             {
                 throw new ArgumentException("The sender must be a DependencyObject", nameof(sender));
             }
@@ -86,9 +82,8 @@ namespace ReactiveUI
             return Observable.Create<IObservedChange<object, object?>>(subj =>
             {
                 var handler = new DependencyPropertyChangedCallback((_, _) =>
-                {
-                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
-                });
+                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default)));
+
                 var dependencyProperty = dpFetcher();
                 var token = depSender.RegisterPropertyChangedCallback(dependencyProperty, handler);
                 return Disposable.Create(() => depSender.UnregisterPropertyChangedCallback(dependencyProperty, token));
@@ -101,12 +96,12 @@ namespace ReactiveUI
             while (current != null)
             {
                 var ret = current.GetDeclaredProperty(propertyName);
-                if (ret != null && ret.IsStatic())
+                if (ret?.IsStatic() == true)
                 {
                     return ret;
                 }
 
-                current = current.BaseType != null ? current.BaseType.GetTypeInfo() : null;
+                current = current.BaseType?.GetTypeInfo();
             }
 
             return null;
@@ -118,12 +113,12 @@ namespace ReactiveUI
             while (current != null)
             {
                 var ret = current.GetDeclaredField(propertyName);
-                if (ret != null && ret.IsStatic)
+                if (ret?.IsStatic == true)
                 {
                     return ret;
                 }
 
-                current = current.BaseType != null ? current.BaseType.GetTypeInfo() : null;
+                current = current.BaseType?.GetTypeInfo();
             }
 
             return null;

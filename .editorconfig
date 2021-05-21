@@ -242,6 +242,7 @@ dotnet_diagnostic.RCS1074.severity = error
 dotnet_diagnostic.RCS1090.severity = error
 dotnet_diagnostic.RCS1138.severity = error
 dotnet_diagnostic.RCS1139.severity = error
+dotnet_diagnostic.RCS1158.severity = none
 dotnet_diagnostic.RCS1163.severity = suggestion
 dotnet_diagnostic.RCS1168.severity = suggestion
 dotnet_diagnostic.RCS1188.severity = error
@@ -423,6 +424,9 @@ dotnet_diagnostic.SA1651.severity = error
 dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
 dotnet_diagnostic.SX1623.severity = none
+
+dotnet_diagnostic.IDE0046.severity = suggestion
+dotnet_diagnostic.IDE0060.severity = none
 
 # C++ Files
 [*.{cpp,h,in}]

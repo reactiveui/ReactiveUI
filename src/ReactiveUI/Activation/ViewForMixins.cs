@@ -18,7 +18,7 @@ namespace ReactiveUI
     /// </summary>
     public static class ViewForMixins
     {
-        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> activationFetcherCache =
+        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =
             new(
                (t, _) =>
                    Locator.Current
@@ -146,7 +146,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(item));
             }
 
-            var activationFetcher = activationFetcherCache.Get(item.GetType());
+            var activationFetcher = _activationFetcherCache.Get(item.GetType());
             if (activationFetcher is null)
             {
                 const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";

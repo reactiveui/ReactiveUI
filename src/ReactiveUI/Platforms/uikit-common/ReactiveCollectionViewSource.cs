@@ -98,7 +98,7 @@ namespace ReactiveUI
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewSource<TSource>>> Changing => this.GetChangingObservable();
 
         /// <summary>
-        /// Gets an an Observable that signals *after* a property has changed.
+        /// Gets an Observable that signals *after* a property has changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionViewSource<TSource>>> Changed => this.GetChangedObservable();
 

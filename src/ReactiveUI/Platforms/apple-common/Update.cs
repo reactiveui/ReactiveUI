@@ -42,7 +42,7 @@ namespace ReactiveUI
         public static Update CreateAdd(int index) => new(UpdateType.Add, index);
 
         /// <summary>
-        /// Creates an update for the the deleted index.
+        /// Creates an update for the deleted index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The updated delete.</returns>

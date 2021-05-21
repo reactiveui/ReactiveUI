@@ -14,22 +14,23 @@ using Splat;
 namespace ReactiveUI
 {
     /// <summary>
+    /// <para>
     /// MessageBus represents an object that can act as a "Message Bus", a
     /// simple way for ViewModels and other objects to communicate with each
     /// other in a loosely coupled way.
-    ///
+    /// </para>
+    /// <para>
     /// Specifying which messages go where is done via a combination of the Type
     /// of the message as well as an additional "Contract" parameter; this is a
     /// unique string used to distinguish between messages of the same Type, and
     /// is arbitrarily set by the client.
+    /// </para>
     /// </summary>
     public class MessageBus : IMessageBus
     {
-        private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus =
-            new();
+        private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus = new();
 
-        private readonly Dictionary<(Type type, string? contract), IScheduler> _schedulerMappings =
-            new();
+        private readonly Dictionary<(Type type, string? contract), IScheduler> _schedulerMappings = new();
 
         /// <summary>
         /// Gets or sets the Current MessageBus.
@@ -93,7 +94,7 @@ namespace ReactiveUI
         public bool IsRegistered(Type type, string? contract = null)
         {
             var ret = false;
-            WithMessageBus(type, contract, (mb, item) => { ret = mb.ContainsKey(item) && mb[item].IsAlive; });
+            WithMessageBus(type, contract, (mb, item) => ret = mb.ContainsKey(item) && mb[item].IsAlive);
 
             return ret;
         }

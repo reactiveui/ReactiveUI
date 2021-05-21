@@ -19,13 +19,11 @@ namespace ReactiveUI
     /// Fragments via property names, similar to Butter Knife, as well as allows
     /// you to fetch controls manually.
     /// </summary>
-   public static partial class ControlFetcherMixin
+    public static partial class ControlFetcherMixin
     {
-        private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds
-            = new();
+        private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds = new();
 
-        private static readonly ConditionalWeakTable<object, Dictionary<string?, View?>> viewCache
-            = new();
+        private static readonly ConditionalWeakTable<object, Dictionary<string?, View?>> _viewCache = new();
 
         /// <summary>
         /// Gets the control from an activity.
@@ -177,19 +175,16 @@ namespace ReactiveUI
         {
             var members = @this.GetType().GetRuntimeProperties();
 
-            switch (resolveStrategy)
+            return resolveStrategy switch
             {
-                default: // Implicit matches the Default.
-                    return members.Where(member => member.PropertyType.IsSubclassOf(typeof(View))
-                                              || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null);
+                ResolveStrategy.ExplicitOptIn =>
+                    members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
+                ResolveStrategy.ExplicitOptOut =>
+                    members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType) && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null),
 
-                case ResolveStrategy.ExplicitOptIn:
-                    return members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null);
-
-                case ResolveStrategy.ExplicitOptOut:
-                    return members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType)
-                                              && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null);
-            }
+                // Implicit matches the Default.
+                _ => members.Where(member => member.PropertyType.IsSubclassOf(typeof(View)) || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
+            };
         }
 
         internal static string GetResourceName(this PropertyInfo member)
@@ -210,7 +205,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(fetchControlFromView));
             }
 
-            var ourViewCache = viewCache.GetOrCreateValue(rootView);
+            var ourViewCache = _viewCache.GetOrCreateValue(rootView);
 
             if (ourViewCache.TryGetValue(propertyName, out var ret))
             {

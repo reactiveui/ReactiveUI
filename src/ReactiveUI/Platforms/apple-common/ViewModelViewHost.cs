@@ -209,7 +209,6 @@ namespace ReactiveUI
 #pragma warning disable RCS1221 // Use pattern matching instead of combination of 'as' operator and null check.
                         var viewController = view as NSViewController;
 #pragma warning restore RCS1221 // Use pattern matching instead of combination of 'as' operator and null check.
-
                         if (viewController is null)
                         {
                             //// TODO: As viewController = NULL at this point this excetion will never show the FullName, find fixed text to replace this with.

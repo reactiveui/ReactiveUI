@@ -89,7 +89,7 @@ namespace ReactiveUI
         /// <returns>
         /// The view associated with the given view model.
         /// </returns>
-        public IViewFor? ResolveView<T>(T viewModel, string? contract = null)
+        public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
         {
             if (viewModel is null)
             {
@@ -222,7 +222,7 @@ namespace ReactiveUI
                     return null;
                 }
 
-                if (!(service is IViewFor view))
+                if (service is not IViewFor view)
                 {
                     return null;
                 }

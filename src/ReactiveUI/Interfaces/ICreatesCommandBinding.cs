@@ -45,7 +45,7 @@ namespace ReactiveUI
         ///     Observable.Empty.</param>
         /// <returns>An IDisposable which will disconnect the binding when
         /// disposed.</returns>
-        IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter);
+        IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter);
 
         /// <summary>
         /// Bind an ICommand to a UI object to a specific event. This event may
@@ -62,7 +62,7 @@ namespace ReactiveUI
         /// Observable.Empty.</param>
         /// <param name="eventName">The event to bind to.</param>
         /// <returns>An IDisposable which will disconnect the binding when disposed.</returns>
-        IDisposable? BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
             where TEventArgs : EventArgs
 #endif
