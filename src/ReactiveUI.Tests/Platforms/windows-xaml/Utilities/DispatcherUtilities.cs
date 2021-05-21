@@ -38,7 +38,6 @@ namespace ReactiveUI.Tests.Xaml
         /// </summary>
         /// <param name="f">Unused frame object..</param>
         /// <returns>Unused return value.</returns>
-        [SuppressMessage("Design", "CA1801: Parameter never used", Justification = "Used on some platforms.")]
         public static object? ExitFrame(object f)
         {
 #if !NETFX_CORE

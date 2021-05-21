@@ -10,7 +10,6 @@ namespace ReactiveUI.Tests
     /// <summary>
     /// A interface view model.
     /// </summary>
-    [SuppressMessage("Design", "CA1040: Avoid empty interfaces", Justification = "Deliberate empty interface.")]
     public interface IFooViewModel
     {
     }

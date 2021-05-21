@@ -13,8 +13,6 @@ using DynamicData;
 using ReactiveUI.Winforms;
 using Xunit;
 
-#pragma warning disable SA1403 // FileMayOnlyContainASingleNamespace
-
 namespace ReactiveUI.Tests.Winforms
 {
     /// <summary>

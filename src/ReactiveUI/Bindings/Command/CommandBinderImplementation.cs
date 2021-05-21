@@ -38,14 +38,19 @@ namespace ReactiveUI
         /// instead of the default.
         /// NOTE: If this parameter is used inside WhenActivated, it's
         /// important to dispose the binding when the view is deactivated.</param>
-        /// <returns>A class representing the binding. Dispose it to disconnect
-        /// the binding.</returns>
+        /// <returns>
+        /// A class representing the binding. Dispose it to disconnect
+        /// the binding.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">nameof(vmProperty)
+        /// or
+        /// nameof(vmProperty).</exception>
         public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp?>> vmProperty,
                 Expression<Func<TView, TControl>> controlProperty,
-                Func<TParam> withParameter,
+                Expression<Func<TViewModel, TParam?>> withParameter,
                 string? toEvent = null)
             where TView : class, IViewFor<TViewModel>
             where TViewModel : class
@@ -65,10 +70,7 @@ namespace ReactiveUI
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            var bindingDisposable = BindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent, cmd =>
-            cmd is IReactiveCommand rc
-                    ? ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute)
-                    : new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter())));
+            var bindingDisposable = BindCommandInternal(source, view, controlExpression, viewModel.ToObservable(withParameter), toEvent);
 
             return new ReactiveBinding<TView, TProp>(
                 view,
@@ -105,7 +107,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TProp?>> vmProperty,
                 Expression<Func<TView, TControl>> controlProperty,
-                IObservable<TParam> withParameter,
+                IObservable<TParam?> withParameter,
                 string? toEvent = null)
             where TView : class, IViewFor<TViewModel>
             where TViewModel : class
@@ -141,8 +143,7 @@ namespace ReactiveUI
                 TView view,
                 Expression controlExpression,
                 IObservable<TParam> withParameter,
-                string? toEvent,
-                Func<ICommand, ICommand>? commandFixuper = null)
+                string? toEvent)
             where TView : class, IViewFor
             where TProp : ICommand
         {
@@ -167,11 +168,9 @@ namespace ReactiveUI
                         return;
                     }
 
-                    var cmd = commandFixuper is not null ? commandFixuper(x.val) : x.val;
-
                     disposable = !string.IsNullOrEmpty(toEvent) ?
-                               CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!), toEvent) :
-                               CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y!));
+                               CreatesCommandBinding.BindCommandToObject(x.val, x.host, withParameter.Select(y => (object)y!), toEvent) :
+                               CreatesCommandBinding.BindCommandToObject(x.val, x.host, withParameter.Select(y => (object)y!));
                 });
 
             return Disposable.Create(() =>

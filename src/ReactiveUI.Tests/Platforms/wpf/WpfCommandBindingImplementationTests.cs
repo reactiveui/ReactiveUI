@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -189,77 +189,69 @@ namespace ReactiveUI.Tests.Wpf
             var view = new CommandBindingView { ViewModel = vm };
 
             // Create a paramenter feed
-            var invokeCount = 0;
-            vm.Command2.Subscribe(_ => invokeCount++);
+            vm.Command2.Subscribe(_ => vm.Value++);
             view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
 
             // Bind the command and the IObservable parameter.
-            var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm.Command2.Select(_ => invokeCount), "MouseUp");
-            Assert.Equal(0, invokeCount);
+            var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm.WhenAnyValue(vm => vm.Value), "MouseUp");
+            Assert.Equal(0, vm.Value);
 
             // Confirm that the values update as expected.
             var parameter = 0;
             vm.Command1.Subscribe(i => parameter = i);
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-            Assert.Equal(1, invokeCount);
+            Assert.Equal(1, vm.Value);
             Assert.Equal(0, parameter);
 
             view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
             Assert.Equal(1, parameter);
 
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-            Assert.Equal(2, invokeCount);
+            Assert.Equal(2, vm.Value);
             Assert.Equal(1, parameter);
 
             view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
             Assert.Equal(2, parameter);
-            Assert.Equal(2, invokeCount);
+            Assert.Equal(2, vm.Value);
         }
 
         /// <summary>
         /// Commands the bind view model to view with function.
         /// </summary>
-        [Fact(Skip = "Need to resolve Func<T> to IObservable<T> bug exists if using this overload. Implimentation uses a ReactiveCommand for Parameter but does not reflect the required types")]
+        [Fact]
         public void CommandBindViewModelToViewWithFunc()
         {
-            ////////////////////////////////////////////
-            //// TEST FAILING NEED TO FIND RESOLVE /////
-            ////////////////////////////////////////////
-
             var vm = new CommandBindingViewModel();
             var view = new CommandBindingView { ViewModel = vm };
 
             // Create a paramenter feed
-            var invokeCount = 0;
-            var func = new Func<int>(() => invokeCount);
             vm.Command2.Subscribe(_ =>
             {
-                invokeCount++;
-                func();
+                vm.Value++;
             });
             view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
 
             // Bind the command and the Func<T> parameter.
-            var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, func, "MouseUp");
-            Assert.Equal(0, invokeCount);
+            var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm => vm.Value, "MouseUp");
+            Assert.Equal(0, vm.Value);
 
             // Confirm that the values update as expected.
             var parameter = 0;
             vm.Command1.Subscribe(i => parameter = i);
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-            Assert.Equal(1, invokeCount);
+            Assert.Equal(1, vm.Value);
             Assert.Equal(0, parameter);
 
             view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
             Assert.Equal(1, parameter);
 
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-            Assert.Equal(2, invokeCount);
+            Assert.Equal(2, vm.Value);
             Assert.Equal(1, parameter);
 
             view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
             Assert.Equal(2, parameter);
-            Assert.Equal(2, invokeCount);
+            Assert.Equal(2, vm.Value);
         }
 
         [Fact]
