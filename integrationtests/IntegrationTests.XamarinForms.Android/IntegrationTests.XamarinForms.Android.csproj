@@ -62,7 +62,7 @@
     <PackageReference Include="Xamarin.Android.Support.Compat" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.Collections" Version="28.0.*" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.*" />
-    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.2.2.1" />
+    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.2.3" />
     <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.1.1.8" />
     <PackageReference Include="Xamarin.AndroidX.Palette" Version="1.0.0.7" />
   </ItemGroup>
