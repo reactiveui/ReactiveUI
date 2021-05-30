@@ -109,7 +109,7 @@ namespace ReactiveUI
         /// Gets or sets an observable which will signal when the Navigation changes.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; }
+        public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
 
         [OnDeserialized]
         private void SetupRx(StreamingContext sc) => SetupRx();

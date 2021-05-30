@@ -77,11 +77,13 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => _changing.Value;
+        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => // TODO: Create Test
+            _changing.Value;
 
         /// <inheritdoc />
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => _changed.Value;
+        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => // TODO: Create Test
+            _changed.Value;
 
         /// <inheritdoc/>
         [IgnoreDataMember]
@@ -94,18 +96,21 @@ namespace ReactiveUI
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
-        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
+        public IDisposable SuppressChangeNotifications() => // TODO: Create Test
+            IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <summary>
         /// Determines if change notifications are enabled or not.
         /// </summary>
         /// <returns>A value indicating whether change notifications are enabled.</returns>
-        public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
+        public bool AreChangeNotificationsEnabled() => // TODO: Create Test
+            IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
         /// <summary>
         /// Delays notifications until the return IDisposable is disposed.
         /// </summary>
         /// <returns>A disposable which when disposed will send delayed notifications.</returns>
-        public IDisposable DelayChangeNotifications() => IReactiveObjectExtensions.DelayChangeNotifications(this);
+        public IDisposable DelayChangeNotifications() => // TODO: Create Test
+            IReactiveObjectExtensions.DelayChangeNotifications(this);
     }
 }

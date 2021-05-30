@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// <param name="command">The command.</param>
         /// <param name="control">The control.</param>
         /// <returns>A disposable.</returns>
-        public static IDisposable BindToTarget(this ICommand command, View control)
+        public static IDisposable BindToTarget(this ICommand command, View control) // TODO: Create Test
         {
             if (command is null)
             {

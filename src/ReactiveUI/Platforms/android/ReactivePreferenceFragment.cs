@@ -103,21 +103,21 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a signal when the fragment is activated.
         /// </summary>
-        public IObservable<Unit> Activated => _activated.AsObservable();
+        public IObservable<Unit> Activated => _activated.AsObservable(); // TODO: Create Test
 
         /// <summary>
         /// Gets a signal when the fragment is deactivated.
         /// </summary>
-        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable(); // TODO: Create Test
 
         /// <inheritdoc/>
-        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
+        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this); // TODO: Create Test
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args); // TODO: Create Test
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args); // TODO: Create Test
 
         /// <inheritdoc/>
         [Obsolete("deprecated")]

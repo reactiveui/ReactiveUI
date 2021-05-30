@@ -70,7 +70,7 @@ namespace ReactiveUI
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            var bindingDisposable = BindCommandInternal(source, view, controlExpression, viewModel.ToObservable(withParameter), toEvent);
+            var bindingDisposable = BindCommandInternal(source, view, controlExpression, withParameter.ToObservable(viewModel), toEvent);
 
             return new ReactiveBinding<TView, TProp>(
                 view,

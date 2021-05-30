@@ -70,7 +70,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action) // TODO: Create Test
         {
             var isCancelled = false;
             var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
@@ -93,7 +93,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
+        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) // TODO: Create Test
         {
             if (dueTime <= Now)
             {

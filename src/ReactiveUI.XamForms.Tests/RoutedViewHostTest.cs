@@ -303,6 +303,9 @@ namespace ReactiveUI.XamForms.Tests
             await _navigationViewModel.Navigate(nameof(ChildViewModel));
             await fixture.PopAsyncInner(animated, fast).ConfigureAwait(true);
 
+            var viewModelSearch = _navigationViewModel.Router.FindViewModelInStack<MainViewModel>();
+            Assert.NotNull(viewModelSearch);
+
             Assert.Equal(1, fixture.StackDepth);
             var navigationStack = _navigationViewModel.Router.NavigationStack;
             Assert.Equal(1, navigationStack.Count);

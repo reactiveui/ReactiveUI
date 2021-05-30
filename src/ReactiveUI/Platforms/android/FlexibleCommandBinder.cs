@@ -117,7 +117,7 @@ namespace ReactiveUI
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
 
-            var compDisp = new CompositeDisposable(
+            return new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEvent<EventHandler, bool>(
@@ -129,8 +129,6 @@ namespace ReactiveUI
                         x => command.CanExecuteChanged += x,
                         x => command.CanExecuteChanged -= x)
                     .Subscribe(x => enabledSetter(target, x, null)));
-
-            return compDisp;
         }
 
         /// <summary>

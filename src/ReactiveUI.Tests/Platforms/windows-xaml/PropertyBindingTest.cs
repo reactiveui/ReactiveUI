@@ -8,6 +8,9 @@ using System.Collections;
 using System.Globalization;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using DynamicData.Binding;
 using Xunit;
 
@@ -37,7 +40,7 @@ namespace ReactiveUI.Tests.Xaml
             vm.JustADecimal = 123.45m;
             Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
 
-            var disp = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, d => d.ToString(), decimal.Parse);
+            var disp = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, d => d.ToString(), t => decimal.TryParse(t, out var res) ? res : decimal.Zero);
 
             Assert.Equal(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
             Assert.Equal(123.45m, vm.JustADecimal);
@@ -551,7 +554,21 @@ namespace ReactiveUI.Tests.Xaml
             PropertyBindViewModel? vm = new();
             var view = new PropertyBindView { ViewModel = vm };
 
-            view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(CultureInfo.InvariantCulture), decimal.Parse);
+            vm.JustADecimal = 123.45m;
+            Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(CultureInfo.InvariantCulture), t => decimal.TryParse(t, out var res) ? res : 0m);
+
+            Assert.Equal(view.SomeTextBox.Text, "123.45");
+
+            vm.JustADecimal = 1.0M;
+            Assert.Equal(view.SomeTextBox.Text, "1.0");
+
+            vm.JustADecimal = 2.0M;
+            Assert.Equal(view.SomeTextBox.Text, "2.0");
+
+            view.SomeTextBox.Text = "3.0";
+            Assert.Equal(vm.JustADecimal, 3.0M);
         }
 
         /// <summary>
@@ -577,6 +594,98 @@ namespace ReactiveUI.Tests.Xaml
             GC.WaitForPendingFinalizers();
 
             Assert.False(weakRef.IsAlive);
+        }
+
+        [Fact]
+        public void OneWayBindWithHintTest()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            PropertyBindView view = new() { ViewModel = vm };
+            PropertyBinderImplementation fixture = new();
+
+            fixture.OneWayBind(vm, view, vm => vm.JustABoolean, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+            Assert.Equal(view.SomeTextBox.Visibility, System.Windows.Visibility.Visible);
+
+            vm.JustABoolean = true;
+            Assert.Equal(view.SomeTextBox.Visibility, System.Windows.Visibility.Collapsed);
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void OneWayBindWithHintTestDisposeWithFailure()
+        {
+            CompositeDisposable? dis = null;
+            PropertyBindViewModel? vm = new();
+            PropertyBindView view = new() { ViewModel = vm };
+            PropertyBinderImplementation fixture = new();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.OneWayBind(vm, view, vm => vm.JustABoolean, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis!));
+        }
+
+        [Fact]
+        public void BindToWithHintTest()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var obs = vm.WhenAnyValue(x => x.JustABoolean);
+            var a = new PropertyBinderImplementation().BindTo(obs, view, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+            Assert.Equal(view.SomeTextBox.Visibility, System.Windows.Visibility.Visible);
+
+            vm.JustABoolean = true;
+            Assert.Equal(view.SomeTextBox.Visibility, System.Windows.Visibility.Collapsed);
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTest()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustADecimal = 123.45m;
+            Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, update.AsObservable(), d => d.ToString(CultureInfo.InvariantCulture), t => decimal.TryParse(t, out var res) ? res : decimal.Zero).DisposeWith(dis);
+
+            vm.JustADecimal = 1.0M;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123.45");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "1.0");
+
+            vm.JustADecimal = 2.0M;
+            Assert.Equal(view.SomeTextBox.Text, "1.0");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.0");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "3.0";
+            Assert.Equal(vm.JustADecimal, 3.0M);
+
+            view.SomeTextBox.Text = "4.0";
+            Assert.Equal(vm.JustADecimal, 4.0M);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustADecimal = 2.0M;
+            Assert.Equal(view.SomeTextBox.Text, "4.0");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.0");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
         }
     }
 }

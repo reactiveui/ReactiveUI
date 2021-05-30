@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI

@@ -27,7 +27,7 @@ namespace ReactiveUI
         /// <param name="manager">The UsbManager system service.</param>
         /// <param name="context">The Context to request the permission from.</param>
         /// <param name="device">The UsbDevice to request permission for.</param>
-        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbDevice device) =>
+        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbDevice device) => // TODO: Create Test
             Observable.Create<bool>(observer =>
             {
                 var usbPermissionReceiver = new UsbDevicePermissionReceiver(observer, device);
@@ -47,7 +47,7 @@ namespace ReactiveUI
         /// <param name="manager">The UsbManager system service.</param>
         /// <param name="context">The Context to request the permission from.</param>
         /// <param name="accessory">The UsbAccessory to request permission for.</param>
-        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbAccessory accessory) =>
+        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbAccessory accessory) => // TODO: Create Test
             Observable.Create<bool>(observer =>
             {
                 var usbPermissionReceiver = new UsbAccessoryPermissionReceiver(observer, accessory);

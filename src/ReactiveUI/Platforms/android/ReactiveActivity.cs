@@ -106,12 +106,12 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a signal when the activity is activated.
         /// </summary>
-        public IObservable<Unit> Activated => _activated.AsObservable();
+        public IObservable<Unit> Activated => _activated.AsObservable(); // TODO: Create Test
 
         /// <summary>
         ///  Gets a signal when the activity is deactivated.
         /// </summary>
-        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable(); // TODO: Create Test
 
         /// <summary>
         /// Gets the activity result.
@@ -119,7 +119,8 @@ namespace ReactiveUI
         /// <value>
         /// The activity result.
         /// </value>
-        public IObservable<(int requestCode, Result resultCode, Intent? intent)> ActivityResult => _activityResult.AsObservable();
+        public IObservable<(int requestCode, Result resultCode, Intent? intent)> ActivityResult => // TODO: Create Test
+            _activityResult.AsObservable();
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -128,13 +129,16 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
+        public IDisposable SuppressChangeNotifications() => // TODO: Create Test
+            IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => // TODO: Create Test
+            PropertyChanging?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => // TODO: Create Test
+            PropertyChanged?.Invoke(this, args);
 
         /// <summary>
         /// Starts the activity for result asynchronously.
@@ -142,7 +146,7 @@ namespace ReactiveUI
         /// <param name="intent">The intent.</param>
         /// <param name="requestCode">The request code.</param>
         /// <returns>A task with the result and the intent.</returns>
-        public Task<(Result resultCode, Intent? intent)> StartActivityForResultAsync(Intent? intent, int requestCode)
+        public Task<(Result resultCode, Intent? intent)> StartActivityForResultAsync(Intent? intent, int requestCode) // TODO: Create Test
         {
             // NB: It's important that we set up the subscription *before* we
             // call ActivityForResult
@@ -162,7 +166,7 @@ namespace ReactiveUI
         /// <param name="type">The type.</param>
         /// <param name="requestCode">The request code.</param>
         /// <returns>A task with the result and intent.</returns>
-        public Task<(Result resultCode, Intent? intent)> StartActivityForResultAsync(Type type, int requestCode)
+        public Task<(Result resultCode, Intent? intent)> StartActivityForResultAsync(Type type, int requestCode) // TODO: Create Test
         {
             // NB: It's important that we set up the subscription *before* we
             // call ActivityForResult
