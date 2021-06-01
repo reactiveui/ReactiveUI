@@ -83,7 +83,7 @@ namespace ReactiveUI.Tests
                 }
             }
 
-            Assert.Equal(approvedPublicApi, receivedPublicApi);
+            Assert.Equal(approvedPublicApi.Trim(), receivedPublicApi);
         }
 
         private static string Filter(string text)
