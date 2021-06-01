@@ -300,6 +300,10 @@ namespace ReactiveUI
             where TSender : ReactiveUI.IReactiveObject { }
         public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
             where TSender : ReactiveUI.IReactiveObject { }
+        public static void SubscribePropertyChangedEvents<TSender>(this TSender reactiveObject)
+            where TSender : ReactiveUI.IReactiveObject { }
+        public static void SubscribePropertyChangingEvents<TSender>(this TSender reactiveObject)
+            where TSender : ReactiveUI.IReactiveObject { }
     }
     public interface IReactivePropertyChangedEventArgs<out TSender>
     {
