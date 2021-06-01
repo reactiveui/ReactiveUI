@@ -114,10 +114,10 @@ namespace ReactiveUI.Tests.Xaml
             vm.JustADecimal = 17.2m;
             var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
-            Assert.Equal(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+            Assert.Equal(vm.JustADecimal.ToString(CultureInfo.CurrentCulture), view.SomeTextBox.Text);
             Assert.Equal(17.2m, vm.JustADecimal);
 
-            view.SomeTextBox.Text = 42.3m.ToString(CultureInfo.InvariantCulture);
+            view.SomeTextBox.Text = 42.3m.ToString(CultureInfo.CurrentCulture);
             Assert.Equal(42.3m, vm.JustADecimal);
 
             // Bad formatting.

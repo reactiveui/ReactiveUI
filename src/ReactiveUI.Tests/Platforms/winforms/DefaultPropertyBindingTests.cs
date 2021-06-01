@@ -143,7 +143,7 @@ namespace ReactiveUI.Tests.Winforms
             var disp2 = view.Bind(vm, x => x.SomeDouble, x => x.Property3.Text);
             vm.SomeDouble = 123.4;
 
-            Assert.Equal(vm.SomeDouble.ToString(CultureInfo.InvariantCulture), view.Property3.Text);
+            Assert.Equal(vm.SomeDouble.ToString(CultureInfo.CurrentCulture), view.Property3.Text);
         }
 
         /// <summary>
