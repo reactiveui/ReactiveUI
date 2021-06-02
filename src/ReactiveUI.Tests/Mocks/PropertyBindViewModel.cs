@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using DynamicData.Binding;
 
 namespace ReactiveUI.Tests
@@ -18,14 +19,15 @@ namespace ReactiveUI.Tests
     /// <seealso cref="ReactiveUI.ReactiveObject" />
     public class PropertyBindViewModel : ReactiveObject
     {
-        private string? _Property1;
-        private PropertyBindModel? _Model;
-        private int _Property2;
-        private double _JustADouble;
-        private decimal _JustADecimal;
-        private double? _NullableDouble;
-        private int _JustAInt32;
-        private bool _JustABoolean;
+        private string? _property1;
+        private PropertyBindModel? _model;
+        private int _property2;
+        private double _justADouble;
+        private decimal _justADecimal;
+        private double? _nullableDouble;
+        private int _justAInt32;
+        private bool _justABoolean;
+        private Visibility _justAVisibility;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyBindViewModel"/> class.
@@ -42,8 +44,8 @@ namespace ReactiveUI.Tests
         /// </summary>
         public string? Property1
         {
-            get => _Property1;
-            set => this.RaiseAndSetIfChanged(ref _Property1, value);
+            get => _property1;
+            set => this.RaiseAndSetIfChanged(ref _property1, value);
         }
 
         /// <summary>
@@ -51,8 +53,8 @@ namespace ReactiveUI.Tests
         /// </summary>
         public int Property2
         {
-            get => _Property2;
-            set => this.RaiseAndSetIfChanged(ref _Property2, value);
+            get => _property2;
+            set => this.RaiseAndSetIfChanged(ref _property2, value);
         }
 
         /// <summary>
@@ -60,8 +62,8 @@ namespace ReactiveUI.Tests
         /// </summary>
         public double JustADouble
         {
-            get => _JustADouble;
-            set => this.RaiseAndSetIfChanged(ref _JustADouble, value);
+            get => _justADouble;
+            set => this.RaiseAndSetIfChanged(ref _justADouble, value);
         }
 
         /// <summary>
@@ -72,8 +74,8 @@ namespace ReactiveUI.Tests
         /// </value>
         public bool JustABoolean
         {
-            get => _JustABoolean;
-            set => this.RaiseAndSetIfChanged(ref _JustABoolean, value);
+            get => _justABoolean;
+            set => this.RaiseAndSetIfChanged(ref _justABoolean, value);
         }
 
         /// <summary>
@@ -81,8 +83,8 @@ namespace ReactiveUI.Tests
         /// </summary>
         public decimal JustADecimal
         {
-            get => _JustADecimal;
-            set => this.RaiseAndSetIfChanged(ref _JustADecimal, value);
+            get => _justADecimal;
+            set => this.RaiseAndSetIfChanged(ref _justADecimal, value);
         }
 
         /// <summary>
@@ -90,8 +92,8 @@ namespace ReactiveUI.Tests
         /// </summary>
         public int JustAInt32
         {
-            get => _JustAInt32;
-            set => this.RaiseAndSetIfChanged(ref _JustAInt32, value);
+            get => _justAInt32;
+            set => this.RaiseAndSetIfChanged(ref _justAInt32, value);
         }
 
         /// <summary>
@@ -99,8 +101,14 @@ namespace ReactiveUI.Tests
         /// </summary>
         public double? NullableDouble
         {
-            get => _NullableDouble;
-            set => this.RaiseAndSetIfChanged(ref _NullableDouble, value);
+            get => _nullableDouble;
+            set => this.RaiseAndSetIfChanged(ref _nullableDouble, value);
+        }
+
+        public Visibility JustAVisibility
+        {
+            get => _justAVisibility;
+            set => this.RaiseAndSetIfChanged(ref _justAVisibility, value);
         }
 
         /// <summary>
@@ -116,8 +124,8 @@ namespace ReactiveUI.Tests
         /// </summary>
         public PropertyBindModel? Model
         {
-            get => _Model;
-            set => this.RaiseAndSetIfChanged(ref _Model, value);
+            get => _model;
+            set => this.RaiseAndSetIfChanged(ref _model, value);
         }
     }
 }

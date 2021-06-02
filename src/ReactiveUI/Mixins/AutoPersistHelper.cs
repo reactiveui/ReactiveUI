@@ -132,7 +132,7 @@ namespace ReactiveUI
         /// it is possible that it will never be saved.
         /// </param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
-        public static IDisposable AutoPersistCollection<TItem>(this ObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, TimeSpan? interval = null)
+        public static IDisposable AutoPersistCollection<TItem>(this ObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, TimeSpan? interval = null) // TODO: Create Test
             where TItem : IReactiveObject =>
             AutoPersistCollection(@this, doPersist, Observable<Unit>.Never, interval);
 
@@ -180,7 +180,7 @@ namespace ReactiveUI
         /// it is possible that it will never be saved.
         /// </param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
-        public static IDisposable AutoPersistCollection<TItem, TDontCare>(this ReadOnlyObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
+        public static IDisposable AutoPersistCollection<TItem, TDontCare>(this ReadOnlyObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null) // TODO: Create Test
             where TItem : IReactiveObject =>
             AutoPersistCollection<TItem, ReadOnlyObservableCollection<TItem>, TDontCare>(@this, doPersist, manualSaveSignal, interval);
 
@@ -205,7 +205,7 @@ namespace ReactiveUI
         /// it is possible that it will never be saved.
         /// </param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
-        public static IDisposable AutoPersistCollection<TItem, TCollection, TDontCare>(this TCollection @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
+        public static IDisposable AutoPersistCollection<TItem, TCollection, TDontCare>(this TCollection @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null) // TODO: Create Test
             where TItem : IReactiveObject
             where TCollection : INotifyCollectionChanged, IEnumerable<TItem>
         {
@@ -250,7 +250,7 @@ namespace ReactiveUI
         /// A method to be called when an object is removed from the collection.
         /// </param>
         /// <returns>A Disposable that deactivates this behavior.</returns>
-        public static IDisposable ActOnEveryObject<TItem>(this ObservableCollection<TItem> @this, Action<TItem> onAdd, Action<TItem> onRemove)
+        public static IDisposable ActOnEveryObject<TItem>(this ObservableCollection<TItem> @this, Action<TItem> onAdd, Action<TItem> onRemove) // TODO: Create Test
             where TItem : IReactiveObject =>
             ActOnEveryObject<TItem, ObservableCollection<TItem>>(@this, onAdd, onRemove);
 
@@ -270,7 +270,7 @@ namespace ReactiveUI
         /// A method to be called when an object is removed from the collection.
         /// </param>
         /// <returns>A Disposable that deactivates this behavior.</returns>
-        public static IDisposable ActOnEveryObject<TItem>(this ReadOnlyObservableCollection<TItem> @this, Action<TItem> onAdd, Action<TItem> onRemove)
+        public static IDisposable ActOnEveryObject<TItem>(this ReadOnlyObservableCollection<TItem> @this, Action<TItem> onAdd, Action<TItem> onRemove) // TODO: Create Test
             where TItem : IReactiveObject =>
             ActOnEveryObject<TItem, ReadOnlyObservableCollection<TItem>>(@this, onAdd, onRemove);
 

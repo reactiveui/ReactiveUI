@@ -31,7 +31,7 @@ namespace ReactiveUI
         /// <param name="activity">The activity.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>The return view.</returns>
-        public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null)
+        public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null) // TODO: Create Test
             => GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)));
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace ReactiveUI
         /// <param name="assembly">The assembly containing the user-defined view.</param>
         /// <param name="propertyName">The property.</param>
         /// <returns>The return view.</returns>
-        public static View? GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null)
+        public static View? GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null) // TODO: Create Test
             => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(assembly, propertyName)));
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="layoutHost">The layout view host.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
         {
             if (layoutHost is null)
             {
@@ -77,7 +77,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="view">The view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
         {
             if (view is null)
             {
@@ -112,7 +112,7 @@ namespace ReactiveUI
         /// <param name="inflatedView">The inflated view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
         [Obsolete("This class is obsoleted in this android platform")]
-        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
         {
             if (fragment is null)
             {
@@ -144,7 +144,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="activity">The Activity.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
         {
             if (activity is null)
             {

@@ -16,7 +16,7 @@ namespace ReactiveUI
     public class PlatformOperations : IPlatformOperations
     {
         /// <inheritdoc/>
-        public string? GetOrientation()
+        public string? GetOrientation() // TODO: Create Test
         {
             if (Application.Context.GetSystemService(Context.WindowService) is not IWindowManager wm)
             {

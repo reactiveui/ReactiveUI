@@ -19,18 +19,18 @@ namespace ReactiveUI
         /// </summary>
         /// <typeparam name="TSource">The type of the view model.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="source">The view model.</param>
         /// <param name="expression">The expression.</param>
+        /// <param name="source">The view model.</param>
         /// <param name="beforeChange">if set to <c>true</c> [before change].</param>
         /// <param name="skipInitial">if set to <c>true</c> [skip initial].</param>
         /// <returns>
         /// An observable Result.
         /// </returns>
         public static IObservable<TResult?> ToObservable<TSource, TResult>(
-            this TSource? source,
-            Expression<Func<TSource, TResult?>> expression,
+            this Expression<Func<TSource, TResult?>> expression,
+            TSource? source,
             bool beforeChange = false,
-            bool skipInitial = false)
+            bool skipInitial = false) // TODO: Create Test
         {
             var sParam = Reflection.Rewrite(expression.Body);
             return source.SubscribeToExpressionChain<TSource, TResult?>(sParam, beforeChange, skipInitial, RxApp.SuppressViewCommandBindingMessage)

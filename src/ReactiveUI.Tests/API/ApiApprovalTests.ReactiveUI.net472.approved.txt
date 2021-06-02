@@ -437,7 +437,7 @@ namespace ReactiveUI
     }
     public static class ObservableFuncMixins
     {
-        public static System.IObservable<TResult?> ToObservable<TSource, TResult>(this TSource? source, System.Linq.Expressions.Expression<System.Func<TSource, TResult?>> expression, bool beforeChange = false, bool skipInitial = false) { }
+        public static System.IObservable<TResult?> ToObservable<TSource, TResult>(this System.Linq.Expressions.Expression<System.Func<TSource, TResult?>> expression, TSource? source, bool beforeChange = false, bool skipInitial = false) { }
     }
     public static class ObservableLoggingMixin
     {

@@ -21,7 +21,7 @@ namespace ReactiveUI
         /// <typeparam name="T">The layout view host type.</typeparam>
         /// <param name="item">The view.</param>
         /// <returns>The view host.</returns>
-        public static T GetViewHost<T>(this View item)
+        public static T GetViewHost<T>(this View item) // TODO: Create Test
             where T : ILayoutViewHost
         {
             var tagData = item?.GetTag(ViewHostTag);
@@ -39,6 +39,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="item">The view.</param>
         /// <returns>The view host.</returns>
-        public static ILayoutViewHost? GetViewHost(this View item) => item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
+        public static ILayoutViewHost? GetViewHost(this View item) => // TODO: Create Test
+            item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
     }
 }

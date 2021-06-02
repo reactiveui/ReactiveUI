@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -386,26 +387,26 @@ namespace ReactiveUI
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
 
-            var signalObservable = signalViewUpdate != null
-                                       ? signalViewUpdate.Select(_ => false)
-                                       : view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false);
-
             var somethingChanged = Observable.Merge(
-                                                    Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
-                                                    signalInitialUpdate.Select(_ => true),
-                                                    signalObservable);
+                                                   signalViewUpdate == null ?
+                                                   Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true) :
+                                                   signalViewUpdate.Select(_ => true)
+                                                        .Merge(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true).Take(1)),
+                                                   signalInitialUpdate.Select(_ => true),
+                                                   view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false));
 
-            var changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
-            !Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
+            var changeWithValues = somethingChanged
+                .Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
+                    !Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
                     !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain())
-                    ? (false, null, false)
-                    : isVm
-                    ? !vmToViewConverter(vmValue, out var vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView)
                         ? (false, null, false)
-                        : (true, vmAsView, isVm)
-                    : !viewToVmConverter(vValue, out var vAsViewModel) || EqualityComparer<TVMProp?>.Default.Equals(vmValue, vAsViewModel)
-                    ? (false, null, false)
-                    : (true, vAsViewModel, isVm));
+                        : isVm
+                        ? !vmToViewConverter(vmValue, out var vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView)
+                                                ? (false, null, false)
+                                                : (true, vmAsView, isVm)
+                        : !viewToVmConverter(vValue, out var vAsViewModel) || EqualityComparer<TVMProp?>.Default.Equals(vmValue, vAsViewModel)
+                                                ? (false, null, false)
+                                                : (true, vAsViewModel, isVm));
 
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
             if (!ret)

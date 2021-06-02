@@ -42,7 +42,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task CurrentViewModelObservableIsAccurate()
         {
-            var fixture = new RoutingState();
+            var fixture = new RoutingState(RxApp.MainThreadScheduler);
             fixture.CurrentViewModel.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
             Assert.Equal(1, output.Count);

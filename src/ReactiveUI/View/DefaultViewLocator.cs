@@ -21,7 +21,8 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
         /// </summary>
         /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
-        internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) => ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
+        internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) =>
+            ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
 
         /// <summary>
         /// Gets or sets a function that is used to convert a view model name to a proposed view name.

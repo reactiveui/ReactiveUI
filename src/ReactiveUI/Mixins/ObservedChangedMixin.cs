@@ -59,7 +59,7 @@ namespace ReactiveUI
         /// <returns>
         /// The current value of the property.
         /// </returns>
-        public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
+        public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item) => // TODO: Create Test
             item is null ? throw new ArgumentNullException(nameof(item)) : !item.TryGetValue(out var returnValue) ? default : returnValue;
 
         /// <summary>
@@ -75,8 +75,7 @@ namespace ReactiveUI
         /// An Observable representing the stream of current values of
         /// the given change notification stream.
         /// </returns>
-        public static IObservable<TValue> Value<TSender, TValue>(
-            this IObservable<IObservedChange<TSender, TValue>> item) =>
+        public static IObservable<TValue> Value<TSender, TValue>(this IObservable<IObservedChange<TSender, TValue>> item) => // TODO: Create Test
             item.Select(GetValue);
 
         /// <summary>
