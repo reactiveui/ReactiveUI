@@ -52,7 +52,7 @@ namespace ReactiveUI
                 TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
-                Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
+                Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare?>> handler)
             where TViewModel : class
             where TView : class, IViewFor;
     }

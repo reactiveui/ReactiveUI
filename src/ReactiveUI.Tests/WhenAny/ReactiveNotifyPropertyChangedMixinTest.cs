@@ -476,18 +476,18 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyShouldWorkEvenWithNormalProperties()
         {
-            var fixture = new TestFixture
+            TestFixture? fixture = new()
             {
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz",
                 PocoProperty = "Bamf"
             };
 
-            var output = new List<IObservedChange<TestFixture, string?>?>();
+            var output = new List<IObservedChange<TestFixture?, string?>?>();
             fixture.WhenAny(x => x.PocoProperty, x => x).Subscribe(output.Add);
             var output2 = new List<string?>();
             fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output2.Add);
-            var output3 = new List<IObservedChange<TestFixture, int?>?>();
+            var output3 = new List<IObservedChange<TestFixture?, int?>?>();
             fixture.WhenAny(x => x.NullableInt, x => x).Subscribe(output3.Add);
 
             var output4 = new List<int?>();
@@ -586,8 +586,8 @@ namespace ReactiveUI.Tests
                     fixture.SomeOtherParam = 5;
                     fixture.Child.IsNotNullString = "Foo";
 
-                    var output1 = new List<IObservedChange<HostTestFixture, int>>();
-                    var output2 = new List<IObservedChange<HostTestFixture, string>>();
+                    var output1 = new List<IObservedChange<HostTestFixture?, int>>();
+                    var output2 = new List<IObservedChange<HostTestFixture?, string>>();
                     fixture.WhenAny(
                         x => x.SomeOtherParam,
                         x => x.Child!.IsNotNullString,
@@ -599,7 +599,7 @@ namespace ReactiveUI.Tests
                         x =>
                         {
                             output1.Add(x!.sop);
-                            output2.Add(x.nns!);
+                            output2.Add(x!.nns!);
                         });
 
                     scheduler.Start();

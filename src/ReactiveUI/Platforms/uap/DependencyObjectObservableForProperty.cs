@@ -40,7 +40,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (sender == null)
             {
@@ -79,10 +79,10 @@ namespace ReactiveUI
                 return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
             }
 
-            return Observable.Create<IObservedChange<object, object?>>(subj =>
+            return Observable.Create<IObservedChange<object?, object?>>(subj =>
             {
                 var handler = new DependencyPropertyChangedCallback((_, _) =>
-                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default)));
+                    subj.OnNext(new ObservedChange<object?, object?>(sender, expression, default)));
 
                 var dependencyProperty = dpFetcher();
                 var token = depSender.RegisterPropertyChangedCallback(dependencyProperty, handler);

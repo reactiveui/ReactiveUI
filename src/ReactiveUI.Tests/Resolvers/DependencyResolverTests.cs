@@ -181,9 +181,9 @@ namespace ReactiveUI.Tests
             return resolver;
         }
 
-        private static void GetRegistrationsForPlatform(string typeName, Dictionary<Type, List<Type>> serviceTypeToImplementationTypes)
+        private static void GetRegistrationsForPlatform(string? typeName, Dictionary<Type, List<Type>> serviceTypeToImplementationTypes)
         {
-            var platformRegistrationsType = Type.GetType(typeName);
+            var platformRegistrationsType = Type.GetType(typeName!);
             if (platformRegistrationsType is not null)
             {
                 var platformRegistrations = Activator.CreateInstance(platformRegistrationsType);

@@ -136,7 +136,7 @@ namespace ReactiveUI
                 if (registerTypeClass is not null)
                 {
                     var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass)!;
-                    registerer?.Register((f, t) => resolver.RegisterConstant(f(), t));
+                    registerer?.Register((f, t) => resolver.RegisterConstant(f()!, t));
                 }
             }
         }

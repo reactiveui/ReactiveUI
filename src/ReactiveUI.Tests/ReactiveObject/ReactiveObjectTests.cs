@@ -124,12 +124,12 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExceptionsThrownInSubscribersShouldMarshalToThrownExceptions()
         {
-            var fixture = new TestFixture
+            TestFixture? fixture = new()
             {
                 IsOnlyOneWord = "Foo"
             };
 
-            fixture.Changed.Subscribe(x => { throw new Exception("Die!"); });
+            fixture.Changed.Subscribe(_ => { throw new Exception("Die!"); });
             fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList).Subscribe();
 
             fixture.IsOnlyOneWord = "Bar";
@@ -142,12 +142,12 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ObservableForPropertyUsingExpression()
         {
-            var fixture = new TestFixture
+            TestFixture? fixture = new()
             {
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz"
             };
-            var output = new List<IObservedChange<TestFixture, string?>>();
+            var output = new List<IObservedChange<TestFixture?, string?>>();
             fixture.ObservableForProperty(x => x.IsNotNullString)
                    .WhereNotNull()
                    .Subscribe(x => output.Add(x));
@@ -175,7 +175,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void RaiseAndSetUsingExpression()
         {
-            var fixture = new TestFixture
+            TestFixture? fixture = new()
             {
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz"
@@ -200,7 +200,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ReactiveObjectShouldntSerializeAnythingExtra()
         {
-            var fixture = new TestFixture
+            TestFixture? fixture = new()
             {
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz"

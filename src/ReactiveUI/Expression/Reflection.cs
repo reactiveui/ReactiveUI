@@ -214,7 +214,7 @@ namespace ReactiveUI
                     return false;
                 }
 
-                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
+                current = GetValueFetcherOrThrow(expression?.GetMemberInfo())(current, expression?.GetArgumentsArray());
             }
 
             if (current == null)
@@ -254,7 +254,7 @@ namespace ReactiveUI
                 }
 
                 var sender = current;
-                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
+                current = GetValueFetcherOrThrow(expression?.GetMemberInfo())(current, expression?.GetArgumentsArray());
                 changeValues[currentIndex] = new ObservedChange<object, object?>(sender, expression, current);
                 currentIndex++;
             }
@@ -289,12 +289,12 @@ namespace ReactiveUI
             foreach (var expression in expressions.SkipLast(1))
             {
                 var getter = shouldThrow ?
-                    GetValueFetcherOrThrow(expression.GetMemberInfo()) :
-                    GetValueFetcherForProperty(expression.GetMemberInfo());
+                    GetValueFetcherOrThrow(expression?.GetMemberInfo()) :
+                    GetValueFetcherForProperty(expression?.GetMemberInfo());
 
                 if (getter != null)
                 {
-                    target = getter(target ?? throw new ArgumentNullException(nameof(target)), expression.GetArgumentsArray());
+                    target = getter(target ?? throw new ArgumentNullException(nameof(target)), expression?.GetArgumentsArray());
                 }
             }
 

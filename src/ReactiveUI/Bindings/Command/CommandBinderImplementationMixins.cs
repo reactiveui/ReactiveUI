@@ -33,7 +33,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
-                Expression<Func<TViewModel, TParam>> withParameter,
+                Expression<Func<TViewModel, TParam?>> withParameter,
                 string? toEvent = null)
             where TView : class, IViewFor<TViewModel>
             where TViewModel : class

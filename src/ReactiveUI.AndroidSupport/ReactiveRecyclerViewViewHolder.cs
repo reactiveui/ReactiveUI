@@ -29,7 +29,6 @@ namespace ReactiveUI.AndroidSupport
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Legacy reasons")]
         [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1306: Field should start with a lower case letter", Justification = "Legacy reasons")]
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> AllPublicProperties = null!;
 

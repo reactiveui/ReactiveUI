@@ -19,7 +19,7 @@ namespace ReactiveUI
         /// Loads the application state from persistent storage.
         /// </summary>
         /// <returns>An object observable.</returns>
-        IObservable<object> LoadState();
+        IObservable<object?> LoadState();
 
         /// <summary>
         /// Saves the application state to disk.

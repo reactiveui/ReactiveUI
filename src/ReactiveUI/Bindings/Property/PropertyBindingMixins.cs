@@ -127,7 +127,7 @@ namespace ReactiveUI
                 TViewModel? viewModel,
                 Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare>? signalViewUpdate,
+                IObservable<TDontCare?>? signalViewUpdate,
                 object? conversionHint = null,
                 IBindingTypeConverter? vmToViewConverterOverride = null,
                 IBindingTypeConverter? viewToVMConverterOverride = null) // TODO: Create Test
@@ -221,7 +221,7 @@ namespace ReactiveUI
             TViewModel? viewModel,
             Expression<Func<TViewModel, TVMProp?>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
-            IObservable<TDontCare>? signalViewUpdate,
+            IObservable<TDontCare?>? signalViewUpdate,
             Func<TVMProp?, TVProp> vmToViewConverter,
             Func<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class
@@ -346,7 +346,7 @@ namespace ReactiveUI
         /// </param>
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         public static IDisposable BindTo<TValue, TTarget, TTValue>(
-            this IObservable<TValue> @this,
+            this IObservable<TValue?> @this,
             TTarget? target,
             Expression<Func<TTarget, TTValue?>> property,
             object? conversionHint = null,

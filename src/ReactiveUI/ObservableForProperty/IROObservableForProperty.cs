@@ -27,7 +27,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (expression == null)
             {
@@ -46,21 +46,21 @@ namespace ReactiveUI
                 if (expression.NodeType == ExpressionType.Index)
                 {
                     return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                        .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                        .Select(_ => new ObservedChange<object?, object?>(sender, expression, default));
                 }
 
                 return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                    .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                    .Select(_ => new ObservedChange<object?, object?>(sender, expression, default));
             }
 
             if (expression.NodeType == ExpressionType.Index)
             {
                 return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                          .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                          .Select(_ => new ObservedChange<object?, object?>(sender, expression, default));
             }
 
             return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                      .Select(_ => new ObservedChange<object?, object?>(sender, expression, default));
         }
     }
 }

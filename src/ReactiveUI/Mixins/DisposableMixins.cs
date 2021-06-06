@@ -25,7 +25,7 @@ namespace System.Reactive.Disposables
         /// <returns>
         /// The disposable.
         /// </returns>
-        public static T DisposeWith<T>(this T item, CompositeDisposable compositeDisposable)
+        public static T? DisposeWith<T>(this T? item, CompositeDisposable compositeDisposable)
             where T : IDisposable
         {
             if (compositeDisposable is null)
@@ -33,7 +33,7 @@ namespace System.Reactive.Disposables
                 throw new ArgumentNullException(nameof(compositeDisposable));
             }
 
-            compositeDisposable.Add(item);
+            compositeDisposable.Add(item!);
             return item;
         }
     }

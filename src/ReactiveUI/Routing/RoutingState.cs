@@ -24,7 +24,7 @@ namespace ReactiveUI
     public class RoutingState : ReactiveObject
     {
         [DataMember]
-        private readonly ObservableCollection<IRoutableViewModel> _navigationStack;
+        private readonly ObservableCollection<IRoutableViewModel?> _navigationStack;
 
         [IgnoreDataMember]
         private IScheduler _scheduler;
@@ -49,7 +49,7 @@ namespace ReactiveUI
         public RoutingState(IScheduler scheduler)
         {
             _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
-            _navigationStack = new ObservableCollection<IRoutableViewModel>();
+            _navigationStack = new ObservableCollection<IRoutableViewModel?>();
             SetupRx();
         }
 
@@ -58,7 +58,7 @@ namespace ReactiveUI
         /// collection being the currently visible ViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public ObservableCollection<IRoutableViewModel> NavigationStack => _navigationStack;
+        public ObservableCollection<IRoutableViewModel?> NavigationStack => _navigationStack;
 
         /// <summary>
         /// Gets or sets the scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
@@ -109,7 +109,7 @@ namespace ReactiveUI
         /// Gets or sets an observable which will signal when the Navigation changes.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
+        public IObservable<IChangeSet<IRoutableViewModel?>> NavigationChanged { get; protected set; } // TODO: Create Test
 
         [OnDeserialized]
         private void SetupRx(StreamingContext sc) => SetupRx();

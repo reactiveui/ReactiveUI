@@ -54,7 +54,7 @@ namespace ReactiveUI
                 TViewModel? viewModel,
                 TView view,
                 Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
-                Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler) // TODO: Create Test
+                Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare?>> handler) // TODO: Create Test
             where TViewModel : class
             where TView : class, IViewFor
         {

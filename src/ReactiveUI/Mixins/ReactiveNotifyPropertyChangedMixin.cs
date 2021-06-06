@@ -47,7 +47,7 @@ namespace ReactiveUI
         /// with the initial value.</param>
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
-        public static IObservable<IObservedChange<TSender, TValue?>> ObservableForProperty<TSender, TValue>(
+        public static IObservable<IObservedChange<TSender?, TValue?>> ObservableForProperty<TSender, TValue>(
                 this TSender? item,
                 Expression<Func<TSender, TValue?>> property,
                 bool beforeChange = false,
@@ -78,7 +78,7 @@ namespace ReactiveUI
              *  Resubscribe to new Baz, publish to Subject
              */
 
-            return SubscribeToExpressionChain<TSender, TValue?>(
+            return SubscribeToExpressionChain<TSender?, TValue?>(
                 item,
                 property.Body,
                 beforeChange,
@@ -132,7 +132,7 @@ namespace ReactiveUI
         /// <typeparam name="TValue">The end value we want to subscribe to.</typeparam>
         /// <returns>A observable which notifies about observed changes.</returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
-        public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
+        public static IObservable<IObservedChange<TSender?, TValue?>> SubscribeToExpressionChain<TSender, TValue>(
             this TSender? source,
             Expression? expression,
             bool beforeChange = false,
@@ -168,16 +168,16 @@ namespace ReactiveUI
                     throw new InvalidCastException($"Unable to cast from {val.GetType()} to {typeof(TValue)}.");
                 }
 
-                return new ObservedChange<TSender, TValue>(source, expression, (TValue)val!);
+                return new ObservedChange<TSender?, TValue?>(source, expression, (TValue?)val!);
             });
 
             return r.DistinctUntilChanged(x => x.Value);
         }
 
-        private static IObservable<IObservedChange<object, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
+        private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
         {
             // Make sure a change at a root node propagates events down
-            var kicker = new ObservedChange<object, object?>(sourceChange.Value!, expression, default);
+            var kicker = new ObservedChange<object?, object?>(sourceChange.Value!, expression, default);
 
             // Handle null values in the chain
             if (sourceChange.Value is null)
@@ -188,10 +188,10 @@ namespace ReactiveUI
             // Handle non null values in the chain
             return NotifyForProperty(sourceChange.Value, expression, beforeChange, suppressWarnings)
                 .StartWith(kicker)
-                .Select(x => new ObservedChange<object, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
+                .Select(x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
         }
 
-        private static IObservable<IObservedChange<object, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
+        private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
         {
             if (expression is null)
             {

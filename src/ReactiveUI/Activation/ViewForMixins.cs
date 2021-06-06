@@ -41,7 +41,7 @@ namespace ReactiveUI
         /// View is activated. It returns a list of Disposables that will be
         /// cleaned up when the View is deactivated.
         /// </param>
-        public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
+        public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable?>> block) // TODO: Create Test
         {
             if (item is null)
             {
@@ -62,7 +62,7 @@ namespace ReactiveUI
         /// you to register Disposables to be cleaned up when the View is
         /// deactivated (i.e. "d(someObservable.Subscribe());").
         /// </param>
-        public static void WhenActivated(this IActivatableViewModel item, Action<Action<IDisposable>> block)
+        public static void WhenActivated(this IActivatableViewModel item, Action<Action<IDisposable?>> block)
         {
             if (item is null)
             {
@@ -71,7 +71,7 @@ namespace ReactiveUI
 
             item.Activator.AddActivationBlock(() =>
             {
-                var ret = new List<IDisposable>();
+                var ret = new List<IDisposable?>();
                 block(ret.Add);
                 return ret;
             });
@@ -113,7 +113,7 @@ namespace ReactiveUI
         /// cleaned up when the View is deactivated.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
+        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable?>> block) // TODO: Create Test
         {
             if (item is null)
             {
@@ -139,7 +139,7 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view) // TODO: Create Test
+        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable?>> block, IViewFor? view) // TODO: Create Test
         {
             if (item is null)
             {
@@ -177,7 +177,7 @@ namespace ReactiveUI
         /// deactivated (i.e. "d(someObservable.Subscribe());").
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block) => item.WhenActivated(block, null!);
+        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable?>> block) => item.WhenActivated(block, null!);
 
         /// <summary>
         /// WhenActivated allows you to register a Func to be called when a
@@ -196,11 +196,11 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view) => // TODO: Create Test
+        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable?>> block, IViewFor view) => // TODO: Create Test
             item.WhenActivated(
                 () =>
                 {
-                    var ret = new List<IDisposable>();
+                    var ret = new List<IDisposable?>();
                     block(ret.Add);
                     return ret;
                 },
@@ -232,7 +232,7 @@ namespace ReactiveUI
                 },
                 view);
 
-        private static IDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
+        private static IDisposable HandleViewActivation(Func<IEnumerable<IDisposable?>> block, IObservable<bool> activation)
         {
             var viewDisposable = new SerialDisposable();
 
@@ -244,7 +244,7 @@ namespace ReactiveUI
                     viewDisposable.Disposable = Disposable.Empty;
                     if (activated)
                     {
-                        viewDisposable.Disposable = new CompositeDisposable(block());
+                        viewDisposable.Disposable = new CompositeDisposable(block().Select(x => x!));
                     }
                 }),
                 viewDisposable);

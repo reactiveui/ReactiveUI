@@ -11,7 +11,7 @@ namespace ReactiveUI
 {
     internal static class CompatMixins
     {
-        internal static void ForEach<T>(this IEnumerable<T> @this, Action<T> block)
+        internal static void ForEach<T>(this IEnumerable<T?> @this, Action<T?> block)
         {
             foreach (var v in @this)
             {
@@ -19,7 +19,7 @@ namespace ReactiveUI
             }
         }
 
-        internal static IEnumerable<T> SkipLast<T>(this IEnumerable<T> enumerable, int count)
+        internal static IEnumerable<T?> SkipLast<T>(this IEnumerable<T?> enumerable, int count)
         {
             var inputList = enumerable.ToList();
             return inputList.Take(inputList.Count - count);

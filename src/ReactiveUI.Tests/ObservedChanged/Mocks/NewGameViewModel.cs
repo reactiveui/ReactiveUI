@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests
         /// </summary>
         public NewGameViewModel()
         {
-            Players = new ObservableCollectionExtended<string>();
+            Players = new ObservableCollectionExtended<string?>();
 
             var canStart = Players.ToObservableChangeSet().CountChanged().Select(_ => Players.Count >= 3);
             StartGame = ReactiveCommand.Create(() => { }, canStart);
@@ -63,7 +63,7 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Gets the players collection.
         /// </summary>
-        public ObservableCollectionExtended<string> Players { get; }
+        public ObservableCollectionExtended<string?> Players { get; }
 
         /// <summary>
         /// Gets the add player command.

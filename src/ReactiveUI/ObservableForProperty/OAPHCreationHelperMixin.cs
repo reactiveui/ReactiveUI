@@ -44,10 +44,10 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing field
         /// for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
-            Expression<Func<TObj, TRet>> property,
+            Expression<Func<TObj, TRet?>> property,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -103,11 +103,11 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing field
         /// for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
-            Expression<Func<TObj, TRet>> property,
-            TRet initialValue,
+            Expression<Func<TObj, TRet?>> property,
+            TRet? initialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -146,11 +146,11 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing field
         /// for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
-            Expression<Func<TObj, TRet>> property,
-            Func<TRet> getInitialValue,
+            Expression<Func<TObj, TRet?>> property,
+            Func<TRet?> getInitialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject => source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
@@ -188,11 +188,11 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing
         /// field for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
-            Expression<Func<TObj, TRet>> property,
-            out ObservableAsPropertyHelper<TRet> result,
+            Expression<Func<TObj, TRet?>> property,
+            out ObservableAsPropertyHelper<TRet?> result,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -255,12 +255,12 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing
         /// field for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
-            Expression<Func<TObj, TRet>> property,
-            out ObservableAsPropertyHelper<TRet> result,
-            TRet initialValue,
+            Expression<Func<TObj, TRet?>> property,
+            out ObservableAsPropertyHelper<TRet?> result,
+            TRet? initialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -302,12 +302,12 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing
         /// field for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
-            Expression<Func<TObj, TRet>> property,
-            out ObservableAsPropertyHelper<TRet> result,
-            Func<TRet> getInitialValue,
+            Expression<Func<TObj, TRet?>> property,
+            out ObservableAsPropertyHelper<TRet?> result,
+            Func<TRet?> getInitialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -352,11 +352,11 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing field
         /// for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
             string property,
-            TRet initialValue,
+            TRet? initialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -393,8 +393,8 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing field
         /// for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
             string property,
             bool deferSubscription = false,
@@ -453,11 +453,11 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing field
         /// for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
             string property,
-            Func<TRet> getInitialValue,
+            Func<TRet?> getInitialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -513,11 +513,11 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing
         /// field for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
             string property,
-            out ObservableAsPropertyHelper<TRet> result,
+            out ObservableAsPropertyHelper<TRet?> result,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -582,12 +582,12 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing
         /// field for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> target,
+        public static ObservableAsPropertyHelper<TRet?> ToProperty<TObj, TRet>(
+            this IObservable<TRet?> target,
             TObj source,
             string property,
-            out ObservableAsPropertyHelper<TRet> result,
-            Func<TRet> getInitialValue,
+            out ObservableAsPropertyHelper<TRet?> result,
+            Func<TRet?> getInitialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
@@ -617,11 +617,11 @@ namespace ReactiveUI
             return result;
         }
 
-        private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+        private static ObservableAsPropertyHelper<TRet?> ObservableToProperty<TObj, TRet>(
             this TObj target,
-            IObservable<TRet> observable,
-            Expression<Func<TObj, TRet>> property,
-            Func<TRet> getInitialValue,
+            IObservable<TRet?> observable,
+            Expression<Func<TObj, TRet?>> property,
+            Func<TRet?> getInitialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             where TObj : class, IReactiveObject
@@ -668,7 +668,7 @@ namespace ReactiveUI
                 name += "[]";
             }
 
-            return new ObservableAsPropertyHelper<TRet>(
+            return new ObservableAsPropertyHelper<TRet?>(
                 observable,
                 _ => target.RaisingPropertyChanged(name),
                 _ => target.RaisingPropertyChanging(name),
@@ -677,10 +677,10 @@ namespace ReactiveUI
                 scheduler);
         }
 
-        private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+        private static ObservableAsPropertyHelper<TRet?> ObservableToProperty<TObj, TRet>(
             this TObj target,
-            IObservable<TRet> observable,
-            Expression<Func<TObj, TRet>> property,
+            IObservable<TRet?> observable,
+            Expression<Func<TObj, TRet?>> property,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
                 where TObj : class, IReactiveObject
@@ -727,20 +727,20 @@ namespace ReactiveUI
                 name += "[]";
             }
 
-            return new ObservableAsPropertyHelper<TRet>(
+            return new ObservableAsPropertyHelper<TRet?>(
                 observable,
                 _ => target.RaisingPropertyChanged(name),
                 _ => target.RaisingPropertyChanging(name),
-                () => default!,
+                () => default,
                 deferSubscription,
                 scheduler);
         }
 
-        private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+        private static ObservableAsPropertyHelper<TRet?> ObservableToProperty<TObj, TRet>(
             this TObj target,
-            IObservable<TRet> observable,
+            IObservable<TRet?> observable,
             string property,
-            Func<TRet> getInitialValue,
+            Func<TRet?> getInitialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             where TObj : class, IReactiveObject
@@ -760,7 +760,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(property));
             }
 
-            return new ObservableAsPropertyHelper<TRet>(
+            return new ObservableAsPropertyHelper<TRet?>(
                                                         observable,
                                                         _ => target.RaisingPropertyChanged(property),
                                                         _ => target.RaisingPropertyChanging(property),
@@ -769,9 +769,9 @@ namespace ReactiveUI
                                                         scheduler);
         }
 
-        private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+        private static ObservableAsPropertyHelper<TRet?> ObservableToProperty<TObj, TRet>(
             this TObj target,
-            IObservable<TRet> observable,
+            IObservable<TRet?> observable,
             string property,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
@@ -792,7 +792,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(property));
             }
 
-            return new ObservableAsPropertyHelper<TRet>(
+            return new ObservableAsPropertyHelper<TRet?>(
                 observable,
                 _ => target.RaisingPropertyChanged(property),
                 _ => target.RaisingPropertyChanging(property),

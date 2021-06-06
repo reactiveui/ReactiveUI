@@ -139,10 +139,10 @@ namespace ReactiveUI
         }
 
         private static IDisposable BindCommandInternal<TView, TProp, TParam>(
-                IObservable<TProp> source,
+                IObservable<TProp?> source,
                 TView view,
                 Expression controlExpression,
-                IObservable<TParam> withParameter,
+                IObservable<TParam?> withParameter,
                 string? toEvent)
             where TView : class, IViewFor
             where TProp : ICommand

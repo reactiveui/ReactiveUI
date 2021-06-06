@@ -51,7 +51,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare>? signalViewUpdate,
+                IObservable<TDontCare?>? signalViewUpdate,
                 object? conversionHint,
                 IBindingTypeConverter? vmToViewConverterOverride = null,
                 IBindingTypeConverter? viewToVMConverterOverride = null)
@@ -92,7 +92,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                IObservable<TDontCare>? signalViewUpdate,
+                IObservable<TDontCare?>? signalViewUpdate,
                 Func<TVMProp?, TVProp> vmToViewConverter,
                 Func<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class
@@ -215,7 +215,7 @@ namespace ReactiveUI
 
         /// <inheritdoc />
         public IDisposable BindTo<TValue, TTarget, TTValue>(
-            IObservable<TValue> observedChange,
+            IObservable<TValue?> observedChange,
             TTarget? target,
             Expression<Func<TTarget, TTValue?>> propertyExpression,
             object? conversionHint = null,
@@ -271,8 +271,8 @@ namespace ReactiveUI
 #pragma warning restore IDE0031 // Use null propagation
         }
 
-        private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
-                IObservable<TObs> changeObservable,
+        private (IDisposable disposable, IObservable<TValue?> value) BindToDirect<TTarget, TValue, TObs>(
+                IObservable<TObs?> changeObservable,
                 TTarget target,
                 Expression viewExpression)
             where TTarget : class
@@ -299,7 +299,7 @@ namespace ReactiveUI
                 return converter(value, paramValue, paramParams);
             }
 
-            IObservable<TValue> setObservable;
+            IObservable<TValue?> setObservable;
 
             if (viewExpression.GetParent()?.NodeType == ExpressionType.Parameter)
             {
@@ -367,7 +367,7 @@ namespace ReactiveUI
             TView view,
             Expression<Func<TViewModel, TVMProp?>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
-            IObservable<TDontCare>? signalViewUpdate,
+            IObservable<TDontCare?>? signalViewUpdate,
             OutFunc<TVMProp?, TVProp> vmToViewConverter,
             OutFunc<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class

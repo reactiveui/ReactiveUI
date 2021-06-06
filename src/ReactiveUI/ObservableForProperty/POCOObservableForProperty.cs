@@ -25,7 +25,7 @@ namespace ReactiveUI
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => 1;
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (sender is null)
             {
@@ -39,8 +39,8 @@ namespace ReactiveUI
                 _hasWarned[(type, propertyName)] = true;
             }
 
-            return Observable.Return(new ObservedChange<object, object?>(sender, expression, default), RxApp.MainThreadScheduler)
-                .Concat(Observable<IObservedChange<object, object?>>.Never);
+            return Observable.Return(new ObservedChange<object?, object?>(sender, expression, default), RxApp.MainThreadScheduler)
+                .Concat(Observable<IObservedChange<object?, object?>>.Never);
         }
     }
 }

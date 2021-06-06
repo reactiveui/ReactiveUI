@@ -42,10 +42,10 @@ namespace ReactiveUI
     /// </summary>
     public sealed class ViewModelActivator : IDisposable
     {
-        private readonly List<Func<IEnumerable<IDisposable>>> _blocks;
+        private readonly List<Func<IEnumerable<IDisposable?>>> _blocks;
         private readonly Subject<Unit> _activated;
         private readonly Subject<Unit> _deactivated;
-        private IDisposable _activationHandle = Disposable.Empty;
+        private IDisposable? _activationHandle = Disposable.Empty;
         private int _refCount;
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace ReactiveUI
         /// </summary>
         public ViewModelActivator()
         {
-            _blocks = new List<Func<IEnumerable<IDisposable>>>();
+            _blocks = new List<Func<IEnumerable<IDisposable?>>>();
             _activated = new Subject<Unit>();
             _deactivated = new Subject<Unit>();
         }
@@ -76,12 +76,12 @@ namespace ReactiveUI
         /// being activated.
         /// </summary>
         /// <returns>A Disposable that calls Deactivate when disposed.</returns>
-        public IDisposable Activate()
+        public IDisposable? Activate()
         {
             if (Interlocked.Increment(ref _refCount) == 1)
             {
-                var disposable = new CompositeDisposable(_blocks.SelectMany(x => x()));
-                Interlocked.Exchange(ref _activationHandle, disposable).Dispose();
+                var disposable = new CompositeDisposable(_blocks.SelectMany(x => x().Select(x => x!)));
+                Interlocked.Exchange(ref _activationHandle!, disposable).Dispose();
                 _activated.OnNext(Unit.Default);
             }
 
@@ -100,7 +100,7 @@ namespace ReactiveUI
         {
             if (Interlocked.Decrement(ref _refCount) == 0 || ignoreRefCount)
             {
-                Interlocked.Exchange(ref _activationHandle, Disposable.Empty).Dispose();
+                Interlocked.Exchange(ref _activationHandle!, Disposable.Empty).Dispose();
                 _deactivated.OnNext(Unit.Default);
             }
         }
@@ -108,7 +108,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public void Dispose()
         {
-            _activationHandle.Dispose();
+            _activationHandle?.Dispose();
             _activated.Dispose();
             _deactivated.Dispose();
         }
@@ -118,6 +118,6 @@ namespace ReactiveUI
         /// on activation, then disposed on deactivation.
         /// </summary>
         /// <param name="block">The block to add.</param>
-        internal void AddActivationBlock(Func<IEnumerable<IDisposable>> block) => _blocks.Add(block);
+        internal void AddActivationBlock(Func<IEnumerable<IDisposable?>> block) => _blocks.Add(block);
     }
 }

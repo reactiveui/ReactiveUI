@@ -31,7 +31,12 @@ namespace ReactiveUI.Fody.Helpers
         /// or
         /// Backing field not found for " + propertyInfo.
         /// </exception>
-        public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(this IObservable<TRet> item, TObj source, Expression<Func<TObj, TRet>> property, bool deferSubscription = false, IScheduler? scheduler = null)
+        public static ObservableAsPropertyHelper<TRet?> ToPropertyEx<TObj, TRet>(
+            this IObservable<TRet?> item,
+            TObj source,
+            Expression<Func<TObj, TRet?>> property,
+            bool deferSubscription = false,
+            IScheduler? scheduler = null)
             where TObj : ReactiveObject
         {
             if (item is null)
@@ -81,7 +86,13 @@ namespace ReactiveUI.Fody.Helpers
         /// or
         /// Backing field not found for " + propertyInfo.
         /// </exception>
-        public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(this IObservable<TRet> item, TObj source, Expression<Func<TObj, TRet>> property, TRet initialValue, bool deferSubscription = false, IScheduler? scheduler = null)
+        public static ObservableAsPropertyHelper<TRet?> ToPropertyEx<TObj, TRet>(
+            this IObservable<TRet?> item,
+            TObj source,
+            Expression<Func<TObj, TRet?>> property,
+            TRet? initialValue,
+            bool deferSubscription = false,
+            IScheduler? scheduler = null)
             where TObj : ReactiveObject
         {
             if (item is null)
