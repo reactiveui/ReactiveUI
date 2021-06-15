@@ -41,6 +41,27 @@ namespace ReactiveUI.Tests.Wpf
         }
 
         [Fact]
+        public void WindowIsActivatedAndDeactivated()
+        {
+            var window = new WpfTestWindow();
+            var activation = new ActivationForViewFetcher();
+
+            var obs = activation.GetActivationForView(window);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
+
+            var loaded = new RoutedEventArgs();
+            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
+
+            window.RaiseEvent(loaded);
+
+            new[] { true }.AssertAreEqual(activated);
+
+            window.Close();
+
+            new[] { true, false }.AssertAreEqual(activated);
+        }
+
+        [Fact]
         public void IsHitTestVisibleActivatesFrameworkElement()
         {
             var uc = new WpfTestUserControl();
