@@ -55,9 +55,32 @@ namespace ReactiveUI
                 x => fe.Unloaded += x,
                 x => fe.Unloaded -= x);
 
+            var windowActivation = GetActivationForWindow(view);
+
             return viewLoaded
                 .Merge(viewUnloaded)
                 .Merge(hitTestVisible)
+                .Merge(windowActivation)
+                .DistinctUntilChanged();
+        }
+
+        private static IObservable<bool> GetActivationForWindow(IActivatableView view)
+        {
+            if (view is not Window window)
+            {
+                return Observable<bool>.Empty;
+            }
+
+            var viewClosed = Observable.FromEvent<EventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object? sender, EventArgs e) => eventHandler(false);
+                    return Handler;
+                },
+                x => window.Closed += x,
+                x => window.Closed -= x);
+
+            return viewClosed
                 .DistinctUntilChanged();
         }
     }
