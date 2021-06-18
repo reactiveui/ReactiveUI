@@ -7,6 +7,7 @@ using System;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace ReactiveUI
 {
@@ -57,10 +58,13 @@ namespace ReactiveUI
 
             var windowActivation = GetActivationForWindow(view);
 
+            var dispatcherActivation = GetActivationForDispatcher(fe);
+
             return viewLoaded
                 .Merge(viewUnloaded)
                 .Merge(hitTestVisible)
                 .Merge(windowActivation)
+                .Merge(dispatcherActivation)
                 .DistinctUntilChanged();
         }
 
@@ -81,6 +85,21 @@ namespace ReactiveUI
                 x => window.Closed -= x);
 
             return viewClosed
+                .DistinctUntilChanged();
+        }
+
+        private static IObservable<bool> GetActivationForDispatcher(DispatcherObject dispatcherObject)
+        {
+            var dispatcherShutdownStarted = Observable.FromEvent<EventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object? sender, EventArgs e) => eventHandler(false);
+                    return Handler;
+                },
+                x => dispatcherObject.Dispatcher.ShutdownStarted += x,
+                x => dispatcherObject.Dispatcher.ShutdownStarted -= x);
+
+            return dispatcherShutdownStarted
                 .DistinctUntilChanged();
         }
     }
