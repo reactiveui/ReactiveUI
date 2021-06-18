@@ -62,6 +62,37 @@ namespace ReactiveUI.Tests.Wpf
         }
 
         [Fact]
+        public void WindowAndFrameworkElementAreActivatedAndDeactivated()
+        {
+            var window = new WpfTestWindow();
+            var uc = new WpfTestUserControl();
+
+            window.RootGrid.Children.Add(uc);
+
+            var activation = new ActivationForViewFetcher();
+
+            var windowObs = activation.GetActivationForView(window);
+            windowObs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
+
+            var ucObs = activation.GetActivationForView(uc);
+            ucObs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
+
+            var loaded = new RoutedEventArgs();
+            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
+
+            window.RaiseEvent(loaded);
+            uc.RaiseEvent(loaded);
+
+            new[] { true }.AssertAreEqual(windowActivated);
+            new[] { true }.AssertAreEqual(controlActivated);
+
+            window.Dispatcher.InvokeShutdown();
+
+            new[] { true, false }.AssertAreEqual(windowActivated);
+            new[] { true, false }.AssertAreEqual(controlActivated);
+        }
+
+        [Fact]
         public void IsHitTestVisibleActivatesFrameworkElement()
         {
             var uc = new WpfTestUserControl();

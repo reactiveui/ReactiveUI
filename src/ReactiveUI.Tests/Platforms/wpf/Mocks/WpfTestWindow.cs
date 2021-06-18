@@ -4,10 +4,19 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Wpf
 {
     public class WpfTestWindow : Window, IActivatableView
     {
+        public WpfTestWindow()
+        {
+            RootGrid = new Grid();
+
+            AddChild(RootGrid);
+        }
+
+        public Grid RootGrid { get; }
     }
 }
