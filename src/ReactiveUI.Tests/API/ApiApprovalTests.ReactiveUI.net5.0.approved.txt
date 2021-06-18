@@ -678,13 +678,14 @@ namespace ReactiveUI
     }
     public enum RegistrationNamespace
     {
-        XamForms = 0,
-        Winforms = 1,
-        Wpf = 2,
-        Uno = 3,
-        Blazor = 4,
-        Drawing = 5,
-        Avalonia = 6,
+        None = 0,
+        XamForms = 1,
+        Winforms = 2,
+        Wpf = 3,
+        Uno = 4,
+        Blazor = 5,
+        Drawing = 6,
+        Avalonia = 7,
     }
     public class Registrations
     {
