@@ -12,7 +12,7 @@ namespace ReactiveUI
     {
         /// <summary>No platform to register.</summary>
         None = 0,
-        
+
         /// <summary>
         /// Xamarin Forms.
         /// </summary>
