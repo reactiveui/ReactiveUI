@@ -84,8 +84,7 @@ namespace ReactiveUI
                 x => window.Closed += x,
                 x => window.Closed -= x);
 
-            return viewClosed
-                .DistinctUntilChanged();
+            return viewClosed;
         }
 
         private static IObservable<bool> GetActivationForDispatcher(DispatcherObject dispatcherObject)
@@ -99,8 +98,7 @@ namespace ReactiveUI
                 x => dispatcherObject.Dispatcher.ShutdownStarted += x,
                 x => dispatcherObject.Dispatcher.ShutdownStarted -= x);
 
-            return dispatcherShutdownStarted
-                .DistinctUntilChanged();
+            return dispatcherShutdownStarted;
         }
     }
 }
