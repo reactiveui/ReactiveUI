@@ -91,7 +91,7 @@ namespace TestHelper
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int hashCode = 1054991603;
+            var hashCode = 1054991603;
             hashCode = (hashCode * -1521134295) + EqualityComparer<IList<DiagnosticResultLocation>>.Default.GetHashCode(_locations);
             hashCode = (hashCode * -1521134295) + EqualityComparer<IList<DiagnosticResultLocation>>.Default.GetHashCode(Locations);
             hashCode = (hashCode * -1521134295) + Severity.GetHashCode();

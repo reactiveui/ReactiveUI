@@ -36,7 +36,6 @@ namespace ReactiveUI.Tests
 
         public ReactiveCommand<string, string> Command3 { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Test usage")]
         public ObservableCollectionExtended<int>? MyListOfInts
         {
             get => _myListOfInts;

@@ -19,13 +19,11 @@ namespace ReactiveUI
     /// Fragments via property names, similar to Butter Knife, as well as allows
     /// you to fetch controls manually.
     /// </summary>
-   public static partial class ControlFetcherMixin
+    public static partial class ControlFetcherMixin
     {
-        private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds
-            = new();
+        private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds = new();
 
-        private static readonly ConditionalWeakTable<object, Dictionary<string?, View?>> viewCache
-            = new();
+        private static readonly ConditionalWeakTable<object, Dictionary<string?, View?>> _viewCache = new();
 
         /// <summary>
         /// Gets the control from an activity.
@@ -33,7 +31,7 @@ namespace ReactiveUI
         /// <param name="activity">The activity.</param>
         /// <param name="propertyName">The property name.</param>
         /// <returns>The return view.</returns>
-        public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null)
+        public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null) // TODO: Create Test
             => GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)));
 
         /// <summary>
@@ -43,7 +41,7 @@ namespace ReactiveUI
         /// <param name="assembly">The assembly containing the user-defined view.</param>
         /// <param name="propertyName">The property.</param>
         /// <returns>The return view.</returns>
-        public static View? GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null)
+        public static View? GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null) // TODO: Create Test
             => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(assembly, propertyName)));
 
         /// <summary>
@@ -51,7 +49,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="layoutHost">The layout view host.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
         {
             if (layoutHost is null)
             {
@@ -79,7 +77,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="view">The view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
         {
             if (view is null)
             {
@@ -114,7 +112,7 @@ namespace ReactiveUI
         /// <param name="inflatedView">The inflated view.</param>
         /// <param name="resolveMembers">The resolve members.</param>
         [Obsolete("This class is obsoleted in this android platform")]
-        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
         {
             if (fragment is null)
             {
@@ -146,7 +144,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="activity">The Activity.</param>
         /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
         {
             if (activity is null)
             {
@@ -177,19 +175,16 @@ namespace ReactiveUI
         {
             var members = @this.GetType().GetRuntimeProperties();
 
-            switch (resolveStrategy)
+            return resolveStrategy switch
             {
-                default: // Implicit matches the Default.
-                    return members.Where(member => member.PropertyType.IsSubclassOf(typeof(View))
-                                              || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null);
+                ResolveStrategy.ExplicitOptIn =>
+                    members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
+                ResolveStrategy.ExplicitOptOut =>
+                    members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType) && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null),
 
-                case ResolveStrategy.ExplicitOptIn:
-                    return members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null);
-
-                case ResolveStrategy.ExplicitOptOut:
-                    return members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType)
-                                              && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null);
-            }
+                // Implicit matches the Default.
+                _ => members.Where(member => member.PropertyType.IsSubclassOf(typeof(View)) || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
+            };
         }
 
         internal static string GetResourceName(this PropertyInfo member)
@@ -210,7 +205,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(fetchControlFromView));
             }
 
-            var ourViewCache = viewCache.GetOrCreateValue(rootView);
+            var ourViewCache = _viewCache.GetOrCreateValue(rootView);
 
             if (ourViewCache.TryGetValue(propertyName, out var ret))
             {

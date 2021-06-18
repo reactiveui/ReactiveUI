@@ -33,9 +33,9 @@ namespace ReactiveUI
         /// <returns>An observable tracking whether the view is active.</returns>
         public IObservable<bool> GetActivationForView(IActivatableView view)
         {
-            if (!(view is ICanActivate canActivate))
+            if (view is not ICanActivate canActivate)
             {
-                return Observable.Empty(false);
+                return Observable.Return(false);
             }
 
             return canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));

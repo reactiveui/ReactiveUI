@@ -50,10 +50,10 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public void OnCompleted() => _subject.OnCompleted();
+        public void OnCompleted() => _subject.OnCompleted(); // TODO: Create Test
 
         /// <inheritdoc/>
-        public void OnError(Exception error) => _subject.OnError(error);
+        public void OnError(Exception error) => _subject.OnError(error); // TODO: Create Test
 
         /// <inheritdoc/>
         public void OnNext(T value) => _subject.OnNext(value);

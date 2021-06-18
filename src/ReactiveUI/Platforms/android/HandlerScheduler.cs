@@ -26,10 +26,8 @@ namespace ReactiveUI
         private readonly Handler _handler;
         private readonly long _looperId;
 
-        static HandlerScheduler()
-        {
+        static HandlerScheduler() =>
             MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper!), Looper.MainLooper?.Thread?.Id);
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HandlerScheduler"/> class.
@@ -53,7 +51,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            bool isCancelled = false;
+            var isCancelled = false;
             var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
 
             _handler.Post(() =>
@@ -72,9 +70,9 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action) // TODO: Create Test
         {
-            bool isCancelled = false;
+            var isCancelled = false;
             var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
 
             _handler.PostDelayed(
@@ -95,7 +93,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
+        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) // TODO: Create Test
         {
             if (dueTime <= Now)
             {

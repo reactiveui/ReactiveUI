@@ -49,7 +49,7 @@ namespace ReactiveUI
             TObj source,
             Expression<Func<TObj, TRet>> property,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
         {
             if (target is null)
@@ -109,7 +109,7 @@ namespace ReactiveUI
             Expression<Func<TObj, TRet>> property,
             TRet initialValue,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
             => ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
 
@@ -152,7 +152,7 @@ namespace ReactiveUI
             Expression<Func<TObj, TRet>> property,
             Func<TRet> getInitialValue,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject => source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace ReactiveUI
             Expression<Func<TObj, TRet>> property,
             out ObservableAsPropertyHelper<TRet> result,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
         {
             if (target is null)
@@ -262,7 +262,7 @@ namespace ReactiveUI
             out ObservableAsPropertyHelper<TRet> result,
             TRet initialValue,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
             => ToProperty(target, source, property, out result, () => initialValue, deferSubscription, scheduler);
 
@@ -309,7 +309,7 @@ namespace ReactiveUI
             out ObservableAsPropertyHelper<TRet> result,
             Func<TRet> getInitialValue,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
         {
             var ret = source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
@@ -358,7 +358,7 @@ namespace ReactiveUI
             string property,
             TRet initialValue,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
             => ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
 
@@ -398,7 +398,7 @@ namespace ReactiveUI
             TObj source,
             string property,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
         {
             if (target is null)
@@ -459,7 +459,7 @@ namespace ReactiveUI
             string property,
             Func<TRet> getInitialValue,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
         {
             if (target is null)
@@ -519,7 +519,7 @@ namespace ReactiveUI
             string property,
             out ObservableAsPropertyHelper<TRet> result,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
         {
             if (target is null)
@@ -537,13 +537,11 @@ namespace ReactiveUI
                 throw new ArgumentException($"'{nameof(property)}' cannot be null or whitespace", nameof(property));
             }
 
-            var ret = source.ObservableToProperty(
+            result = source.ObservableToProperty(
                 target,
                 property,
                 deferSubscription,
                 scheduler);
-
-            result = ret;
 
             return result;
         }
@@ -591,7 +589,7 @@ namespace ReactiveUI
             out ObservableAsPropertyHelper<TRet> result,
             Func<TRet> getInitialValue,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             where TObj : class, IReactiveObject
         {
             if (target is null)
@@ -643,7 +641,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(property));
             }
 
-            Expression expression = Reflection.Rewrite(property.Body);
+            var expression = Reflection.Rewrite(property.Body);
 
             var parent = expression.GetParent();
 
@@ -664,7 +662,7 @@ namespace ReactiveUI
                 throw new ArgumentException("The property expression does not point towards a valid member.", nameof(property));
             }
 
-            string name = memberInfo.Name;
+            var name = memberInfo.Name;
             if (expression is IndexExpression)
             {
                 name += "[]";
@@ -702,7 +700,7 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(property));
             }
 
-            Expression expression = Reflection.Rewrite(property.Body);
+            var expression = Reflection.Rewrite(property.Body);
 
             var parent = expression.GetParent();
 
@@ -723,7 +721,7 @@ namespace ReactiveUI
                 throw new ArgumentException("The property expression does not point towards a valid member.", nameof(property));
             }
 
-            string name = memberInfo.Name;
+            var name = memberInfo.Name;
             if (expression is IndexExpression)
             {
                 name += "[]";

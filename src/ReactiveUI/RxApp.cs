@@ -32,7 +32,6 @@ namespace ReactiveUI
     /// This class also initializes a whole bunch of other stuff, including the IoC container,
     /// logging and error handling.
     /// </remarks>
-    [SuppressMessage("Usage", "CS8618: Non-nullable property is uninitialized", Justification = "Threading magic.")]
     public static class RxApp
     {
 #if ANDROID || IOS
@@ -46,6 +45,7 @@ namespace ReactiveUI
         /// </summary>
         public const int BigCacheLimit = 64;
 #else
+
         /// <summary>
         /// The size of a small cache of items. Often used for the MemoizingMRUCache class.
         /// </summary>
@@ -55,17 +55,23 @@ namespace ReactiveUI
         /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
         /// </summary>
         public const int BigCacheLimit = 256;
+
 #endif
 
         [ThreadStatic]
         private static IScheduler _unitTestTaskpoolScheduler = null!;
+
         private static IScheduler _taskpoolScheduler = null!;
+
         [ThreadStatic]
         private static IScheduler _unitTestMainThreadScheduler = null!;
+
         private static IScheduler _mainThreadScheduler = null!;
         private static IObserver<Exception> _defaultExceptionHandler = null!;
+
         [ThreadStatic]
         private static ISuspensionHost _unitTestSuspensionHost = null!;
+
         private static ISuspensionHost _suspensionHost = null!;
         private static bool _hasSchedulerBeenChecked;
 
@@ -239,15 +245,7 @@ namespace ReactiveUI
 
         private static IScheduler UnitTestMainThreadScheduler
         {
-            get
-            {
-                if (_unitTestMainThreadScheduler is null)
-                {
-                    _unitTestMainThreadScheduler = CurrentThreadScheduler.Instance;
-                }
-
-                return _unitTestMainThreadScheduler;
-            }
+            get => _unitTestMainThreadScheduler ??= CurrentThreadScheduler.Instance;
 
             set => _unitTestMainThreadScheduler = value;
         }

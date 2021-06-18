@@ -74,20 +74,20 @@ namespace TestHelper
         /// <param name="expectedResults">Diagnostic Results that should have appeared in the code.</param>
         private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
         {
-            int expectedCount = expectedResults.Length;
+            var expectedCount = expectedResults.Length;
             var actualCountList = actualResults.ToList();
-            int actualCount = actualCountList.Count;
+            var actualCount = actualCountList.Count;
 
             if (expectedCount != actualCount)
             {
-                string diagnosticsOutput = actualCountList.Any() ? FormatDiagnostics(analyzer, actualCountList.ToArray()) : "    NONE.";
+                var diagnosticsOutput = actualCountList.Any() ? FormatDiagnostics(analyzer, actualCountList.ToArray()) : "    NONE.";
 
                 Assert.True(
                     false,
                     $"Mismatch between number of diagnostics returned, expected \"{expectedCount}\" actual \"{actualCount}\"\r\n\r\nDiagnostics:\r\n{diagnosticsOutput}\r\n");
             }
 
-            for (int i = 0; i < expectedResults.Length; i++)
+            for (var i = 0; i < expectedResults.Length; i++)
             {
                 var actual = actualCountList[i];
                 var expected = expectedResults[i];
@@ -113,7 +113,7 @@ namespace TestHelper
                                       $"Expected {expected.Locations.Count - 1} additional locations but got {additionalLocations.Length} for Diagnostic:\r\n    {FormatDiagnostics(analyzer, actual)}\r\n");
                     }
 
-                    for (int j = 0; j < additionalLocations.Length; ++j)
+                    for (var j = 0; j < additionalLocations.Length; ++j)
                     {
                         VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expected.Locations[j + 1]);
                     }
@@ -192,7 +192,7 @@ namespace TestHelper
         private static string FormatDiagnostics(DiagnosticAnalyzer analyzer, params Diagnostic[] diagnostics)
         {
             var builder = new StringBuilder();
-            for (int i = 0; i < diagnostics.Length; ++i)
+            for (var i = 0; i < diagnostics.Length; ++i)
             {
                 builder.AppendLine("// " + diagnostics[i].ToString());
 
@@ -214,7 +214,7 @@ namespace TestHelper
                                 location.IsInSource,
                                 $"Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata: {diagnostics[i]}\r\n");
 
-                            string resultMethodName = diagnostics[i].Location.SourceTree!.FilePath.EndsWith(".cs", StringComparison.Ordinal) ? "GetCSharpResultAt" : "GetBasicResultAt";
+                            var resultMethodName = diagnostics[i].Location.SourceTree!.FilePath.EndsWith(".cs", StringComparison.Ordinal) ? "GetCSharpResultAt" : "GetBasicResultAt";
                             var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
 
                             builder.Append($"{resultMethodName}({linePosition.Line + 1}, {linePosition.Character + 1}, {analyzerType.Name}.{rule.Id})");

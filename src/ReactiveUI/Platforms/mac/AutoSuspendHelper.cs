@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -17,12 +16,12 @@ using Splat;
 namespace ReactiveUI
 {
     /// <summary>
+    /// <para>
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
-    ///
-    /// Locator.Current.GetService.{ISuspensionHost}().SetupDefaultSuspendResume();
-    ///
-    /// This will fetch your SuspensionHost.
+    /// </para>
+    /// <para><c>Locator.Current.GetService.{ISuspensionHost}().SetupDefaultSuspendResume();</c>.</para>
+    /// <para>This will fetch your SuspensionHost.</para>
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
@@ -77,29 +76,27 @@ namespace ReactiveUI
         /// Dids the finish launching.
         /// </summary>
         /// <param name="notification">The notification.</param>
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
+#pragma warning disable RCS1163 // Unused parameter.
         public void DidFinishLaunching(NSNotification notification) => _isResuming.OnNext(Unit.Default);
 
         /// <summary>
         /// Dids the resign active.
         /// </summary>
         /// <param name="notification">The notification.</param>
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         public void DidResignActive(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
 
         /// <summary>
         /// Dids the become active.
         /// </summary>
         /// <param name="notification">The notification.</param>
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         public void DidBecomeActive(NSNotification notification) => _isUnpausing.OnNext(Unit.Default);
 
         /// <summary>
         /// Dids the hide.
         /// </summary>
         /// <param name="notification">The notification.</param>
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
         public void DidHide(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
+#pragma warning restore RCS1163 // Unused parameter.
 
         /// <inheritdoc />
         public void Dispose()

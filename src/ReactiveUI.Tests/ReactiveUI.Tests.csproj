@@ -24,6 +24,10 @@
     <None Include="Platforms\**\*.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Platforms\Winforms\Mocks\TestFormNotCanActivate.cs" />
+  </ItemGroup>
+
   <Choose>
     <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.1')) AND '$(OS)' == 'Windows_NT'">
       <PropertyGroup>
@@ -76,4 +80,28 @@
       </ItemGroup>
     </When>
   </Choose>
+
+  <ItemGroup>
+    <Compile Update="Platforms\Winforms\Mocks\TestForm.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TestForm.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Platforms\Winforms\Mocks\TestFormNotCanActivate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Platforms\Winforms\Mocks\TestFormNotCanActivate.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TestFormNotCanActivate.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Platforms\winforms\Mocks\TestFormNotCanActivate.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TestFormNotCanActivate.resx</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>

@@ -66,8 +66,8 @@ namespace ReactiveUI
                 throw new NotSupportedException("Array index expressions are only supported with constants.");
             }
 
-            Expression left = Visit(node.Left);
-            Expression right = Visit(node.Right);
+            var left = Visit(node.Left);
+            var right = Visit(node.Right);
 
             // Translate arrayindex into normal index expression
             return Expression.MakeIndex(left, left.Type.GetRuntimeProperty("Item"), new[] { right });
@@ -77,7 +77,7 @@ namespace ReactiveUI
         {
             if (node.NodeType == ExpressionType.ArrayLength && node.Operand is not null)
             {
-                Expression expression = Visit(node.Operand);
+                var expression = Visit(node.Operand);
 
                 var memberInfo = expression.Type.GetRuntimeProperty("Length");
 
@@ -116,7 +116,7 @@ namespace ReactiveUI
                 throw new ArgumentException("The Method call does not point towards an object.", nameof(node));
             }
 
-            Expression instance = Visit(node.Object);
+            var instance = Visit(node.Object);
             IEnumerable<Expression> arguments = Visit(node.Arguments);
 
             // Translate call to get_Item into normal index expression

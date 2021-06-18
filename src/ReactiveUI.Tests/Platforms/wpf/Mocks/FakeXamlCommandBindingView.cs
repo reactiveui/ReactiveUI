@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests.Wpf
         {
             _buttonDeclaredInXaml = new Button();
 
-            this.BindCommand(ViewModel!, vm => vm!.Command2!, v => v._buttonDeclaredInXaml);
+            this.BindCommand(ViewModel, vm => vm!.Command2!, v => v._buttonDeclaredInXaml);
         }
 
         /// <summary>

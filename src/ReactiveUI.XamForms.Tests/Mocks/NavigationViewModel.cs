@@ -5,6 +5,8 @@
 
 using System;
 using System.Reactive;
+using System.Reactive.Linq;
+
 using Splat;
 
 namespace ReactiveUI.XamForms.Tests.Mocks
@@ -25,6 +27,12 @@ namespace ReactiveUI.XamForms.Tests.Mocks
         public IObservable<IRoutableViewModel> Navigate(string name)
         {
             var viewModel = Locator.Current.GetService<IRoutableViewModel>(name);
+
+            if (viewModel is null)
+            {
+                return Observable.Throw<IRoutableViewModel>(new InvalidOperationException("Could not find the view model with the name."));
+            }
+
             return Router.Navigate.Execute(viewModel);
         }
 
@@ -54,6 +62,6 @@ namespace ReactiveUI.XamForms.Tests.Mocks
         /// Navigates back.
         /// </summary>
         /// <returns>An observable.</returns>
-        public IObservable<Unit> NavigateBack() => Router.NavigateBack.Execute();
+        public IObservable<IRoutableViewModel?> NavigateBack() => Router.NavigateBack.Execute();
     }
 }

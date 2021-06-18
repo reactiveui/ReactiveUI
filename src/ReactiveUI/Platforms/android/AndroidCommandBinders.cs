@@ -19,15 +19,15 @@ namespace ReactiveUI
         /// <summary>
         /// Initializes a new instance of the <see cref="AndroidCommandBinders"/> class.
         /// </summary>
-        public AndroidCommandBinders()
+        public AndroidCommandBinders() // TODO: Create Test
         {
-            Type view = typeof(View);
+            var view = typeof(View);
             Register(view, 9, (cmd, t, cp) => ForEvent(cmd, t, cp, "Click", view.GetRuntimeProperty("Enabled")));
         }
 
         /// <summary>
         /// Gets the static instance of <see cref="AndroidCommandBinders"/>.
         /// </summary>
-        public static Lazy<AndroidCommandBinders> Instance { get; } = new();
+        public static Lazy<AndroidCommandBinders> Instance { get; } = new(); // TODO: Create Test
     }
 }

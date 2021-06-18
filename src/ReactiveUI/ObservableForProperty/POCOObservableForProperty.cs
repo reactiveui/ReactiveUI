@@ -19,7 +19,7 @@ namespace ReactiveUI
     /// </summary>
     public class POCOObservableForProperty : ICreatesObservableForProperty
     {
-        private static readonly IDictionary<(Type, string), bool> hasWarned = new ConcurrentDictionary<(Type, string), bool>();
+        private static readonly IDictionary<(Type, string), bool> _hasWarned = new ConcurrentDictionary<(Type, string), bool>();
 
         /// <inheritdoc/>
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => 1;
@@ -33,10 +33,10 @@ namespace ReactiveUI
             }
 
             var type = sender.GetType();
-            if (!hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)
+            if (!_hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)
             {
                 this.Log().Warn($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
-                hasWarned[(type, propertyName)] = true;
+                _hasWarned[(type, propertyName)] = true;
             }
 
             return Observable.Return(new ObservedChange<object, object?>(sender, expression, default), RxApp.MainThreadScheduler)

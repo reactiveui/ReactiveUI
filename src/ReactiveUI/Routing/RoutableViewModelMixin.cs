@@ -17,7 +17,7 @@ namespace ReactiveUI
     /// </summary>
     public static class RoutableViewModelMixin
     {
-        private static readonly ListChangeReason[] NavigationStackRemovalOperations = { ListChangeReason.Remove, ListChangeReason.RemoveRange };
+        private static readonly ListChangeReason[] _navigationStackRemovalOperations = { ListChangeReason.Remove, ListChangeReason.RemoveRange };
 
         /// <summary>
         /// This method allows you to set up connections that only operate
@@ -57,15 +57,18 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// <para>
         /// This method will return an observable that fires events every time
         /// the topmost ViewModel in the navigation stack is this ViewModel.
         /// This allows you to set up connections that only operate while the
         /// ViewModel has focus.
-        ///
+        /// </para>
+        /// <para>
         /// The observable will complete when the ViewModel is removed completely
         /// from the navigation stack. If your ViewModel can be _removed_ from
         /// the navigation stack and then reused later, you must call this method
         /// and resubscribe each time it is reused.
+        /// </para>
         /// </summary>
         /// <param name="item">The viewmodel to watch for navigation changes.</param>
         /// <returns>An IObservable{Unit} that signals when the ViewModel has
@@ -90,14 +93,17 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// <para>
         /// This method will return an observable that fires events _just before_
         /// the ViewModel is no longer the topmost ViewModel in the navigation
         /// stack. This allows you to clean up anything before losing focus.
-        ///
+        /// </para>
+        /// <para>
         /// The observable will complete when the ViewModel is removed completely
         /// from the navigation stack. If your ViewModel can be _removed_ from
         /// the navigation stack and then reused later, you must call this method
         /// and resubscribe each time it is reused.
+        /// </para>
         /// </summary>
         /// /// <param name="item">The viewmodel to watch for navigation changes.</param>
         /// <returns>An IObservable{Unit} that signals when the ViewModel is no
@@ -126,6 +132,6 @@ namespace ReactiveUI
             changeSet
                 .Any(
                     change => change.Reason == ListChangeReason.Clear ||
-                              (NavigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item));
+                              (_navigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item));
     }
 }

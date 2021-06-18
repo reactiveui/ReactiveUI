@@ -205,7 +205,7 @@ namespace ReactiveUI.Tests
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz"
             };
-            string? json = JSONHelper.Serialize(fixture);
+            var json = JSONHelper.Serialize(fixture);
 
             if (json is null)
             {

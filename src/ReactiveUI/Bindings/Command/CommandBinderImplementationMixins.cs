@@ -17,26 +17,26 @@ namespace ReactiveUI
     {
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this ICommandBinderImplementation @this,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TProp>> propertyName,
+                Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 string? toEvent = null)
-            where TViewModel : class
             where TView : class, IViewFor<TViewModel>
+            where TViewModel : class
             where TProp : ICommand =>
             @this.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
 
         public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this ICommandBinderImplementation @this,
-                TViewModel viewModel,
+                TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TProp>> propertyName,
+                Expression<Func<TViewModel, TProp?>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string? toEvent = null)
-            where TViewModel : class
             where TView : class, IViewFor<TViewModel>
+            where TViewModel : class
             where TProp : ICommand
         {
             if (withParameter is null)

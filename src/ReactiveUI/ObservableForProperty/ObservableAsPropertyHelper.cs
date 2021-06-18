@@ -10,7 +10,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
-
 using Splat;
 
 namespace ReactiveUI
@@ -26,9 +25,9 @@ namespace ReactiveUI
     public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
     {
         private readonly Lazy<ISubject<Exception>> _thrownExceptions;
-        private readonly ISubject<T> _subject;
-        private readonly Func<T> _getInitialValue;
-        private T _lastValue;
+        private readonly ISubject<T?> _subject;
+        private readonly Func<T?> _getInitialValue;
+        private T? _lastValue;
         private CompositeDisposable _disposable = new();
         private int _activated;
 
@@ -56,9 +55,9 @@ namespace ReactiveUI
         /// this should normally be a Dispatcher-based scheduler.
         /// </param>
         public ObservableAsPropertyHelper(
-            IObservable<T> observable,
-            Action<T> onChanged,
-            T initialValue = default,
+            IObservable<T?> observable,
+            Action<T?> onChanged,
+            T? initialValue = default,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             : this(observable, onChanged, null, initialValue, deferSubscription, scheduler)
@@ -93,12 +92,12 @@ namespace ReactiveUI
         /// should normally be a Dispatcher-based scheduler.
         /// </param>
         public ObservableAsPropertyHelper(
-            IObservable<T> observable,
-            Action<T> onChanged,
-            Action<T>? onChanging = null,
-            T initialValue = default,
+            IObservable<T?> observable,
+            Action<T?> onChanged,
+            Action<T?>? onChanging = null,
+            T? initialValue = default,
             bool deferSubscription = false,
-            IScheduler? scheduler = null)
+            IScheduler? scheduler = null) // TODO: Create Test
             : this(observable, onChanged, onChanging, () => initialValue, deferSubscription, scheduler)
         {
         }
@@ -131,10 +130,10 @@ namespace ReactiveUI
         /// should normally be a Dispatcher-based scheduler.
         /// </param>
         public ObservableAsPropertyHelper(
-            IObservable<T> observable,
-            Action<T> onChanged,
-            Action<T>? onChanging = null,
-            Func<T>? getInitialValue = null,
+            IObservable<T?> observable,
+            Action<T?> onChanged,
+            Action<T?>? onChanging = null,
+            Func<T?>? getInitialValue = null,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
         {
@@ -153,7 +152,7 @@ namespace ReactiveUI
 
             _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
 
-            _subject = new ScheduledSubject<T>(scheduler);
+            _subject = new ScheduledSubject<T?>(scheduler);
             _subject.Subscribe(
                 x =>
                 {
@@ -164,21 +163,17 @@ namespace ReactiveUI
                 ex => _thrownExceptions.Value.OnNext(ex))
                 .DisposeWith(_disposable);
 
-#pragma warning disable CS8603 // Possible null reference return.
-            _getInitialValue = getInitialValue ?? (() => default);
-#pragma warning restore CS8603 // Possible null reference return.
+            _getInitialValue = getInitialValue!;
 
             if (deferSubscription)
             {
-#pragma warning disable CS8601 // Possible null reference assignment.
                 _lastValue = default!;
-#pragma warning restore CS8601 // Possible null reference assignment.
                 Source = observable.DistinctUntilChanged();
             }
             else
             {
                 _lastValue = _getInitialValue();
-                Source = observable.StartWith(_lastValue).DistinctUntilChanged();
+                Source = observable.StartWith(_lastValue!).DistinctUntilChanged();
                 Source.Subscribe(_subject).DisposeWith(_disposable);
                 _activated = 1;
             }
@@ -187,7 +182,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the last provided value from the Observable.
         /// </summary>
-        public T Value
+        public T? Value
         {
             get
             {
@@ -220,7 +215,7 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
-        internal /* for testing purposes */ IObservable<T> Source { get; }
+        internal /* for testing purposes */ IObservable<T?> Source { get; }
 
         /// <summary>
         /// Constructs a "default" ObservableAsPropertyHelper object. This is
@@ -235,13 +230,13 @@ namespace ReactiveUI
         /// normally be a Dispatcher-based scheduler.
         /// </param>
         /// <returns>A default property helper.</returns>
-        public static ObservableAsPropertyHelper<T> Default(T initialValue = default, IScheduler? scheduler = null) =>
-            new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue!, false, scheduler);
+        public static ObservableAsPropertyHelper<T> Default(T? initialValue = default, IScheduler? scheduler = null) => // TODO: Create Test
+            new(Observable<T>.Never, _ => { }, initialValue!, false, scheduler);
 
         /// <summary>
         /// Disposes this ObservableAsPropertyHelper.
         /// </summary>
-        public void Dispose()
+        public void Dispose() // TODO: Create Test
         {
             _disposable?.Dispose();
             _disposable = null!;

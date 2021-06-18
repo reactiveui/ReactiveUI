@@ -22,8 +22,6 @@ namespace ReactiveUI
     /// A control which will use Splat dependency injection to determine the View
     /// to show. It uses.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-    [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
     public class ViewModelViewHost : ReactiveViewController
     {
         private readonly SerialDisposable _currentView;
@@ -40,7 +38,7 @@ namespace ReactiveUI
         {
             _currentView = new SerialDisposable();
             _viewContract = this
-                .WhenAnyObservable(x => x.ViewContractObservable!)
+                .WhenAnyObservable(x => x.ViewContractObservable)
                 .ToProperty(this, x => x.ViewContract, initialValue: null, scheduler: RxApp.MainThreadScheduler);
 
             Initialize();
@@ -174,16 +172,14 @@ namespace ReactiveUI
 
         private void Initialize()
         {
-            var viewChange = Observable
+            var viewChange = this.WhenAnyValue(x => x.ViewModel)
                 .CombineLatest(
-                    this.WhenAnyValue(x => x.ViewModel),
-                    this.WhenAnyObservable(x => x.ViewContractObservable!).StartWith((string?)null),
+                    this.WhenAnyObservable(x => x.ViewContractObservable).StartWith((string?)null),
                     (vm, contract) => new { ViewModel = vm, Contract = contract })
                 .Where(x => x.ViewModel is not null);
 
-            var defaultViewChange = Observable
+            var defaultViewChange = this.WhenAnyValue(x => x.ViewModel)
                 .CombineLatest(
-                    this.WhenAnyValue(x => x.ViewModel),
                     this.WhenAnyValue(x => x.DefaultContent),
                     (vm, defaultContent) => new { ViewModel = vm, DefaultContent = defaultContent })
                 .Where(x => x.ViewModel is null && x.DefaultContent is not null)
@@ -210,20 +206,24 @@ namespace ReactiveUI
                             throw new Exception(message);
                         }
 
+#pragma warning disable RCS1221 // Use pattern matching instead of combination of 'as' operator and null check.
                         var viewController = view as NSViewController;
-
+#pragma warning restore RCS1221 // Use pattern matching instead of combination of 'as' operator and null check.
                         if (viewController is null)
                         {
+                            //// TODO: As viewController = NULL at this point this excetion will never show the FullName, find fixed text to replace this with.
+
                             throw new Exception($"Resolved view type '{viewController?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                         }
 
                         view.ViewModel = x.ViewModel;
                         Adopt(this, viewController);
 
-                        var disposables = new CompositeDisposable();
-                        disposables.Add(viewController);
-                        disposables.Add(Disposable.Create(() => Disown(viewController)));
-                        _currentView.Disposable = disposables;
+                        _currentView.Disposable = (CompositeDisposable?)new()
+                        {
+                            viewController,
+                            Disposable.Create(() => Disown(viewController))
+                        };
                     });
 
             defaultViewChange

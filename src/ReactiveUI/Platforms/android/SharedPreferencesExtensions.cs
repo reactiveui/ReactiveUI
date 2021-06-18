@@ -20,7 +20,7 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>The observable sequence of keys for changed shared preferences.</returns>
         /// <param name="sharedPreferences">The shared preferences to get the changes from.</param>
-        public static IObservable<string?> PreferenceChanged(this ISharedPreferences sharedPreferences) =>
+        public static IObservable<string?> PreferenceChanged(this ISharedPreferences sharedPreferences) => // TODO: Create Test
             Observable.Create<string?>(observer =>
             {
                 var listener = new OnSharedPreferenceChangeListener(observer);

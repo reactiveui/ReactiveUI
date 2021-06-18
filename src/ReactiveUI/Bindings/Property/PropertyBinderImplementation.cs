@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -20,37 +21,27 @@ namespace ReactiveUI
     /// <summary>
     /// Provides methods to bind properties to observables.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
     public class PropertyBinderImplementation : IPropertyBinderImplementation
     {
         private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new(
-            (types, _) =>
-            {
-                return Locator.Current.GetServices<IBindingTypeConverter?>()
+            (types, _) => Locator.Current.GetServices<IBindingTypeConverter?>()
                     .Aggregate((currentAffinity: -1, currentBinding: default(IBindingTypeConverter)), (acc, x) =>
                     {
                         var score = x?.GetAffinityForObjects(types.fromType, types.toType) ?? -1;
                         return score > acc.currentAffinity && score > 0 ? (score, x) : acc;
-                    }).currentBinding;
-            },
+                    }).currentBinding,
             RxApp.SmallCacheLimit);
 
-        private static readonly MemoizingMRUCache<(Type fromType, Type toType), ISetMethodBindingConverter?> _setMethodCache = new(
-            (type, _) =>
-            {
-                return Locator.Current.GetServices<ISetMethodBindingConverter>()
+        private static readonly MemoizingMRUCache<(Type? fromType, Type? toType), ISetMethodBindingConverter?> _setMethodCache = new(
+            (type, _) => Locator.Current.GetServices<ISetMethodBindingConverter>()
                     .Aggregate((currentAffinity: -1, currentBinding: default(ISetMethodBindingConverter)), (acc, x) =>
                     {
                         var score = x.GetAffinityForObjects(type.fromType, type.toType);
                         return score > acc.currentAffinity && score > 0 ? (score, x) : acc;
-                    }).currentBinding;
-            },
+                    }).currentBinding,
             RxApp.SmallCacheLimit);
 
-        static PropertyBinderImplementation()
-        {
-            RxApp.EnsureInitialized();
-        }
+        static PropertyBinderImplementation() => RxApp.EnsureInitialized();
 
         private delegate bool OutFunc<in T1, T2>(T1 t1, out T2 t2);
 
@@ -58,7 +49,7 @@ namespace ReactiveUI
         public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare>? signalViewUpdate,
                 object? conversionHint,
@@ -76,27 +67,21 @@ namespace ReactiveUI
                     $"Can't two-way convert between {typeof(TVMProp)} and {typeof(TVProp)}. To fix this, register a IBindingTypeConverter or call the version with the converter Func.");
             }
 
-#pragma warning disable CS8601 // Possible null reference assignment.
-            bool VmToViewFunc(TVMProp vmValue, out TVProp vValue)
+            bool VmToViewFunc(TVMProp? vmValue, out TVProp vValue)
             {
-                var result = vmToViewConverter.TryConvert(vmValue, typeof(TVProp), conversionHint, out object? tmp);
+                var result = vmToViewConverter.TryConvert(vmValue, typeof(TVProp), conversionHint, out var tmp);
 
-#pragma warning disable CS8605 // Unboxing a possibly null value.
-                vValue = result && tmp != null ? (TVProp)tmp : default;
-#pragma warning restore CS8605 // Unboxing a possibly null value.
+                vValue = result && tmp != null ? (TVProp)tmp : default!;
                 return result;
             }
 
-            bool ViewToVmFunc(TVProp vValue, out TVMProp vmValue)
+            bool ViewToVmFunc(TVProp vValue, out TVMProp? vmValue)
             {
-                var result = viewToVMConverter.TryConvert(vValue, typeof(TVMProp), conversionHint, out object? tmp);
+                var result = viewToVMConverter.TryConvert(vValue, typeof(TVMProp?), conversionHint, out var tmp);
 
-#pragma warning disable CS8605 // Unboxing a possibly null value.
-                vmValue = result && tmp != null ? (TVMProp)tmp : default;
-#pragma warning restore CS8605 // Unboxing a possibly null value.
+                vmValue = result && tmp != null ? (TVMProp?)tmp : default;
                 return result;
             }
-#pragma warning restore CS8601 // Possible null reference assignment.
 
             return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc);
         }
@@ -105,11 +90,11 @@ namespace ReactiveUI
         public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare>? signalViewUpdate,
-                Func<TVMProp, TVProp> vmToViewConverter,
-                Func<TVProp, TVMProp> viewToVmConverter)
+                Func<TVMProp?, TVProp> vmToViewConverter,
+                Func<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -133,13 +118,13 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(viewToVmConverter));
             }
 
-            bool VmToViewFunc(TVMProp vmValue, out TVProp vValue)
+            bool VmToViewFunc(TVMProp? vmValue, out TVProp vValue)
             {
                 vValue = vmToViewConverter(vmValue);
                 return true;
             }
 
-            bool ViewToVmFunc(TVProp vValue, out TVMProp vmValue)
+            bool ViewToVmFunc(TVProp vValue, out TVMProp? vmValue)
             {
                 vmValue = viewToVmConverter(vValue);
                 return true;
@@ -152,7 +137,7 @@ namespace ReactiveUI
         public IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel? viewModel,
                 TView view,
-                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TViewModel, TVMProp?>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
                 object? conversionHint = null,
                 IBindingTypeConverter? vmToViewConverterOverride = null)
@@ -172,7 +157,7 @@ namespace ReactiveUI
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
             var viewType = viewExpression.Type;
-            var converter = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp), viewType);
+            var converter = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp?), viewType);
 
             if (converter == null)
             {
@@ -186,15 +171,7 @@ namespace ReactiveUI
             }
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
-                    .SelectMany(x =>
-                    {
-                        if (!converter.TryConvert(x, viewType, conversionHint, out object? tmp))
-                        {
-                            return Observable<object>.Empty;
-                        }
-
-                        return Observable.Return(tmp);
-                    });
+                    .SelectMany(x => !converter.TryConvert(x, viewType, conversionHint, out var tmp) ? Observable<object>.Empty : Observable.Return(tmp));
 
             var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
 
@@ -205,9 +182,9 @@ namespace ReactiveUI
         public IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
             TViewModel? viewModel,
             TView view,
-            Expression<Func<TViewModel, TProp>> vmProperty,
+            Expression<Func<TViewModel, TProp?>> vmProperty,
             Expression<Func<TView, TOut>> viewProperty,
-            Func<TProp, TOut> selector)
+            Func<TProp?, TOut> selector)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -229,7 +206,7 @@ namespace ReactiveUI
                 return new ReactiveBinding<TView, TOut>(view, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
             }
 
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>().Select(selector);
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp?>().Select(selector);
 
             var (disposable, obs) = BindToDirect<TView, TOut, TOut>(source, view, viewExpression);
 
@@ -239,8 +216,8 @@ namespace ReactiveUI
         /// <inheritdoc />
         public IDisposable BindTo<TValue, TTarget, TTValue>(
             IObservable<TValue> observedChange,
-            TTarget target,
-            Expression<Func<TTarget, TTValue>> propertyExpression,
+            TTarget? target,
+            Expression<Func<TTarget, TTValue?>> propertyExpression,
             object? conversionHint = null,
             IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class
@@ -263,34 +240,24 @@ namespace ReactiveUI
                 return Disposable.Empty;
             }
 
-            var converter = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TValue), typeof(TTValue));
+            var converter = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TValue), typeof(TTValue?));
 
             if (converter == null)
             {
                 throw new ArgumentException($"Can't convert {typeof(TValue)} to {typeof(TTValue)}. To fix this, register a IBindingTypeConverter");
             }
 
-            var source = observedChange.SelectMany(x =>
-            {
-                if (!converter.TryConvert(x, typeof(TTValue), conversionHint, out var tmp))
-                {
-                    return Observable<object>.Empty;
-                }
+            var source = observedChange.SelectMany(x => !converter.TryConvert(x, typeof(TTValue?), conversionHint, out var tmp) ? Observable<object>.Empty : Observable.Return(tmp));
 
-                return Observable.Return(tmp);
-            });
-
-            var (disposable, _) = BindToDirect<TTarget, TTValue, object?>(source, target, viewExpression);
+            var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target, viewExpression);
 
             return disposable;
         }
 
-        internal static IBindingTypeConverter? GetConverterForTypes(Type lhs, Type rhs)
-        {
-            return _typeConverterCache.Get((lhs, rhs));
-        }
+        internal static IBindingTypeConverter? GetConverterForTypes(Type lhs, Type rhs) =>
+            _typeConverterCache.Get((lhs, rhs));
 
-        private static Func<object?, object?, object?[]?, object?>? GetSetConverter(Type? fromType, Type targetType)
+        private static Func<object?, object?, object?[]?, object?>? GetSetConverter(Type? fromType, Type? targetType)
         {
             if (fromType == null)
             {
@@ -299,12 +266,9 @@ namespace ReactiveUI
 
             var setter = _setMethodCache.Get((fromType, targetType));
 
-            if (setter == null)
-            {
-                return null;
-            }
-
-            return setter.PerformSet;
+#pragma warning disable IDE0031 // Use null propagation
+            return setter == null ? null : setter.PerformSet;
+#pragma warning restore IDE0031 // Use null propagation
         }
 
         private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
@@ -316,7 +280,7 @@ namespace ReactiveUI
             var defaultSetter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
 
-            object? SetThenGet(object paramTarget, object? paramValue, object?[]? paramParams)
+            object? SetThenGet(object? paramTarget, object? paramValue, object?[]? paramParams)
             {
                 var converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
 
@@ -351,14 +315,7 @@ namespace ReactiveUI
                     {
                         var value = SetThenGet(x.host, x.val, viewExpression.GetArgumentsArray());
 
-                        if (value == null)
-                        {
-#pragma warning disable CS8603 // Possible null reference return.
-                            return default;
-#pragma warning restore CS8603 // Possible null reference return.
-                        }
-
-                        return (TValue)value;
+                        return value == null ? default : (TValue)value;
                     })!;
             }
 
@@ -375,22 +332,16 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(view));
             }
 
-            Func<IObservedChange<object, object?>[]> vmFetcher;
-            if (vmExpression != null)
-            {
-                vmFetcher = () =>
+            Func<IObservedChange<object, object?>[]> vmFetcher = vmExpression != null
+                ? (() =>
                 {
                     Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
                     return fetchedValues;
-                };
-            }
-            else
-            {
-                vmFetcher = () => new IObservedChange<object, object?>[]
+                })
+                : (() => new IObservedChange<object, object?>[]
                 {
                     new ObservedChange<object, object?>(null!, null!, viewModel)
-                };
-            }
+                });
 
             var vFetcher = new Func<IObservedChange<object, object?>[]>(() =>
             {
@@ -414,13 +365,13 @@ namespace ReactiveUI
         private IReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
             TViewModel? viewModel,
             TView view,
-            Expression<Func<TViewModel, TVMProp>> vmProperty,
+            Expression<Func<TViewModel, TVMProp?>> vmProperty,
             Expression<Func<TView, TVProp>> viewProperty,
             IObservable<TDontCare>? signalViewUpdate,
-            OutFunc<TVMProp, TVProp> vmToViewConverter,
-            OutFunc<TVProp, TVMProp> viewToVmConverter)
-            where TView : class, IViewFor
+            OutFunc<TVMProp?, TVProp> vmToViewConverter,
+            OutFunc<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel : class
+            where TView : class, IViewFor
         {
             if (vmProperty == null)
             {
@@ -436,40 +387,26 @@ namespace ReactiveUI
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
 
-            var signalObservable = signalViewUpdate != null
-                                       ? signalViewUpdate.Select(_ => false)
-                                       : view.WhenAnyDynamic(viewExpression, x => (TVProp)x.Value).Select(_ => false);
-
             var somethingChanged = Observable.Merge(
-                                                    Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
-                                                    signalInitialUpdate.Select(_ => true),
-                                                    signalObservable);
+                                                   signalViewUpdate == null ?
+                                                   Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true) :
+                                                   signalViewUpdate.Select(_ => true)
+                                                        .Merge(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true).Take(1)),
+                                                   signalInitialUpdate.Select(_ => true),
+                                                   view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false));
 
-            var changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
-            {
-                if (!Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
-                    !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain()))
-                {
-                    return (false, null, false);
-                }
-
-                if (isVm)
-                {
-                    if (!vmToViewConverter(vmValue, out TVProp vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView))
-                    {
-                        return (false, null, false);
-                    }
-
-                    return (true, vmAsView, isVm);
-                }
-
-                if (!viewToVmConverter(vValue, out TVMProp vAsViewModel) || EqualityComparer<TVMProp>.Default.Equals(vmValue, vAsViewModel))
-                {
-                    return (false, null, false);
-                }
-
-                return (true, vAsViewModel, isVm);
-            });
+            var changeWithValues = somethingChanged
+                .Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
+                    !Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
+                    !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain())
+                        ? (false, null, false)
+                        : isVm
+                        ? !vmToViewConverter(vmValue, out var vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView)
+                                                ? (false, null, false)
+                                                : (true, vmAsView, isVm)
+                        : !viewToVmConverter(vValue, out var vAsViewModel) || EqualityComparer<TVMProp?>.Default.Equals(vmValue, vAsViewModel)
+                                                ? (false, null, false)
+                                                : (true, vAsViewModel, isVm));
 
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
             if (!ret)
@@ -477,13 +414,13 @@ namespace ReactiveUI
                 return null!;
             }
 
-            IObservable<(object? view, bool isViewModel)> changes = changeWithValues
+            var changes = changeWithValues
                 .Where(value => value.isValid)
                 .Select(value => (value.view, value.isViewModel))
                 .Publish()
                 .RefCount();
 
-            IDisposable disposable = changes.Subscribe(isVmWithLatestValue =>
+            var disposable = changes.Subscribe(isVmWithLatestValue =>
             {
                 if (isVmWithLatestValue.isViewModel)
                 {

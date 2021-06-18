@@ -20,6 +20,6 @@ namespace ReactiveUI
         /// <param name="viewModel">View model.</param>
         /// <param name="contract">Contract.</param>
         /// <returns>The view associated with the given view model.</returns>
-        IViewFor? ResolveView<T>(T viewModel, string? contract = null);
+        IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
     }
 }

@@ -23,10 +23,10 @@ namespace ReactiveUI
     /// </summary>
     public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
-        private static readonly Dictionary<(Type viewType, string? propertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> DispatchTable;
+        private static readonly Dictionary<(Type viewType, string? propertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> _dispatchTable;
 
         static AndroidObservableForWidgets() =>
-            DispatchTable = new[]
+            _dispatchTable = new[]
                             {
                                 CreateFromWidget<TextView, TextChangedEventArgs>(v => v.Text, (v, h) => v.TextChanged += h, (v, h) => v.TextChanged -= h),
                                 CreateFromWidget<NumberPicker, NumberPicker.ValueChangeEventArgs>(v => v.Value, (v, h) => v.ValueChanged += h, (v, h) => v.ValueChanged -= h),
@@ -47,7 +47,7 @@ namespace ReactiveUI
                 return 0;
             }
 
-            return DispatchTable.Keys.Any(x => x.viewType is not null && (x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName)) ? 5 : 0;
+            return _dispatchTable.Keys.Any(x => x.viewType is not null && (x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName)) ? 5 : 0;
         }
 
         /// <inheritdoc/>
@@ -59,9 +59,9 @@ namespace ReactiveUI
             }
 
             var type = sender.GetType();
-            var tableItem = DispatchTable.Keys.First(x => x.viewType is not null && (x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName));
+            var tableItem = _dispatchTable.Keys.First(x => x.viewType is not null && (x.viewType.IsAssignableFrom(type) && x.propertyName == propertyName));
 
-            return !DispatchTable.TryGetValue(tableItem, out var dispatchItem) ?
+            return !_dispatchTable.TryGetValue(tableItem, out var dispatchItem) ?
                        Observable.Never<IObservedChange<object, object?>>() :
                        dispatchItem.Invoke(sender, expression);
         }
@@ -170,7 +170,6 @@ namespace ReactiveUI
                 });
         }
 
-        [SuppressMessage("Design", "SA1201: Should not follow method", Justification = "Stylecop not aware of records.")]
         private sealed record DispatchItem
         {
             public DispatchItem(

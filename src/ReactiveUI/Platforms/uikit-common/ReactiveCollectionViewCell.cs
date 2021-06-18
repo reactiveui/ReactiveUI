@@ -21,11 +21,10 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
     [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged<ReactiveCollectionViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        private Subject<Unit> _activated = new();
-        private Subject<Unit> _deactivated = new();
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell"/> class.
@@ -49,8 +48,9 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
+#pragma warning disable RCS1163 // Unused parameter.
         protected ReactiveCollectionViewCell(NSCoder coder)
+#pragma warning restore RCS1163 // Unused parameter.
             : base(NSObjectFlag.Empty)
         {
         }
@@ -152,8 +152,9 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell{TViewModel}"/> class.
         /// </summary>
         /// <param name="coder">The coder.</param>
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Legacy interface")]
+#pragma warning disable RCS1163 // Unused parameter.
         protected ReactiveCollectionViewCell(NSCoder coder)
+#pragma warning restore RCS1163 // Unused parameter.
             : base(NSObjectFlag.Empty)
         {
         }

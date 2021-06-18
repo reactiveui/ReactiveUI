@@ -71,10 +71,6 @@ namespace ReactiveUI
     /// </code>
     /// </para>
     /// </remarks>
-    [SuppressMessage(
-        "StyleCop.CSharp.MaintainabilityRules",
-        "SA1402:FileMayOnlyContainASingleType",
-        Justification = "Same class just generic.")]
     public static class ReactiveCommand
     {
         /// <summary>

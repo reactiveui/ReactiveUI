@@ -9,12 +9,9 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reflection;
 
 using Android.App;
 using Android.OS;
-
-using Java.Lang;
 
 using Splat;
 
@@ -41,7 +38,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
         /// </summary>
         /// <param name="hostApplication">The host application.</param>
-        public AutoSuspendHelper(Application hostApplication)
+        public AutoSuspendHelper(Application hostApplication) // TODO: Create Test
         {
             if (hostApplication is null)
             {

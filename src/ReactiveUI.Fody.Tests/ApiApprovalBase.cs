@@ -45,7 +45,7 @@ namespace ReactiveUI.Fody.Tests
                 var approvedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.approved.txt");
                 var receivedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.received.txt");
 
-                string approvedPublicApi = string.Empty;
+                var approvedPublicApi = string.Empty;
 
                 if (File.Exists(approvedFileName))
                 {

@@ -41,7 +41,7 @@ namespace ReactiveUI.Tests
             }
 
             // Run test twice and verify that POCO message is logged only once.
-            for (int i = 0; i < 2; i++)
+            for (var i = 0; i < 2; i++)
             {
                 using (var testLoggerRegistration = new TestLoggerRegistration(_testLoggerForNotificationPocoErrorOnBind))
                 {
@@ -78,7 +78,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in NET472")]
         public void NotificationPocoSuppressErrorOnBind()
         {
             using (var testLoggerRegistration = new TestLoggerRegistration())

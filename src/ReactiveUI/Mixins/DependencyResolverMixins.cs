@@ -26,7 +26,6 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="resolver">The resolver to initialize.</param>
         /// <param name="registrationNamespaces">Which platforms to use.</param>
-        [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
         public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
         {
             var possibleNamespaces = new Dictionary<RegistrationNamespace, string>
@@ -56,7 +55,7 @@ namespace ReactiveUI
 
             var fdr = typeof(DependencyResolverMixins);
 
-            var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName?.Replace(fdr?.FullName + ", ", string.Empty)!);
+            var assemblyName = new AssemblyName(fdr.AssemblyQualifiedName!.Replace(fdr.FullName + ", ", string.Empty));
 
             foreach (var ns in extraNs)
             {
@@ -115,10 +114,9 @@ namespace ReactiveUI
             }
         }
 
-        [SuppressMessage("Redundancy", "CA1801: Redundant parameter", Justification = "Used on some platforms")]
         private static Func<object> TypeFactory(TypeInfo typeInfo)
         {
-            var parameterlessConstructor = typeInfo.DeclaredConstructors.FirstOrDefault(ci => ci.IsPublic && !ci.GetParameters().Any());
+            var parameterlessConstructor = typeInfo.DeclaredConstructors.FirstOrDefault(ci => ci.IsPublic && ci.GetParameters().Length == 0);
             if (parameterlessConstructor is null)
             {
                 throw new Exception($"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.");
@@ -127,7 +125,6 @@ namespace ReactiveUI
             return Expression.Lambda<Func<object>>(Expression.New(parameterlessConstructor)).Compile();
         }
 
-        [SuppressMessage("Globalization", "CA1307: operator could change based on locale settings", Justification = "Replace() does not have third parameter on all platforms")]
         private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)
         {
             var targetType = namespaceName + ".Registrations";

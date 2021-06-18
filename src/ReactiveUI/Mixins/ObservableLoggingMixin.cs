@@ -29,7 +29,7 @@ namespace ReactiveUI
             this IObservable<T> @this,
             TObj logObject,
             string? message = null,
-            Func<T, string>? stringifier = null)
+            Func<T, string>? stringifier = null) // TODO: Create Test
             where TObj : IEnableLogger
         {
             message ??= string.Empty;
@@ -38,13 +38,13 @@ namespace ReactiveUI
             {
                 return @this.Do(
                     x => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, stringifier(x)),
-                    ex => logObject.Log().Warn(ex, message + " " + "OnError"),
+                    ex => logObject.Log().Warn(ex, message + " OnError"),
                     () => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
             }
 
             return @this.Do(
                 x => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnNext: {1}", message, x),
-                ex => logObject.Log().Warn(ex, message + " " + "OnError"),
+                ex => logObject.Log().Warn(ex, message + " OnError"),
                 () => logObject.Log().Info(CultureInfo.InvariantCulture, "{0} OnCompleted", message));
         }
 
@@ -58,7 +58,7 @@ namespace ReactiveUI
         /// <param name="next">The Observable to replace the current one OnError.</param>
         /// <param name="message">An error message to print.</param>
         /// <returns>The same Observable.</returns>
-        public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> @this, TObj klass, IObservable<T>? next = null, string? message = null)
+        public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> @this, TObj klass, IObservable<T>? next = null, string? message = null) // TODO: Create Test
             where TObj : IEnableLogger
         {
             next ??= Observable<T>.Default;
@@ -81,7 +81,7 @@ namespace ReactiveUI
         /// current one OnError.</param>
         /// <param name="message">An error message to print.</param>
         /// <returns>The same Observable.</returns>
-        public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string? message = null)
+        public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string? message = null) // TODO: Create Test
             where TObj : IEnableLogger
             where TException : Exception =>
             @this.Catch<T, TException>(ex =>

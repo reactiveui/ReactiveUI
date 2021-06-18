@@ -275,7 +275,7 @@ namespace ReactiveUI.Tests
         public void OAPHDeferSubscriptionWithInitialFuncValueEmitInitialValueWhenSubscribed()
         {
             var observable = Observable.Empty<int>();
-            bool wasAccessed = false;
+            var wasAccessed = false;
             Func<int> getInitialValue = () =>
             {
                 wasAccessed = true;
@@ -489,7 +489,7 @@ namespace ReactiveUI.Tests
         public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName() =>
             new TestScheduler().With(scheduler =>
             {
-                var fixture = new OAPHIndexerTestFixture();
+                var fixture = new OAPHIndexerTestFixture(0);
                 var propertiesChanged = new List<string>();
 
                 fixture.PropertyChanged += (_, args) =>
@@ -503,6 +503,43 @@ namespace ReactiveUI.Tests
                 fixture.Text = "awesome";
 
                 Assert.Equal(new[] { "Text", "Item[]" }, propertiesChanged);
+            });
+
+        /// <summary>
+        /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
+        /// </summary>
+        [Fact]
+        public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName1() =>
+            new TestScheduler().With(scheduler =>
+            {
+                Assert.Throws<NotSupportedException>(() =>
+                {
+                    var fixture = new OAPHIndexerTestFixture(1);
+                    var propertiesChanged = new List<string>();
+
+                    fixture.PropertyChanged += (_, args) =>
+                    {
+                        if (args.PropertyName != null)
+                        {
+                            propertiesChanged.Add(args.PropertyName);
+                        }
+                    };
+
+                    fixture.Text = "awesome";
+                });
+            });
+
+        /// <summary>
+        /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
+        /// </summary>
+        [Fact]
+        public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName2() =>
+            new TestScheduler().With(scheduler =>
+            {
+                Assert.Throws<ArgumentException>(() =>
+                {
+                    var fixture = new OAPHIndexerTestFixture(2);
+                });
             });
     }
 }

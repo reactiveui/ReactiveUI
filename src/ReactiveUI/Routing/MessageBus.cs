@@ -14,27 +14,28 @@ using Splat;
 namespace ReactiveUI
 {
     /// <summary>
+    /// <para>
     /// MessageBus represents an object that can act as a "Message Bus", a
     /// simple way for ViewModels and other objects to communicate with each
     /// other in a loosely coupled way.
-    ///
+    /// </para>
+    /// <para>
     /// Specifying which messages go where is done via a combination of the Type
     /// of the message as well as an additional "Contract" parameter; this is a
     /// unique string used to distinguish between messages of the same Type, and
     /// is arbitrarily set by the client.
+    /// </para>
     /// </summary>
     public class MessageBus : IMessageBus
     {
-        private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus =
-            new();
+        private readonly Dictionary<(Type type, string? contract), NotAWeakReference> _messageBus = new();
 
-        private readonly Dictionary<(Type type, string? contract), IScheduler> _schedulerMappings =
-            new();
+        private readonly Dictionary<(Type type, string? contract), IScheduler> _schedulerMappings = new();
 
         /// <summary>
         /// Gets or sets the Current MessageBus.
         /// </summary>
-        public static IMessageBus Current { get; set; } = new MessageBus();
+        public static IMessageBus Current { get; set; } = new MessageBus(); // TODO: Create Test
 
         /// <summary>
         /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
@@ -46,7 +47,8 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void RegisterScheduler<T>(IScheduler scheduler, string? contract = null) => _schedulerMappings[(typeof(T), contract)] = scheduler;
+        public void RegisterScheduler<T>(IScheduler scheduler, string? contract = null) => // TODO: Create Test
+            _schedulerMappings[(typeof(T), contract)] = scheduler;
 
         /// <summary>
         /// Listen provides an Observable that will fire whenever a Message is
@@ -75,7 +77,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An Observable representing the notifications posted to the
         /// message bus.</returns>
-        public IObservable<T> ListenIncludeLatest<T>(string? contract = null)
+        public IObservable<T> ListenIncludeLatest<T>(string? contract = null) // TODO: Create Test
         {
             this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
 
@@ -92,8 +94,8 @@ namespace ReactiveUI
         /// <returns>True if messages have been posted for this message Type.</returns>
         public bool IsRegistered(Type type, string? contract = null)
         {
-            bool ret = false;
-            WithMessageBus(type, contract, (mb, item) => { ret = mb.ContainsKey(item) && mb[item].IsAlive; });
+            var ret = false;
+            WithMessageBus(type, contract, (mb, item) => ret = mb.ContainsKey(item) && mb[item].IsAlive);
 
             return ret;
         }

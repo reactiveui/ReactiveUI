@@ -42,10 +42,7 @@ namespace ReactiveUI.Tests
         public void FactoryThrowsArgumentNullException_FallsBackToCurrentThread()
         {
             IScheduler? schedulerExecutedOn = null;
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             var schedulerFactory = new Func<IScheduler>(() => throw new ArgumentNullException());
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
             sut.Schedule<object>(
                                  null!,

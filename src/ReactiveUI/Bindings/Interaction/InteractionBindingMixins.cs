@@ -14,12 +14,12 @@ namespace ReactiveUI
     /// </summary>
     public static class InteractionBindingMixins
     {
-        private static readonly IInteractionBinderImplementation binderImplementation;
+        private static readonly IInteractionBinderImplementation _binderImplementation;
 
         static InteractionBindingMixins()
         {
             RxApp.EnsureInitialized();
-            binderImplementation = new InteractionBinderImplementation();
+            _binderImplementation = new InteractionBinderImplementation();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace ReactiveUI
                 Func<InteractionContext<TInput, TOutput>, Task> handler)
             where TViewModel : class
             where TView : class, IViewFor =>
-            binderImplementation.BindInteraction(
+            _binderImplementation.BindInteraction(
                 viewModel,
                 view,
                 propertyName,
@@ -67,7 +67,7 @@ namespace ReactiveUI
                 Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
             where TViewModel : class
             where TView : class, IViewFor =>
-            binderImplementation.BindInteraction(
+            _binderImplementation.BindInteraction(
                 viewModel,
                 view,
                 propertyName,

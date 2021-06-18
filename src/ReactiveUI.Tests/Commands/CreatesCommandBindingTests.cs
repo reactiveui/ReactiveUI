@@ -26,7 +26,7 @@ namespace ReactiveUI.Tests
             var input = new TestFixture();
             var fixture = new CreatesCommandBindingViaEvent();
             var wasCalled = false;
-            var cmd = ReactiveCommand.Create<int>(x => wasCalled = true);
+            var cmd = ReactiveCommand.Create<int>(_ => wasCalled = true);
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.False(fixture.GetAffinityForObject(input.GetType(), false) > 0);
@@ -36,7 +36,7 @@ namespace ReactiveUI.Tests
             Assert.True(wasCalled);
 
             wasCalled = false;
-            disposable.Dispose();
+            disposable?.Dispose();
             input.IsNotNullString = "Bar";
             Assert.False(wasCalled);
         }

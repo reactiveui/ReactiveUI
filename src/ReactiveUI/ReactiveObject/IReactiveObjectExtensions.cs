@@ -170,6 +170,34 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Use this method for enabling classic PropertyChanging events when you
+        /// are implementing IReactiveObject manually.
+        /// </summary>
+        /// <typeparam name="TSender">The sender type.</typeparam>
+        /// <param name="reactiveObject">The instance of IReactiveObject which should propagate property changes.</param>
+        public static void SubscribePropertyChangingEvents<TSender>(this TSender reactiveObject)
+            where TSender : IReactiveObject
+        {
+            var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+
+            s.SubscribePropertyChangingEvents();
+        }
+
+        /// <summary>
+        /// Use this method for enabling classic PropertyChanged events when you
+        /// are implementing IReactiveObject manually.
+        /// </summary>
+        /// <typeparam name="TSender">The sender type.</typeparam>
+        /// <param name="reactiveObject">The instance of IReactiveObject which should propagate property changes.</param>
+        public static void SubscribePropertyChangedEvents<TSender>(this TSender reactiveObject)
+            where TSender : IReactiveObject
+        {
+            var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+
+            s.SubscribePropertyChangedEvents();
+        }
+
         internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable<TSender>(this TSender reactiveObject)
             where TSender : IReactiveObject
         {
@@ -191,14 +219,6 @@ namespace ReactiveUI
             return s.ThrownExceptions;
         }
 
-        internal static void SubscribePropertyChangingEvents<TSender>(this TSender reactiveObject)
-            where TSender : IReactiveObject
-        {
-            var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
-
-            s.SubscribePropertyChangingEvents();
-        }
-
         internal static void RaisingPropertyChanging<TSender>(this TSender reactiveObject, string propertyName)
             where TSender : IReactiveObject
         {
@@ -210,14 +230,6 @@ namespace ReactiveUI
             var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
 
             s.RaisePropertyChanging(propertyName);
-        }
-
-        internal static void SubscribePropertyChangedEvents<TSender>(this TSender reactiveObject)
-            where TSender : IReactiveObject
-        {
-            var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
-
-            s.SubscribePropertyChangedEvents();
         }
 
         internal static void RaisingPropertyChanged<TSender>(this TSender reactiveObject, string propertyName)
@@ -398,7 +410,7 @@ namespace ReactiveUI
                 var seen = new HashSet<string>();
                 var uniqueEvents = new Stack<TEventArgs>(events.Count);
 
-                for (int i = events.Count - 1; i >= 0; i--)
+                for (var i = events.Count - 1; i >= 0; i--)
                 {
                     var propertyName = events[i].PropertyName;
                     if (propertyName is not null && seen.Add(propertyName))

@@ -85,7 +85,6 @@ namespace ReactiveUI
 #if HAS_UNO && IOS
     [global::Foundation.Register]
 #endif
-    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
     public
 #if HAS_UNO
         partial
@@ -123,7 +122,7 @@ namespace ReactiveUI
         /// objects that may have been collected in the managed world.
         /// </remarks>
         /// <param name="javaReference">A <see cref="IntPtr"/> containing a Java Native Interface (JNI) object reference.</param>
-        /// <param name="transfer">A <see cref="JniHandleOwnership"/> indicating how to handle handle.</param>
+        /// <param name="transfer">A <see cref="JniHandleOwnership"/> indicating how to handle.</param>
         protected ReactivePage(IntPtr javaReference, global::Android.Runtime.JniHandleOwnership transfer)
             : base(javaReference, transfer)
         {

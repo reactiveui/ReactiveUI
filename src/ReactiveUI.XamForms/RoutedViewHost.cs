@@ -40,9 +40,9 @@ namespace ReactiveUI.XamForms
         {
             this.WhenActivated(disposable =>
             {
-                bool currentlyPopping = false;
-                bool popToRootPending = false;
-                bool userInstigated = false;
+                var currentlyPopping = false;
+                var popToRootPending = false;
+                var userInstigated = false;
 
                 this.WhenAnyObservable(x => x.Router.NavigationChanged)
                     .Where(_ => Router.NavigationStack.Count == 0)
@@ -116,7 +116,7 @@ namespace ReactiveUI.XamForms
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
                     .SelectMany(async page =>
                     {
-                        bool animated = true;
+                        var animated = true;
                         var attribute = page.GetType().GetCustomAttribute<DisableAnimationAttribute>();
                         if (attribute is not null)
                         {
@@ -184,9 +184,7 @@ namespace ReactiveUI.XamForms
             Router = screen.Router;
 
             this.WhenAnyValue(x => x.Router)
-                .SelectMany(router =>
-                {
-                    return router.NavigationStack
+                .SelectMany(router => router!.NavigationStack
                         .ToObservable()
                         .Select(x => (Page)ViewLocator.Current.ResolveView(x)!)
                         .SelectMany(x => PushAsync(x).ToObservable())
@@ -200,8 +198,7 @@ namespace ReactiveUI.XamForms
 
                             ((IViewFor)CurrentPage).ViewModel = vm;
                             CurrentPage.Title = vm.UrlPathSegment;
-                        });
-                })
+                        }))
                 .Subscribe();
         }
 

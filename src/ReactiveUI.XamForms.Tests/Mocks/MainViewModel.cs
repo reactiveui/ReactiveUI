@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
+
 using Splat;
 
 namespace ReactiveUI.XamForms.Tests.Mocks
@@ -15,7 +17,7 @@ namespace ReactiveUI.XamForms.Tests.Mocks
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
         /// </summary>
-        public MainViewModel() => HostScreen = Locator.Current.GetService<IScreen>();
+        public MainViewModel() => HostScreen = Locator.Current.GetService<IScreen>() ?? throw new InvalidOperationException("There is no valid screen");
 
         /// <inheritdoc/>
         public string? UrlPathSegment => "Main view";

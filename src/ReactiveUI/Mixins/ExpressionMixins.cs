@@ -27,7 +27,7 @@ namespace ReactiveUI
         public static IEnumerable<Expression> GetExpressionChain(this Expression expression)
         {
             var expressions = new List<Expression>();
-            Expression? node = expression;
+            var node = expression;
 
             while (node is not null && node.NodeType != ExpressionType.Parameter)
             {
@@ -121,7 +121,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>The parent expression.</returns>
-        public static Expression? GetParent(this Expression expression)
+        public static Expression? GetParent(this Expression expression) // TODO: Create Test
         {
             if (expression is null)
             {
@@ -143,8 +143,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>An array of arguments.</returns>
-        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:ClosingSquareBracketsMustBeSpacedCorrectly", Justification = "Reviewed.")]
-        public static object?[]? GetArgumentsArray(this Expression expression)
+        public static object?[]? GetArgumentsArray(this Expression expression) // TODO: Create Test
         {
             if (expression is null)
             {

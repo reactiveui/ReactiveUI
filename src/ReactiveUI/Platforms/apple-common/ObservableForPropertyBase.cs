@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
@@ -122,10 +121,7 @@ namespace ReactiveUI
                     _ => subj.OnNext(new ObservedChange<object, object?>(sender, expression, default)),
                     sender);
 
-                return Disposable.Create(() =>
-                {
-                    NSNotificationCenter.DefaultCenter.RemoveObserver(handle);
-                });
+                return Disposable.Create(() => NSNotificationCenter.DefaultCenter.RemoveObserver(handle));
             });
 
         /// <summary>
@@ -136,10 +132,9 @@ namespace ReactiveUI
         /// <param name="expression">The expression.</param>
         /// <param name="eventName">The event name.</param>
         protected static IObservable<IObservedChange<object, object?>> ObservableFromEvent(NSObject sender, Expression expression, string eventName) =>
-            Observable.Create<IObservedChange<object, object?>>(subj => Observable.FromEventPattern(sender, eventName).Subscribe(_ =>
-                {
-                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
-                }));
+            Observable.Create<IObservedChange<object, object?>>(subj =>
+                Observable.FromEventPattern(sender, eventName).Subscribe(_ =>
+                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default))));
 
         /// <summary>
         /// Registers an observable factory for the specified type and property.
@@ -150,7 +145,7 @@ namespace ReactiveUI
         /// <param name="createObservable">Create observable.</param>
         protected void Register(Type type, string property, int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> createObservable)
         {
-            if (!_config.TryGetValue(type, out Dictionary<string, ObservablePropertyInfo> typeProperties))
+            if (!_config.TryGetValue(type, out var typeProperties))
             {
                 typeProperties = new Dictionary<string, ObservablePropertyInfo>();
                 _config[type] = typeProperties;
@@ -159,7 +154,6 @@ namespace ReactiveUI
             typeProperties[property] = new ObservablePropertyInfo(affinity, createObservable);
         }
 
-        [SuppressMessage("Design", "SA1201:Should not follow method", Justification = "Stylecop not aware of records.")]
         internal record ObservablePropertyInfo
         {
             public ObservablePropertyInfo(int affinity, Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> createObservable) =>

@@ -16,7 +16,6 @@ namespace ReactiveUI
     /// If the type you're creating a comparer for is known this class is nothing more than an alias for the generic
     /// OrderedComparer. This class can be used to create comparers for anonymous types.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public static class OrderedComparer
     {
         /// <summary>
@@ -27,8 +26,9 @@ namespace ReactiveUI
         /// <typeparam name="T">The type.</typeparam>
         /// <param name="enumerable">The enumerable.</param>
         /// <returns>A comparer builder.</returns>
-        [SuppressMessage("Microsoft.Performance", "CA1801", Justification = "Existing API")]
+#pragma warning disable RCS1163 // Unused parameter.
         public static IComparerBuilder<T> For<T>(IEnumerable<T> enumerable) => For<T>();
+#pragma warning restore RCS1163 // Unused parameter.
 
         /// <summary>
         /// Creates a comparer builder for the specified type. Note that the builder is not a comparer in itself,

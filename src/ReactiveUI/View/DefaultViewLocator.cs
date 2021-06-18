@@ -21,7 +21,8 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
         /// </summary>
         /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
-        internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) => ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
+        internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) =>
+            ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
 
         /// <summary>
         /// Gets or sets a function that is used to convert a view model name to a proposed view name.
@@ -89,7 +90,7 @@ namespace ReactiveUI
         /// <returns>
         /// The view associated with the given view model.
         /// </returns>
-        public IViewFor? ResolveView<T>(T viewModel, string? contract = null)
+        public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
         {
             if (viewModel is null)
             {
@@ -222,7 +223,7 @@ namespace ReactiveUI
                     return null;
                 }
 
-                if (!(service is IViewFor view))
+                if (service is not IViewFor view)
                 {
                     return null;
                 }

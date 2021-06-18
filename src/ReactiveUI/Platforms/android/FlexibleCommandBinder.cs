@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -47,7 +46,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable? BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
+        public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
         {
             if (target is null)
             {
@@ -72,13 +71,13 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
             where TEventArgs : EventArgs
 #endif
-        {
-            throw new NotImplementedException();
-        }
+#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
+          => throw new NotImplementedException();
+#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
 
         /// <summary>
         /// Creates a commands binding from event and a property.
@@ -89,8 +88,7 @@ namespace ReactiveUI
         /// <param name="commandParameter">Command parameter.</param>
         /// <param name="eventName">Event name.</param>
         /// <param name="enabledProperty">Enabled property name.</param>
-        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "nullable object array.")]
-        protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, PropertyInfo enabledProperty)
+        protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
         {
             if (command is null)
             {
@@ -100,7 +98,7 @@ namespace ReactiveUI
             commandParameter ??= Observable.Return(target);
 
             object? latestParam = null;
-            var ctl = target;
+            var ctl = target!;
 
             var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe(_ =>
             {
@@ -119,7 +117,7 @@ namespace ReactiveUI
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
 
-            var compDisp = new CompositeDisposable(
+            return new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEvent<EventHandler, bool>(
@@ -131,8 +129,6 @@ namespace ReactiveUI
                         x => command.CanExecuteChanged += x,
                         x => command.CanExecuteChanged -= x)
                     .Subscribe(x => enabledSetter(target, x, null)));
-
-            return compDisp;
         }
 
         /// <summary>
@@ -141,13 +137,13 @@ namespace ReactiveUI
         /// <param name="type">Type.</param>
         /// <param name="affinity">The affinity for the type.</param>
         /// <param name="createBinding">Creates the binding.</param>
-        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding) => _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
+        protected void Register(Type type, int affinity, Func<ICommand?, object?, IObservable<object?>, IDisposable> createBinding) => _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
 
         private class CommandBindingInfo
         {
             public int Affinity { get; set; }
 
-            public Func<ICommand, object, IObservable<object>, IDisposable>? CreateBinding { get; set; }
+            public Func<ICommand?, object?, IObservable<object?>, IDisposable>? CreateBinding { get; set; }
         }
     }
 }

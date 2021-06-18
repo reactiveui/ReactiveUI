@@ -56,9 +56,9 @@ namespace ReactiveUI.Tests
             {
                 foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(PlatformRegistrationManager.DefaultRegistrationNamespaces))
                 {
-                    IEnumerable<object> resolvedServices = resolver.GetServices(shouldRegistered.Key);
+                    var resolvedServices = resolver.GetServices(shouldRegistered.Key);
                     Assert.Equal(shouldRegistered.Value.Count, resolvedServices.Count());
-                    foreach (Type implementationType in shouldRegistered.Value)
+                    foreach (var implementationType in shouldRegistered.Value)
                     {
                         resolvedServices
                             .Any(rs => rs.GetType() == implementationType)
@@ -83,9 +83,9 @@ namespace ReactiveUI.Tests
 
                 foreach (var shouldRegistered in registeredService)
                 {
-                    IEnumerable<object> resolvedServices = resolver.GetServices(shouldRegistered.Key);
+                    var resolvedServices = resolver.GetServices(shouldRegistered.Key);
 
-                    foreach (Type implementationType in shouldRegistered.Value)
+                    foreach (var implementationType in shouldRegistered.Value)
                     {
                         resolvedServices
                             .Any(rs => rs.GetType() == implementationType)
@@ -97,7 +97,6 @@ namespace ReactiveUI.Tests
 
         [Theory]
         [MemberData(nameof(NamespacesToRegister))]
-        [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in NET472")]
         public void RegisteredNamespacesShouldBeRegistered(IEnumerable<RegistrationNamespace> namespacesToRegister)
         {
             var resolver = GenerateResolver();
@@ -109,7 +108,7 @@ namespace ReactiveUI.Tests
 
                 foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
                 {
-                    IEnumerable<object> resolvedServices = resolver.GetServices(shouldRegistered.Key);
+                    var resolvedServices = resolver.GetServices(shouldRegistered.Key);
 
                     resolvedServices
                         .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)

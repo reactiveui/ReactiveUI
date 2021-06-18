@@ -18,14 +18,14 @@ namespace ReactiveUI
     /// </summary>
     public static class ViewForMixins
     {
-        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> activationFetcherCache =
+        private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =
             new(
                (t, _) =>
                    Locator.Current
                           .GetServices<IActivationForViewFetcher?>()
                           .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher?)), (acc, x) =>
                           {
-                              int score = x?.GetAffinityForView(t) ?? 0;
+                              var score = x?.GetAffinityForView(t) ?? 0;
                               return score > acc.count ? (score, x) : acc;
                           }).viewFetcher, RxApp.SmallCacheLimit);
 
@@ -41,7 +41,7 @@ namespace ReactiveUI
         /// View is activated. It returns a list of Disposables that will be
         /// cleaned up when the View is deactivated.
         /// </param>
-        public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block)
+        public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
         {
             if (item is null)
             {
@@ -87,7 +87,7 @@ namespace ReactiveUI
         /// View is activated. The Action parameter (usually called 'disposables') allows
         /// you to collate all the disposables to be cleaned up during deactivation.
         /// </param>
-        public static void WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block)
+        public static void WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block) // TODO: Create Test
         {
             if (item is null)
             {
@@ -113,7 +113,7 @@ namespace ReactiveUI
         /// cleaned up when the View is deactivated.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block)
+        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
         {
             if (item is null)
             {
@@ -139,14 +139,14 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view)
+        public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view) // TODO: Create Test
         {
             if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
-            var activationFetcher = activationFetcherCache.Get(item.GetType());
+            var activationFetcher = _activationFetcherCache.Get(item.GetType());
             if (activationFetcher is null)
             {
                 const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
@@ -196,7 +196,7 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view) =>
+        public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view) => // TODO: Create Test
             item.WhenActivated(
                 () =>
                 {
@@ -222,7 +222,7 @@ namespace ReactiveUI
         /// can be supplied here.
         /// </param>
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) =>
+        public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) => // TODO: Create Test
             item.WhenActivated(
                 () =>
                 {

@@ -88,25 +88,30 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) =>
+            PropertyChangingHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedHandler?.Invoke(this, args);
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) =>
+            PropertyChangedHandler?.Invoke(this, args);
 
         /// <inheritdoc/>
-        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
+        public IDisposable SuppressChangeNotifications() => // TODO: Create Test
+            IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <summary>
         /// Determines if change notifications are enabled or not.
         /// </summary>
         /// <returns>A value indicating whether change notifications are enabled.</returns>
-        public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
+        public bool AreChangeNotificationsEnabled() => // TODO: Create Test
+            IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
         /// <summary>
         /// Delays notifications until the return IDisposable is disposed.
         /// </summary>
         /// <returns>A disposable which when disposed will send delayed notifications.</returns>
-        public IDisposable DelayChangeNotifications() => IReactiveObjectExtensions.DelayChangeNotifications(this);
+        public IDisposable DelayChangeNotifications() =>
+            IReactiveObjectExtensions.DelayChangeNotifications(this);
     }
 }
 

@@ -18,17 +18,14 @@ namespace ReactiveUI
     /// </summary>
     public static class ReactiveNotifyPropertyChangedMixin
     {
-        private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> notifyFactoryCache =
+        private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> _notifyFactoryCache =
             new(
-                (t, _) =>
-                {
-                    return Locator.Current.GetServices<ICreatesObservableForProperty>()
+                (t, _) => Locator.Current.GetServices<ICreatesObservableForProperty>()
                                   .Aggregate((score: 0, binding: (ICreatesObservableForProperty?)null), (acc, x) =>
                                   {
-                                      int score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
+                                      var score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
                                       return score > acc.score ? (score, x) : acc;
-                                  }).binding;
-                }, RxApp.BigCacheLimit);
+                                  }).binding, RxApp.BigCacheLimit);
 
         static ReactiveNotifyPropertyChangedMixin() => RxApp.EnsureInitialized();
 
@@ -50,9 +47,9 @@ namespace ReactiveUI
         /// with the initial value.</param>
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
-        public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
-                this TSender item,
-                Expression<Func<TSender, TValue>> property,
+        public static IObservable<IObservedChange<TSender, TValue?>> ObservableForProperty<TSender, TValue>(
+                this TSender? item,
+                Expression<Func<TSender, TValue?>> property,
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
@@ -81,7 +78,7 @@ namespace ReactiveUI
              *  Resubscribe to new Baz, publish to Subject
              */
 
-            return SubscribeToExpressionChain<TSender, TValue>(
+            return SubscribeToExpressionChain<TSender, TValue?>(
                 item,
                 property.Body,
                 beforeChange,
@@ -107,10 +104,10 @@ namespace ReactiveUI
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
-                this TSender item,
-                Expression<Func<TSender, TValue>> property,
-                Func<TValue, TRet> selector,
-                bool beforeChange = false)
+                this TSender? item,
+                Expression<Func<TSender, TValue?>> property,
+                Func<TValue?, TRet> selector,
+                bool beforeChange = false) // TODO: Create Test
             where TSender : class
         {
             if (selector is null)
@@ -136,11 +133,11 @@ namespace ReactiveUI
         /// <returns>A observable which notifies about observed changes.</returns>
         /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
         public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
-            this TSender source,
-            Expression expression,
+            this TSender? source,
+            Expression? expression,
             bool beforeChange = false,
             bool skipInitial = true,
-            bool suppressWarnings = false)
+            bool suppressWarnings = false) // TODO: Create Test
         {
             if (source is null)
             {
@@ -150,7 +147,7 @@ namespace ReactiveUI
             IObservable<IObservedChange<object?, object?>> notifier =
                 Observable.Return(new ObservedChange<object?, object?>(null, null!, source));
 
-            IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
+            var chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n
                 .Select(y => NestedObservedChanges(expr, y, beforeChange, suppressWarnings))
                 .Switch());
@@ -208,7 +205,7 @@ namespace ReactiveUI
             }
 
             var propertyName = memberInfo.Name;
-            var result = notifyFactoryCache.Get((sender.GetType(), propertyName, beforeChange));
+            var result = _notifyFactoryCache.Get((sender.GetType(), propertyName, beforeChange));
 
             if (result is null)
             {

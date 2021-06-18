@@ -66,7 +66,6 @@ namespace ReactiveUI
     /// This is an Activity that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     [Obsolete("This class is obsoleted in this android platform")]
     public class ReactivePreferenceActivity : PreferenceActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactivePreferenceActivity>, IHandleObservableErrors
     {
@@ -112,7 +111,7 @@ namespace ReactiveUI
         /// <value>
         /// The deactivated.
         /// </value>
-        public IObservable<Unit> Activated => _activated.AsObservable();
+        public IObservable<Unit> Activated => _activated.AsObservable(); // TODO: Create Test
 
         /// <summary>
         ///  Gets a signal when the activity is deactivated.
@@ -120,7 +119,7 @@ namespace ReactiveUI
         /// <value>
         /// The deactivated.
         /// </value>
-        public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+        public IObservable<Unit> Deactivated => _deactivated.AsObservable(); // TODO: Create Test
 
         /// <summary>
         ///  Gets a signal with an activity result.
@@ -128,7 +127,8 @@ namespace ReactiveUI
         /// <value>
         /// The deactivated.
         /// </value>
-        public IObservable<(int requestCode, Result resultCode, Intent? intent)> ActivityResult => _activityResult.AsObservable();
+        public IObservable<(int requestCode, Result resultCode, Intent? intent)> ActivityResult => // TODO: Create Test
+            _activityResult.AsObservable();
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -137,7 +137,8 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>An object that, when disposed, re-enables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
+        public IDisposable SuppressChangeNotifications() => // TODO: Create Test
+            IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
         /// <inheritdoc/>
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -151,7 +152,7 @@ namespace ReactiveUI
         /// <param name="intent">The intent.</param>
         /// <param name="requestCode">The request code.</param>
         /// <returns>A task with the result and intent.</returns>
-        public Task<(Result resultCode, Intent? intent)> StartActivityForResultAsync(Intent? intent, int requestCode)
+        public Task<(Result resultCode, Intent? intent)> StartActivityForResultAsync(Intent? intent, int requestCode) // TODO: Create Test
         {
             // NB: It's important that we set up the subscription *before* we
             // call ActivityForResult
@@ -171,7 +172,7 @@ namespace ReactiveUI
         /// <param name="type">The type.</param>
         /// <param name="requestCode">The request code.</param>
         /// <returns>A task with the result and intent.</returns>
-        public Task<(Result resultCode, Intent? intent)> StartActivityForResultAsync(Type type, int requestCode)
+        public Task<(Result resultCode, Intent? intent)> StartActivityForResultAsync(Type type, int requestCode) // TODO: Create Test
         {
             // NB: It's important that we set up the subscription *before* we
             // call ActivityForResult

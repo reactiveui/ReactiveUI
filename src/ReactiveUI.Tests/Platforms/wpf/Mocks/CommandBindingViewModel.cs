@@ -15,18 +15,18 @@ namespace ReactiveUI.Tests.Wpf
 {
     public class CommandBindingViewModel : ReactiveObject
     {
-        private ReactiveCommand<int, Unit> _Command1;
+        private ReactiveCommand<int, int> _Command1;
         private ReactiveCommand<Unit, Unit> _Command2;
 
         private int _value;
 
         public CommandBindingViewModel()
         {
-            _Command1 = ReactiveCommand.Create<int, Unit>(_ => Unit.Default, outputScheduler: ImmediateScheduler.Instance);
+            _Command1 = ReactiveCommand.Create<int, int>(_ => { return _; }, outputScheduler: ImmediateScheduler.Instance);
             _Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
         }
 
-        public ReactiveCommand<int, Unit> Command1
+        public ReactiveCommand<int, int> Command1
         {
             get => _Command1;
             set => this.RaiseAndSetIfChanged(ref _Command1, value);

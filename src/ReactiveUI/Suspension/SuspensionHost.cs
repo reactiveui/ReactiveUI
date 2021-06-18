@@ -22,11 +22,9 @@ namespace ReactiveUI
 
         private readonly ReplaySubject<IObservable<Unit>> _isUnpausing = new(1);
 
-        private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState =
-            new(1);
+        private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState = new(1);
 
-        private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState =
-            new(1);
+        private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState = new(1);
 
         private object? _appState;
 
@@ -36,11 +34,11 @@ namespace ReactiveUI
         public SuspensionHost()
         {
 #if COCOA
-            var message = "Your AppDelegate class needs to use AutoSuspendHelper";
+            const string? message = "Your AppDelegate class needs to use AutoSuspendHelper";
 #elif ANDROID
-            var message = "You need to create an App class and use AutoSuspendHelper";
+            const string? message = "You need to create an App class and use AutoSuspendHelper";
 #else
-            var message = "Your App class needs to use AutoSuspendHelper";
+            const string? message = "Your App class needs to use AutoSuspendHelper";
 #endif
 
             IsLaunchingNew = IsResuming = IsUnpausing = ShouldInvalidateState =
@@ -52,7 +50,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets a observable which notifies when the application is resuming.
         /// </summary>
-        public IObservable<Unit> IsResuming
+        public IObservable<Unit> IsResuming // TODO: Create Test
         {
             get => _isResuming.Switch();
             set => _isResuming.OnNext(value);
@@ -61,7 +59,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets a observable which notifies when the application is un-pausing.
         /// </summary>
-        public IObservable<Unit> IsUnpausing
+        public IObservable<Unit> IsUnpausing // TODO: Create Test
         {
             get => _isUnpausing.Switch();
             set => _isUnpausing.OnNext(value);
@@ -70,7 +68,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets a observable which notifies when the application should persist its state.
         /// </summary>
-        public IObservable<IDisposable> ShouldPersistState
+        public IObservable<IDisposable> ShouldPersistState // TODO: Create Test
         {
             get => _shouldPersistState.Switch();
             set => _shouldPersistState.OnNext(value);
@@ -79,7 +77,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets a observable which notifies when a application is launching new.
         /// </summary>
-        public IObservable<Unit> IsLaunchingNew
+        public IObservable<Unit> IsLaunchingNew // TODO: Create Test
         {
             get => _isLaunchingNew.Switch();
             set => _isLaunchingNew.OnNext(value);
@@ -88,7 +86,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets or sets a observable which notifies when the application state should be invalidated.
         /// </summary>
-        public IObservable<Unit> ShouldInvalidateState
+        public IObservable<Unit> ShouldInvalidateState // TODO: Create Test
         {
             get => _shouldInvalidateState.Switch();
             set => _shouldInvalidateState.OnNext(value);

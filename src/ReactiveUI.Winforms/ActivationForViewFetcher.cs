@@ -93,7 +93,7 @@ namespace ReactiveUI.Winforms
 
         private static bool GetIsDesignMode(Control control)
         {
-            bool isDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime || control.Site?.DesignMode == true || control.Parent?.Site?.DesignMode == true;
+            var isDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime || control.Site?.DesignMode == true || control.Parent?.Site?.DesignMode == true;
 
             return isDesignMode;
         }

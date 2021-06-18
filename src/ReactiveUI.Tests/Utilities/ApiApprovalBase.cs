@@ -41,7 +41,7 @@ namespace ReactiveUI.Tests
             var approvedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.approved.txt");
             var receivedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.received.txt");
 
-            string approvedPublicApi = string.Empty;
+            var approvedPublicApi = string.Empty;
 
             if (File.Exists(approvedFileName))
             {
@@ -76,14 +76,14 @@ namespace ReactiveUI.Tests
                     process.StartInfo.FileName = "diff";
 #endif
                     process.Start();
-                    string output = process.StandardOutput.ReadToEnd();
+                    var output = process.StandardOutput.ReadToEnd();
                     process.WaitForExit();
 
                     throw new Exception("Invalid API configuration: " + Environment.NewLine + output);
                 }
             }
 
-            Assert.Equal(approvedPublicApi, receivedPublicApi);
+            Assert.Equal(approvedPublicApi.Trim(), receivedPublicApi);
         }
 
         private static string Filter(string text)

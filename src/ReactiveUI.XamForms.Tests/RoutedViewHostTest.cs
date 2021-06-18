@@ -303,6 +303,9 @@ namespace ReactiveUI.XamForms.Tests
             await _navigationViewModel.Navigate(nameof(ChildViewModel));
             await fixture.PopAsyncInner(animated, fast).ConfigureAwait(true);
 
+            var viewModelSearch = _navigationViewModel.Router.FindViewModelInStack<MainViewModel>();
+            Assert.NotNull(viewModelSearch);
+
             Assert.Equal(1, fixture.StackDepth);
             var navigationStack = _navigationViewModel.Router.NavigationStack;
             Assert.Equal(1, navigationStack.Count);
@@ -360,6 +363,12 @@ namespace ReactiveUI.XamForms.Tests
             if (initialViewModel is not null)
             {
                 var mainViewModel = Locator.Current.GetService<IRoutableViewModel>(initialViewModel);
+
+                if (mainViewModel is null)
+                {
+                    throw new InvalidOperationException("There should be a valid view model.");
+                }
+
                 _navigationViewModel.Router.NavigationStack.Add(mainViewModel);
             }
 

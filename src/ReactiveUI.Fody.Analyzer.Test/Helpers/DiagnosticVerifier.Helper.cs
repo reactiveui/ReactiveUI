@@ -148,8 +148,8 @@ namespace TestHelper
         /// <returns>A Project created out of the Documents created from the source strings.</returns>
         private static Project? CreateProject(string[] sources, string language = LanguageNames.CSharp)
         {
-            string fileNamePrefix = DefaultFilePathPrefix;
-            string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
+            var fileNamePrefix = DefaultFilePathPrefix;
+            var fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
             var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
@@ -163,7 +163,7 @@ namespace TestHelper
                 .AddMetadataReference(projectId, ReactiveUi)
                 .AddMetadataReference(projectId, ReactiveUiHelper);
 
-            int count = 0;
+            var count = 0;
             foreach (var source in sources)
             {
                 var newFileName = fileNamePrefix + count + "." + fileExt;
