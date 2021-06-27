@@ -70,18 +70,14 @@ Before you submit your pull request consider the following guidelines:
 * Follow our [Coding Rules](#rules).
 * Run the test suite, as described below.
 * Commit your changes using a descriptive commit message that follows our
-  [commit message conventions](#commit).
+  [commit message guidelines](https://reactiveui.net/contribute/software-style-guide/commit-message-convention).
 
     ```shell
     git commit -a
     ```
   Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
-* Build your changes locally to ensure all the tests pass:
-
-    ```shell
-    build.cmd
-    ```
+* Build your changes locally to ensure all the tests pass by using the Solution (.sln) files in the `src` directory.
 
 * Push your branch to GitHub:
 
@@ -149,9 +145,9 @@ from the main (upstream) repository:
     - .NET Core cross-platform development
     - Windows 10 SDK 10.0.17763.0 (individual component)
 - PowerShell
-- Android SDK Platform 26 (install through Visual Studio)
+- Android SDK Platform 29 (install through Visual Studio)
 
-Once all the above are set up, running `.\build.cmd` in the repository root should get everything up and running.
+Once all the above are set up, use the desired Solution (.sln) file in the repository's `src` directory.
 
 ### <a name="rules"></a> Coding Rules
 
