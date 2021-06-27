@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -541,5 +540,26 @@ namespace ReactiveUI.Tests
                     var fixture = new OAPHIndexerTestFixture(2);
                 });
             });
+
+        /// <summary>
+        /// Nullables the types test shouldnt need decorators with toproperty.
+        /// </summary>
+        [Fact]
+        public void NullableTypesTestShouldntNeedDecorators2_ToProperty()
+        {
+            WhenAnyTestFixture? fixture = new();
+            fixture.WhenAnyValue(
+                x => x.ProjectService.ProjectsNullable,
+                x => x.AccountService.AccountUsersNullable)
+                   .Where(tuple => tuple.Item1.Any() && tuple.Item2.Any())
+                   .Select(tuple =>
+                   {
+                       var (projects, users) = tuple;
+                       return (int?)users.Values.Count(x => !string.IsNullOrWhiteSpace(x?.LastName));
+                   })
+                   .ToProperty(fixture, x => x.AccountsFound, out fixture._accountsFound);
+
+            Assert.Equal(fixture.AccountsFound, 3);
+        }
     }
 }

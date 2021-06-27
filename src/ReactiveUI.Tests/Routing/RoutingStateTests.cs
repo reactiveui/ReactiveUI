@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -17,6 +16,10 @@ namespace ReactiveUI.Tests
 {
     public class RoutingStateTests
     {
+        /// <summary>
+        /// Navigations the push pop test.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task NavigationPushPopTest()
         {
@@ -39,6 +42,10 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, fixture.NavigationStack.Count);
         }
 
+        /// <summary>
+        /// Currents the view model observable is accurate.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task CurrentViewModelObservableIsAccurate()
         {
@@ -87,6 +94,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(null, (navigatedTo as TestViewModel)?.SomeProp);
         }
 
+        /// <summary>
+        /// Currents the view model observable is accurate via when any observable.
+        /// </summary>
         [Fact]
         public void CurrentViewModelObservableIsAccurateViaWhenAnyObservable()
         {
@@ -112,11 +122,16 @@ namespace ReactiveUI.Tests
             Assert.Equal("A", (output.Last() as TestViewModel)?.SomeProp);
         }
 
+        /// <summary>
+        /// Navigates the and reset check navigation stack.
+        /// </summary>
         [Fact]
         public void NavigateAndResetCheckNavigationStack()
         {
-            var fixture = new TestScreen();
-            fixture.Router = new RoutingState();
+            var fixture = new TestScreen
+            {
+                Router = new RoutingState()
+            };
             var viewModel = new TestViewModel();
 
             Assert.False(fixture.Router.NavigationStack.Any());
@@ -127,6 +142,9 @@ namespace ReactiveUI.Tests
             Assert.True(ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel));
         }
 
+        /// <summary>
+        /// Schedulers the is used for all commands.
+        /// </summary>
         [Fact]
         public void SchedulerIsUsedForAllCommands()
         {

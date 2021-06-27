@@ -16,7 +16,9 @@ using Xunit;
 
 #if NETFX_CORE
 #else
+
 using FactAttribute = Xunit.WpfFactAttribute;
+
 #endif
 
 namespace ReactiveUI.Tests.Xaml
@@ -314,7 +316,7 @@ namespace ReactiveUI.Tests.Xaml
             var view = new PropertyBindView { ViewModel = null };
 
             Assert.Throws<ArgumentNullException>(() =>
-                 view.WhenAnyValue(x => x.FakeControl!.NullHatingString!)
+                 view.WhenAnyValue(x => x.FakeControl.NullHatingString)
                      .BindTo(view.ViewModel, x => x.Property1));
         }
 

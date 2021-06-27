@@ -9,7 +9,9 @@ using Xunit;
 
 #if NETFX_CORE
 #else
+
 using FactAttribute = Xunit.WpfFactAttribute;
+
 #endif
 
 namespace ReactiveUI.Tests.Xaml
@@ -25,7 +27,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void WhenAnyThroughAViewShouldntGiveNullValues()
         {
-            var vm = new HostTestFixture
+            HostTestFixture? vm = new()
             {
                 Child = new TestFixture
                 {
@@ -42,7 +44,7 @@ namespace ReactiveUI.Tests.Xaml
             Assert.Equal(0, output.Count);
             Assert.Null(fixture.ViewModel);
 
-            fixture.WhenAnyValue(x => x.ViewModel!.Child!.IsNotNullString!).Subscribe(output.Add);
+            fixture.WhenAnyValue(x => x.ViewModel!.Child!.IsNotNullString).Subscribe(output.Add);
 
             fixture.ViewModel = vm;
             Assert.Equal(1, output.Count);

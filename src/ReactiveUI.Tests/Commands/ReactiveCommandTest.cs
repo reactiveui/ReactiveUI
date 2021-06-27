@@ -5,20 +5,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
 using DynamicData;
-
 using Microsoft.Reactive.Testing;
-
 using ReactiveUI.Testing;
-
 using Xunit;
 
 namespace ReactiveUI.Tests

@@ -36,10 +36,7 @@ namespace ReactiveUI.Tests
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord)
                     .Select(x => x.GetValue())
                     .WhereNotNull()
-                    .Subscribe(x =>
-                    {
-                        output.Add(x);
-                    });
+                    .Subscribe(x => output.Add(x));
 
                 foreach (var v in input)
                 {

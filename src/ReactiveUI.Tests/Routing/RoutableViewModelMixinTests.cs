@@ -9,8 +9,14 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    /// <summary>
+    /// Routable ViewModel MixinTests.
+    /// </summary>
     public class RoutableViewModelMixinTests
     {
+        /// <summary>
+        /// Whens the navigated to calls on navigated to when view model is first added.
+        /// </summary>
         [Fact]
         public void WhenNavigatedToCallsOnNavigatedToWhenViewModelIsFirstAdded()
         {
@@ -31,6 +37,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, count);
         }
 
+        /// <summary>
+        /// Whens the navigated to calls on navigated to when view model returns to top of stack.
+        /// </summary>
         [Fact]
         public void WhenNavigatedToCallsOnNavigatedToWhenViewModelReturnsToTopOfStack()
         {
@@ -54,6 +63,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, count);
         }
 
+        /// <summary>
+        /// Whens the navigated to calls dispose when view model loses focus.
+        /// </summary>
         [Fact]
         public void WhenNavigatedToCallsDisposeWhenViewModelLosesFocus()
         {
@@ -77,6 +89,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, count);
         }
 
+        /// <summary>
+        /// Whens the navigated to calls dispose when navigation stack is reset.
+        /// </summary>
         [Fact]
         public void WhenNavigatedToCallsDisposeWhenNavigationStackIsReset()
         {
@@ -100,6 +115,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, count);
         }
 
+        /// <summary>
+        /// Whens the navigated to observable fires when view model added to navigation stack.
+        /// </summary>
         [Fact]
         public void WhenNavigatedToObservableFiresWhenViewModelAddedToNavigationStack()
         {
@@ -118,6 +136,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, count);
         }
 
+        /// <summary>
+        /// Whens the navigated to observable fires when view model returns to navigation stack.
+        /// </summary>
         [Fact]
         public void WhenNavigatedToObservableFiresWhenViewModelReturnsToNavigationStack()
         {
@@ -139,6 +160,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, count);
         }
 
+        /// <summary>
+        /// Whens the navigated to observable completes when view model is removed from navigation stack.
+        /// </summary>
         [Fact]
         public void WhenNavigatedToObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
         {
@@ -157,6 +181,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, count);
         }
 
+        /// <summary>
+        /// Whens the navigated to observable completes when navigation stack is reset.
+        /// </summary>
         [Fact]
         public void WhenNavigatedToObservableCompletesWhenNavigationStackIsReset()
         {
@@ -176,6 +203,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, count);
         }
 
+        /// <summary>
+        /// Whens the navigating from observable fires when view model loses focus.
+        /// </summary>
         [Fact]
         public void WhenNavigatingFromObservableFiresWhenViewModelLosesFocus()
         {
@@ -195,6 +225,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, count);
         }
 
+        /// <summary>
+        /// Whens the navigating from observable completes when view model is removed from navigation stack.
+        /// </summary>
         [Fact]
         public void WhenNavigatingFromObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
         {
@@ -213,6 +246,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, count);
         }
 
+        /// <summary>
+        /// Whens the navigating from observable completes when navigation stack is reset.
+        /// </summary>
         [Fact]
         public void WhenNavigatingFromObservableCompletesWhenNavigationStackIsReset()
         {
