@@ -16,8 +16,10 @@ namespace ReactiveUI.Tests.Suspension
         [Fact]
         public void GetAppStateReturns()
         {
-            var fixture = new SuspensionHost();
-            fixture.AppState = new DummyAppState();
+            var fixture = new SuspensionHost
+            {
+                AppState = new DummyAppState()
+            };
 
             var result = fixture.GetAppState<DummyAppState>();
 

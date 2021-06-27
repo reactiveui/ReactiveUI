@@ -47,7 +47,7 @@ namespace ReactiveUI
         /// with the initial value.</param>
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
-        public static IObservable<IObservedChange<TSender, TValue?>> ObservableForProperty<TSender, TValue>(
+        public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
                 this TSender? item,
                 Expression<Func<TSender, TValue?>> property,
                 bool beforeChange = false,
@@ -78,7 +78,7 @@ namespace ReactiveUI
              *  Resubscribe to new Baz, publish to Subject
              */
 
-            return SubscribeToExpressionChain<TSender, TValue?>(
+            return SubscribeToExpressionChain<TSender, TValue>(
                 item,
                 property.Body,
                 beforeChange,

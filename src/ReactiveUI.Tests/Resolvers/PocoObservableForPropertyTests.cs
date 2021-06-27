@@ -6,14 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
-
 using FluentAssertions;
-
 using Splat;
-
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -112,12 +108,14 @@ namespace ReactiveUI.Tests
         }
 
 #pragma warning disable CA1812 // Class is not instantiated
+
         private class INPCClass : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler? PropertyChanged;
 
             public void NotifyPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         }
+
 #pragma warning restore CA1812 // Class is not instantiated
 
         private class TestLogger : ILogger
