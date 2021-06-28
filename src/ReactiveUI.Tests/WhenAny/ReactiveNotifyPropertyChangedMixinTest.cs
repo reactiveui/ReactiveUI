@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,13 +11,9 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
-
 using DynamicData;
-
 using Microsoft.Reactive.Testing;
-
 using ReactiveUI.Testing;
-
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -777,6 +773,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(result!.Count(), 3);
         }
 
+        /// <summary>
+        /// Nullables the types test shouldnt need decorators2.
+        /// </summary>
         [Fact]
         public void NullableTypesTestShouldntNeedDecorators2()
         {
@@ -796,6 +795,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(result!.Count(), 3);
         }
 
+        /// <summary>
+        /// Nons the nullable types test shouldnt need decorators.
+        /// </summary>
         [Fact]
         public void NonNullableTypesTestShouldntNeedDecorators()
         {
@@ -809,6 +811,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(result!.Count(), 3);
         }
 
+        /// <summary>
+        /// Nons the nullable types test shouldnt need decorators2.
+        /// </summary>
         [Fact]
         public void NonNullableTypesTestShouldntNeedDecorators2()
         {
@@ -826,6 +831,341 @@ namespace ReactiveUI.Tests
                    .Subscribe(dict => result = dict);
 
             Assert.Equal(result!.Count(), 3);
+        }
+
+        /// <summary>
+        /// Whens any value with1 paramerters.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith1Paramerters()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1)
+                   .Select(value =>
+                   {
+                       return value;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "1");
+        }
+
+        /// <summary>
+        /// Whens any value with2 paramerters returns tuple.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith2ParamertersReturnsTuple()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2)
+                   .Select(tuple =>
+                   {
+                       var (value1, value2) = tuple;
+                       return value1 + value2;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "1");
+        }
+
+        /// <summary>
+        /// Whens any value with2 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith2ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                (v1, v2) => (v1, v2))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2) = tuple;
+                       return value1 + value2;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "1");
+        }
+
+        /// <summary>
+        /// Whens any value with3 paramerters returns tuple.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith3ParamertersReturnsTuple()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3)
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3) = tuple;
+                       return value1 + value2 + value3;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "13");
+        }
+
+        /// <summary>
+        /// Whens any value with3 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith3ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                (v1, v2, v3) => (v1, v2, v3))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3) = tuple;
+                       return value1 + value2 + value3;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "13");
+        }
+
+        /// <summary>
+        /// Whens any value with4 paramerters returns tuple.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith4ParamertersReturnsTuple()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4)
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4) = tuple;
+                       return value1 + value2 + value3 + value4;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "13");
+        }
+
+        /// <summary>
+        /// Whens any value with4 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith4ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                (v1, v2, v3, v4) => (v1, v2, v3, v4))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4) = tuple;
+                       return value1 + value2 + value3 + value4;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "13");
+        }
+
+        /// <summary>
+        /// Whens any value with5 paramerters returns tuple.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith5ParamertersReturnsTuple()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5)
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5) = tuple;
+                       return value1 + value2 + value3 + value4 + value5;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "135");
+        }
+
+        /// <summary>
+        /// Whens any value with5 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith5ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                (v1, v2, v3, v4, v5) => (v1, v2, v3, v4, v5))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5) = tuple;
+                       return value1 + value2 + value3 + value4 + value5;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "135");
+        }
+
+        /// <summary>
+        /// Whens any value with6 paramerters returns tuple.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith6ParamertersReturnsTuple()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6)
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "135");
+        }
+
+        /// <summary>
+        /// Whens any value with6 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith6ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6,
+                (v1, v2, v3, v4, v5, v6) => (v1, v2, v3, v4, v5, v6))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "135");
+        }
+
+        /// <summary>
+        /// Whens any value with7 paramerters returns tuple.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith7ParamertersReturnsTuple()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6,
+                x => x.Value7)
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6, value7) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6 + value7;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "1357");
+        }
+
+        /// <summary>
+        /// Whens any value with7 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith7ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6,
+                x => x.Value7,
+                (v1, v2, v3, v4, v5, v6, v7) => (v1, v2, v3, v4, v5, v6, v7))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6, value7) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6 + value7;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "1357");
+        }
+
+        /// <summary>
+        /// Whens any value with8 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith8ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6,
+                x => x.Value7,
+                x => x.Value8,
+                (v1, v2, v3, v4, v5, v6, v7, v8) => (v1, v2, v3, v4, v5, v6, v7, v8))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6, value7, value8) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "1357");
         }
     }
 }

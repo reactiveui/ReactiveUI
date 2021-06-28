@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -21,6 +21,17 @@ namespace ReactiveUI.Tests
 
         [IgnoreDataMember]
         private ProjectService _projectService = new();
+
+        private string _value1 = "1";
+        private string? _value2;
+        private string _value3 = "3";
+        private string? _value4;
+        private string _value5 = "5";
+        private string? _value6;
+        private string _value7 = "7";
+        private string? _value8;
+        private string _value9 = "9";
+        private string? _value10;
 
         /// <summary>
         /// Gets or sets the account service.
@@ -53,5 +64,135 @@ namespace ReactiveUI.Tests
         /// </summary>
         [IgnoreDataMember]
         public int? AccountsFound => _accountsFound!.Value;
+
+        /// <summary>
+        /// Gets or sets the value1.
+        /// </summary>
+        /// <value>
+        /// The value1.
+        /// </value>
+        [DataMember]
+        public string Value1
+        {
+            get => _value1;
+            set => this.RaiseAndSetIfChanged(ref _value1, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value2.
+        /// </summary>
+        /// <value>
+        /// The value2.
+        /// </value>
+        [DataMember]
+        public string? Value2
+        {
+            get => _value2;
+            set => this.RaiseAndSetIfChanged(ref _value2, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value3.
+        /// </summary>
+        /// <value>
+        /// The value3.
+        /// </value>
+        [DataMember]
+        public string Value3
+        {
+            get => _value3;
+            set => this.RaiseAndSetIfChanged(ref _value3, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value4.
+        /// </summary>
+        /// <value>
+        /// The value4.
+        /// </value>
+        [DataMember]
+        public string? Value4
+        {
+            get => _value4;
+            set => this.RaiseAndSetIfChanged(ref _value4, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value5.
+        /// </summary>
+        /// <value>
+        /// The value5.
+        /// </value>
+        [DataMember]
+        public string Value5
+        {
+            get => _value5;
+            set => this.RaiseAndSetIfChanged(ref _value5, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value6.
+        /// </summary>
+        /// <value>
+        /// The value6.
+        /// </value>
+        [DataMember]
+        public string? Value6
+        {
+            get => _value6;
+            set => this.RaiseAndSetIfChanged(ref _value6, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value7.
+        /// </summary>
+        /// <value>
+        /// The value7.
+        /// </value>
+        [DataMember]
+        public string Value7
+        {
+            get => _value7;
+            set => this.RaiseAndSetIfChanged(ref _value7, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value8.
+        /// </summary>
+        /// <value>
+        /// The value8.
+        /// </value>
+        [DataMember]
+        public string? Value8
+        {
+            get => _value8;
+            set => this.RaiseAndSetIfChanged(ref _value8, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value9.
+        /// </summary>
+        /// <value>
+        /// The value9.
+        /// </value>
+        [DataMember]
+        public string Value9
+        {
+            get => _value9;
+            set => this.RaiseAndSetIfChanged(ref _value9, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value10.
+        /// </summary>
+        /// <value>
+        /// The value10.
+        /// </value>
+        [DataMember]
+        public string? Value10
+        {
+            get => _value10;
+            set => this.RaiseAndSetIfChanged(ref _value10, value);
+        }
     }
 }
