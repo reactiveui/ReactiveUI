@@ -187,7 +187,7 @@ namespace ReactiveUI
     public interface ICreatesObservableForProperty : Splat.IEnableLogger
     {
         int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false);
-        System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
+        System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
     }
     public interface IHandleObservableErrors
     {
@@ -217,7 +217,7 @@ namespace ReactiveUI
     {
         public INPCObservableForProperty() { }
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
     public interface IObservedChange<out TSender, out TValue>
     {
@@ -401,27 +401,27 @@ namespace ReactiveUI
     }
     public static class OAPHCreationHelperMixin
     {
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, System.Linq.Expressions.Expression<System.Func<TObj, TRet?>> property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, string property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, System.Linq.Expressions.Expression<System.Func<TObj, TRet?>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, System.Linq.Expressions.Expression<System.Func<TObj, TRet?>> property, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, System.Linq.Expressions.Expression<System.Func<TObj, TRet?>> property, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, string property, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, string property, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, System.Linq.Expressions.Expression<System.Func<TObj, TRet?>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, System.Linq.Expressions.Expression<System.Func<TObj, TRet?>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj? source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
             where TObj :  class, ReactiveUI.IReactiveObject { }
     }
     public sealed class ObservableAsPropertyHelper<T> : ReactiveUI.IHandleObservableErrors, Splat.IEnableLogger, System.IDisposable

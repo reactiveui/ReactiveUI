@@ -32,6 +32,8 @@ namespace ReactiveUI.Tests
         private string? _value8;
         private string _value9 = "9";
         private string? _value10;
+        private string _value11 = "11";
+        private string? _value12;
 
         /// <summary>
         /// Gets or sets the account service.
@@ -193,6 +195,32 @@ namespace ReactiveUI.Tests
         {
             get => _value10;
             set => this.RaiseAndSetIfChanged(ref _value10, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value11.
+        /// </summary>
+        /// <value>
+        /// The value11.
+        /// </value>
+        [DataMember]
+        public string Value11
+        {
+            get => _value11;
+            set => this.RaiseAndSetIfChanged(ref _value11, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the value12.
+        /// </summary>
+        /// <value>
+        /// The value12.
+        /// </value>
+        [DataMember]
+        public string? Value12
+        {
+            get => _value12;
+            set => this.RaiseAndSetIfChanged(ref _value12, value);
         }
     }
 }

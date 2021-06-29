@@ -174,10 +174,10 @@ namespace ReactiveUI
             return r.DistinctUntilChanged(x => x.Value);
         }
 
-        private static IObservable<IObservedChange<object, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
+        private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
         {
             // Make sure a change at a root node propagates events down
-            var kicker = new ObservedChange<object, object?>(sourceChange.Value!, expression, default);
+            var kicker = new ObservedChange<object?, object?>(sourceChange.Value!, expression, default);
 
             // Handle null values in the chain
             if (sourceChange.Value is null)
@@ -188,10 +188,10 @@ namespace ReactiveUI
             // Handle non null values in the chain
             return NotifyForProperty(sourceChange.Value, expression, beforeChange, suppressWarnings)
                 .StartWith(kicker)
-                .Select(x => new ObservedChange<object, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
+                .Select(x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
         }
 
-        private static IObservable<IObservedChange<object, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
+        private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
         {
             if (expression is null)
             {

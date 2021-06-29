@@ -1167,5 +1167,127 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(result, "1357");
         }
+
+        /// <summary>
+        /// Whens any value with8 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith9ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6,
+                x => x.Value7,
+                x => x.Value8,
+                x => x.Value9,
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => (v1, v2, v3, v4, v5, v6, v7, v8, v9))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6, value7, value8, value9) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8 + value9;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "13579");
+        }
+
+        /// <summary>
+        /// Whens any value with8 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith10ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6,
+                x => x.Value7,
+                x => x.Value8,
+                x => x.Value9,
+                x => x.Value10,
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8 + value9 + value10;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "13579");
+        }
+
+        /// <summary>
+        /// Whens any value with8 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith11ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6,
+                x => x.Value7,
+                x => x.Value8,
+                x => x.Value9,
+                x => x.Value10,
+                x => x.Value11,
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8 + value9 + value10 + value11;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "1357911");
+        }
+
+        /// <summary>
+        /// Whens any value with8 paramerters returns values.
+        /// </summary>
+        [Fact]
+        public void WhenAnyValueWith12ParamertersReturnsValues()
+        {
+            WhenAnyTestFixture fixture = new();
+            string? result = null;
+            fixture.WhenAnyValue(
+                x => x.Value1,
+                x => x.Value2,
+                x => x.Value3,
+                x => x.Value4,
+                x => x.Value5,
+                x => x.Value6,
+                x => x.Value7,
+                x => x.Value8,
+                x => x.Value9,
+                x => x.Value10,
+                x => x.Value11,
+                x => x.Value12,
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12))
+                   .Select(tuple =>
+                   {
+                       var (value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12) = tuple;
+                       return value1 + value2 + value3 + value4 + value5 + value6 + value7 + value8 + value9 + value10 + value11 + value12;
+                   })
+                   .Subscribe(value => result = value);
+
+            Assert.Equal(result, "1357911");
+        }
     }
 }
