@@ -17,7 +17,7 @@ namespace ReactiveUI.Tests
         private readonly ObservableAsPropertyHelper<string?> _firstThreeLettersOfOneWord;
 
         [IgnoreDataMember]
-        private readonly ObservableAsPropertyHelper<string?> _lastThreeLettersOfOneWord;
+        private readonly ObservableAsPropertyHelper<string> _lastThreeLettersOfOneWord;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OaphNameOfTestFixture"/> class.
@@ -25,7 +25,7 @@ namespace ReactiveUI.Tests
         public OaphNameOfTestFixture()
         {
             this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x).ToProperty(this, nameof(FirstThreeLettersOfOneWord), out _firstThreeLettersOfOneWord);
-            _lastThreeLettersOfOneWord = this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(x.Length - 3, 3) : (string?)x).ToProperty(this, nameof(LastThreeLettersOfOneWord));
+            _lastThreeLettersOfOneWord = this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(x.Length - 3, 3) : x).ToProperty(this, nameof(LastThreeLettersOfOneWord));
         }
 
         /// <summary>
@@ -38,6 +38,6 @@ namespace ReactiveUI.Tests
         /// Gets the last three letters of one word.
         /// </summary>
         [IgnoreDataMember]
-        public string? LastThreeLettersOfOneWord => _lastThreeLettersOfOneWord.Value;
+        public string LastThreeLettersOfOneWord => _lastThreeLettersOfOneWord.Value;
     }
 }
