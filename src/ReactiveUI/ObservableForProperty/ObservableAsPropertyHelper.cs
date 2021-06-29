@@ -167,13 +167,13 @@ namespace ReactiveUI
 
             if (deferSubscription)
             {
-                _lastValue = default!;
+                _lastValue = default;
                 Source = observable.DistinctUntilChanged();
             }
             else
             {
                 _lastValue = _getInitialValue();
-                Source = observable.StartWith(_lastValue!).DistinctUntilChanged();
+                Source = observable.StartWith(_lastValue).DistinctUntilChanged();
                 Source.Subscribe(_subject).DisposeWith(_disposable);
                 _activated = 1;
             }
@@ -182,7 +182,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the last provided value from the Observable.
         /// </summary>
-        public T? Value
+        public T Value
         {
             get
             {
@@ -197,7 +197,7 @@ namespace ReactiveUI
                     }
                 }
 
-                return _lastValue;
+                return _lastValue!;
             }
         }
 

@@ -48,6 +48,6 @@ namespace ReactiveUI
         /// <returns>An IObservable which is signaled whenever the specified
         /// property on the object changes. If this cannot be done for a
         /// specified value of beforeChanged, return Observable.Never.</returns>
-        IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
+        IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
     }
 }
