@@ -16,12 +16,15 @@ using Splat;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
+
 using System.Windows.Controls;
+
 #endif
 
 #if HAS_UNO
 namespace ReactiveUI.Uno
 #else
+
 namespace ReactiveUI
 #endif
 {
@@ -70,13 +73,13 @@ namespace ReactiveUI
             DefaultStyleKey = typeof(ViewModelViewHost);
 #endif
 
-            if (ModeDetector.InUnitTestRunner())
-            {
-                ViewContractObservable = Observable<string>.Never;
+            ////if (ModeDetector.InUnitTestRunner())
+            ////{
+            ////    ViewContractObservable = Observable<string>.Never;
 
-                // NB: InUnitTestRunner also returns true in Design Mode
-                return;
-            }
+            ////    // NB: InUnitTestRunner also returns true in Design Mode
+            ////    return;
+            ////}
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
             Func<string?> platformGetter = () => default;
@@ -92,26 +95,29 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
+            ViewContractObservable = ModeDetector.InUnitTestRunner()
+                ? Observable<string>.Never
+                : Observable.FromEvent<SizeChangedEventHandler, string>(
+                  eventHandler =>
+                  {
+                      void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter()!);
+                      return Handler;
+                  },
+                  x => SizeChanged += x,
+                  x => SizeChanged -= x)
+                  .StartWith(platformGetter())
+                  .DistinctUntilChanged();
+
             var contractChanged = _updateViewContract.Select(_ => ViewContractObservable).Switch();
             var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
 
-            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
+            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract)).StartWith((default, null));
 
-            vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
             contractChanged
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => _viewContract = x ?? string.Empty);
 
-            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
-                eventHandler =>
-                {
-                    void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter()!);
-                    return Handler;
-                },
-                x => SizeChanged += x,
-                x => SizeChanged -= x)
-                .StartWith(platformGetter())
-                .DistinctUntilChanged();
+            this.WhenActivated(d => d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract))));
         }
 
         /// <summary>
