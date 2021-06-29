@@ -20,6 +20,7 @@ namespace ReactiveUI.XamForms
         /// <inheritdoc/>
         public int GetAffinityForView(Type view) =>
             typeof(Shell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+            typeof(BaseShellItem).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
             typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
             typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
             typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
@@ -31,6 +32,7 @@ namespace ReactiveUI.XamForms
             var activation =
                 GetActivationFor(view as ICanActivate) ??
                 GetActivationFor(view as Shell) ??
+                GetActivationFor(view as BaseShellItem) ??
                 GetActivationFor(view as Page) ??
                 GetActivationFor(view as View) ??
                 GetActivationFor(view as Cell) ??
@@ -139,6 +141,34 @@ namespace ReactiveUI.XamForms
                     },
                     x => shell.Disappearing += x,
                     x => shell.Disappearing -= x);
+
+            return appearing.Merge(disappearing);
+        }
+
+        private static IObservable<bool>? GetActivationFor(BaseShellItem? page)
+        {
+            if (page is null)
+            {
+                return null;
+            }
+
+            var appearing = Observable.FromEvent<EventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object? sender, EventArgs e) => eventHandler(true);
+                    return Handler;
+                },
+                x => page.Appearing += x,
+                x => page.Appearing -= x);
+
+            var disappearing = Observable.FromEvent<EventHandler, bool>(
+                eventHandler =>
+                {
+                    void Handler(object? sender, EventArgs e) => eventHandler(false);
+                    return Handler;
+                },
+                x => page.Disappearing += x,
+                x => page.Disappearing -= x);
 
             return appearing.Merge(disappearing);
         }

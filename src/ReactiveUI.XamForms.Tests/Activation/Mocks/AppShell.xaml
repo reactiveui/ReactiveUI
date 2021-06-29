@@ -6,7 +6,7 @@
     xmlns:rxui="clr-namespace:ReactiveUI.XamForms;assembly=ReactiveUI.XamForms"
     xmlns:vm="clr-namespace:ReactiveUI.XamForms.Tests.Activation"
     Title="Shell.XamForms.Test"
-    x:TypeArguments="vm:ActivatingViewModel2">
+    x:TypeArguments="vm:AppShellViewModel">
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
@@ -31,9 +31,9 @@
         </ResourceDictionary>
     </Shell.Resources>
 
-    <rxui:ShellViewModel Title="Shell" x:TypeArguments="vm:ShellViewModel" />
-    <rxui:ShellViewModel Title="Content" x:TypeArguments="vm:ContentPageViewModel" />
-    <rxui:ShellViewModel Title="Tabbed" x:TypeArguments="vm:TabbedPageViewModel" />
-    <rxui:ShellViewModel Title="Carousel" x:TypeArguments="vm:CarouselPageViewModel" />
-    <rxui:ShellViewModel Title="FlyOut" x:TypeArguments="vm:FlyOutPageViewModel" />
+    <rxui:ReactiveShellContent Title="Shell" x:TypeArguments="vm:ShellViewModel" />
+    <rxui:ReactiveShellContent Title="Content" x:TypeArguments="vm:ContentPageViewModel" />
+    <rxui:ReactiveShellContent Title="Tabbed" x:TypeArguments="vm:TabbedPageViewModel" />
+    <rxui:ReactiveShellContent Title="Carousel" x:TypeArguments="vm:CarouselPageViewModel" />
+    <rxui:ReactiveShellContent Title="FlyOut" x:TypeArguments="vm:FlyOutPageViewModel" />
 </rxui:ReactiveShell>

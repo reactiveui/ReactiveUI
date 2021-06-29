@@ -13,8 +13,8 @@ namespace ReactiveUI.XamForms
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <seealso cref="ShellContent" />
-    public class ShellViewModel<TViewModel> : ShellContent, IActivatableView
-        where TViewModel : class, new()
+    public class ReactiveShellContent<TViewModel> : ShellContent, IActivatableView
+        where TViewModel : class
     {
         /// <summary>
         /// The contract property.
@@ -22,8 +22,10 @@ namespace ReactiveUI.XamForms
         public static readonly BindableProperty ContractProperty = BindableProperty.Create(
             nameof(Contract),
             typeof(string),
-            typeof(ShellViewModel<TViewModel>),
-            null);
+            typeof(ReactiveShellContent<TViewModel>),
+            null,
+            BindingMode.Default,
+            propertyChanged: ViewModelChanged);
 
         /// <summary>
         /// The view model property.
@@ -31,18 +33,21 @@ namespace ReactiveUI.XamForms
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
             nameof(ViewModel),
             typeof(TViewModel),
-            typeof(ShellViewModel<TViewModel>),
+            typeof(ReactiveShellContent<TViewModel>),
             default(TViewModel),
             BindingMode.Default,
             propertyChanged: ViewModelChanged);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShellViewModel{TViewModel}"/> class.
+        /// Initializes a new instance of the <see cref="ReactiveShellContent{TViewModel}" /> class.
         /// </summary>
-        public ShellViewModel()
+        public ReactiveShellContent()
         {
-            ViewLocator = Locator.Current.GetService<IViewLocator>();
-            ViewModel = new TViewModel();
+            var view = Locator.Current.GetService<IViewFor<TViewModel>>(Contract);
+            if (view != null)
+            {
+                ContentTemplate = new DataTemplate(() => view);
+            }
         }
 
         /// <summary>
@@ -51,38 +56,33 @@ namespace ReactiveUI.XamForms
         /// <value>
         /// The view model.
         /// </value>
-        public TViewModel ViewModel
+        public TViewModel? ViewModel
         {
             get => (TViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 
         /// <summary>
-        /// Gets or sets the contract.
+        /// Gets or sets the contract for the view.
         /// </summary>
         /// <value>
         /// The contract.
         /// </value>
-        public string Contract
+        public string? Contract
         {
-            get => (string)GetValue(ContractProperty);
+            get => (string?)GetValue(ContractProperty);
             set => SetValue(ContractProperty, value);
         }
 
-        /// <summary>
-        /// Gets or sets the view locator.
-        /// </summary>
-        /// <value>
-        /// The view locator.
-        /// </value>
-        public IViewLocator? ViewLocator { get; set; }
-
         private static void ViewModelChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (bindable is ShellViewModel<TViewModel> svm)
+            if (bindable is ReactiveShellContent<TViewModel> svm)
             {
-                var view = svm.ViewLocator?.ResolveView(newValue as TViewModel, svm.Contract);
-                svm.ContentTemplate = new DataTemplate(() => view);
+                var view = Locator.Current.GetService<IViewFor<TViewModel>>(svm.Contract);
+                if (view != null)
+                {
+                    svm.ContentTemplate = new DataTemplate(() => view);
+                }
             }
         }
     }

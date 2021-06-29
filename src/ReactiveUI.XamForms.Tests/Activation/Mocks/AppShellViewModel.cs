@@ -12,12 +12,12 @@ namespace ReactiveUI.XamForms.Tests.Activation
     /// </summary>
     /// <seealso cref="ReactiveUI.ReactiveObject" />
     /// <seealso cref="ReactiveUI.IActivatableViewModel" />
-    public class ActivatingViewModel2 : ReactiveObject, IActivatableViewModel
+    public class AppShellViewModel : ReactiveObject, IActivatableViewModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ActivatingViewModel2"/> class.
+        /// Initializes a new instance of the <see cref="AppShellViewModel"/> class.
         /// </summary>
-        public ActivatingViewModel2()
+        public AppShellViewModel()
         {
             Activator = new ViewModelActivator();
 

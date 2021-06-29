@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Disposables;
-using ReactiveUI.Tests;
 
 namespace ReactiveUI.XamForms.Tests.Activation
 {
