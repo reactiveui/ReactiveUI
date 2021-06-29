@@ -19,6 +19,7 @@ namespace ReactiveUI.XamForms
     {
         /// <inheritdoc/>
         public int GetAffinityForView(Type view) =>
+            typeof(Shell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
             typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
             typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
             typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
@@ -29,6 +30,7 @@ namespace ReactiveUI.XamForms
         {
             var activation =
                 GetActivationFor(view as ICanActivate) ??
+                GetActivationFor(view as Shell) ??
                 GetActivationFor(view as Page) ??
                 GetActivationFor(view as View) ??
                 GetActivationFor(view as Cell) ??
@@ -113,6 +115,30 @@ namespace ReactiveUI.XamForms
                     },
                     x => cell.Disappearing += x,
                     x => cell.Disappearing -= x);
+
+            return appearing.Merge(disappearing);
+        }
+
+        private static IObservable<bool>? GetActivationFor(Shell? shell)
+        {
+            if (shell is null)
+            {
+                return null;
+            }
+
+            var appearing = shell.WhenAnyValue(x => x.Navigation.NavigationStack.Count)
+                .Where(x => x > 0)
+                .DistinctUntilChanged()
+                .Select(_ => true);
+
+            var disappearing = Observable.FromEvent<EventHandler, bool>(
+                    eventHandler =>
+                    {
+                        void Handler(object? sender, EventArgs e) => eventHandler(false);
+                        return Handler;
+                    },
+                    x => shell.Disappearing += x,
+                    x => shell.Disappearing -= x);
 
             return appearing.Merge(disappearing);
         }

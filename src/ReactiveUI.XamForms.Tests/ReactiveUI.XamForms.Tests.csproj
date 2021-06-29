@@ -9,4 +9,34 @@
     <ProjectReference Include="..\ReactiveUI.XamForms\ReactiveUI.XamForms.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Activation\Mocks\FlyoutPageView.xaml.cs">
+      <DependentUpon>FlyoutPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Activation\Mocks\FlyoutPageViewFlyout.xaml.cs">
+      <DependentUpon>FlyoutPageViewFlyout.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Activation\Mocks\FlyoutPageViewDetail.xaml.cs">
+      <DependentUpon>FlyoutPageViewDetail.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Activation\Mocks\App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Activation\Mocks\AppShell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Activation\Mocks\FlyoutPageView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Activation\Mocks\FlyoutPageViewDetail.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Activation\Mocks\FlyoutPageViewFlyout.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
