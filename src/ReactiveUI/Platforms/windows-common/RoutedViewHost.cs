@@ -95,15 +95,13 @@ namespace ReactiveUI
                     },
                     x => SizeChanged += x,
                     x => SizeChanged -= x)
-                .DistinctUntilChanged()
-                .StartWith(platformGetter())
-                .Select(x => x);
+               .StartWith(platformGetter())
+               .DistinctUntilChanged();
 
             IRoutableViewModel? currentViewModel = null;
-            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Do(x => currentViewModel = x).CombineLatest(
-                this.WhenAnyObservable(x => x.ViewContractObservable),
-                (viewModel, contract) => (viewModel, contract))
-                .StartWith((currentViewModel, ViewContract));
+            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Do(x => currentViewModel = x).StartWith(currentViewModel).CombineLatest(
+                this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract),
+                (viewModel, contract) => (viewModel, contract));
 
             this.WhenActivated(d =>
             {
