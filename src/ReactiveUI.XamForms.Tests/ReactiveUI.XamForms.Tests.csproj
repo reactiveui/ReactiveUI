@@ -1,12 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Forms.Mocks" Version="4.7.0.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.XamForms\ReactiveUI.XamForms.csproj" />
   </ItemGroup>
-
 </Project>
