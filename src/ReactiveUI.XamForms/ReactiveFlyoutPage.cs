@@ -3,18 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using Xamarin.Forms;
 
 namespace ReactiveUI.XamForms
 {
     /// <summary>
-    /// This is an <see cref="MasterDetailPage"/> that is also an <see cref="IViewFor{T}"/>.
+    /// Reactive Flyout Page.
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-    /// <seealso cref="Xamarin.Forms.MasterDetailPage" />
+    /// <seealso cref="Xamarin.Forms.FlyoutPage" />
     /// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
-    public class ReactiveMasterDetailPage<TViewModel> : MasterDetailPage, IViewFor<TViewModel>
+    public class ReactiveFlyoutPage<TViewModel> : FlyoutPage, IViewFor<TViewModel>
         where TViewModel : class
     {
         /// <summary>
@@ -23,7 +22,7 @@ namespace ReactiveUI.XamForms
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
             nameof(ViewModel),
             typeof(TViewModel),
-            typeof(ReactiveMasterDetailPage<TViewModel>),
+            typeof(ReactiveFlyoutPage<TViewModel>),
             default(TViewModel),
             BindingMode.OneWay,
             propertyChanged: OnViewModelChanged);
