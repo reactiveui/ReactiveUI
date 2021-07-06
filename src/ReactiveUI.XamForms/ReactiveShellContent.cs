@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using Splat;
 using Xamarin.Forms;
 
@@ -76,6 +77,11 @@ namespace ReactiveUI.XamForms
 
         private static void ViewModelChanged(BindableObject bindable, object oldValue, object newValue)
         {
+            if (Locator.Current is null)
+            {
+                throw new NullReferenceException(nameof(Locator.Current));
+            }
+
             if (bindable is ReactiveShellContent<TViewModel> svm)
             {
                 var view = Locator.Current.GetService<IViewFor<TViewModel>>(svm.Contract);
