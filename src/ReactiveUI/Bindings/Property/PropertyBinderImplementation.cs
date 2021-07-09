@@ -13,7 +13,7 @@ using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-
+using DynamicData;
 using Splat;
 
 namespace ReactiveUI
@@ -252,6 +252,35 @@ namespace ReactiveUI
             var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target, viewExpression);
 
             return disposable;
+        }
+
+        /// <inheritdoc />
+        public IDisposable BindList<TView, TViewModel, TData, TProp>(
+                TView view,
+                TViewModel? viewModel,
+                Expression<Func<TViewModel, IObservableList<TData>?>> vmProperty,
+                Expression<Func<TView, TProp?>> viewProperty)
+            where TViewModel : class
+            where TView : class, IViewFor<TViewModel>
+        {
+            IDisposable? lastBinding = null;
+
+            return
+
+                // Get latest viewmodel and get latest non-null list from viewmodel property
+                view.WhenAnyValue(v => v.ViewModel)
+                .Where(vm => vm != null)
+                .Select(vm => vm.WhenAnyValue(vmProperty!))
+                .Switch()
+                .Where(sourceList => sourceList != null)
+                .Do(_ => lastBinding?.Dispose()) // Clean up last list binding
+                .Select(sourceList =>
+                { // Create new list binding
+                    lastBinding = sourceList!.Connect().Bind(out var list).Subscribe();
+                    return list;
+                })
+                .Finally(() => lastBinding?.Dispose()) // When the observable is disposed, dispose the list binding too
+                .BindTo(view, viewProperty); // Bind the new bindable list to the view property
         }
 
         internal static IBindingTypeConverter? GetConverterForTypes(Type lhs, Type rhs) =>

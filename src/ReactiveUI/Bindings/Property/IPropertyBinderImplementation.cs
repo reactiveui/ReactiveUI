@@ -5,7 +5,7 @@
 
 using System;
 using System.Linq.Expressions;
-
+using DynamicData;
 using Splat;
 
 namespace ReactiveUI
@@ -253,5 +253,26 @@ namespace ReactiveUI
             object? conversionHint,
             IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class;
+
+        /// <summary>
+        /// Create a one way list binding from the viewmodel to the view. The view list property will
+        /// be automatically updated to reflect the viewmodel source list property.
+        /// </summary>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TData">The type of the data stored in the list.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <param name="view">The view used for the binding.</param>
+        /// <param name="viewModel">A dummy viewmodel parameter, used to infer the viewmodel type.</param>
+        /// <param name="vmProperty">The source property in the viewmodel that contains the list.</param>
+        /// <param name="viewProperty">The target property in the view to bind the list to.</param>
+        /// <returns>An object that when disposed, disconnects the binding.</returns>
+        IDisposable BindList<TView, TViewModel, TData, TProp>(
+                TView view,
+                TViewModel? viewModel,
+                Expression<Func<TViewModel, IObservableList<TData>?>> vmProperty,
+                Expression<Func<TView, TProp?>> viewProperty)
+            where TViewModel : class
+            where TView : class, IViewFor<TViewModel>;
     }
 }
