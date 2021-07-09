@@ -243,7 +243,7 @@ namespace ReactiveUI
         ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor;
-        System.IDisposable BindList<TView, TViewModel, TData, TProp>(TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, DynamicData.IObservableList<TData>?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TProp?>> viewProperty)
+        System.IDisposable BindList<TView, TViewModel, TData, TProp>(TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, System.Collections.ObjectModel.ReadOnlyObservableCollection<TData>?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TProp?>> viewProperty)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class;
         System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> propertyExpression, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
@@ -507,7 +507,7 @@ namespace ReactiveUI
         public ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
-        public System.IDisposable BindList<TView, TViewModel, TData, TProp>(TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, DynamicData.IObservableList<TData>?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TProp?>> viewProperty)
+        public System.IDisposable BindList<TView, TViewModel, TData, TProp>(TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, System.Collections.ObjectModel.ReadOnlyObservableCollection<TData>?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TProp?>> viewProperty)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class { }
         public System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> propertyExpression, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
@@ -545,7 +545,7 @@ namespace ReactiveUI
         public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
-        public static System.IDisposable BindList<TView, TViewModel, TData, TProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, DynamicData.IObservableList<TData>?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TProp?>> viewProperty)
+        public static System.IDisposable BindList<TView, TViewModel, TData, TProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, System.Collections.ObjectModel.ReadOnlyObservableCollection<TData>?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TProp?>> viewProperty)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>
             where TViewModel :  class { }
         public static System.IDisposable BindTo<TValue, TTarget, TTValue>(this System.IObservable<TValue> @this, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> property, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
