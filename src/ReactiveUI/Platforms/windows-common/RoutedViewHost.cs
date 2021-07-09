@@ -16,12 +16,15 @@ using Splat;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
+
 using System.Windows.Controls;
+
 #endif
 
 #if HAS_UNO
 namespace ReactiveUI.Uno
 #else
+
 namespace ReactiveUI
 #endif
 {
@@ -55,6 +58,8 @@ namespace ReactiveUI
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable<string>.Default));
 
+        private string? _viewContract;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
         /// </summary>
@@ -66,14 +71,8 @@ namespace ReactiveUI
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
-            if (ModeDetector.InUnitTestRunner())
-            {
-                ViewContractObservable = Observable<string>.Never;
-                return;
-            }
-
             var platform = Locator.Current.GetService<IPlatformOperations>();
-            Func<string?> platformGetter = () => default!;
+            Func<string?> platformGetter = () => default;
 
             if (platform == null)
             {
@@ -86,7 +85,9 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string?>(
+            ViewContractObservable = ModeDetector.InUnitTestRunner()
+                ? Observable<string>.Never
+                : Observable.FromEvent<SizeChangedEventHandler, string?>(
                     eventHandler =>
                     {
                         void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
@@ -94,12 +95,12 @@ namespace ReactiveUI
                     },
                     x => SizeChanged += x,
                     x => SizeChanged -= x)
-                .DistinctUntilChanged()
-                .StartWith(platformGetter())
-                .Select(x => x);
+               .StartWith(platformGetter())
+               .DistinctUntilChanged();
 
-            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel!).CombineLatest(
-                this.WhenAnyObservable(x => x.ViewContractObservable),
+            IRoutableViewModel? currentViewModel = null;
+            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Do(x => currentViewModel = x).StartWith(currentViewModel).CombineLatest(
+                this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract),
                 (viewModel, contract) => (viewModel, contract));
 
             this.WhenActivated(d =>
@@ -107,26 +108,8 @@ namespace ReactiveUI
                 // NB: The DistinctUntilChanged is useful because most views in
                 // WinRT will end up getting here twice - once for configuring
                 // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-                d(vmAndContract.DistinctUntilChanged().Subscribe(
-                    x =>
-                    {
-                        if (x.viewModel == null)
-                        {
-                            Content = DefaultContent;
-                            return;
-                        }
-
-                        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                        var view = viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel);
-
-                        if (view == null)
-                        {
-                            throw new Exception($"Couldn't find view for '{x.viewModel}'.");
-                        }
-
-                        view.ViewModel = x.viewModel;
-                        Content = view;
-                    },
+                d(vmAndContract.DistinctUntilChanged<(IRoutableViewModel? viewModel, string? contract)>().Subscribe(
+                    ResolveViewForViewModel,
                     ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
             });
         }
@@ -163,11 +146,40 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Gets or sets the view contract.
+        /// </summary>
+        public string? ViewContract
+        {
+            get => _viewContract;
+            set => ViewContractObservable = Observable.Return(value);
+        }
+
+        /// <summary>
         /// Gets or sets the view locator.
         /// </summary>
         /// <value>
         /// The view locator.
         /// </value>
         public IViewLocator? ViewLocator { get; set; }
+
+        private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
+        {
+            if (x.viewModel == null)
+            {
+                Content = DefaultContent;
+                return;
+            }
+
+            var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+            var view = viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel);
+
+            if (view == null)
+            {
+                throw new Exception($"Couldn't find view for '{x.viewModel}'.");
+            }
+
+            view.ViewModel = x.viewModel;
+            Content = view;
+        }
     }
 }

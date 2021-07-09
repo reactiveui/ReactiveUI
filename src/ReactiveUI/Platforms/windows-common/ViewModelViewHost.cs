@@ -8,20 +8,25 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Windows;
 using Splat;
 
 #if NETFX_CORE || HAS_UNO
+
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+
 #else
+
 using System.Windows.Controls;
+
 #endif
 
 #if HAS_UNO
+
 namespace ReactiveUI.Uno
 #else
+
 namespace ReactiveUI
 #endif
 {
@@ -30,13 +35,11 @@ namespace ReactiveUI
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
-    [SuppressMessage("Design", "CA1063: Remove IDisposable from the list of interfaces implemented", Justification = "Deliberate usage")]
     public
 #if HAS_UNO
         partial
 #endif
-        class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger, IDisposable
+        class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
     {
         /// <summary>
         /// The default content dependency property.
@@ -48,18 +51,15 @@ namespace ReactiveUI
         /// The view model dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, ViewModelChanged));
+            DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
 
         /// <summary>
         /// The view contract observable dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewContractObservableProperty =
-            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default, ViewContractChanged));
+            DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
 
-        private readonly Subject<Unit> _updateViewModel = new();
-        private readonly Subject<Unit> _updateViewContract = new();
         private string? _viewContract;
-        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
@@ -69,14 +69,6 @@ namespace ReactiveUI
 #if NETFX_CORE
             DefaultStyleKey = typeof(ViewModelViewHost);
 #endif
-
-            if (ModeDetector.InUnitTestRunner())
-            {
-                ViewContractObservable = Observable<string>.Never;
-
-                // NB: InUnitTestRunner also returns true in Design Mode
-                return;
-            }
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
             Func<string?> platformGetter = () => default;
@@ -92,26 +84,30 @@ namespace ReactiveUI
                 platformGetter = () => platform.GetOrientation();
             }
 
-            var contractChanged = _updateViewContract.Select(_ => ViewContractObservable).Switch();
-            var viewModelChanged = _updateViewModel.Select(_ => ViewModel);
+            ViewContractObservable = ModeDetector.InUnitTestRunner()
+                ? Observable<string?>.Never
+                : Observable.FromEvent<SizeChangedEventHandler, string?>(
+                  eventHandler =>
+                  {
+                      void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter()!);
+                      return Handler;
+                  },
+                  x => SizeChanged += x,
+                  x => SizeChanged -= x)
+                  .StartWith(platformGetter())
+                  .DistinctUntilChanged();
 
-            var vmAndContract = contractChanged.CombineLatest(viewModelChanged, (contract, vm) => new { ViewModel = vm, Contract = contract });
+            var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract);
+            var viewModelChanged = this.WhenAnyValue(x => x.ViewModel).StartWith(ViewModel);
 
-            vmAndContract.Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
             contractChanged
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => _viewContract = x ?? string.Empty);
 
-            ViewContractObservable = Observable.FromEvent<SizeChangedEventHandler, string>(
-                eventHandler =>
-                {
-                    void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter()!);
-                    return Handler;
-                },
-                x => SizeChanged += x,
-                x => SizeChanged -= x)
-                .StartWith(platformGetter())
-                .DistinctUntilChanged();
+            var vmAndContract = contractChanged
+                .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
+
+            this.WhenActivated(d => d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract))));
         }
 
         /// <summary>
@@ -154,43 +150,6 @@ namespace ReactiveUI
         /// Gets or sets the view locator.
         /// </summary>
         public IViewLocator? ViewLocator { get; set; }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Disposes of resources inside the class.
-        /// </summary>
-        /// <param name="isDisposing">If we are disposing managed resources.</param>
-        protected virtual void Dispose(bool isDisposing)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            if (isDisposing)
-            {
-                _updateViewModel.Dispose();
-                _updateViewContract.Dispose();
-            }
-
-            _isDisposed = true;
-        }
-
-        private static void ViewModelChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-        {
-            ((ViewModelViewHost)dependencyObject)._updateViewModel.OnNext(Unit.Default);
-        }
-
-        private static void ViewContractChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-        {
-            ((ViewModelViewHost)dependencyObject)._updateViewContract.OnNext(Unit.Default);
-        }
 
         private void ResolveViewForViewModel(object? viewModel, string? contract)
         {
