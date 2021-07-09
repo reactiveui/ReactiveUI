@@ -35,12 +35,6 @@ namespace ReactiveUI.Tests
             <DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
                           xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                 <StackPanel Orientation=""Horizontal"">
-                    <Path
-                        Margin=""0,2,6,0""
-                        VerticalAlignment=""Center""
-                        Data=""M 0,0 L 2.5,2.5 L 0,5""
-                        Stroke=""#555555""
-                        StrokeThickness=""2"" />
                     <TextBlock
                         VerticalAlignment=""Stretch""
                         Text=""{Binding Name}""
