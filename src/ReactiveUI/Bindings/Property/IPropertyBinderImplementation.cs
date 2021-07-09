@@ -4,8 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
-using DynamicData;
 using Splat;
 
 namespace ReactiveUI
@@ -270,7 +270,7 @@ namespace ReactiveUI
         IDisposable BindList<TView, TViewModel, TData, TProp>(
                 TView view,
                 TViewModel? viewModel,
-                Expression<Func<TViewModel, IObservableList<TData>?>> vmProperty,
+                Expression<Func<TViewModel, ReadOnlyObservableCollection<TData>?>> vmProperty,
                 Expression<Func<TView, TProp?>> viewProperty)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>;

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -13,6 +15,7 @@ namespace ReactiveUI.Tests
     public class MockBindListViewModel : ReactiveObject
     {
         private readonly ObservableAsPropertyHelper<MockBindListItemViewModel?> _activeItem;
+        private readonly ReadOnlyObservableCollection<MockBindListItemViewModel> _listItems;
 
         static MockBindListViewModel()
         {
@@ -36,8 +39,11 @@ namespace ReactiveUI.Tests
                 });
             });
 
-            ActiveListItem.Connect().Select(_ => ActiveListItem.Count > 0 ? ActiveListItem.Items.ElementAt(ActiveListItem.Count - 1) : null)
+            ActiveListItem.Connect()
+                .Select(_ => ActiveListItem.Count > 0 ? ActiveListItem.Items.ElementAt(ActiveListItem.Count - 1) : null)
                 .ToProperty(this, vm => vm.ActiveItem, out _activeItem);
+
+            ActiveListItem.Connect().ObserveOn(RxApp.MainThreadScheduler).Bind(out _listItems).Subscribe();
         }
 
         /// <summary>
@@ -56,5 +62,13 @@ namespace ReactiveUI.Tests
         /// Only this item and its ancestors are kept, the rest of the items are removed.
         /// </summary>
         public ReactiveCommand<MockBindListItemViewModel, Unit> SelectItem { get; }
+
+        /// <summary>
+        /// Gets the list items.
+        /// </summary>
+        /// <value>
+        /// The list items.
+        /// </value>
+        public ReadOnlyObservableCollection<MockBindListItemViewModel> ListItems => _listItems;
     }
 }

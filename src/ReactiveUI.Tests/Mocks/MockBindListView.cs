@@ -52,7 +52,7 @@ namespace ReactiveUI.Tests
             ViewModel = new();
             this.WhenActivated(d =>
             {
-                this.BindList(ViewModel, vm => vm.ActiveListItem, v => v.ItemList.ItemsSource).DisposeWith(d);
+                this.BindList(ViewModel, vm => vm.ListItems, v => v.ItemList.ItemsSource).DisposeWith(d);
                 this.WhenAnyValue(v => v.ItemList.SelectedItem)
                     .Where(i => i != null)
                     .Cast<MockBindListItemViewModel>()
