@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
@@ -60,18 +60,14 @@
       </ItemGroup>
     </When>
     <When Condition=" $(TargetFramework.StartsWith('net4'))">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
         <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
         <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
-
-        <Reference Include="PresentationCore" />
-        <Reference Include="PresentationFramework" />
-        <Reference Include="System.Windows.Forms" />
-        <Reference Include="System.Xaml" />
-        <Reference Include="WindowsBase" />
-        <Reference Include="UIAutomationTypes" />
-        <Reference Include="UIAutomationProvider" />
 
         <Compile Include="Platforms\common-gui\**\*.cs" />
         <Compile Include="Platforms\wpf\**\*.cs" />
@@ -80,6 +76,10 @@
       </ItemGroup>
     </When>
   </Choose>
+
+  <ItemGroup>
+    <Page Remove="Mocks\MockBindListView.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Platforms\Winforms\Mocks\TestForm.Designer.cs">
