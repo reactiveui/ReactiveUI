@@ -10,7 +10,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
-using ReactiveUI;
 
 namespace ReactiveUI.Tests
 {
@@ -18,7 +17,7 @@ namespace ReactiveUI.Tests
     /// MockBindListView.
     /// </summary>
     /// <seealso cref="System.Windows.Controls.UserControl" />
-    public partial class MockBindListView : UserControl, IViewFor<MockBindListViewModel>
+    public class MockBindListView : UserControl, IViewFor<MockBindListViewModel>
     {
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register(nameof(ViewModel), typeof(MockBindListViewModel), typeof(MockBindListView), new PropertyMetadata(null));
@@ -28,7 +27,6 @@ namespace ReactiveUI.Tests
         /// </summary>
         public MockBindListView()
         {
-            // InitializeComponent();
             ItemList = new();
 
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(@"
@@ -52,7 +50,7 @@ namespace ReactiveUI.Tests
             ViewModel = new();
             this.WhenActivated(d =>
             {
-                this.BindList(ViewModel, vm => vm.ListItems, v => v.ItemList.ItemsSource).DisposeWith(d);
+                this.OneWayBind(ViewModel, vm => vm.ListItems, v => v.ItemList.ItemsSource).DisposeWith(d);
                 this.WhenAnyValue(v => v.ItemList.SelectedItem)
                     .Where(i => i != null)
                     .Cast<MockBindListItemViewModel>()

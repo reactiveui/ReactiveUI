@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reactive;
 
@@ -354,27 +353,5 @@ namespace ReactiveUI
             IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget : class =>
             _binderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
-
-        /// <summary>
-        /// Create a one way list binding from the viewmodel to the view. The view list property will
-        /// be automatically updated to reflect the viewmodel source list property.
-        /// </summary>
-        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
-        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
-        /// <typeparam name="TData">The type of the data stored in the list.</typeparam>
-        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
-        /// <param name="view">The view used for the binding.</param>
-        /// <param name="viewModel">A dummy viewmodel parameter, used to infer the viewmodel type.</param>
-        /// <param name="vmProperty">The source property in the viewmodel that contains the list.</param>
-        /// <param name="viewProperty">The target property in the view to bind the list to.</param>
-        /// <returns>An object that when disposed, disconnects the binding.</returns>
-        public static IDisposable BindList<TView, TViewModel, TData, TProp>(
-                this TView view,
-                TViewModel? viewModel,
-                Expression<Func<TViewModel, ReadOnlyObservableCollection<TData>?>> vmProperty,
-                Expression<Func<TView, TProp?>> viewProperty)
-            where TViewModel : class
-            where TView : class, IViewFor<TViewModel> =>
-            _binderImplementation.BindList(view, viewModel, vmProperty, viewProperty);
     }
 }

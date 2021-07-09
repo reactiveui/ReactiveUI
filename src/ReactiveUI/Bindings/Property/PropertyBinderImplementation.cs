@@ -5,14 +5,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using DynamicData;
+
 using Splat;
 
 namespace ReactiveUI
@@ -252,23 +253,6 @@ namespace ReactiveUI
 
             return disposable;
         }
-
-        /// <inheritdoc />
-        public IDisposable BindList<TView, TViewModel, TData, TProp>(
-                TView view,
-                TViewModel? viewModel,
-                Expression<Func<TViewModel, ReadOnlyObservableCollection<TData>?>> vmProperty,
-                Expression<Func<TView, TProp?>> viewProperty)
-            where TViewModel : class
-            where TView : class, IViewFor<TViewModel> =>
-
-                // Get latest viewmodel and get latest non-null list from viewmodel property
-                view.WhenAnyValue(v => v.ViewModel)
-                .Where(vm => vm != null)
-                .Select(vm => vm.WhenAnyValue(vmProperty!))
-                .Switch()
-                .Where(sourceList => sourceList != null)
-                .BindTo(view, viewProperty); // Bind the new bindable list to the view property
 
         internal static IBindingTypeConverter? GetConverterForTypes(Type lhs, Type rhs) =>
             _typeConverterCache.Get((lhs, rhs));
