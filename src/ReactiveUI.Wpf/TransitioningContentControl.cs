@@ -6,16 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 // This control is gratefully borrowed from http://blog.landdolphin.net/?p=17
 // Thanks guys!
@@ -299,9 +295,9 @@ namespace ReactiveUI
 
             _previousImageSite.Source = GetRenderTargetBitmapFromUiElement(_currentContentPresentationSite);
             _currentContentPresentationSite.Content = newContent;
-            string transitionInName = string.Empty;
-            int statesRemaining;
-            string startingTransitionName;
+            var transitionInName = string.Empty;
+            var statesRemaining = 0;
+            var startingTransitionName = string.Empty;
 
             if (Transition == TransitionType.Bounce)
             {
@@ -317,6 +313,11 @@ namespace ReactiveUI
             }
             else
             {
+                if (StartingTransition != null)
+                {
+                    StartingTransition!.Completed -= NextState;
+                }
+
                 StartingTransition = null;
                 startingTransitionName = Transition == TransitionType.Fade
                                              ? "Transition_Fade"

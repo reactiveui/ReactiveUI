@@ -5,6 +5,7 @@
 
 using System;
 using System.IO;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -137,6 +138,15 @@ namespace ReactiveUI.Tests.Wpf
             uiThread.Start();
             Thread.Sleep(100);
             uiThread.Join();
+        }
+
+        [Fact]
+        public void DummySuspensionDriverTest()
+        {
+            var dsd = new DummySuspensionDriver();
+            dsd.LoadState().Select(_ => 1).Subscribe(_ => Assert.Equal(1, _));
+            dsd.SaveState("Save Me").Select(_ => 2).Subscribe(_ => Assert.Equal(2, _));
+            dsd.InvalidateState().Select(_ => 3).Subscribe(_ => Assert.Equal(3, _));
         }
     }
 }
