@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <None Remove="Platforms\Winforms\Mocks\TestFormNotCanActivate.cs" />
+    <None Remove="Platforms\wpf\WpfGeneralTests.cs" />
   </ItemGroup>
 
   <Choose>
@@ -103,5 +104,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>TestFormNotCanActivate.resx</DependentUpon>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Mocks\View1.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Mocks\View2.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 </Project>

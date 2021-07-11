@@ -6,11 +6,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 // This control is gratefully borrowed from http://blog.landdolphin.net/?p=17
 // Thanks guys!
@@ -60,6 +65,7 @@ namespace ReactiveUI
         private Grid? _container;
         private Image? _previousImageSite;
         private ContentPresenter? _currentContentPresentationSite;
+        private VisualStateGroup? _presentationGroup;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransitioningContentControl"/> class.
@@ -172,14 +178,14 @@ namespace ReactiveUI
                 // Decouple transition.
                 if (_completingTransition is not null)
                 {
-                    _completingTransition.Completed -= OnTransitionCompleted;
+                    CompletingTransition!.Completed -= OnTransitionCompleted;
                 }
 
                 _completingTransition = value;
 
                 if (_completingTransition is not null)
                 {
-                    _completingTransition.Completed += OnTransitionCompleted;
+                    CompletingTransition!.Completed += OnTransitionCompleted;
                     SetTransitionDefaultValues();
                 }
             }
@@ -205,6 +211,7 @@ namespace ReactiveUI
 
             // Set the current content site to the first piece of content.
             _currentContentPresentationSite.Content = Content;
+            _presentationGroup = ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container!))!.FirstOrDefault(o => o.Name == PresentationGroup);
             VisualStateManager.GoToState(this, NormalState, false);
         }
 
@@ -291,59 +298,69 @@ namespace ReactiveUI
             }
 
             _previousImageSite.Source = GetRenderTargetBitmapFromUiElement(_currentContentPresentationSite);
-
             _currentContentPresentationSite.Content = newContent;
+            string transitionInName = string.Empty;
+            int statesRemaining;
             string startingTransitionName;
 
             if (Transition == TransitionType.Bounce)
             {
                 // Wire up the completion transition.
-                var transitionInName = $"Transition_{Transition}{Direction}In";
+                transitionInName = $"Transition_{Transition}{Direction}In";
                 CompletingTransition = GetTransitionStoryboardByName(transitionInName);
 
                 // Wire up the first transition to start the second transition when it's complete.
                 startingTransitionName = $"Transition_{Transition}{Direction}Out";
-                var transitionOut = GetTransitionStoryboardByName(startingTransitionName);
-
-                transitionOut.Completed += (_, _) => VisualStateManager.GoToState(
-                    this,
-                    transitionInName,
-                    false);
-
-                StartingTransition = transitionOut;
+                StartingTransition = (Storyboard?)GetTransitionStoryboardByName(startingTransitionName);
+                statesRemaining = 2;
+                StartingTransition!.Completed += NextState;
             }
             else
             {
+                StartingTransition = null;
                 startingTransitionName = Transition == TransitionType.Fade
                                              ? "Transition_Fade"
                                              : $"Transition_{Transition}{Direction}";
 
                 CompletingTransition = GetTransitionStoryboardByName(startingTransitionName);
+                statesRemaining = 1;
             }
 
             // Start the transition.
             _isTransitioning = true;
             RaiseTransitionStarted();
 
+            statesRemaining--;
             VisualStateManager.GoToState(
-                                         this,
-                                         startingTransitionName,
-                                         false);
+                                           this,
+                                           startingTransitionName,
+                                           false);
+            void NextState(object? o, EventArgs e)
+            {
+                StartingTransition!.Completed -= NextState;
+                if (statesRemaining == 1)
+                {
+                    statesRemaining--;
+                    VisualStateManager.GoToState(
+                                                this,
+                                                transitionInName,
+                                                false);
+                }
+            }
         }
 
         private Storyboard GetTransitionStoryboardByName(string transitionName)
         {
             // Hook up the CurrentTransition.
-            var presentationGroup =
-                ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container!))!.FirstOrDefault(o => o.Name == PresentationGroup);
-            if (presentationGroup is null)
+            if (_presentationGroup is null)
             {
                 throw new ArgumentException("Invalid VisualStateGroup.");
             }
 
-            var transition =
-                ((IEnumerable<VisualState>)presentationGroup.States).Where(o => o.Name == transitionName).Select(
-                    o => o.Storyboard).FirstOrDefault();
+            var transition = ((IEnumerable<VisualState>)_presentationGroup.States)
+                .Where(o => o.Name == transitionName)
+                .Select(o => o.Storyboard).FirstOrDefault();
+
             if (transition is null)
             {
                 throw new ArgumentException("Invalid transition");
@@ -416,21 +433,25 @@ namespace ReactiveUI
                                 completingDoubleAnimation.From = -ActualHeight;
 
                                 break;
+
                             case TransitionDirection.Up:
                                 startingDoubleAnimation.To = -ActualHeight;
                                 completingDoubleAnimation.From = ActualHeight;
 
                                 break;
+
                             case TransitionDirection.Right:
                                 startingDoubleAnimation.To = ActualWidth;
                                 completingDoubleAnimation.From = -ActualWidth;
 
                                 break;
+
                             case TransitionDirection.Left:
                                 startingDoubleAnimation.To = -ActualWidth;
                                 completingDoubleAnimation.From = ActualWidth;
 
                                 break;
+
                             default: throw new ArgumentOutOfRangeException(nameof(TransitionDirection));
                         }
 

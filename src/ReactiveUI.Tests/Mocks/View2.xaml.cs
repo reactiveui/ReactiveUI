@@ -3,20 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows;
 using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Wpf
 {
-    public class WpfTestWindow : Window, IActivatableView
+    /// <summary>
+    /// Interaction logic for View2.xaml.
+    /// </summary>
+    public partial class View2 : UserControl
     {
-        public WpfTestWindow()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="View2"/> class.
+        /// </summary>
+        public View2()
         {
-            RootGrid = new Grid();
-
-            AddChild(RootGrid);
+            InitializeComponent();
         }
-
-        public Grid RootGrid { get; }
     }
 }
