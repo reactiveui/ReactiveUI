@@ -26,6 +26,10 @@
 
   <ItemGroup>
     <None Remove="Platforms\Winforms\Mocks\TestFormNotCanActivate.cs" />
+    <None Remove="Platforms\wpf\Mocks\TransitionMock\FirstView.xaml.cs" />
+    <None Remove="Platforms\wpf\Mocks\TransitionMock\MainWindow.xaml.cs" />
+    <None Remove="Platforms\wpf\Mocks\TransitionMock\SecondView.xaml.cs" />
+    <None Remove="Platforms\wpf\Mocks\TransitionMock\TCMockWindowViewModel.cs" />
   </ItemGroup>
 
   <Choose>
@@ -103,5 +107,17 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>TestFormNotCanActivate.resx</DependentUpon>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Platforms\wpf\Mocks\TransitionMock\FirstView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Platforms\wpf\Mocks\TransitionMock\TCMockWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Platforms\wpf\Mocks\TransitionMock\SecondView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 </Project>
