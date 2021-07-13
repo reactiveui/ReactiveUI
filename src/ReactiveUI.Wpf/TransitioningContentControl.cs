@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -7,11 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+
+[assembly: InternalsVisibleTo("ReactiveUI.Tests")]
 
 // This control is gratefully borrowed from http://blog.landdolphin.net/?p=17
 // Thanks guys!
@@ -52,6 +55,10 @@ namespace ReactiveUI
             typeof(TimeSpan),
             typeof(TransitioningContentControl),
             new PropertyMetadata(TimeSpan.FromSeconds(0.3)));
+
+#pragma warning disable SA1401 // Fields should be private
+        internal static bool OverrideDpi = false;
+#pragma warning restore SA1401 // Fields should be private
 
         private const string PresentationGroup = "PresentationStates";
         private const string NormalState = "Normal";
@@ -235,9 +242,16 @@ namespace ReactiveUI
             var dpiScale = VisualTreeHelper.GetDpi(uiElement);
 #endif
 
+            if (OverrideDpi)
+            {
+                dpiScale = new DpiScale(1.25, 1.25);
+            }
+
+            var pixelWidth = Math.Max(1.0, uiElement.RenderSize.Width * dpiScale.DpiScaleX);
+            var pixelHeight = Math.Max(1.0, uiElement.RenderSize.Height * dpiScale.DpiScaleY);
             var renderTargetBitmap = new RenderTargetBitmap(
-                                                            Convert.ToInt32(uiElement.RenderSize.Width * dpiScale.DpiScaleX),
-                                                            Convert.ToInt32(uiElement.RenderSize.Height * dpiScale.DpiScaleY),
+                                                            Convert.ToInt32(pixelWidth),
+                                                            Convert.ToInt32(pixelHeight),
                                                             dpiScale.PixelsPerInchX,
                                                             dpiScale.PixelsPerInchY,
                                                             PixelFormats.Pbgra32);
