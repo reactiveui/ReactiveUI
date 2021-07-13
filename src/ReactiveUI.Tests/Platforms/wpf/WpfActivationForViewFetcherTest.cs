@@ -180,59 +180,5 @@ namespace ReactiveUI.Tests.Wpf
 
             new[] { true, false, true, false }.AssertAreEqual(activated);
         }
-
-        [StaFact]
-        public void TransitioninContentControlDpiTest()
-        {
-            var uiThread = new Thread(() =>
-            {
-                var window = new TCMockWindow();
-                var app = new Application();
-
-                window.WhenActivated(async d =>
-                {
-                    TransitioningContentControl.OverrideDpi = true;
-                    window.TransitioningContent.Height = 500;
-                    window.TransitioningContent.Width = 500;
-                    window.TransitioningContent.Content = new FirstView();
-                    await Task.Delay(5000).ConfigureAwait(true);
-                    window.TransitioningContent.Content = new SecondView();
-                    await Task.Delay(5000).ConfigureAwait(true);
-                    window.TransitioningContent.Height = 300;
-                    window.TransitioningContent.Width = 300;
-                    window.TransitioningContent.Content = new FirstView();
-                    await Task.Delay(5000).ConfigureAwait(true);
-                    window.TransitioningContent.Content = new SecondView();
-                    window.TransitioningContent.Height = 0.25;
-                    window.TransitioningContent.Width = 0.25;
-                    window.TransitioningContent.Content = new FirstView();
-                    await Task.Delay(5000).ConfigureAwait(true);
-                    window.TransitioningContent.Content = new SecondView();
-                    window.TransitioningContent.Height = 500;
-                    window.TransitioningContent.Width = 500;
-                    window.TransitioningContent.Content = new FirstView();
-                    await Task.Delay(5000).ConfigureAwait(true);
-                    window.TransitioningContent.Content = new SecondView();
-                    await Task.Delay(5000).ConfigureAwait(true);
-                    window.TransitioningContent.Height = 300;
-                    window.TransitioningContent.Width = 300;
-                    window.TransitioningContent.Content = new FirstView();
-                    await Task.Delay(5000).ConfigureAwait(true);
-                    window.TransitioningContent.Content = new SecondView();
-                    window.TransitioningContent.Height = 0.25;
-                    window.TransitioningContent.Width = 0.25;
-                    window.TransitioningContent.Content = new FirstView();
-                    await Task.Delay(5000).ConfigureAwait(true);
-                    window.TransitioningContent.Content = new SecondView();
-                    window.Dispatcher.InvokeShutdown();
-                    app.Shutdown();
-                });
-                app.Run(window);
-            });
-            uiThread.SetApartmentState(ApartmentState.STA);
-            uiThread.Start();
-            Thread.Sleep(100);
-            uiThread.Join();
-        }
     }
 }

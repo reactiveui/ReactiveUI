@@ -74,6 +74,11 @@
   </Choose>
 
   <ItemGroup>
+    <None Remove="Platforms\wpf\WpfGeneralFixture.cs" />
+    <None Remove="Platforms\wpf\WpfGeneralFixtureApp.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Platforms\Winforms\Mocks\TestForm.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
