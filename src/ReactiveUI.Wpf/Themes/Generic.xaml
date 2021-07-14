@@ -353,7 +353,7 @@
                                 </VisualState>
 
                                 <VisualState x:Name="Transition_BounceLeftIn">
-                                    <Storyboard>
+                                    <Storyboard x:Name="BounceLeftIn">
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90" />
@@ -380,7 +380,7 @@
                                 </VisualState>
 
                                 <VisualState x:Name="Transition_BounceLeftOut">
-                                    <Storyboard>
+                                    <Storyboard x:Name="BounceLeftOut">
                                         <DoubleAnimation
                                             BeginTime="00:00:00"
                                             Storyboard.TargetName="PART_PreviousImageSite"
@@ -400,7 +400,7 @@
                                 </VisualState>
 
                                 <VisualState x:Name="Transition_BounceRightIn">
-                                    <Storyboard>
+                                    <Storyboard x:Name="BounceRightIn">
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90" />
@@ -427,7 +427,7 @@
                                 </VisualState>
 
                                 <VisualState x:Name="Transition_BounceRightOut">
-                                    <Storyboard>
+                                    <Storyboard x:Name="BounceRightOut">
                                         <DoubleAnimation
                                             BeginTime="00:00:00"
                                             Storyboard.TargetName="PART_PreviousImageSite"
@@ -447,7 +447,7 @@
                                 </VisualState>
 
                                 <VisualState x:Name="Transition_BounceUpIn">
-                                    <Storyboard>
+                                    <Storyboard x:Name="BounceUpIn">
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90" />
@@ -474,7 +474,7 @@
                                 </VisualState>
 
                                 <VisualState x:Name="Transition_BounceUpOut">
-                                    <Storyboard>
+                                    <Storyboard x:Name="BounceUpOut">
                                         <DoubleAnimation
                                             BeginTime="00:00:00"
                                             Storyboard.TargetName="PART_PreviousImageSite"
@@ -494,7 +494,7 @@
                                 </VisualState>
 
                                 <VisualState x:Name="Transition_BounceDownIn">
-                                    <Storyboard>
+                                    <Storyboard x:Name="BounceDownIn">
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90" />
@@ -521,7 +521,7 @@
                                 </VisualState>
 
                                 <VisualState x:Name="Transition_BounceDownOut">
-                                    <Storyboard>
+                                    <Storyboard x:Name="BounceDownOut">
                                         <DoubleAnimation
                                             BeginTime="00:00:00"
                                             Storyboard.TargetName="PART_PreviousImageSite"
@@ -546,5 +546,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>

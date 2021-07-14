@@ -693,41 +693,5 @@ namespace ReactiveUI.Tests.Xaml
             dis.Dispose();
             Assert.True(dis.IsDisposed);
         }
-
-        [StaFact]
-        public void BindListFunctionalTest()
-        {
-            var window = new WpfTestWindow();
-            var view = new MockBindListView();
-            window.RootGrid.Children.Add(view);
-
-            var loaded = new RoutedEventArgs
-            {
-                RoutedEvent = FrameworkElement.LoadedEvent
-            };
-
-            window.RaiseEvent(loaded);
-            view.RaiseEvent(loaded);
-            var test1 = new MockBindListItemViewModel("Test1");
-            view.ViewModel?.ActiveListItem.Add(test1);
-            Assert.Equal(1, view.ItemList.Items.Count);
-            Assert.Equal(test1, view.ViewModel!.ActiveItem);
-
-            var test2 = new MockBindListItemViewModel("Test2");
-            view.ViewModel?.ActiveListItem.Add(test2);
-            Assert.Equal(2, view.ItemList.Items.Count);
-            Assert.Equal(test2, view.ViewModel!.ActiveItem);
-
-            var test3 = new MockBindListItemViewModel("Test3");
-            view.ViewModel?.ActiveListItem.Add(test3);
-            Assert.Equal(3, view.ItemList.Items.Count);
-            Assert.Equal(test3, view.ViewModel!.ActiveItem);
-
-            view.ItemList.SelectedItem = view.ItemList.Items.GetItemAt(0);
-            Assert.Equal(1, view.ItemList.Items.Count);
-            Assert.Equal(test1, view.ViewModel!.ActiveItem);
-
-            window.Dispatcher.InvokeShutdown();
-        }
     }
 }
