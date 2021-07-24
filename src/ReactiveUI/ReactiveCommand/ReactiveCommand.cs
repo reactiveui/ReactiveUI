@@ -664,7 +664,6 @@ namespace ReactiveUI
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _outputScheduler = outputScheduler ?? throw new ArgumentNullException(nameof(outputScheduler));
             _exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
-
             _executionInfo = new Subject<ExecutionInfo>();
             _synchronizedExecutionInfo = Subject.Synchronize(_executionInfo, outputScheduler);
             _isExecuting = _synchronizedExecutionInfo.Scan(
@@ -679,7 +678,7 @@ namespace ReactiveUI
                      };
                  }).Select(inFlightCount => inFlightCount > 0).StartWith(false)
                  .DistinctUntilChanged().Replay(1)
-                 .RefCount().ObserveOn(RxApp.MainThreadScheduler);
+                 .RefCount();
 
             _canExecute = canExecute.Catch<bool, Exception>(
                 ex =>
@@ -688,11 +687,12 @@ namespace ReactiveUI
                     return Observables.False;
                 }).StartWith(false).CombineLatest(_isExecuting, (canEx, isEx) => canEx && !isEx)
                 .DistinctUntilChanged()
-                .Replay(1).RefCount().ObserveOn(RxApp.MainThreadScheduler);
+                .Replay(1).RefCount();
+
             _results = _synchronizedExecutionInfo.Where(x => x.Demarcation == ExecutionDemarcation.Result)
                 .Select(x => x.Result);
 
-            _canExecuteSubscription = _canExecute.Subscribe(OnCanExecuteChanged);
+            _canExecuteSubscription = _canExecute.ObserveOn(RxApp.MainThreadScheduler).Subscribe(OnCanExecuteChanged);
         }
 
         private enum ExecutionDemarcation

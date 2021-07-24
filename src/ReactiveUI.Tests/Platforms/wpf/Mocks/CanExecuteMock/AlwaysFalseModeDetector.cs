@@ -9,29 +9,17 @@ using Splat;
 namespace ReactiveUI.Tests.Wpf
 {
     /// <summary>
-    /// Live Test Mode Detector.
+    /// Always False Mode Detector.
     /// </summary>
     /// <seealso cref="Splat.IModeDetector" />
-    public class LiveTestModeDetector : IModeDetector
+    public class AlwaysFalseModeDetector : IModeDetector
     {
-        private bool _useUnitTest = false;
-
-        /// <summary>
-        /// Sets the unit true.
-        /// </summary>
-        public void SetUnitTrue() => _useUnitTest = true;
-
-        /// <summary>
-        /// Sets the unit false.
-        /// </summary>
-        public void SetUnitFalse() => _useUnitTest = false;
-
         /// <summary>
         /// Gets a value indicating whether the current library or application is running through a unit test.
         /// </summary>
         /// <returns>
         /// If we are currently running in a unit test.
         /// </returns>
-        public bool? InUnitTestRunner() => _useUnitTest;
+        public bool? InUnitTestRunner() => false;
     }
 }
