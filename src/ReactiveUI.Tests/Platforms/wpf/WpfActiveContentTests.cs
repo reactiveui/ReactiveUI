@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using DynamicData;
+using Splat;
 using Xunit;
 
 namespace ReactiveUI.Tests.Wpf
@@ -20,6 +21,7 @@ namespace ReactiveUI.Tests.Wpf
     public class WpfActiveContentTests : IClassFixture<WpfActiveContentFixture>
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        private static bool isExecutingExecuted = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WpfActiveContentTests"/> class.
@@ -193,6 +195,42 @@ namespace ReactiveUI.Tests.Wpf
                 window.TransitioningContent.Content = new FirstView();
                 await Task.Delay(5000).ConfigureAwait(true);
                 window.TransitioningContent.Content = new SecondView();
+                window.Close();
+            });
+            window!.ShowDialog();
+        }
+
+        [StaFact]
+        public void ReactiveCommandRunningOnTaskThreadAllowsCanExecuteAndExecutingToFire()
+        {
+            var modeDetector = new LiveTestModeDetector();
+            ModeDetector.OverrideModeDetector(modeDetector);
+            var window = Fixture?.App?.MockWindowFactory();
+            window!.WhenActivated(async d =>
+            {
+                var view = new CanExecuteExecutingView();
+                view!.ViewModel = new();
+                isExecutingExecuted = false;
+                window!.TransitioningContent.VerticalContentAlignment = VerticalAlignment.Stretch;
+                window!.TransitioningContent.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+                window!.TransitioningContent.Content = view;
+                await Task.Delay(5000).ConfigureAwait(true);
+                int? result = null;
+                view!.ViewModel!.Command3.IsExecuting
+                .Subscribe(static value =>
+                {
+                    if (value)
+                    {
+                        isExecutingExecuted = true;
+                    }
+                });
+                view!.ViewModel!.Command3.Subscribe(r => result = r);
+                await view!.ViewModel!.Command3.Execute();
+                await Task.Delay(5000).ConfigureAwait(true);
+                Assert.True(isExecutingExecuted);
+
+                Assert.Equal(100, result);
+
                 window.Close();
             });
             window!.ShowDialog();

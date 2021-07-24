@@ -679,7 +679,7 @@ namespace ReactiveUI
                      };
                  }).Select(inFlightCount => inFlightCount > 0).StartWith(false)
                  .DistinctUntilChanged().Replay(1)
-                 .RefCount();
+                 .RefCount().ObserveOn(RxApp.MainThreadScheduler);
 
             _canExecute = canExecute.Catch<bool, Exception>(
                 ex =>
@@ -688,7 +688,7 @@ namespace ReactiveUI
                     return Observables.False;
                 }).StartWith(false).CombineLatest(_isExecuting, (canEx, isEx) => canEx && !isEx)
                 .DistinctUntilChanged()
-                .Replay(1).RefCount();
+                .Replay(1).RefCount().ObserveOn(RxApp.MainThreadScheduler);
             _results = _synchronizedExecutionInfo.Where(x => x.Demarcation == ExecutionDemarcation.Result)
                 .Select(x => x.Result);
 

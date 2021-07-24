@@ -74,6 +74,8 @@
   </Choose>
 
   <ItemGroup>
+    <None Remove="Platforms\wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml.cs" />
+    <None Remove="Platforms\wpf\Mocks\CanExecuteMock\LiveTestModeDetector.cs" />
     <None Remove="Platforms\wpf\WpfGeneralFixture.cs" />
     <None Remove="Platforms\wpf\WpfGeneralFixtureApp.cs" />
   </ItemGroup>
@@ -92,6 +94,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>TestFormNotCanActivate.resx</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Platforms\wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
   
 </Project>
