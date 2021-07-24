@@ -4,10 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using DynamicData;
+using Splat;
 using Xunit;
 
 namespace ReactiveUI.Tests.Wpf
@@ -194,6 +196,48 @@ namespace ReactiveUI.Tests.Wpf
                 await Task.Delay(5000).ConfigureAwait(true);
                 window.TransitioningContent.Content = new SecondView();
                 window.Close();
+            });
+            window!.ShowDialog();
+        }
+
+        [StaFact]
+        public void ReactiveCommandRunningOnTaskThreadAllowsCanExecuteAndExecutingToFire()
+        {
+            LiveModeDetector.UseRuntimeThreads();
+            var window = Fixture?.App?.MockWindowFactory();
+            window!.WhenActivated(async d =>
+            {
+                try
+                {
+                    window!.TransitioningContent.VerticalContentAlignment = VerticalAlignment.Stretch;
+                    window!.TransitioningContent.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+                    var view = new CanExecuteExecutingView();
+                    window!.TransitioningContent.Content = view;
+                    await Task.Delay(5000).ConfigureAwait(true);
+
+                    var isExecutingExecuted = false;
+                    view!.ViewModel!.Command3.IsExecuting
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Subscribe(value =>
+                    {
+                        if (value)
+                        {
+                            isExecutingExecuted = true;
+                        }
+                    }).DisposeWith(d);
+
+                    int? result = null;
+                    view!.ViewModel!.Command3.Subscribe(r => result = r);
+                    await view!.ViewModel!.Command3.Execute();
+                    await Task.Delay(5000).ConfigureAwait(true);
+                    Assert.Equal(100, result);
+                    Assert.True(isExecutingExecuted);
+                }
+                finally
+                {
+                    window?.Close();
+                    LiveModeDetector.UseDefaultModeDetector();
+                }
             });
             window!.ShowDialog();
         }
