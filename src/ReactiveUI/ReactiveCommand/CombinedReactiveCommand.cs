@@ -48,12 +48,16 @@ namespace ReactiveUI
         /// <param name="childCommands">The child commands which will be executed.</param>
         /// <param name="canExecute">A observable when the command can be executed.</param>
         /// <param name="outputScheduler">The scheduler where to dispatch the output from the command.</param>
+        /// <param name="canExecuteScheduler">
+        /// An optional scheduler that is used for CanExecute and IsExecuting events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
         /// <exception cref="ArgumentNullException">Fires when required arguments are null.</exception>
         /// <exception cref="ArgumentException">Fires if the child commands container is empty.</exception>
         protected internal CombinedReactiveCommand(
             IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
             IObservable<bool> canExecute,
-            IScheduler outputScheduler)
+            IScheduler outputScheduler,
+            IScheduler canExecuteScheduler)
         {
             if (childCommands is null)
             {
@@ -68,6 +72,11 @@ namespace ReactiveUI
             if (outputScheduler is null)
             {
                 throw new ArgumentNullException(nameof(outputScheduler));
+            }
+
+            if (canExecuteScheduler is null)
+            {
+                throw new ArgumentNullException(nameof(canExecuteScheduler));
             }
 
             var childCommandsArray = childCommands.ToArray();
@@ -92,7 +101,8 @@ namespace ReactiveUI
                 .CombineLatest(canChildrenExecute, (ce, cce) => ce && cce)
                 .DistinctUntilChanged()
                 .Replay(1)
-                .RefCount();
+                .RefCount()
+                .ObserveOn(canExecuteScheduler);
 
             _exceptionsSubscription = childCommandsArray.Select(x => x.ThrownExceptions)
                                                         .Merge()
@@ -104,7 +114,8 @@ namespace ReactiveUI
                         .Select(x => x.Execute(param))
                         .CombineLatest(),
                 combinedCanExecute,
-                outputScheduler);
+                outputScheduler,
+                canExecuteScheduler);
 
             // we already handle exceptions on individual child commands above, but the same exception
             // will tick through innerCommand. Therefore, we need to ensure we ignore it or the default

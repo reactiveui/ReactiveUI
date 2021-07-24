@@ -985,7 +985,7 @@ namespace ReactiveUI.Tests
         public void InvokeCommandWorksEvenIfTheSourceIsCold()
         {
             var executionCount = 0;
-            ReactiveCommand<Unit, int> fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
+            ReactiveCommand<Unit, int> fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
             var source = Observable.Return(Unit.Default);
             source.InvokeCommand(fixture);
 
