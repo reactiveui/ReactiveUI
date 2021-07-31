@@ -93,7 +93,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets a observable when the control is activated.
         /// </summary>
-        public new IObservable<Unit> Activated => _activated.AsObservable();
+        public IObservable<Unit> Activated => _activated.AsObservable();
 
         /// <summary>
         /// Gets a observable that occurs when the control is deactivated.
