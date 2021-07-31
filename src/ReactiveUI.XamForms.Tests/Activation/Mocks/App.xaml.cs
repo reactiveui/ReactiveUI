@@ -16,7 +16,6 @@ namespace ReactiveUI.XamForms.Tests.Activation
         /// <summary>
         /// Initializes a new instance of the <see cref="App" /> class.
         /// </summary>
-        /// <param name="page">The page.</param>
         public App()
         {
             InitializeComponent();
