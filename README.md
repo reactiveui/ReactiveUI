@@ -156,6 +156,12 @@ If you want to submit pull requests please first open a [GitHub issue](https://g
         <a href="https://github.com/cabauman">Colt Bauman</a>
         <p>South Korea</p>
       </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/chrispulman.png?s=150">
+        <br>
+        <a href="https://github.com/chrispulman">Chris Pulman</a>
+        <p>UK</p>
+      </td>
     </tr>
   </tbody>
 </table>
