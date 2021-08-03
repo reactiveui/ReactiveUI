@@ -31,7 +31,7 @@ namespace ReactiveUI
     /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
     /// <see cref="ReactiveCommand.Create"/> can be used when your execution logic is synchronous.
     /// <see cref="ReactiveCommand.CreateFromObservable{TResult}(Func{IObservable{TResult}}, IObservable{bool}, IScheduler, IScheduler)"/> and
-    /// <see cref="ReactiveCommand.CreateFromTask(Func{Task}, IObservable{bool}, IScheduler)"/> (and overloads) can be used for asynchronous
+    /// <see cref="ReactiveCommand.CreateFromTask(Func{Task}, IObservable{bool}, IScheduler, IScheduler)"/> (and overloads) can be used for asynchronous
     /// execution logic. Optionally, you can provide an observable that governs the availability of the command for execution,
     /// as well as a scheduler to which events will be delivered.
     /// </para>
