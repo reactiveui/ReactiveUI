@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27604.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.WPF", "IntegrationTests.WPF\IntegrationTests.WPF.csproj", "{1F07CDC4-B1B7-4D91-8F07-9AE1C648E316}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.WPF", "IntegrationTests.WPF\IntegrationTests.WPF.csproj", "{1F07CDC4-B1B7-4D91-8F07-9AE1C648E316}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.Shared", "IntegrationTests.Shared\IntegrationTests.Shared.csproj", "{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI", "..\src\ReactiveUI\ReactiveUI.csproj", "{456E20D3-1AC1-4A70-BC6A-550C2AE6E902}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Wpf", "..\src\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj", "{7AA14D4F-DFC5-4BAE-B673-50632536C6B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6ED18F6-26D2-46B0-A086-F43BBF72FA78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{456E20D3-1AC1-4A70-BC6A-550C2AE6E902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{456E20D3-1AC1-4A70-BC6A-550C2AE6E902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{456E20D3-1AC1-4A70-BC6A-550C2AE6E902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{456E20D3-1AC1-4A70-BC6A-550C2AE6E902}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AA14D4F-DFC5-4BAE-B673-50632536C6B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AA14D4F-DFC5-4BAE-B673-50632536C6B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AA14D4F-DFC5-4BAE-B673-50632536C6B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AA14D4F-DFC5-4BAE-B673-50632536C6B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

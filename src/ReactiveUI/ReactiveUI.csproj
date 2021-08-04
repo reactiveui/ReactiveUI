@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0;tizen40</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;net472;uap10.0.16299;netcoreapp3.1;net5.0-windows;net5.0-windows10.0.19041</TargetFrameworks>
@@ -24,7 +24,6 @@
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="Splat" Version="11.*" />
     <PackageReference Include="DynamicData" Version="7.*" />
-    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">

@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;uap10.0.16299</TargetFrameworks>
@@ -19,7 +19,6 @@
   <ItemGroup>
     <PackageReference Include="Fody" Version="6.5.2" PrivateAssets="None" />
     <PackageReference Include="FodyPackaging" Version="6.5.2" PrivateAssets="All" />
-    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">

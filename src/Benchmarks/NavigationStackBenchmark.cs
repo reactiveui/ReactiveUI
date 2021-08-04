@@ -22,7 +22,7 @@ namespace ReactiveUI.Benchmarks
     public class NavigationStackBenchmark
     {
         private static readonly Func<MockViewModel> _mockViewModel;
-        private RoutingState _router;
+        private RoutingState? _router;
 
         /// <summary>
         /// Initializes static members of the <see cref="NavigationStackBenchmark"/> class.
@@ -47,7 +47,7 @@ namespace ReactiveUI.Benchmarks
         [GlobalCleanup]
         public void Cleanup()
         {
-            _router.NavigationStack.Clear();
+            _router!.NavigationStack.Clear();
             _router = null;
         }
 
@@ -57,7 +57,7 @@ namespace ReactiveUI.Benchmarks
         [IterationSetup]
         public void IterationSetup()
         {
-            _router.NavigationStack.Clear();
+            _router!.NavigationStack.Clear();
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void Navigate()
         {
-            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+            using (_router!.Navigate.Execute(_mockViewModel()).Subscribe())
             {
                 _router.NavigationStack.ToList();
             }
@@ -78,7 +78,7 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void NavigateAndReset()
         {
-            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
+            using (_router!.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
             {
                 _router.NavigationStack.ToList();
             }
@@ -90,7 +90,7 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void NavigateBack()
         {
-            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
+            using (_router!.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
             using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
             using (_router.NavigateBack.Execute().Subscribe())
             {
@@ -103,7 +103,7 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void NavigationStack()
         {
-            using (_router.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
+            using (_router!.NavigateAndReset.Execute(_mockViewModel()).Subscribe())
             {
                 _router.NavigationStack.ToList();
             }

@@ -19,7 +19,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("1.0.0.0")]
 
-
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version

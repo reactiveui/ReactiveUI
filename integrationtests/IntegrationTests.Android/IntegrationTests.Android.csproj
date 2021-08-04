@@ -102,17 +102,14 @@
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.*" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI\ReactiveUI.csproj">
+      <Project>{f9808728-e148-438b-96ea-5f18c832cf4a}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
       <Project>{92988ce1-ea84-4a3a-8921-d3474cc0c87b}</Project>
       <Name>IntegrationTests.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-		Other similar extension points exist, see Microsoft.Common.targets.
-		<Target Name="BeforeBuild">
-		</Target>
-		<Target Name="AfterBuild">
-		</Target>
-	-->
 </Project>

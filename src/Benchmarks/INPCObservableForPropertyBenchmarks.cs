@@ -21,10 +21,10 @@ namespace ReactiveUI.Benchmarks
     [MarkdownExporterAttribute.GitHub]
     public class INPCObservableForPropertyBenchmarks
     {
-        private readonly Expression<Func<TestClassChanged, string>> _expr = x => x.Property1;
+        private readonly Expression<Func<TestClassChanged, string?>> _expr = x => x.Property1;
         private readonly INPCObservableForProperty _instance = new INPCObservableForProperty();
-        private Expression _exp;
-        private string _propertyName;
+        private Expression? _exp;
+        private string? _propertyName;
 
         /// <summary>
         /// Setup the benchmarks. This will be run once per set of benchmarks.
@@ -33,7 +33,7 @@ namespace ReactiveUI.Benchmarks
         public void Setup()
         {
             _exp = Reflection.Rewrite(_expr.Body);
-            _propertyName = _exp.GetMemberInfo().Name;
+            _propertyName = _exp!.GetMemberInfo()?.Name;
         }
 
         /// <summary>
@@ -44,20 +44,20 @@ namespace ReactiveUI.Benchmarks
         {
             var testClass = new TestClassChanged();
 
-            var changes = new List<IObservedChange<object, object>>();
-            var dispose = _instance.GetNotificationForProperty(testClass, _exp, _propertyName, false).Subscribe(c => changes.Add(c));
+            var changes = new List<IObservedChange<object?, object?>>();
+            var dispose = _instance.GetNotificationForProperty(testClass, _exp!, _propertyName!, false).Subscribe(c => changes.Add(c));
             dispose.Dispose();
         }
 
         private class TestClassChanged : INotifyPropertyChanged
         {
-            private string _property;
+            private string? _property;
 
-            private string _property2;
+            private string? _property2;
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler? PropertyChanged;
 
-            public string Property1
+            public string? Property1
             {
                 get => _property;
                 set
@@ -67,7 +67,7 @@ namespace ReactiveUI.Benchmarks
                 }
             }
 
-            public string Property2
+            public string? Property2
             {
                 get => _property2;
                 set
@@ -77,7 +77,7 @@ namespace ReactiveUI.Benchmarks
                 }
             }
 
-            public void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }

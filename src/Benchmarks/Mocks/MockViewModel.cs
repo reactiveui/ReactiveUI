@@ -26,6 +26,6 @@ namespace ReactiveUI.Benchmarks
         /// <summary>
         /// Gets the url path. This is not being used in this version.
         /// </summary>
-        public string UrlPathSegment { get; }
+        public string? UrlPathSegment { get; }
     }
 }

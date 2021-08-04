@@ -5,6 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="genesis.ensure" Version="2.0.0" />
-    <PackageReference Include="ReactiveUI" Version="*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 </Project>

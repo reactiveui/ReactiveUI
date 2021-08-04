@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>   
@@ -14,13 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-      <PackageReference Include="System.Reactive" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <ItemGroup>
