@@ -25,12 +25,12 @@ namespace ReactiveUI.Benchmarks
         /// <summary>
         /// Gets or sets from observable.
         /// </summary>
-        public Subject<MockViewModel> FromObservable { get; set; }
+        public Subject<MockViewModel>? FromObservable { get; set; }
 
         /// <summary>
         /// Gets or sets from task.
         /// </summary>
-        public Task FromTask { get; set; }
+        public Task? FromTask { get; set; }
 
         /// <summary>
         /// Setup for all benchmark instances being run.
@@ -55,14 +55,14 @@ namespace ReactiveUI.Benchmarks
         /// </summary>
         /// <returns>The command.</returns>
         [Benchmark]
-        public object CreateReactiveCommandFromObservable() => ReactiveCommand.CreateFromObservable(() => FromObservable.AsObservable());
+        public object CreateReactiveCommandFromObservable() => ReactiveCommand.CreateFromObservable(() => FromObservable!.AsObservable());
 
         /// <summary>
         /// Benchmark for creating a ReactiveCommand a task.
         /// </summary>
         /// <returns>The command.</returns>
         [Benchmark]
-        public object CreateReactiveCommandFromTask() => ReactiveCommand.CreateFromTask(async () => await FromTask);
+        public object CreateReactiveCommandFromTask() => ReactiveCommand.CreateFromTask(async () => await FromTask!.ConfigureAwait(false));
 
         /// <summary>
         /// Benchmark for creating a ReactiveCommand with a can execute observable.
@@ -76,14 +76,14 @@ namespace ReactiveUI.Benchmarks
         /// </summary>
         /// <returns>The command.</returns>
         [Benchmark]
-        public object CreateFromObservableWithCanExecute() => ReactiveCommand.CreateFromObservable(() => FromObservable.AsObservable(), _canExecute);
+        public object CreateFromObservableWithCanExecute() => ReactiveCommand.CreateFromObservable(() => FromObservable!.AsObservable(), _canExecute);
 
         /// <summary>
         /// Benchmark for creating a ReactiveCommand from a task with a can execute observable.
         /// </summary>
         /// <returns>The command.</returns>
         [Benchmark]
-        public object CreateFromTaskWithCanExecute() => ReactiveCommand.CreateFromTask(async () => await FromTask, _canExecute);
+        public object CreateFromTaskWithCanExecute() => ReactiveCommand.CreateFromTask(async () => await FromTask!.ConfigureAwait(false), _canExecute);
 
         /// <summary>
         /// Benchmark for creating a ReactiveCommand with a can execute observable.
@@ -97,13 +97,13 @@ namespace ReactiveUI.Benchmarks
         /// </summary>
         /// <returns>The command.</returns>
         [Benchmark]
-        public object CreateFromObservableWithCanExecuteAndScheduler() => ReactiveCommand.CreateFromObservable(() => FromObservable.AsObservable(), _canExecute, RxApp.MainThreadScheduler);
+        public object CreateFromObservableWithCanExecuteAndScheduler() => ReactiveCommand.CreateFromObservable(() => FromObservable!.AsObservable(), _canExecute, RxApp.MainThreadScheduler);
 
         /// <summary>
         /// Benchmark for creating a ReactiveCommand from a task with a can execute observable.
         /// </summary>
         /// <returns>The command.</returns>
         [Benchmark]
-        public object CreateFromTaskWithCanExecuteAndScheduler() => ReactiveCommand.CreateFromTask(async () => await FromTask, _canExecute, RxApp.MainThreadScheduler);
+        public object CreateFromTaskWithCanExecuteAndScheduler() => ReactiveCommand.CreateFromTask(async () => await FromTask!.ConfigureAwait(false), _canExecute, RxApp.MainThreadScheduler);
     }
 }

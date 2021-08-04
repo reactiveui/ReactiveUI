@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net5.0-windows</TargetFrameworks>
@@ -20,22 +20,12 @@
     </PackageReference>
     <PackageReference Include="Xunit.StaFact" Version="1.0.37" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="ReactiveUI.Testing" Version="*" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="UIAutomationTypes" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

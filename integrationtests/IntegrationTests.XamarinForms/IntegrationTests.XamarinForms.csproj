@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,11 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="Acr.UserDialogs" Version="7.1.0.514" />
-    <PackageReference Include="ReactiveUI.XamForms" Version="*" />
-    <PackageReference Include="Xamarin.Forms" Version="5.0.*" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI.XamForms\ReactiveUI.XamForms.csproj" />
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />
   </ItemGroup>
 </Project>

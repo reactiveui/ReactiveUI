@@ -21,8 +21,8 @@ namespace ReactiveUI.Benchmarks
     [MarkdownExporterAttribute.GitHub]
     public class RoutableViewModelMixinsBenchmarks
     {
-        private Func<MockViewModel> _mockViewModel;
-        private RoutingState _router;
+        private Func<MockViewModel>? _mockViewModel;
+        private RoutingState? _router;
 
         /// <summary>
         /// Setup before all benchmarks are run.
@@ -50,7 +50,7 @@ namespace ReactiveUI.Benchmarks
         [IterationSetup]
         public void IterationSetup()
         {
-            _router.NavigationStack.Clear();
+            _router!.NavigationStack.Clear();
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void WhenNavigatedToObservable()
         {
-            using (_mockViewModel().WhenNavigatedToObservable().Subscribe(x => Console.WriteLine("Observed")))
-            using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
+            using (_mockViewModel!().WhenNavigatedToObservable().Subscribe(x => Console.WriteLine("Observed")))
+            using (_router!.Navigate.Execute(_mockViewModel()).Subscribe())
             {
             }
         }
@@ -71,11 +71,11 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void WhenNavigatingFromObservable()
         {
-           using (_router.Navigate.Execute(_mockViewModel()).Subscribe())
-           using (_mockViewModel().WhenNavigatingFromObservable().Subscribe())
-           using (_router.NavigateBack.Execute().Subscribe())
-           {
-           }
+            using (_router!.Navigate.Execute(_mockViewModel!()).Subscribe())
+            using (_mockViewModel().WhenNavigatingFromObservable().Subscribe())
+            using (_router.NavigateBack.Execute().Subscribe())
+            {
+            }
         }
     }
 }

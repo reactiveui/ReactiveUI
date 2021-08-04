@@ -10,12 +10,10 @@
 
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
     <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
   </ItemGroup>
 

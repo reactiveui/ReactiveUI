@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27604.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.Android", "IntegrationTests.Android\IntegrationTests.Android.csproj", "{3BC0AC7E-3B3B-4D3F-9CC0-B2BDECC460A6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.Shared", "IntegrationTests.Shared\IntegrationTests.Shared.csproj", "{92988CE1-EA84-4A3A-8921-D3474CC0C87B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI", "..\src\ReactiveUI\ReactiveUI.csproj", "{F9808728-E148-438B-96EA-5F18C832CF4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{92988CE1-EA84-4A3A-8921-D3474CC0C87B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92988CE1-EA84-4A3A-8921-D3474CC0C87B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92988CE1-EA84-4A3A-8921-D3474CC0C87B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9808728-E148-438B-96EA-5F18C832CF4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9808728-E148-438B-96EA-5F18C832CF4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9808728-E148-438B-96EA-5F18C832CF4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9808728-E148-438B-96EA-5F18C832CF4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
