@@ -48,11 +48,11 @@ namespace ReactiveUI
             this TSender? sender,
             Expression<Func<TSender, TRet?>> property1)
         {
-            return sender.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
+            return sender.WhenAny(property1, (IObservedChange<TSender, TRet?> c1) => c1.Value!);
         }
 
         <# for(int length=1; length <= maxFuncLength; length++) { #>
-        <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
+        <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString() + "?"); #>
         <# var templParamsDec = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
         <# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
         <# string valuePropertyParams = String.Join(", ", Enumerable.Range(1, length).Select(x => String.Format("property{0}", x))); #>
@@ -181,7 +181,7 @@ namespace ReactiveUI
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1)
             where TSender : class
         {
-            return sender!.WhenAny(obs1, x => x.Value.EmptyIfNull()).Switch();
+            return sender!.WhenAny(obs1, x => x.Value!.EmptyIfNull()).Switch();
         }
 
 <# for(int length=2; length <= maxFuncLength; length++) { #>
@@ -192,7 +192,7 @@ namespace ReactiveUI
         <# } #>
 <# string paramsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "Expression<Func<TSender, IObservable<TRet>?>> obs" + x.ToString())); #>
 <# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
-<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value.EmptyIfNull()")); #>
+<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value!.EmptyIfNull()")); #>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, <#= paramsStr #>)
             where TSender : class
         {
@@ -210,7 +210,7 @@ namespace ReactiveUI
 <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString() + "?"); #>
 <# var templParamsDec = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
 <# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
-<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value.EmptyIfNull()")); #>
+<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value!.EmptyIfNull()")); #>
 <# string selectorTypeParams = String.Join(", ", templParams); #>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(this TSender? sender,
             <# for(int i=1; i <= length; i++) { #>

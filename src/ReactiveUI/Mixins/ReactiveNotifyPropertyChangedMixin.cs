@@ -145,7 +145,7 @@ namespace ReactiveUI
             }
 
             IObservable<IObservedChange<object?, object?>> notifier =
-                Observable.Return(new ObservedChange<object?, object?>(null, null!, source));
+                Observable.Return(new ObservedChange<object?, object?>(null, null, source));
 
             var chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n

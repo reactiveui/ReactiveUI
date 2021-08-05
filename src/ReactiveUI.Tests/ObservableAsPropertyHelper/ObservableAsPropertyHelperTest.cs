@@ -551,11 +551,11 @@ namespace ReactiveUI.Tests
             fixture.WhenAnyValue(
                 x => x.ProjectService.ProjectsNullable,
                 x => x.AccountService.AccountUsersNullable)
-                   .Where(tuple => tuple.Item1.Any() && tuple.Item2.Any())
+                   .Where(tuple => tuple.Item1?.Count > 0 && tuple.Item2?.Count > 0)
                    .Select(tuple =>
                    {
                        var (projects, users) = tuple;
-                       return (int?)users.Values.Count(x => !string.IsNullOrWhiteSpace(x?.LastName));
+                       return users?.Values.Count(x => !string.IsNullOrWhiteSpace(x?.LastName));
                    })
                    .ToProperty(fixture, x => x.AccountsFound, out fixture._accountsFound);
 

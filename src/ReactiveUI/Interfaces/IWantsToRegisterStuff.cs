@@ -18,6 +18,6 @@ namespace ReactiveUI
         /// Register platform dependencies inside Splat.
         /// </summary>
         /// <param name="registerFunction">A method the deriving class will class to register the type.</param>
-        void Register(Action<Func<object>, Type> registerFunction);
+        void Register(Action<Func<object?>, Type?> registerFunction);
     }
 }
