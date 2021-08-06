@@ -53,11 +53,6 @@ namespace ReactiveUI
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
             if (property is null)
             {
                 throw new ArgumentNullException(nameof(property));
@@ -139,11 +134,6 @@ namespace ReactiveUI
             bool skipInitial = true,
             bool suppressWarnings = false) // TODO: Create Test
         {
-            if (source is null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
             IObservable<IObservedChange<object?, object?>> notifier =
                 Observable.Return(new ObservedChange<object?, object?>(null, null, source));
 
@@ -168,7 +158,7 @@ namespace ReactiveUI
                     throw new InvalidCastException($"Unable to cast from {val.GetType()} to {typeof(TValue)}.");
                 }
 
-                return new ObservedChange<TSender, TValue>(source, expression, (TValue)val!);
+                return new ObservedChange<TSender, TValue>(source!, expression, (TValue)val!);
             });
 
             return r.DistinctUntilChanged(x => x.Value);

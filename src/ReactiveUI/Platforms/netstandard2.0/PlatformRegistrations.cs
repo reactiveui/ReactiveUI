@@ -16,7 +16,7 @@ namespace ReactiveUI
     public class PlatformRegistrations : IWantsToRegisterStuff
     {
         /// <inheritdoc/>
-        public void Register(Action<Func<object?>, Type?> registerFunction)
+        public void Register(Action<Func<object>, Type> registerFunction)
         {
             if (registerFunction is null)
             {
