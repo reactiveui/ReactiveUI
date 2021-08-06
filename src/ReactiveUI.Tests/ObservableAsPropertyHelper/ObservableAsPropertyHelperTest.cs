@@ -456,13 +456,13 @@ namespace ReactiveUI.Tests
 
             fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanging).Subscribe();
 
-            var changing = new[] { firstThreeChanging, lastThreeChanging };
+            var changing = new[] { firstThreeChanging!, lastThreeChanging };
 
             fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanged).Subscribe();
 
             fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanged).Subscribe();
 
-            var changed = new[] { firstThreeChanged, lastThreeChanged };
+            var changed = new[] { firstThreeChanged!, lastThreeChanged };
 
             Assert.True(changed.All(x => x.Count == 0));
             Assert.True(changing.All(x => x.Count == 0));

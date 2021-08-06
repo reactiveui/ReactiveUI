@@ -1325,5 +1325,31 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(result, "1357911");
         }
+
+        [Fact]
+        public void WhenAnyValueWithToProperty()
+        {
+            HostTestFixture? fixture = new();
+
+            Assert.Equal(null, fixture.Owner);
+            Assert.Equal(null, fixture.OwnerName);
+
+            fixture.Owner = new();
+            fixture.Owner.Name = "Fred";
+            Assert.NotNull(fixture.Owner);
+            Assert.Equal("Fred", fixture.OwnerName);
+
+            fixture.Owner.Name = "Wilma";
+            Assert.Equal("Wilma", fixture.OwnerName);
+
+            fixture.Owner.Name = null;
+            Assert.Equal(null, fixture.OwnerName);
+
+            fixture.Owner.Name = "Barney";
+            Assert.Equal("Barney", fixture.OwnerName);
+
+            fixture.Owner.Name = "Betty";
+            Assert.Equal("Betty", fixture.OwnerName);
+        }
     }
 }

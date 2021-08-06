@@ -49,7 +49,7 @@ namespace ReactiveUI
         /// notifications for the given property.</returns>
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
                 this TSender? item,
-                Expression<Func<TSender, TValue?>> property,
+                Expression<Func<TSender, TValue>> property,
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
@@ -100,7 +100,7 @@ namespace ReactiveUI
         /// notifications for the given property.</returns>
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
                 this TSender? item,
-                Expression<Func<TSender, TValue?>> property,
+                Expression<Func<TSender, TValue>> property,
                 Func<TValue?, TRet> selector,
                 bool beforeChange = false) // TODO: Create Test
             where TSender : class

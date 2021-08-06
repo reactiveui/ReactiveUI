@@ -59,8 +59,11 @@ namespace ReactiveUI
 
                                 if (view is not null)
                                 {
-                                    _titleUpdater.Disposable = Router.GetCurrentViewModel()
-                                        .WhenAnyValue(y => y.UrlPathSegment)
+                                    _titleUpdater.Disposable = Router
+                                        .WhenAnyValue(y => y.GetCurrentViewModel())
+                                        .WhereNotNull()
+                                        .Select(vm => vm.WhenAnyValue(x => x.UrlPathSegment))
+                                        .Switch()
                                         .Subscribe(y => view.NavigationItem.Title = y);
                                 }
                             }
@@ -85,9 +88,12 @@ namespace ReactiveUI
 
                             if (x?.View is not null)
                             {
-                                _titleUpdater.Disposable = Router.GetCurrentViewModel()
-                                    .WhenAnyValue(y => y.UrlPathSegment)
-                                    .Subscribe(y => x.View.NavigationItem.Title = y);
+                                _titleUpdater.Disposable = Router
+                                        .WhenAnyValue(y => y.GetCurrentViewModel())
+                                        .WhereNotNull()
+                                        .Select(vm => vm.WhenAnyValue(x => x.UrlPathSegment))
+                                        .Switch()
+                                        .Subscribe(y => x.View.NavigationItem.Title = y);
                             }
 
                             _routerInstigated = true;
