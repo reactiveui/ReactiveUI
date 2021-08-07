@@ -1151,5 +1151,35 @@ namespace ReactiveUI.Tests
             fixture4.Execute().Subscribe(_ => { }, _ => { });
             Assert.Equal(4, failureCount);
         }
+
+        [Fact]
+        public async Task ReactiveCommandCreateFromTaskHandlesTaskExceptionAsync()
+        {
+            var subj = new Subject<Unit>();
+            var isExecuting = false;
+            Exception? fail = null;
+            var fixture = ReactiveCommand.CreateFromTask(async _ =>
+            {
+                await subj.Take(1);
+                throw new Exception("break execution");
+            });
+            fixture.IsExecuting.Subscribe(x => isExecuting = x);
+            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+
+            Assert.False(isExecuting);
+            Assert.Null(fail);
+
+            fixture.Execute().Subscribe();
+            Assert.True(isExecuting);
+            Assert.Null(fail);
+
+            subj.OnNext(Unit.Default);
+
+            // Wait 1 ms to allow execution to complete
+            await Task.Delay(1).ConfigureAwait(false);
+
+            Assert.False(isExecuting);
+            Assert.Equal("break execution", fail?.Message);
+        }
     }
 }
