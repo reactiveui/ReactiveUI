@@ -145,13 +145,13 @@ namespace ReactiveUI.Tests
 
             new Registrations().Register((factory, serviceType) =>
             {
-                if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out var implementationTypes) == false)
+                if (serviceTypeToImplementationTypes.TryGetValue(serviceType!, out var implementationTypes) == false)
                 {
                     implementationTypes = new List<Type>();
-                    serviceTypeToImplementationTypes.Add(serviceType, implementationTypes);
+                    serviceTypeToImplementationTypes.Add(serviceType!, implementationTypes);
                 }
 
-                implementationTypes.Add(factory().GetType());
+                implementationTypes.Add(factory()!.GetType());
             });
 
             new PlatformRegistrations().Register((factory, serviceType) =>

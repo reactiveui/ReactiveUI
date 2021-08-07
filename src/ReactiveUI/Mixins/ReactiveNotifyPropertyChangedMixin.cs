@@ -49,15 +49,10 @@ namespace ReactiveUI
         /// notifications for the given property.</returns>
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
                 this TSender? item,
-                Expression<Func<TSender, TValue?>> property,
+                Expression<Func<TSender, TValue>> property,
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
             if (property is null)
             {
                 throw new ArgumentNullException(nameof(property));
@@ -105,7 +100,7 @@ namespace ReactiveUI
         /// notifications for the given property.</returns>
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
                 this TSender? item,
-                Expression<Func<TSender, TValue?>> property,
+                Expression<Func<TSender, TValue>> property,
                 Func<TValue?, TRet> selector,
                 bool beforeChange = false) // TODO: Create Test
             where TSender : class
@@ -139,13 +134,8 @@ namespace ReactiveUI
             bool skipInitial = true,
             bool suppressWarnings = false) // TODO: Create Test
         {
-            if (source is null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
             IObservable<IObservedChange<object?, object?>> notifier =
-                Observable.Return(new ObservedChange<object?, object?>(null, null!, source));
+                Observable.Return(new ObservedChange<object?, object?>(null, null, source));
 
             var chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n
@@ -168,7 +158,7 @@ namespace ReactiveUI
                     throw new InvalidCastException($"Unable to cast from {val.GetType()} to {typeof(TValue)}.");
                 }
 
-                return new ObservedChange<TSender, TValue>(source, expression, (TValue)val!);
+                return new ObservedChange<TSender, TValue>(source!, expression, (TValue)val!);
             });
 
             return r.DistinctUntilChanged(x => x.Value);
