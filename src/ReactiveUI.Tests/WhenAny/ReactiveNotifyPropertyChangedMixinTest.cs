@@ -636,9 +636,9 @@ namespace ReactiveUI.Tests
             };
 
             var output1 = new List<string?>();
-            var output2 = new List<int>();
+            var output2 = new List<int?>();
             fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output1.Add);
-            fixture.WhenAnyValue(x => x.IsOnlyOneWord, x => x.Length).Subscribe(output2.Add);
+            fixture.WhenAnyValue(x => x.IsOnlyOneWord, x => x?.Length).Subscribe(output2.Add);
 
             Assert.Equal(1, output1.Count);
             Assert.Equal("Bamf", output1[0]);
@@ -784,11 +784,11 @@ namespace ReactiveUI.Tests
             fixture.WhenAnyValue(
                 x => x.ProjectService.ProjectsNullable,
                 x => x.AccountService.AccountUsersNullable)
-                   .Where(tuple => tuple.Item1.Any() && tuple.Item2.Any())
+                   .Where(tuple => tuple.Item1?.Count > 0 && tuple.Item2?.Count > 0)
                    .Select(tuple =>
                    {
                        var (projects, users) = tuple;
-                       return users.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName));
+                       return users?.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName));
                    })
                    .Subscribe(dict => result = dict);
 
@@ -804,7 +804,7 @@ namespace ReactiveUI.Tests
             WhenAnyTestFixture fixture = new();
             IEnumerable<AccountUser>? result = null;
             fixture.WhenAnyValue(x => x.AccountService.AccountUsers)
-                   .Where(users => users.Any())
+                   .Where(users => users.Count > 0)
                    .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x.LastName)))
                    .Subscribe(dict => result = dict);
 
@@ -818,15 +818,15 @@ namespace ReactiveUI.Tests
         public void NonNullableTypesTestShouldntNeedDecorators2()
         {
             WhenAnyTestFixture fixture = new();
-            IEnumerable<AccountUser?>? result = null;
+            IEnumerable<AccountUser>? result = null;
             fixture.WhenAnyValue(
                 x => x.ProjectService.Projects,
                 x => x.AccountService.AccountUsers)
-                   .Where(tuple => tuple.Item1.Any() && tuple.Item2.Any())
+                   .Where(tuple => tuple.Item1?.Count > 0 && tuple.Item2?.Count > 0)
                    .Select(tuple =>
                    {
                        var (projects, users) = tuple;
-                       return users.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName));
+                       return users!.Values.Where(x => !string.IsNullOrWhiteSpace(x.LastName));
                    })
                    .Subscribe(dict => result = dict);
 
@@ -842,14 +842,50 @@ namespace ReactiveUI.Tests
             WhenAnyTestFixture fixture = new();
             string? result = null;
             fixture.WhenAnyValue(
-                x => x.Value1)
-                   .Select(value =>
-                   {
-                       return value;
-                   })
-                   .Subscribe(value => result = value);
+                x => x.Value1).Subscribe(value => result = value);
 
             Assert.Equal(result, "1");
+        }
+
+        [Fact]
+        public void WhenAnyValueWith1ParamertersSequentialCheck()
+        {
+            WhenAnyTestFixture fixture = new();
+            var result = string.Empty;
+            fixture.Value1 = null!;
+            fixture.WhenAnyValue(
+                x => x.Value1).Subscribe(value => result = value);
+
+            Assert.Equal(result, null);
+
+            fixture.Value1 = "A";
+            Assert.Equal(result, "A");
+
+            fixture.Value1 = "B";
+            Assert.Equal(result, "B");
+
+            fixture.Value1 = null!;
+            Assert.Equal(result, null);
+        }
+
+        [Fact]
+        public void WhenAnyValueWith1ParamertersSequentialCheckNullable()
+        {
+            WhenAnyTestFixture fixture = new();
+            var result = string.Empty;
+            fixture.WhenAnyValue(
+                x => x.Value2).Subscribe(value => result = value);
+
+            Assert.Equal(result, null);
+
+            fixture.Value2 = "A";
+            Assert.Equal(result, "A");
+
+            fixture.Value2 = "B";
+            Assert.Equal(result, "B");
+
+            fixture.Value2 = null;
+            Assert.Equal(result, null);
         }
 
         /// <summary>
@@ -1288,6 +1324,32 @@ namespace ReactiveUI.Tests
                    .Subscribe(value => result = value);
 
             Assert.Equal(result, "1357911");
+        }
+
+        [Fact]
+        public void WhenAnyValueWithToProperty()
+        {
+            HostTestFixture? fixture = new();
+
+            Assert.Equal(null, fixture.Owner);
+            Assert.Equal(null, fixture.OwnerName);
+
+            fixture.Owner = new();
+            fixture.Owner.Name = "Fred";
+            Assert.NotNull(fixture.Owner);
+            Assert.Equal("Fred", fixture.OwnerName);
+
+            fixture.Owner.Name = "Wilma";
+            Assert.Equal("Wilma", fixture.OwnerName);
+
+            fixture.Owner.Name = null;
+            Assert.Equal(null, fixture.OwnerName);
+
+            fixture.Owner.Name = "Barney";
+            Assert.Equal("Barney", fixture.OwnerName);
+
+            fixture.Owner.Name = "Betty";
+            Assert.Equal("Betty", fixture.OwnerName);
         }
     }
 }

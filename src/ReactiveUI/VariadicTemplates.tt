@@ -46,9 +46,9 @@ namespace ReactiveUI
         /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
         public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
             this TSender? sender,
-            Expression<Func<TSender, TRet?>> property1)
+            Expression<Func<TSender, TRet>> property1)
         {
-            return sender.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
+            return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
         }
 
         <# for(int length=1; length <= maxFuncLength; length++) { #>
@@ -74,11 +74,11 @@ namespace ReactiveUI
         <# } #>public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
             this TSender? sender,
             <# for(int i=1; i <= length; i++) { #>
-            Expression<Func<TSender, T<#=i#>?>> property<#=i#><# if (i != length) { #>,<# } #>
+            Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
 
             <# } #>)
         {
-            return sender.WhenAny(<#= valuePropertyParams #>,
+            return sender!.WhenAny(<#= valuePropertyParams #>,
                                 (<#= valueSelectorParams #>) =>
                                     (<#= valueSelectorArgs #>));
         }
@@ -98,11 +98,11 @@ namespace ReactiveUI
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
             this TSender? sender,
             <# for(int i=1; i <= length; i++) { #>
-            Expression<Func<TSender, T<#=i#>?>> property<#=i#>,
+            Expression<Func<TSender, T<#=i#>>> property<#=i#>,
             <# } #>
             Func<<#= String.Join(",", templParams) #>, TRet> selector)
         {
-            return sender.WhenAny(<#= valuePropertyParams #>,
+            return sender!.WhenAny(<#= valuePropertyParams #>,
                                 (<#= valueSelectorParams #>) =>
                                     selector(<#= valueSelectorArgs #>));
         }
@@ -121,16 +121,16 @@ namespace ReactiveUI
         public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
                 this TSender? sender,
             <# for(int i=1; i <= length; i++) { #>
-                Expression<Func<TSender, T<#=i#>?>> property<#=i#>,
+                Expression<Func<TSender, T<#=i#>>> property<#=i#>,
             <# } #>
                 Func<<#= selectorTypeParams #>, TRet> selector)
         {
             <# if (length == 1){ #>
-                return sender.ObservableForProperty(property<#=1#>, false, false).Select(selector);
+                return sender!.ObservableForProperty(property<#=1#>, false, false).Select(selector);
             <# }else{ #>
             return Observable.CombineLatest(
                 <# for(int i=1; i <= length; i++) { #>
-                    sender.ObservableForProperty(property<#=i#>, false, false),
+                    sender!.ObservableForProperty(property<#=i#>, false, false),
                 <# } #>
                 selector
             );
@@ -178,10 +178,10 @@ namespace ReactiveUI
         /// <summary>Observe a observable which is set to a property, and automatically subscribe to the most recent emitted value.</summary>
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="obs1">The first observable to observe.</param>
-        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1)
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender sender, Expression<Func<TSender, IObservable<TRet>?>> obs1)
             where TSender : class
         {
-            return sender!.WhenAny(obs1, x => x.Value.EmptyIfNull()).Switch();
+            return sender.WhenAny(obs1, x => x.Value!.EmptyIfNull()).Switch();
         }
 
 <# for(int length=2; length <= maxFuncLength; length++) { #>
@@ -192,11 +192,11 @@ namespace ReactiveUI
         <# } #>
 <# string paramsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "Expression<Func<TSender, IObservable<TRet>?>> obs" + x.ToString())); #>
 <# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
-<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value.EmptyIfNull()")); #>
-        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, <#= paramsStr #>)
+<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value!.EmptyIfNull()")); #>
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender sender, <#= paramsStr #>)
             where TSender : class
         {
-            return sender!.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => new[] {<#= valsStr #>})
+            return sender.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => new[] {<#= valsStr #>})
                 .Select(x => x.Merge()).Switch();
         }
 <# } #>
@@ -210,16 +210,16 @@ namespace ReactiveUI
 <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString() + "?"); #>
 <# var templParamsDec = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
 <# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
-<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value.EmptyIfNull()")); #>
+<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value!.EmptyIfNull()")); #>
 <# string selectorTypeParams = String.Join(", ", templParams); #>
-        public static IObservable<TRet> WhenAnyObservable<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(this TSender? sender,
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(this TSender sender,
             <# for(int i=1; i <= length; i++) { #>
                 Expression<Func<TSender, IObservable<T<#=i#>>?>> obs<#=i#>,
             <# } #>
                 Func<<#= selectorTypeParams #>, TRet> selector)
             where TSender : class
         {
-            return sender!.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => Observable.CombineLatest(<#= valsStr #>, selector))
+            return sender.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => Observable.CombineLatest(<#= valsStr #>, selector))
                 .Switch();
         }
 <# } #>

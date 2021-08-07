@@ -33,8 +33,8 @@ namespace ReactiveUI.Fody.Helpers
         /// </exception>
         public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(
             this IObservable<TRet> item,
-            TObj? source,
-            Expression<Func<TObj, TRet?>> property,
+            TObj source,
+            Expression<Func<TObj, TRet>> property,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
             where TObj : ReactiveObject
@@ -88,8 +88,8 @@ namespace ReactiveUI.Fody.Helpers
         /// </exception>
         public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(
             this IObservable<TRet> item,
-            TObj? source,
-            Expression<Func<TObj, TRet?>> property,
+            TObj source,
+            Expression<Func<TObj, TRet>> property,
             TRet initialValue,
             bool deferSubscription = false,
             IScheduler? scheduler = null)

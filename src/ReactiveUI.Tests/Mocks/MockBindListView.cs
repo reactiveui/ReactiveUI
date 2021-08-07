@@ -55,7 +55,7 @@ namespace ReactiveUI.Tests
                     .Where(i => i != null)
                     .Cast<MockBindListItemViewModel>()
                     .Do(_ => ItemList.UnselectAll())
-                    .InvokeCommand(this, v => v.ViewModel!.SelectItem).DisposeWith(d);
+                    .InvokeCommand(this, v => v!.ViewModel!.SelectItem).DisposeWith(d);
             });
         }
 
