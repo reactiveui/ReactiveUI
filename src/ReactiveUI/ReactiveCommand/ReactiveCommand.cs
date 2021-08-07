@@ -804,19 +804,21 @@ namespace ReactiveUI
                         _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
                         return Observable<TResult>.Empty;
                     }).Concat(_execute(parameter))
-                .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                .Catch<TResult, Exception>(
-                    ex =>
-                    {
-                        _exceptions.OnNext(ex);
-                        return Observable.Throw<TResult>(ex);
-                    }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
-                .PublishLast()
-                .RefCount()
-                .ObserveOn(_outputScheduler);
+                    .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
+                    .Catch<TResult, Exception>(
+                        ex =>
+                        {
+                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
+                            _exceptions.OnNext(ex);
+                            return Observable.Throw<TResult>(ex);
+                        }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
+                    .PublishLast()
+                    .RefCount()
+                    .ObserveOn(_outputScheduler);
             }
             catch (Exception ex)
             {
+                _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
                 _exceptions.OnNext(ex);
                 return Observable.Throw<TResult>(ex);
             }
@@ -828,24 +830,26 @@ namespace ReactiveUI
             try
             {
                 return Observable.Defer(
-                                     () =>
-                                     {
-                                         _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
-                                         return Observable<TResult>.Empty;
-                                     }).Concat(_execute(default!))
-                                 .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                                 .Catch<TResult, Exception>(
-                                     ex =>
-                                     {
-                                         _exceptions.OnNext(ex);
-                                         return Observable.Throw<TResult>(ex);
-                                     }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
-                                 .PublishLast()
-                                 .RefCount()
-                                 .ObserveOn(_outputScheduler);
+                    () =>
+                    {
+                        _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
+                        return Observable<TResult>.Empty;
+                    }).Concat(_execute(default!))
+                    .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
+                    .Catch<TResult, Exception>(
+                        ex =>
+                        {
+                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
+                            _exceptions.OnNext(ex);
+                            return Observable.Throw<TResult>(ex);
+                        }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
+                    .PublishLast()
+                    .RefCount()
+                    .ObserveOn(_outputScheduler);
             }
             catch (Exception ex)
             {
+                _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
                 _exceptions.OnNext(ex);
                 return Observable.Throw<TResult>(ex);
             }
