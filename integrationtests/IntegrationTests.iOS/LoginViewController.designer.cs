@@ -10,7 +10,8 @@ using System.CodeDom.Compiler;
 namespace IntegrationTests.iOS
 {
 	[Register ("LoginViewController")]
-	partial class LoginViewController
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    partial class LoginViewController
 	{
 		[Outlet]
 		UIKit.UIButton CancelButton { get; set; }

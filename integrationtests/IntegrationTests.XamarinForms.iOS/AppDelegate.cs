@@ -14,6 +14,7 @@ namespace IntegrationTests.XamarinForms.iOS
     /// application events from iOS.
     /// </summary>
     [Register("AppDelegate")]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
     {
         /// <summary>

@@ -3,20 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace IntegrationTests.WPF
+namespace ReactiveUI
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml.
+    /// Trigger Update.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    public partial class MainWindow
+    public enum TriggerUpdate
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// The view to view model.
         /// </summary>
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        ViewToViewModel,
+
+        /// <summary>
+        /// The view model to view.
+        /// </summary>
+        ViewModelToView
     }
 }

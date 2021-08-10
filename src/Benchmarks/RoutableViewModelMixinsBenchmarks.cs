@@ -19,6 +19,7 @@ namespace ReactiveUI.Benchmarks
     [CoreJob]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class RoutableViewModelMixinsBenchmarks
     {
         private Func<MockViewModel>? _mockViewModel;

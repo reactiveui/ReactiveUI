@@ -20,6 +20,7 @@ namespace IntegrationTests.iOS
     /// <summary>
     /// The main login view controller for the application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class LoginViewController : ReactiveViewController<LoginViewModel>
     {
         /// <summary>

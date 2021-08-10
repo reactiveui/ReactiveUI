@@ -19,50 +19,37 @@ namespace ReactiveUI
         /// <summary>
         /// Creates a two-way binding between a view model and a view.
         /// This binding will attempt to convert the values of the
-        /// view and view model properties using a <see cref="IBindingTypeConverter"/>
+        /// view and view model properties using a <see cref="IBindingTypeConverter" />
         /// if they are not of the same type.
         /// </summary>
         /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
         /// <typeparam name="TView">The type of the view being bound.</typeparam>
         /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
         /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
-        /// <typeparam name="TDontCare">
-        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/>
-        /// emits values is considered, not the actual values emitted.
-        /// </typeparam>
+        /// <typeparam name="TDontCare">A dummy type, only the fact that <paramref name="signalViewUpdate" />
+        /// emits values is considered, not the actual values emitted.</typeparam>
         /// <param name="viewModel">The instance of the view model object to be bound.</param>
         /// <param name="view">The instance of the view object to be bound.</param>
-        /// <param name="vmProperty">
-        /// An expression representing the property to be bound to on the view model.
+        /// <param name="vmProperty">An expression representing the property to be bound to on the view model.
         /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
         /// the binding will attempt to subscribe recursively to updates in order to
-        /// always get and set the correct property.
-        /// </param>
-        /// <param name="viewProperty">
-        /// An expression representing the property to be bound to on the view.
+        /// always get and set the correct property.</param>
+        /// <param name="viewProperty">An expression representing the property to be bound to on the view.
         /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
         /// the binding will attempt to subscribe recursively to updates in order to
-        /// always get and set the correct property.
-        /// </param>
-        /// <param name="signalViewUpdate">
-        /// An observable, that when signaled, indicates that the view property
+        /// always get and set the correct property.</param>
+        /// <param name="signalViewUpdate">An observable, that when signaled, indicates that the view property
         /// has been changed, and that the binding should update the view model
-        /// property accordingly.
-        /// </param>
-        /// <param name="conversionHint">
-        /// An object that can provide a hint for the converter.
-        /// The semantics of this object is defined by the converter used.
-        /// </param>
-        /// <param name="vmToViewConverterOverride">
-        /// An optional <see cref="IBindingTypeConverter"/> to use when converting from the
-        /// viewModel to view property.
-        /// </param>
-        /// <param name="viewToVMConverterOverride">
-        /// An optional <see cref="IBindingTypeConverter"/> to use when converting from the
-        /// view to viewModel property.
-        /// </param>
+        /// property accordingly.</param>
+        /// <param name="conversionHint">An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.</param>
+        /// <param name="vmToViewConverterOverride">An optional <see cref="IBindingTypeConverter" /> to use when converting from the
+        /// viewModel to view property.</param>
+        /// <param name="viewToVMConverterOverride">An optional <see cref="IBindingTypeConverter" /> to use when converting from the
+        /// view to viewModel property.</param>
+        /// <param name="triggerUpdate">The trigger update direction.</param>
         /// <returns>
-        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// An instance of <see cref="IDisposable" /> that, when disposed,
         /// disconnects the binding.
         /// </returns>
         IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
@@ -73,53 +60,43 @@ namespace ReactiveUI
                 IObservable<TDontCare>? signalViewUpdate,
                 object? conversionHint,
                 IBindingTypeConverter? vmToViewConverterOverride = null,
-                IBindingTypeConverter? viewToVMConverterOverride = null)
+                IBindingTypeConverter? viewToVMConverterOverride = null,
+                TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
             where TViewModel : class
             where TView : class, IViewFor;
 
         /// <summary>
         /// Creates a two-way binding between a view model and a view.
         /// This binding will attempt to convert the values of the
-        /// view and view model properties using a <see cref="IBindingTypeConverter"/>
+        /// view and view model properties using a <see cref="IBindingTypeConverter" />
         /// if they are not of the same type.
         /// </summary>
         /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
         /// <typeparam name="TView">The type of the view being bound.</typeparam>
         /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
         /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
-        /// <typeparam name="TDontCare">
-        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/>
-        /// emits values is considered, not the actual values emitted.
-        /// </typeparam>
+        /// <typeparam name="TDontCare">A dummy type, only the fact that <paramref name="signalViewUpdate" />
+        /// emits values is considered, not the actual values emitted.</typeparam>
         /// <param name="viewModel">The instance of the view model object to be bound.</param>
         /// <param name="view">The instance of the view object to be bound.</param>
-        /// <param name="vmProperty">
-        /// An expression representing the property to be bound to on the view model.
+        /// <param name="vmProperty">An expression representing the property to be bound to on the view model.
         /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
         /// the binding will attempt to subscribe recursively to updates in order to
-        /// always get and set the correct property.
-        /// </param>
-        /// <param name="viewProperty">
-        /// An expression representing the property to be bound to on the view.
+        /// always get and set the correct property.</param>
+        /// <param name="viewProperty">An expression representing the property to be bound to on the view.
         /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
         /// the binding will attempt to subscribe recursively to updates in order to
-        /// always get and set the correct property.
-        /// </param>
-        /// <param name="signalViewUpdate">
-        /// An observable, that when signaled, indicates that the view property
+        /// always get and set the correct property.</param>
+        /// <param name="signalViewUpdate">An observable, that when signaled, indicates that the view property
         /// has been changed, and that the binding should update the view model
-        /// property accordingly.
-        /// </param>
-        /// <param name="vmToViewConverter">
-        /// Delegate to convert the value of the view model's property's type to a value of the
-        /// view's property's type.
-        /// </param>
-        /// <param name="viewToVmConverter">
-        /// Delegate to convert the value of the view's property's type to a value of the
-        /// view model's property's type.
-        /// </param>
+        /// property accordingly.</param>
+        /// <param name="vmToViewConverter">Delegate to convert the value of the view model's property's type to a value of the
+        /// view's property's type.</param>
+        /// <param name="viewToVmConverter">Delegate to convert the value of the view's property's type to a value of the
+        /// view model's property's type.</param>
+        /// <param name="triggerUpdate">The trigger update direction.</param>
         /// <returns>
-        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// An instance of <see cref="IDisposable" /> that, when disposed,
         /// disconnects the binding.
         /// </returns>
         IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
@@ -129,7 +106,8 @@ namespace ReactiveUI
                 Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare>? signalViewUpdate,
                 Func<TVMProp?, TVProp> vmToViewConverter,
-                Func<TVProp, TVMProp?> viewToVmConverter)
+                Func<TVProp, TVMProp?> viewToVmConverter,
+                TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
             where TViewModel : class
             where TView : class, IViewFor;
 

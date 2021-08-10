@@ -15,6 +15,7 @@ namespace IntegrationTests.XamarinForms.UWP
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public sealed partial class App : Application
     {
         /// <summary>

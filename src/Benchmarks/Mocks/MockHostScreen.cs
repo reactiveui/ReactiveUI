@@ -8,6 +8,7 @@ namespace ReactiveUI.Benchmarks
     /// <summary>
     /// A mock for the screen in ReactiveUI. This will only contain the routing state.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class MockHostScreen : IScreen
     {
         /// <summary>

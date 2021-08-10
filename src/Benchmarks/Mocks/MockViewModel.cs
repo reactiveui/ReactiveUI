@@ -11,6 +11,7 @@ namespace ReactiveUI.Benchmarks
     /// A mock for a ReactiveObject which is routable.
     /// </summary>
     [DataContract]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class MockViewModel : ReactiveObject, IRoutableViewModel
     {
         /// <summary>

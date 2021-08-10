@@ -19,6 +19,7 @@ namespace ReactiveUI.Benchmarks
     [CoreJob]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class INPCObservableForPropertyBenchmarks
     {
         private readonly Expression<Func<TestClassChanged, string?>> _expr = x => x.Property1;

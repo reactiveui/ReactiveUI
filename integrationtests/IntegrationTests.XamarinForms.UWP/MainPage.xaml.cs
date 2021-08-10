@@ -8,6 +8,7 @@ namespace IntegrationTests.XamarinForms.UWP
     /// <summary>
     /// The main page for the application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public sealed partial class MainPage
     {
         /// <summary>
