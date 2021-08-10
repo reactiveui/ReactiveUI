@@ -46,6 +46,11 @@ namespace ReactiveUI
         /// <summary>
         /// Avalonia.
         /// </summary>
-        Avalonia
+        Avalonia,
+
+        /// <summary>
+        /// Maui.
+        /// </summary>
+        Maui
     }
 }
