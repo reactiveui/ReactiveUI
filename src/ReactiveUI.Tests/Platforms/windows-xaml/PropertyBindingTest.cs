@@ -695,6 +695,54 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithConverter()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustADecimal = 123.45m;
+            Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var decimalToStringTypeConverter = new DecimalToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, update.AsObservable(), 2, decimalToStringTypeConverter, decimalToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustADecimal = 1.0M;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123.45");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            vm.JustADecimal = 2.0M;
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "3.00";
+            Assert.Equal(vm.JustADecimal, 3.0M);
+
+            view.SomeTextBox.Text = "4.00";
+            Assert.Equal(vm.JustADecimal, 4.0M);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustADecimal = 2.0M;
+            Assert.Equal(view.SomeTextBox.Text, "4.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
         public void BindWithFuncToTriggerUpdateTestViewToViewModel()
         {
             CompositeDisposable dis = new();

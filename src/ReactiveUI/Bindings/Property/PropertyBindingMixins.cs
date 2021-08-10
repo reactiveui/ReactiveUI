@@ -118,7 +118,7 @@ namespace ReactiveUI
                 object? conversionHint = null,
                 IBindingTypeConverter? vmToViewConverterOverride = null,
                 IBindingTypeConverter? viewToVMConverterOverride = null,
-                TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel) // TODO: Create Test
+                TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
             where TViewModel : class
             where TView : class, IViewFor =>
             _binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, conversionHint, vmToViewConverterOverride, viewToVMConverterOverride, triggerUpdate);

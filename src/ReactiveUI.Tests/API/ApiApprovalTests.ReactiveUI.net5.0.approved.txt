@@ -122,6 +122,12 @@ namespace ReactiveUI
         public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
+    public class DecimalToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public DecimalToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
     public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
     {
         public System.Func<string, string> ViewModelToViewFunc { get; set; }
@@ -131,6 +137,12 @@ namespace ReactiveUI
     {
         public static void InitializeReactiveUI(this Splat.IMutableDependencyResolver resolver, params ReactiveUI.RegistrationNamespace[] registrationNamespaces) { }
         public static void RegisterViewsForViewModels(this Splat.IMutableDependencyResolver resolver, System.Reflection.Assembly assembly) { }
+    }
+    public class DoubleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public DoubleToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
     }
     public class DummySuspensionDriver : ReactiveUI.ISuspensionDriver
     {
