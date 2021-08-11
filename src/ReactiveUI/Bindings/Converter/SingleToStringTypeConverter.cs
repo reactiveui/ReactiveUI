@@ -46,21 +46,23 @@ namespace ReactiveUI
 
             if (from is string fromString)
             {
-                float.TryParse(fromString, out var outSingle);
-
-                if (conversionHint is int doubleHint)
+                var success = float.TryParse(fromString, out var outSingle);
+                if (success)
                 {
-                    result = Math.Round(outSingle, doubleHint);
+                    if (conversionHint is int singleHint)
+                    {
+                        result = Convert.ToSingle(Math.Round(outSingle, singleHint));
+                        return true;
+                    }
+
+                    result = outSingle;
+
                     return true;
                 }
-
-                result = outSingle;
-
-                return true;
             }
 
-            result = float.NaN;
-            return true;
+            result = null!;
+            return false;
         }
     }
 }

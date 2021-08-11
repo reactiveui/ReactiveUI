@@ -17,6 +17,7 @@ namespace ReactiveUI.Tests
         private string? _property1;
         private PropertyBindModel? _model;
         private int _property2;
+        private float _justASingle;
         private double _justADouble;
         private decimal _justADecimal;
         private double? _nullableDouble;
@@ -100,10 +101,28 @@ namespace ReactiveUI.Tests
             set => this.RaiseAndSetIfChanged(ref _nullableDouble, value);
         }
 
+        /// <summary>
+        /// Gets or sets the just a visibility.
+        /// </summary>
+        /// <value>
+        /// The just a visibility.
+        /// </value>
         public Visibility JustAVisibility
         {
             get => _justAVisibility;
             set => this.RaiseAndSetIfChanged(ref _justAVisibility, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the just a single.
+        /// </summary>
+        /// <value>
+        /// The just a single.
+        /// </value>
+        public float JustASingle
+        {
+            get => _justASingle;
+            set => this.RaiseAndSetIfChanged(ref _justASingle, value);
         }
 
         /// <summary>
