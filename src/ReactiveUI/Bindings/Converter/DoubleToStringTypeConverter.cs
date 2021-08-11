@@ -46,8 +46,7 @@ namespace ReactiveUI
 
             if (from is string fromString)
             {
-                var outDouble = double.NaN;
-                double.TryParse(fromString, out outDouble);
+                double.TryParse(fromString, out var outDouble);
 
                 if (conversionHint is int doubleHint)
                 {
@@ -60,8 +59,8 @@ namespace ReactiveUI
                 return true;
             }
 
-            result = null!;
-            return false;
+            result = double.NaN;
+            return true;
         }
     }
 }

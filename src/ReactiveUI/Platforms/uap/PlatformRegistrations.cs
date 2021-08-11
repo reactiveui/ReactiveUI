@@ -27,8 +27,6 @@ namespace ReactiveUI
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 
             if (!ModeDetector.InUnitTestRunner())

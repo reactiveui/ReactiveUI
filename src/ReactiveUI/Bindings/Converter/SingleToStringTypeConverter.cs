@@ -8,20 +8,20 @@ using System;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Decimal To String Type Converter.
+    /// Single To String Type Converter.
     /// </summary>
     /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-    public class DecimalToStringTypeConverter : IBindingTypeConverter
+    public class SingleToStringTypeConverter : IBindingTypeConverter
     {
         /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType)
         {
-            if (fromType == typeof(decimal) && toType == typeof(string))
+            if (fromType == typeof(float) && toType == typeof(string))
             {
                 return 10;
             }
 
-            if (fromType == typeof(string) && toType == typeof(decimal))
+            if (fromType == typeof(string) && toType == typeof(float))
             {
                 return 10;
             }
@@ -32,35 +32,35 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
         {
-            if (toType == typeof(string) && from is decimal fromDecimal)
+            if (toType == typeof(string) && from is float fromSingle)
             {
-                if (conversionHint is int decimalHint)
+                if (conversionHint is int singleHint)
                 {
-                    result = fromDecimal.ToString($"F{decimalHint}");
+                    result = fromSingle.ToString($"F{singleHint}");
                     return true;
                 }
 
-                result = fromDecimal.ToString();
+                result = fromSingle.ToString();
                 return true;
             }
 
             if (from is string fromString)
             {
-                decimal.TryParse(fromString, out var outDecimal);
+                float.TryParse(fromString, out var outSingle);
 
-                if (conversionHint is int decimalHint)
+                if (conversionHint is int doubleHint)
                 {
-                    result = Math.Round(outDecimal, decimalHint);
+                    result = Math.Round(outSingle, doubleHint);
                     return true;
                 }
 
-                result = outDecimal;
+                result = outSingle;
 
                 return true;
             }
 
-            result = null!;
-            return false;
+            result = float.NaN;
+            return true;
         }
     }
 }

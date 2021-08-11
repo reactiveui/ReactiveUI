@@ -32,6 +32,8 @@ namespace ReactiveUI.Winforms
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new PanelSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
             registerFunction(() => new TableContentSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
+            registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 
             if (!ModeDetector.InUnitTestRunner())

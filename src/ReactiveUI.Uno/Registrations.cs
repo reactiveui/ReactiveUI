@@ -27,6 +27,8 @@ namespace ReactiveUI.Uno
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 
             // Re-enable once the obsolete code in Uno has been worked out.
