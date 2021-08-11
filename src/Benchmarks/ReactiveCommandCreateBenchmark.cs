@@ -18,6 +18,7 @@ namespace ReactiveUI.Benchmarks
     [CoreJob]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class ReactiveCommandCreateBenchmark
     {
         private readonly IObservable<bool> _canExecute = new Subject<bool>().AsObservable();

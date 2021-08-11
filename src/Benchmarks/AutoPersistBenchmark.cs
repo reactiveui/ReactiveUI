@@ -20,6 +20,7 @@ namespace ReactiveUI.Benchmarks
     [CoreJob]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class AutoPersistBenchmark
     {
         private ObservableCollection<MockViewModel>? _collection;

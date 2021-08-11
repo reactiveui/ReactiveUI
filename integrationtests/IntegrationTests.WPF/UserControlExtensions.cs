@@ -15,6 +15,7 @@ namespace IntegrationTests.WPF
     /// <summary>
     /// Extension methods associated with the UserControl class.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static class UserControlExtensions
     {
         /// <summary>

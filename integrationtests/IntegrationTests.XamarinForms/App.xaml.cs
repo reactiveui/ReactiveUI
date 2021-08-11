@@ -11,6 +11,7 @@ namespace IntegrationTests.XamarinForms
     /// <summary>
     /// The class which represents the main application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class App : Application
     {
         /// <summary>

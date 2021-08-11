@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -20,6 +21,7 @@ namespace IntegrationTests.Android
     /// The main activity for the application.
     /// </summary>
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
+    [ExcludeFromCodeCoverage]
     public class MainActivity : ReactiveActivity<LoginViewModel>
     {
         /// <summary>

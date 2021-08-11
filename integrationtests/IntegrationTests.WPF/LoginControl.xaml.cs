@@ -15,6 +15,7 @@ namespace IntegrationTests.WPF
     /// <summary>
     /// Interaction logic for LoginControl.xaml.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class LoginControl : ReactiveUserControl<LoginViewModel>
     {
         /// <summary>

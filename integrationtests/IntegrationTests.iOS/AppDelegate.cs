@@ -7,6 +7,7 @@ using Foundation;
 using UIKit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
+
 namespace IntegrationTests.iOS
 {
     /// <summary>
@@ -14,6 +15,7 @@ namespace IntegrationTests.iOS
     /// User Interface of the application, as well as listening (and optionally responding) to application events from iOS.
     /// </summary>
     [Register("AppDelegate")]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class AppDelegate : UIApplicationDelegate
     {
         /// <summary>

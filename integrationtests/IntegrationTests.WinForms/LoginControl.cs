@@ -17,6 +17,7 @@ namespace IntegrationTests.WinForms
     /// <summary>
     /// A control for logging in a user.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class LoginControl : UserControl, IViewFor<LoginViewModel>
     {
         /// <summary>

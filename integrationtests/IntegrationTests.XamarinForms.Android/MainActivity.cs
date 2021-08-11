@@ -14,6 +14,7 @@ namespace IntegrationTests.XamarinForms.Droid
     /// The main activity for the application.
     /// </summary>
     [Activity(Label = "IntegrationTests.XamarinForms", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         /// <inheritdoc />
