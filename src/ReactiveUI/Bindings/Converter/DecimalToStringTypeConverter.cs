@@ -46,18 +46,19 @@ namespace ReactiveUI
 
             if (from is string fromString)
             {
-                var outDecimal = decimal.Zero;
-                decimal.TryParse(fromString, out outDecimal);
-
-                if (conversionHint is int decimalHint)
+                var success = decimal.TryParse(fromString, out var outDecimal);
+                if (success)
                 {
-                    result = Math.Round(outDecimal, decimalHint);
+                    if (conversionHint is int decimalHint)
+                    {
+                        result = Math.Round(outDecimal, decimalHint);
+                        return true;
+                    }
+
+                    result = outDecimal;
+
                     return true;
                 }
-
-                result = outDecimal;
-
-                return true;
             }
 
             result = null!;

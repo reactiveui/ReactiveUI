@@ -695,7 +695,7 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
-        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithConverter()
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithDecimalConverter()
         {
             CompositeDisposable dis = new();
             PropertyBindViewModel? vm = new();
@@ -783,6 +783,102 @@ namespace ReactiveUI.Tests.Xaml
 
             update.OnNext(true);
             Assert.Equal(vm.JustADecimal, 2.0m);
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithDoubleConverter()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustADouble = 123.45;
+            Assert.NotEqual(vm.JustADouble.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var doubleToStringTypeConverter = new DoubleToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustADouble, x => x.SomeTextBox.Text, update.AsObservable(), 2, doubleToStringTypeConverter, doubleToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustADouble = 1.0;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123.45");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            vm.JustADouble = 2.0;
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "3.00";
+            Assert.Equal(vm.JustADouble, 3.0);
+
+            view.SomeTextBox.Text = "4.00";
+            Assert.Equal(vm.JustADouble, 4.0);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustADouble = 2.0;
+            Assert.Equal(view.SomeTextBox.Text, "4.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithSingleConverter()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustASingle = 123.45f;
+            Assert.NotEqual(vm.JustASingle.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var singleToStringTypeConverter = new SingleToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustASingle, x => x.SomeTextBox.Text, update.AsObservable(), 2, singleToStringTypeConverter, singleToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustASingle = 1.0f;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123.45");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            vm.JustASingle = 2.0f;
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "3.00";
+            Assert.Equal(vm.JustASingle, 3.0f);
+
+            view.SomeTextBox.Text = "4.00";
+            Assert.Equal(vm.JustASingle, 4.0f);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustASingle = 2.0f;
+            Assert.Equal(view.SomeTextBox.Text, "4.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
 
             dis.Dispose();
             Assert.True(dis.IsDisposed);
