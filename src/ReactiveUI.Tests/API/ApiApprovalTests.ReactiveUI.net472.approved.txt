@@ -766,6 +766,12 @@ namespace ReactiveUI
     {
         public SingleInstanceViewAttribute() { }
     }
+    public class SingleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public SingleToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
     public class StringConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {
         public StringConverter() { }

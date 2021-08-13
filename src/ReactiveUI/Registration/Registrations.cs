@@ -30,6 +30,9 @@ namespace ReactiveUI
             registerFunction(() => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new EqualityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new DefaultViewLocator(), typeof(IViewLocator));
             registerFunction(() => new CanActivateViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));

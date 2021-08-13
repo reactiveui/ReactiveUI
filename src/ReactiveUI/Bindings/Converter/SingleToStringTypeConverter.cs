@@ -8,20 +8,20 @@ using System;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Double To String Type Converter.
+    /// Single To String Type Converter.
     /// </summary>
     /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-    public class DoubleToStringTypeConverter : IBindingTypeConverter
+    public class SingleToStringTypeConverter : IBindingTypeConverter
     {
         /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType)
         {
-            if (fromType == typeof(double) && toType == typeof(string))
+            if (fromType == typeof(float) && toType == typeof(string))
             {
                 return 10;
             }
 
-            if (fromType == typeof(string) && toType == typeof(double))
+            if (fromType == typeof(string) && toType == typeof(float))
             {
                 return 10;
             }
@@ -32,30 +32,30 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
         {
-            if (toType == typeof(string) && from is double fromDouble)
+            if (toType == typeof(string) && from is float fromSingle)
             {
-                if (conversionHint is int doubleHint)
+                if (conversionHint is int singleHint)
                 {
-                    result = fromDouble.ToString($"F{doubleHint}");
+                    result = fromSingle.ToString($"F{singleHint}");
                     return true;
                 }
 
-                result = fromDouble.ToString();
+                result = fromSingle.ToString();
                 return true;
             }
 
             if (from is string fromString)
             {
-                var success = double.TryParse(fromString, out var outDouble);
+                var success = float.TryParse(fromString, out var outSingle);
                 if (success)
                 {
-                    if (conversionHint is int doubleHint)
+                    if (conversionHint is int singleHint)
                     {
-                        result = Math.Round(outDouble, doubleHint);
+                        result = Convert.ToSingle(Math.Round(outSingle, singleHint));
                         return true;
                     }
 
-                    result = outDouble;
+                    result = outSingle;
 
                     return true;
                 }
