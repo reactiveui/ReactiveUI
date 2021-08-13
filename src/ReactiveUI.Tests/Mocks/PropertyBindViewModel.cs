@@ -21,7 +21,10 @@ namespace ReactiveUI.Tests
         private double _justADouble;
         private decimal _justADecimal;
         private double? _nullableDouble;
+        private byte _justAByte;
+        private short _justAInt16;
         private int _justAInt32;
+        private long _justAInt64;
         private bool _justABoolean;
         private Visibility _justAVisibility;
 
@@ -86,10 +89,37 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Gets or sets the just a int32.
         /// </summary>
+        public byte JustAByte
+        {
+            get => _justAByte;
+            set => this.RaiseAndSetIfChanged(ref _justAByte, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the just a int32.
+        /// </summary>
+        public short JustAInt16
+        {
+            get => _justAInt16;
+            set => this.RaiseAndSetIfChanged(ref _justAInt16, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the just a int32.
+        /// </summary>
         public int JustAInt32
         {
             get => _justAInt32;
             set => this.RaiseAndSetIfChanged(ref _justAInt32, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the just a int32.
+        /// </summary>
+        public long JustAInt64
+        {
+            get => _justAInt64;
+            set => this.RaiseAndSetIfChanged(ref _justAInt64, value);
         }
 
         /// <summary>

@@ -883,5 +883,197 @@ namespace ReactiveUI.Tests.Xaml
             dis.Dispose();
             Assert.True(dis.IsDisposed);
         }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithByteConverter()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustAByte = 123;
+            Assert.NotEqual(vm.JustAByte.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var singleToStringTypeConverter = new ByteToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustAByte, x => x.SomeTextBox.Text, update.AsObservable(), 3, singleToStringTypeConverter, singleToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustAByte = 1;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            vm.JustAByte = 2;
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "003";
+            Assert.Equal(vm.JustAByte, 3);
+
+            view.SomeTextBox.Text = "004";
+            Assert.Equal(vm.JustAByte, 4);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustAByte = 2;
+            Assert.Equal(view.SomeTextBox.Text, "004");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithShortConverter()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustAInt16 = 123;
+            Assert.NotEqual(vm.JustAInt16.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var singleToStringTypeConverter = new ShortToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustAInt16, x => x.SomeTextBox.Text, update.AsObservable(), 3, singleToStringTypeConverter, singleToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustAInt16 = 1;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            vm.JustAInt16 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "003";
+            Assert.Equal(vm.JustAInt16, 3);
+
+            view.SomeTextBox.Text = "004";
+            Assert.Equal(vm.JustAInt16, 4);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustAInt16 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "004");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithIntegerConverter()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustAInt32 = 123;
+            Assert.NotEqual(vm.JustAInt32.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var singleToStringTypeConverter = new IntegerToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustAInt32, x => x.SomeTextBox.Text, update.AsObservable(), 3, singleToStringTypeConverter, singleToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustAInt32 = 1;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            vm.JustAInt32 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "003";
+            Assert.Equal(vm.JustAInt32, 3);
+
+            view.SomeTextBox.Text = "004";
+            Assert.Equal(vm.JustAInt32, 4);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustAInt32 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "004");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithLongConverter()
+        {
+            CompositeDisposable dis = new();
+            PropertyBindViewModel? vm = new();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustAInt64 = 123;
+            Assert.NotEqual(vm.JustAInt64.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var singleToStringTypeConverter = new LongToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustAInt64, x => x.SomeTextBox.Text, update.AsObservable(), 3, singleToStringTypeConverter, singleToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustAInt64 = 1;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            vm.JustAInt64 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "003";
+            Assert.Equal(vm.JustAInt64, 3);
+
+            view.SomeTextBox.Text = "004";
+            Assert.Equal(vm.JustAInt64, 4);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustAInt64 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "004");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
     }
 }
