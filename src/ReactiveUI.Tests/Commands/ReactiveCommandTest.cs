@@ -1158,11 +1158,13 @@ namespace ReactiveUI.Tests
             var subj = new Subject<Unit>();
             var isExecuting = false;
             Exception? fail = null;
-            var fixture = ReactiveCommand.CreateFromTask(async _ =>
-            {
-                await subj.Take(1);
-                throw new Exception("break execution");
-            });
+            var fixture = ReactiveCommand.CreateFromTask(
+                async _ =>
+                {
+                    await subj.Take(1);
+                    throw new Exception("break execution");
+                });
+
             fixture.IsExecuting.Subscribe(x => isExecuting = x);
             fixture.ThrownExceptions.Subscribe(ex => fail = ex);
 
@@ -1175,8 +1177,8 @@ namespace ReactiveUI.Tests
 
             subj.OnNext(Unit.Default);
 
-            // Wait 1 ms to allow execution to complete
-            await Task.Delay(1).ConfigureAwait(false);
+            // Wait 10 ms to allow execution to complete
+            await Task.Delay(10).ConfigureAwait(false);
 
             Assert.False(isExecuting);
             Assert.Equal("break execution", fail?.Message);
