@@ -23,14 +23,20 @@ jobs:
         fetch-depth: 0
 
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.8.1
       with:
         dotnet-version: 3.1.x
 
     - name: Install .NET 5
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.8.1
       with:
         dotnet-version: 5.0.x
+
+    - name: Install .NET 6
+      uses: actions/setup-dotnet@v1.8.1
+      with:
+        dotnet-version: 6.0.x
+        include-prerelease: true
 
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
