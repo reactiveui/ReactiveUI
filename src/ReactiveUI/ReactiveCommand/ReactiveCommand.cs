@@ -766,13 +766,14 @@ namespace ReactiveUI
                 .CombineLatest(_isExecuting, (canEx, isEx) => canEx && !isEx)
                 .DistinctUntilChanged()
                 .Replay(1)
-                .RefCount()
-                .ObserveOn(_canExecuteScheduler);
+                .RefCount();
 
             _results = _synchronizedExecutionInfo.Where(x => x.Demarcation == ExecutionDemarcation.Result)
                 .Select(x => x.Result);
 
-            _canExecuteSubscription = _canExecute.Subscribe(OnCanExecuteChanged);
+            _canExecuteSubscription = _canExecute
+                .ObserveOn(_canExecuteScheduler)
+                .Subscribe(OnCanExecuteChanged);
         }
 
         private enum ExecutionDemarcation
