@@ -45,6 +45,12 @@ namespace ReactiveUI
         TwoWay = 1,
         AsyncOneWay = 2,
     }
+    public class ByteToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public ByteToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
     public class CanActivateViewFetcher : ReactiveUI.IActivationForViewFetcher
     {
         public CanActivateViewFetcher() { }
@@ -360,6 +366,12 @@ namespace ReactiveUI
     {
         ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
     }
+    public class IntegerToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public IntegerToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
     public class InteractionBinderImplementation : ReactiveUI.IInteractionBinderImplementation, Splat.IEnableLogger
     {
         public InteractionBinderImplementation() { }
@@ -394,6 +406,12 @@ namespace ReactiveUI
         public System.IDisposable RegisterHandler(System.Action<ReactiveUI.InteractionContext<TInput, TOutput>> handler) { }
         public System.IDisposable RegisterHandler(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
         public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
+    }
+    public class LongToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public LongToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
     }
     public class MessageBus : ReactiveUI.IMessageBus, Splat.IEnableLogger
     {
@@ -755,6 +773,12 @@ namespace ReactiveUI
         public void OnError(System.Exception error) { }
         public void OnNext(T value) { }
         public System.IDisposable Subscribe(System.IObserver<T> observer) { }
+    }
+    public class ShortToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public ShortToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
     }
     [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.All)]
     public class SingleInstanceViewAttribute : System.Attribute

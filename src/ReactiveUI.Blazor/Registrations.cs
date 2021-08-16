@@ -24,6 +24,10 @@ namespace ReactiveUI.Blazor
             }
 
             registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
