@@ -21,17 +21,22 @@ jobs:
         fetch-depth: 0
         lfs: true
 
-    # Install the .NET Core workload
-    - name: Install .NET Core 3.1.x
-      uses: actions/setup-dotnet@v1
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1.8.1
       with:
         dotnet-version: 3.1.x
 
-    - name: Install .NET 5.0.x
-      uses: actions/setup-dotnet@v1
+    - name: Install .NET 5
+      uses: actions/setup-dotnet@v1.8.1
       with:
         dotnet-version: 5.0.x
 
+    - name: Install .NET 6
+      uses: actions/setup-dotnet@v1.8.1
+      with:
+        dotnet-version: 6.0.x
+        include-prerelease: true
+        
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
