@@ -38,14 +38,17 @@ jobs:
         dotnet-version: 6.0.x
         include-prerelease: true
 
+    - name: Install VS2019 preview
+      shell: bash
+      run: |
+        dotnet tool update -g dotnet-vs
+        vs install preview -sku:enterprise --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
+        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
+
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
       with:
         prerelease: true
-
-    # - name: Update VS2019
-    #   shell: powershell
-    #   run: Start-Process -Wait -PassThru -FilePath "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" -ArgumentList "update --passive --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"""
 
     - name: NBGV
       id: nbgv
@@ -54,7 +57,7 @@ jobs:
         setAllVars: true
 
     - name: NuGet restore
-      run: | 
+      run: |
         dotnet restore ReactiveUI.sln
         dotnet restore ReactiveUI.Events.sln
       working-directory: src
@@ -67,7 +70,7 @@ jobs:
         pharmacist generate-platform -t net461,net462,net47,net471,net472,net48,netcoreapp3.1,net5.0 --is-winforms -o "src/ReactiveUI.Events.Winforms/" --output-prefix "Events_"
 
     - name: Build
-      run: | 
+      run: |
         msbuild /t:build,pack /nowarn:MSB4011,VSX1000 /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.sln
         msbuild /t:build,pack /nowarn:MSB4011,VSX1000 /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.Events.sln
       working-directory: src
