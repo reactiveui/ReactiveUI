@@ -9,6 +9,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
@@ -1182,6 +1183,30 @@ namespace ReactiveUI.Tests
 
             Assert.False(isExecuting);
             Assert.Equal("break execution", fail?.Message);
+        }
+
+        [Fact]
+        public async Task ReactiveCommandExecutesFromInvokeCommand()
+        {
+            var semaphore = new SemaphoreSlim(0);
+            var command = ReactiveCommand.Create(() => semaphore.Release());
+
+            Observable.Return(Unit.Default)
+                      .InvokeCommand(command);
+
+            var result = 0;
+            var task = semaphore.WaitAsync();
+            if (await Task.WhenAny(Task.Delay(TimeSpan.FromMilliseconds(100)), task).ConfigureAwait(true) == task)
+            {
+                result = 1;
+            }
+            else
+            {
+                result = -1;
+            }
+
+            await Task.Delay(200).ConfigureAwait(false);
+            Assert.Equal(1, result);
         }
     }
 }
