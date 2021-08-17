@@ -38,12 +38,12 @@ jobs:
         dotnet-version: 6.0.x
         include-prerelease: true
 
-    #- name: Install VS2019 preview
-    #  shell: bash
-    #  run: |
-    #    dotnet tool update -g dotnet-vs
-    #    vs install preview -sku:enterprise --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
-    #    echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
+    - name: Install VS2019 preview
+      shell: bash
+      run: |
+        dotnet tool update -g dotnet-vs
+        vs install preview -sku:enterprise --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
+        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
 
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
