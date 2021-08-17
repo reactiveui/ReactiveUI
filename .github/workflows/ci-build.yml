@@ -40,6 +40,8 @@ jobs:
 
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
+      with:
+        prerelease: true
 
     # - name: Update VS2019
     #   shell: powershell
