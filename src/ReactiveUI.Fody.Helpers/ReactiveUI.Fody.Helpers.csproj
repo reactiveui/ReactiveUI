@@ -13,9 +13,9 @@
     <!-- Due to fody insisting on having .net 4 classes, we can't pack on non-windows -->
     <IsPackable Condition=" '$(OS)' != 'Windows_NT' ">false</IsPackable>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Fody" Version="6.5.2" PrivateAssets="None" />
     <PackageReference Include="FodyPackaging" Version="6.5.2" PrivateAssets="All" />
@@ -29,28 +29,28 @@
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS'))">
-    <Reference Include="System.Runtime.Serialization" />    
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.TVOS10'))">
-    <Reference Include="System.Runtime.Serialization" />    
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac'))">
-    <Reference Include="System.Runtime.Serialization" />    
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('MonoAndroid'))">
-    <Reference Include="System.Runtime.Serialization" />    
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
-  
+
   <ItemGroup Condition="$(TargetFramework.StartsWith('netcoreapp'))">
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
     <ProjectReference Include="..\ReactiveUI.Fody\ReactiveUI.Fody.csproj" ReferenceOutputAssembly="False" />

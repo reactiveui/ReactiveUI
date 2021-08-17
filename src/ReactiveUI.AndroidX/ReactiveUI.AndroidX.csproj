@@ -5,7 +5,7 @@
     <PackageDescription>Provides ReactiveUI extensions for the AndroidX Library</PackageDescription>
     <PackageId>ReactiveUI.AndroidX</PackageId>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;forms;monodroid;monotouch;xamarin.android;net;</PackageTags>
   </PropertyGroup>
 
@@ -17,7 +17,7 @@
     <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.2.1.1" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
