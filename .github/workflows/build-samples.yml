@@ -38,8 +38,10 @@ jobs:
         include-prerelease: true
         
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Add MSBuild to PATH
+      uses: glennawatson/setup-msbuild@v1.0.3
+      with:
+        prerelease: true
 
     - name: Restore/Build the sample
       run: msbuild IntegrationTests.All.sln /t:restore,build /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=$env:Configuration
