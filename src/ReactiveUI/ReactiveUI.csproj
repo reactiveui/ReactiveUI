@@ -102,6 +102,10 @@
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
 
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
+    <Compile Include="Platforms\net6\**\*.cs" />
+  </ItemGroup>
+
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
     <Compile Include="Platforms\tizen\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
