@@ -3,6 +3,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidX")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Drawing")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.TestRunner.Android")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno")]
