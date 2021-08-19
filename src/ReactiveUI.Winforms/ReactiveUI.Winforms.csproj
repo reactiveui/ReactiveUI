@@ -1,14 +1,14 @@
 <Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>   
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Forms</PackageDescription>
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
   </PropertyGroup>
 

@@ -4,9 +4,9 @@
     <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
     <FodyTargetFramework Condition=" $(TargetFramework.StartsWith('net4')) ">$(TargetFramework)</FodyTargetFramework>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
   </ItemGroup>

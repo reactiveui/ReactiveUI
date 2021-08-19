@@ -7,7 +7,7 @@
     <PackageDescription>A extension to the ReactiveUI platform that provides Splat bitmap operation support.</PackageDescription>
     <PackageId>ReactiveUI.Drawing</PackageId>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

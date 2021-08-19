@@ -5,12 +5,12 @@
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;net472</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />    
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
     <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
   </ItemGroup>
 

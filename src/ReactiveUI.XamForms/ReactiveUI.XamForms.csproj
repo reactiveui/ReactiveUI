@@ -4,7 +4,7 @@
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Xamarin Forms</PackageDescription>
     <PackageId>ReactiveUI.XamForms</PackageId>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.forms;net</PackageTags>
   </PropertyGroup>
 
