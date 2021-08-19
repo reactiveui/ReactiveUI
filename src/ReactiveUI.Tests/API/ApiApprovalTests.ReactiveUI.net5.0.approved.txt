@@ -717,6 +717,7 @@ namespace ReactiveUI
         Blazor = 5,
         Drawing = 6,
         Avalonia = 7,
+        Maui = 8,
     }
     public class Registrations
     {
