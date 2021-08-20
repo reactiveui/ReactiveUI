@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Splat.Autofac" Version="12.*" />
-    <PackageReference Include="Splat.DryIoc" Version="12.*" />
+    <PackageReference Include="Splat.DryIoc" Version="13.*" />
     <PackageReference Include="Splat.Ninject" Version="12.*" />
   </ItemGroup>
 
