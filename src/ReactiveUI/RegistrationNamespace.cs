@@ -51,6 +51,11 @@ namespace ReactiveUI
         /// <summary>
         /// Maui.
         /// </summary>
-        Maui
+        Maui,
+
+        /// <summary>
+        /// Uwp.
+        /// </summary>
+        Uwp,
     }
 }

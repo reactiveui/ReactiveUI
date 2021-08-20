@@ -25,7 +25,7 @@ namespace ReactiveUI
     public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         private readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> _commonSource;
-        private readonly Subject<object> _elementSelected = new();
+        private readonly Subject<object?> _elementSelected = new();
         private readonly UITableViewAdapter _adapter;
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets an IObservable that is a hook to <see cref="RowSelected"/> calls.
         /// </summary>
-        public IObservable<object> ElementSelected => _elementSelected;
+        public IObservable<object?> ElementSelected => _elementSelected;
 
         /// <summary>
         /// Gets or sets the row animation to use when UITableView.InsertSections is invoked.
@@ -281,7 +281,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="indexPath">The index path.</param>
         /// <returns>The item.</returns>
-        public object ItemAt(NSIndexPath indexPath)
+        public object? ItemAt(NSIndexPath indexPath)
         {
             if (indexPath is null)
             {

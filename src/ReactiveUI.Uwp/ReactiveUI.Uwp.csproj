@@ -1,0 +1,23 @@
+<Project Sdk="MSBuild.Sdk.Extras">
+
+  <PropertyGroup>
+    <TargetFrameworks>uap10.0.16299</TargetFrameworks>
+    <PackageDescription>Provides ReactiveUI extensions for the UWP Library</PackageDescription>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <DefineConstants>$(DefineConstants);NETFX_CORE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Rx\**\*.cs" />
+    <None Include="Rx\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Label="Package">
+    <None Include="ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
+  </ItemGroup>
+</Project>

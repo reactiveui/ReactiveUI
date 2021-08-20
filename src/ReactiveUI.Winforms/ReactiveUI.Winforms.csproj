@@ -17,6 +17,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net5.0-windows' or $(TargetFramework) == 'net6.0-windows' ">
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx" />
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Internal\Constants.cs" LinkBase="Rx" />
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Uwp\Rx\Linq\DispatcherObservable.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="RoutedViewHost.Designer.cs">
       <SubType>UserControl</SubType>
       <DependentUpon>RoutedViewHost.cs</DependentUpon>

@@ -28,7 +28,14 @@ namespace ReactiveUI
                 }
 
                 var serializer = new BinaryFormatter();
-                var st = new MemoryStream(AutoSuspendHelper.LatestBundle.GetByteArray("__state"));
+                var buffer = AutoSuspendHelper.LatestBundle.GetByteArray("__state");
+
+                if (buffer is null)
+                {
+                    return Observable.Throw<object>(new InvalidOperationException("The buffer __state could not be found."));
+                }
+
+                var st = new MemoryStream(buffer);
 
                 return Observable.Return(serializer.Deserialize(st));
             }

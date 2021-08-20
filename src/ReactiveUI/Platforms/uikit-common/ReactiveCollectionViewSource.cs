@@ -23,7 +23,7 @@ namespace ReactiveUI
     public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         private readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> _commonSource;
-        private readonly Subject<object> _elementSelected = new();
+        private readonly Subject<object?> _elementSelected = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
@@ -89,7 +89,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets an IObservable that is a hook to <see cref="ItemSelected"/> calls.
         /// </summary>
-        public IObservable<object> ElementSelected => _elementSelected;
+        public IObservable<object?> ElementSelected => _elementSelected;
 
         /// <summary>
         /// Gets an Observable that signals *before* a property is about to
@@ -138,7 +138,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="indexPath">The index path.</param>
         /// <returns>The object at the specified index.</returns>
-        public object ItemAt(NSIndexPath indexPath)
+        public object? ItemAt(NSIndexPath indexPath)
         {
             if (indexPath is null)
             {

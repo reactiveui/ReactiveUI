@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29001.49
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD9762CF-E104-481C-96A6-26E624B86283}"
 	ProjectSection(SolutionItems) = preProject
@@ -63,7 +63,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{EF7ED1B0-00E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2AE709FA-BE58-4287-BFD3-E80BEB605125}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Maui", "ReactiveUI.Maui\ReactiveUI.Maui.csproj", "{3C552CA0-C364-4E51-8825-35D082C1D5BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Maui", "ReactiveUI.Maui\ReactiveUI.Maui.csproj", "{3C552CA0-C364-4E51-8825-35D082C1D5BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Uwp", "ReactiveUI.Uwp\ReactiveUI.Uwp.csproj", "{3684F9E6-BD5F-4C13-8DE8-FFCA8C62F439}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +161,10 @@ Global
 		{3C552CA0-C364-4E51-8825-35D082C1D5BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C552CA0-C364-4E51-8825-35D082C1D5BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C552CA0-C364-4E51-8825-35D082C1D5BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3684F9E6-BD5F-4C13-8DE8-FFCA8C62F439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3684F9E6-BD5F-4C13-8DE8-FFCA8C62F439}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3684F9E6-BD5F-4C13-8DE8-FFCA8C62F439}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3684F9E6-BD5F-4C13-8DE8-FFCA8C62F439}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -186,6 +192,7 @@ Global
 		{999D555D-C567-457C-95F7-8AD61310C56E} = {EF7ED1B0-00E4-4CD0-9741-0D1D4463B8EC}
 		{46D5C71E-2E58-4454-BE3A-30B9047A2D1E} = {2AE709FA-BE58-4287-BFD3-E80BEB605125}
 		{3C552CA0-C364-4E51-8825-35D082C1D5BA} = {EF7ED1B0-00E4-4CD0-9741-0D1D4463B8EC}
+		{3684F9E6-BD5F-4C13-8DE8-FFCA8C62F439} = {EF7ED1B0-00E4-4CD0-9741-0D1D4463B8EC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9326B58C-0AD3-4527-B3F4-86B54673C62E}

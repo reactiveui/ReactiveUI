@@ -132,13 +132,27 @@ namespace ReactiveUI
             var pi = ActuallyGetProperty(typeInfo, propertyName + "Property");
             if (pi != null)
             {
-                return () => (DependencyProperty)pi.GetValue(null);
+                var value = pi.GetValue(null);
+
+                if (value is null)
+                {
+                    return null;
+                }
+
+                return () => (DependencyProperty)value;
             }
 
             var fi = ActuallyGetField(typeInfo, propertyName + "Property");
             if (fi != null)
             {
-                return () => (DependencyProperty)fi.GetValue(null);
+                var value = fi.GetValue(null);
+
+                if (value is null)
+                {
+                    return null;
+                }
+
+                return () => (DependencyProperty)value;
             }
 
             return null;
