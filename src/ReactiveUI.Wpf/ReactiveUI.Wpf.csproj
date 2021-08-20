@@ -1,6 +1,6 @@
 <Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Presentation Foundation (WPF)</PackageDescription>
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
@@ -14,11 +14,8 @@
     <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net461')) ">
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />
   </ItemGroup>
 </Project>

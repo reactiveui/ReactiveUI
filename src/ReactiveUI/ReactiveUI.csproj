@@ -1,7 +1,7 @@
 <Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0;tizen40;net6.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;net472;uap10.0.16299;netcoreapp3.1;net5.0-windows;net5.0-windows10.0.19041</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0;tizen40;net6.0;net6.0-android;net6.0-ios;net6.0-tvos;net6.0-macos</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;net472;uap10.0.16299;netcoreapp3.1;net5.0-windows;net6.0-windows;net5.0-windows10.0.19041</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
@@ -10,19 +10,22 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(TargetFramework) == 'net5.0-windows'">
+  <PropertyGroup Condition="$(TargetFramework) == 'net5.0-windows' or $(TargetFramework) == 'net6.0-windows'">
     <UseWpf>true</UseWpf>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net47' or $(TargetFramework) == 'net471' or $(TargetFramework) == 'net5.0-windows'">
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net47' or $(TargetFramework) == 'net471' or $(TargetFramework) == 'net5.0-windows' or $(TargetFramework) == 'net6.0-windows'">
     <DefineConstants>$(DefineConstants);HAS_WPF</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
+    <Compile Remove="Resources\**" />
     <None Include="Platforms\**\*.cs" />
-    <PackageReference Include="Splat" Version="12.*" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+    <PackageReference Include="Splat" Version="13.*" />
     <PackageReference Include="DynamicData" Version="7.*" />
   </ItemGroup>
 
@@ -45,7 +48,7 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net5.0-windows' ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net5.0-windows' or $(TargetFramework) == 'net6.0-windows' ">
     <Compile Include="Platforms\net4Desktop\**\*.cs" />
   </ItemGroup>
 

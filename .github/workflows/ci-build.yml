@@ -38,7 +38,16 @@ jobs:
         dotnet-version: 6.0.x
         include-prerelease: true
 
-    - name: Install VS2019 preview
+    - name: Install DotNet workloads
+      shell: bash
+      run: |
+        dotnet workload install android
+        dotnet workload install ios
+        dotnet workload install tvos
+        dotnet workload install macos
+        dotnet workload install maui
+
+    - name: Install VS2022 preview
       shell: bash
       run: |
         dotnet tool update -g dotnet-vs
