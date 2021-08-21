@@ -71,12 +71,13 @@ jobs:
         dotnet restore ReactiveUI.Events.sln
       working-directory: src
 
-    - name: Install Pharmacist and Generate Events
-      run: |
-        dotnet tool install -g Pharmacist
-        pharmacist generate-platform -t uap10.0.16299,uap10.0.17134,uap10.0.17763,uap10.0.18362,uap10.0.19041,xamarin.mac20,xamarin.tvos10,monoandroid10.0,monoandroid11.0,xamarin.ios10,xamarin.watchos10 -o "src/ReactiveUI.Events/" --output-prefix "Events_"
-        pharmacist generate-platform -t net461,net462,net47,net471,net472,net48,netcoreapp3.1,net5.0,net6.0 --is-wpf -o "src/ReactiveUI.Events.WPF/" --output-prefix "Events_"
-        pharmacist generate-platform -t net461,net462,net47,net471,net472,net48,netcoreapp3.1,net5.0,net6.0 --is-winforms -o "src/ReactiveUI.Events.Winforms/" --output-prefix "Events_"
+    # Removed until Pharmacist can be released with new package
+    #- name: Install Pharmacist and Generate Events
+    #  run: |
+    #    dotnet tool install -g Pharmacist
+    #    pharmacist generate-platform -t uap10.0.16299,uap10.0.17134,uap10.0.17763,uap10.0.18362,uap10.0.19041,xamarin.mac20,xamarin.tvos10,monoandroid10.0,monoandroid11.0,xamarin.ios10,xamarin.watchos10 -o "src/ReactiveUI.Events/" --output-prefix "Events_"
+    #    pharmacist generate-platform -t net461,net462,net47,net471,net472,net48,netcoreapp3.1,net5.0,net6.0 --is-wpf -o "src/ReactiveUI.Events.WPF/" --output-prefix "Events_"
+    #    pharmacist generate-platform -t net461,net462,net47,net471,net472,net48,netcoreapp3.1,net5.0,net6.0 --is-winforms -o "src/ReactiveUI.Events.Winforms/" --output-prefix "Events_"
 
     - name: Build
       run: |
