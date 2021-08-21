@@ -72,7 +72,6 @@ jobs:
     - name: Build
       run: |
         msbuild /t:build,pack /nowarn:MSB4011,VSX1000 /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.sln
-        msbuild /t:build,pack /nowarn:MSB4011,VSX1000 /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.Events.sln
       working-directory: src
 
     - name: Run Unit Tests and Generate Coverage
