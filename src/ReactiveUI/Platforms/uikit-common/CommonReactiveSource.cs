@@ -94,7 +94,7 @@ namespace ReactiveUI
             return count;
         }
 
-        public object ItemAt(NSIndexPath path)
+        public object? ItemAt(NSIndexPath path)
         {
             Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 

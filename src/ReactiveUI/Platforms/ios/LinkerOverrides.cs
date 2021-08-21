@@ -67,7 +67,7 @@ namespace ReactiveUI.Cocoa
             sw.ValueChanged += eh;
             sw.On = true;
 
-            eh.Invoke(null, null);
+            eh.Invoke(null, EventArgs.Empty);
         }
     }
 }

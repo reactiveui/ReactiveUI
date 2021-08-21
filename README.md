@@ -127,6 +127,14 @@ ReactiveUI is developed under an OSI-approved open source license, making it fre
 
 If you want to submit pull requests please first open a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose) to discuss. We are first time PR contributors friendly.
 
+The current source uses **Visual Studio 2019 Preview**. Please install the following workloads to enable building the source:
+
+- dotnet workload install android
+- dotnet workload install ios
+- dotnet workload install tvos
+- dotnet workload install macos
+- dotnet workload install maui
+
 ## Core Team
 
 <table>
@@ -150,6 +158,8 @@ If you want to submit pull requests please first open a [GitHub issue](https://g
         <a href="https://github.com/worldbeater">Artyom Gorchakov</a>
         <p>Moscow, Russia</p>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/cabauman.png?s=150">
         <br>
@@ -165,6 +175,7 @@ If you want to submit pull requests please first open a [GitHub issue](https://g
     </tr>
   </tbody>
 </table>
+
 
 ## Alumni Core Team
 
@@ -191,6 +202,8 @@ The following have been core team members in the past.
         <a href="https://github.com/olevett">Olly Levett</a>
         <p>London, United Kingdom</p>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/anaisbetts.png?s=150">
         <br>
@@ -212,6 +225,7 @@ The following have been core team members in the past.
      </tr>
   </tbody>
 </table>
+
 
 ## .NET Foundation
 

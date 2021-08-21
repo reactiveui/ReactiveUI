@@ -1,7 +1,7 @@
 <Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Forms</PackageDescription>
@@ -14,6 +14,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net5.0-windows' or $(TargetFramework) == 'net6.0-windows' ">
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx" />
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Internal\Constants.cs" LinkBase="Rx" />
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Uwp\Rx\Linq\DispatcherObservable.cs" />
   </ItemGroup>
 
   <ItemGroup>

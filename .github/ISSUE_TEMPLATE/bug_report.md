@@ -20,16 +20,19 @@ If this is a question please ask on [StackOverflow](https://stackoverflow.com/qu
 
 **Steps To Reproduce**
 <!--
-Provide the steps to reproduce the behavior:
+Provide the steps to reproduce the behaviour:
+
+​	Either link a Repo showing the error, this gives us most context for your use case scenario.
+
+​	OR Following these steps
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 -->
 
-
-
-**Expected behavior**
+**Expected behaviour**
 <!-- A clear and concise description of what you expected to happen. -->
 
 
@@ -44,6 +47,7 @@ Provide the steps to reproduce the behavior:
 - OS:       <!-- [e.g. iOS] -->
 - Version   <!-- [e.g. 22] -->
 - Device:   <!-- [e.g. iPhone6] -->
+- ReactiveUI Version:    <!-- [e.g. 15.1.1] -->
 
 **Additional context**
 <!-- Add any other context about the problem here. -->

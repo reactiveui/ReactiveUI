@@ -1,6 +1,6 @@
 <Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows;net461;net472;net48;net5.0-windows10.0.19041</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Presentation Foundation (WPF)</PackageDescription>
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
@@ -11,14 +11,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
+    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net5.0-windows' or $(TargetFramework) == 'net6.0-windows' ">
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Concurrency\DispatcherScheduler.cs" LinkBase="Rx" />
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Internal\Constants.cs" LinkBase="Rx" />
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Uwp\Rx\Linq\ControlObservable.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net461')) ">
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="..\ReactiveUI\Platforms\windows-common\BindingTypeConverters.cs" />
   </ItemGroup>
 </Project>

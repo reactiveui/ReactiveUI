@@ -124,7 +124,7 @@ namespace ReactiveUI
                 Observable.FromEvent<EventHandler, bool>(
                     eventHandler =>
                     {
-                        void Handler(object sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
+                        void Handler(object? sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
                         return Handler;
                     },
                     x => command.CanExecuteChanged += x,
@@ -182,7 +182,7 @@ namespace ReactiveUI
                 Observable.FromEvent<EventHandler, bool>(
                     eventHandler =>
                     {
-                        void Handler(object sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
+                        void Handler(object? sender, EventArgs e) => eventHandler(command.CanExecute(latestParam));
                         return Handler;
                     },
                     x => command.CanExecuteChanged += x,

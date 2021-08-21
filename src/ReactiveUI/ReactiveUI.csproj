@@ -1,7 +1,7 @@
 <Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid10.0;tizen40;net6.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;net472;uap10.0.16299;netcoreapp3.1;net5.0-windows;net5.0-windows10.0.19041</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid11.0;tizen40;net6.0;net6.0-android;net6.0-ios;net6.0-tvos;net6.0-macos;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;net472;uap10.0.16299</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
@@ -10,56 +10,21 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(TargetFramework) == 'net5.0-windows'">
-    <UseWpf>true</UseWpf>
-    <UseWindowsForms>true</UseWindowsForms>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net47' or $(TargetFramework) == 'net471' or $(TargetFramework) == 'net5.0-windows'">
-    <DefineConstants>$(DefineConstants);HAS_WPF</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
+    <Compile Remove="Resources\**" />
     <None Include="Platforms\**\*.cs" />
-    <PackageReference Include="Splat" Version="12.*" />
-    <PackageReference Include="DynamicData" Version="7.*" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <Compile Include="Platforms\netstandard2.0\**\*.cs" />
+    <Compile Include="Platforms\shared\**\*.cs" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
-    <Compile Include="Platforms\net4\**\*.cs" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net46')) ">
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net46')) or $(TargetFramework) == 'net5.0-windows' ">
-    <Compile Include="Platforms\net4Desktop\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard2')) ">
-    <Compile Include="Platforms\shared\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
-    <Compile Include="Platforms\windows-common\**\*.cs" />
-    <Compile Include="Platforms\uap\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Label="Package" Condition=" $(TargetFramework.StartsWith('uap')) ">
-    <None Include="Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
@@ -70,12 +35,26 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-ios')) ">
+    <Compile Include="Platforms\apple-common\**\*.cs" />
+    <Compile Include="Platforms\ios\**\*.cs" />
+    <Compile Include="Platforms\uikit-common\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+  </ItemGroup>
+
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\mac\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="netstandard" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-mac')) ">
+    <Compile Include="Platforms\apple-common\**\*.cs" />
+    <Compile Include="Platforms\mac\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
@@ -86,24 +65,26 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-tvos')) ">
+    <Compile Include="Platforms\apple-common\**\*.cs" />
+    <Compile Include="Platforms\tvos\**\*.cs" />
+    <Compile Include="Platforms\uikit-common\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+  </ItemGroup>
+
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
     <Compile Include="Platforms\android\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
-    <Compile Include="Platforms\netcoreapp3\**\*.cs" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-android')) ">
+    <Compile Include="Platforms\android\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net5')) ">
-    <Compile Include="Platforms\net5\**\*.cs" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
-    <Compile Include="Platforms\net6\**\*.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or $(TargetFramework.StartsWith('net5')) or '$(TargetFramework)' == 'net6.0' or $(TargetFramework.StartsWith('netcoreapp3')) or $(TargetFramework.StartsWith('uap')) ">
+    <Compile Include="Platforms\net\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
@@ -119,6 +100,11 @@
     <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
     <PackageReference Include="System.Threading" Version="4.3.0" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Splat" Version="13.*" />
+    <PackageReference Include="DynamicData" Version="7.*" />
   </ItemGroup>
 
   <ItemGroup>

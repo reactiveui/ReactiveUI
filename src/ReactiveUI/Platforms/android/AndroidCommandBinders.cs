@@ -22,7 +22,7 @@ namespace ReactiveUI
         public AndroidCommandBinders() // TODO: Create Test
         {
             var view = typeof(View);
-            Register(view, 9, (cmd, t, cp) => ForEvent(cmd, t, cp, "Click", view.GetRuntimeProperty("Enabled")));
+            Register(view, 9, (cmd, t, cp) => ForEvent(cmd, t, cp, "Click", view.GetRuntimeProperty("Enabled") ?? throw new InvalidOperationException("Could not find property 'Enabled' on type View, which is needed for binding")));
         }
 
         /// <summary>

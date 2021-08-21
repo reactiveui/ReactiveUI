@@ -231,9 +231,16 @@ namespace ReactiveUI
                 {
                     var resources = currentAssembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
 
-                    return resources.GetNestedType("Id").GetFields()
+                    var idType = resources.GetNestedType("Id");
+
+                    if (idType is null)
+                    {
+                        throw new InvalidOperationException("Id is not a valid nested type in the resources.");
+                    }
+
+                    return idType.GetFields()
                         .Where(x => x.FieldType == typeof(int))
-                        .ToDictionary(k => k.Name, v => (int)v.GetRawConstantValue(), StringComparer.InvariantCultureIgnoreCase);
+                        .ToDictionary(k => k.Name, v => ((int?)v.GetRawConstantValue()) ?? 0, StringComparer.InvariantCultureIgnoreCase);
                 });
 
             return ids[name];

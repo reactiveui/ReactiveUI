@@ -36,7 +36,8 @@ namespace ReactiveUI
                 { RegistrationNamespace.Uno, "ReactiveUI.Uno" },
                 { RegistrationNamespace.Blazor, "ReactiveUI.Blazor" },
                 { RegistrationNamespace.Drawing, "ReactiveUI.Drawing" },
-                { RegistrationNamespace.Maui, "ReactiveUI.Maui" }
+                { RegistrationNamespace.Maui, "ReactiveUI.Maui" },
+                { RegistrationNamespace.Uwp, "ReactiveUI.Uwp" },
             };
 
             if (registrationNamespaces.Length == 0)

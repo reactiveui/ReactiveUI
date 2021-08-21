@@ -55,7 +55,6 @@ namespace ReactiveUI.AndroidSupport
     /// This is an Activity that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged).
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
     {
         private readonly Subject<Unit> _activated = new();

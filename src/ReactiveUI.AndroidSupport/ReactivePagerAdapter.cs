@@ -22,7 +22,6 @@ namespace ReactiveUI.AndroidSupport
     /// Observable change set, in a similar fashion to ReactiveTableViewSource.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
         where TViewModel : class
     {
@@ -138,5 +137,4 @@ namespace ReactiveUI.AndroidSupport
         {
         }
     }
-#pragma warning restore SA1600 // Elements should be documented
 }

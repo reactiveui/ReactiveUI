@@ -1,6 +1,6 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard20;MonoAndroid10.0;Xamarin.iOS10;Xamarin.Mac20</TargetFrameworks>
+    <TargetFrameworks>netstandard20;MonoAndroid11.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.16299</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno</PackageDescription>
@@ -15,8 +15,14 @@
     <DefineConstants>HAS_UNO;WASM</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+    <Compile Remove="Resources\**" />
+  </ItemGroup>
+
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('uap')) ">
-    <PackageReference Include="Uno.UI" Version="3.*" />
+    <PackageReference Include="Uno.UI" Version="3.10.0-dev.414" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
@@ -29,11 +35,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\ReactiveUI\Platforms\uap\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI\Platforms\uap" />
-    <Compile Include="..\ReactiveUI\Platforms\uap\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI\Platforms\uap" />
-    <Compile Include="..\ReactiveUI\Platforms\windows-common\**\*.cs" LinkBase="ReactiveUI\Platforms\windows-common" />
+    <Compile Include="..\ReactiveUI.Uwp\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI.Uwp" />
+    <Compile Include="..\ReactiveUI.Uwp\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI.Uwp" />
+    <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
 
-  	<None Include="..\ReactiveUI\Platforms\uap\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
+  	<None Include="..\ReactiveUI.Uwp\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
   </ItemGroup>
 
   <ItemGroup>
