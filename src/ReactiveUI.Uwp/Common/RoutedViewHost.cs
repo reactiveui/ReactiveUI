@@ -8,15 +8,19 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using ReactiveUI;
 using Splat;
 
-#if NETFX_CORE || HAS_UNO
+#if HAS_WINUI
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+#elif NETFX_CORE || HAS_UNO
+using System.Windows;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
 
+using System.Windows;
 using System.Windows.Controls;
 
 #endif
