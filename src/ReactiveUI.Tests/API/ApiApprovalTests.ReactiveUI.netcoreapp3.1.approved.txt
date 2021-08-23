@@ -8,6 +8,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uwp")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinUI")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.XamForms")]
@@ -718,6 +719,7 @@ namespace ReactiveUI
         Avalonia = 7,
         Maui = 8,
         Uwp = 9,
+        WinUI = 10,
     }
     public class Registrations
     {
