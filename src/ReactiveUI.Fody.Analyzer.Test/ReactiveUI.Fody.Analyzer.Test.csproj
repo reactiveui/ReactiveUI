@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <Nullable>enable</Nullable>
@@ -16,8 +16,5 @@
     <ProjectReference Include="..\ReactiveUI.Fody.Helpers\ReactiveUI.Fody.Helpers.csproj" />
     <ProjectReference Include="..\ReactiveUI.Fody\ReactiveUI.Fody.csproj" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="FluentAssertions" Version="6.1.0" />
   </ItemGroup>
 </Project>

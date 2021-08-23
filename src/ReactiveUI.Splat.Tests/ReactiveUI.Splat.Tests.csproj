@@ -17,9 +17,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FluentAssertions" Version="6.1.0" />
-  </ItemGroup>
-
 </Project>

@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
@@ -27,11 +27,7 @@
   <ItemGroup>
     <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FluentAssertions" Version="6.1.0" />
-  </ItemGroup>
-
+  
   <Target Name="CopyWeavers" BeforeTargets="Fody.WeavingTask">
     <!-- Fody expects to find weavers in referenced NuGet packages or the Tools directory at the solution level.
          Since this is for testing purposes before a NuGet package is created, we'll just use the Tools directory
