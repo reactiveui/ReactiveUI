@@ -57,5 +57,10 @@ namespace ReactiveUI
         /// Uwp.
         /// </summary>
         Uwp,
+
+        /// <summary>
+        /// WinUI.
+        /// </summary>
+        WinUI,
     }
 }

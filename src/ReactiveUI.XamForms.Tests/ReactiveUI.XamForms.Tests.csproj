@@ -12,4 +12,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.XamForms\ReactiveUI.XamForms.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FluentAssertions" Version="6.1.0" />
+  </ItemGroup>
 </Project>

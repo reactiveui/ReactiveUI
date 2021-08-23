@@ -15,4 +15,8 @@
     <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="FluentAssertions" Version="6.1.0" />
+  </ItemGroup>
+
 </Project>

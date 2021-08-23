@@ -24,10 +24,7 @@ namespace ReactiveUI.WinUI
             }
 
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-
-            // registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
@@ -35,7 +32,7 @@ namespace ReactiveUI.WinUI
             if (!ModeDetector.InUnitTestRunner())
             {
                 // NB: On .NET Core, trying to touch DispatcherScheduler blows up :cry:
-                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => { return DispatcherQueueScheduler.Current; });
+                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
                 RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             }
 

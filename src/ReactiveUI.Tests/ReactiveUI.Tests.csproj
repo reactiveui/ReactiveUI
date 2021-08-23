@@ -96,6 +96,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Update="FluentAssertions" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="Platforms\wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
