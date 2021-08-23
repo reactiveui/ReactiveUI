@@ -31,12 +31,20 @@ namespace ReactiveUI.WinUI
             }
 
             var viewLoaded = Observable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
-                eventHandler => (FrameworkElement sender1, object e1) => ViewLoadedHandler(sender1, e1, eventHandler),
+                eventHandler =>
+                {
+                    void Handler(FrameworkElement sender, object e) => eventHandler(true);
+                    return Handler;
+                },
                 x => fe.Loading += x,
                 x => fe.Loading -= x);
 
             var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
-                eventHandler => (object sender, RoutedEventArgs e) => ViewUnloadedHandler(sender, e, eventHandler),
+                eventHandler =>
+                {
+                    void Handler(object sender, RoutedEventArgs e) => eventHandler(false);
+                    return Handler;
+                },
                 x => fe.Unloaded += x,
                 x => fe.Unloaded -= x);
 
@@ -46,9 +54,5 @@ namespace ReactiveUI.WinUI
                 .Switch()
                 .DistinctUntilChanged();
         }
-
-        private static void ViewUnloadedHandler(object sender, RoutedEventArgs e, Action<bool> eventHandler) => eventHandler(false);
-
-        private static void ViewLoadedHandler(FrameworkElement sender, object e, Action<bool> eventHandler) => eventHandler(true);
     }
 }
