@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
+    <TargetFrameworks>net5.0-windows10.0.19041.0;net6.0-windows10.0.19041</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for WinUI Desktop</PackageDescription>
     <RootNamespace>ReactiveUI.WinUI.Desktop</RootNamespace>
@@ -12,17 +12,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ProjectReunion" Version="0.8.2" />
-    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="0.8.2" />
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="0.8.2" />
-    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />    
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
-    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />
   </ItemGroup>
 
 </Project>
