@@ -33,7 +33,7 @@ namespace ReactiveUI.WinUI
             if (!ModeDetector.InUnitTestRunner())
             {
                 // NB: On .NET Core, trying to touch DispatcherScheduler blows up :cry:
-                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => { return DispatcherQueueScheduler.Current; });
+                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
                 RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
             }
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
@@ -14,5 +14,4 @@
   <ItemGroup>
     <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/" />
   </ItemGroup>
-
 </Project>
