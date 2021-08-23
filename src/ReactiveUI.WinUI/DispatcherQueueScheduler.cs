@@ -44,7 +44,6 @@ namespace System.Reactive.Concurrency
         {
             DispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
             Priority = DispatcherQueuePriority.Normal;
-
         }
 
         /// <summary>
