@@ -7,7 +7,6 @@
     <RuntimeIdentifiers>win10-x86;win10-x64</RuntimeIdentifiers>
     <DefineConstants>HAS_WINUI</DefineConstants>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;winui</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
 

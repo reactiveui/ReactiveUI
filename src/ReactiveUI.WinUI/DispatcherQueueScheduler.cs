@@ -11,7 +11,7 @@ using Microsoft.UI.Dispatching;
 namespace System.Reactive.Concurrency
 {
     /// <summary>
-    /// Represents an object that schedules units of work on a <see cref="System.Windows.Threading.Dispatcher"/>.
+    /// Represents an object that schedules units of work on a <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/>.
     /// </summary>
     /// <remarks>
     /// This scheduler type is typically used indirectly through the <see cref="Linq.DispatcherObservable.ObserveOnDispatcher{TSource}(IObservable{TSource})"/> and <see cref="Linq.DispatcherObservable.SubscribeOnDispatcher{TSource}(IObservable{TSource})"/> methods that use the Dispatcher on the calling thread.
@@ -19,7 +19,7 @@ namespace System.Reactive.Concurrency
     public class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriodic
     {
         /// <summary>
-        /// Gets the scheduler that schedules work on the <see cref="System.Windows.Threading.Dispatcher"/> for the current thread.
+        /// Gets the scheduler that schedules work on the <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> for the current thread.
         /// </summary>
         public static DispatcherQueueScheduler Current
         {
@@ -36,33 +36,32 @@ namespace System.Reactive.Concurrency
         }
 
         /// <summary>
-        /// Constructs a <see cref="DispatcherScheduler"/> that schedules units of work on the given <see cref="System.Windows.Threading.Dispatcher"/>.
+        /// Constructs a <see cref="DispatcherQueueScheduler"/> that schedules units of work on the given <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/>.
         /// </summary>
-        /// <param name="dispatcher"><see cref="DispatcherScheduler"/> to schedule work on.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="dispatcher"/> is <c>null</c>.</exception>
-        public DispatcherQueueScheduler(DispatcherQueue dispatcher)
+        /// <param name="dispatcherQueue"><see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> to schedule work on.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="dispatcherQueue"/> is <c>null</c>.</exception>
+        public DispatcherQueueScheduler(DispatcherQueue dispatcherQueue)
         {
-            Dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+            DispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
             Priority = DispatcherQueuePriority.Normal;
-
         }
 
         /// <summary>
-        /// Constructs a <see cref="DispatcherScheduler"/> that schedules units of work on the given <see cref="System.Windows.Threading.Dispatcher"/> at the given priority.
+        /// Constructs a <see cref="DispatcherScheduler"/> that schedules units of work on the given <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> at the given priority.
         /// </summary>
-        /// <param name="dispatcher"><see cref="DispatcherScheduler"/> to schedule work on.</param>
+        /// <param name="dispatcherQueue"><see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> to schedule work on.</param>
         /// <param name="priority">Priority at which units of work are scheduled.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="dispatcher"/> is <c>null</c>.</exception>
-        public DispatcherQueueScheduler(DispatcherQueue dispatcher, DispatcherQueuePriority priority)
+        /// <exception cref="ArgumentNullException"><paramref name="dispatcherQueue"/> is <c>null</c>.</exception>
+        public DispatcherQueueScheduler(DispatcherQueue dispatcherQueue, DispatcherQueuePriority priority)
         {
-            Dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+            DispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
             Priority = priority;
         }
 
         /// <summary>
-        /// Gets the <see cref="System.Windows.Threading.Dispatcher"/> associated with the <see cref="DispatcherScheduler"/>.
+        /// Gets the <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> associated with the <see cref="DispatcherQueueScheduler"/>.
         /// </summary>
-        public DispatcherQueue Dispatcher { get; }
+        public DispatcherQueue DispatcherQueue { get; }
 
         /// <summary>
         /// Gets the priority at which work items will be dispatched.
@@ -86,20 +85,20 @@ namespace System.Reactive.Concurrency
 
             var d = new SingleAssignmentDisposable();
 
-            Dispatcher.TryEnqueue(Priority, 
+            DispatcherQueue.TryEnqueue(Priority,
                 () =>
-                { 
-                     if (!d.IsDisposed)
-                     {
-                         d.Disposable = action(this, state);
-                     }
+                {
+                    if (!d.IsDisposed)
+                    {
+                        d.Disposable = action(this, state);
+                    }
                 });
 
             return d;
         }
 
         /// <summary>
-        /// Schedules an action to be executed after <paramref name="dueTime"/> on the dispatcher, using a <see cref="System.Windows.Threading.DispatcherTimer"/> object.
+        /// Schedules an action to be executed after <paramref name="dueTime"/> on the dispatcherQueue, using a <see cref="Microsoft.UI.Dispatching.DispatcherQueueTimer"/> object.
         /// </summary>
         /// <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
         /// <param name="state">State passed to the action to be executed.</param>
@@ -127,7 +126,7 @@ namespace System.Reactive.Concurrency
         {
             var d = new MultipleAssignmentDisposable();
 
-            var timer = Dispatcher.CreateTimer();
+            var timer = DispatcherQueue.CreateTimer();
 
             timer.Tick += (s, e) =>
             {
@@ -163,7 +162,7 @@ namespace System.Reactive.Concurrency
         }
 
         /// <summary>
-        /// Schedules a periodic piece of work on the dispatcher, using a <see cref="System.Windows.Threading.DispatcherTimer"/> object.
+        /// Schedules a periodic piece of work on the dispatcherQueue, using a <see cref="Microsoft.UI.Dispatching.DispatcherQueueTimer"/> object.
         /// </summary>
         /// <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
         /// <param name="state">Initial state passed to the action upon the first iteration.</param>
@@ -184,7 +183,7 @@ namespace System.Reactive.Concurrency
                 throw new ArgumentNullException(nameof(action));
             }
 
-            var timer = Dispatcher.CreateTimer();
+            var timer = DispatcherQueue.CreateTimer();
 
             var state1 = state;
 
