@@ -6,7 +6,6 @@
     <RuntimeIdentifiers>win10-x86;win10-x64</RuntimeIdentifiers>
     <DefineConstants>HAS_WINUI</DefineConstants>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;winui</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <UseWinUI>true</UseWinUI>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
@@ -16,11 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />    
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
-    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />
   </ItemGroup>
 
 </Project>

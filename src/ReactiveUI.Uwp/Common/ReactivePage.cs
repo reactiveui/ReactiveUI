@@ -5,7 +5,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-#if NETFX_CORE || HAS_UNO
+#if HAS_WINUI
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+#elif NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
@@ -48,7 +51,7 @@ namespace ReactiveUI
     /// </code>
     /// </para>
     /// <para>
-    /// Note that UWP projects do not support the <c>TypeArguments</c> attribute. The XAML designer window in WPF projects also does not
+    /// Note that UWP and WinUI projects do not support the <c>TypeArguments</c> attribute. The XAML designer window in WPF projects also does not
     /// support generic types. To use <see cref="ReactivePage{TViewModel}"/> in XAML documents you need to create a base class
     /// where you derive from <see cref="ReactivePage{TViewModel}"/> with the type argument filled in.
     /// <code>
