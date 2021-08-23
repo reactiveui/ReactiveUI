@@ -1,31 +1,25 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;net5.0-windows10.0.19041</TargetFrameworks>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
     <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Platforms\Winforms\Mocks\TestFormNotCanActivate.cs" />
   </ItemGroup>
 
   <Choose>
@@ -60,18 +54,14 @@
       </ItemGroup>
     </When>
     <When Condition=" $(TargetFramework.StartsWith('net4'))">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
         <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
         <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
-
-        <Reference Include="PresentationCore" />
-        <Reference Include="PresentationFramework" />
-        <Reference Include="System.Windows.Forms" />
-        <Reference Include="System.Xaml" />
-        <Reference Include="WindowsBase" />
-        <Reference Include="UIAutomationTypes" />
-        <Reference Include="UIAutomationProvider" />
 
         <Compile Include="Platforms\common-gui\**\*.cs" />
         <Compile Include="Platforms\wpf\**\*.cs" />
@@ -80,6 +70,14 @@
       </ItemGroup>
     </When>
   </Choose>
+
+  <ItemGroup>
+    <None Remove="Platforms\wpf\Mocks\CanExecuteMock\AlwaysFalseModeDetector.cs" />
+    <None Remove="Platforms\wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml.cs" />
+    <None Remove="Platforms\wpf\Mocks\CanExecuteMock\LiveModeDetector.cs" />
+    <None Remove="Platforms\wpf\WpfGeneralFixture.cs" />
+    <None Remove="Platforms\wpf\WpfGeneralFixtureApp.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Platforms\Winforms\Mocks\TestForm.Designer.cs">
@@ -98,10 +96,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Platforms\winforms\Mocks\TestFormNotCanActivate.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TestFormNotCanActivate.resx</DependentUpon>
-    </None>
+    <Page Update="Platforms\wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
+
 </Project>

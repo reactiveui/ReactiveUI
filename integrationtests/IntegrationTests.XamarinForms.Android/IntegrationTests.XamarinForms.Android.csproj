@@ -16,7 +16,7 @@
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -51,20 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Acr.UserDialogs" Version="7.1.0.514" />
-    <PackageReference Include="ReactiveUI.AndroidSupport" Version="*" />
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.Preference" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.Compat" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.Collections" Version="28.0.*" />
-    <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.*" />
-    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.2.3" />
-    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.1.1.8" />
-    <PackageReference Include="Xamarin.AndroidX.Palette" Version="1.0.0.7" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -102,6 +88,10 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI.AndroidSupport\ReactiveUI.AndroidSupport.csproj">
+      <Project>{e6284535-0b6e-42aa-9113-5230ab09e8e6}</Project>
+      <Name>ReactiveUI.AndroidSupport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationTests.XamarinForms\IntegrationTests.XamarinForms.csproj">
       <Project>{3bf35d8c-f119-4113-8f75-4ddbb2ba0caf}</Project>
       <Name>IntegrationTests.XamarinForms</Name>

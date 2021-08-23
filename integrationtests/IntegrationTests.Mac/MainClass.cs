@@ -10,6 +10,7 @@ namespace IntegrationTests.Mac
     /// <summary>
     /// The class which hosts the main entry point for the application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static class MainClass
     {
         /// <summary>

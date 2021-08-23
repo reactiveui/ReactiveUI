@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using FluentAssertions;
-using ReactiveUI;
 using Splat;
 using Xunit;
 using FactAttribute = Xunit.WpfFactAttribute;

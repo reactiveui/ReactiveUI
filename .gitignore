@@ -370,3 +370,4 @@ src/Tools/
 
 # MSBuild generator editor configs
 **/*.GeneratedMSBuildEditorConfig.editorconfig
+/app

@@ -53,7 +53,7 @@ namespace ReactiveUI.Cocoa
             bbi.Clicked += eh;
             bbi.Clicked -= eh;
 
-            eh.Invoke(null, null);
+            eh.Invoke(null, EventArgs.Empty);
         }
     }
 }

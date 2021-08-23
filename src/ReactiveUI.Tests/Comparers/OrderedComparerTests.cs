@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -95,7 +94,7 @@ namespace ReactiveUI.Tests
         public void WorksWithAnonymousTypes()
         {
             var source = new List<string> { "abc", "bcd", "cde" };
-            var items = source.Select(x => new { FirstLetter = x[0], AllOfIt = x }).ToList();
+            var items = source.ConvertAll(x => new { FirstLetter = x[0], AllOfIt = x });
 
             items.Sort(OrderedComparer.For(items).OrderBy(x => x.FirstLetter));
             Assert.True(items.Select(x => x.FirstLetter).SequenceEqual("abc"));

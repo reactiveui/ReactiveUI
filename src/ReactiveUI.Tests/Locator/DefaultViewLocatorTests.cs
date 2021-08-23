@@ -4,10 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
-
 using Splat;
-
 using Xunit;
 
 namespace ReactiveUI.Tests

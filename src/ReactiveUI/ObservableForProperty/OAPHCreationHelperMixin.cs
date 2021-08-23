@@ -619,7 +619,7 @@ namespace ReactiveUI
 
         private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
             this TObj target,
-            IObservable<TRet> observable,
+            IObservable<TRet?> observable,
             Expression<Func<TObj, TRet>> property,
             Func<TRet> getInitialValue,
             bool deferSubscription = false,
@@ -679,7 +679,7 @@ namespace ReactiveUI
 
         private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
             this TObj target,
-            IObservable<TRet> observable,
+            IObservable<TRet?> observable,
             Expression<Func<TObj, TRet>> property,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
@@ -731,14 +731,14 @@ namespace ReactiveUI
                 observable,
                 _ => target.RaisingPropertyChanged(name),
                 _ => target.RaisingPropertyChanging(name),
-                () => default!,
+                () => default,
                 deferSubscription,
                 scheduler);
         }
 
         private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
             this TObj target,
-            IObservable<TRet> observable,
+            IObservable<TRet?> observable,
             string property,
             Func<TRet> getInitialValue,
             bool deferSubscription = false,
@@ -771,7 +771,7 @@ namespace ReactiveUI
 
         private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
             this TObj target,
-            IObservable<TRet> observable,
+            IObservable<TRet?> observable,
             string property,
             bool deferSubscription = false,
             IScheduler? scheduler = null)
@@ -796,7 +796,7 @@ namespace ReactiveUI
                 observable,
                 _ => target.RaisingPropertyChanged(property),
                 _ => target.RaisingPropertyChanging(property),
-                () => default!,
+                () => default,
                 deferSubscription,
                 scheduler);
         }

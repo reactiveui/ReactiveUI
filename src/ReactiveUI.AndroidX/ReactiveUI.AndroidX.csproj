@@ -1,23 +1,23 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>MonoAndroid10.0</TargetFrameworks>
+    <TargetFrameworks>MonoAndroid11.0</TargetFrameworks>
     <PackageDescription>Provides ReactiveUI extensions for the AndroidX Library</PackageDescription>
     <PackageId>ReactiveUI.AndroidX</PackageId>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;forms;monodroid;monotouch;xamarin.android;net;</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.3.0" />
-    <PackageReference Include="Xamarin.AndroidX.Fragment" Version="1.3.4" />
-    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.1.1.8" />
-    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.2.1" />
+    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.3.1.1" />
+    <PackageReference Include="Xamarin.AndroidX.Fragment" Version="1.3.6.1" />
+    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.1.1.9" />
+    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.2.1.1" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>

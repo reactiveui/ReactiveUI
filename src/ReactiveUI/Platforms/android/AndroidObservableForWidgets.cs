@@ -85,7 +85,7 @@ namespace ReactiveUI
                             >(
                                 eventHandler =>
                                 {
-                                    void Handler(object sender, AdapterView.ItemSelectedEventArgs e) =>
+                                    void Handler(object? sender, AdapterView.ItemSelectedEventArgs e) =>
                                         eventHandler(new ObservedChange<object, object?>(adapterView, ex, default));
 
                                     return Handler;
@@ -99,7 +99,7 @@ namespace ReactiveUI
                                 ObservedChange<object, object?>>(
                                 eventHandler =>
                                 {
-                                    void Handler(object sender, AdapterView.NothingSelectedEventArgs e) =>
+                                    void Handler(object? sender, AdapterView.NothingSelectedEventArgs e) =>
                                         eventHandler(new ObservedChange<object, object?>(adapterView, ex, default));
 
                                     return Handler;
@@ -160,7 +160,7 @@ namespace ReactiveUI
                     return Observable.FromEvent<EventHandler<TEventArgs>, ObservedChange<object, object?>>(
                         eventHandler =>
                         {
-                            void Handler(object sender, TEventArgs e) =>
+                            void Handler(object? sender, TEventArgs e) =>
                                 eventHandler(new ObservedChange<object, object?>(view, ex, default));
 
                             return Handler;

@@ -11,6 +11,7 @@ namespace IntegrationTests.UWP
     /// <summary>
     /// A base level control for logging the user in.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class LoginControlBase : ReactiveUserControl<LoginViewModel>
     {
     }

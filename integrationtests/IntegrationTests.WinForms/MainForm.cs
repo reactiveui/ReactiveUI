@@ -10,6 +10,7 @@ namespace IntegrationTests.WinForms
     /// <summary>
     /// The main form of the application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class MainForm : Form
     {
         /// <summary>

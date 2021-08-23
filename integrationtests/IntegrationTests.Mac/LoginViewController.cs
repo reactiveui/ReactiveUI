@@ -17,6 +17,7 @@ namespace IntegrationTests.Mac
     /// <summary>
     /// A controller responsible for logging in the user.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class LoginViewController : ReactiveViewController<LoginViewModel>
     {
         /// <summary>

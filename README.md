@@ -23,28 +23,27 @@ There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveu
 
 Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific packages are required. This means your app won't perform as expected until you install the packages properly. See the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
 
-| Platform          | ReactiveUI Package                  | NuGet                | [Events][EventsDocs] Package            |
-| ----------------- | ----------------------------------- | -------------------- | --------------------------------------- |
-| .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] | None                                    |
-|                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody] | None                                    |
-| Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test] | None                                    |
-| Universal Windows | [ReactiveUI][UniDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
-| WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]   | [ReactiveUI.Events.WPF][WpfEvents]      |
-| Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]   | [ReactiveUI.Events.WinForms][WinEvents] |
-| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   | [ReactiveUI.Events.XamForms][XamEvents] |
-| Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events.XamEssentials][XamE] |
-| AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX] | [ReactiveUI.Events][CoreEvents]         |
-| Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]   | [ReactiveUI.Events][CoreEvents]         |
-| Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
-| Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
-| Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] | [ReactiveUI.Events][CoreEvents]         |
-| Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz] | None                                    |
-| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]   | None                                    |
-| Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   | None                                    |
-| Any               | [ReactiveUI.Validation][ValDocs]    | [![ValBadge]][ValCore] | None                                  |
+| Platform          | ReactiveUI Package                  | NuGet                |
+| ----------------- | ----------------------------------- | -------------------- |
+| .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] |
+|                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody] |
+| Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test] |
+| Universal Windows | [ReactiveUI][UniDoc]                | [![CoreBadge]][Core] |
+| WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]   |
+| Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]   |
+| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   |
+| Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core] |
+| AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX] |
+| Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]   |
+| Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] |
+| Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] |
+| Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] |
+| Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz] |
+| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]   |
+| Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   |
+| Any               | [ReactiveUI.Validation][ValDocs]    | [![ValBadge]][ValCore] |
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
-[CoreEvents]: https://www.nuget.org/packages/ReactiveUI.Events/
 [CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg
 [CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
 
@@ -59,7 +58,6 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [UniDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
 
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
-[WpfEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WPF/
 [WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
 [WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
 
@@ -72,8 +70,6 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.XamForms/
 [XamBadge]: https://img.shields.io/nuget/v/ReactiveUI.XamForms.svg
 [XamDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-forms
-[XamE]: https://www.nuget.org/packages/ReactiveUI.Events.XamEssentials/
-
 [Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
 [DroBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidSupport.svg
 [DroDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-android
@@ -127,6 +123,14 @@ ReactiveUI is developed under an OSI-approved open source license, making it fre
 
 If you want to submit pull requests please first open a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose) to discuss. We are first time PR contributors friendly.
 
+The current source uses **Visual Studio 2019 Preview**. Please install the following workloads to enable building the source:
+
+- dotnet workload install android
+- dotnet workload install ios
+- dotnet workload install tvos
+- dotnet workload install macos
+- dotnet workload install maui
+
 ## Core Team
 
 <table>
@@ -150,15 +154,24 @@ If you want to submit pull requests please first open a [GitHub issue](https://g
         <a href="https://github.com/worldbeater">Artyom Gorchakov</a>
         <p>Moscow, Russia</p>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/cabauman.png?s=150">
         <br>
         <a href="https://github.com/cabauman">Colt Bauman</a>
         <p>South Korea</p>
       </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/chrispulman.png?s=150">
+        <br>
+        <a href="https://github.com/chrispulman">Chris Pulman</a>
+        <p>UK</p>
+      </td>
     </tr>
   </tbody>
 </table>
+
 
 ## Alumni Core Team
 
@@ -185,6 +198,8 @@ The following have been core team members in the past.
         <a href="https://github.com/olevett">Olly Levett</a>
         <p>London, United Kingdom</p>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <img width="100" height="100" src="https://github.com/anaisbetts.png?s=150">
         <br>
@@ -206,6 +221,7 @@ The following have been core team members in the past.
      </tr>
   </tbody>
 </table>
+
 
 ## .NET Foundation
 

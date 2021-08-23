@@ -11,6 +11,7 @@ namespace IntegrationTests.WinForms
     /// <summary>
     /// The class which hosts the main entry point to the application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static class Program
     {
         /// <summary>

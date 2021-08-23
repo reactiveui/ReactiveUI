@@ -21,7 +21,6 @@ namespace ReactiveUI.AndroidSupport
     /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
     /// </summary>
     /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
     public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
         where TViewModel : class, IReactiveObject
     {

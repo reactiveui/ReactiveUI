@@ -26,6 +26,10 @@ namespace ReactiveUI.Wpf
 
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+            registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));

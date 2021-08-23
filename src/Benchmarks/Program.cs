@@ -15,6 +15,7 @@ namespace ReactiveUI.Benchmarks
     /// <summary>
     /// Class which hosts the main entry point into the application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static class Program
     {
         /// <summary>

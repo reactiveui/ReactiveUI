@@ -12,6 +12,7 @@ namespace IntegrationTests.Mac
     /// The main application delegate.
     /// </summary>
     [Register("AppDelegate")]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class AppDelegate : NSApplicationDelegate
     {
         /// <inheritdoc />

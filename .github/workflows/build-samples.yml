@@ -12,7 +12,7 @@ jobs:
       matrix:
         configuration: [Debug, Release]
 
-    runs-on: windows-latest  
+    runs-on: windows-latest
 
     steps:
     - name: Checkout
@@ -21,20 +21,42 @@ jobs:
         fetch-depth: 0
         lfs: true
 
-    # Install the .NET Core workload
-    - name: Install .NET Core 3.1.x
-      uses: actions/setup-dotnet@v1
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1.8.1
       with:
         dotnet-version: 3.1.x
 
-    - name: Install .NET 5.0.x
-      uses: actions/setup-dotnet@v1
+    - name: Install .NET 5
+      uses: actions/setup-dotnet@v1.8.1
       with:
         dotnet-version: 5.0.x
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Install .NET 6
+      uses: actions/setup-dotnet@v1.8.1
+      with:
+        dotnet-version: 6.0.x
+        include-prerelease: true
+
+    - name: Install DotNet workloads
+      shell: bash
+      run: |
+        dotnet workload install android
+        dotnet workload install ios
+        dotnet workload install tvos
+        dotnet workload install macos
+        dotnet workload install maui
+        
+    - name: Install VS2022 preview
+      shell: bash
+      run: |
+        dotnet tool update -g dotnet-vs
+        vs install preview -sku:enterprise --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
+        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
+
+    - name: Add MSBuild to PATH
+      uses: glennawatson/setup-msbuild@v1.0.3
+      with:
+        prerelease: true
 
     - name: Restore/Build the sample
       run: msbuild IntegrationTests.All.sln /t:restore,build /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=$env:Configuration

@@ -17,6 +17,7 @@ namespace IntegrationTests.XamarinForms
     /// <summary>
     /// The main page for the application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class MainPage : ReactiveContentPage<LoginViewModel>
     {
         /// <summary>

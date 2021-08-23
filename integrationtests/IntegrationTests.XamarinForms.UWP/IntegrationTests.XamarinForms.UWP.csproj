@@ -150,6 +150,10 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.*" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI.XamForms\ReactiveUI.XamForms.csproj">
+      <Project>{b49bb0fa-a58e-43dd-bd4c-d84748ca18a6}</Project>
+      <Name>ReactiveUI.XamForms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationTests.XamarinForms\IntegrationTests.XamarinForms.csproj">
       <Project>{3bf35d8c-f119-4113-8f75-4ddbb2ba0caf}</Project>
       <Name>IntegrationTests.XamarinForms</Name>

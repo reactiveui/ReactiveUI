@@ -10,6 +10,7 @@ namespace IntegrationTests.WPF
     /// <summary>
     /// Interaction logic for App.xaml.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class App : Application
     {
     }

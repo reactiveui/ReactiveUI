@@ -90,10 +90,17 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
+#if MAC
+        /// <summary>
+        /// Gets a observable when the control is activated.
+        /// </summary>
+        public new IObservable<Unit> Activated => _activated.AsObservable();
+#else
         /// <summary>
         /// Gets a observable when the control is activated.
         /// </summary>
         public IObservable<Unit> Activated => _activated.AsObservable();
+#endif
 
         /// <summary>
         /// Gets a observable that occurs when the control is deactivated.

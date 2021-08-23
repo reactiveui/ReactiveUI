@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -457,13 +456,13 @@ namespace ReactiveUI.Tests
 
             fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanging).Subscribe();
 
-            var changing = new[] { firstThreeChanging, lastThreeChanging };
+            var changing = new[] { firstThreeChanging!, lastThreeChanging };
 
             fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanged).Subscribe();
 
             fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, beforeChange: false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanged).Subscribe();
 
-            var changed = new[] { firstThreeChanged, lastThreeChanged };
+            var changed = new[] { firstThreeChanged!, lastThreeChanged };
 
             Assert.True(changed.All(x => x.Count == 0));
             Assert.True(changing.All(x => x.Count == 0));
@@ -541,5 +540,26 @@ namespace ReactiveUI.Tests
                     var fixture = new OAPHIndexerTestFixture(2);
                 });
             });
+
+        /// <summary>
+        /// Nullables the types test shouldnt need decorators with toproperty.
+        /// </summary>
+        [Fact]
+        public void NullableTypesTestShouldntNeedDecorators2_ToProperty()
+        {
+            WhenAnyTestFixture? fixture = new();
+            fixture.WhenAnyValue(
+                x => x.ProjectService.ProjectsNullable,
+                x => x.AccountService.AccountUsersNullable)
+                   .Where(tuple => tuple.Item1?.Count > 0 && tuple.Item2?.Count > 0)
+                   .Select(tuple =>
+                   {
+                       var (projects, users) = tuple;
+                       return users?.Values.Count(x => !string.IsNullOrWhiteSpace(x?.LastName));
+                   })
+                   .ToProperty(fixture, x => x.AccountsFound, out fixture._accountsFound);
+
+            Assert.Equal(fixture.AccountsFound, 3);
+        }
     }
 }

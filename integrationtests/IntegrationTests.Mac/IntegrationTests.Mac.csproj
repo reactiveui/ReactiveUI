@@ -86,6 +86,10 @@
     <InterfaceDefinition Include="Main.storyboard" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI\ReactiveUI.csproj">
+      <Project>{17caf778-0fc0-46de-9bf0-b36049715eaa}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
       <Project>{3A9F323C-EB97-4251-89AB-F705B1718FB7}</Project>
       <Name>IntegrationTests.Shared</Name>

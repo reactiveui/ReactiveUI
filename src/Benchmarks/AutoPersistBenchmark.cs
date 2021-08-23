@@ -20,9 +20,10 @@ namespace ReactiveUI.Benchmarks
     [CoreJob]
     [MemoryDiagnoser]
     [MarkdownExporterAttribute.GitHub]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class AutoPersistBenchmark
     {
-        private ObservableCollection<MockViewModel> _collection;
+        private ObservableCollection<MockViewModel>? _collection;
 
         /// <summary>
         /// Setup the benchmark with all the needed objects. This is run once per set of benchmarks in this object.
@@ -46,22 +47,23 @@ namespace ReactiveUI.Benchmarks
         [Benchmark]
         public void AutoPersistCollection()
         {
-            var disposable = _collection.AutoPersistCollection(
-                x => Observable.Create<Unit>(
+            var disposable = _collection?.AutoPersistCollection(
+                _ => Observable.Create<Unit>(
                     _ =>
                     {
                         Console.WriteLine("Done stuff");
                         return Disposable.Empty;
-                    }).Select(_ => Unit.Default), TimeSpan.FromMilliseconds(200));
+                    }).Select(_ => Unit.Default),
+                TimeSpan.FromMilliseconds(200));
 
             for (int i = 0; i < 5; ++i)
             {
-                _collection.Add(new MockViewModel());
+                _collection?.Add(new MockViewModel());
             }
 
-            _collection.Clear();
+            _collection?.Clear();
 
-            disposable.Dispose();
+            disposable?.Dispose();
         }
     }
 }

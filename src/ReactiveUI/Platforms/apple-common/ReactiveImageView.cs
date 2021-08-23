@@ -107,8 +107,13 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
+#if UIKIT
         /// <inheritdoc/>
         public IObservable<Unit> Activated => _activated.AsObservable();
+#else
+        /// <inheritdoc/>
+        public new IObservable<Unit> Activated => _activated.AsObservable();
+#endif
 
         /// <inheritdoc/>
         public IObservable<Unit> Deactivated => _deactivated.AsObservable();

@@ -8,6 +8,7 @@ namespace IntegrationTests.WPF
     /// <summary>
     /// Interaction logic for MainWindow.xaml.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class MainWindow
     {
         /// <summary>

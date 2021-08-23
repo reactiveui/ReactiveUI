@@ -38,7 +38,7 @@ namespace ReactiveUI.Tests
         /// <exception cref="ArgumentNullException">The view is null.</exception>
         public IObservable<bool> GetActivationForView(IActivatableView view)
         {
-            if (!(view is ActivatingView av))
+            if (view is not ActivatingView av)
             {
                 throw new ArgumentNullException(nameof(view));
             }

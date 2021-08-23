@@ -54,7 +54,8 @@ namespace ReactiveUI
                 IObservable<TDontCare>? signalViewUpdate,
                 object? conversionHint,
                 IBindingTypeConverter? vmToViewConverterOverride = null,
-                IBindingTypeConverter? viewToVMConverterOverride = null)
+                IBindingTypeConverter? viewToVMConverterOverride = null,
+                TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -83,7 +84,7 @@ namespace ReactiveUI
                 return result;
             }
 
-            return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc);
+            return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc, triggerUpdate);
         }
 
         /// <inheritdoc />
@@ -94,7 +95,8 @@ namespace ReactiveUI
                 Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare>? signalViewUpdate,
                 Func<TVMProp?, TVProp> vmToViewConverter,
-                Func<TVProp, TVMProp?> viewToVmConverter)
+                Func<TVProp, TVMProp?> viewToVmConverter,
+                TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -130,7 +132,7 @@ namespace ReactiveUI
                 return true;
             }
 
-            return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc);
+            return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc, triggerUpdate);
         }
 
         /// <inheritdoc />
@@ -369,7 +371,8 @@ namespace ReactiveUI
             Expression<Func<TView, TVProp>> viewProperty,
             IObservable<TDontCare>? signalViewUpdate,
             OutFunc<TVMProp?, TVProp> vmToViewConverter,
-            OutFunc<TVProp, TVMProp?> viewToVmConverter)
+            OutFunc<TVProp, TVMProp?> viewToVmConverter,
+            TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -387,26 +390,54 @@ namespace ReactiveUI
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
 
-            var somethingChanged = Observable.Merge(
-                                                   signalViewUpdate == null ?
-                                                   Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true) :
-                                                   signalViewUpdate.Select(_ => true)
-                                                        .Merge(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true).Take(1)),
-                                                   signalInitialUpdate.Select(_ => true),
-                                                   view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false));
+            IObservable<(bool isValid, object? view, bool isViewModel)>? changeWithValues = null;
 
-            var changeWithValues = somethingChanged
-                .Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
-                    !Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
-                    !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain())
+            if (triggerUpdate == TriggerUpdate.ViewToViewModel)
+            {
+                var signalObservable = signalViewUpdate != null
+                                       ? signalViewUpdate.Select(_ => false)
+                                       : view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false);
+
+                var somethingChanged = Observable.Merge(
+                                                        Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
+                                                        signalInitialUpdate.Select(_ => true),
+                                                        signalObservable);
+
+                changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
+                !Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
+                        !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain())
                         ? (false, null, false)
                         : isVm
                         ? !vmToViewConverter(vmValue, out var vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView)
-                                                ? (false, null, false)
-                                                : (true, vmAsView, isVm)
+                            ? (false, null, false)
+                            : (true, vmAsView, isVm)
                         : !viewToVmConverter(vValue, out var vAsViewModel) || EqualityComparer<TVMProp?>.Default.Equals(vmValue, vAsViewModel)
-                                                ? (false, null, false)
-                                                : (true, vAsViewModel, isVm));
+                            ? (false, null, false)
+                            : (true, vAsViewModel, isVm));
+            }
+            else
+            {
+                var somethingChanged = Observable.Merge(
+                                                     signalViewUpdate == null ?
+                                                     Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true) :
+                                                     signalViewUpdate.Select(_ => true)
+                                                          .Merge(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true).Take(1)),
+                                                     signalInitialUpdate.Select(_ => true),
+                                                     view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false));
+
+                changeWithValues = somethingChanged
+                    .Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
+                        !Reflection.TryGetValueForPropertyChain(out TVMProp vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
+                        !Reflection.TryGetValueForPropertyChain(out TVProp vValue, view, viewExpression.GetExpressionChain())
+                            ? (false, null, false)
+                            : isVm
+                            ? !vmToViewConverter(vmValue, out var vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView)
+                                ? (false, null, false)
+                                : (true, vmAsView, isVm)
+                            : !viewToVmConverter(vValue, out var vAsViewModel) || EqualityComparer<TVMProp?>.Default.Equals(vmValue, vAsViewModel)
+                                ? (false, null, false)
+                                : (true, vAsViewModel, isVm));
+            }
 
             var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
             if (!ret)

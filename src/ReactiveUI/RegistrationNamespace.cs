@@ -12,7 +12,7 @@ namespace ReactiveUI
     {
         /// <summary>No platform to register.</summary>
         None = 0,
-        
+
         /// <summary>
         /// Xamarin Forms.
         /// </summary>
@@ -46,6 +46,21 @@ namespace ReactiveUI
         /// <summary>
         /// Avalonia.
         /// </summary>
-        Avalonia
+        Avalonia,
+
+        /// <summary>
+        /// Maui.
+        /// </summary>
+        Maui,
+
+        /// <summary>
+        /// Uwp.
+        /// </summary>
+        Uwp,
+
+        /// <summary>
+        /// WinUI.
+        /// </summary>
+        WinUI,
     }
 }

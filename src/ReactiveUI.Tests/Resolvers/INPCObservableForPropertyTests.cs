@@ -40,7 +40,7 @@ namespace ReactiveUI.Tests
             Expression<Func<TestClassChanged, string?>> expr = x => x!.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
-            var changes = new List<IObservedChange<object, object?>>();
+            var changes = new List<IObservedChange<object?, object?>>();
 
             var propertyName = exp.GetMemberInfo()?.Name;
 
@@ -70,7 +70,7 @@ namespace ReactiveUI.Tests
             Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
-            var changes = new List<IObservedChange<object, object?>>();
+            var changes = new List<IObservedChange<object?, object?>>();
 
             var propertyName = exp.GetMemberInfo()?.Name;
 
@@ -100,7 +100,7 @@ namespace ReactiveUI.Tests
             Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
-            var changes = new List<IObservedChange<object, object?>>();
+            var changes = new List<IObservedChange<object?, object?>>();
 
             var propertyName = exp.GetMemberInfo()?.Name;
 
@@ -130,7 +130,7 @@ namespace ReactiveUI.Tests
             Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
             var exp = Reflection.Rewrite(expr.Body);
 
-            var changes = new List<IObservedChange<object, object?>>();
+            var changes = new List<IObservedChange<object?, object?>>();
 
             var propertyName = exp.GetMemberInfo()?.Name;
 

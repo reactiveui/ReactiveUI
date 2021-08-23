@@ -6,11 +6,13 @@
 using UIKit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
+
 namespace IntegrationTests.iOS
 {
     /// <summary>
     /// The main application which contains the entry point to the application.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static class Application
     {
         /// <summary>

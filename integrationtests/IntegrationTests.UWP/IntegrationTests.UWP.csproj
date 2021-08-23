@@ -140,6 +140,10 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.*" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI\ReactiveUI.csproj">
+      <Project>{31b50b33-5e0d-4290-9a34-f4fdbee0339b}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
       <Project>{B77110E5-D591-4163-9E77-74682345FDF8}</Project>
       <Name>IntegrationTests.Shared</Name>

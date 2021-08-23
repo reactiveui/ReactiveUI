@@ -16,6 +16,7 @@ namespace IntegrationTests.Shared
     /// View model for login functionality.
     /// </summary>
     /// <seealso cref="ReactiveUI.ReactiveObject" />
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class LoginViewModel : ReactiveObject
     {
         private string _userName;

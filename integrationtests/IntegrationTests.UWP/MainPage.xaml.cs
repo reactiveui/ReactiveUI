@@ -10,6 +10,7 @@ namespace IntegrationTests.UWP
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public sealed partial class MainPage : Page
     {
         /// <summary>

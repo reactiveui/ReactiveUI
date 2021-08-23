@@ -25,7 +25,7 @@ namespace ReactiveUI
         }
 
         /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
             if (expression == null)
             {
@@ -47,12 +47,12 @@ namespace ReactiveUI
                 {
                     return obs.Where(x => string.IsNullOrEmpty(x)
                         || x?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                        .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
+                        .Select(_ => new ObservedChange<object?, object?>(sender, expression, default!));
                 }
 
                 return obs.Where(x => string.IsNullOrEmpty(x)
                     || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
+                .Select(_ => new ObservedChange<object?, object?>(sender, expression, default!));
             }
             else if (sender is INotifyPropertyChanged after)
             {
@@ -69,16 +69,16 @@ namespace ReactiveUI
                 {
                     return obs.Where(x => string.IsNullOrEmpty(x)
                         || x?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                    .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
+                    .Select(_ => new ObservedChange<object?, object?>(sender, expression, default!));
                 }
 
                 return obs.Where(x => string.IsNullOrEmpty(x)
                     || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                .Select(_ => new ObservedChange<object, object>(sender, expression, default!));
+                .Select(_ => new ObservedChange<object?, object?>(sender, expression, default!));
             }
             else
             {
-                return Observable<IObservedChange<object, object?>>.Never;
+                return Observable<IObservedChange<object?, object?>>.Never;
             }
         }
     }
