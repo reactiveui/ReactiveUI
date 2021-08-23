@@ -5,7 +5,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-#if NETFX_CORE || HAS_UNO
+#if HAS_WINUI
+using Microsoft.UI.Xaml;
+#elif NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 #else
 using System.Windows;
