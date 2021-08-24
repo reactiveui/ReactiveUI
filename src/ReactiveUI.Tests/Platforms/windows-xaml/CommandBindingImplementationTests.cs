@@ -30,16 +30,15 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindByNameWireup()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = new() };
 
             Assert.Null(view.Command1.Command);
 
-            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1);
-            Assert.Equal(vm.Command1, view.Command1.Command);
+            var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+            Assert.Equal(view.ViewModel.Command1, view.Command1.Command);
 
             var newCmd = ReactiveCommand.Create<int>(_ => { });
-            vm.Command1 = newCmd;
+            view.ViewModel.Command1 = newCmd;
             Assert.Equal(newCmd, view.Command1.Command);
 
             disp.Dispose();
@@ -54,14 +53,14 @@ namespace ReactiveUI.Tests.Xaml
         {
             var vm = new CommandBindViewModel
             {
-                NestedViewModel = new FakeNestedViewModel()
+                NestedViewModel = new()
             };
 
             var view = new CommandBindView { ViewModel = vm };
 
-            view.BindCommand(vm, m => m.NestedViewModel.NestedCommand, x => x.Command1);
+            view.BindCommand(view.ViewModel, m => m.NestedViewModel.NestedCommand, x => x.Command1);
 
-            Assert.Equal(vm.NestedViewModel.NestedCommand, view.Command1.Command);
+            Assert.Equal(view.ViewModel.NestedViewModel.NestedCommand, view.Command1.Command);
         }
 
         /// <summary>
@@ -70,13 +69,12 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindSetsInitialEnabledState_True()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = new() };
 
             var canExecute1 = new BehaviorSubject<bool>(true);
-            vm.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+            view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
 
-            view.BindCommand(vm, x => x.Command1, x => x.Command1);
+            view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
 
             Assert.True(view.Command1.IsEnabled);
         }
@@ -87,13 +85,12 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindSetsDisablesCommandWhenCanExecuteChanged()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = new() };
 
             var canExecute1 = new BehaviorSubject<bool>(true);
-            vm.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+            view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
 
-            view.BindCommand(vm, x => x.Command1, x => x.Command1);
+            view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
 
             Assert.True(view.Command1.IsEnabled);
 
@@ -108,13 +105,12 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindSetsInitialEnabledState_False()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = new() };
 
             var canExecute1 = new BehaviorSubject<bool>(false);
-            vm.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+            view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
 
-            view.BindCommand(vm, x => x.Command1, x => x.Command1);
+            view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
 
             Assert.False(view.Command1.IsEnabled);
         }
@@ -125,19 +121,18 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindRaisesCanExecuteChangedOnBind()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = new() };
 
             var canExecute1 = new BehaviorSubject<bool>(true);
-            vm.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+            view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
 
-            view.BindCommand(vm, x => x.Command1, x => x.Command1);
+            view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
 
             Assert.True(view.Command1.IsEnabled);
 
             // Now  change to a disabled cmd
             var canExecute2 = new BehaviorSubject<bool>(false);
-            vm.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute2);
+            view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute2);
 
             Assert.False(view.Command1.IsEnabled);
         }
@@ -148,20 +143,18 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindWithParameterExpression()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = new() };
 
             var received = 0;
-            var cmd = ReactiveCommand.Create<int>(i => { received = i; });
-            vm.Command1 = cmd;
+            view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
 
-            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+            var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
 
-            vm.Value = 42;
+            view.ViewModel.Value = 42;
             view.Command1.RaiseCustomClick();
             Assert.Equal(42, received);
 
-            vm.Value = 13;
+            view.ViewModel.Value = 13;
             view.Command1.RaiseCustomClick();
             Assert.Equal(13, received);
         }
@@ -172,22 +165,21 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindWithDelaySetVMParameterExpression()
         {
-            var vm = new CommandBindViewModel();
-            var view = new ReactiveObjectCommandBindView();
+            var view = new ReactiveObjectCommandBindView
+            {
+                ViewModel = new()
+            };
 
             var received = 0;
-            var cmd = ReactiveCommand.Create<int>(i => { received = i; });
-            vm.Command1 = cmd;
+            view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
 
-            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+            var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
 
-            view.ViewModel = vm;
-
-            vm.Value = 42;
+            view.ViewModel.Value = 42;
             view.Command1.RaiseCustomClick();
             Assert.Equal(42, received);
 
-            vm.Value = 13;
+            view.ViewModel.Value = 13;
             view.Command1.RaiseCustomClick();
             Assert.Equal(13, received);
         }
@@ -198,24 +190,25 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindWithDelaySetVMParameterNoINPCExpression()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView();
+            var view = new CommandBindView { ViewModel = new() };
 
             var received = 0;
-            var cmd = ReactiveCommand.Create<int>(i => { received = i; });
-            vm.Command1 = cmd;
+            var cmd = ReactiveCommand.Create<int>(i => received = i);
+            view.ViewModel.Command1 = cmd;
+            view.ViewModel.Value = 10;
 
-            view.BindCommand(vm, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+            view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
 
-            view.ViewModel = vm;
-
-            vm.Value = 42;
             view.Command1.RaiseCustomClick();
-            Assert.Equal(0, received);
+            Assert.Equal(10, received);
 
-            vm.Value = 13;
+            view.ViewModel.Value = 42;
             view.Command1.RaiseCustomClick();
-            Assert.Equal(0, received);
+            Assert.Equal(42, received);
+
+            view.ViewModel.Value = 13;
+            view.Command1.RaiseCustomClick();
+            Assert.Equal(13, received);
         }
 
         /// <summary>
@@ -224,17 +217,19 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void CommandBindWithParameterObservable()
         {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView { ViewModel = vm };
+            var view = new CommandBindView { ViewModel = new() };
 
             var received = 0;
             var cmd = ReactiveCommand.Create<int>(i => { received = i; });
-            vm.Command1 = cmd;
+            view.ViewModel.Command1 = cmd;
+            view.ViewModel.Value = 10;
+            var value = view.ViewModel.WhenAnyValue(v => v.Value);
+            var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, value, nameof(CustomClickButton.CustomClick));
 
-            var value = Observable.Return(42);
-            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1, value, nameof(CustomClickButton.CustomClick));
+            view.Command1.RaiseCustomClick();
+            Assert.Equal(10, received);
 
-            vm.Value = 42;
+            view.ViewModel.Value = 42;
             view.Command1.RaiseCustomClick();
 
             Assert.Equal(42, received);
