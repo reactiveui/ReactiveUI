@@ -21,6 +21,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CheckGetAffinityForObjectValues()
         {
+            RxApp.EnsureInitialized();
             var instance = new POCOObservableForProperty();
 
             Assert.Equal(1, instance.GetAffinityForObject(typeof(PocoType), null!, false));
@@ -30,6 +31,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NotificationPocoErrorOnBind()
         {
+            RxApp.EnsureInitialized();
+
             // Use same logger, when the test is executed multiple times in the same AndroidRunner/AppDomain/AssemblyLoadContext
             if (_testLoggerForNotificationPocoErrorOnBind is null)
             {
@@ -76,6 +79,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NotificationPocoSuppressErrorOnBind()
         {
+            RxApp.EnsureInitialized();
             using (var testLoggerRegistration = new TestLoggerRegistration())
             {
                 var instance = new POCOObservableForProperty();
