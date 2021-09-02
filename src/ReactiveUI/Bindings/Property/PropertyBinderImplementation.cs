@@ -186,7 +186,7 @@ namespace ReactiveUI
             TView view,
             Expression<Func<TViewModel, TProp?>> vmProperty,
             Expression<Func<TView, TOut>> viewProperty,
-            Func<TProp?, TOut> selector)
+            Func<TProp, TOut> selector)
             where TViewModel : class
             where TView : class, IViewFor
         {
@@ -208,7 +208,7 @@ namespace ReactiveUI
                 return new ReactiveBinding<TView, TOut>(view, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
             }
 
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp?>().Select(selector);
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>().Select(selector);
 
             var (disposable, obs) = BindToDirect<TView, TOut, TOut>(source, view, viewExpression);
 
