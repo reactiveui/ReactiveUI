@@ -196,7 +196,7 @@ namespace ReactiveUI
             TView view,
             Expression<Func<TViewModel, TProp?>> vmProperty,
             Expression<Func<TView, TOut>> viewProperty,
-            Func<TProp?, TOut> selector)
+            Func<TProp, TOut> selector)
             where TViewModel : class
             where TView : class, IViewFor;
 
