@@ -22,7 +22,7 @@ jobs:
       shell: bash
       run: |
         dotnet tool update -g dotnet-vs
-        vs modify preview -sku:enterprise --passive --wait --all
+        vs install preview -sku:enterprise --passive --wait --all
         echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
 
     - name: Checkout
@@ -56,10 +56,10 @@ jobs:
         dotnet workload install maui
         dotnet workload restore "src/ReactiveUI/ReactiveUI.csproj"
 
-    #- name: Add MSBuild to PATH
-    #  uses: glennawatson/setup-msbuild@v1.0.3
-    #  with:
-    #    prerelease: true
+    - name: Add MSBuild to PATH
+      uses: glennawatson/setup-msbuild@v1.0.3
+      with:
+        prerelease: true
 
     - name: NBGV
       id: nbgv
