@@ -54,7 +54,7 @@ jobs:
         dotnet workload install tvos
         dotnet workload install macos
         dotnet workload install maui
-        dotnet workload restore "ReactiveUI\ReactiveUI.csproj"
+        dotnet workload restore ReactiveUI.csproj
 
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
