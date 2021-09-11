@@ -12,26 +12,14 @@ jobs:
       matrix:
         configuration: [Debug, Release]
 
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        lfs: true
-
-    - name: Install VS2022 preview
-      shell: pwsh
-      run: |
-        Invoke-WebRequest -Uri https://aka.ms/vs/17/pre/vs_community.exe -OutFile vs_community.exe
-        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-        $startInfo.FileName = "vs_community.exe"
-        $startInfo.Arguments = "--norestart --wait --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --quiet --nickname Preview"
-        $process = New-Object System.Diagnostics.Process
-        $process.StartInfo = $startInfo
-        $process.Start()
-        $process.WaitForExit()        
+        lfs: true       
 
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1.8.1
