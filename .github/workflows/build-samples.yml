@@ -49,9 +49,8 @@ jobs:
     - name: Install VS2022 preview
       shell: bash
       run: |
-        dotnet tool update -g dotnet-vs
-        vs install preview -sku:enterprise --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
-        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
+        wget https://aka.ms/vs/17/pre/vs_community.exe
+        vs_community.exe --no-restart --wait --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --quiet --nickname Preview --
 
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
