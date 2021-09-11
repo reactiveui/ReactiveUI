@@ -27,7 +27,7 @@ jobs:
         Invoke-WebRequest -Uri https://aka.ms/vs/17/pre/vs_community.exe -OutFile vs_community.exe
         $startInfo = New-Object System.Diagnostics.ProcessStartInfo
         $startInfo.FileName = "vs_community.exe"
-        $startInfo.Arguments = "-no-restart --wait --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --quiet --nickname Preview"
+        $startInfo.Arguments = "-norestart --wait --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --quiet --nickname Preview"
         $process = New-Object System.Diagnostics.Process
         $process.StartInfo = $startInfo
         $process.Start()
