@@ -22,7 +22,8 @@ jobs:
       shell: bash
       run: |
         dotnet tool update -g dotnet-vs
-        vs modify preview -sku:enterprise 
+        vs modify preview -sku:enterprise
+        --passive
         --add Microsoft.VisualStudio.Component.Windows10SDK.16299
         --add Microsoft.Net.Component.4.6.1.TargetingPack
         --add Microsoft.VisualStudio.Component.ManagedDesktop.Core
