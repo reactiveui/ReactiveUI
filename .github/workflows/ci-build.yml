@@ -17,20 +17,12 @@ jobs:
     outputs:
       nbgv: ${{ steps.nbgv.outputs.SemVer2 }}
     steps:
-
+    
     - name: Install VS2022 preview
       shell: bash
       run: |
         dotnet tool update -g dotnet-vs
-        vs modify preview -sku:enterprise
-        --passive
-        --add Microsoft.VisualStudio.Component.Windows10SDK.16299
-        --add Microsoft.Net.Component.4.6.1.TargetingPack
-        --add Microsoft.VisualStudio.Component.ManagedDesktop.Core
-        --add Microsoft.NetCore.Component.DevelopmentTools
-        --add Microsoft.VisualStudio.Workload.NetCrossPlat
-        --add Microsoft.VisualStudio.Workload.Universal
-        --wait
+        vs modify preview -sku:enterprise --passive --add Microsoft.VisualStudio.Component.Windows10SDK.16299 --add Microsoft.Net.Component.4.6.1.TargetingPack --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --wait
         echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
 
     - name: Checkout
