@@ -17,17 +17,24 @@ jobs:
     outputs:
       nbgv: ${{ steps.nbgv.outputs.SemVer2 }}
     steps:
+    #- name: Install VS2022 preview
+    #  shell: pwsh
+    #  run: |
+    #    Invoke-WebRequest -Uri https://aka.ms/vs/17/pre/vs_community.exe -OutFile vs_community.exe
+    #    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    #    $startInfo.FileName = "vs_community.exe"
+    #    $startInfo.Arguments = "--norestart --wait --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --quiet --nickname Preview"
+    #    $process = New-Object System.Diagnostics.Process
+    #    $process.StartInfo = $startInfo
+    #    $process.Start()
+    #    $process.WaitForExit()        
+        
     - name: Install VS2022 preview
-      shell: pwsh
+      shell: bash
       run: |
-        Invoke-WebRequest -Uri https://aka.ms/vs/17/pre/vs_community.exe -OutFile vs_community.exe
-        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-        $startInfo.FileName = "vs_community.exe"
-        $startInfo.Arguments = "--norestart --wait --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --quiet --nickname Preview"
-        $process = New-Object System.Diagnostics.Process
-        $process.StartInfo = $startInfo
-        $process.Start()
-        $process.WaitForExit()        
+        dotnet tool update -g dotnet-vs
+        vs install preview -sku:enterprise --norestart --wait --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
+        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
 
     - name: Checkout
       uses: actions/checkout@v2
