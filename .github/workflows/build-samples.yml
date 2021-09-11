@@ -21,6 +21,12 @@ jobs:
         fetch-depth: 0
         lfs: true
 
+    - name: Install VS2022 preview
+      shell: bash
+      run: |
+        curl https://aka.ms/vs/17/pre/vs_community.exe --output ./vs_community.exe
+        ./vs_community.exe --no-restart --wait --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --quiet --nickname Preview --
+
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1.8.1
       with:
@@ -46,12 +52,6 @@ jobs:
         dotnet workload install macos
         dotnet workload install maui
         
-    - name: Install VS2022 preview
-      shell: bash
-      run: |
-        wget https://aka.ms/vs/17/pre/vs_community.exe
-        vs_community.exe --no-restart --wait --add Microsoft.VisualStudio.Component.ManagedDesktop.Core --add Microsoft.NetCore.Component.DevelopmentTools --add Microsoft.VisualStudio.Workload.NetCrossPlat --add Microsoft.VisualStudio.Workload.Universal --quiet --nickname Preview --
-
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
       with:
