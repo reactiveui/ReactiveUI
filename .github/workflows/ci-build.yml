@@ -18,6 +18,10 @@ jobs:
       nbgv: ${{ steps.nbgv.outputs.SemVer2 }}
     steps:
 
+    - name: Update VS2022
+      shell: powershell
+      run: Start-Process -Wait -PassThru -FilePath "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" -ArgumentList "modify --allWorkloads --passive --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2022\Preview"""
+
     - name: Checkout
       uses: actions/checkout@v2
       with:
