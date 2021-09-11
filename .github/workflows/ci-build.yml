@@ -20,9 +20,8 @@ jobs:
 
     - name: Update VS2022
       shell: powershell
-      run: $process = Start-Process -Wait -PassThru -FilePath vs_enterprise.exe 
+      run: Start-Process -Wait -PassThru -FilePath vs_enterprise.exe 
            -ArgumentList "modify --allWorkloads --passive --wait --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2022\Preview"""
-           Write-Output $process.ExitCode 
 
     - name: Checkout
       uses: actions/checkout@v2
