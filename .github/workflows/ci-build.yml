@@ -27,14 +27,7 @@ jobs:
     #    $process = New-Object System.Diagnostics.Process
     #    $process.StartInfo = $startInfo
     #    $process.Start()
-    #    $process.WaitForExit()        
-        
-    - name: Install VS2022 preview
-      shell: bash
-      run: |
-        dotnet tool update -g dotnet-vs
-        vs install preview -sku:enterprise --norestart --wait --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
-        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
+    #    $process.WaitForExit()
 
     - name: Checkout
       uses: actions/checkout@v2
@@ -65,7 +58,14 @@ jobs:
         dotnet workload install tvos
         dotnet workload install macos
         dotnet workload install maui
-
+    
+    - name: Install VS2022 preview
+      shell: bash
+      run: |
+        dotnet tool update -g dotnet-vs
+        vs install preview -sku:enterprise --norestart --wait --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
+        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
+        
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
       with:
