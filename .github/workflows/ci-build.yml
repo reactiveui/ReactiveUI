@@ -18,10 +18,12 @@ jobs:
       nbgv: ${{ steps.nbgv.outputs.SemVer2 }}
     steps:
 
-    - name: Update VS2022
-      shell: powershell
-      run: Start-Process -Wait -PassThru -FilePath "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"
-           -ArgumentList "modify --allWorkloads --passive --wait --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2022\Preview"""
+    - name: Install VS2022 preview
+      shell: bash
+      run: |
+        dotnet tool update -g dotnet-vs
+        vs modify preview -sku:enterprise --quiet +Microsoft.VisualStudio.Component.ManagedDesktop.Core +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal
+        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
 
     - name: Checkout
       uses: actions/checkout@v2
