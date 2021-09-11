@@ -22,7 +22,7 @@ jobs:
       shell: bash
       run: |
         dotnet tool update -g dotnet-vs
-        vs modify preview -sku:enterprise --passive --wait +Microsoft.VisualStudio.Workload.ManagedDesktop +Microsoft.VisualStudio.Workload.NetCrossPlat +Microsoft.VisualStudio.Workload.Universal +Microsoft.VisualStudio.Workload.NetCoreTools +Microsoft.VisualStudio.Component.Windows10SDK.16299 +Microsoft.Net.Component.4.6.1.TargetingPack +Microsoft.NetCore.Component.DevelopmentTools +Microsoft.VisualStudio.Component.Windows10SDK.19041 +Component.Android.SDK30
+        vs modify preview -sku:enterprise --passive --wait --all
         echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
 
     - name: Checkout
