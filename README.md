@@ -23,25 +23,25 @@ There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveu
 
 Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific packages are required. This means your app won't perform as expected until you install the packages properly. See the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
 
-| Platform          | ReactiveUI Package                  | NuGet                |
-| ----------------- | ----------------------------------- | -------------------- |
-| .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] |
-|                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody] |
-| Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test] |
-| WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]   |
-| UWP               | [ReactiveUI.UWP][UwpDoc]            | [![UwpBadge]][Uwp]   |
-| WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi]   |
-| Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]   |
-| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   |
-| Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core] |
-| AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX] |
-| Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]   |
-| Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] |
-| Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] |
-| Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] |
-| Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz] |
-| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]   |
-| Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   |
+| Platform          | ReactiveUI Package                  | NuGet                  |
+| ----------------- | ----------------------------------- | ---------------------- |
+| .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
+|                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody]   |
+| Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test]   |
+| WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]     |
+| UWP               | [ReactiveUI.UWP][UwpDoc]            | [![UwpBadge]][Uwp]     |
+| WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
+| Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
+| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]     |
+| Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core]   |
+| AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX]   |
+| Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]     |
+| Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core]   |
+| Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core]   |
+| Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
+| Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz]   |
+| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]     |
+| Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]     |
 | Any               | [ReactiveUI.Validation][ValDocs]    | [![ValBadge]][ValCore] |
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
