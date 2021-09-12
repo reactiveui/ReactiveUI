@@ -15,13 +15,25 @@ jobs:
     runs-on: windows-2022
     steps:
     
-    - name: Install VS2022 preview
+    - name: Update VS2022 preview
       shell: bash
       run: |
         dotnet tool update -g dotnet-vs
-        vs install preview -sku:enterprise --all
+        vs modify preview +mobile +xamarin +core +desktop +uwp +web
         echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
-        
+
+    - name: Install Windows SDK 10.0.16299
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/p/?linkid=864422 -OutFile winsdk.exe
+        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $startInfo.FileName = "winsdk.exe"
+        $startInfo.Arguments = "/norestart /quiet"
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $startInfo
+        $process.Start()
+        $process.WaitForExit()
+
     - name: Checkout
       uses: actions/checkout@v2
       with:
