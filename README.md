@@ -28,8 +28,9 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] |
 |                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody] |
 | Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test] |
-| Universal Windows | [ReactiveUI][UniDoc]                | [![CoreBadge]][Core] |
 | WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]   |
+| UWP               | [ReactiveUI.UWP][UwpDoc]            | [![UwpBadge]][Uwp]   |
+| WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi]   |
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]   |
 | Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   |
 | Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core] |
@@ -55,11 +56,17 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
 [TestDoc]: https://reactiveui.net/docs/handbook/testing/
 
-[UniDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
-
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
 [WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
 [WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
+
+[Uwp]: https://www.nuget.org/packages/ReactiveUI.Uwp/
+[UwpBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uwp.svg
+[UwpDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
+
+[WinUi]: https://www.nuget.org/packages/ReactiveUI.WinUI/
+[WinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinUI.svg
+[WinUiDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
 
 [Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
 [WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
