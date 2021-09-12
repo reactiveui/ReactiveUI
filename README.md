@@ -31,6 +31,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]     |
 | UWP               | [ReactiveUI.Uwp][UwpDoc]            | [![UwpBadge]][Uwp]     |
 | WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
+| MAUI              | [ReactiveUI.Maui][MauiDoc]          | [![MauiBadge]][Maui] |
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
 | Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]     |
 | Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core]   |
@@ -67,6 +68,10 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [WinUi]: https://www.nuget.org/packages/ReactiveUI.WinUI/
 [WinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinUI.svg
 [WinUiDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
+
+[Maui]: https://www.nuget.org/packages/ReactiveUI.Maui/
+[MauiBadge]: https://img.shields.io/nuget/v/ReactiveUI.Maui.svg
+[MauiDoc]: https://blog.jetbrains.com/dotnet/2020/09/18/xamarin-maui-and-the-reactive-mvvm-between-them-webinar-recording/
 
 [Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
 [WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
