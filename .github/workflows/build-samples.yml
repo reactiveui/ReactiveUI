@@ -8,10 +8,6 @@ on:
 
 jobs:
   build-samples:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-
     runs-on: windows-2022
     steps:
     
@@ -71,7 +67,5 @@ jobs:
         prerelease: true
 
     - name: Restore/Build the sample
-      run: msbuild IntegrationTests.All.sln /t:restore,build /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=$env:Configuration
+      run: msbuild IntegrationTests.All.sln /t:restore,build /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=Release
       working-directory: integrationtests
-      env:
-        Configuration: ${{ matrix.configuration }}
