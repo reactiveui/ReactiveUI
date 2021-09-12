@@ -23,24 +23,26 @@ There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveu
 
 Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific packages are required. This means your app won't perform as expected until you install the packages properly. See the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
 
-| Platform          | ReactiveUI Package                  | NuGet                |
-| ----------------- | ----------------------------------- | -------------------- |
-| .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] |
-|                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody] |
-| Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test] |
-| Universal Windows | [ReactiveUI][UniDoc]                | [![CoreBadge]][Core] |
-| WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]   |
-| Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]   |
-| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]   |
-| Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core] |
-| AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX] |
-| Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]   |
-| Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core] |
-| Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core] |
-| Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core] |
-| Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz] |
-| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]   |
-| Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]   |
+| Platform          | ReactiveUI Package                  | NuGet                  |
+| ----------------- | ----------------------------------- | ---------------------- |
+| .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
+|                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody]   |
+| Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test]   |
+| WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]     |
+| UWP               | [ReactiveUI.Uwp][UwpDoc]            | [![UwpBadge]][Uwp]     |
+| WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
+| MAUI              | [ReactiveUI.Maui][MauiDoc]          | [![MauiBadge]][Maui] |
+| Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
+| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]     |
+| Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core]   |
+| AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX]   |
+| Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]     |
+| Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core]   |
+| Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core]   |
+| Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
+| Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz]   |
+| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]     |
+| Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]     |
 | Any               | [ReactiveUI.Validation][ValDocs]    | [![ValBadge]][ValCore] |
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
@@ -55,11 +57,21 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
 [TestDoc]: https://reactiveui.net/docs/handbook/testing/
 
-[UniDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
-
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
 [WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
 [WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
+
+[Uwp]: https://www.nuget.org/packages/ReactiveUI.Uwp/
+[UwpBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uwp.svg
+[UwpDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
+
+[WinUi]: https://www.nuget.org/packages/ReactiveUI.WinUI/
+[WinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinUI.svg
+[WinUiDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
+
+[Maui]: https://www.nuget.org/packages/ReactiveUI.Maui/
+[MauiBadge]: https://img.shields.io/nuget/v/ReactiveUI.Maui.svg
+[MauiDoc]: https://blog.jetbrains.com/dotnet/2020/09/18/xamarin-maui-and-the-reactive-mvvm-between-them-webinar-recording/
 
 [Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
 [WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
