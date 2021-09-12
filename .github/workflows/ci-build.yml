@@ -22,7 +22,7 @@ jobs:
       shell: bash
       run: |
         dotnet tool update -g dotnet-vs
-        vs install preview -sku:enterprise --all
+        vs modify preview +mobile +xamarin +core +desktop +uwp +web
         echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
 
     - name: Checkout
