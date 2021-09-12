@@ -29,7 +29,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 |                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody]   |
 | Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test]   |
 | WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]     |
-| UWP               | [ReactiveUI.UWP][UwpDoc]            | [![UwpBadge]][Uwp]     |
+| UWP               | [ReactiveUI.Uwp][UwpDoc]            | [![UwpBadge]][Uwp]     |
 | WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
 | Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]     |
