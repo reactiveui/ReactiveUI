@@ -111,7 +111,7 @@ namespace ReactiveUI
                 return view;
             }
 
-            view = AttemptViewResolutionFor(ToggleViewModelType(viewModel?.GetType()), contract);
+            view = AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract);
 
             if (view is not null)
             {
@@ -129,13 +129,8 @@ namespace ReactiveUI
             return null;
         }
 
-        private static Type? ToggleViewModelType(Type? viewModelType)
+        private static Type? ToggleViewModelType(Type viewModelType)
         {
-            if (viewModelType is null)
-            {
-                return null;
-            }
-
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
 
             if (viewModelTypeName is null)
@@ -199,12 +194,7 @@ namespace ReactiveUI
             proposedViewTypeName = typeof(IViewFor<>).MakeGenericType(viewModelType).AssemblyQualifiedName;
             view = AttemptViewResolution(proposedViewTypeName, contract);
 
-            if (view is not null)
-            {
-                return view;
-            }
-
-            return null;
+            return view;
         }
 
         private IViewFor? AttemptViewResolution(string? viewTypeName, string? contract)
@@ -218,10 +208,6 @@ namespace ReactiveUI
                 }
 
                 var service = Locator.Current.GetService(viewType, contract);
-                if (service is null)
-                {
-                    return null;
-                }
 
                 if (service is not IViewFor view)
                 {
