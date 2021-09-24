@@ -67,6 +67,8 @@ jobs:
         dotnet workload install macos
         dotnet workload install maui
         dotnet workload restore "src/ReactiveUI/ReactiveUI.csproj"
+        dotnet tool install -g Redth.Net.Maui.Check
+        maui-check --non-interactive --fix
 
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
