@@ -42,7 +42,7 @@
     <PackageReference Include="FluentAssertions" Version="6.1.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="10.2.0" />
-    <PackageReference Include="DiffEngine" Version="7.2.1" />
+    <PackageReference Include="DiffEngine" Version="7.3.0" />
     <PackageReference Include="coverlet.msbuild" Version="3.1.0" PrivateAssets="All" />
   </ItemGroup>
   
