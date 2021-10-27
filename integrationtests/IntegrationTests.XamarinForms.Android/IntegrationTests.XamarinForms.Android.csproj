@@ -50,7 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Acr.UserDialogs" Version="7.1.0.514" />
+    <PackageReference Include="Acr.UserDialogs" Version="7.2.0.534" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
