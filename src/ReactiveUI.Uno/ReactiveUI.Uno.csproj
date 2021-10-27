@@ -4,7 +4,7 @@
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.16299</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno</PackageDescription>
-    <DefineConstants>HAS_UNO</DefineConstants>
+    <DefineConstants>$(DefineConstants);HAS_UNO</DefineConstants>
     <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <DefineConstants>HAS_UNO;WASM</DefineConstants>
+    <DefineConstants>$(DefineConstants);WASM</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

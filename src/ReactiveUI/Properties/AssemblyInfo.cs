@@ -14,6 +14,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.AndroidSupport")]
 [assembly: InternalsVisibleTo("ReactiveUI.AndroidX")]
 [assembly: InternalsVisibleTo("ReactiveUI.Uno")]
+[assembly: InternalsVisibleTo("ReactiveUI.Uno.WinUI")]
 [assembly: InternalsVisibleTo("ReactiveUI.Drawing")]
 [assembly: InternalsVisibleTo("ReactiveUI.TestRunner.Android")]
 [assembly: InternalsVisibleTo("ReactiveUI.Uwp")]

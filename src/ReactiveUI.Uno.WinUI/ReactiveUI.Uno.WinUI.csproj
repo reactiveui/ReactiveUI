@@ -1,0 +1,19 @@
+﻿<Project>
+  
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);HAS_WINUI</DefineConstants>
+  </PropertyGroup>
+
+  <Import Project="..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
+
+  <PropertyGroup>
+     <!-- Remove uap target --> 
+    <TargetFrameworks>netstandard20;MonoAndroid11.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos</TargetFrameworks>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Remove="Uno.UI" />
+    <PackageReference Include="Uno.WinUI" Version="3.9.7" />
+  </ItemGroup>
+  
+</Project>

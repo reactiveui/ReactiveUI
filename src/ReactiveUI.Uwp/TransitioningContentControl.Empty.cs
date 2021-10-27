@@ -4,7 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+#if HAS_WINUI
+using Microsoft.UI.Xaml.Controls;
+#else
 using Windows.UI.Xaml.Controls;
+#endif
 
 #if HAS_UNO
 namespace ReactiveUI.Uno
