@@ -41,7 +41,8 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core]   |
 | Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
 | Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz]   |
-| Platform Uno      | ReactiveUI.Uno                      | [![UnoBadge]][Uno]     |
+| Platform Uno      | [ReactiveUI.Uno][UnoDoc]            | [![UnoBadge]][Uno]     |
+| Platform Uno      | [ReactiveUI.Uno.WinUI][UnoWinUiDoc] | [![UnoWinUiBadge]][UnoWinUi] |
 | Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]     |
 | Any               | [ReactiveUI.Validation][ValDocs]    | [![ValBadge]][ValCore] |
 
@@ -95,6 +96,9 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [Uno]: https://www.nuget.org/packages/ReactiveUI.Uno/
 [UnoBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.svg
 [UnoDoc]: https://reactiveui.net/docs/getting-started/installation/uno-platform
+[UnoWinUi]: https://www.nuget.org/packages/ReactiveUI.Uno.WinUI/
+[UnoWinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.WinUI.svg
+[UnoWinUiDoc]: https://reactiveui.net/docs/getting-started/installation/uno-platform
 
 [Blaz]: https://www.nuget.org/packages/ReactiveUI.Blazor/
 [BlazBadge]: https://img.shields.io/nuget/v/ReactiveUI.Blazor.svg

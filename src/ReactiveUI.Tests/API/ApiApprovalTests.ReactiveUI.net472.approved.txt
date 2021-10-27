@@ -7,6 +7,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.TestRunner.Android")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno.WinUI")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uwp")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinUI")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]

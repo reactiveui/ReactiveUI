@@ -10,7 +10,11 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using Splat;
+#if HAS_WINUI
+using Microsoft.UI.Xaml;
+#else
 using Windows.UI.Xaml;
+#endif
 
 #if HAS_UNO
 namespace ReactiveUI.Uno

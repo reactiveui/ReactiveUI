@@ -7,7 +7,11 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-#if NETFX_CORE || HAS_UNO
+#if HAS_WINUI
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Markup;
+#elif NETFX_CORE || HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
@@ -51,7 +55,11 @@ namespace ReactiveUI
             var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
             assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
 
+#if HAS_WINUI
+            return (DataTemplate)XamlReader.Load(template.Replace("__ASSEMBLYNAME__", assemblyName));
+#else
             return (DataTemplate)XamlReader.Parse(template.Replace("__ASSEMBLYNAME__", assemblyName));
+#endif
 #endif
         });
 
