@@ -35,19 +35,7 @@ jobs:
         $process = New-Object System.Diagnostics.Process
         $process.StartInfo = $startInfo
         $process.Start()
-        $process.WaitForExit()        
-        
-    - name: Install Windows SDK 10.0.17763
-      shell: pwsh
-      run: |
-        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/p/?LinkID=2033908 -OutFile winsdk.exe
-        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-        $startInfo.FileName = "winsdk.exe"
-        $startInfo.Arguments = "/norestart /quiet"
-        $process = New-Object System.Diagnostics.Process
-        $process.StartInfo = $startInfo
-        $process.Start()
-        $process.WaitForExit()  
+        $process.WaitForExit()
         
     - name: Checkout
       uses: actions/checkout@v2
