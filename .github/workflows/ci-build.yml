@@ -35,7 +35,7 @@ jobs:
         $process = New-Object System.Diagnostics.Process
         $process.StartInfo = $startInfo
         $process.Start()
-        $process.WaitForExit()        
+        $process.WaitForExit()
         
     - name: Checkout
       uses: actions/checkout@v2
