@@ -58,8 +58,6 @@ namespace ReactiveUI
 
             var windowActivation = GetActivationForWindow(view);
 
-            var dispatcherActivation = GetActivationForDispatcher(fe);
-
             return viewLoaded
                 .Merge(viewUnloaded)
                 .Merge(hitTestVisible)
