@@ -64,7 +64,6 @@ namespace ReactiveUI
                 .Merge(viewUnloaded)
                 .Merge(hitTestVisible)
                 .Merge(windowActivation)
-                .Merge(dispatcherActivation)
                 .DistinctUntilChanged();
         }
 
@@ -85,20 +84,6 @@ namespace ReactiveUI
                 x => window.Closed -= x);
 
             return viewClosed;
-        }
-
-        private static IObservable<bool> GetActivationForDispatcher(DispatcherObject dispatcherObject)
-        {
-            var dispatcherShutdownStarted = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void Handler(object? sender, EventArgs e) => eventHandler(false);
-                    return Handler;
-                },
-                x => dispatcherObject.Dispatcher.ShutdownStarted += x,
-                x => dispatcherObject.Dispatcher.ShutdownStarted -= x);
-
-            return dispatcherShutdownStarted;
         }
     }
 }
