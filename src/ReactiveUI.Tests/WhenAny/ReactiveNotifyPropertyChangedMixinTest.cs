@@ -31,7 +31,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void AnyChangeInExpressionListTriggersUpdate()
         {
-            ObjChain1? obj = new();
+            var obj = new ObjChain1();
             bool obsUpdated;
 
             obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe(_ => obsUpdated = true);
@@ -111,7 +111,7 @@ namespace ReactiveUI.Tests
         public void OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent() =>
             new TestScheduler().With(scheduler =>
             {
-                HostTestFixture? fixture = new()
+                var fixture = new HostTestFixture()
                 {
                     Child = new TestFixture()
                 };
@@ -171,7 +171,7 @@ namespace ReactiveUI.Tests
         public void OFPNamedPropertyTestBeforeChange() =>
             new TestScheduler().With(scheduler =>
             {
-                TestFixture? fixture = new()
+                var fixture = new TestFixture()
                 {
                     IsOnlyOneWord = "Pre"
                 };
@@ -200,7 +200,7 @@ namespace ReactiveUI.Tests
         public void OFPNamedPropertyTestNoSkipInitial() =>
             new TestScheduler().With(scheduler =>
             {
-                TestFixture? fixture = new()
+                var fixture = new TestFixture()
                 {
                     IsOnlyOneWord = "Pre"
                 };
@@ -225,7 +225,7 @@ namespace ReactiveUI.Tests
         public void OFPNamedPropertyTestRepeats() =>
             new TestScheduler().With(scheduler =>
             {
-                TestFixture? fixture = new();
+                var fixture = new TestFixture();
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord)
                        .ToObservableChangeSet(ImmediateScheduler.Instance)
                        .Bind(out var changes)
@@ -256,7 +256,7 @@ namespace ReactiveUI.Tests
         public void OFPReplacingTheHostShouldResubscribeTheObservable() =>
             new TestScheduler().With(scheduler =>
             {
-                HostTestFixture? fixture = new()
+                var fixture = new HostTestFixture()
                 {
                     Child = new TestFixture()
                 };
@@ -301,7 +301,7 @@ namespace ReactiveUI.Tests
         public void OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable() =>
             new TestScheduler().With(scheduler =>
             {
-                HostTestFixture? fixture = new()
+                var fixture = new HostTestFixture()
                 {
                     Child = new TestFixture()
                 };
@@ -341,7 +341,7 @@ namespace ReactiveUI.Tests
         public void OFPShouldWorkWithINPCObjectsToo() =>
             new TestScheduler().With(scheduler =>
             {
-                NonReactiveINPCObject? fixture = new()
+                var fixture = new NonReactiveINPCObject()
                 {
                     InpcProperty = null!
                 };
@@ -367,7 +367,7 @@ namespace ReactiveUI.Tests
         public void OFPSimpleChildPropertyTest() =>
             new TestScheduler().With(scheduler =>
             {
-                HostTestFixture? fixture = new()
+                var fixture = new HostTestFixture()
                 {
                     Child = new TestFixture()
                 };
@@ -401,7 +401,7 @@ namespace ReactiveUI.Tests
         public void OFPSimplePropertyTest() =>
             new TestScheduler().With(scheduler =>
             {
-                TestFixture? fixture = new();
+                var fixture = new TestFixture();
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord)
                        .ToObservableChangeSet(ImmediateScheduler.Instance)
                        .Bind(out var changes)
@@ -431,7 +431,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void SubscriptionToWhenAnyShouldReturnCurrentValue()
         {
-            HostTestFixture? obj = new();
+            var obj = new HostTestFixture();
             var observedValue = 1;
             obj.WhenAnyValue(x => x.SomeOtherParam).Subscribe(x => observedValue = x);
 
@@ -575,7 +575,7 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(
                 scheduler =>
                 {
-                    HostTestFixture? fixture = new()
+                    var fixture = new HostTestFixture()
                     {
                         Child = new TestFixture()
                     };
@@ -651,7 +651,7 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(
                 scheduler =>
                 {
-                    HostTestFixture? fixture = new()
+                    var fixture = new HostTestFixture()
                     {
                         Child = new TestFixture()
                     };
@@ -1329,7 +1329,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWithToProperty()
         {
-            HostTestFixture? fixture = new();
+            var fixture = new HostTestFixture();
 
             Assert.Equal(null, fixture.Owner);
             Assert.Equal(null, fixture.OwnerName);

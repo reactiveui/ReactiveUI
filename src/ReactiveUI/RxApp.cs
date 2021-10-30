@@ -45,17 +45,15 @@ public static class RxApp
     /// </summary>
     public const int BigCacheLimit = 64;
 #else
+    /// <summary>
+    /// The size of a small cache of items. Often used for the MemoizingMRUCache class.
+    /// </summary>
+    public const int SmallCacheLimit = 64;
 
-        /// <summary>
-        /// The size of a small cache of items. Often used for the MemoizingMRUCache class.
-        /// </summary>
-        public const int SmallCacheLimit = 64;
-
-        /// <summary>
-        /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
-        /// </summary>
-        public const int BigCacheLimit = 256;
-
+    /// <summary>
+    /// The size of a large cache of items. Often used for the MemoizingMRUCache class.
+    /// </summary>
+    public const int BigCacheLimit = 256;
 #endif
 
     [ThreadStatic]
@@ -109,8 +107,8 @@ public static class RxApp
             {
 #pragma warning disable CA1065 // Avoid exceptions in constructors -- In scheduler.
                 throw new UnhandledErrorException(
-                                                  "An object implementing IHandleObservableErrors (often a ReactiveCommand or ObservableAsPropertyHelper) has errored, thereby breaking its observable pipeline. To prevent this, ensure the pipeline does not error, or Subscribe to the ThrownExceptions property of the object in question to handle the erroneous case.",
-                                                  ex);
+                    "An object implementing IHandleObservableErrors (often a ReactiveCommand or ObservableAsPropertyHelper) has errored, thereby breaking its observable pipeline. To prevent this, ensure the pipeline does not error, or Subscribe to the ThrownExceptions property of the object in question to handle the erroneous case.",
+                    ex);
 #pragma warning restore CA1065
             });
         });

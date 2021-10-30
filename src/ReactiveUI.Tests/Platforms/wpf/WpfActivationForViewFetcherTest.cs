@@ -5,8 +5,6 @@
 
 using System;
 using System.Reactive.Concurrency;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 using DynamicData;
@@ -40,58 +38,6 @@ namespace ReactiveUI.Tests.Wpf
             uc.RaiseEvent(unloaded);
 
             new[] { true, false }.AssertAreEqual(activated);
-        }
-
-        [Fact]
-        public void WindowIsActivatedAndDeactivated()
-        {
-            var window = new WpfTestWindow();
-            var activation = new ActivationForViewFetcher();
-
-            var obs = activation.GetActivationForView(window);
-            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
-
-            var loaded = new RoutedEventArgs();
-            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
-
-            window.RaiseEvent(loaded);
-
-            new[] { true }.AssertAreEqual(activated);
-
-            window.Close();
-
-            new[] { true, false }.AssertAreEqual(activated);
-        }
-
-        [StaFact]
-        public void WindowAndFrameworkElementAreActivatedAndDeactivated()
-        {
-            var window = new WpfTestWindow();
-            var uc = new WpfTestUserControl();
-
-            window.RootGrid.Children.Add(uc);
-
-            var activation = new ActivationForViewFetcher();
-
-            var windowObs = activation.GetActivationForView(window);
-            windowObs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
-
-            var ucObs = activation.GetActivationForView(uc);
-            ucObs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
-
-            var loaded = new RoutedEventArgs();
-            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
-
-            window.RaiseEvent(loaded);
-            uc.RaiseEvent(loaded);
-
-            new[] { true }.AssertAreEqual(windowActivated);
-            new[] { true }.AssertAreEqual(controlActivated);
-
-            window.Dispatcher.InvokeShutdown();
-
-            new[] { true, false }.AssertAreEqual(windowActivated);
-            new[] { true, false }.AssertAreEqual(controlActivated);
         }
 
         [Fact]

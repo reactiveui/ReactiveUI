@@ -34,15 +34,15 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     public SuspensionHost()
     {
 #if COCOA
-            const string? message = "Your AppDelegate class needs to use AutoSuspendHelper";
+        const string? message = "Your AppDelegate class needs to use AutoSuspendHelper";
 #elif ANDROID
         const string? message = "You need to create an App class and use AutoSuspendHelper";
 #else
-            const string? message = "Your App class needs to use AutoSuspendHelper";
+        const string? message = "Your App class needs to use AutoSuspendHelper";
 #endif
 
         IsLaunchingNew = IsResuming = IsUnpausing = ShouldInvalidateState =
-                                                        Observable.Throw<Unit>(new Exception(message));
+            Observable.Throw<Unit>(new Exception(message));
 
         ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
     }

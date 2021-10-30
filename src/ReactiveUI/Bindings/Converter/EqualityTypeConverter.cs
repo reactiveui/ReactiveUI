@@ -133,7 +133,7 @@ public class EqualityTypeConverter : IBindingTypeConverter
         }
 
 #if NETFX_CORE || PORTABLE
-            return targetType.GetTypeInfo().IsAssignableFrom(from.GetType().GetTypeInfo());
+        return targetType.GetTypeInfo().IsAssignableFrom(from.GetType().GetTypeInfo());
 #else
         return targetType.IsInstanceOfType(from);
 #endif

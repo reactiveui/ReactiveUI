@@ -9,32 +9,31 @@ using ReactiveUI.Fody.Helpers;
 
 using Xunit;
 
-namespace ReactiveUI.Fody.Tests.Issues
+namespace ReactiveUI.Fody.Tests.Issues;
+
+/// <summary>
+/// Checks to make sure that extern properties work.
+/// </summary>
+public class ExternPropertyTests
 {
     /// <summary>
-    /// Checks to make sure that extern properties work.
+    /// Checks that observables passed as a parameter are supported.
     /// </summary>
-    public class ExternPropertyTests
+    [Fact]
+    public void AllowObservableAsPropertyAttributeOnAccessor()
     {
-        /// <summary>
-        /// Checks that observables passed as a parameter are supported.
-        /// </summary>
-        [Fact]
-        public void AllowObservableAsPropertyAttributeOnAccessor()
-        {
-            var model = new TestModel("foo");
-            Assert.Equal("foo", model.MyProperty);
-        }
+        var model = new TestModel("foo");
+        Assert.Equal("foo", model.MyProperty);
+    }
 
-        private class TestModel : ReactiveObject
-        {
-            public TestModel(string myProperty) => Observable.Return(myProperty).ToPropertyEx(this, x => x.MyProperty);
+    private class TestModel : ReactiveObject
+    {
+        public TestModel(string myProperty) => Observable.Return(myProperty).ToPropertyEx(this, x => x.MyProperty);
 
-            public extern string MyProperty
-            {
-                [ObservableAsProperty]
-                get;
-            }
+        public extern string MyProperty
+        {
+            [ObservableAsProperty]
+            get;
         }
     }
 }

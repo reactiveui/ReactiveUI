@@ -38,6 +38,12 @@ namespace ReactiveUI.Tests
             Assert.True(await fixture.NavigateBack.CanExecute.FirstAsync());
 
             var navigatedTo = await fixture.NavigateBack.Execute();
+
+            if (navigatedTo is null)
+            {
+                throw new InvalidOperationException("Should have valid navigated to screen");
+            }
+
             Assert.Equal(navigatedTo.GetType(), input.GetType());
             Assert.Equal(1, fixture.NavigationStack.Count);
         }

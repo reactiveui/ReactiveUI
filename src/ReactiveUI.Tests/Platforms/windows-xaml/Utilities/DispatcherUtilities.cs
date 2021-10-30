@@ -27,7 +27,7 @@ namespace ReactiveUI.Tests.Xaml
         public static void DoEvents()
         {
 #if !NETFX_CORE
-            DispatcherFrame frame = new();
+            var frame = new DispatcherFrame();
             Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
             Dispatcher.PushFrame(frame);
 #endif
@@ -41,7 +41,12 @@ namespace ReactiveUI.Tests.Xaml
         public static object? ExitFrame(object f)
         {
 #if !NETFX_CORE
-            ((DispatcherFrame)f).Continue = false;
+            if (f is not DispatcherFrame frame)
+            {
+                return null;
+            }
+
+            frame.Continue = false;
 #endif
             return null;
         }

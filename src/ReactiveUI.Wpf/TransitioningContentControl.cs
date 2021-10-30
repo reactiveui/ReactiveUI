@@ -237,7 +237,7 @@ public class TransitioningContentControl : ContentControl
         }
 
 #if NET461
-            var dpiScale = new DpiScale(1, 1);
+        var dpiScale = new DpiScale(1, 1);
 #else
         var dpiScale = VisualTreeHelper.GetDpi(uiElement);
 #endif
@@ -506,36 +506,36 @@ public class TransitioningContentControl : ContentControl
     }
 
 #if NET461
-        private struct DpiScale
+    private struct DpiScale
+    {
+        /// <summary>Initializes a new instance of the <see cref="DpiScale" /> structure.</summary>
+        /// <param name="dpiScaleX">The DPI scale on the X axis.</param>
+        /// <param name="dpiScaleY">The DPI scale on the Y axis. </param>
+        public DpiScale(double dpiScaleX, double dpiScaleY)
         {
-            /// <summary>Initializes a new instance of the <see cref="DpiScale" /> structure.</summary>
-            /// <param name="dpiScaleX">The DPI scale on the X axis.</param>
-            /// <param name="dpiScaleY">The DPI scale on the Y axis. </param>
-            public DpiScale(double dpiScaleX, double dpiScaleY)
-            {
-                DpiScaleX = dpiScaleX;
-                DpiScaleY = dpiScaleY;
-            }
-
-            /// <summary>Gets the DPI scale on the X axis.</summary>
-            /// <returns>The DPI scale for the X axis.</returns>
-            public double DpiScaleX { get; }
-
-            /// <summary>Gets the DPI scale on the Yaxis.</summary>
-            /// <returns>The DPI scale for the Y axis.</returns>
-            public double DpiScaleY { get; }
-
-            /// <summary>Gets the PixelsPerDip at which the text should be rendered.</summary>
-            /// <returns>The current <see cref="DpiScale.PixelsPerDip" /> value.</returns>
-            public double PixelsPerDip => DpiScaleY;
-
-            /// <summary>Gets the DPI along X axis.</summary>
-            /// <returns>The DPI along the X axis.</returns>
-            public double PixelsPerInchX => 96.0 * DpiScaleX;
-
-            /// <summary>Gets the DPI along Y axis.</summary>
-            /// <returns>The DPI along the Y axis.</returns>
-            public double PixelsPerInchY => 96.0 * DpiScaleY;
+            DpiScaleX = dpiScaleX;
+            DpiScaleY = dpiScaleY;
         }
+
+        /// <summary>Gets the DPI scale on the X axis.</summary>
+        /// <returns>The DPI scale for the X axis.</returns>
+        public double DpiScaleX { get; }
+
+        /// <summary>Gets the DPI scale on the Yaxis.</summary>
+        /// <returns>The DPI scale for the Y axis.</returns>
+        public double DpiScaleY { get; }
+
+        /// <summary>Gets the PixelsPerDip at which the text should be rendered.</summary>
+        /// <returns>The current <see cref="DpiScale.PixelsPerDip" /> value.</returns>
+        public double PixelsPerDip => DpiScaleY;
+
+        /// <summary>Gets the DPI along X axis.</summary>
+        /// <returns>The DPI along the X axis.</returns>
+        public double PixelsPerInchX => 96.0 * DpiScaleX;
+
+        /// <summary>Gets the DPI along Y axis.</summary>
+        /// <returns>The DPI along the Y axis.</returns>
+        public double PixelsPerInchY => 96.0 * DpiScaleY;
+    }
 #endif
 }
