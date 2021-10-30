@@ -69,7 +69,7 @@ namespace ReactiveUI.XamForms.Tests.Activation.Mocks
 
             private void OnPropertyChanged([CallerMemberName] string propertyName = "")
             {
-                if (PropertyChanged == null)
+                if (PropertyChanged is null)
                 {
                     return;
                 }

@@ -79,7 +79,7 @@ namespace ReactiveUI
             var platform = Locator.Current.GetService<IPlatformOperations>();
             Func<string?> platformGetter = () => default;
 
-            if (platform == null)
+            if (platform is null)
             {
                 // NB: This used to be an error but WPF design mode can't read
                 // good or do other stuff good.
@@ -159,7 +159,7 @@ namespace ReactiveUI
 
         private void ResolveViewForViewModel(object? viewModel, string? contract)
         {
-            if (viewModel == null)
+            if (viewModel is null)
             {
                 Content = DefaultContent;
                 return;
@@ -168,7 +168,7 @@ namespace ReactiveUI
             var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
             var viewInstance = viewLocator.ResolveView(viewModel, contract) ?? viewLocator.ResolveView(viewModel);
 
-            if (viewInstance == null)
+            if (viewInstance is null)
             {
                 Content = DefaultContent;
                 this.Log().Warn($"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");

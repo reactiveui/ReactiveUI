@@ -6,49 +6,48 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace ReactiveUI.Winforms
+namespace ReactiveUI.Winforms;
+
+/// <summary>
+/// This is an  UserControl that is both and UserControl and has a ReactiveObject powers
+/// (i.e. you can call RaiseAndSetIfChanged).
+/// </summary>
+/// <typeparam name="TViewModel">The type of the view model.</typeparam>
+/// <seealso cref="System.Windows.Forms.UserControl" />
+/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+public partial class ReactiveUserControl<TViewModel> : UserControl, IViewFor<TViewModel>
+    where TViewModel : class
 {
     /// <summary>
-    /// This is an  UserControl that is both and UserControl and has a ReactiveObject powers
-    /// (i.e. you can call RaiseAndSetIfChanged).
+    /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
     /// </summary>
-    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-    /// <seealso cref="System.Windows.Forms.UserControl" />
-    /// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
-    public partial class ReactiveUserControl<TViewModel> : UserControl, IViewFor<TViewModel>
-        where TViewModel : class
+    public ReactiveUserControl() => InitializeComponent();
+
+    /// <inheritdoc/>
+    [Category("ReactiveUI")]
+    [Description("The ViewModel.")]
+    [Bindable(true)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public TViewModel? ViewModel { get; set; }
+
+    /// <inheritdoc/>
+    object? IViewFor.ViewModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
-        /// </summary>
-        public ReactiveUserControl() => InitializeComponent();
+        get => ViewModel;
+        set => ViewModel = (TViewModel?)value;
+    }
 
-        /// <inheritdoc/>
-        [Category("ReactiveUI")]
-        [Description("The ViewModel.")]
-        [Bindable(true)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public TViewModel? ViewModel { get; set; }
-
-        /// <inheritdoc/>
-        object? IViewFor.ViewModel
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            get => ViewModel;
-            set => ViewModel = (TViewModel?)value;
+            components?.Dispose();
         }
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                components?.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
+        base.Dispose(disposing);
     }
 }

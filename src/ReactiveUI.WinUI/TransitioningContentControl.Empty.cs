@@ -6,12 +6,11 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml.Controls;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// A control with a single transition.
+/// </summary>
+public class TransitioningContentControl : ContentControl
 {
-    /// <summary>
-    /// A control with a single transition.
-    /// </summary>
-    public class TransitioningContentControl : ContentControl
-    {
-    }
 }

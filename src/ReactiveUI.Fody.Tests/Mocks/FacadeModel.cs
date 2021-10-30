@@ -17,27 +17,21 @@ namespace ReactiveUI.Fody.Tests
     /// </summary>
     public class FacadeModel : ReactiveObject
     {
-        private BaseModel _dependency;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FacadeModel"/> class.
         /// </summary>
-        public FacadeModel() => _dependency = new BaseModel();
+        public FacadeModel() => Dependency = new BaseModel();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacadeModel"/> class.
         /// </summary>
         /// <param name="dependency">The dependency to base again.</param>
-        public FacadeModel(BaseModel dependency) => _dependency = dependency;
+        public FacadeModel(BaseModel dependency) => Dependency = dependency;
 
         /// <summary>
         /// Gets the base dependency.
         /// </summary>
-        public BaseModel Dependency
-        {
-            get => _dependency;
-            private set => _dependency = value;
-        }
+        public BaseModel Dependency { get; private set; }
 
         /// <summary>
         /// Gets or sets a property with the same name in the dependency.

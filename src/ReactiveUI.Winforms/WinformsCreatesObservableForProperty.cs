@@ -14,71 +14,70 @@ using System.Windows.Forms;
 
 using Splat;
 
-namespace ReactiveUI.Winforms
+namespace ReactiveUI.Winforms;
+
+/// <summary>
+/// WinForm view objects are not Generally Observable™, so hard-code some
+/// particularly useful types.
+/// </summary>
+/// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
+public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
 {
-    /// <summary>
-    /// WinForm view objects are not Generally Observable™, so hard-code some
-    /// particularly useful types.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
-    public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
+    private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> EventInfoCache = new(
+     (pair, _) => pair.type.GetEvent(pair.name + "Changed", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public),
+     RxApp.SmallCacheLimit);
+
+    /// <inheritdoc/>
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
-        private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> EventInfoCache = new(
-            (pair, _) => pair.type.GetEvent(pair.name + "Changed", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public),
-            RxApp.SmallCacheLimit);
-
-        /// <inheritdoc/>
-        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
+        var supportsTypeBinding = typeof(Component).IsAssignableFrom(type);
+        if (!supportsTypeBinding)
         {
-            var supportsTypeBinding = typeof(Component).IsAssignableFrom(type);
-            if (!supportsTypeBinding)
-            {
-                return 0;
-            }
-
-            var ei = EventInfoCache.Get((type, propertyName));
-            return !beforeChanged && ei != null ? 8 : 0;
+            return 0;
         }
 
-        /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        var ei = EventInfoCache.Get((type, propertyName));
+        return !beforeChanged && ei is not null ? 8 : 0;
+    }
+
+    /// <inheritdoc/>
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+    {
+        if (sender is null)
         {
-            if (sender == null)
-            {
-                throw new ArgumentNullException(nameof(sender));
-            }
+            throw new ArgumentNullException(nameof(sender));
+        }
 
-            var ei = EventInfoCache.Get((sender.GetType(), propertyName));
+        var ei = EventInfoCache.Get((sender.GetType(), propertyName));
 
-            if (ei is null)
-            {
-                throw new InvalidOperationException("Could not find a valid event for expression.");
-            }
+        if (ei is null)
+        {
+            throw new InvalidOperationException("Could not find a valid event for expression.");
+        }
 
-            return Observable.Create<IObservedChange<object, object?>>(subj =>
+        return Observable.Create<IObservedChange<object, object?>>(subj =>
+        {
+            var completed = false;
+            var handler = new EventHandler((o, e) =>
             {
-                var completed = false;
-                var handler = new EventHandler((o, e) =>
+                if (completed)
                 {
-                    if (completed)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    try
-                    {
-                        subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
-                    }
-                    catch (Exception ex)
-                    {
-                        subj.OnError(ex);
-                        completed = true;
-                    }
-                });
-
-                ei.AddEventHandler(sender, handler);
-                return Disposable.Create(() => ei.RemoveEventHandler(sender, handler));
+                try
+                {
+                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
+                }
+                catch (Exception ex)
+                {
+                    subj.OnError(ex);
+                    completed = true;
+                }
             });
-        }
+
+            ei.AddEventHandler(sender, handler);
+            return Disposable.Create(() => ei.RemoveEventHandler(sender, handler));
+        });
     }
 }

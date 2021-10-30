@@ -3,32 +3,31 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Extension methods associated with the ControlFetcher class.
+/// </summary>
+public static partial class ControlFetcherMixin
 {
     /// <summary>
-    /// Extension methods associated with the ControlFetcher class.
+    /// Resolution strategy for bindings.
     /// </summary>
-    public static partial class ControlFetcherMixin
+    public enum ResolveStrategy
     {
         /// <summary>
-        /// Resolution strategy for bindings.
+        /// Resolve all properties that use a subclass of View.
         /// </summary>
-        public enum ResolveStrategy
-        {
-            /// <summary>
-            /// Resolve all properties that use a subclass of View.
-            /// </summary>
-            Implicit,
+        Implicit,
 
-            /// <summary>
-            /// Resolve only properties with an WireUpResource attribute.
-            /// </summary>
-            ExplicitOptIn,
+        /// <summary>
+        /// Resolve only properties with an WireUpResource attribute.
+        /// </summary>
+        ExplicitOptIn,
 
-            /// <summary>
-            /// Resolve all View properties and those that use a subclass of View, except those with an IgnoreResource attribute.
-            /// </summary>
-            ExplicitOptOut
-        }
+        /// <summary>
+        /// Resolve all View properties and those that use a subclass of View, except those with an IgnoreResource attribute.
+        /// </summary>
+        ExplicitOptOut
     }
 }

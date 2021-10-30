@@ -100,7 +100,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task WhenAnyObservableSmokeTestMerging()
         {
-            TestWhenAnyObsViewModel fixture = new();
+            var fixture = new TestWhenAnyObsViewModel();
 
             var list = new List<int>();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);

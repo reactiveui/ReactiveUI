@@ -29,9 +29,6 @@ namespace ReactiveUI.Tests
         private int? _nullableInt;
 
         [IgnoreDataMember]
-        private string? _pocoProperty;
-
-        [IgnoreDataMember]
         private List<string>? _stackOverflowTrigger;
 
         [IgnoreDataMember]
@@ -85,11 +82,8 @@ namespace ReactiveUI.Tests
         /// Gets or sets the poco property.
         /// </summary>
         [DataMember]
-        public string? PocoProperty
-        {
-            get => _pocoProperty;
-            set => _pocoProperty = value;
-        }
+        [field: IgnoreDataMember]
+        public string? PocoProperty { get; set; }
 
         /// <summary>
         /// Gets or sets the stack overflow trigger.

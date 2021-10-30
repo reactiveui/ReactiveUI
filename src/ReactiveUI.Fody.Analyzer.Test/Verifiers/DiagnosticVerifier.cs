@@ -80,7 +80,7 @@ namespace TestHelper
 
             if (expectedCount != actualCount)
             {
-                var diagnosticsOutput = actualCountList.Any() ? FormatDiagnostics(analyzer, actualCountList.ToArray()) : "    NONE.";
+                var diagnosticsOutput = actualCountList.Count > 0 ? FormatDiagnostics(analyzer, actualCountList.ToArray()) : "    NONE.";
 
                 Assert.True(
                     false,

@@ -10,37 +10,36 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using Splat;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// This class is the final fallback for WhenAny, and will simply immediately
+/// return the value of the type at the time it was created. It will also
+/// warn the user that this is probably not what they want to do.
+/// </summary>
+public class POCOObservableForProperty : ICreatesObservableForProperty
 {
-    /// <summary>
-    /// This class is the final fallback for WhenAny, and will simply immediately
-    /// return the value of the type at the time it was created. It will also
-    /// warn the user that this is probably not what they want to do.
-    /// </summary>
-    public class POCOObservableForProperty : ICreatesObservableForProperty
+    private static readonly IDictionary<(Type, string), bool> _hasWarned = new ConcurrentDictionary<(Type, string), bool>();
+
+    /// <inheritdoc/>
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => 1;
+
+    /// <inheritdoc/>
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        private static readonly IDictionary<(Type, string), bool> _hasWarned = new ConcurrentDictionary<(Type, string), bool>();
-
-        /// <inheritdoc/>
-        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => 1;
-
-        /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        if (sender is null)
         {
-            if (sender is null)
-            {
-                throw new ArgumentNullException(nameof(sender));
-            }
-
-            var type = sender.GetType();
-            if (!_hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)
-            {
-                this.Log().Warn($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
-                _hasWarned[(type, propertyName)] = true;
-            }
-
-            return Observable.Return(new ObservedChange<object, object?>(sender, expression, default), RxApp.MainThreadScheduler)
-                .Concat(Observable<IObservedChange<object, object?>>.Never);
+            throw new ArgumentNullException(nameof(sender));
         }
+
+        var type = sender.GetType();
+        if (!_hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)
+        {
+            this.Log().Warn($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
+            _hasWarned[(type, propertyName)] = true;
+        }
+
+        return Observable.Return(new ObservedChange<object, object?>(sender, expression, default), RxApp.MainThreadScheduler)
+                         .Concat(Observable<IObservedChange<object, object?>>.Never);
     }
 }

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using System.Collections.Generic;
 
 namespace ReactiveUI.Testing.Tests
@@ -29,7 +30,15 @@ namespace ReactiveUI.Testing.Tests
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>The test fixture.</returns>
-        public static TestFixture ToTestFixture(TestFixtureBuilder builder) => builder.Build();
+        public static TestFixture ToTestFixture(TestFixtureBuilder builder)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            return builder.Build();
+        }
 
         /// <summary>
         /// Adds the count to the builder.

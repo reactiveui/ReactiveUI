@@ -8,51 +8,41 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Generates Observables based on observing Reactive objects.
+/// </summary>
+public class IROObservableForProperty : ICreatesObservableForProperty
 {
-    /// <summary>
-    /// Generates Observables based on observing Reactive objects.
-    /// </summary>
-    public class IROObservableForProperty : ICreatesObservableForProperty
+    /// <inheritdoc/>
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
-        /// <inheritdoc/>
-        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
-        {
-            // NB: Since every IReactiveObject is also an INPC, we need to bind more
-            // tightly than INPCObservableForProperty, so we return 10 here
-            // instead of one
+        // NB: Since every IReactiveObject is also an INPC, we need to bind more
+        // tightly than INPCObservableForProperty, so we return 10 here
+        // instead of one
 #pragma warning disable IDE0022 // Use expression body for methods
-            return typeof(IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
+        return typeof(IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
 #pragma warning restore IDE0022 // Use expression body for methods
+    }
+
+    /// <inheritdoc/>
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+    {
+        if (expression is null)
+        {
+            throw new ArgumentNullException(nameof(expression));
         }
 
-        /// <inheritdoc/>
-        public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        if (sender is not IReactiveObject iro)
         {
-            if (expression == null)
-            {
-                throw new ArgumentNullException(nameof(expression));
-            }
+            throw new ArgumentException("Sender doesn't implement IReactiveObject");
+        }
 
-            if (sender is not IReactiveObject iro)
-            {
-                throw new ArgumentException("Sender doesn't implement IReactiveObject");
-            }
+        var obs = beforeChanged ? iro.GetChangingObservable() : iro.GetChangedObservable();
 
-            var obs = beforeChanged ? iro.GetChangingObservable() : iro.GetChangedObservable();
-
-            if (beforeChanged)
-            {
-                if (expression.NodeType == ExpressionType.Index)
-                {
-                    return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                        .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
-                }
-
-                return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                    .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
-            }
-
+        if (beforeChanged)
+        {
             if (expression.NodeType == ExpressionType.Index)
             {
                 return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
@@ -62,5 +52,14 @@ namespace ReactiveUI
             return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
                       .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
         }
+
+        if (expression.NodeType == ExpressionType.Index)
+        {
+            return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
+                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+        }
+
+        return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
+                  .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
     }
 }

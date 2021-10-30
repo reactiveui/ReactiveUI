@@ -8,56 +8,55 @@ using Microsoft.Xaml.Interactivity;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 
-namespace ReactiveUI.Blend
+namespace ReactiveUI.Blend;
+
+/// <summary>
+/// A base class which allows us to declare our own behaviors.
+/// This is based on the WPF Blend SDK based Behaviors.
+/// </summary>
+/// <typeparam name="T">The type of DependencyObject to create a behavior for.</typeparam>
+public class Behavior<T> : DependencyObject, IBehavior
+    where T : DependencyObject
 {
     /// <summary>
-    /// A base class which allows us to declare our own behaviors.
-    /// This is based on the WPF Blend SDK based Behaviors.
+    /// Gets the associated object.
     /// </summary>
-    /// <typeparam name="T">The type of DependencyObject to create a behavior for.</typeparam>
-    public class Behavior<T> : DependencyObject, IBehavior
-        where T : DependencyObject
+    public T? AssociatedObject { get; private set; }
+
+    /// <inheritdoc/>
+    DependencyObject? IBehavior.AssociatedObject => AssociatedObject;
+
+    /// <inheritdoc/>
+    public virtual void Attach(DependencyObject associatedObject)
     {
-        /// <summary>
-        /// Gets the associated object.
-        /// </summary>
-        public T? AssociatedObject { get; private set; }
-
-        /// <inheritdoc/>
-        DependencyObject? IBehavior.AssociatedObject => AssociatedObject;
-
-        /// <inheritdoc/>
-        public virtual void Attach(DependencyObject associatedObject)
+        if (associatedObject == AssociatedObject || DesignMode.DesignModeEnabled)
         {
-            if (associatedObject == AssociatedObject || DesignMode.DesignModeEnabled)
-            {
-                return;
-            }
-
-            if (AssociatedObject is not null)
-            {
-                throw new InvalidOperationException("Cannot attach multiple objects.");
-            }
-
-            AssociatedObject = associatedObject as T;
-            OnAttached();
+            return;
         }
 
-        /// <inheritdoc/>
-        public virtual void Detach() => OnDetaching();
-
-        /// <summary>
-        /// Called when [attached].
-        /// </summary>
-        protected virtual void OnAttached()
+        if (AssociatedObject is not null)
         {
+            throw new InvalidOperationException("Cannot attach multiple objects.");
         }
 
-        /// <summary>
-        /// Called when [detaching].
-        /// </summary>
-        protected virtual void OnDetaching()
-        {
-        }
+        AssociatedObject = associatedObject as T;
+        OnAttached();
+    }
+
+    /// <inheritdoc/>
+    public virtual void Detach() => OnDetaching();
+
+    /// <summary>
+    /// Called when [attached].
+    /// </summary>
+    protected virtual void OnAttached()
+    {
+    }
+
+    /// <summary>
+    /// Called when [detaching].
+    /// </summary>
+    protected virtual void OnDetaching()
+    {
     }
 }

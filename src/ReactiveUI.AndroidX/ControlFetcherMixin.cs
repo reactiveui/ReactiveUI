@@ -8,46 +8,45 @@ using Android.Views;
 using static ReactiveUI.ControlFetcherMixin;
 using Fragment = AndroidX.Fragment.App.Fragment;
 
-namespace ReactiveUI.AndroidX
+namespace ReactiveUI.AndroidX;
+
+/// <summary>
+/// ControlFetcherMixin helps you automatically wire-up Activities and
+/// Fragments via property names, similar to Butter Knife, as well as allows
+/// you to fetch controls manually.
+/// </summary>
+public static class ControlFetcherMixin
 {
     /// <summary>
-    /// ControlFetcherMixin helps you automatically wire-up Activities and
-    /// Fragments via property names, similar to Butter Knife, as well as allows
-    /// you to fetch controls manually.
+    /// Wires a control to a property.
+    /// This should be called in the Fragment's OnCreateView, with the newly inflated layout.
     /// </summary>
-   public static class ControlFetcherMixin
+    /// <param name="fragment">The fragment.</param>
+    /// <param name="inflatedView">The inflated view.</param>
+    /// <param name="resolveMembers">The resolve members.</param>
+    public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
     {
-        /// <summary>
-        /// Wires a control to a property.
-        /// This should be called in the Fragment's OnCreateView, with the newly inflated layout.
-        /// </summary>
-        /// <param name="fragment">The fragment.</param>
-        /// <param name="inflatedView">The inflated view.</param>
-        /// <param name="resolveMembers">The resolve members.</param>
-        public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+        if (fragment is null)
         {
-            if (fragment is null)
+            throw new ArgumentNullException(nameof(fragment));
+        }
+
+        var members = fragment.GetWireUpMembers(resolveMembers);
+
+        foreach (var member in members)
+        {
+            try
             {
-                throw new ArgumentNullException(nameof(fragment));
+                // Find the android control with the same name from the view
+                var view = inflatedView.GetControl(fragment.GetType().Assembly, member.GetResourceName());
+
+                // Set the activity field's value to the view with that identifier
+                member.SetValue(fragment, view);
             }
-
-            var members = fragment.GetWireUpMembers(resolveMembers);
-
-            foreach (var member in members)
+            catch (Exception ex)
             {
-                try
-                {
-                    // Find the android control with the same name from the view
-                    var view = inflatedView.GetControl(fragment.GetType().Assembly, member.GetResourceName());
-
-                    // Set the activity field's value to the view with that identifier
-                    member.SetValue(fragment, view);
-                }
-                catch (Exception ex)
-                {
-                    throw new
-                        MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
-                }
+                throw new
+                    MissingFieldException("Failed to wire up the Property " + member.Name + " to a View in your layout with a corresponding identifier", ex);
             }
         }
     }

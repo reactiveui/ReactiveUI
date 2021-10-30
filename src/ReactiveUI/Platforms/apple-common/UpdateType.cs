@@ -3,21 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// The type of update triggered.
+/// </summary>
+public enum UpdateType
 {
     /// <summary>
-    /// The type of update triggered.
+    /// An add update.
     /// </summary>
-    public enum UpdateType
-    {
-        /// <summary>
-        /// An add update.
-        /// </summary>
-        Add,
+    Add,
 
-        /// <summary>
-        /// A delete update.
-        /// </summary>
-        Delete
-    }
+    /// <summary>
+    /// A delete update.
+    /// </summary>
+    Delete
 }

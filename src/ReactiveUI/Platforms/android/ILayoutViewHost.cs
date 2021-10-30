@@ -5,19 +5,18 @@
 
 using Android.Views;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Interface that defines a layout view host.
+/// </summary>
+public interface ILayoutViewHost
 {
     /// <summary>
-    /// Interface that defines a layout view host.
+    /// Gets the view.
     /// </summary>
-    public interface ILayoutViewHost
-    {
-        /// <summary>
-        /// Gets the view.
-        /// </summary>
-        /// <value>
-        /// The view.
-        /// </value>
-        View? View { get; }
-    }
+    /// <value>
+    /// The view.
+    /// </value>
+    View? View { get; }
 }

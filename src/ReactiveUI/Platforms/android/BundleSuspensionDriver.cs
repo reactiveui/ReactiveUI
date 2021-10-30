@@ -9,71 +9,70 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Loads and saves state to persistent storage.
+/// </summary>
+public class BundleSuspensionDriver : ISuspensionDriver
 {
-    /// <summary>
-    /// Loads and saves state to persistent storage.
-    /// </summary>
-    public class BundleSuspensionDriver : ISuspensionDriver
+    /// <inheritdoc/>
+    public IObservable<object> LoadState() // TODO: Create Test
     {
-        /// <inheritdoc/>
-        public IObservable<object> LoadState() // TODO: Create Test
+        try
         {
-            try
+            // NB: Sometimes OnCreate gives us a null bundle
+            if (AutoSuspendHelper.LatestBundle is null)
             {
-                // NB: Sometimes OnCreate gives us a null bundle
-                if (AutoSuspendHelper.LatestBundle is null)
-                {
-                    return Observable.Throw<object>(new Exception("New bundle, start from scratch"));
-                }
-
-                var serializer = new BinaryFormatter();
-                var buffer = AutoSuspendHelper.LatestBundle.GetByteArray("__state");
-
-                if (buffer is null)
-                {
-                    return Observable.Throw<object>(new InvalidOperationException("The buffer __state could not be found."));
-                }
-
-                var st = new MemoryStream(buffer);
-
-                return Observable.Return(serializer.Deserialize(st));
+                return Observable.Throw<object>(new Exception("New bundle, start from scratch"));
             }
-            catch (Exception ex)
+
+            var serializer = new BinaryFormatter();
+            var buffer = AutoSuspendHelper.LatestBundle.GetByteArray("__state");
+
+            if (buffer is null)
             {
-                return Observable.Throw<object>(ex);
+                return Observable.Throw<object>(new InvalidOperationException("The buffer __state could not be found."));
             }
+
+            var st = new MemoryStream(buffer);
+
+            return Observable.Return(serializer.Deserialize(st));
         }
-
-        /// <inheritdoc/>
-        public IObservable<Unit> SaveState(object state) // TODO: Create Test
+        catch (Exception ex)
         {
-            try
-            {
-                var serializer = new BinaryFormatter();
-                var st = new MemoryStream();
-
-                AutoSuspendHelper.LatestBundle?.PutByteArray("__state", st.ToArray());
-                return Observables.Unit;
-            }
-            catch (Exception ex)
-            {
-                return Observable.Throw<Unit>(ex);
-            }
+            return Observable.Throw<object>(ex);
         }
+    }
 
-        /// <inheritdoc/>
-        public IObservable<Unit> InvalidateState() // TODO: Create Test
+    /// <inheritdoc/>
+    public IObservable<Unit> SaveState(object state) // TODO: Create Test
+    {
+        try
         {
-            try
-            {
-                AutoSuspendHelper.LatestBundle?.PutByteArray("__state", Array.Empty<byte>());
-                return Observables.Unit;
-            }
-            catch (Exception ex)
-            {
-                return Observable.Throw<Unit>(ex);
-            }
+            var serializer = new BinaryFormatter();
+            var st = new MemoryStream();
+
+            AutoSuspendHelper.LatestBundle?.PutByteArray("__state", st.ToArray());
+            return Observables.Unit;
+        }
+        catch (Exception ex)
+        {
+            return Observable.Throw<Unit>(ex);
+        }
+    }
+
+    /// <inheritdoc/>
+    public IObservable<Unit> InvalidateState() // TODO: Create Test
+    {
+        try
+        {
+            AutoSuspendHelper.LatestBundle?.PutByteArray("__state", Array.Empty<byte>());
+            return Observables.Unit;
+        }
+        catch (Exception ex)
+        {
+            return Observable.Throw<Unit>(ex);
         }
     }
 }

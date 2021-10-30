@@ -35,7 +35,7 @@ namespace ReactiveUI
                 return 0;
             }
 
-            if (GetDependencyPropertyFetcher(type, propertyName) == null)
+            if (GetDependencyPropertyFetcher(type, propertyName) is null)
             {
                 return 0;
             }
@@ -46,7 +46,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            if (sender == null)
+            if (sender is null)
             {
                 throw new ArgumentNullException(nameof(sender));
             }
@@ -71,7 +71,7 @@ namespace ReactiveUI
             }
 
             var dpFetcher = GetDependencyPropertyFetcher(type, propertyName);
-            if (dpFetcher == null)
+            if (dpFetcher is null)
             {
                 this.Log().Warn(
                     CultureInfo.InvariantCulture,
@@ -97,7 +97,7 @@ namespace ReactiveUI
         private static PropertyInfo? ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
         {
             var current = typeInfo;
-            while (current != null)
+            while (current is not null)
             {
                 var ret = current.GetDeclaredProperty(propertyName);
                 if (ret?.IsStatic() == true)
@@ -114,7 +114,7 @@ namespace ReactiveUI
         private static FieldInfo? ActuallyGetField(TypeInfo typeInfo, string propertyName)
         {
             var current = typeInfo;
-            while (current != null)
+            while (current is not null)
             {
                 var ret = current.GetDeclaredField(propertyName);
                 if (ret?.IsStatic == true)
@@ -134,7 +134,7 @@ namespace ReactiveUI
 
             // Look for the DependencyProperty attached to this property name
             var pi = ActuallyGetProperty(typeInfo, propertyName + "Property");
-            if (pi != null)
+            if (pi is not null)
             {
                 var value = pi.GetValue(null);
 
@@ -147,7 +147,7 @@ namespace ReactiveUI
             }
 
             var fi = ActuallyGetField(typeInfo, propertyName + "Property");
-            if (fi != null)
+            if (fi is not null)
             {
                 var value = fi.GetValue(null);
 

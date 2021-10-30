@@ -6,33 +6,32 @@
 using System;
 using Object = Java.Lang.Object;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+internal static class ObjectExtension
 {
-    internal static class ObjectExtension
+    public static TObject ToNetObject<TObject>(this Object value)
     {
-        public static TObject ToNetObject<TObject>(this Object value)
+        if (value is null)
         {
-            if (value is null)
-            {
-                return default!;
-            }
-
-            if (!(value is JavaHolder))
-            {
-                throw new InvalidOperationException("Unable to convert to .NET object. Only Java.Lang.Object created with .ToJavaObject() can be converted.");
-            }
-
-            return (TObject)((JavaHolder)value).Instance;
+            return default!;
         }
 
-        public static Object? ToJavaObject<TObject>(this TObject value)
+        if (!(value is JavaHolder))
         {
-            if (value is null)
-            {
-                return null;
-            }
-
-            return new JavaHolder(value);
+            throw new InvalidOperationException("Unable to convert to .NET object. Only Java.Lang.Object created with .ToJavaObject() can be converted.");
         }
+
+        return (TObject)((JavaHolder)value).Instance;
+    }
+
+    public static Object? ToJavaObject<TObject>(this TObject value)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        return new JavaHolder(value);
     }
 }

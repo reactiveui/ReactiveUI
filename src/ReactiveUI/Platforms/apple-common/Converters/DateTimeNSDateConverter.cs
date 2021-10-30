@@ -6,39 +6,38 @@
 using System;
 using Foundation;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Binding Type Converter for DateTime to NSDateTime.
+/// </summary>
+public class DateTimeNSDateConverter : IBindingTypeConverter
 {
-    /// <summary>
-    /// Binding Type Converter for DateTime to NSDateTime.
-    /// </summary>
-    public class DateTimeNSDateConverter : IBindingTypeConverter
+    internal static Lazy<DateTimeNSDateConverter> Instance { get; } = new();
+
+    /// <inheritdoc/>
+    public int GetAffinityForObjects(Type fromType, Type toType) =>
+        (fromType == typeof(DateTime) && toType == typeof(NSDate)) ||
+        (toType == typeof(DateTime) && fromType == typeof(NSDate)) ? 4 : -1;
+
+    /// <inheritdoc/>
+    public bool TryConvert(object? val, Type toType, object? conversionHint, out object? result)
     {
-        internal static Lazy<DateTimeNSDateConverter> Instance { get; } = new();
+        result = null;
 
-        /// <inheritdoc/>
-        public int GetAffinityForObjects(Type fromType, Type toType) =>
-            (fromType == typeof(DateTime) && toType == typeof(NSDate)) ||
-            (toType == typeof(DateTime) && fromType == typeof(NSDate)) ? 4 : -1;
-
-        /// <inheritdoc/>
-        public bool TryConvert(object? val, Type toType, object? conversionHint, out object? result)
+        if (val?.GetType() == typeof(DateTime) && toType == typeof(NSDate))
         {
-            result = null;
-
-            if (val?.GetType() == typeof(DateTime) && toType == typeof(NSDate))
-            {
-                var dt = (DateTime)val;
-                result = (NSDate)dt;
-                return true;
-            }
-            else if (val?.GetType() == typeof(NSDate) && toType == typeof(DateTime))
-            {
-                var dt = (NSDate)val;
-                result = (DateTime)dt;
-                return true;
-            }
-
-            return false;
+            var dt = (DateTime)val;
+            result = (NSDate)dt;
+            return true;
         }
+        else if (val?.GetType() == typeof(NSDate) && toType == typeof(DateTime))
+        {
+            var dt = (NSDate)val;
+            result = (DateTime)dt;
+            return true;
+        }
+
+        return false;
     }
 }

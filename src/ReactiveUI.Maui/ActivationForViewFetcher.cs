@@ -9,112 +9,111 @@ using System.Reactive.Linq;
 using System.Reflection;
 using Microsoft.Maui.Controls;
 
-namespace ReactiveUI.Maui
+namespace ReactiveUI.Maui;
+
+/// <summary>
+/// This class is the default implementation that determines when views are Activated and Deactivated.
+/// </summary>
+/// <seealso cref="ReactiveUI.IActivationForViewFetcher" />
+public class ActivationForViewFetcher : IActivationForViewFetcher
 {
-    /// <summary>
-    /// This class is the default implementation that determines when views are Activated and Deactivated.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.IActivationForViewFetcher" />
-    public class ActivationForViewFetcher : IActivationForViewFetcher
+    /// <inheritdoc/>
+    public int GetAffinityForView(Type view) =>
+        typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+        typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+        typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
+            ? 10 : 0;
+
+    /// <inheritdoc/>
+    public IObservable<bool> GetActivationForView(IActivatableView view)
     {
-        /// <inheritdoc/>
-        public int GetAffinityForView(Type view) =>
-            typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-            typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-            typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
-                ? 10 : 0;
+        var activation =
+            GetActivationFor(view as ICanActivate) ??
+            GetActivationFor(view as Page) ??
+            GetActivationFor(view as View) ??
+            GetActivationFor(view as Cell) ??
+            Observable<bool>.Never;
 
-        /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatableView view)
+        return activation.DistinctUntilChanged();
+    }
+
+    private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) => canActivate?.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
+
+    private static IObservable<bool>? GetActivationFor(Page? page)
+    {
+        if (page is null)
         {
-            var activation =
-                GetActivationFor(view as ICanActivate) ??
-                GetActivationFor(view as Page) ??
-                GetActivationFor(view as View) ??
-                GetActivationFor(view as Cell) ??
-                Observable<bool>.Never;
-
-            return activation.DistinctUntilChanged();
+            return null;
         }
 
-        private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) => canActivate?.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
+        var appearing = Observable.FromEvent<EventHandler, bool>(
+                                                                 eventHandler =>
+                                                                 {
+                                                                     void Handler(object? sender, EventArgs e) => eventHandler(true);
+                                                                     return Handler;
+                                                                 },
+                                                                 x => page.Appearing += x,
+                                                                 x => page.Appearing -= x);
 
-        private static IObservable<bool>? GetActivationFor(Page? page)
+        var disappearing = Observable.FromEvent<EventHandler, bool>(
+                                                                    eventHandler =>
+                                                                    {
+                                                                        void Handler(object? sender, EventArgs e) => eventHandler(false);
+                                                                        return Handler;
+                                                                    },
+                                                                    x => page.Disappearing += x,
+                                                                    x => page.Disappearing -= x);
+
+        return appearing.Merge(disappearing);
+    }
+
+    private static IObservable<bool>? GetActivationFor(View? view)
+    {
+        if (view is null)
         {
-            if (page is null)
-            {
-                return null;
-            }
-
-            var appearing = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void Handler(object? sender, EventArgs e) => eventHandler(true);
-                    return Handler;
-                },
-                x => page.Appearing += x,
-                x => page.Appearing -= x);
-
-            var disappearing = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void Handler(object? sender, EventArgs e) => eventHandler(false);
-                    return Handler;
-                },
-                x => page.Disappearing += x,
-                x => page.Disappearing -= x);
-
-            return appearing.Merge(disappearing);
+            return null;
         }
 
-        private static IObservable<bool>? GetActivationFor(View? view)
+        var propertyChanged = Observable.FromEvent<PropertyChangedEventHandler, string?>(
+         eventHandler =>
+         {
+             void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
+             return Handler;
+         },
+         x => view.PropertyChanged += x,
+         x => view.PropertyChanged -= x);
+
+        return propertyChanged
+               .Where(x => x == "IsVisible")
+               .Select(_ => view.IsVisible)
+               .StartWith(view.IsVisible);
+    }
+
+    private static IObservable<bool>? GetActivationFor(Cell? cell)
+    {
+        if (cell is null)
         {
-            if (view is null)
-            {
-                return null;
-            }
-
-            var propertyChanged = Observable.FromEvent<PropertyChangedEventHandler, string?>(
-                eventHandler =>
-                {
-                    void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
-                    return Handler;
-                },
-                x => view.PropertyChanged += x,
-                x => view.PropertyChanged -= x);
-
-            return propertyChanged
-                .Where(x => x == "IsVisible")
-                .Select(_ => view.IsVisible)
-                .StartWith(view.IsVisible);
+            return null;
         }
 
-        private static IObservable<bool>? GetActivationFor(Cell? cell)
-        {
-            if (cell is null)
-            {
-                return null;
-            }
+        var appearing = Observable.FromEvent<EventHandler, bool>(
+                                                                 eventHandler =>
+                                                                 {
+                                                                     void Handler(object? sender, EventArgs e) => eventHandler(true);
+                                                                     return Handler;
+                                                                 },
+                                                                 x => cell.Appearing += x,
+                                                                 x => cell.Appearing -= x);
 
-            var appearing = Observable.FromEvent<EventHandler, bool>(
-                    eventHandler =>
-                    {
-                        void Handler(object? sender, EventArgs e) => eventHandler(true);
-                        return Handler;
-                    },
-                    x => cell.Appearing += x,
-                    x => cell.Appearing -= x);
+        var disappearing = Observable.FromEvent<EventHandler, bool>(
+                                                                    eventHandler =>
+                                                                    {
+                                                                        void Handler(object? sender, EventArgs e) => eventHandler(false);
+                                                                        return Handler;
+                                                                    },
+                                                                    x => cell.Disappearing += x,
+                                                                    x => cell.Disappearing -= x);
 
-            var disappearing = Observable.FromEvent<EventHandler, bool>(
-                    eventHandler =>
-                    {
-                        void Handler(object? sender, EventArgs e) => eventHandler(false);
-                        return Handler;
-                    },
-                    x => cell.Disappearing += x,
-                    x => cell.Disappearing -= x);
-
-            return appearing.Merge(disappearing);
-        }
+        return appearing.Merge(disappearing);
     }
 }

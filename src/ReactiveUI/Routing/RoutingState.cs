@@ -14,145 +14,142 @@ using DynamicData;
 using DynamicData.Binding;
 #pragma warning disable 8618
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// RoutingState manages the ViewModel Stack and allows ViewModels to
+/// navigate to other ViewModels.
+/// </summary>
+[DataContract]
+public class RoutingState : ReactiveObject
 {
+
+    [IgnoreDataMember]
+    private IScheduler _scheduler;
+
     /// <summary>
-    /// RoutingState manages the ViewModel Stack and allows ViewModels to
-    /// navigate to other ViewModels.
+    /// Initializes static members of the <see cref="RoutingState"/> class.
+    /// </summary>R
+    static RoutingState() => RxApp.EnsureInitialized();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoutingState"/> class.
     /// </summary>
-    [DataContract]
-    public class RoutingState : ReactiveObject
+    public RoutingState()
+        : this(RxApp.MainThreadScheduler)
     {
-        [DataMember]
-        private readonly ObservableCollection<IRoutableViewModel> _navigationStack;
+    }
 
-        [IgnoreDataMember]
-        private IScheduler _scheduler;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoutingState"/> class.
+    /// </summary>
+    /// <param name="scheduler">A scheduler for where to send navigation changes to.</param>
+    public RoutingState(IScheduler scheduler)
+    {
+        _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
+        NavigationStack = new ObservableCollection<IRoutableViewModel>();
+        SetupRx();
+    }
 
-        /// <summary>
-        /// Initializes static members of the <see cref="RoutingState"/> class.
-        /// </summary>R
-        static RoutingState() => RxApp.EnsureInitialized();
+    /// <summary>
+    /// Gets the current navigation stack, the last element in the
+    /// collection being the currently visible ViewModel.
+    /// </summary>
+    [IgnoreDataMember]
+    public ObservableCollection<IRoutableViewModel> NavigationStack { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RoutingState"/> class.
-        /// </summary>
-        public RoutingState()
-            : this(RxApp.MainThreadScheduler)
+    /// <summary>
+    /// Gets or sets the scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
+    /// </summary>
+    [IgnoreDataMember]
+    public IScheduler Scheduler
+    {
+        get => _scheduler;
+        set
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RoutingState"/> class.
-        /// </summary>
-        /// <param name="scheduler">A scheduler for where to send navigation changes to.</param>
-        public RoutingState(IScheduler scheduler)
-        {
-            _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
-            _navigationStack = new ObservableCollection<IRoutableViewModel>();
-            SetupRx();
-        }
-
-        /// <summary>
-        /// Gets the current navigation stack, the last element in the
-        /// collection being the currently visible ViewModel.
-        /// </summary>
-        [IgnoreDataMember]
-        public ObservableCollection<IRoutableViewModel> NavigationStack => _navigationStack;
-
-        /// <summary>
-        /// Gets or sets the scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
-        /// </summary>
-        [IgnoreDataMember]
-        public IScheduler Scheduler
-        {
-            get => _scheduler;
-            set
+            if (_scheduler != value)
             {
-                if (_scheduler != value)
-                {
-                    _scheduler = value;
-                    SetupRx();
-                }
+                _scheduler = value;
+                SetupRx();
             }
         }
+    }
 
-        /// <summary>
-        /// Gets or sets a command which will navigate back to the previous element in the stack.
-        /// </summary>
-        [IgnoreDataMember]
-        public ReactiveCommand<Unit, IRoutableViewModel?> NavigateBack { get; protected set; }
+    /// <summary>
+    /// Gets or sets a command which will navigate back to the previous element in the stack.
+    /// </summary>
+    [IgnoreDataMember]
+    public ReactiveCommand<Unit, IRoutableViewModel?> NavigateBack { get; protected set; }
 
-        /// <summary>
-        /// Gets or sets a command that navigates to the a new element in the stack - the Execute parameter
-        /// must be a ViewModel that implements IRoutableViewModel.
-        /// </summary>
-        [IgnoreDataMember]
-        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; }
+    /// <summary>
+    /// Gets or sets a command that navigates to the a new element in the stack - the Execute parameter
+    /// must be a ViewModel that implements IRoutableViewModel.
+    /// </summary>
+    [IgnoreDataMember]
+    public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; }
 
-        /// <summary>
-        /// Gets or sets a command that navigates to a new element and resets the navigation stack (i.e. the
-        /// new ViewModel will now be the only element in the stack) - the
-        /// Execute parameter must be a ViewModel that implements
-        /// IRoutableViewModel.
-        /// </summary>
-        [IgnoreDataMember]
-        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
+    /// <summary>
+    /// Gets or sets a command that navigates to a new element and resets the navigation stack (i.e. the
+    /// new ViewModel will now be the only element in the stack) - the
+    /// Execute parameter must be a ViewModel that implements
+    /// IRoutableViewModel.
+    /// </summary>
+    [IgnoreDataMember]
+    public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
 
-        /// <summary>
-        /// Gets or sets the current view model which is to be shown for the Routing.
-        /// </summary>
-        [IgnoreDataMember]
-        public IObservable<IRoutableViewModel?> CurrentViewModel { get; protected set; }
+    /// <summary>
+    /// Gets or sets the current view model which is to be shown for the Routing.
+    /// </summary>
+    [IgnoreDataMember]
+    public IObservable<IRoutableViewModel?> CurrentViewModel { get; protected set; }
 
-        /// <summary>
-        /// Gets or sets an observable which will signal when the Navigation changes.
-        /// </summary>
-        [IgnoreDataMember]
-        public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
+    /// <summary>
+    /// Gets or sets an observable which will signal when the Navigation changes.
+    /// </summary>
+    [IgnoreDataMember]
+    public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
 
-        [OnDeserialized]
-        private void SetupRx(StreamingContext sc) => SetupRx();
+    [OnDeserialized]
+    private void SetupRx(StreamingContext sc) => SetupRx();
 
-        private void SetupRx()
-        {
-            var navigateScheduler = _scheduler;
+    private void SetupRx()
+    {
+        var navigateScheduler = _scheduler;
 
-            NavigationChanged = _navigationStack.ToObservableChangeSet();
+        NavigationChanged = NavigationStack.ToObservableChangeSet();
 
-            var countAsBehavior = Observable.Defer(() => Observable.Return(NavigationStack.Count)).Concat(NavigationChanged.CountChanged().Select(_ => NavigationStack.Count));
-            NavigateBack =
-                ReactiveCommand.CreateFromObservable<IRoutableViewModel?>(
-                    () =>
-                    {
-                        _navigationStack.RemoveAt(NavigationStack.Count - 1);
-                        return Observable.Return(NavigationStack.Count > 0 ? _navigationStack[NavigationStack.Count - 1] : default);
-                    },
-                    countAsBehavior.Select(x => x > 1),
-                    navigateScheduler);
+        var countAsBehavior = Observable.Defer(() => Observable.Return(NavigationStack.Count)).Concat(NavigationChanged.CountChanged().Select(_ => NavigationStack.Count));
+        NavigateBack =
+            ReactiveCommand.CreateFromObservable<IRoutableViewModel?>(
+                                                                      () =>
+                                                                      {
+                                                                          NavigationStack.RemoveAt(NavigationStack.Count - 1);
+                                                                          return Observable.Return(NavigationStack.Count > 0 ? NavigationStack[NavigationStack.Count - 1] : default);
+                                                                      },
+                                                                      countAsBehavior.Select(x => x > 1),
+                                                                      navigateScheduler);
 
-            Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(
-                vm =>
-                {
-                    if (vm is null)
-                    {
-                        throw new Exception("Navigate must be called on an IRoutableViewModel");
-                    }
+        Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(
+         vm =>
+         {
+             if (vm is null)
+             {
+                 throw new Exception("Navigate must be called on an IRoutableViewModel");
+             }
 
-                    _navigationStack.Add(vm);
-                    return Observable.Return(vm);
-                },
-                outputScheduler: navigateScheduler);
+             NavigationStack.Add(vm);
+             return Observable.Return(vm);
+         },
+         outputScheduler: navigateScheduler);
 
-            NavigateAndReset = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(
-                vm =>
-                {
-                    _navigationStack.Clear();
-                    return Navigate.Execute(vm);
-                },
-                outputScheduler: navigateScheduler);
+        NavigateAndReset = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(
+         vm =>
+         {
+             NavigationStack.Clear();
+             return Navigate.Execute(vm);
+         },
+         outputScheduler: navigateScheduler);
 
-            CurrentViewModel = Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())).Concat(NavigationChanged.Select(_ => NavigationStack.LastOrDefault()));
-        }
+        CurrentViewModel = Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())).Concat(NavigationChanged.Select(_ => NavigationStack.LastOrDefault()));
     }
 }

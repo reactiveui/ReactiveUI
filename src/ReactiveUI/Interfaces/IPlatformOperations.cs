@@ -3,18 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Additional details implemented by the different ReactiveUI platform projects.
+/// </summary>
+public interface IPlatformOperations
 {
     /// <summary>
-    /// Additional details implemented by the different ReactiveUI platform projects.
+    /// Gets a descriptor that describes (if applicable) the orientation
+    /// of the screen.
     /// </summary>
-    public interface IPlatformOperations
-    {
-        /// <summary>
-        /// Gets a descriptor that describes (if applicable) the orientation
-        /// of the screen.
-        /// </summary>
-        /// <returns>The device orientation descriptor.</returns>
-        string? GetOrientation();
-    }
+    /// <returns>The device orientation descriptor.</returns>
+    string? GetOrientation();
 }

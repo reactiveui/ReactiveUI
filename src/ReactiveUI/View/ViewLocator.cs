@@ -7,36 +7,35 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Splat;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Helper class which will get the currently registered IViewLocator interface inside
+/// the Splat dependency injection container.
+/// </summary>
+public static class ViewLocator
 {
     /// <summary>
-    /// Helper class which will get the currently registered IViewLocator interface inside
-    /// the Splat dependency injection container.
+    /// Gets the currently registered IViewLocator interface.
     /// </summary>
-    public static class ViewLocator
+    /// <exception cref="Exception">
+    /// If there is no IViewLocator registered.
+    /// Can happen due to using your own DI container and don't rerun the
+    /// DependencyResolverMixins.InitializeReactiveUI() method.
+    /// Also can happen if you don't include all the NuGet packages.
+    /// </exception>
+    [SuppressMessage("Microsoft.Reliability", "CA1065", Justification = "Exception required to keep interface same.")]
+    public static IViewLocator Current
     {
-        /// <summary>
-        /// Gets the currently registered IViewLocator interface.
-        /// </summary>
-        /// <exception cref="Exception">
-        /// If there is no IViewLocator registered.
-        /// Can happen due to using your own DI container and don't rerun the
-        /// DependencyResolverMixins.InitializeReactiveUI() method.
-        /// Also can happen if you don't include all the NuGet packages.
-        /// </exception>
-        [SuppressMessage("Microsoft.Reliability", "CA1065", Justification = "Exception required to keep interface same.")]
-        public static IViewLocator Current
+        get
         {
-            get
+            var ret = Locator.Current.GetService<IViewLocator>();
+            if (ret is null)
             {
-                var ret = Locator.Current.GetService<IViewLocator>();
-                if (ret is null)
-                {
-                    throw new ViewLocatorNotFoundException("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
-                }
-
-                return ret;
+                throw new ViewLocatorNotFoundException("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
             }
+
+            return ret;
         }
     }
 }

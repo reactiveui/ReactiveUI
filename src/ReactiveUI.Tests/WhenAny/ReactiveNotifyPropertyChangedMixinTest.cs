@@ -763,10 +763,10 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NullableTypesTestShouldntNeedDecorators()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             IEnumerable<AccountUser?>? result = null;
             fixture.WhenAnyValue(x => x.AccountService.AccountUsersNullable)
-                   .Where(users => users.Any())
+                   .Where(users => users.Count > 0)
                    .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName)))
                    .Subscribe(dict => result = dict);
 
@@ -779,7 +779,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NullableTypesTestShouldntNeedDecorators2()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             IEnumerable<AccountUser?>? result = null;
             fixture.WhenAnyValue(
                 x => x.ProjectService.ProjectsNullable,
@@ -801,7 +801,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NonNullableTypesTestShouldntNeedDecorators()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             IEnumerable<AccountUser>? result = null;
             fixture.WhenAnyValue(x => x.AccountService.AccountUsers)
                    .Where(users => users.Count > 0)
@@ -817,7 +817,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NonNullableTypesTestShouldntNeedDecorators2()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             IEnumerable<AccountUser>? result = null;
             fixture.WhenAnyValue(
                 x => x.ProjectService.Projects,
@@ -839,7 +839,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith1Paramerters()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1).Subscribe(value => result = value);
@@ -850,7 +850,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith1ParamertersSequentialCheck()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             var result = string.Empty;
             fixture.Value1 = null!;
             fixture.WhenAnyValue(
@@ -871,7 +871,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith1ParamertersSequentialCheckNullable()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             var result = string.Empty;
             fixture.WhenAnyValue(
                 x => x.Value2).Subscribe(value => result = value);
@@ -894,7 +894,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith2ParamertersReturnsTuple()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -915,7 +915,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith2ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -937,7 +937,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith3ParamertersReturnsTuple()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -959,7 +959,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith3ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -982,7 +982,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith4ParamertersReturnsTuple()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1005,7 +1005,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith4ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1029,7 +1029,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith5ParamertersReturnsTuple()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1053,7 +1053,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith5ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1078,7 +1078,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith6ParamertersReturnsTuple()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1103,7 +1103,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith6ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1129,7 +1129,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith7ParamertersReturnsTuple()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1155,7 +1155,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith7ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1182,7 +1182,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith8ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1210,7 +1210,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith9ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1239,7 +1239,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith10ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1269,7 +1269,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith11ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,
@@ -1300,7 +1300,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyValueWith12ParamertersReturnsValues()
         {
-            WhenAnyTestFixture fixture = new();
+            var fixture = new WhenAnyTestFixture();
             string? result = null;
             fixture.WhenAnyValue(
                 x => x.Value1,

@@ -5,35 +5,34 @@
 
 using System.Linq.Expressions;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// A data-only version of IObservedChange.
+/// </summary>
+/// <typeparam name="TSender">The sender type.</typeparam>
+/// <typeparam name="TValue">The value type.</typeparam>
+public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
 {
     /// <summary>
-    /// A data-only version of IObservedChange.
+    /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
     /// </summary>
-    /// <typeparam name="TSender">The sender type.</typeparam>
-    /// <typeparam name="TValue">The value type.</typeparam>
-    public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
+    /// <param name="sender">The sender.</param>
+    /// <param name="expression">Expression describing the member.</param>
+    /// <param name="value">The value.</param>
+    public ObservedChange(TSender sender, Expression? expression, TValue value)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="expression">Expression describing the member.</param>
-        /// <param name="value">The value.</param>
-        public ObservedChange(TSender sender, Expression? expression, TValue value)
-        {
-            Sender = sender;
-            Expression = expression;
-            Value = value;
-        }
-
-        /// <inheritdoc/>
-        public TSender Sender { get; }
-
-        /// <inheritdoc/>
-        public Expression? Expression { get; }
-
-        /// <inheritdoc/>
-        public TValue Value { get; }
+        Sender = sender;
+        Expression = expression;
+        Value = value;
     }
+
+    /// <inheritdoc/>
+    public TSender Sender { get; }
+
+    /// <inheritdoc/>
+    public Expression? Expression { get; }
+
+    /// <inheritdoc/>
+    public TValue Value { get; }
 }

@@ -3,64 +3,63 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Platforms or other registration namespaces for the dependency resolver to consider when initializing.
+/// </summary>
+public enum RegistrationNamespace
 {
+    /// <summary>No platform to register.</summary>
+    None = 0,
+
     /// <summary>
-    /// Platforms or other registration namespaces for the dependency resolver to consider when initializing.
+    /// Xamarin Forms.
     /// </summary>
-    public enum RegistrationNamespace
-    {
-        /// <summary>No platform to register.</summary>
-        None = 0,
+    XamForms,
 
-        /// <summary>
-        /// Xamarin Forms.
-        /// </summary>
-        XamForms,
+    /// <summary>
+    /// Windows Forms.
+    /// </summary>
+    Winforms,
 
-        /// <summary>
-        /// Windows Forms.
-        /// </summary>
-        Winforms,
+    /// <summary>
+    /// WPF.
+    /// </summary>
+    Wpf,
 
-        /// <summary>
-        /// WPF.
-        /// </summary>
-        Wpf,
+    /// <summary>
+    /// Uno.
+    /// </summary>
+    Uno,
 
-        /// <summary>
-        /// Uno.
-        /// </summary>
-        Uno,
+    /// <summary>
+    /// Blazor.
+    /// </summary>
+    Blazor,
 
-        /// <summary>
-        /// Blazor.
-        /// </summary>
-        Blazor,
+    /// <summary>
+    /// Drawing.
+    /// </summary>
+    Drawing,
 
-        /// <summary>
-        /// Drawing.
-        /// </summary>
-        Drawing,
+    /// <summary>
+    /// Avalonia.
+    /// </summary>
+    Avalonia,
 
-        /// <summary>
-        /// Avalonia.
-        /// </summary>
-        Avalonia,
+    /// <summary>
+    /// Maui.
+    /// </summary>
+    Maui,
 
-        /// <summary>
-        /// Maui.
-        /// </summary>
-        Maui,
+    /// <summary>
+    /// Uwp.
+    /// </summary>
+    Uwp,
 
-        /// <summary>
-        /// Uwp.
-        /// </summary>
-        Uwp,
-
-        /// <summary>
-        /// WinUI.
-        /// </summary>
-        WinUI,
-    }
+    /// <summary>
+    /// WinUI.
+    /// </summary>
+    WinUI,
 }
