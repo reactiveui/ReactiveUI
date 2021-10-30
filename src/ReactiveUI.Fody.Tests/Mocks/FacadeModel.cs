@@ -26,7 +26,7 @@ public class FacadeModel : ReactiveObject
     /// <summary>
     /// Gets the base dependency.
     /// </summary>
-    public BaseModel Dependency { get; private init; }
+    public BaseModel Dependency { get; }
 
     /// <summary>
     /// Gets or sets a property with the same name in the dependency.

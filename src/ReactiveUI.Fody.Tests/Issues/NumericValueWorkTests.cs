@@ -12,12 +12,12 @@ namespace ReactiveUI.Fody.Tests.Issues;
 /// <summary>
 /// A set of tests to make sure that they produce valid numeric values for different types.
 /// </summary>
-public class NumericValueWorkTests
+public static class NumericValueWorkTests
 {
     /// <summary>
     /// A test to make sure that all the default values are kept after generation.
     /// </summary>
-    public void KeepsDefaultValuesTest()
+    public static void KeepsDefaultValuesTest()
     {
         var testModel = new TestModel();
 
