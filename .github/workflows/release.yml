@@ -18,7 +18,7 @@ jobs:
       shell: bash
       run: |
         dotnet tool update -g dotnet-vs
-        vs modify preview +mobile +desktop +uwp +web
+        vs modify preview +mobile +xamarin +core +desktop +uwp +web
         echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
 
     - name: Install Windows SDK 10.0.16299
@@ -62,9 +62,10 @@ jobs:
         dotnet workload install tvos
         dotnet workload install macos
         dotnet workload install maui
+        dotnet workload restore "src/ReactiveUI/ReactiveUI.csproj"
         dotnet tool install -g Redth.Net.Maui.Check
         maui-check --non-interactive --fix
-        
+
     - name: Add MSBuild to PATH
       uses: glennawatson/setup-msbuild@v1.0.3
       with:
@@ -76,12 +77,13 @@ jobs:
       with:
         setAllVars: true
 
-    - name: NuGet Restore
-      run: dotnet restore
+    - name: NuGet restore
+      run: |
+        dotnet restore ReactiveUI.sln
       working-directory: src
 
     - name: Build
-      run: msbuild /t:build,pack /nowarn:MSB4011 /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }}
+      run: msbuild /t:build,pack /nowarn:MSB4011 /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }}  ReactiveUI.sln
       working-directory: src
 
     - name: Save SignClient Configuration
