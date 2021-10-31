@@ -9,8 +9,13 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
 
+#if HAS_UNO_WINUI
+using Microsoft.UI.Xaml;
+using Windows.Foundation;
+#else
 using Windows.Foundation;
 using Windows.UI.Xaml;
+#endif
 
 namespace ReactiveUI.Uno
 {
