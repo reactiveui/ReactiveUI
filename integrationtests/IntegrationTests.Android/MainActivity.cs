@@ -54,6 +54,11 @@ namespace IntegrationTests.Android
         /// <inheritdoc />
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
+            if (item is null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
             return item.ItemId == Resource.Id.action_settings || base.OnOptionsItemSelected(item);
         }
 

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using System.Reactive.Concurrency;
 
 namespace IntegrationTests.Shared.Tests.Features.Login
@@ -28,7 +29,10 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         /// Converts the builder into a LoginViewModel using automatic casting.
         /// </summary>
         /// <param name="builder">The builder instance to convert into a LoginViewModel.</param>
-        public static implicit operator LoginViewModel(LoginViewModelBuilder builder) => builder.ToLoginViewModel();
+        public static implicit operator LoginViewModel(LoginViewModelBuilder builder)
+        {
+            return builder?.ToLoginViewModel();
+        }
 
         /// <summary>
         /// Logs the user in with the specified user name.
