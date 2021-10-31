@@ -217,7 +217,7 @@ namespace TestHelper
                             var resultMethodName = diagnostics[i].Location.SourceTree!.FilePath.EndsWith(".cs", StringComparison.Ordinal) ? "GetCSharpResultAt" : "GetBasicResultAt";
                             var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
 
-                            builder.Append($"{resultMethodName}({linePosition.Line + 1}, {linePosition.Character + 1}, {analyzerType.Name}.{rule.Id})");
+                            builder.Append(resultMethodName).Append('(').Append(linePosition.Line + 1).Append(", ").Append(linePosition.Character + 1).Append(", ").Append(analyzerType.Name).Append('.').Append(rule.Id).Append(')');
                         }
 
                         if (i != diagnostics.Length - 1)

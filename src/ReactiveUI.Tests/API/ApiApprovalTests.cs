@@ -5,6 +5,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+
+using VerifyXunit;
 
 using Xunit;
 
@@ -14,18 +17,21 @@ namespace ReactiveUI.Tests.API
     /// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [UsesVerify]
     public class ApiApprovalTests : ApiApprovalBase
     {
         /// <summary>
         /// Generates public API for the ReactiveUI.Testing API.
         /// </summary>
+        /// <returns>A task to monitor the process.</returns>
         [Fact]
-        public void Testing() => CheckApproval(typeof(Testing.SchedulerExtensions).Assembly);
+        public Task Testing() => CheckApproval(typeof(Testing.SchedulerExtensions).Assembly);
 
         /// <summary>
         /// Generates public API for the ReactiveUI API.
         /// </summary>
+        /// <returns>A task to monitor the process.</returns>
         [Fact]
-        public void ReactiveUI() => CheckApproval(typeof(RxApp).Assembly);
+        public Task ReactiveUI() => CheckApproval(typeof(RxApp).Assembly);
     }
 }

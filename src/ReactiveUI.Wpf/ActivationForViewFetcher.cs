@@ -73,13 +73,13 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         }
 
         var viewClosed = Observable.FromEvent<EventHandler, bool>(
-                                                                  eventHandler =>
-                                                                  {
-                                                                      void Handler(object? sender, EventArgs e) => eventHandler(false);
-                                                                      return Handler;
-                                                                  },
-                                                                  x => window.Closed += x,
-                                                                  x => window.Closed -= x);
+            eventHandler =>
+            {
+                void Handler(object? sender, EventArgs e) => eventHandler(false);
+                return Handler;
+            },
+            x => window.Closed += x,
+            x => window.Closed -= x);
 
         return viewClosed;
     }

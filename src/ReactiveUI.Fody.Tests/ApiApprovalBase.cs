@@ -5,20 +5,15 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-
-using DiffEngine;
+using System.Threading.Tasks;
 
 using PublicApiGenerator;
 
-using Splat;
-using Xunit;
+using VerifyTests;
 
-namespace ReactiveUI.Fody.Tests;
+using VerifyXunit;
 
 /// <summary>
 /// Tests for API approvals.
@@ -26,57 +21,29 @@ namespace ReactiveUI.Fody.Tests;
 [ExcludeFromCodeCoverage]
 public abstract class ApiApprovalBase
 {
-    private static readonly Regex _removeCoverletSectionRegex = new(@"^namespace Coverlet\.Core\.Instrumentation\.Tracker.*?^}", RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.Compiled);
-
     /// <summary>
     /// Checks the assembly to detect the public API. Generates a received/approved version of the API.
     /// </summary>
     /// <param name="assembly">The assembly to check.</param>
-    /// <param name="memberName">Auto populated member name.</param>
     /// <param name="filePath">Auto populated file path.</param>
-    protected static void CheckApproval(Assembly assembly, [CallerMemberName]string? memberName = null, [CallerFilePath]string? filePath = null)
+    /// <returns>A task to monitor the progress.</returns>
+    protected static Task CheckApproval(Assembly assembly, [CallerFilePath]string? filePath = null)
     {
-        var targetFrameworkName = Assembly.GetExecutingAssembly().GetTargetFrameworkName();
-
-        var sourceDirectory = Path.GetDirectoryName(filePath);
-
-        if (sourceDirectory is not null)
+        if (filePath is null)
         {
-            var approvedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.approved.txt");
-            var receivedFileName = Path.Combine(sourceDirectory, $"ApiApprovalTests.{memberName}.{targetFrameworkName}.received.txt");
-
-            var approvedPublicApi = string.Empty;
-
-            if (File.Exists(approvedFileName))
-            {
-                approvedPublicApi = File.ReadAllText(approvedFileName);
-            }
-
-            var receivedPublicApi = Filter(assembly.GeneratePublicApi(new()));
-
-            if (!string.Equals(receivedPublicApi, approvedPublicApi, StringComparison.InvariantCulture))
-            {
-                File.WriteAllText(receivedFileName, receivedPublicApi);
-                DiffRunner.Launch(receivedFileName, approvedFileName);
-            }
-
-            Assert.Equal(approvedPublicApi, receivedPublicApi);
+            return Task.CompletedTask;
         }
-    }
 
-    private static string Filter(string text)
-    {
-        text = _removeCoverletSectionRegex.Replace(text, string.Empty);
-        return string.Join(Environment.NewLine, text.Split(
-                                                           new[]
-                                                           {
-                                                               Environment.NewLine,
-                                                           },
-                                                           StringSplitOptions.RemoveEmptyEntries)
-                                                    .Where(l =>
-                                                               !l.StartsWith("[assembly: AssemblyVersion(", StringComparison.InvariantCulture) &&
-                                                               !l.StartsWith("[assembly: AssemblyFileVersion(", StringComparison.InvariantCulture) &&
-                                                               !l.StartsWith("[assembly: AssemblyInformationalVersion(", StringComparison.InvariantCulture) &&
-                                                               !string.IsNullOrWhiteSpace(l)));
+        var generatorOptions = new ApiGeneratorOptions { WhitelistedNamespacePrefixes = new[] { "ReactiveUI" } };
+        var apiText = assembly.GeneratePublicApi(generatorOptions);
+        var verifySettings = new VerifySettings();
+        return Verifier.Verify(apiText, verifySettings, filePath)
+            .UniqueForRuntimeAndVersion()
+            .ScrubEmptyLines()
+            .ScrubLines(l =>
+                l.StartsWith("[assembly: AssemblyVersion(", StringComparison.InvariantCulture) ||
+                l.StartsWith("[assembly: AssemblyFileVersion(", StringComparison.InvariantCulture) ||
+                l.StartsWith("[assembly: AssemblyInformationalVersion(", StringComparison.InvariantCulture) ||
+                l.StartsWith("[assembly: System.Reflection.AssemblyMetadata(", StringComparison.InvariantCulture));
     }
 }

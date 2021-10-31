@@ -1,7 +1,6 @@
-﻿[assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/reactiveui/reactiveui")]
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.19041.0")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v6.0", FrameworkDisplayName="")]
-[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.19041.0")]
+﻿[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows7.0")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v5.0", FrameworkDisplayName="")]
+[assembly: System.Runtime.Versioning.TargetPlatform("Windows7.0")]
 namespace ReactiveUI.Winforms
 {
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher, Splat.IEnableLogger
@@ -109,4 +108,12 @@ namespace ReactiveUI.Winforms
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
         public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
+}
+namespace System.Reactive.Concurrency
+{
+    public class ControlScheduler : System.Reactive.Concurrency.LocalScheduler, System.Reactive.Concurrency.ISchedulerPeriodic { }
+}
+namespace System.Reactive.Linq
+{
+    public static class ControlObservable { }
 }

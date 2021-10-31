@@ -1,8 +1,8 @@
 <Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net472;net6.0-windows10.0.19041</TargetFrameworks>
+    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net472;net5.0-windows</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" $(TargetFramework.StartsWith('net6.0-windows')) AND '$(OS)' == 'Windows_NT'">
+    <When Condition=" $(TargetFramework.StartsWith('net5.0-windows')) ">
       <PropertyGroup>
         <UseWpf>true</UseWpf>
         <UseWindowsForms>true</UseWindowsForms>
