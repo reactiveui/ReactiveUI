@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    types: [opened, synchronize, reopened, closed]
     branches: [ main ]
 
 env:
@@ -123,56 +122,3 @@ jobs:
       with:
         name: nuget
         path: '**/*.nupkg'
-
-  release:
-    runs-on: ubuntu-latest
-    needs: build
-    if: contains(github.event.pull_request.labels.*.name, 'release') && github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
-    - name: Download NuGet Packages
-      uses: actions/download-artifact@v2
-      with:
-        name: nuget
-
-    - name: Save SignClient Configuration
-      run: 'echo "$SIGN_CLIENT_CONFIG" > SignPackages.json'
-      shell: bash
-      env:
-        SIGN_CLIENT_CONFIG: ${{secrets.SIGN_CLIENT_CONFIG}}
-
-    - name: Sign NuGet Packages
-      uses: glennawatson/signclient@v1
-      with:
-        input-files: '**/*.nupkg'
-        sign-client-secret: ${{ secrets.SIGN_CLIENT_SECRET }}
-        sign-client-user: ${{ secrets.SIGN_CLIENT_USER_ID }}
-        project-name: reactiveui
-        description: reactiveui
-        config-file: SignPackages.json
-
-    - name: Changelog
-      uses: glennawatson/ChangeLog@v1
-      id: changelog
-
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-      with:
-          tag_name: ${{ needs.build.outputs.nbgv }}
-          release_name: ${{ needs.build.outputs.nbgv }}
-          body: |
-            ${{ steps.changelog.outputs.commitLog }}
-
-    - name: NuGet Push
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
-        SOURCE_URL: https://api.nuget.org/v3/index.json
-      run: |
-        dotnet nuget push -s ${{ env.SOURCE_URL }} -k ${{ env.NUGET_AUTH_TOKEN }} **/*.nupkg
-
