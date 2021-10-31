@@ -1,0 +1,122 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  configuration: Release
+  productNamespacePrefix: "ReactiveUI"
+
+jobs:
+  release:
+    runs-on: windows-2022
+    environment:
+      name: release
+    steps:
+    - name: Update VS2022 preview
+      shell: bash
+      run: |
+        dotnet tool update -g dotnet-vs
+        vs modify preview +mobile +desktop +uwp +web
+        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
+
+    - name: Install Windows SDK 10.0.16299
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/p/?linkid=864422 -OutFile winsdk.exe
+        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $startInfo.FileName = "winsdk.exe"
+        $startInfo.Arguments = "/norestart /quiet"
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $startInfo
+        $process.Start()
+        $process.WaitForExit()
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1.8.2
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Install .NET 5
+      uses: actions/setup-dotnet@v1.8.2
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Install .NET 6
+      uses: actions/setup-dotnet@v1.8.2
+      with:
+        dotnet-version: 6.0.x
+        include-prerelease: true
+
+    - name: Install DotNet workloads
+      shell: bash
+      run: |
+        dotnet workload install android
+        dotnet workload install ios
+        dotnet workload install tvos
+        dotnet workload install macos
+        dotnet workload install maui
+        dotnet tool install -g Redth.Net.Maui.Check
+        maui-check --non-interactive --fix
+        
+    - name: Add MSBuild to PATH
+      uses: glennawatson/setup-msbuild@v1.0.3
+      with:
+        prerelease: true
+
+    - name: NBGV
+      id: nbgv
+      uses: dotnet/nbgv@master
+      with:
+        setAllVars: true
+
+    - name: NuGet Restore
+      run: dotnet restore
+      working-directory: src
+
+    - name: Build
+      run: msbuild /t:build,pack /nowarn:MSB4011 /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }}
+      working-directory: src
+
+    - name: Save SignClient Configuration
+      run: 'echo "$SIGN_CLIENT_CONFIG" > SignPackages.json'
+      shell: bash
+      env:
+        SIGN_CLIENT_CONFIG: ${{secrets.SIGN_CLIENT_CONFIG}}
+
+    - name: Sign NuGet Packages
+      uses: glennawatson/signclient@v1
+      with:
+        input-files: '**/*.nupkg'
+        sign-client-secret: ${{ secrets.SIGN_CLIENT_SECRET }}
+        sign-client-user: ${{ secrets.SIGN_CLIENT_USER_ID }}
+        project-name: reactiveui
+        description: reactiveui
+        config-file: SignPackages.json
+
+    - name: Changelog
+      uses: glennawatson/ChangeLog@v1
+      id: changelog
+
+    - name: Create Release
+      uses: actions/create-release@v1.1.4
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+          tag_name: ${{ steps.nbgv.outputs.SemVer2 }}
+          release_name: ${{ steps.nbgv.outputs.SemVer2 }}
+          body: |
+            ${{ steps.changelog.outputs.commitLog }}
+
+    - name: NuGet Push
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
+        SOURCE_URL: https://api.nuget.org/v3/index.json
+      run: |
+        dotnet nuget push -s ${{ env.SOURCE_URL }} -k ${{ env.NUGET_AUTH_TOKEN }} **/*.nupkg

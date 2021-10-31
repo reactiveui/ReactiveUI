@@ -1,0 +1,23 @@
+[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.7.2", FrameworkDisplayName=".NET Framework 4.7.2")]
+namespace ReactiveUI.Blend
+{
+    public class FollowObservableStateBehavior : Microsoft.Xaml.Behaviors.Behavior<System.Windows.FrameworkElement>
+    {
+        public static readonly System.Windows.DependencyProperty StateObservableProperty;
+        public static readonly System.Windows.DependencyProperty TargetObjectProperty;
+        public FollowObservableStateBehavior() { }
+        public bool AutoResubscribeOnError { get; set; }
+        public System.IObservable<string> StateObservable { get; set; }
+        public System.Windows.FrameworkElement TargetObject { get; set; }
+        protected override void OnDetaching() { }
+        protected static void OnStateObservableChanged(System.Windows.DependencyObject? sender, System.Windows.DependencyPropertyChangedEventArgs e) { }
+    }
+    public class ObservableTrigger : Microsoft.Xaml.Behaviors.TriggerBase<System.Windows.FrameworkElement>
+    {
+        public static readonly System.Windows.DependencyProperty ObservableProperty;
+        public ObservableTrigger() { }
+        public bool AutoResubscribeOnError { get; set; }
+        public System.IObservable<object> Observable { get; set; }
+        protected static void OnObservableChanged(System.Windows.DependencyObject sender, System.Windows.DependencyPropertyChangedEventArgs e) { }
+    }
+}
