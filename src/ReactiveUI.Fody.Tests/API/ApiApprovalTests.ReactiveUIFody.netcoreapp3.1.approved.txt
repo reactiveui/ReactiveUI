@@ -8,7 +8,7 @@
 namespace ReactiveUI.Fody.Helpers
 {
     [System.AttributeUsage(System.AttributeTargets.Method | System.AttributeTargets.Property | System.AttributeTargets.All)]
-    public class ObservableAsPropertyAttribute : System.Attribute
+    public sealed class ObservableAsPropertyAttribute : System.Attribute
     {
         public ObservableAsPropertyAttribute() { }
     }
@@ -20,12 +20,12 @@ namespace ReactiveUI.Fody.Helpers
             where TObj : ReactiveUI.ReactiveObject { }
     }
     [System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.All)]
-    public class ReactiveAttribute : System.Attribute
+    public sealed class ReactiveAttribute : System.Attribute
     {
         public ReactiveAttribute() { }
     }
     [System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.All)]
-    public class ReactiveDependencyAttribute : System.Attribute
+    public sealed class ReactiveDependencyAttribute : System.Attribute
     {
         public ReactiveDependencyAttribute(string targetName) { }
         public string Target { get; }

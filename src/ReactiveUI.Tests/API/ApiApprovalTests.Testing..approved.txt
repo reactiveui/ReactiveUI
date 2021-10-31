@@ -1,0 +1,47 @@
+﻿[assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/reactiveui/reactiveui")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v6.0", FrameworkDisplayName="")]
+namespace ReactiveUI.Testing
+{
+    public interface IBuilder { }
+    public static class IBuilderExtensions
+    {
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField>? field, System.Collections.Generic.IEnumerable<TField> values)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField>? field, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, out TField field, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair)
+            where TKey :  notnull { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
+            where TBuilder : ReactiveUI.Testing.IBuilder
+            where TKey :  notnull { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, TKey key, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder
+            where TKey :  notnull { }
+    }
+    public static class MessageBusExtensions
+    {
+        public static void With(this ReactiveUI.IMessageBus messageBus, System.Action block) { }
+        public static TRet With<TRet>(this ReactiveUI.IMessageBus messageBus, System.Func<TRet> block) { }
+        public static System.IDisposable WithMessageBus(this ReactiveUI.IMessageBus messageBus) { }
+    }
+    public static class SchedulerExtensions
+    {
+        public static void AdvanceByMs(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds) { }
+        public static void AdvanceToMs(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds) { }
+        public static long FromTimeSpan(this Microsoft.Reactive.Testing.TestScheduler scheduler, System.TimeSpan span) { }
+        public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnCompletedAt<T>(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds) { }
+        public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnErrorAt<T>(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds, System.Exception ex) { }
+        public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnNextAt<T>(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds, T value) { }
+        public static void With<T>(this T scheduler, System.Action<T> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static TRet With<T, TRet>(this T scheduler, System.Func<T, TRet> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static System.Threading.Tasks.Task WithAsync<T>(this T scheduler, System.Func<T, System.Threading.Tasks.Task> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static System.Threading.Tasks.Task<TRet> WithAsync<T, TRet>(this T scheduler, System.Func<T, System.Threading.Tasks.Task<TRet>> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static System.IDisposable WithScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
+    }
+}
