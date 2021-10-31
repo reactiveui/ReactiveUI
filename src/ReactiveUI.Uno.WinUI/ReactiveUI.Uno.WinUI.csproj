@@ -38,7 +38,7 @@
     <Compile Include="..\ReactiveUI.Uwp\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI.Uwp" />
     <Compile Include="..\ReactiveUI.Uwp\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI.Uwp" />
     <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
-    <Compile Include="..\ReactiveUI.Uno\**\*.cs" LinkBase="common" />
+    <Compile Include="..\ReactiveUI.Uno\*.cs" LinkBase="common" />
 
   	<None Include="..\ReactiveUI.Uwp\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
   </ItemGroup>
