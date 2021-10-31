@@ -7,23 +7,22 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace ReactiveUI.Legacy
+namespace ReactiveUI.Legacy;
+
+internal sealed class CollectionDebugView<T>
 {
-    internal sealed class CollectionDebugView<T>
+    private readonly ICollection<T> _collection;
+
+    public CollectionDebugView(ICollection<T> collection) => _collection = collection ?? throw new ArgumentNullException(nameof(collection), "collection is null.");
+
+    [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+    public T[] Items
     {
-        private readonly ICollection<T> _collection;
-
-        public CollectionDebugView(ICollection<T> collection) => _collection = collection ?? throw new ArgumentNullException(nameof(collection), "collection is null.");
-
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public T[] Items
+        get
         {
-            get
-            {
-                T[] array = new T[_collection.Count];
-                _collection.CopyTo(array, 0);
-                return array;
-            }
+            var array = new T[_collection.Count];
+            _collection.CopyTo(array, 0);
+            return array;
         }
     }
 }

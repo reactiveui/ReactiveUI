@@ -8,133 +8,132 @@ using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reflection;
 
-namespace ReactiveUI.Fody.Helpers
+namespace ReactiveUI.Fody.Helpers;
+
+/// <summary>
+/// Extension methods for observable as property helpers.
+/// </summary>
+public static class ObservableAsPropertyExtensions
 {
     /// <summary>
-    /// Extension methods for observable as property helpers.
+    /// To the property execute.
     /// </summary>
-    public static class ObservableAsPropertyExtensions
+    /// <typeparam name="TObj">The type of the object.</typeparam>
+    /// <typeparam name="TRet">The type of the ret.</typeparam>
+    /// <param name="item">The observable with the return value.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="property">The property.</param>
+    /// <param name="deferSubscription">if set to <c>true</c> [defer subscription].</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <returns>An observable property helper with the specified return value.</returns>
+    /// <exception cref="Exception">
+    /// Could not resolve expression " + property + " into a property.
+    /// or
+    /// Backing field not found for " + propertyInfo.
+    /// </exception>
+    public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(
+        this IObservable<TRet> item,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        bool deferSubscription = false,
+        IScheduler? scheduler = null)
+        where TObj : ReactiveObject
     {
-        /// <summary>
-        /// To the property execute.
-        /// </summary>
-        /// <typeparam name="TObj">The type of the object.</typeparam>
-        /// <typeparam name="TRet">The type of the ret.</typeparam>
-        /// <param name="item">The observable with the return value.</param>
-        /// <param name="source">The source.</param>
-        /// <param name="property">The property.</param>
-        /// <param name="deferSubscription">if set to <c>true</c> [defer subscription].</param>
-        /// <param name="scheduler">The scheduler.</param>
-        /// <returns>An observable property helper with the specified return value.</returns>
-        /// <exception cref="Exception">
-        /// Could not resolve expression " + property + " into a property.
-        /// or
-        /// Backing field not found for " + propertyInfo.
-        /// </exception>
-        public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(
-            this IObservable<TRet> item,
-            TObj source,
-            Expression<Func<TObj, TRet>> property,
-            bool deferSubscription = false,
-            IScheduler? scheduler = null)
-            where TObj : ReactiveObject
+        if (item is null)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            if (property is null)
-            {
-                throw new ArgumentNullException(nameof(property));
-            }
-
-            var result = item.ToProperty(source, property, deferSubscription, scheduler);
-
-            // Now assign the field via reflection.
-            var propertyInfo = property.GetPropertyInfo();
-            if (propertyInfo is null)
-            {
-                throw new Exception("Could not resolve expression " + property + " into a property.");
-            }
-
-            var field = propertyInfo.DeclaringType?.GetTypeInfo().GetDeclaredField("$" + propertyInfo.Name);
-            if (field is null)
-            {
-                throw new Exception("Backing field not found for " + propertyInfo);
-            }
-
-            field.SetValue(source, result);
-
-            return result;
+            throw new ArgumentNullException(nameof(item));
         }
 
-        /// <summary>
-        /// To the property execute.
-        /// </summary>
-        /// <typeparam name="TObj">The type of the object.</typeparam>
-        /// <typeparam name="TRet">The type of the ret.</typeparam>
-        /// <param name="item">The observable with the return value.</param>
-        /// <param name="source">The source.</param>
-        /// <param name="property">The property.</param>
-        /// <param name="initialValue">The initial value.</param>
-        /// <param name="deferSubscription">if set to <c>true</c> [defer subscription].</param>
-        /// <param name="scheduler">The scheduler.</param>
-        /// <returns>An observable property helper with the specified return value.</returns>
-        /// <exception cref="Exception">
-        /// Could not resolve expression " + property + " into a property.
-        /// or
-        /// Backing field not found for " + propertyInfo.
-        /// </exception>
-        public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(
-            this IObservable<TRet> item,
-            TObj source,
-            Expression<Func<TObj, TRet>> property,
-            TRet initialValue,
-            bool deferSubscription = false,
-            IScheduler? scheduler = null)
-            where TObj : ReactiveObject
+        if (property is null)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            if (property is null)
-            {
-                throw new ArgumentNullException(nameof(property));
-            }
-
-            var result = item.ToProperty(source, property, initialValue, deferSubscription, scheduler);
-
-            // Now assign the field via reflection.
-            var propertyInfo = property.GetPropertyInfo();
-            if (propertyInfo is null)
-            {
-                throw new Exception("Could not resolve expression " + property + " into a property.");
-            }
-
-            var field = propertyInfo.DeclaringType?.GetTypeInfo().GetDeclaredField("$" + propertyInfo.Name);
-            if (field is null)
-            {
-                throw new Exception("Backing field not found for " + propertyInfo);
-            }
-
-            field.SetValue(source, result);
-
-            return result;
+            throw new ArgumentNullException(nameof(property));
         }
 
-        private static PropertyInfo GetPropertyInfo(this LambdaExpression expression)
-        {
-            var current = expression.Body;
-            if (current is UnaryExpression unary)
-            {
-                current = unary.Operand;
-            }
+        var result = item.ToProperty(source, property, deferSubscription, scheduler);
 
-            var call = (MemberExpression)current;
-            return (PropertyInfo)call.Member;
+        // Now assign the field via reflection.
+        var propertyInfo = property.GetPropertyInfo();
+        if (propertyInfo is null)
+        {
+            throw new Exception("Could not resolve expression " + property + " into a property.");
         }
+
+        var field = propertyInfo.DeclaringType?.GetTypeInfo().GetDeclaredField("$" + propertyInfo.Name);
+        if (field is null)
+        {
+            throw new Exception("Backing field not found for " + propertyInfo);
+        }
+
+        field.SetValue(source, result);
+
+        return result;
+    }
+
+    /// <summary>
+    /// To the property execute.
+    /// </summary>
+    /// <typeparam name="TObj">The type of the object.</typeparam>
+    /// <typeparam name="TRet">The type of the ret.</typeparam>
+    /// <param name="item">The observable with the return value.</param>
+    /// <param name="source">The source.</param>
+    /// <param name="property">The property.</param>
+    /// <param name="initialValue">The initial value.</param>
+    /// <param name="deferSubscription">if set to <c>true</c> [defer subscription].</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <returns>An observable property helper with the specified return value.</returns>
+    /// <exception cref="Exception">
+    /// Could not resolve expression " + property + " into a property.
+    /// or
+    /// Backing field not found for " + propertyInfo.
+    /// </exception>
+    public static ObservableAsPropertyHelper<TRet> ToPropertyEx<TObj, TRet>(
+        this IObservable<TRet> item,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        TRet initialValue,
+        bool deferSubscription = false,
+        IScheduler? scheduler = null)
+        where TObj : ReactiveObject
+    {
+        if (item is null)
+        {
+            throw new ArgumentNullException(nameof(item));
+        }
+
+        if (property is null)
+        {
+            throw new ArgumentNullException(nameof(property));
+        }
+
+        var result = item.ToProperty(source, property, initialValue, deferSubscription, scheduler);
+
+        // Now assign the field via reflection.
+        var propertyInfo = property.GetPropertyInfo();
+        if (propertyInfo is null)
+        {
+            throw new Exception("Could not resolve expression " + property + " into a property.");
+        }
+
+        var field = propertyInfo.DeclaringType?.GetTypeInfo().GetDeclaredField("$" + propertyInfo.Name);
+        if (field is null)
+        {
+            throw new Exception("Backing field not found for " + propertyInfo);
+        }
+
+        field.SetValue(source, result);
+
+        return result;
+    }
+
+    private static PropertyInfo GetPropertyInfo(this LambdaExpression expression)
+    {
+        var current = expression.Body;
+        if (current is UnaryExpression unary)
+        {
+            current = unary.Operand;
+        }
+
+        var call = (MemberExpression)current;
+        return (PropertyInfo)call.Member;
     }
 }

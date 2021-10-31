@@ -6,32 +6,31 @@
 using System;
 using System.Reactive;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// ISuspensionDriver represents a class that can load/save state to persistent
+/// storage. Most platforms have a basic implementation of this class, but you
+/// probably want to write your own.
+/// </summary>
+public interface ISuspensionDriver
 {
     /// <summary>
-    /// ISuspensionDriver represents a class that can load/save state to persistent
-    /// storage. Most platforms have a basic implementation of this class, but you
-    /// probably want to write your own.
+    /// Loads the application state from persistent storage.
     /// </summary>
-    public interface ISuspensionDriver
-    {
-        /// <summary>
-        /// Loads the application state from persistent storage.
-        /// </summary>
-        /// <returns>An object observable.</returns>
-        IObservable<object> LoadState();
+    /// <returns>An object observable.</returns>
+    IObservable<object> LoadState();
 
-        /// <summary>
-        /// Saves the application state to disk.
-        /// </summary>
-        /// <param name="state">The application state.</param>
-        /// <returns>A completed observable.</returns>
-        IObservable<Unit> SaveState(object state);
+    /// <summary>
+    /// Saves the application state to disk.
+    /// </summary>
+    /// <param name="state">The application state.</param>
+    /// <returns>A completed observable.</returns>
+    IObservable<Unit> SaveState(object state);
 
-        /// <summary>
-        /// Invalidates the application state (i.e. deletes it from disk).
-        /// </summary>
-        /// <returns>A completed observable.</returns>
-        IObservable<Unit> InvalidateState();
-    }
+    /// <summary>
+    /// Invalidates the application state (i.e. deletes it from disk).
+    /// </summary>
+    /// <returns>A completed observable.</returns>
+    IObservable<Unit> InvalidateState();
 }

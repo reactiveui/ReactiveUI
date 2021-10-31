@@ -5,58 +5,57 @@
 
 using System;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Integer To String Type Converter.
+/// </summary>
+/// <seealso cref="ReactiveUI.IBindingTypeConverter" />
+public class LongToStringTypeConverter : IBindingTypeConverter
 {
-    /// <summary>
-    /// Integer To String Type Converter.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-    public class LongToStringTypeConverter : IBindingTypeConverter
+    /// <inheritdoc/>
+    public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        /// <inheritdoc/>
-        public int GetAffinityForObjects(Type fromType, Type toType)
+        if (fromType == typeof(long) && toType == typeof(string))
         {
-            if (fromType == typeof(long) && toType == typeof(string))
-            {
-                return 10;
-            }
-
-            if (fromType == typeof(string) && toType == typeof(long))
-            {
-                return 10;
-            }
-
-            return 0;
+            return 10;
         }
 
-        /// <inheritdoc/>
-        public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
+        if (fromType == typeof(string) && toType == typeof(long))
         {
-            if (toType == typeof(string) && from is long fromLong)
-            {
-                if (conversionHint is int longHint)
-                {
-                    result = fromLong.ToString($"D{longHint}");
-                    return true;
-                }
+            return 10;
+        }
 
-                result = fromLong.ToString();
+        return 0;
+    }
+
+    /// <inheritdoc/>
+    public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
+    {
+        if (toType == typeof(string) && from is long fromLong)
+        {
+            if (conversionHint is int longHint)
+            {
+                result = fromLong.ToString($"D{longHint}");
                 return true;
             }
 
-            if (from is string fromString)
-            {
-                var success = long.TryParse(fromString, out var outLong);
-                if (success)
-                {
-                    result = outLong;
-
-                    return true;
-                }
-            }
-
-            result = null!;
-            return false;
+            result = fromLong.ToString();
+            return true;
         }
+
+        if (from is string fromString)
+        {
+            var success = long.TryParse(fromString, out var outLong);
+            if (success)
+            {
+                result = outLong;
+
+                return true;
+            }
+        }
+
+        result = null!;
+        return false;
     }
 }

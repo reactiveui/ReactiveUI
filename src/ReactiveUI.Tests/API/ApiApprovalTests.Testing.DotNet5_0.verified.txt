@@ -1,5 +1,4 @@
-[assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/reactiveui/reactiveui")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v5.0", FrameworkDisplayName="")]
+﻿[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v5.0", FrameworkDisplayName="")]
 namespace ReactiveUI.Testing
 {
     public interface IBuilder { }

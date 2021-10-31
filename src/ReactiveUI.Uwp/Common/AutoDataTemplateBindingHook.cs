@@ -66,7 +66,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
-            if (getCurrentViewProperties == null)
+            if (getCurrentViewProperties is null)
             {
                 throw new ArgumentNullException(nameof(getCurrentViewProperties));
             }
@@ -89,12 +89,12 @@ namespace ReactiveUI
                 return true;
             }
 
-            if (itemsControl.ItemTemplate != null)
+            if (itemsControl.ItemTemplate is not null)
             {
                 return true;
             }
 
-            if (itemsControl.ItemTemplateSelector != null)
+            if (itemsControl.ItemTemplateSelector is not null)
             {
                 return true;
             }

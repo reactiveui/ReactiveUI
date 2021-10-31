@@ -12,7 +12,7 @@ using Xunit.Sdk;
 namespace ReactiveUI.Tests
 {
     // run tests on invariant culture to avoid problems e.g with culture specific decimal separator
-    public class UseInvariantCulture : BeforeAfterTestAttribute
+    public sealed class UseInvariantCulture : BeforeAfterTestAttribute
     {
         private CultureInfo? _storedCulture;
 

@@ -7,41 +7,40 @@ using System;
 using System.Reactive.Concurrency;
 using Splat;
 
-namespace ReactiveUI.Wpf
+namespace ReactiveUI.Wpf;
+
+/// <summary>
+/// Registrations specific to the WPF platform.
+/// </summary>
+public class Registrations : IWantsToRegisterStuff
 {
-    /// <summary>
-    /// Registrations specific to the WPF platform.
-    /// </summary>
-    public class Registrations : IWantsToRegisterStuff
+    /// <inheritdoc/>
+    public void Register(Action<Func<object>, Type> registerFunction)
     {
-        /// <inheritdoc/>
-        public void Register(Action<Func<object>, Type> registerFunction)
+        if (registerFunction is null)
         {
-            if (registerFunction is null)
-            {
-                throw new ArgumentNullException(nameof(registerFunction));
-            }
-
-            registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-
-            registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-            registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-            registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-
-            if (!ModeDetector.InUnitTestRunner())
-            {
-                // NB: On .NET Core, trying to touch DispatcherScheduler blows up :cry:
-                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
-                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            }
-
-            RxApp.SuppressViewCommandBindingMessage = true;
+            throw new ArgumentNullException(nameof(registerFunction));
         }
+
+        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+
+        registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+        registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+
+        if (!ModeDetector.InUnitTestRunner())
+        {
+            // NB: On .NET Core, trying to touch DispatcherScheduler blows up :cry:
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+        }
+
+        RxApp.SuppressViewCommandBindingMessage = true;
     }
 }

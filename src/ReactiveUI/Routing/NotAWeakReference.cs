@@ -5,15 +5,14 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+internal class NotAWeakReference
 {
-    internal class NotAWeakReference
-    {
-        public NotAWeakReference(object target) => Target = target;
+    public NotAWeakReference(object target) => Target = target;
 
-        public object Target { get; }
+    public object Target { get; }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1822", Justification = "Keep existing API.")]
-        public bool IsAlive => true;
-    }
+    [SuppressMessage("Microsoft.Maintainability", "CA1822", Justification = "Keep existing API.")]
+    public bool IsAlive => true;
 }

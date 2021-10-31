@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using System.Collections.Generic;
 
 namespace IntegrationTests.Shared.Tests
@@ -41,7 +42,12 @@ namespace IntegrationTests.Shared.Tests
         public static TBuilder With<TBuilder, TField>(this TBuilder @this, ref List<TField> field, IEnumerable<TField> values)
             where TBuilder : IBuilder
         {
-            if (values == null)
+            if (field is null)
+            {
+                throw new ArgumentNullException(nameof(field));
+            }
+
+            if (values is null)
             {
                 field = null;
             }
@@ -66,6 +72,11 @@ namespace IntegrationTests.Shared.Tests
         public static TBuilder With<TBuilder, TField>(this TBuilder @this, ref List<TField> field, TField value)
             where TBuilder : IBuilder
         {
+            if (field is null)
+            {
+                throw new ArgumentNullException(nameof(field));
+            }
+
             field.Add(value);
             return @this;
         }

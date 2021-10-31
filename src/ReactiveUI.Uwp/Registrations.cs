@@ -8,29 +8,28 @@ using System.Reactive.Concurrency;
 
 using Splat;
 
-namespace ReactiveUI.Uwp
+namespace ReactiveUI.Uwp;
+
+/// <summary>
+/// .NET Framework platform registrations.
+/// </summary>
+/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+public class Registrations : IWantsToRegisterStuff
 {
-    /// <summary>
-    /// .NET Framework platform registrations.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
-    public class Registrations : IWantsToRegisterStuff
+    /// <inheritdoc/>
+    public void Register(Action<Func<object>, Type> registerFunction)
     {
-        /// <inheritdoc/>
-        public void Register(Action<Func<object>, Type> registerFunction)
+        if (registerFunction is null)
         {
-            if (registerFunction is null)
-            {
-                throw new ArgumentNullException(nameof(registerFunction));
-            }
-
-            registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-            registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-            registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-
-            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+            throw new ArgumentNullException(nameof(registerFunction));
         }
+
+        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+        registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+
+        registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
     }
 }

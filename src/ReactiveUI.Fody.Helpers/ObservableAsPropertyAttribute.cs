@@ -5,14 +5,13 @@
 
 using System;
 
-namespace ReactiveUI.Fody.Helpers
+namespace ReactiveUI.Fody.Helpers;
+
+/// <summary>
+/// Attribute that marks an ObservableAsPropertyHelper for weaving.
+/// </summary>
+/// <seealso cref="System.Attribute" />
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
+public sealed class ObservableAsPropertyAttribute : Attribute
 {
-    /// <summary>
-    /// Attribute that marks an ObservableAsPropertyHelper for weaving.
-    /// </summary>
-    /// <seealso cref="System.Attribute" />
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
-    public class ObservableAsPropertyAttribute : Attribute
-    {
-    }
 }

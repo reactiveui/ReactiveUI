@@ -5,23 +5,22 @@
 
 using System;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Class that represents the platform registration for ReactiveUI.
+/// </summary>
+public static class PlatformRegistrationManager
 {
+    internal static RegistrationNamespace[] DefaultRegistrationNamespaces { get; } =
+        (RegistrationNamespace[])Enum.GetValues(typeof(RegistrationNamespace));
+
+    internal static RegistrationNamespace[] NamespacesToRegister { get; set; } = DefaultRegistrationNamespaces;
+
     /// <summary>
-    /// Class that represents the platform registration for ReactiveUI.
+    /// Set the platform namespaces to register.
+    /// This needs to be set before the first call to <see cref="RxApp"/>.
     /// </summary>
-    public static class PlatformRegistrationManager
-    {
-        internal static RegistrationNamespace[] DefaultRegistrationNamespaces { get; } =
-            (RegistrationNamespace[])Enum.GetValues(typeof(RegistrationNamespace));
-
-        internal static RegistrationNamespace[] NamespacesToRegister { get; set; } = DefaultRegistrationNamespaces;
-
-        /// <summary>
-        /// Set the platform namespaces to register.
-        /// This needs to be set before the first call to <see cref="RxApp"/>.
-        /// </summary>
-        /// <param name="namespaces">The namespaces to register.</param>
-        public static void SetRegistrationNamespaces(params RegistrationNamespace[] namespaces) => NamespacesToRegister = namespaces;
-    }
+    /// <param name="namespaces">The namespaces to register.</param>
+    public static void SetRegistrationNamespaces(params RegistrationNamespace[] namespaces) => NamespacesToRegister = namespaces;
 }

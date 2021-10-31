@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 using Xunit;
 
@@ -19,7 +20,8 @@ namespace ReactiveUI.Tests.Xaml
         /// <summary>
         /// Generates the public API for the blend project.
         /// </summary>
+        /// <returns>A task to monitor the process.</returns>
         [Fact]
-        public void Blend() => CheckApproval(typeof(Blend.FollowObservableStateBehavior).Assembly);
+        public Task Blend() => CheckApproval(typeof(Blend.FollowObservableStateBehavior).Assembly);
     }
 }

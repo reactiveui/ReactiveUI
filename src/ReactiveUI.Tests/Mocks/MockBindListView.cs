@@ -52,7 +52,7 @@ namespace ReactiveUI.Tests
             {
                 this.OneWayBind(ViewModel, vm => vm.ListItems, v => v.ItemList.ItemsSource).DisposeWith(d);
                 this.WhenAnyValue(v => v.ItemList.SelectedItem)
-                    .Where(i => i != null)
+                    .Where(i => i is not null)
                     .Cast<MockBindListItemViewModel>()
                     .Do(_ => ItemList.UnselectAll())
                     .InvokeCommand(this, v => v!.ViewModel!.SelectItem).DisposeWith(d);

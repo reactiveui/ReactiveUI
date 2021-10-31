@@ -10,120 +10,119 @@ using Android.App;
 using Android.Content;
 using Android.Hardware.Usb;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Extension methods for the usb manager.
+/// </summary>
+public static class UsbManagerExtensions
 {
+    private const string ActionUsbPermission = "com.reactiveui.USB_PERMISSION";
+
     /// <summary>
-    /// Extension methods for the usb manager.
+    /// Requests temporary permission for the given package to access the device.
+    /// This may result in a system dialog being displayed to the user if permission had not already been granted.
     /// </summary>
-    public static class UsbManagerExtensions
-    {
-        private const string ActionUsbPermission = "com.reactiveui.USB_PERMISSION";
-
-        /// <summary>
-        /// Requests temporary permission for the given package to access the device.
-        /// This may result in a system dialog being displayed to the user if permission had not already been granted.
-        /// </summary>
-        /// <returns>The observable sequence of permission values.</returns>
-        /// <param name="manager">The UsbManager system service.</param>
-        /// <param name="context">The Context to request the permission from.</param>
-        /// <param name="device">The UsbDevice to request permission for.</param>
-        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbDevice device) => // TODO: Create Test
-            Observable.Create<bool>(observer =>
-            {
-                var usbPermissionReceiver = new UsbDevicePermissionReceiver(observer, device);
-                context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
-
-                var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ActionUsbPermission), 0);
-                manager.RequestPermission(device, intent);
-
-                return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
-            });
-
-        /// <summary>
-        /// Requests temporary permission for the given package to access the accessory.
-        /// This may result in a system dialog being displayed to the user if permission had not already been granted.
-        /// </summary>
-        /// <returns>The observable sequence of permission values.</returns>
-        /// <param name="manager">The UsbManager system service.</param>
-        /// <param name="context">The Context to request the permission from.</param>
-        /// <param name="accessory">The UsbAccessory to request permission for.</param>
-        public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbAccessory accessory) => // TODO: Create Test
-            Observable.Create<bool>(observer =>
-            {
-                var usbPermissionReceiver = new UsbAccessoryPermissionReceiver(observer, accessory);
-                context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
-
-                var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ActionUsbPermission), 0);
-                manager.RequestPermission(accessory, intent);
-
-                return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
-            });
-
-        /// <summary>
-        /// Private implementation of BroadcastReceiver to handle device permission requests.
-        /// </summary>
-        private class UsbDevicePermissionReceiver
-            : BroadcastReceiver
+    /// <returns>The observable sequence of permission values.</returns>
+    /// <param name="manager">The UsbManager system service.</param>
+    /// <param name="context">The Context to request the permission from.</param>
+    /// <param name="device">The UsbDevice to request permission for.</param>
+    public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbDevice device) => // TODO: Create Test
+        Observable.Create<bool>(observer =>
         {
-            private readonly IObserver<bool> _observer;
-            private readonly UsbDevice _device;
+            var usbPermissionReceiver = new UsbDevicePermissionReceiver(observer, device);
+            context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
 
-            public UsbDevicePermissionReceiver(IObserver<bool> observer, UsbDevice device)
-            {
-                _observer = observer;
-                _device = device;
-            }
+            var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ActionUsbPermission), 0);
+            manager.RequestPermission(device, intent);
 
-            public override void OnReceive(Context? context, Intent? intent)
-            {
-                if (intent is null)
-                {
-                    return;
-                }
+            return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
+        });
 
-                var extraDevice = intent.GetParcelableExtra(UsbManager.ExtraDevice) as UsbDevice;
-                if (_device.DeviceName != extraDevice?.DeviceName)
-                {
-                    return;
-                }
+    /// <summary>
+    /// Requests temporary permission for the given package to access the accessory.
+    /// This may result in a system dialog being displayed to the user if permission had not already been granted.
+    /// </summary>
+    /// <returns>The observable sequence of permission values.</returns>
+    /// <param name="manager">The UsbManager system service.</param>
+    /// <param name="context">The Context to request the permission from.</param>
+    /// <param name="accessory">The UsbAccessory to request permission for.</param>
+    public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbAccessory accessory) => // TODO: Create Test
+        Observable.Create<bool>(observer =>
+        {
+            var usbPermissionReceiver = new UsbAccessoryPermissionReceiver(observer, accessory);
+            context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
 
-                var permissionGranted = intent.GetBooleanExtra(UsbManager.ExtraPermissionGranted, false);
-                _observer.OnNext(permissionGranted);
-                _observer.OnCompleted();
-            }
+            var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ActionUsbPermission), 0);
+            manager.RequestPermission(accessory, intent);
+
+            return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
+        });
+
+    /// <summary>
+    /// Private implementation of BroadcastReceiver to handle device permission requests.
+    /// </summary>
+    private class UsbDevicePermissionReceiver
+        : BroadcastReceiver
+    {
+        private readonly IObserver<bool> _observer;
+        private readonly UsbDevice _device;
+
+        public UsbDevicePermissionReceiver(IObserver<bool> observer, UsbDevice device)
+        {
+            _observer = observer;
+            _device = device;
         }
 
-        /// <summary>
-        /// Private implementation of BroadcastReceiver to handle accessory permission requests.
-        /// </summary>
-        private class UsbAccessoryPermissionReceiver
-            : BroadcastReceiver
+        public override void OnReceive(Context? context, Intent? intent)
         {
-            private readonly IObserver<bool> _observer;
-            private readonly UsbAccessory _accessory;
-
-            public UsbAccessoryPermissionReceiver(IObserver<bool> observer, UsbAccessory accessory)
+            if (intent is null)
             {
-                _observer = observer;
-                _accessory = accessory;
+                return;
             }
 
-            public override void OnReceive(Context? context, Intent? intent)
+            var extraDevice = intent.GetParcelableExtra(UsbManager.ExtraDevice) as UsbDevice;
+            if (_device.DeviceName != extraDevice?.DeviceName)
             {
-                if (intent?.GetParcelableExtra(UsbManager.ExtraAccessory) is not UsbAccessory extraAccessory)
-                {
-                    return;
-                }
-
-                if (_accessory.Manufacturer != extraAccessory.Manufacturer || _accessory.Model != extraAccessory.Model)
-                {
-                    return;
-                }
-
-                var permissionGranted = intent.GetBooleanExtra(UsbManager.ExtraPermissionGranted, false);
-                _observer.OnNext(permissionGranted);
-                _observer.OnCompleted();
+                return;
             }
+
+            var permissionGranted = intent.GetBooleanExtra(UsbManager.ExtraPermissionGranted, false);
+            _observer.OnNext(permissionGranted);
+            _observer.OnCompleted();
+        }
+    }
+
+    /// <summary>
+    /// Private implementation of BroadcastReceiver to handle accessory permission requests.
+    /// </summary>
+    private class UsbAccessoryPermissionReceiver
+        : BroadcastReceiver
+    {
+        private readonly IObserver<bool> _observer;
+        private readonly UsbAccessory _accessory;
+
+        public UsbAccessoryPermissionReceiver(IObserver<bool> observer, UsbAccessory accessory)
+        {
+            _observer = observer;
+            _accessory = accessory;
+        }
+
+        public override void OnReceive(Context? context, Intent? intent)
+        {
+            if (intent?.GetParcelableExtra(UsbManager.ExtraAccessory) is not UsbAccessory extraAccessory)
+            {
+                return;
+            }
+
+            if (_accessory.Manufacturer != extraAccessory.Manufacturer || _accessory.Model != extraAccessory.Model)
+            {
+                return;
+            }
+
+            var permissionGranted = intent.GetBooleanExtra(UsbManager.ExtraPermissionGranted, false);
+            _observer.OnNext(permissionGranted);
+            _observer.OnCompleted();
         }
     }
 }

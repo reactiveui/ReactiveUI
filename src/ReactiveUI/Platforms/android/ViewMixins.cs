@@ -5,41 +5,40 @@
 
 using Android.Views;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Default methods for <see cref="ILayoutViewHost"/>.
+/// </summary>
+public static class ViewMixins
 {
+    internal const int ViewHostTag = -4222;
+
     /// <summary>
-    /// Default methods for <see cref="ILayoutViewHost"/>.
+    /// Gets the ViewHost associated with a given View by accessing the
+    /// Tag of the View.
     /// </summary>
-    public static class ViewMixins
+    /// <typeparam name="T">The layout view host type.</typeparam>
+    /// <param name="item">The view.</param>
+    /// <returns>The view host.</returns>
+    public static T GetViewHost<T>(this View item) // TODO: Create Test
+        where T : ILayoutViewHost
     {
-        internal const int ViewHostTag = -4222;
-
-        /// <summary>
-        /// Gets the ViewHost associated with a given View by accessing the
-        /// Tag of the View.
-        /// </summary>
-        /// <typeparam name="T">The layout view host type.</typeparam>
-        /// <param name="item">The view.</param>
-        /// <returns>The view host.</returns>
-        public static T GetViewHost<T>(this View item) // TODO: Create Test
-            where T : ILayoutViewHost
+        var tagData = item?.GetTag(ViewHostTag);
+        if (tagData is not null)
         {
-            var tagData = item?.GetTag(ViewHostTag);
-            if (tagData is not null)
-            {
-                return tagData.ToNetObject<T>();
-            }
-
-            return default!;
+            return tagData.ToNetObject<T>();
         }
 
-        /// <summary>
-        /// Gets the ViewHost associated with a given View by accessing the
-        /// Tag of the View.
-        /// </summary>
-        /// <param name="item">The view.</param>
-        /// <returns>The view host.</returns>
-        public static ILayoutViewHost? GetViewHost(this View item) => // TODO: Create Test
-            item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
+        return default!;
     }
+
+    /// <summary>
+    /// Gets the ViewHost associated with a given View by accessing the
+    /// Tag of the View.
+    /// </summary>
+    /// <param name="item">The view.</param>
+    /// <returns>The view host.</returns>
+    public static ILayoutViewHost? GetViewHost(this View item) => // TODO: Create Test
+        item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
 }

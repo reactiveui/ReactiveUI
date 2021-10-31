@@ -493,7 +493,7 @@ namespace ReactiveUI.Tests
 
                 fixture.PropertyChanged += (_, args) =>
                 {
-                    if (args.PropertyName != null)
+                    if (args.PropertyName is not null)
                     {
                         propertiesChanged.Add(args.PropertyName);
                     }
@@ -518,7 +518,7 @@ namespace ReactiveUI.Tests
 
                     fixture.PropertyChanged += (_, args) =>
                     {
-                        if (args.PropertyName != null)
+                        if (args.PropertyName is not null)
                         {
                             propertiesChanged.Add(args.PropertyName);
                         }
@@ -547,7 +547,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NullableTypesTestShouldntNeedDecorators2_ToProperty()
         {
-            WhenAnyTestFixture? fixture = new();
+            var fixture = new WhenAnyTestFixture();
             fixture.WhenAnyValue(
                 x => x.ProjectService.ProjectsNullable,
                 x => x.AccountService.AccountUsersNullable)

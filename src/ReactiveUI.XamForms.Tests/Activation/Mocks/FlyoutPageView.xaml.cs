@@ -40,7 +40,7 @@ namespace ReactiveUI.XamForms.Tests.Activation.Mocks
         private void ListView_ItemSelected(object? sender, SelectedItemChangedEventArgs e)
         {
             var item = e.SelectedItem as FlyoutPageViewFlyoutMenuItem;
-            if (item == null)
+            if (item is null)
             {
                 return;
             }

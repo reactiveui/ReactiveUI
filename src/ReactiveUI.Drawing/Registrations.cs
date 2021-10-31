@@ -6,25 +6,24 @@
 using System;
 using Splat;
 
-namespace ReactiveUI.Drawing
+namespace ReactiveUI.Drawing;
+
+/// <summary>
+/// Splat Drawing platform registrations.
+/// </summary>
+/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+public class Registrations : IWantsToRegisterStuff
 {
-    /// <summary>
-    /// Splat Drawing platform registrations.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
-    public class Registrations : IWantsToRegisterStuff
+    /// <inheritdoc/>
+    public void Register(Action<Func<object>, Type> registerFunction)
     {
-        /// <inheritdoc/>
-        public void Register(Action<Func<object>, Type> registerFunction)
+        if (registerFunction is null)
         {
-            if (registerFunction is null)
-            {
-                throw new ArgumentNullException(nameof(registerFunction));
-            }
+            throw new ArgumentNullException(nameof(registerFunction));
+        }
 
 #if !NETSTANDARD && !NETCOREAPP2_0
-            registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
+        registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
 #endif
-        }
     }
 }

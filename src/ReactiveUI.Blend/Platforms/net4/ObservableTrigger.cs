@@ -8,64 +8,63 @@ using System.Reactive.Linq;
 using System.Windows;
 using Microsoft.Xaml.Behaviors;
 
-namespace ReactiveUI.Blend
+namespace ReactiveUI.Blend;
+
+/// <summary>
+/// A blend based trigger which will be activated when a IObservable triggers.
+/// </summary>
+public class ObservableTrigger : TriggerBase<FrameworkElement>
 {
     /// <summary>
-    /// A blend based trigger which will be activated when a IObservable triggers.
+    /// The dependency property registration for the Observable property.
     /// </summary>
-    public class ObservableTrigger : TriggerBase<FrameworkElement>
+    public static readonly DependencyProperty ObservableProperty =
+        DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(OnObservableChanged));
+
+    private IDisposable? _watcher;
+
+    /// <summary>
+    /// Gets or sets the observable which will activate the trigger.
+    /// </summary>
+    public IObservable<object> Observable
     {
-        /// <summary>
-        /// The dependency property registration for the Observable property.
-        /// </summary>
-        public static readonly DependencyProperty ObservableProperty =
-            DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(OnObservableChanged));
+        get => (IObservable<object>)GetValue(ObservableProperty);
+        set => SetValue(ObservableProperty, value);
+    }
 
-        private IDisposable? _watcher;
+    /// <summary>
+    /// Gets or sets a value indicating whether to resubscribe the trigger if there is a error when running the IObservable.
+    /// </summary>
+    public bool AutoResubscribeOnError { get; set; }
 
-        /// <summary>
-        /// Gets or sets the observable which will activate the trigger.
-        /// </summary>
-        public IObservable<object> Observable
+    /// <summary>
+    /// Called when [observable changed].
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
+    protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (!(sender is ObservableTrigger triggerItem))
         {
-            get => (IObservable<object>)GetValue(ObservableProperty);
-            set => SetValue(ObservableProperty, value);
+            throw new ArgumentException("Sender must be of type " + nameof(ObservableTrigger), nameof(sender));
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to resubscribe the trigger if there is a error when running the IObservable.
-        /// </summary>
-        public bool AutoResubscribeOnError { get; set; }
-
-        /// <summary>
-        /// Called when [observable changed].
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
-        protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        if (triggerItem._watcher is not null)
         {
-            if (!(sender is ObservableTrigger triggerItem))
-            {
-                throw new ArgumentException("Sender must be of type " + nameof(ObservableTrigger), nameof(sender));
-            }
-
-            if (triggerItem._watcher is not null)
-            {
-                triggerItem._watcher.Dispose();
-                triggerItem._watcher = null;
-            }
-
-            triggerItem._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
-                x => triggerItem.InvokeActions(x),
-                _ =>
-                {
-                    if (!triggerItem.AutoResubscribeOnError)
-                    {
-                        return;
-                    }
-
-                    OnObservableChanged(triggerItem, e);
-                });
+            triggerItem._watcher.Dispose();
+            triggerItem._watcher = null;
         }
+
+        triggerItem._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+         x => triggerItem.InvokeActions(x),
+         _ =>
+         {
+             if (!triggerItem.AutoResubscribeOnError)
+             {
+                 return;
+             }
+
+             OnObservableChanged(triggerItem, e);
+         });
     }
 }

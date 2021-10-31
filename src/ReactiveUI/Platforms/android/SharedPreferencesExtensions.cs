@@ -8,38 +8,37 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Android.Content;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Extension methods for shared preferences.
+/// </summary>
+public static class SharedPreferencesExtensions
 {
     /// <summary>
-    /// Extension methods for shared preferences.
+    /// A observable sequence of keys for changed shared preferences.
     /// </summary>
-    public static class SharedPreferencesExtensions
-    {
-        /// <summary>
-        /// A observable sequence of keys for changed shared preferences.
-        /// </summary>
-        /// <returns>The observable sequence of keys for changed shared preferences.</returns>
-        /// <param name="sharedPreferences">The shared preferences to get the changes from.</param>
-        public static IObservable<string?> PreferenceChanged(this ISharedPreferences sharedPreferences) => // TODO: Create Test
-            Observable.Create<string?>(observer =>
-            {
-                var listener = new OnSharedPreferenceChangeListener(observer);
-                sharedPreferences.RegisterOnSharedPreferenceChangeListener(listener);
-                return Disposable.Create(() => sharedPreferences.UnregisterOnSharedPreferenceChangeListener(listener));
-            });
-
-        /// <summary>
-        /// Private implementation of ISharedPreferencesOnSharedPreferenceChangeListener.
-        /// </summary>
-        private class OnSharedPreferenceChangeListener
-            : Java.Lang.Object,
-            ISharedPreferencesOnSharedPreferenceChangeListener
+    /// <returns>The observable sequence of keys for changed shared preferences.</returns>
+    /// <param name="sharedPreferences">The shared preferences to get the changes from.</param>
+    public static IObservable<string?> PreferenceChanged(this ISharedPreferences sharedPreferences) => // TODO: Create Test
+        Observable.Create<string?>(observer =>
         {
-            private readonly IObserver<string?> _observer;
+            var listener = new OnSharedPreferenceChangeListener(observer);
+            sharedPreferences.RegisterOnSharedPreferenceChangeListener(listener);
+            return Disposable.Create(() => sharedPreferences.UnregisterOnSharedPreferenceChangeListener(listener));
+        });
 
-            public OnSharedPreferenceChangeListener(IObserver<string?> observer) => _observer = observer;
+    /// <summary>
+    /// Private implementation of ISharedPreferencesOnSharedPreferenceChangeListener.
+    /// </summary>
+    private class OnSharedPreferenceChangeListener
+        : Java.Lang.Object,
+            ISharedPreferencesOnSharedPreferenceChangeListener
+    {
+        private readonly IObserver<string?> _observer;
 
-            void ISharedPreferencesOnSharedPreferenceChangeListener.OnSharedPreferenceChanged(ISharedPreferences? sharedPreferences, string? key) => _observer.OnNext(key);
-        }
+        public OnSharedPreferenceChangeListener(IObserver<string?> observer) => _observer = observer;
+
+        void ISharedPreferencesOnSharedPreferenceChangeListener.OnSharedPreferenceChanged(ISharedPreferences? sharedPreferences, string? key) => _observer.OnNext(key);
     }
 }

@@ -27,7 +27,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NullObservablesDoNotCauseExceptions()
         {
-            TestWhenAnyObsViewModel? fixture = new();
+            var fixture = new TestWhenAnyObsViewModel();
             fixture.Command1 = null;
 
             // these are the overloads of WhenAnyObservable that perform a Merge
@@ -67,7 +67,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task WhenAnyObservableSmokeTestCombining()
         {
-            TestWhenAnyObsViewModel? fixture = new();
+            var fixture = new TestWhenAnyObsViewModel();
 
             var list = new List<string?>();
             fixture.WhenAnyObservable(x => x.Command3, x => x.Command1, (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
@@ -100,7 +100,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task WhenAnyObservableSmokeTestMerging()
         {
-            TestWhenAnyObsViewModel fixture = new();
+            var fixture = new TestWhenAnyObsViewModel();
 
             var list = new List<int>();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
@@ -131,7 +131,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
         {
-            TestWhenAnyObsViewModel? fixture = new();
+            var fixture = new TestWhenAnyObsViewModel();
             fixture!.WhenAnyObservable(x => x.Changes)!.Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
             Assert.Equal(0, output.Count);
 

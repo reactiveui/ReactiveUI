@@ -1,5 +1,4 @@
-[assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/reactiveui/reactiveui")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidSupport")]
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidSupport")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidX")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Drawing")]
@@ -793,7 +792,7 @@ namespace ReactiveUI
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
     }
     [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.All)]
-    public class SingleInstanceViewAttribute : System.Attribute
+    public sealed class SingleInstanceViewAttribute : System.Attribute
     {
         public SingleInstanceViewAttribute() { }
     }
@@ -842,7 +841,7 @@ namespace ReactiveUI
         public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
     }
     [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.All)]
-    public class ViewContractAttribute : System.Attribute
+    public sealed class ViewContractAttribute : System.Attribute
     {
         public ViewContractAttribute(string contract) { }
         public string Contract { get; }
@@ -985,9 +984,5 @@ namespace ReactiveUI
 }
 namespace System.Reactive.Disposables
 {
-    public static class DisposableMixins
-    {
-        public static T DisposeWith<T>(this T item, System.Reactive.Disposables.CompositeDisposable compositeDisposable)
-            where T : System.IDisposable { }
-    }
+    public static class DisposableMixins { }
 }

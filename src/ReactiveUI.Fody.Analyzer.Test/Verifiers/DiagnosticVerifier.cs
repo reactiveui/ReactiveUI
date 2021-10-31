@@ -80,7 +80,7 @@ namespace TestHelper
 
             if (expectedCount != actualCount)
             {
-                var diagnosticsOutput = actualCountList.Any() ? FormatDiagnostics(analyzer, actualCountList.ToArray()) : "    NONE.";
+                var diagnosticsOutput = actualCountList.Count > 0 ? FormatDiagnostics(analyzer, actualCountList.ToArray()) : "    NONE.";
 
                 Assert.True(
                     false,
@@ -194,7 +194,7 @@ namespace TestHelper
             var builder = new StringBuilder();
             for (var i = 0; i < diagnostics.Length; ++i)
             {
-                builder.AppendLine("// " + diagnostics[i].ToString());
+                builder.Append("// ").AppendLine(diagnostics[i].ToString());
 
                 var analyzerType = analyzer.GetType();
                 var rules = analyzer.SupportedDiagnostics;
@@ -217,7 +217,7 @@ namespace TestHelper
                             var resultMethodName = diagnostics[i].Location.SourceTree!.FilePath.EndsWith(".cs", StringComparison.Ordinal) ? "GetCSharpResultAt" : "GetBasicResultAt";
                             var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
 
-                            builder.Append($"{resultMethodName}({linePosition.Line + 1}, {linePosition.Character + 1}, {analyzerType.Name}.{rule.Id})");
+                            builder.Append(resultMethodName).Append('(').Append(linePosition.Line + 1).Append(", ").Append(linePosition.Character + 1).Append(", ").Append(analyzerType.Name).Append('.').Append(rule.Id).Append(')');
                         }
 
                         if (i != diagnostics.Length - 1)

@@ -5,6 +5,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+
+using VerifyXunit;
+
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -13,12 +17,14 @@ namespace ReactiveUI.Tests
     /// Checks the WinForms API to make sure there aren't any unexpected public API changes.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [UsesVerify]
     public class WinformsApiApprovalTests : ApiApprovalBase
     {
         /// <summary>
         /// Checks the approved vs the received API.
         /// </summary>
+        /// <returns>A task to monitor the process.</returns>
         [Fact]
-        public void Winforms() => CheckApproval(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly);
+        public Task Winforms() => CheckApproval(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly);
     }
 }

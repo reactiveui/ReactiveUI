@@ -5,64 +5,63 @@
 
 using System;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Single To String Type Converter.
+/// </summary>
+/// <seealso cref="ReactiveUI.IBindingTypeConverter" />
+public class SingleToStringTypeConverter : IBindingTypeConverter
 {
-    /// <summary>
-    /// Single To String Type Converter.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-    public class SingleToStringTypeConverter : IBindingTypeConverter
+    /// <inheritdoc/>
+    public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        /// <inheritdoc/>
-        public int GetAffinityForObjects(Type fromType, Type toType)
+        if (fromType == typeof(float) && toType == typeof(string))
         {
-            if (fromType == typeof(float) && toType == typeof(string))
-            {
-                return 10;
-            }
-
-            if (fromType == typeof(string) && toType == typeof(float))
-            {
-                return 10;
-            }
-
-            return 0;
+            return 10;
         }
 
-        /// <inheritdoc/>
-        public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
+        if (fromType == typeof(string) && toType == typeof(float))
         {
-            if (toType == typeof(string) && from is float fromSingle)
-            {
-                if (conversionHint is int singleHint)
-                {
-                    result = fromSingle.ToString($"F{singleHint}");
-                    return true;
-                }
+            return 10;
+        }
 
-                result = fromSingle.ToString();
+        return 0;
+    }
+
+    /// <inheritdoc/>
+    public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
+    {
+        if (toType == typeof(string) && from is float fromSingle)
+        {
+            if (conversionHint is int singleHint)
+            {
+                result = fromSingle.ToString($"F{singleHint}");
                 return true;
             }
 
-            if (from is string fromString)
+            result = fromSingle.ToString();
+            return true;
+        }
+
+        if (from is string fromString)
+        {
+            var success = float.TryParse(fromString, out var outSingle);
+            if (success)
             {
-                var success = float.TryParse(fromString, out var outSingle);
-                if (success)
+                if (conversionHint is int singleHint)
                 {
-                    if (conversionHint is int singleHint)
-                    {
-                        result = Convert.ToSingle(Math.Round(outSingle, singleHint));
-                        return true;
-                    }
-
-                    result = outSingle;
-
+                    result = Convert.ToSingle(Math.Round(outSingle, singleHint));
                     return true;
                 }
-            }
 
-            result = null!;
-            return false;
+                result = outSingle;
+
+                return true;
+            }
         }
+
+        result = null!;
+        return false;
     }
 }

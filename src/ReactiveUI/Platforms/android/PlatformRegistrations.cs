@@ -7,34 +7,33 @@ using System;
 using System.Reactive.Concurrency;
 using Splat;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Android platform registrations.
+/// </summary>
+/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+public class PlatformRegistrations : IWantsToRegisterStuff
 {
-    /// <summary>
-    /// Android platform registrations.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
-    public class PlatformRegistrations : IWantsToRegisterStuff
+    /// <inheritdoc/>
+    public void Register(Action<Func<object>, Type> registerFunction) // TODO: Create Test
     {
-        /// <inheritdoc/>
-        public void Register(Action<Func<object>, Type> registerFunction) // TODO: Create Test
+        if (registerFunction is null)
         {
-            if (registerFunction is null)
-            {
-                throw new ArgumentNullException(nameof(registerFunction));
-            }
-
-            registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-            registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
-
-            if (!ModeDetector.InUnitTestRunner())
-            {
-                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-                RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
-            }
-
-            registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
+            throw new ArgumentNullException(nameof(registerFunction));
         }
+
+        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
+        registerFunction(() => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
+
+        if (!ModeDetector.InUnitTestRunner())
+        {
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
+        }
+
+        registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
     }
 }
