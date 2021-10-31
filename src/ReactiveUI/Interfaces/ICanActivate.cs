@@ -6,23 +6,22 @@
 using System;
 using System.Reactive;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// This Interface is used by the framework to explicitly provide activation
+/// events. Usually you can ignore this unless you are porting RxUI to a new
+/// UI Toolkit.
+/// </summary>
+public interface ICanActivate
 {
     /// <summary>
-    /// This Interface is used by the framework to explicitly provide activation
-    /// events. Usually you can ignore this unless you are porting RxUI to a new
-    /// UI Toolkit.
+    /// Gets a observable which is triggered when the ViewModel is activated.
     /// </summary>
-    public interface ICanActivate
-    {
-        /// <summary>
-        /// Gets a observable which is triggered when the ViewModel is activated.
-        /// </summary>
-        IObservable<Unit> Activated { get; }
+    IObservable<Unit> Activated { get; }
 
-        /// <summary>
-        /// Gets a observable which is triggered when the ViewModel is deactivated.
-        /// </summary>
-        IObservable<Unit> Deactivated { get; }
-    }
+    /// <summary>
+    /// Gets a observable which is triggered when the ViewModel is deactivated.
+    /// </summary>
+    IObservable<Unit> Deactivated { get; }
 }

@@ -10,11 +10,45 @@ root = true
 insert_final_newline = true
 indent_style = space
 indent_size = 4
-trim_trailing_whitespace = true
+dotnet_diagnostic.CA1027.severity=error
+dotnet_diagnostic.CA1062.severity=error
+dotnet_diagnostic.CA1064.severity=error
+dotnet_diagnostic.CA1066.severity=error
+dotnet_diagnostic.CA1067.severity=error
+dotnet_diagnostic.CA1068.severity=error
+dotnet_diagnostic.CA1069.severity=warning
+dotnet_diagnostic.CA2013.severity=error
+dotnet_diagnostic.CA1802.severity=error
+dotnet_diagnostic.CA1813.severity=error
+dotnet_diagnostic.CA1814.severity=error
+dotnet_diagnostic.CA1815.severity=error
+dotnet_diagnostic.CA1822.severity=error
+dotnet_diagnostic.CA1827.severity=error
+dotnet_diagnostic.CA1828.severity=error
+dotnet_diagnostic.CA1826.severity=error
+dotnet_diagnostic.CA1829.severity=error
+dotnet_diagnostic.CA1830.severity=error
+dotnet_diagnostic.CA1831.severity=error
+dotnet_diagnostic.CA1832.severity=error
+dotnet_diagnostic.CA1833.severity=error
+dotnet_diagnostic.CA1834.severity=error
+dotnet_diagnostic.CA1835.severity=error
+dotnet_diagnostic.CA1836.severity=error
+dotnet_diagnostic.CA1837.severity=error
+dotnet_diagnostic.CA1838.severity=error
+dotnet_diagnostic.CA2015.severity=error
+dotnet_diagnostic.CA2012.severity=error
+dotnet_diagnostic.CA2011.severity=error
+dotnet_diagnostic.CA2009.severity=error
+dotnet_diagnostic.CA2008.severity=error
+dotnet_diagnostic.CA2007.severity=warning
+dotnet_diagnostic.CA2000.severity=suggestion
+
+[project.json]
+indent_size = 2
 
 # C# files
 [*.cs]
-
 # New line preferences
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
@@ -41,10 +75,12 @@ dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_qualification_for_method = false:suggestion
 dotnet_style_qualification_for_event = false:suggestion
 
-# Types: use keywords instead of BCL types, and permit var only when the type is clear
+# only use var when it's obvious what the variable type is
 csharp_style_var_for_built_in_types = true:suggestion
-csharp_style_var_when_type_is_apparent = true:none
+csharp_style_var_when_type_is_apparent = true:suggestion
 csharp_style_var_elsewhere = true:suggestion
+
+# prefer C# premade types.
 dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
 dotnet_style_predefined_type_for_member_access = true:suggestion
 
@@ -56,14 +92,14 @@ dotnet_naming_symbols.constant_fields.applicable_kinds   = field
 dotnet_naming_symbols.constant_fields.required_modifiers = const
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
-# static fields should have _ prefix
+# static fields should have s_ prefix
 dotnet_naming_rule.static_fields_should_have_prefix.severity = suggestion
 dotnet_naming_rule.static_fields_should_have_prefix.symbols  = static_fields
 dotnet_naming_rule.static_fields_should_have_prefix.style    = static_prefix_style
 dotnet_naming_symbols.static_fields.applicable_kinds   = field
 dotnet_naming_symbols.static_fields.required_modifiers = static
 dotnet_naming_symbols.static_fields.applicable_accessibilities = private, internal, private_protected
-dotnet_naming_style.static_prefix_style.required_prefix = _
+dotnet_naming_style.static_prefix_style.required_prefix = s_
 dotnet_naming_style.static_prefix_style.capitalization = camel_case
 
 # internal and private fields should be _camelCase
@@ -78,7 +114,7 @@ dotnet_naming_style.camel_case_underscore_style.capitalization = camel_case
 # Code style defaults
 csharp_using_directive_placement = outside_namespace:suggestion
 dotnet_sort_system_directives_first = true
-csharp_prefer_braces = true:suggestion
+csharp_prefer_braces = true:silent
 csharp_preserve_single_line_blocks = true:none
 csharp_preserve_single_line_statements = false:none
 csharp_prefer_static_local_function = true:suggestion
@@ -99,8 +135,8 @@ dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggesti
 dotnet_style_prefer_inferred_tuple_names = true:suggestion
 dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
 dotnet_style_prefer_auto_properties = true:suggestion
-dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
-dotnet_style_prefer_conditional_expression_over_return = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = true:silent
 csharp_prefer_simple_default_expression = true:suggestion
 
 # Expression-bodied members
@@ -242,7 +278,6 @@ dotnet_diagnostic.RCS1074.severity = error
 dotnet_diagnostic.RCS1090.severity = error
 dotnet_diagnostic.RCS1138.severity = error
 dotnet_diagnostic.RCS1139.severity = error
-dotnet_diagnostic.RCS1158.severity = none
 dotnet_diagnostic.RCS1163.severity = suggestion
 dotnet_diagnostic.RCS1168.severity = suggestion
 dotnet_diagnostic.RCS1188.severity = error
@@ -365,7 +400,7 @@ dotnet_diagnostic.SA1501.severity = error
 dotnet_diagnostic.SA1502.severity = error
 dotnet_diagnostic.SA1503.severity = error
 dotnet_diagnostic.SA1504.severity = error
-dotnet_diagnostic.SA1505.severity = error
+dotnet_diagnostic.SA1505.severity = none
 dotnet_diagnostic.SA1506.severity = error
 dotnet_diagnostic.SA1507.severity = error
 dotnet_diagnostic.SA1508.severity = error
@@ -374,7 +409,7 @@ dotnet_diagnostic.SA1510.severity = error
 dotnet_diagnostic.SA1511.severity = error
 dotnet_diagnostic.SA1512.severity = error
 dotnet_diagnostic.SA1513.severity = error
-dotnet_diagnostic.SA1514.severity = error
+dotnet_diagnostic.SA1514.severity = none
 dotnet_diagnostic.SA1515.severity = error
 dotnet_diagnostic.SA1516.severity = error
 dotnet_diagnostic.SA1517.severity = error
@@ -424,9 +459,45 @@ dotnet_diagnostic.SA1651.severity = error
 dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
 dotnet_diagnostic.SX1623.severity = none
-
-dotnet_diagnostic.IDE0046.severity = suggestion
-dotnet_diagnostic.IDE0060.severity = none
+dotnet_diagnostic.RCS1102.severity=error
+dotnet_diagnostic.RCS1166.severity=error
+dotnet_diagnostic.RCS1078i.severity=error
+dotnet_diagnostic.RCS1248.severity=error
+dotnet_diagnostic.RCS1080.severity=error
+dotnet_diagnostic.RCS1077.severity=error
+dotnet_diagnostic.CA1825.severity=error
+dotnet_diagnostic.CA1812.severity=error
+dotnet_diagnostic.CA1805.severity=error
+dotnet_diagnostic.RCS1197.severity=error
+dotnet_diagnostic.RCS1198.severity=suggestion
+dotnet_diagnostic.RCS1231.severity=suggestion
+dotnet_diagnostic.RCS1235.severity=error
+dotnet_diagnostic.RCS1242.severity=error
+dotnet_diagnostic.CA2016.severity=warning
+dotnet_diagnostic.CA2014.severity=error
+dotnet_diagnostic.RCS1010.severity=error
+dotnet_diagnostic.RCS1006.severity=error
+dotnet_diagnostic.RCS1005.severity=error
+dotnet_diagnostic.RCS1020.severity=error
+dotnet_diagnostic.RCS1049.severity=warning
+dotnet_diagnostic.RCS1058.severity=warning
+dotnet_diagnostic.RCS1068.severity=warning
+dotnet_diagnostic.RCS1073.severity=warning
+dotnet_diagnostic.RCS1084.severity=error
+dotnet_diagnostic.RCS1085.severity=error
+dotnet_diagnostic.RCS1105.severity=error
+dotnet_diagnostic.RCS1112.severity=error
+dotnet_diagnostic.RCS1128.severity=error
+dotnet_diagnostic.RCS1143.severity=error
+dotnet_diagnostic.RCS1171.severity=error
+dotnet_diagnostic.RCS1173.severity=error
+dotnet_diagnostic.RCS1176.severity=error
+dotnet_diagnostic.RCS1177.severity=error
+dotnet_diagnostic.RCS1179.severity=error
+dotnet_diagnostic.RCS1180.severity=warning
+dotnet_diagnostic.RCS1190.severity=error
+dotnet_diagnostic.RCS1195.severity=error
+dotnet_diagnostic.RCS1214.severity=error
 
 # C++ Files
 [*.{cpp,h,in}]
@@ -434,11 +505,8 @@ curly_bracket_next_line = true
 indent_brace_style = Allman
 
 # Xml project files
-[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]
+[*.{csproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]
 indent_size = 2
-
-[*.{csproj,vbproj,proj,nativeproj,locproj}]
-charset = utf-8
 
 # Xml build files
 [*.builds]
@@ -452,13 +520,8 @@ indent_size = 2
 [*.{props,targets,config,nuspec}]
 indent_size = 2
 
-# YAML config files
-[*.{yml,yaml}]
-indent_size = 2
-
 # Shell scripts
 [*.sh]
 end_of_line = lf
-
-[*.{cmd,bat}]
+[*.{cmd, bat}]
 end_of_line = crlf

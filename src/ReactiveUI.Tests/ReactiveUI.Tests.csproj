@@ -1,8 +1,8 @@
 <Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;net5.0-windows10.0.19041</TargetFrameworks>
+    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net472;net5.0-windows</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -23,22 +23,7 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" $(TargetFramework.StartsWith('netcoreapp3.1')) AND '$(OS)' == 'Windows_NT'">
-      <PropertyGroup>
-        <UseWpf>true</UseWpf>
-        <UseWindowsForms>true</UseWindowsForms>
-      </PropertyGroup>
-      <ItemGroup>
-        <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
-        <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
-        <Compile Include="Platforms\common-gui\**\*.cs" />
-        <Compile Include="Platforms\wpf\**\*.cs" />
-        <Compile Include="Platforms\Winforms\**\*.cs" />
-        <Compile Include="Platforms\windows-xaml\**\*.cs" />
-        <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
-      </ItemGroup>
-    </When>
-    <When Condition=" $(TargetFramework.StartsWith('net5')) AND '$(OS)' == 'Windows_NT'">
+    <When Condition=" $(TargetFramework.StartsWith('net5.0-windows')) ">
       <PropertyGroup>
         <UseWpf>true</UseWpf>
         <UseWindowsForms>true</UseWindowsForms>

@@ -8,28 +8,28 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 
-namespace ReactiveUI.Winforms
+namespace ReactiveUI.Winforms;
+
+internal static class ObservableCollectionChangedToListChangedTransformer
 {
-    internal static class ObservableCollectionChangedToListChangedTransformer
+    /// <summary>
+    ///     Transforms a NotifyCollectionChangedEventArgs into zero or more ListChangedEventArgs.
+    /// </summary>
+    /// <param name="ea">The event args.</param>
+    /// <returns>An enumerable of <see cref="ListChangedEventArgs"/>.</returns>
+    internal static IEnumerable<ListChangedEventArgs> AsListChangedEventArgs(this NotifyCollectionChangedEventArgs ea)
     {
-        /// <summary>
-        ///     Transforms a NotifyCollectionChangedEventArgs into zero or more ListChangedEventArgs.
-        /// </summary>
-        /// <param name="ea">The event args.</param>
-        /// <returns>An enumerable of <see cref="ListChangedEventArgs"/>.</returns>
-        internal static IEnumerable<ListChangedEventArgs> AsListChangedEventArgs(this NotifyCollectionChangedEventArgs ea)
+        switch (ea.Action)
         {
-            switch (ea.Action)
-            {
-                case NotifyCollectionChangedAction.Reset:
-                    yield return new ListChangedEventArgs(ListChangedType.Reset, -1);
-                    break;
+            case NotifyCollectionChangedAction.Reset:
+                yield return new ListChangedEventArgs(ListChangedType.Reset, -1);
+                break;
 
-                case NotifyCollectionChangedAction.Replace:
-                    yield return new ListChangedEventArgs(ListChangedType.ItemChanged, ea.NewStartingIndex);
-                    break;
+            case NotifyCollectionChangedAction.Replace:
+                yield return new ListChangedEventArgs(ListChangedType.ItemChanged, ea.NewStartingIndex);
+                break;
 
-                case NotifyCollectionChangedAction.Remove when ea.OldItems is not null:
+            case NotifyCollectionChangedAction.Remove when ea.OldItems is not null:
                 {
                     foreach (var index in Enumerable.Range(ea.OldStartingIndex, ea.OldItems.Count))
                     {
@@ -39,7 +39,7 @@ namespace ReactiveUI.Winforms
                     break;
                 }
 
-                case NotifyCollectionChangedAction.Add when ea.NewItems is not null:
+            case NotifyCollectionChangedAction.Add when ea.NewItems is not null:
                 {
                     foreach (var index in Enumerable.Range(ea.NewStartingIndex, ea.NewItems.Count))
                     {
@@ -49,14 +49,13 @@ namespace ReactiveUI.Winforms
                     break;
                 }
 
-                case NotifyCollectionChangedAction.Move:
-                    // http://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
-                    yield return new ListChangedEventArgs(
-                        ListChangedType.ItemMoved,
-                        ea.NewStartingIndex,
-                        ea.OldStartingIndex);
-                    break;
-            }
+            case NotifyCollectionChangedAction.Move:
+                // http://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
+                yield return new ListChangedEventArgs(
+                                                      ListChangedType.ItemMoved,
+                                                      ea.NewStartingIndex,
+                                                      ea.OldStartingIndex);
+                break;
         }
     }
 }

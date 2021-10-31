@@ -5,14 +5,13 @@
 
 using System;
 
-namespace ReactiveUI.XamForms
+namespace ReactiveUI.XamForms;
+
+/// <summary>
+/// Attribute that disables animation for a view.
+/// </summary>
+/// <seealso cref="System.Attribute" />
+[AttributeUsage(AttributeTargets.All)]
+public sealed class DisableAnimationAttribute : Attribute
 {
-    /// <summary>
-    /// Attribute that disables animation for a view.
-    /// </summary>
-    /// <seealso cref="System.Attribute" />
-    [AttributeUsage(AttributeTargets.All)]
-    public class DisableAnimationAttribute : Attribute
-    {
-    }
 }

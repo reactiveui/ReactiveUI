@@ -5,14 +5,13 @@
 
 using System;
 
-namespace ReactiveUI.Fody.Helpers
+namespace ReactiveUI.Fody.Helpers;
+
+/// <summary>
+/// Attribute that marks property for INotifyPropertyChanged weaving.
+/// </summary>
+/// <seealso cref="System.Attribute" />
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class ReactiveAttribute : Attribute
 {
-    /// <summary>
-    /// Attribute that marks property for INotifyPropertyChanged weaving.
-    /// </summary>
-    /// <seealso cref="System.Attribute" />
-    [AttributeUsage(AttributeTargets.Property)]
-    public class ReactiveAttribute : Attribute
-    {
-    }
 }

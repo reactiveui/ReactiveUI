@@ -27,7 +27,7 @@ namespace ReactiveUI.Tests.Xaml
         [Fact]
         public void WhenAnyThroughAViewShouldntGiveNullValues()
         {
-            HostTestFixture? vm = new()
+            var vm = new HostTestFixture()
             {
                 Child = new TestFixture
                 {
@@ -37,7 +37,7 @@ namespace ReactiveUI.Tests.Xaml
                 },
             };
 
-            HostTestView? fixture = new();
+            var fixture = new HostTestView();
 
             var output = new List<string?>();
 

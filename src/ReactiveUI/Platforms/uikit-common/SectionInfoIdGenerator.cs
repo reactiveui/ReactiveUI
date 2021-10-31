@@ -3,12 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI
-{
-    internal static class SectionInfoIdGenerator
-    {
-        private static int nextSectionInfoId;
+namespace ReactiveUI;
 
-        public static int Generate() => nextSectionInfoId++;
-    }
+internal static class SectionInfoIdGenerator
+{
+    private static int nextSectionInfoId;
+
+    public static int Generate() => nextSectionInfoId++;
 }

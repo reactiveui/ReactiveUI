@@ -5,43 +5,42 @@
 
 using System.Linq;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Extension methods associated with the RoutingState class.
+/// </summary>
+public static class RoutingStateMixins
 {
     /// <summary>
-    /// Extension methods associated with the RoutingState class.
+    /// Locate the first ViewModel in the stack that matches a certain Type.
     /// </summary>
-    public static class RoutingStateMixins
+    /// <typeparam name="T">The view model type.</typeparam>
+    /// <param name="item">The routing state.</param>
+    /// <returns>The matching ViewModel or null if none exists.</returns>
+    public static T? FindViewModelInStack<T>(this RoutingState item)
+        where T : IRoutableViewModel
     {
-        /// <summary>
-        /// Locate the first ViewModel in the stack that matches a certain Type.
-        /// </summary>
-        /// <typeparam name="T">The view model type.</typeparam>
-        /// <param name="item">The routing state.</param>
-        /// <returns>The matching ViewModel or null if none exists.</returns>
-        public static T? FindViewModelInStack<T>(this RoutingState item)
-            where T : IRoutableViewModel
+        if (item is null)
         {
-            if (item is null)
-            {
-                throw new System.ArgumentNullException(nameof(item));
-            }
-
-            return item.NavigationStack.Reverse().OfType<T>().FirstOrDefault();
+            throw new System.ArgumentNullException(nameof(item));
         }
 
-        /// <summary>
-        /// Returns the currently visible ViewModel.
-        /// </summary>
-        /// <param name="item">The routing state.</param>
-        /// <returns>The matching ViewModel or null if none exists.</returns>
-        public static IRoutableViewModel? GetCurrentViewModel(this RoutingState item)
-        {
-            if (item is null)
-            {
-                throw new System.ArgumentNullException(nameof(item));
-            }
+        return item.NavigationStack.Reverse().OfType<T>().FirstOrDefault();
+    }
 
-            return item.NavigationStack.LastOrDefault();
+    /// <summary>
+    /// Returns the currently visible ViewModel.
+    /// </summary>
+    /// <param name="item">The routing state.</param>
+    /// <returns>The matching ViewModel or null if none exists.</returns>
+    public static IRoutableViewModel? GetCurrentViewModel(this RoutingState item)
+    {
+        if (item is null)
+        {
+            throw new System.ArgumentNullException(nameof(item));
         }
+
+        return item.NavigationStack.LastOrDefault();
     }
 }

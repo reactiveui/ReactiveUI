@@ -7,38 +7,37 @@ using System;
 using System.Reactive.Linq;
 using System.Reflection;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// This class implements View Activation for classes that explicitly describe
+/// their activation via <see cref="ICanActivate"/>. This class is used by the framework.
+/// </summary>
+public class CanActivateViewFetcher : IActivationForViewFetcher
 {
     /// <summary>
-    /// This class implements View Activation for classes that explicitly describe
-    /// their activation via <see cref="ICanActivate"/>. This class is used by the framework.
+    /// Returns a positive integer for derived instances of the <see cref="ICanActivate"/> interface.
     /// </summary>
-    public class CanActivateViewFetcher : IActivationForViewFetcher
+    /// <param name="view">The source type to check.</param>
+    /// <returns>
+    /// A positive integer if <see cref="GetActivationForView(IActivatableView)"/> is supported,
+    /// zero otherwise.
+    /// </returns>
+    public int GetAffinityForView(Type view) => typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ?
+                                                    10 : 0;
+
+    /// <summary>
+    /// Get an observable defining whether the view is active.
+    /// </summary>
+    /// <param name="view">The view to observe.</param>
+    /// <returns>An observable tracking whether the view is active.</returns>
+    public IObservable<bool> GetActivationForView(IActivatableView view)
     {
-        /// <summary>
-        /// Returns a positive integer for derived instances of the <see cref="ICanActivate"/> interface.
-        /// </summary>
-        /// <param name="view">The source type to check.</param>
-        /// <returns>
-        /// A positive integer if <see cref="GetActivationForView(IActivatableView)"/> is supported,
-        /// zero otherwise.
-        /// </returns>
-        public int GetAffinityForView(Type view) => typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ?
-                10 : 0;
-
-        /// <summary>
-        /// Get an observable defining whether the view is active.
-        /// </summary>
-        /// <param name="view">The view to observe.</param>
-        /// <returns>An observable tracking whether the view is active.</returns>
-        public IObservable<bool> GetActivationForView(IActivatableView view)
+        if (view is not ICanActivate canActivate)
         {
-            if (view is not ICanActivate canActivate)
-            {
-                return Observable.Return(false);
-            }
-
-            return canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
+            return Observable.Return(false);
         }
+
+        return canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
     }
 }

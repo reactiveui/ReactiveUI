@@ -7,22 +7,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReactiveUI
-{
-    internal static class CompatMixins
-    {
-        internal static void ForEach<T>(this IEnumerable<T> @this, Action<T> block)
-        {
-            foreach (var v in @this)
-            {
-                block(v);
-            }
-        }
+namespace ReactiveUI;
 
-        internal static IEnumerable<T> SkipLast<T>(this IEnumerable<T> enumerable, int count)
+internal static class CompatMixins
+{
+    internal static void ForEach<T>(this IEnumerable<T> @this, Action<T> block)
+    {
+        foreach (var v in @this)
         {
-            var inputList = enumerable.ToList();
-            return inputList.Take(inputList.Count - count);
+            block(v);
         }
+    }
+
+    internal static IEnumerable<T> SkipLast<T>(this IEnumerable<T> enumerable, int count)
+    {
+        var inputList = enumerable.ToList();
+        return inputList.Take(inputList.Count - count);
     }
 }

@@ -7,37 +7,36 @@ using System;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace ReactiveUI.Winforms
+namespace ReactiveUI.Winforms;
+
+/// <summary>
+/// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
+/// that don't have DataTemplates, and assigns a default DataTemplate that
+/// loads the View associated with each ViewModel.
+/// </summary>
+public class ContentControlBindingHook : IPropertyBindingHook
 {
-    /// <summary>
-    /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
-    /// that don't have DataTemplates, and assigns a default DataTemplate that
-    /// loads the View associated with each ViewModel.
-    /// </summary>
-    public class ContentControlBindingHook : IPropertyBindingHook
+    /// <inheritdoc/>
+    public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
     {
-        /// <inheritdoc/>
-        public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
+        if (getCurrentViewProperties is null)
         {
-            if (getCurrentViewProperties is null)
-            {
-                throw new ArgumentNullException(nameof(getCurrentViewProperties));
-            }
+            throw new ArgumentNullException(nameof(getCurrentViewProperties));
+        }
 
-            var viewProperties = getCurrentViewProperties();
-            var lastViewProperty = viewProperties.LastOrDefault();
+        var viewProperties = getCurrentViewProperties();
+        var lastViewProperty = viewProperties.LastOrDefault();
 
-            if (lastViewProperty?.Sender is not Panel)
-            {
-                return true;
-            }
-
-            if (viewProperties.Last().GetPropertyName() != "Controls")
-            {
-                return true;
-            }
-
+        if (lastViewProperty?.Sender is not Panel)
+        {
             return true;
         }
+
+        if (viewProperties.Last().GetPropertyName() != "Controls")
+        {
+            return true;
+        }
+
+        return true;
     }
 }

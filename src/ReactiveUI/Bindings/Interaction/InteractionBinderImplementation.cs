@@ -10,75 +10,74 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Splat;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Provides methods to bind <see cref="Interaction{TInput, TOutput}"/>s to handlers.
+/// </summary>
+public class InteractionBinderImplementation : IInteractionBinderImplementation
 {
-    /// <summary>
-    /// Provides methods to bind <see cref="Interaction{TInput, TOutput}"/>s to handlers.
-    /// </summary>
-    public class InteractionBinderImplementation : IInteractionBinderImplementation
+    /// <inheritdoc />
+    public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
+        TViewModel? viewModel,
+        TView view,
+        Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
+        Func<InteractionContext<TInput, TOutput>, Task> handler) // TODO: Create Test
+        where TViewModel : class
+        where TView : class, IViewFor
     {
-        /// <inheritdoc />
-        public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
-                TViewModel? viewModel,
-                TView view,
-                Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
-                Func<InteractionContext<TInput, TOutput>, Task> handler) // TODO: Create Test
-            where TViewModel : class
-            where TView : class, IViewFor
+        if (propertyName is null)
         {
-            if (propertyName is null)
-            {
-                throw new ArgumentNullException(nameof(propertyName));
-            }
-
-            if (handler is null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
-            var vmExpression = Reflection.Rewrite(propertyName.Body);
-
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<Interaction<TInput, TOutput>>();
-
-            var interactionDisposable = new SerialDisposable();
-
-            return source
-                .WhereNotNull()
-                .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
-                .Finally(() => interactionDisposable.Dispose())
-                .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
+            throw new ArgumentNullException(nameof(propertyName));
         }
 
-        /// <inheritdoc />
-        public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
-                TViewModel? viewModel,
-                TView view,
-                Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
-                Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler) // TODO: Create Test
-            where TViewModel : class
-            where TView : class, IViewFor
+        if (handler is null)
         {
-            if (propertyName is null)
-            {
-                throw new ArgumentNullException(nameof(propertyName));
-            }
-
-            if (handler is null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
-            var vmExpression = Reflection.Rewrite(propertyName.Body);
-
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<Interaction<TInput, TOutput>>();
-
-            var interactionDisposable = new SerialDisposable();
-
-            return source
-                .Where(x => x is not null)
-                .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
-                .Finally(() => interactionDisposable.Dispose())
-                .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
+            throw new ArgumentNullException(nameof(handler));
         }
+
+        var vmExpression = Reflection.Rewrite(propertyName.Body);
+
+        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<Interaction<TInput, TOutput>>();
+
+        var interactionDisposable = new SerialDisposable();
+
+        return source
+               .WhereNotNull()
+               .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
+               .Finally(() => interactionDisposable.Dispose())
+               .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
+    }
+
+    /// <inheritdoc />
+    public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
+        TViewModel? viewModel,
+        TView view,
+        Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
+        Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler) // TODO: Create Test
+        where TViewModel : class
+        where TView : class, IViewFor
+    {
+        if (propertyName is null)
+        {
+            throw new ArgumentNullException(nameof(propertyName));
+        }
+
+        if (handler is null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        var vmExpression = Reflection.Rewrite(propertyName.Body);
+
+        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<Interaction<TInput, TOutput>>();
+
+        var interactionDisposable = new SerialDisposable();
+
+        return source
+               .Where(x => x is not null)
+               .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
+               .Finally(() => interactionDisposable.Dispose())
+               .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
     }
 }

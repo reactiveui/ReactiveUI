@@ -3,21 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Trigger Update.
+/// </summary>
+public enum TriggerUpdate
 {
     /// <summary>
-    /// Trigger Update.
+    /// The view to view model.
     /// </summary>
-    public enum TriggerUpdate
-    {
-        /// <summary>
-        /// The view to view model.
-        /// </summary>
-        ViewToViewModel,
+    ViewToViewModel,
 
-        /// <summary>
-        /// The view model to view.
-        /// </summary>
-        ViewModelToView
-    }
+    /// <summary>
+    /// The view model to view.
+    /// </summary>
+    ViewModelToView
 }

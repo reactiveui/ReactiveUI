@@ -1,7 +1,4 @@
-[assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/reactiveui/reactiveui")]
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.19041.0")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v5.0", FrameworkDisplayName="")]
-[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.19041.0")]
+﻿[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.7.2", FrameworkDisplayName=".NET Framework 4.7.2")]
 namespace ReactiveUI.Winforms
 {
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher, Splat.IEnableLogger

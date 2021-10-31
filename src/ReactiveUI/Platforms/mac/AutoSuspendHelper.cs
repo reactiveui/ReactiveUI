@@ -13,117 +13,116 @@ using AppKit;
 using Foundation;
 using Splat;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// <para>
+/// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
+/// AppDelegate to inherit from this class, then call:
+/// </para>
+/// <para><c>Locator.Current.GetService.{ISuspensionHost}().SetupDefaultSuspendResume();</c>.</para>
+/// <para>This will fetch your SuspensionHost.</para>
+/// </summary>
+public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
+    private readonly Subject<IDisposable> _shouldPersistState = new();
+    private readonly Subject<Unit> _isResuming = new();
+    private readonly Subject<Unit> _isUnpausing = new();
+
+    private bool _isDisposed;
+
     /// <summary>
-    /// <para>
-    /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
-    /// AppDelegate to inherit from this class, then call:
-    /// </para>
-    /// <para><c>Locator.Current.GetService.{ISuspensionHost}().SetupDefaultSuspendResume();</c>.</para>
-    /// <para>This will fetch your SuspensionHost.</para>
+    /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
     /// </summary>
-    public class AutoSuspendHelper : IEnableLogger, IDisposable
+    /// <param name="appDelegate">The application delegate.</param>
+    public AutoSuspendHelper(NSApplicationDelegate appDelegate)
     {
-        private readonly Subject<IDisposable> _shouldPersistState = new();
-        private readonly Subject<Unit> _isResuming = new();
-        private readonly Subject<Unit> _isUnpausing = new();
+        Reflection.ThrowIfMethodsNotOverloaded(
+                                               "AutoSuspendHelper",
+                                               appDelegate,
+                                               "ApplicationShouldTerminate",
+                                               "DidFinishLaunching",
+                                               "DidResignActive",
+                                               "DidBecomeActive",
+                                               "DidHide");
 
-        private bool _isDisposed;
+        RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
+        RxApp.SuspensionHost.IsResuming = _isResuming;
+        RxApp.SuspensionHost.IsUnpausing = _isUnpausing;
+        RxApp.SuspensionHost.ShouldPersistState = _shouldPersistState;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
-        /// </summary>
-        /// <param name="appDelegate">The application delegate.</param>
-        public AutoSuspendHelper(NSApplicationDelegate appDelegate)
-        {
-            Reflection.ThrowIfMethodsNotOverloaded(
-                "AutoSuspendHelper",
-                appDelegate,
-                "ApplicationShouldTerminate",
-                "DidFinishLaunching",
-                "DidResignActive",
-                "DidBecomeActive",
-                "DidHide");
+        var untimelyDemise = new Subject<Unit>();
+        AppDomain.CurrentDomain.UnhandledException += (o, e) =>
+            untimelyDemise.OnNext(Unit.Default);
 
-            RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
-            RxApp.SuspensionHost.IsResuming = _isResuming;
-            RxApp.SuspensionHost.IsUnpausing = _isUnpausing;
-            RxApp.SuspensionHost.ShouldPersistState = _shouldPersistState;
+        RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;
+    }
 
-            var untimelyDemise = new Subject<Unit>();
-            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
-                untimelyDemise.OnNext(Unit.Default);
+    /// <summary>
+    /// Applications the should terminate.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <returns>The termination reply from the application.</returns>
+    public NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
+    {
+        RxApp.MainThreadScheduler.Schedule(() =>
+                                               _shouldPersistState.OnNext(Disposable.Create(() =>
+                                                                              sender.ReplyToApplicationShouldTerminate(true))));
 
-            RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;
-        }
+        return NSApplicationTerminateReply.Later;
+    }
 
-        /// <summary>
-        /// Applications the should terminate.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <returns>The termination reply from the application.</returns>
-        public NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
-        {
-            RxApp.MainThreadScheduler.Schedule(() =>
-                _shouldPersistState.OnNext(Disposable.Create(() =>
-                    sender.ReplyToApplicationShouldTerminate(true))));
-
-            return NSApplicationTerminateReply.Later;
-        }
-
-        /// <summary>
-        /// Dids the finish launching.
-        /// </summary>
-        /// <param name="notification">The notification.</param>
+    /// <summary>
+    /// Dids the finish launching.
+    /// </summary>
+    /// <param name="notification">The notification.</param>
 #pragma warning disable RCS1163 // Unused parameter.
-        public void DidFinishLaunching(NSNotification notification) => _isResuming.OnNext(Unit.Default);
+    public void DidFinishLaunching(NSNotification notification) => _isResuming.OnNext(Unit.Default);
 
-        /// <summary>
-        /// Dids the resign active.
-        /// </summary>
-        /// <param name="notification">The notification.</param>
-        public void DidResignActive(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
+    /// <summary>
+    /// Dids the resign active.
+    /// </summary>
+    /// <param name="notification">The notification.</param>
+    public void DidResignActive(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
 
-        /// <summary>
-        /// Dids the become active.
-        /// </summary>
-        /// <param name="notification">The notification.</param>
-        public void DidBecomeActive(NSNotification notification) => _isUnpausing.OnNext(Unit.Default);
+    /// <summary>
+    /// Dids the become active.
+    /// </summary>
+    /// <param name="notification">The notification.</param>
+    public void DidBecomeActive(NSNotification notification) => _isUnpausing.OnNext(Unit.Default);
 
-        /// <summary>
-        /// Dids the hide.
-        /// </summary>
-        /// <param name="notification">The notification.</param>
-        public void DidHide(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
+    /// <summary>
+    /// Dids the hide.
+    /// </summary>
+    /// <param name="notification">The notification.</param>
+    public void DidHide(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
 #pragma warning restore RCS1163 // Unused parameter.
 
-        /// <inheritdoc />
-        public void Dispose()
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Disposes of resources inside the class.
+    /// </summary>
+    /// <param name="isDisposing">If we are disposing managed resources.</param>
+    protected virtual void Dispose(bool isDisposing)
+    {
+        if (_isDisposed)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            return;
         }
 
-        /// <summary>
-        /// Disposes of resources inside the class.
-        /// </summary>
-        /// <param name="isDisposing">If we are disposing managed resources.</param>
-        protected virtual void Dispose(bool isDisposing)
+        if (isDisposing)
         {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            if (isDisposing)
-            {
-                _isResuming?.Dispose();
-                _isUnpausing?.Dispose();
-                _shouldPersistState?.Dispose();
-            }
-
-            _isDisposed = true;
+            _isResuming?.Dispose();
+            _isUnpausing?.Dispose();
+            _shouldPersistState?.Dispose();
         }
+
+        _isDisposed = true;
     }
 }

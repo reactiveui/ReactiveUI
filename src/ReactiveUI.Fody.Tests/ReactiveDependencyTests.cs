@@ -4,159 +4,153 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using ReactiveUI.Fody.Helpers;
 using Xunit;
 
-namespace ReactiveUI.Fody.Tests
+namespace ReactiveUI.Fody.Tests;
+
+/// <summary>
+/// Tests for the ReactiveDependencyAttribute.
+/// </summary>
+public class ReactiveDependencyTests
 {
     /// <summary>
-    /// Tests for the ReactiveDependencyAttribute.
+    /// Tests to make sure that the facade returns the same valid as the dependency for the int property.
     /// </summary>
-    public class ReactiveDependencyTests
+    [Fact]
+    public void IntPropertyOnWeavedFacadeReturnsBaseModelIntPropertyDefaultValueTest()
     {
-        /// <summary>
-        /// Tests to make sure that the facade returns the same valid as the dependency for the int property.
-        /// </summary>
-        [Fact]
-        public void IntPropertyOnWeavedFacadeReturnsBaseModelIntPropertyDefaultValueTest()
-        {
-            var model = new BaseModel();
-            var expectedResult = model.IntProperty;
+        var model = new BaseModel();
+        var expectedResult = model.IntProperty;
 
-            var facade = new FacadeModel(model);
+        var facade = new FacadeModel(model);
 
-            Assert.Equal(expectedResult, facade.IntProperty);
-        }
+        Assert.Equal(expectedResult, facade.IntProperty);
+    }
 
-        /// <summary>
-        /// Tests to make sure that the facade returns the same valid as the dependency for the string property.
-        /// </summary>
-        [Fact]
-        public void AnotherStringPropertyOnFacadeReturnsBaseModelStringPropertyDefaultValueTest()
-        {
-            var model = new BaseModel();
-            var expectedResult = model.StringProperty;
+    /// <summary>
+    /// Tests to make sure that the facade returns the same valid as the dependency for the string property.
+    /// </summary>
+    [Fact]
+    public void AnotherStringPropertyOnFacadeReturnsBaseModelStringPropertyDefaultValueTest()
+    {
+        var model = new BaseModel();
+        var expectedResult = model.StringProperty;
 
-            var facade = new FacadeModel(model);
+        var facade = new FacadeModel(model);
 
-            Assert.Equal(expectedResult, facade.AnotherStringProperty);
-        }
+        Assert.Equal(expectedResult, facade.AnotherStringProperty);
+    }
 
-        /// <summary>
-        /// Tests to make sure that the facade returns the same valid as the dependency for the string property after being updated.
-        /// </summary>
-        [Fact]
-        public void SettingAnotherStringPropertyUpdatesTheDependencyStringProperty()
-        {
-            var expectedResult = "New String Value";
-            var facade = new FacadeModel(new BaseModel());
+    /// <summary>
+    /// Tests to make sure that the facade returns the same valid as the dependency for the string property after being updated.
+    /// </summary>
+    [Fact]
+    public void SettingAnotherStringPropertyUpdatesTheDependencyStringProperty()
+    {
+        const string? expectedResult = "New String Value";
+        var facade = new FacadeModel(new()) { AnotherStringProperty = expectedResult };
 
-            facade.AnotherStringProperty = expectedResult;
+        Assert.Equal(expectedResult, facade.Dependency.StringProperty);
+    }
 
-            Assert.Equal(expectedResult, facade.Dependency.StringProperty);
-        }
+    /// <summary>
+    /// Tests to make sure that the facade returns the same valid as the dependency for the int property after being updated.
+    /// </summary>
+    [Fact]
+    public void SettingFacadeIntPropertyUpdatesDependencyIntProperty()
+    {
+        const int expectedResult = 999;
+        var facade = new FacadeModel(new()) { IntProperty = expectedResult };
 
-        /// <summary>
-        /// Tests to make sure that the facade returns the same valid as the dependency for the int property after being updated.
-        /// </summary>
-        [Fact]
-        public void SettingFacadeIntPropertyUpdatesDependencyIntProperty()
-        {
-            var expectedResult = 999;
-            var facade = new FacadeModel(new BaseModel());
+        Assert.Equal(expectedResult, facade.Dependency.IntProperty);
+    }
 
-            facade.IntProperty = expectedResult;
+    /// <summary>
+    /// Checks to make sure that the property changed event is fired after first assignment.
+    /// </summary>
+    [Fact]
+    public void FacadeIntPropertyChangedEventFiresOnAssignmentTest()
+    {
+        const string? expectedPropertyChanged = "IntProperty";
+        var resultPropertyChanged = string.Empty;
 
-            Assert.Equal(expectedResult, facade.Dependency.IntProperty);
-        }
+        var facade = new FacadeModel(new());
 
-        /// <summary>
-        /// Checks to make sure that the property changed event is fired after first assignment.
-        /// </summary>
-        [Fact]
-        public void FacadeIntPropertyChangedEventFiresOnAssignmentTest()
-        {
-            var expectedPropertyChanged = "IntProperty";
-            var resultPropertyChanged = string.Empty;
+        var obj = (INotifyPropertyChanged)facade;
+        obj.PropertyChanged += (_, args) => resultPropertyChanged = args.PropertyName;
 
-            var facade = new FacadeModel(new BaseModel());
+        facade.IntProperty = 999;
 
-            var obj = (INotifyPropertyChanged)facade;
-            obj.PropertyChanged += (sender, args) => resultPropertyChanged = args.PropertyName;
+        Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
+    }
 
-            facade.IntProperty = 999;
+    /// <summary>
+    /// Checks to make sure that the property changed event is fired after first assignment.
+    /// </summary>
+    [Fact]
+    public void FacadeAnotherStringPropertyChangedEventFiresOnAssignmentTest()
+    {
+        const string? expectedPropertyChanged = "AnotherStringProperty";
+        var resultPropertyChanged = string.Empty;
 
-            Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
-        }
+        var facade = new FacadeModel(new());
 
-        /// <summary>
-        /// Checks to make sure that the property changed event is fired after first assignment.
-        /// </summary>
-        [Fact]
-        public void FacadeAnotherStringPropertyChangedEventFiresOnAssignmentTest()
-        {
-            var expectedPropertyChanged = "AnotherStringProperty";
-            var resultPropertyChanged = string.Empty;
+        var obj = (INotifyPropertyChanged)facade;
+        obj.PropertyChanged += (_, args) => resultPropertyChanged = args.PropertyName;
 
-            var facade = new FacadeModel(new BaseModel());
+        facade.AnotherStringProperty = "Some New Value";
 
-            var obj = (INotifyPropertyChanged)facade;
-            obj.PropertyChanged += (sender, args) => resultPropertyChanged = args.PropertyName;
+        Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
+    }
 
-            facade.AnotherStringProperty = "Some New Value";
+    /// <summary>
+    /// Checks to make sure that the facade and the decorate return the same value.
+    /// </summary>
+    [Fact]
+    public void StringPropertyOnWeavedDecoratorReturnsBaseModelDefaultStringValue()
+    {
+        var model = new BaseModel();
+        var expectedResult = model.StringProperty;
 
-            Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
-        }
+        var decorator = new DecoratorModel(model);
 
-        /// <summary>
-        /// Checks to make sure that the facade and the decorate return the same value.
-        /// </summary>
-        [Fact]
-        public void StringPropertyOnWeavedDecoratorReturnsBaseModelDefaultStringValue()
-        {
-            var model = new BaseModel();
-            var expectedResult = model.StringProperty;
+        Assert.Equal(expectedResult, decorator.StringProperty);
+    }
 
-            var decorator = new DecoratorModel(model);
+    /// <summary>
+    /// Checks to make sure that the decorator property changed is fired.
+    /// </summary>
+    [Fact]
+    public void DecoratorStringPropertyRaisesPropertyChanged()
+    {
+        const string? expectedPropertyChanged = "StringProperty";
+        var resultPropertyChanged = string.Empty;
 
-            Assert.Equal(expectedResult, decorator.StringProperty);
-        }
+        var decorator = new DecoratorModel(new());
 
-        /// <summary>
-        /// Checks to make sure that the decorator property changed is fired.
-        /// </summary>
-        [Fact]
-        public void DecoratorStringPropertyRaisesPropertyChanged()
-        {
-            var expectedPropertyChanged = "StringProperty";
-            var resultPropertyChanged = string.Empty;
+        var obj = (INotifyPropertyChanged)decorator;
+        obj.PropertyChanged += (_, args) => resultPropertyChanged = args.PropertyName;
 
-            var decorator = new DecoratorModel(new BaseModel());
+        decorator.StringProperty = "Some New Value";
 
-            var obj = (INotifyPropertyChanged)decorator;
-            obj.PropertyChanged += (sender, args) => resultPropertyChanged = args.PropertyName;
+        Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
+    }
 
-            decorator.StringProperty = "Some New Value";
+    /// <summary>
+    /// Checks to make sure that the decorator property changed is fired.
+    /// </summary>
+    [Fact]
+    public void DecoratorReactiveStringPropertyRaisesPropertyChanged()
+    {
+        const string? expectedPropertyChanged = "SomeCoolNewProperty";
+        var resultPropertyChanged = string.Empty;
 
-            Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
-        }
+        var decorator = new DecoratorModel(new());
 
-        /// <summary>
-        /// Checks to make sure that the decorator property changed is fired.
-        /// </summary>
-        [Fact]
-        public void DecoratorReactiveStringPropertyRaisesPropertyChanged()
-        {
-            var expectedPropertyChanged = "SomeCoolNewProperty";
-            var resultPropertyChanged = string.Empty;
+        var obj = (INotifyPropertyChanged)decorator;
+        obj.PropertyChanged += (_, args) => resultPropertyChanged = args.PropertyName;
 
-            var decorator = new DecoratorModel(new BaseModel());
-
-            var obj = (INotifyPropertyChanged)decorator;
-            obj.PropertyChanged += (sender, args) => resultPropertyChanged = args.PropertyName;
-
-            decorator.UpdateCoolProperty("Some Cool Property");
-            Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
-        }
+        decorator.UpdateCoolProperty("Some Cool Property");
+        Assert.Equal(expectedPropertyChanged, resultPropertyChanged);
     }
 }

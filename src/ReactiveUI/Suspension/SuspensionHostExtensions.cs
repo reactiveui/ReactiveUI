@@ -8,90 +8,89 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Splat;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Extension methods associated with the ISuspensionHost interface.
+/// </summary>
+public static class SuspensionHostExtensions
 {
     /// <summary>
-    /// Extension methods associated with the ISuspensionHost interface.
+    /// Observe changes to the AppState of a class derived from ISuspensionHost.
     /// </summary>
-    public static class SuspensionHostExtensions
+    /// <typeparam name="T">The observable type.</typeparam>
+    /// <param name="item">The suspension host.</param>
+    /// <returns>An observable of the app state.</returns>
+    public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
+        where T : class
     {
-        /// <summary>
-        /// Observe changes to the AppState of a class derived from ISuspensionHost.
-        /// </summary>
-        /// <typeparam name="T">The observable type.</typeparam>
-        /// <param name="item">The suspension host.</param>
-        /// <returns>An observable of the app state.</returns>
-        public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
-            where T : class
+        if (item is null)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            return item.WhenAny(suspensionHost => suspensionHost.AppState, observedChange => observedChange.Value)
-                       .WhereNotNull()
-                       .Cast<T>();
+            throw new ArgumentNullException(nameof(item));
         }
 
-        /// <summary>
-        /// Get the current App State of a class derived from ISuspensionHost.
-        /// </summary>
-        /// <typeparam name="T">The app state type.</typeparam>
-        /// <param name="item">The suspension host.</param>
-        /// <returns>The app state.</returns>
-        public static T GetAppState<T>(this ISuspensionHost item)
-        {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+        return item.WhenAny(suspensionHost => suspensionHost.AppState, observedChange => observedChange.Value)
+                   .WhereNotNull()
+                   .Cast<T>();
+    }
 
-            return (T)item.AppState!;
+    /// <summary>
+    /// Get the current App State of a class derived from ISuspensionHost.
+    /// </summary>
+    /// <typeparam name="T">The app state type.</typeparam>
+    /// <param name="item">The suspension host.</param>
+    /// <returns>The app state.</returns>
+    public static T GetAppState<T>(this ISuspensionHost item)
+    {
+        if (item is null)
+        {
+            throw new ArgumentNullException(nameof(item));
         }
 
-        /// <summary>
-        /// Setup our suspension driver for a class derived off ISuspensionHost interface.
-        /// This will make your suspension host respond to suspend and resume requests.
-        /// </summary>
-        /// <param name="item">The suspension host.</param>
-        /// <param name="driver">The suspension driver.</param>
-        /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
-        public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
+        return (T)item.AppState!;
+    }
+
+    /// <summary>
+    /// Setup our suspension driver for a class derived off ISuspensionHost interface.
+    /// This will make your suspension host respond to suspend and resume requests.
+    /// </summary>
+    /// <param name="item">The suspension host.</param>
+    /// <param name="driver">The suspension driver.</param>
+    /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
+    public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
+    {
+        if (item is null)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            var ret = new CompositeDisposable();
-            driver ??= Locator.Current.GetService<ISuspensionDriver>();
-
-            if (driver is null)
-            {
-                item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
-                return Disposable.Empty;
-            }
-
-            ret.Add(item.ShouldInvalidateState
-                        .SelectMany(_ => driver.InvalidateState())
-                        .LoggedCatch(item, Observables.Unit, "Tried to invalidate app state")
-                        .Subscribe(_ => item.Log().Info("Invalidated app state")));
-
-            ret.Add(item.ShouldPersistState
-                        .SelectMany(x => driver.SaveState(item.AppState!).Finally(x.Dispose))
-                        .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
-                        .Subscribe(_ => item.Log().Info("Persisted application state")));
-
-            ret.Add(item.IsResuming.Merge(item.IsLaunchingNew)
-                        .SelectMany(_ => driver.LoadState())
-                        .LoggedCatch(
-                            item,
-                            Observable.Defer(() => Observable.Return(item.CreateNewAppState?.Invoke())),
-                            "Failed to restore app state from storage, creating from scratch")
-                        .Subscribe(x => item.AppState = x ?? item.CreateNewAppState?.Invoke()));
-
-            return ret;
+            throw new ArgumentNullException(nameof(item));
         }
+
+        var ret = new CompositeDisposable();
+        driver ??= Locator.Current.GetService<ISuspensionDriver>();
+
+        if (driver is null)
+        {
+            item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
+            return Disposable.Empty;
+        }
+
+        ret.Add(item.ShouldInvalidateState
+                    .SelectMany(_ => driver.InvalidateState())
+                    .LoggedCatch(item, Observables.Unit, "Tried to invalidate app state")
+                    .Subscribe(_ => item.Log().Info("Invalidated app state")));
+
+        ret.Add(item.ShouldPersistState
+                    .SelectMany(x => driver.SaveState(item.AppState!).Finally(x.Dispose))
+                    .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
+                    .Subscribe(_ => item.Log().Info("Persisted application state")));
+
+        ret.Add(item.IsResuming.Merge(item.IsLaunchingNew)
+                    .SelectMany(_ => driver.LoadState())
+                    .LoggedCatch(
+                                 item,
+                                 Observable.Defer(() => Observable.Return(item.CreateNewAppState?.Invoke())),
+                                 "Failed to restore app state from storage, creating from scratch")
+                    .Subscribe(x => item.AppState = x ?? item.CreateNewAppState?.Invoke()));
+
+        return ret;
     }
 }

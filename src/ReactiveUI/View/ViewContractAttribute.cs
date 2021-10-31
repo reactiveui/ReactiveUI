@@ -5,28 +5,27 @@
 
 using System;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Allows an additional string to make view resolution more specific than
+/// just a type. When applied to your <see cref="IViewFor{T}"/> -derived
+/// View, you can select between different Views for a single ViewModel
+/// instance.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class ViewContractAttribute : Attribute
 {
     /// <summary>
-    /// Allows an additional string to make view resolution more specific than
-    /// just a type. When applied to your <see cref="IViewFor{T}"/> -derived
-    /// View, you can select between different Views for a single ViewModel
-    /// instance.
+    /// Initializes a new instance of the <see cref="ViewContractAttribute"/> class.
+    /// Constructs the ViewContractAttribute with a specific contract value.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ViewContractAttribute : Attribute
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ViewContractAttribute"/> class.
-        /// Constructs the ViewContractAttribute with a specific contract value.
-        /// </summary>
-        /// <param name="contract">The value of the contract for view
-        /// resolution.</param>
-        public ViewContractAttribute(string contract) => Contract = contract;
+    /// <param name="contract">The value of the contract for view
+    /// resolution.</param>
+    public ViewContractAttribute(string contract) => Contract = contract;
 
-        /// <summary>
-        /// Gets the contract to use when resolving the view in the Splat Dependency Injection engine.
-        /// </summary>
-        public string Contract { get; }
-    }
+    /// <summary>
+    /// Gets the contract to use when resolving the view in the Splat Dependency Injection engine.
+    /// </summary>
+    public string Contract { get; }
 }

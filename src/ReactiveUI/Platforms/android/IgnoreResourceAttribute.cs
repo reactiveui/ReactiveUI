@@ -5,13 +5,12 @@
 
 using System;
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Attribute that marks a resource to be ignored.
+/// </summary>
+[AttributeUsage(AttributeTargets.All)]
+public sealed class IgnoreResourceAttribute : Attribute
 {
-    /// <summary>
-    /// Attribute that marks a resource to be ignored.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All)]
-    public class IgnoreResourceAttribute : Attribute
-    {
-    }
 }

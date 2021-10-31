@@ -9,80 +9,79 @@ using System.ComponentModel;
 using Splat;
 
 #nullable enable
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// Binding Type Converter for component model.
+/// </summary>
+public class ComponentModelTypeConverter : IBindingTypeConverter
 {
-    /// <summary>
-    /// Binding Type Converter for component model.
-    /// </summary>
-    public class ComponentModelTypeConverter : IBindingTypeConverter
+    private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache = new (
+     (types, _) =>
+     {
+         // NB: String is a Magical Type(tm) to TypeConverters. If we are
+         // converting from string => int, we need the Int converter, not
+         // the string converter :-/
+         if (types.fromType == typeof(string))
+         {
+             types = (types.toType, types.fromType);
+         }
+
+         var converter = TypeDescriptor.GetConverter(types.fromType);
+         return converter.CanConvertTo(types.toType) ? converter : null;
+     }, RxApp.SmallCacheLimit);
+
+    /// <inheritdoc/>
+    public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache = new (
-            (types, _) =>
-        {
-            // NB: String is a Magical Type(tm) to TypeConverters. If we are
-            // converting from string => int, we need the Int converter, not
-            // the string converter :-/
-            if (types.fromType == typeof(string))
-            {
-                types = (types.toType, types.fromType);
-            }
+        var converter = _typeConverterCache.Get((fromType, toType));
+        return converter is not null ? 10 : 0;
+    }
 
-            var converter = TypeDescriptor.GetConverter(types.fromType);
-            return converter.CanConvertTo(types.toType) ? converter : null;
-        }, RxApp.SmallCacheLimit);
-
-        /// <inheritdoc/>
-        public int GetAffinityForObjects(Type fromType, Type toType)
+    /// <inheritdoc/>
+    public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
+    {
+        if (from is null)
         {
-            var converter = _typeConverterCache.Get((fromType, toType));
-            return converter is not null ? 10 : 0;
+            result = null;
+            return true;
         }
 
-        /// <inheritdoc/>
-        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
+        var fromType = from.GetType();
+        var converter = _typeConverterCache.Get((fromType, toType));
+
+        if (converter is null)
         {
-            if (from is null)
-            {
-                result = null;
-                return true;
-            }
+            throw new ArgumentException($"Can't convert {fromType} to {toType}. To fix this, register a IBindingTypeConverter");
+        }
 
-            var fromType = from.GetType();
-            var converter = _typeConverterCache.Get((fromType, toType));
+        try
+        {
+            // TODO: This should use conversionHint to determine whether this is locale-aware or not
+            result = (fromType == typeof(string)) ?
+                         converter.ConvertFrom(from) : converter.ConvertTo(from, toType);
 
-            if (converter is null)
-            {
-                throw new ArgumentException($"Can't convert {fromType} to {toType}. To fix this, register a IBindingTypeConverter");
-            }
-
-            try
-            {
-                // TODO: This should use conversionHint to determine whether this is locale-aware or not
-                result = (fromType == typeof(string)) ?
-                    converter.ConvertFrom(from) : converter.ConvertTo(from, toType);
-
-                return true;
-            }
-            catch (FormatException)
+            return true;
+        }
+        catch (FormatException)
+        {
+            result = null;
+            return false;
+        }
+        catch (Exception e)
+        {
+            // Errors from ConvertFrom end up here but wrapped in
+            // outer exception. Add more types here as required.
+            // IndexOutOfRangeException is given when trying to
+            // convert empty strings with some/all? converters
+            if (e.InnerException is IndexOutOfRangeException ||
+                e.InnerException is FormatException)
             {
                 result = null;
                 return false;
             }
-            catch (Exception e)
-            {
-                // Errors from ConvertFrom end up here but wrapped in
-                // outer exception. Add more types here as required.
-                // IndexOutOfRangeException is given when trying to
-                // convert empty strings with some/all? converters
-                if (e.InnerException is IndexOutOfRangeException ||
-                    e.InnerException is FormatException)
-                    {
-                    result = null;
-                    return false;
-                }
 
-                throw new Exception($"Can't convert from {@from.GetType()} to {toType}.", e);
-            }
+            throw new Exception($"Can't convert from {@from.GetType()} to {toType}.", e);
         }
     }
 }

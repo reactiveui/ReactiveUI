@@ -141,11 +141,11 @@ namespace ReactiveUI.Tests
 
         private static Dictionary<Type, List<Type>> GetServicesThatShouldBeRegistered(IReadOnlyList<RegistrationNamespace> onlyNamespaces)
         {
-            Dictionary<Type, List<Type>> serviceTypeToImplementationTypes = new();
+            var serviceTypeToImplementationTypes = new Dictionary<Type, List<Type>>();
 
             new Registrations().Register((factory, serviceType) =>
             {
-                if (serviceTypeToImplementationTypes.TryGetValue(serviceType!, out var implementationTypes) == false)
+                if (!serviceTypeToImplementationTypes.TryGetValue(serviceType!, out var implementationTypes))
                 {
                     implementationTypes = new List<Type>();
                     serviceTypeToImplementationTypes.Add(serviceType!, implementationTypes);
@@ -156,7 +156,7 @@ namespace ReactiveUI.Tests
 
             new PlatformRegistrations().Register((factory, serviceType) =>
             {
-                if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out var implementationTypes) == false)
+                if (!serviceTypeToImplementationTypes.TryGetValue(serviceType, out var implementationTypes))
                 {
                     implementationTypes = new List<Type>();
                     serviceTypeToImplementationTypes.Add(serviceType, implementationTypes);
@@ -189,7 +189,7 @@ namespace ReactiveUI.Tests
                 var register = platformRegistrationsType.GetMethod("Register");
                 var registerParameter = new Action<Func<object>, Type>((factory, serviceType) =>
                 {
-                    if (serviceTypeToImplementationTypes.TryGetValue(serviceType, out var implementationTypes) == false)
+                    if (!serviceTypeToImplementationTypes.TryGetValue(serviceType, out var implementationTypes))
                     {
                         implementationTypes = new List<Type>();
                         serviceTypeToImplementationTypes.Add(serviceType, implementationTypes);

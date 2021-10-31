@@ -6,51 +6,50 @@
 using System.Collections.Generic;
 using Fody;
 
-namespace ReactiveUI.Fody
+namespace ReactiveUI.Fody;
+
+/// <summary>
+/// ReactiveUI module weaver.
+/// </summary>
+/// <seealso cref="BaseModuleWeaver" />
+public class ModuleWeaver : BaseModuleWeaver
 {
-    /// <summary>
-    /// ReactiveUI module weaver.
-    /// </summary>
-    /// <seealso cref="BaseModuleWeaver" />
-    public class ModuleWeaver : BaseModuleWeaver
+    /// <inheritdoc/>
+    public override void Execute()
     {
-        /// <inheritdoc/>
-        public override void Execute()
+        var propertyWeaver = new ReactiveUIPropertyWeaver
         {
-            var propertyWeaver = new ReactiveUIPropertyWeaver
-            {
-                ModuleDefinition = ModuleDefinition,
-                LogInfo = WriteInfo,
-                LogError = WriteError
-            };
-            propertyWeaver.Execute();
+            ModuleDefinition = ModuleDefinition,
+            LogInfo = WriteInfo,
+            LogError = WriteError
+        };
+        propertyWeaver.Execute();
 
-            var observableAsPropertyWeaver = new ObservableAsPropertyWeaver
-            {
-                ModuleDefinition = ModuleDefinition,
-                LogInfo = WriteInfo,
-                FindType = FindTypeDefinition
-            };
-            observableAsPropertyWeaver.Execute();
-
-            var reactiveDependencyWeaver = new ReactiveDependencyPropertyWeaver
-            {
-                ModuleDefinition = ModuleDefinition,
-                LogInfo = WriteInfo,
-                LogError = WriteError
-            };
-            reactiveDependencyWeaver.Execute();
-        }
-
-        /// <inheritdoc/>
-        public override IEnumerable<string> GetAssembliesForScanning()
+        var observableAsPropertyWeaver = new ObservableAsPropertyWeaver
         {
-            yield return "mscorlib";
-            yield return "netstandard";
-            yield return "System";
-            yield return "System.Runtime";
-            yield return "ReactiveUI";
-            yield return "ReactiveUI.Fody.Helpers";
-        }
+            ModuleDefinition = ModuleDefinition,
+            LogInfo = WriteInfo,
+            FindType = FindTypeDefinition
+        };
+        observableAsPropertyWeaver.Execute();
+
+        var reactiveDependencyWeaver = new ReactiveDependencyPropertyWeaver
+        {
+            ModuleDefinition = ModuleDefinition,
+            LogInfo = WriteInfo,
+            LogError = WriteError
+        };
+        reactiveDependencyWeaver.Execute();
+    }
+
+    /// <inheritdoc/>
+    public override IEnumerable<string> GetAssembliesForScanning()
+    {
+        yield return "mscorlib";
+        yield return "netstandard";
+        yield return "System";
+        yield return "System.Runtime";
+        yield return "ReactiveUI";
+        yield return "ReactiveUI.Fody.Helpers";
     }
 }

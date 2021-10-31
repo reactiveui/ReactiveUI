@@ -13,84 +13,84 @@ using Android.Views;
 using DynamicData;
 using DynamicData.Binding;
 
-namespace ReactiveUI.AndroidSupport
+namespace ReactiveUI.AndroidSupport;
+
+/// <summary>
+/// An adapter for the Android <see cref="RecyclerView"/>.
+/// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method
+/// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
+/// </summary>
+/// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
+public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
+    where TViewModel : class, IReactiveObject
 {
+    private readonly ISourceList<TViewModel> _list;
+
+    private readonly IDisposable _inner;
+
     /// <summary>
-    /// An adapter for the Android <see cref="RecyclerView"/>.
-    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method
-    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
+    /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel}"/> class.
     /// </summary>
-    /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
-    public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
-        where TViewModel : class, IReactiveObject
+    /// <param name="backingList">The backing list.</param>
+    protected ReactiveRecyclerViewAdapter(IObservable<IChangeSet<TViewModel>> backingList)
     {
-        private readonly ISourceList<TViewModel> _list;
+        _list = new SourceList<TViewModel>(backingList);
 
-        private readonly IDisposable _inner;
+        _inner = _list
+                 .Connect()
+                 .ForEachChange(UpdateBindings)
+                 .Subscribe();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel}"/> class.
-        /// </summary>
-        /// <param name="backingList">The backing list.</param>
-        protected ReactiveRecyclerViewAdapter(IObservable<IChangeSet<TViewModel>> backingList)
+    /// <inheritdoc/>
+    public override int ItemCount => _list.Count;
+
+    /// <inheritdoc/>
+    public override int GetItemViewType(int position) => GetItemViewType(position, GetViewModelByPosition(position));
+
+    /// <summary>
+    /// Determine the View that will be used/re-used in lists where
+    /// the list contains different cell designs.
+    /// </summary>
+    /// <param name="position">The position of the current view in the list.</param>
+    /// <param name="viewModel">The ViewModel associated with the current View.</param>
+    /// <returns>An ID to be used in OnCreateViewHolder.</returns>
+    public virtual int GetItemViewType(int position, TViewModel? viewModel) => base.GetItemViewType(position);
+
+    /// <inheritdoc/>
+    public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
+    {
+        if (holder is null)
         {
-            _list = new SourceList<TViewModel>(backingList);
-
-            _inner = _list
-                            .Connect()
-                            .ForEachChange(UpdateBindings)
-                            .Subscribe();
+            throw new ArgumentNullException(nameof(holder));
         }
 
-        /// <inheritdoc/>
-        public override int ItemCount => _list.Count;
-
-        /// <inheritdoc/>
-        public override int GetItemViewType(int position) => GetItemViewType(position, GetViewModelByPosition(position));
-
-        /// <summary>
-        /// Determine the View that will be used/re-used in lists where
-        /// the list contains different cell designs.
-        /// </summary>
-        /// <param name="position">The position of the current view in the list.</param>
-        /// <param name="viewModel">The ViewModel associated with the current View.</param>
-        /// <returns>An ID to be used in OnCreateViewHolder.</returns>
-        public virtual int GetItemViewType(int position, TViewModel? viewModel) => base.GetItemViewType(position);
-
-        /// <inheritdoc/>
-        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
+        if (!(holder is IViewFor viewForHolder))
         {
-            if (holder is null)
-            {
-                throw new ArgumentNullException(nameof(holder));
-            }
-
-            if (!(holder is IViewFor viewForHolder))
-            {
-                throw new ArgumentException("Holder must be derived from IViewFor", nameof(holder));
-            }
-
-            viewForHolder.ViewModel = GetViewModelByPosition(position);
+            throw new ArgumentException("Holder must be derived from IViewFor", nameof(holder));
         }
 
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _inner.Dispose();
-                _list.Dispose();
-            }
+        viewForHolder.ViewModel = GetViewModelByPosition(position);
+    }
 
-            base.Dispose(disposing);
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _inner.Dispose();
+            _list.Dispose();
         }
 
-        private TViewModel? GetViewModelByPosition(int position) => position >= _list.Count ? null : _list.Items.ElementAt(position);
+        base.Dispose(disposing);
+    }
 
-        private void UpdateBindings(Change<TViewModel> change)
+    private TViewModel? GetViewModelByPosition(int position) => position >= _list.Count ? null : _list.Items.ElementAt(position);
+
+    private void UpdateBindings(Change<TViewModel> change)
+    {
+        switch (change.Reason)
         {
-            switch (change.Reason)
-            {
             case ListChangeReason.Add:
                 NotifyItemInserted(change.Item.CurrentIndex);
                 break;
@@ -111,29 +111,28 @@ namespace ReactiveUI.AndroidSupport
             case ListChangeReason.Clear:
                 NotifyItemRangeRemoved(change.Range.Index, change.Range.Count);
                 break;
-            }
         }
     }
+}
 
+/// <summary>
+/// An adapter for the Android <see cref="RecyclerView"/>.
+/// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method
+/// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
+/// </summary>
+/// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
+/// <typeparam name="TCollection">The type of collection.</typeparam>
+[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+public abstract class ReactiveRecyclerViewAdapter<TViewModel, TCollection> : ReactiveRecyclerViewAdapter<TViewModel>
+    where TViewModel : class, IReactiveObject
+    where TCollection : ICollection<TViewModel>, INotifyCollectionChanged
+{
     /// <summary>
-    /// An adapter for the Android <see cref="RecyclerView"/>.
-    /// Override the <see cref="RecyclerView.Adapter.CreateViewHolder(ViewGroup, int)"/> method
-    /// to create the your <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> based ViewHolder.
+    /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel, TCollection}"/> class.
     /// </summary>
-    /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
-    /// <typeparam name="TCollection">The type of collection.</typeparam>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-    public abstract class ReactiveRecyclerViewAdapter<TViewModel, TCollection> : ReactiveRecyclerViewAdapter<TViewModel>
-        where TViewModel : class, IReactiveObject
-        where TCollection : ICollection<TViewModel>, INotifyCollectionChanged
+    /// <param name="backingList">The backing list.</param>
+    protected ReactiveRecyclerViewAdapter(TCollection backingList)
+        : base(backingList.ToObservableChangeSet<TCollection, TViewModel>())
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel, TCollection}"/> class.
-        /// </summary>
-        /// <param name="backingList">The backing list.</param>
-        protected ReactiveRecyclerViewAdapter(TCollection backingList)
-            : base(backingList.ToObservableChangeSet<TCollection, TViewModel>())
-        {
-        }
     }
 }
