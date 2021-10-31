@@ -1,19 +1,44 @@
-﻿<Project>
-  
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);HAS_WINUI</DefineConstants>
-  </PropertyGroup>
-
-  <Import Project="..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
-
-  <PropertyGroup>
-     <!-- Remove uap target --> 
     <TargetFrameworks>netstandard20;MonoAndroid11.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos</TargetFrameworks>
+    <PackageId>ReactiveUI.Uno.WinUI</PackageId>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno WinUI</PackageDescription>
+    <DefineConstants>$(DefineConstants);HAS_UNO;HAS_WINUI</DefineConstants>
+    <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;net;unoplatform;winui</PackageTags>
   </PropertyGroup>
-  
+
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <DefineConstants>$(DefineConstants);WASM</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Remove="Uno.UI" />
-    <PackageReference Include="Uno.WinUI" Version="3.9.7" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+    <Compile Remove="Resources\**" />
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <PackageReference Include="Uno.WinUI" Version="3.10.11" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <PackageReference Include="Reactive.Wasm" Version="1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Uwp\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI.Uwp" />
+    <Compile Include="..\ReactiveUI.Uwp\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI.Uwp" />
+    <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
+    <Compile Include="..\ReactiveUI.Uno\*.cs" LinkBase="ReactiveUI.Uno" />
+
+    <None Include="..\ReactiveUI.Uwp\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
 </Project>

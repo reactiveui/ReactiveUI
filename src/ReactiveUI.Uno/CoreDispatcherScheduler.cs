@@ -9,8 +9,13 @@ using System.Reactive.Disposables;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 
+#if HAS_UNO_WINUI
+using Microsoft.UI.Xaml;
+using Windows.UI.Core;
+#else
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+#endif
 
 namespace System.Reactive.Concurrency
 {
