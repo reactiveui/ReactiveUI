@@ -1,5 +1,4 @@
-﻿<Project>
-  
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard20;MonoAndroid11.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos</TargetFrameworks>
     <PackageId>ReactiveUI.Uno.WinUI</PackageId>
@@ -33,9 +32,9 @@
     <Compile Include="..\ReactiveUI.Uwp\TransitioningContentControl.Empty.cs" LinkBase="ReactiveUI.Uwp" />
     <Compile Include="..\ReactiveUI.Uwp\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI.Uwp" />
     <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
-    <Compile Include="..\ReactiveUI.Uno\*.cs" LinkBase="common" />
+    <Compile Include="..\ReactiveUI.Uno\*.cs" LinkBase="ReactiveUI.Uno" />
 
-  	<None Include="..\ReactiveUI.Uwp\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
+    <None Include="..\ReactiveUI.Uwp\ReactiveUI.rd.xml" PackagePath="lib\uap\ReactiveUI\Properties\ReactiveUI.rd.xml" Pack="true" />
   </ItemGroup>
 
   <ItemGroup>
