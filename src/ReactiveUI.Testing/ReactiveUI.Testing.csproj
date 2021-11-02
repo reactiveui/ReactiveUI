@@ -11,6 +11,14 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    <!-- Hack to get around invalid version of Java.Interop -->
+    <Reference Include="Java.Interop">
+       <!-- Path to a VS 2019 Java.Interop.dll -->
+       <HintPath>..\Java.Interop.dll</HintPath>
+    </Reference> 
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
