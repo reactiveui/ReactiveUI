@@ -9,6 +9,14 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;forms;monodroid;monotouch;xamarin.android;net;</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    <!-- Hack to get around invalid version of Java.Interop -->
+    <Reference Include="Java.Interop">
+       <!-- Path to a VS 2019 Java.Interop.dll -->
+       <HintPath>C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v1.0\Java.Interop.dll</HintPath>
+    </Reference> 
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.3.1.3" />
