@@ -15,7 +15,7 @@
     <!-- Hack to get around invalid version of Java.Interop -->
     <Reference Include="Java.Interop">
        <!-- Path to a VS 2019 Java.Interop.dll -->
-       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v1.0\Java.Interop.dll</HintPath>
+       <HintPath>..\Java.Interop.dll</HintPath>
     </Reference> 
   </ItemGroup>
 
