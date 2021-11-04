@@ -13,9 +13,6 @@ namespace System.Reactive.Concurrency
     /// <summary>
     /// Represents an object that schedules units of work on a <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/>.
     /// </summary>
-    /// <remarks>
-    /// This scheduler type is typically used indirectly through the <see cref="Linq.DispatcherObservable.ObserveOnDispatcher{TSource}(IObservable{TSource})"/> and <see cref="Linq.DispatcherObservable.SubscribeOnDispatcher{TSource}(IObservable{TSource})"/> methods that use the Dispatcher on the calling thread.
-    /// </remarks>
     public class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriodic
     {
         /// <summary>
@@ -47,7 +44,7 @@ namespace System.Reactive.Concurrency
         }
 
         /// <summary>
-        /// Constructs a <see cref="DispatcherScheduler"/> that schedules units of work on the given <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> at the given priority.
+        /// Constructs a DispatcherScheduler that schedules units of work on the given <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> at the given priority.
         /// </summary>
         /// <param name="dispatcherQueue"><see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> to schedule work on.</param>
         /// <param name="priority">Priority at which units of work are scheduled.</param>

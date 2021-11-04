@@ -1,4 +1,4 @@
-<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net5.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid11.0;tizen40;net6.0;net6.0-android;net6.0-ios;net6.0-tvos;net6.0-macos;netcoreapp3.1</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461;net472;uap10.0.16299</TargetFrameworks>
@@ -91,8 +91,12 @@
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or $(TargetFramework.StartsWith('net5')) or '$(TargetFramework)' == 'net6.0' or $(TargetFramework.StartsWith('netcoreapp3')) or $(TargetFramework.StartsWith('uap')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or $(TargetFramework.StartsWith('net5')) or '$(TargetFramework)' == 'net6.0' or $(TargetFramework.StartsWith('netcoreapp3')) ">
     <Compile Include="Platforms\net\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <Compile Include="Platforms\uap\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
