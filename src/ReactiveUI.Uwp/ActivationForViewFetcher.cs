@@ -25,7 +25,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     /// <inheritdoc/>
     public IObservable<bool> GetActivationForView(IActivatableView view)
     {
-        if (!(view is FrameworkElement fe))
+        if (view is not FrameworkElement fe)
         {
             return Observable<bool>.Empty;
         }

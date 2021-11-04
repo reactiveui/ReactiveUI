@@ -31,5 +31,11 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 
         registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+
+        if (!ModeDetector.InUnitTestRunner())
+        {
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxApp.MainThreadScheduler = new SingleWindowDispatcherScheduler();
+        }
     }
 }
