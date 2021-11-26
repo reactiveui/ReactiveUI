@@ -743,6 +743,58 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableDecimalConverter()
+        {
+            var dis = new CompositeDisposable();
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustANullDecimal = 123.45m;
+            Assert.NotEqual(vm.JustANullDecimal.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var decimalToStringTypeConverter = new NullableDecimalToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustANullDecimal, x => x.SomeTextBox.Text, update.AsObservable(), 2, decimalToStringTypeConverter, decimalToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustANullDecimal = 1.0M;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123.45");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            vm.JustANullDecimal = 2.0M;
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "3.00";
+            Assert.Equal(vm.JustANullDecimal, 3.0M);
+
+            // test non numerical
+            view.SomeTextBox.Text = "ad3";
+            Assert.Equal(vm.JustANullDecimal, 3.0M);
+
+            view.SomeTextBox.Text = "4.00";
+            Assert.Equal(vm.JustANullDecimal, 4.0M);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustANullDecimal = 2.0M;
+            Assert.Equal(view.SomeTextBox.Text, "4.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
         public void BindWithFuncToTriggerUpdateTestViewToViewModel()
         {
             var dis = new CompositeDisposable();
@@ -827,6 +879,58 @@ namespace ReactiveUI.Tests.Xaml
 
             // test forward bind to ensure trigger is still honoured.
             vm.JustADouble = 2.0;
+            Assert.Equal(view.SomeTextBox.Text, "4.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableDoubleConverter()
+        {
+            var dis = new CompositeDisposable();
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustANullDouble = 123.45;
+            Assert.NotEqual(vm.JustANullDouble.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var xToStringTypeConverter = new NullableDoubleToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustANullDouble, x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustANullDouble = 1.0;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123.45");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            vm.JustANullDouble = 2.0;
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "3.00";
+            Assert.Equal(vm.JustANullDouble, 3.0);
+
+            // test non numerical value
+            view.SomeTextBox.Text = "fa0";
+            Assert.Equal(vm.JustANullDouble, 3.0);
+
+            view.SomeTextBox.Text = "4.00";
+            Assert.Equal(vm.JustANullDouble, 4.0);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustANullDouble = 2.0;
             Assert.Equal(view.SomeTextBox.Text, "4.00");
 
             update.OnNext(true);
@@ -931,6 +1035,58 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableSingleConverter()
+        {
+            var dis = new CompositeDisposable();
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustANullSingle = 123.45f;
+            Assert.NotEqual(vm.JustANullSingle.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var xToStringTypeConverter = new NullableSingleToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustANullSingle, x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustANullSingle = 1.0f;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123.45");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            vm.JustANullSingle = 2.0f;
+            Assert.Equal(view.SomeTextBox.Text, "1.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "3.00";
+            Assert.Equal(vm.JustANullSingle, 3.0f);
+
+            // test non numerical value
+            view.SomeTextBox.Text = "fa0";
+            Assert.Equal(vm.JustANullSingle, 3.0f);
+
+            view.SomeTextBox.Text = "4.00";
+            Assert.Equal(vm.JustANullSingle, 4.0f);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustANullSingle = 2.0f;
+            Assert.Equal(view.SomeTextBox.Text, "4.00");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "2.00");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
         public void BindWithFuncToTriggerUpdateTestViewModelToViewWithSingleConverterNoRound()
         {
             var dis = new CompositeDisposable();
@@ -1015,6 +1171,58 @@ namespace ReactiveUI.Tests.Xaml
 
             // test forward bind to ensure trigger is still honoured.
             vm.JustAByte = 2;
+            Assert.Equal(view.SomeTextBox.Text, "004");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableByteConverter()
+        {
+            var dis = new CompositeDisposable();
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustANullByte = 123;
+            Assert.NotEqual(vm.JustANullByte.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var xToStringTypeConverter = new NullableByteToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustANullByte, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustANullByte = 1;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            vm.JustANullByte = 2;
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "003";
+            Assert.Equal(vm.JustANullByte.Value, 3);
+
+            // test non numerical value
+            view.SomeTextBox.Text = "ad4";
+            Assert.Equal(vm.JustANullByte.Value, 3);
+
+            view.SomeTextBox.Text = "004";
+            Assert.Equal(vm.JustANullByte.Value, 4);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustANullByte = 2;
             Assert.Equal(view.SomeTextBox.Text, "004");
 
             update.OnNext(true);
@@ -1119,6 +1327,58 @@ namespace ReactiveUI.Tests.Xaml
         }
 
         [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableShortConverter()
+        {
+            var dis = new CompositeDisposable();
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustANullInt16 = 123;
+            Assert.NotEqual(vm.JustANullInt16.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var xToStringTypeConverter = new NullableShortToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustANullInt16, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustANullInt16 = 1;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            vm.JustANullInt16 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "003";
+            Assert.Equal(vm.JustANullInt16.Value, 3);
+
+            // test non numerical value
+            view.SomeTextBox.Text = "fa0";
+            Assert.Equal(vm.JustANullInt16.Value, 3);
+
+            view.SomeTextBox.Text = "004";
+            Assert.Equal(vm.JustANullInt16.Value, 4);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustANullInt16 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "004");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
         public void BindWithFuncToTriggerUpdateTestViewModelToViewWithShortConverterNoHint()
         {
             var dis = new CompositeDisposable();
@@ -1203,6 +1463,58 @@ namespace ReactiveUI.Tests.Xaml
 
             // test forward bind to ensure trigger is still honoured.
             vm.JustAInt32 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "004");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            dis.Dispose();
+            Assert.True(dis.IsDisposed);
+        }
+
+        [Fact]
+        public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableIntegerConverter()
+        {
+            var dis = new CompositeDisposable();
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            var update = new Subject<bool>();
+
+            vm.JustANullInt32 = 123;
+            Assert.NotEqual(vm.JustANullInt32!.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+
+            var xToStringTypeConverter = new NullableIntegerToStringTypeConverter();
+
+            view.Bind(vm, x => x.JustANullInt32, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+
+            vm.JustANullInt32 = 1;
+
+            // value should have pre bind value
+            Assert.Equal(view.SomeTextBox.Text, "123");
+
+            // trigger UI update
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            vm.JustANullInt32 = 2;
+            Assert.Equal(view.SomeTextBox.Text, "001");
+
+            update.OnNext(true);
+            Assert.Equal(view.SomeTextBox.Text, "002");
+
+            // test reverse bind no trigger required
+            view.SomeTextBox.Text = "003";
+            Assert.Equal(vm.JustANullInt32, 3);
+
+            // test if the binding handles a non number
+            view.SomeTextBox.Text = "3a4";
+            Assert.Equal(vm.JustANullInt32, 3);
+
+            view.SomeTextBox.Text = "004";
+            Assert.Equal(vm.JustANullInt32, 4);
+
+            // test forward bind to ensure trigger is still honoured.
+            vm.JustANullInt32 = 2;
             Assert.Equal(view.SomeTextBox.Text, "004");
 
             update.OnNext(true);

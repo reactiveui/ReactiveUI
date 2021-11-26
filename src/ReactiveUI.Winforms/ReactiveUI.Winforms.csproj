@@ -7,8 +7,6 @@
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Forms</PackageDescription>
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
   </PropertyGroup>
 

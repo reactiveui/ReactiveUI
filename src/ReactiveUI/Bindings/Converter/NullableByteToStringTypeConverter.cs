@@ -8,20 +8,20 @@ using System;
 namespace ReactiveUI;
 
 /// <summary>
-/// Integer To String Type Converter.
+/// Short To String Type Converter.
 /// </summary>
 /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-public class LongToStringTypeConverter : IBindingTypeConverter
+public class NullableByteToStringTypeConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>
     public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        if (fromType == typeof(long) && toType == typeof(string))
+        if (fromType == typeof(byte?) && toType == typeof(string))
         {
             return 10;
         }
 
-        if (fromType == typeof(string) && toType == typeof(long))
+        if (fromType == typeof(string) && toType == typeof(byte?))
         {
             return 10;
         }
@@ -32,24 +32,24 @@ public class LongToStringTypeConverter : IBindingTypeConverter
     /// <inheritdoc/>
     public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
     {
-        if (toType == typeof(string) && from is long fromLong)
+        if (toType == typeof(string) && from is byte fromByte)
         {
-            if (conversionHint is int longHint)
+            if (conversionHint is int byteHint)
             {
-                result = fromLong.ToString($"D{longHint}");
+                result = fromByte.ToString($"D{byteHint}");
                 return true;
             }
 
-            result = fromLong.ToString();
+            result = fromByte.ToString();
             return true;
         }
 
         if (from is string fromString)
         {
-            var success = long.TryParse(fromString, out var outLong);
+            var success = byte.TryParse(fromString, out var outByte);
             if (success)
             {
-                result = outLong;
+                result = outByte;
 
                 return true;
             }

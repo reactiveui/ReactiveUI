@@ -11,17 +11,17 @@ namespace ReactiveUI;
 /// Integer To String Type Converter.
 /// </summary>
 /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-public class LongToStringTypeConverter : IBindingTypeConverter
+public class NullableLongToStringTypeConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>
     public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        if (fromType == typeof(long) && toType == typeof(string))
+        if (fromType == typeof(long?) && toType == typeof(string))
         {
             return 10;
         }
 
-        if (fromType == typeof(string) && toType == typeof(long))
+        if (fromType == typeof(string) && toType == typeof(long?))
         {
             return 10;
         }

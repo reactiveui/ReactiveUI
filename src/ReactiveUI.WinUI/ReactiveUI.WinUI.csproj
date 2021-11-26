@@ -6,7 +6,6 @@
     <DefineConstants>HAS_WINUI</DefineConstants>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;winui</PackageTags>
     <UseWinUI>true</UseWinUI>
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

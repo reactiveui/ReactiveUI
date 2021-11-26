@@ -11,17 +11,17 @@ namespace ReactiveUI;
 /// Integer To String Type Converter.
 /// </summary>
 /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-public class LongToStringTypeConverter : IBindingTypeConverter
+public class NullableIntegerToStringTypeConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>
     public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        if (fromType == typeof(long) && toType == typeof(string))
+        if (fromType == typeof(int?) && toType == typeof(string))
         {
             return 10;
         }
 
-        if (fromType == typeof(string) && toType == typeof(long))
+        if (fromType == typeof(string) && toType == typeof(int?))
         {
             return 10;
         }
@@ -32,24 +32,24 @@ public class LongToStringTypeConverter : IBindingTypeConverter
     /// <inheritdoc/>
     public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
     {
-        if (toType == typeof(string) && from is long fromLong)
+        if (toType == typeof(string) && from is int fromInt)
         {
-            if (conversionHint is int longHint)
+            if (conversionHint is int intHint)
             {
-                result = fromLong.ToString($"D{longHint}");
+                result = fromInt.ToString($"D{intHint}");
                 return true;
             }
 
-            result = fromLong.ToString();
+            result = fromInt.ToString();
             return true;
         }
 
         if (from is string fromString)
         {
-            var success = long.TryParse(fromString, out var outLong);
+            var success = int.TryParse(fromString, out var outInt);
             if (success)
             {
-                result = outLong;
+                result = outInt;
 
                 return true;
             }

@@ -8,20 +8,20 @@ using System;
 namespace ReactiveUI;
 
 /// <summary>
-/// Integer To String Type Converter.
+/// Single To String Type Converter.
 /// </summary>
 /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-public class LongToStringTypeConverter : IBindingTypeConverter
+public class NullableSingleToStringTypeConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>
     public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        if (fromType == typeof(long) && toType == typeof(string))
+        if (fromType == typeof(float?) && toType == typeof(string))
         {
             return 10;
         }
 
-        if (fromType == typeof(string) && toType == typeof(long))
+        if (fromType == typeof(string) && toType == typeof(float?))
         {
             return 10;
         }
@@ -32,24 +32,30 @@ public class LongToStringTypeConverter : IBindingTypeConverter
     /// <inheritdoc/>
     public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
     {
-        if (toType == typeof(string) && from is long fromLong)
+        if (toType == typeof(string) && from is float fromSingle)
         {
-            if (conversionHint is int longHint)
+            if (conversionHint is int singleHint)
             {
-                result = fromLong.ToString($"D{longHint}");
+                result = fromSingle.ToString($"F{singleHint}");
                 return true;
             }
 
-            result = fromLong.ToString();
+            result = fromSingle.ToString();
             return true;
         }
 
         if (from is string fromString)
         {
-            var success = long.TryParse(fromString, out var outLong);
+            var success = float.TryParse(fromString, out var outSingle);
             if (success)
             {
-                result = outLong;
+                if (conversionHint is int singleHint)
+                {
+                    result = Convert.ToSingle(Math.Round(outSingle, singleHint));
+                    return true;
+                }
+
+                result = outSingle;
 
                 return true;
             }

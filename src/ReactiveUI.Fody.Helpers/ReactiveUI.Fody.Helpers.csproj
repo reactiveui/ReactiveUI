@@ -12,8 +12,6 @@
 
     <!-- Due to fody insisting on having .net 4 classes, we can't pack on non-windows -->
     <IsPackable Condition=" '$(OS)' != 'Windows_NT' ">false</IsPackable>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">

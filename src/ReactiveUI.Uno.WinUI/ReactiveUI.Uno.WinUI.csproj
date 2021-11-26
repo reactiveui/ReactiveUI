@@ -5,8 +5,6 @@
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno WinUI</PackageDescription>
     <DefineConstants>$(DefineConstants);HAS_UNO;HAS_WINUI</DefineConstants>
     <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;net;unoplatform;winui</PackageTags>
   </PropertyGroup>
 

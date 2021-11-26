@@ -45,6 +45,10 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         : base(view)
     {
         SetupRxObj();
+        if (view is null)
+        {
+            throw new ArgumentNullException(nameof(view));
+        }
 
         view.ViewAttachedToWindow += OnViewAttachedToWindow;
         view.ViewDetachedFromWindow += OnViewDetachedFromWindow;
@@ -87,10 +91,39 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     }
 
     /// <inheritdoc/>
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    /// <inheritdoc/>
     public event PropertyChangingEventHandler? PropertyChanging;
 
     /// <inheritdoc/>
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public IObservable<Unit> Activated => _activated.AsObservable();
+
+    /// <inheritdoc/>
+    [IgnoreDataMember]
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.GetChangedObservable();
+
+    /// <inheritdoc/>
+    [IgnoreDataMember]
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.GetChangingObservable();
+
+    /// <inheritdoc/>
+    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+
+    /// <summary>
+    /// Gets an observable that signals that this ViewHolder has been long-clicked.
+    ///
+    /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
+    /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
+    /// </summary>
+    public IObservable<int> LongClicked { get; }
+
+    /// <summary>
+    /// Gets an observable that signals that this ViewHolder has been long-clicked.
+    ///
+    /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
+    /// </summary>
+    public IObservable<TViewModel?> LongClickedWithViewModel { get; }
 
     /// <summary>
     /// Gets an observable that signals that this ViewHolder has been selected.
@@ -108,25 +141,10 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     public IObservable<TViewModel?> SelectedWithViewModel { get; }
 
     /// <summary>
-    /// Gets an observable that signals that this ViewHolder has been long-clicked.
-    ///
-    /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
-    /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
+    /// Gets an observable which signals when exceptions are thrown.
     /// </summary>
-    public IObservable<int> LongClicked { get; }
-
-    /// <summary>
-    /// Gets an observable that signals that this ViewHolder has been long-clicked.
-    ///
-    /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
-    /// </summary>
-    public IObservable<TViewModel?> LongClickedWithViewModel { get; }
-
-    /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated.AsObservable();
-
-    /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+    [IgnoreDataMember]
+    public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <summary>
     /// Gets the current view being shown.
@@ -140,29 +158,12 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         set => this.RaiseAndSetIfChanged(ref _viewModel, value);
     }
 
-    /// <summary>
-    /// Gets an observable which signals when exceptions are thrown.
-    /// </summary>
-    [IgnoreDataMember]
-    public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
-
     /// <inheritdoc/>
     object? IViewFor.ViewModel
     {
         get => ViewModel;
         set => ViewModel = (TViewModel?)value;
     }
-
-    /// <inheritdoc/>
-    [IgnoreDataMember]
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.GetChangingObservable();
-
-    /// <inheritdoc/>
-    [IgnoreDataMember]
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.GetChangedObservable();
-
-    /// <inheritdoc/>
-    public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <summary>
     /// Gets if change notifications via the INotifyPropertyChanged interface are being sent.
@@ -171,10 +172,13 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
     /// <inheritdoc/>
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+
+    /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+    public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -191,14 +195,14 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         base.Dispose(disposing);
     }
 
+    private void OnViewAttachedToWindow(object sender, View.ViewAttachedToWindowEventArgs args) => _activated.OnNext(Unit.Default);
+
+    private void OnViewDetachedFromWindow(object sender, View.ViewDetachedFromWindowEventArgs args) => _deactivated.OnNext(Unit.Default);
+
     [OnDeserialized]
     private void SetupRxObj(StreamingContext sc) => SetupRxObj();
 
     private void SetupRxObj() =>
         AllPublicProperties = new Lazy<PropertyInfo[]>(() =>
                                                            GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
-
-    private void OnViewAttachedToWindow(object sender, View.ViewAttachedToWindowEventArgs args) => _activated.OnNext(Unit.Default);
-
-    private void OnViewDetachedFromWindow(object sender, View.ViewDetachedFromWindowEventArgs args) => _deactivated.OnNext(Unit.Default);
 }

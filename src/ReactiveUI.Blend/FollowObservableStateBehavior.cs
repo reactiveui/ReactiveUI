@@ -10,9 +10,11 @@ using System.Reactive.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
+
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Xaml.Behaviors;
+
 #endif
 
 #pragma warning disable SA1201 // A field should not follow a property - macro if statements make this hard
@@ -25,6 +27,7 @@ namespace ReactiveUI.Blend
 #if NETFX_CORE
     public class FollowObservableStateBehavior : Behavior<Control>
 #else
+
     public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 #endif
     {
@@ -61,6 +64,7 @@ namespace ReactiveUI.Blend
         public static readonly DependencyProperty TargetObjectProperty =
             DependencyProperty.Register("TargetObject", typeof(Control), typeof(FollowObservableStateBehavior), new PropertyMetadata(null));
 #else
+
         /// <summary>
         /// Gets or sets the target object.
         /// </summary>
@@ -75,6 +79,7 @@ namespace ReactiveUI.Blend
         /// </summary>
         public static readonly DependencyProperty TargetObjectProperty =
             DependencyProperty.Register("TargetObject", typeof(FrameworkElement), typeof(FollowObservableStateBehavior), new PropertyMetadata(null));
+
 #endif
 
         /// <summary>
@@ -100,7 +105,18 @@ namespace ReactiveUI.Blend
                 item._watcher = null;
             }
 
-            item._watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+            if (e == default)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
+            var newValue = (IObservable<string>)e.NewValue;
+            if (newValue is null)
+            {
+                throw new ArgumentNullException(nameof(e.NewValue));
+            }
+
+            item._watcher = newValue.ObserveOn(RxApp.MainThreadScheduler).Subscribe(
                 x =>
                 {
                     var target = item.TargetObject ?? item.AssociatedObject;
