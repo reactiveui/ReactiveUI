@@ -6,68 +6,17 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  productNamespacePrefix: "ReactiveUI"
+
 jobs:
-  build-samples:
-    runs-on: windows-2022
-    steps:
-    
-    - name: Update VS2022 preview
-      shell: bash
-      run: |
-        dotnet tool update -g dotnet-vs
-        vs modify preview +mobile +xamarin +core +desktop +uwp +web
-        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
-
-    - name: Install Windows SDK 10.0.16299
-      shell: pwsh
-      run: |
-        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/p/?linkid=864422 -OutFile winsdk.exe
-        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-        $startInfo.FileName = "winsdk.exe"
-        $startInfo.Arguments = "/norestart /quiet"
-        $process = New-Object System.Diagnostics.Process
-        $process.StartInfo = $startInfo
-        $process.Start()
-        $process.WaitForExit()
-
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        lfs: true       
-
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v1.8.2
-      with:
-        dotnet-version: 3.1.x
-
-    - name: Install .NET 5
-      uses: actions/setup-dotnet@v1.8.2
-      with:
-        dotnet-version: 5.0.x
-
-    - name: Install .NET 6
-      uses: actions/setup-dotnet@v1.8.2
-      with:
-        dotnet-version: 6.0.x
-        include-prerelease: true
-
-    - name: Install DotNet workloads
-      shell: bash
-      run: |
-        dotnet workload install android
-        dotnet workload install ios
-        dotnet workload install tvos
-        dotnet workload install macos
-        dotnet workload install maui
-        dotnet tool install -g Redth.Net.Maui.Check
-        maui-check --non-interactive --fix
-        
-    - name: Add MSBuild to PATH
-      uses: glennawatson/setup-msbuild@v1.0.3
-      with:
-        prerelease: true
-
-    - name: Restore/Build the sample
-      run: msbuild IntegrationTests.All.sln /t:restore,build /maxcpucount /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=Release
-      working-directory: integrationtests
+  build:
+    uses: reactiveui/actions-common/.github/workflows/workflow-common-setup-and-build.yml@main
+    with:
+      configuration: Release
+      productNamespacePrefix: "ReactiveUI"
+      useVisualStudioPreview: false
+      useMauiCheckDotNetTool: false
+      srcFolder: 'integrationtests'
+      solutionFile: 'IntegrationTests.All.sln'
+      performTests: false
