@@ -21,7 +21,6 @@ jobs:
           github-token: ${{ github.token }}
           issue-inactive-days: '14'
           pr-inactive-days: '14'
-          exclude-pr-created-before: '2019-01-01T00:00:00Z'
           issue-comment: >
             This issue has been automatically locked since there
             has not been any recent activity after it was closed.
