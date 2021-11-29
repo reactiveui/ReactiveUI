@@ -1,11 +1,11 @@
 name: Sample Build
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+  workflow_dispatch:
+    inputs:
+      disable:
+        description: "temporarily disabled"
+        
 env:
   productNamespacePrefix: "ReactiveUI"
 
