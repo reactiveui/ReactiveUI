@@ -67,7 +67,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CanExecuteIsBehavioral()
         {
-            var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
             fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
             Assert.Equal(1, canExecute.Count);
@@ -83,7 +83,7 @@ namespace ReactiveUI.Tests
                 scheduler =>
                 {
                     var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), scheduler);
-                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler, canExecuteScheduler: scheduler);
+                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler);
                     fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
                     fixture.Execute().Subscribe();
@@ -105,7 +105,7 @@ namespace ReactiveUI.Tests
         public void CanExecuteIsFalseIfCallerDictatesAsSuch()
         {
             var canExecuteSubject = new Subject<bool>();
-            var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
             fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
             canExecuteSubject.OnNext(true);
@@ -124,7 +124,7 @@ namespace ReactiveUI.Tests
         public void CanExecuteIsUnsubscribedAfterCommandDisposal()
         {
             var canExecuteSubject = new Subject<bool>();
-            var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
 
             Assert.True(canExecuteSubject.HasObservers);
 
@@ -140,7 +140,7 @@ namespace ReactiveUI.Tests
         public void CanExecuteOnlyTicksDistinctValues()
         {
             var canExecuteSubject = new Subject<bool>();
-            var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
             fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
             canExecuteSubject.OnNext(false);
@@ -162,7 +162,7 @@ namespace ReactiveUI.Tests
         public void CanExecuteTicksFailuresThroughThrownExceptions()
         {
             var canExecuteSubject = new Subject<bool>();
-            var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
             fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
             canExecuteSubject.OnError(new InvalidOperationException("oops"));
@@ -177,7 +177,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CreateTaskFacilitatesTPLIntegration()
         {
-            var fixture = ReactiveCommand.CreateFromTask(() => Task.FromResult(13), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromTask(() => Task.FromResult(13), outputScheduler: ImmediateScheduler.Instance);
             fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
             fixture.Execute().Subscribe();
@@ -192,7 +192,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CreateTaskFacilitatesTPLIntegrationWithParameter()
         {
-            var fixture = ReactiveCommand.CreateFromTask<int, int>(param => Task.FromResult(param + 1), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromTask<int, int>(param => Task.FromResult(param + 1), outputScheduler: ImmediateScheduler.Instance);
             fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
             fixture.Execute(3).Subscribe();
@@ -231,7 +231,7 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(
                 scheduler =>
                 {
-                    var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()), outputScheduler: scheduler, canExecuteScheduler: scheduler);
+                    var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()), outputScheduler: scheduler);
                     Exception? exception = null;
                     fixture.ThrownExceptions.Subscribe(ex => exception = ex);
                     fixture.Execute().Subscribe(_ => { }, _ => { });
@@ -250,7 +250,7 @@ namespace ReactiveUI.Tests
                 scheduler =>
                 {
                     var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), scheduler);
-                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler, canExecuteScheduler: scheduler);
+                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler);
                     fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var executed).Subscribe();
 
                     var sub1 = fixture.Execute().Subscribe();
@@ -272,7 +272,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteCanTickThroughMultipleResults()
         {
-            var fixture = ReactiveCommand.CreateFromObservable(() => new[] { 1, 2, 3 }.ToObservable(), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromObservable(() => new[] { 1, 2, 3 }.ToObservable(), outputScheduler: ImmediateScheduler.Instance);
             fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
             fixture.Execute().Subscribe();
@@ -292,7 +292,7 @@ namespace ReactiveUI.Tests
                 scheduler =>
                 {
                     var execute = Observables.Unit.Delay(TimeSpan.FromMilliseconds(500), scheduler);
-                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler, canExecuteScheduler: scheduler);
+                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler);
                     fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var executed).Subscribe();
 
                     var sub1 = fixture.Execute().Subscribe();
@@ -333,8 +333,7 @@ namespace ReactiveUI.Tests
                                                           executed = true;
                                                           return Observables.Unit;
                                                       },
-                                                      outputScheduler: ImmediateScheduler.Instance,
-                                                      canExecuteScheduler: ImmediateScheduler.Instance);
+                                                      outputScheduler: ImmediateScheduler.Instance);
 
             fixture.Execute(null);
             Assert.True(executed);
@@ -353,8 +352,7 @@ namespace ReactiveUI.Tests
                                                                               parameters.Add(param);
                                                                               return Observables.Unit;
                                                                           },
-                                                                          outputScheduler: ImmediateScheduler.Instance,
-                                                                          canExecuteScheduler: ImmediateScheduler.Instance);
+                                                                          outputScheduler: ImmediateScheduler.Instance);
 
             fixture.Execute(1).Subscribe();
             fixture.Execute(42).Subscribe();
@@ -372,7 +370,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteReenablesExecutionEvenAfterFailure()
         {
-            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
             fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
             fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
@@ -396,10 +394,10 @@ namespace ReactiveUI.Tests
                 scheduler =>
                 {
                     var execute = Observables.Unit;
-                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler, canExecuteScheduler: scheduler);
+                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler);
                     var executed = false;
 
-                    fixture.Execute().Subscribe(_ => executed = true);
+                    fixture.Execute().ObserveOn(scheduler).Subscribe(_ => executed = true);
 
                     Assert.False(executed);
                     scheduler.AdvanceByMs(1);
@@ -412,7 +410,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteTicksAnyException()
         {
-            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()), outputScheduler: ImmediateScheduler.Instance);
             fixture.ThrownExceptions.Subscribe();
             Exception? exception = null;
             fixture.Execute().Subscribe(_ => { }, ex => exception = ex, () => { });
@@ -426,7 +424,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteTicksAnyLambdaException()
         {
-            var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
             fixture.ThrownExceptions.Subscribe();
             Exception? exception = null;
             fixture.Execute().Subscribe(_ => { }, ex => exception = ex, () => { });
@@ -440,7 +438,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteTicksErrorsThroughThrownExceptions()
         {
-            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
             fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
             fixture.Execute().Subscribe(_ => { }, _ => { });
@@ -455,7 +453,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteTicksLambdaErrorsThroughThrownExceptions()
         {
-            var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => throw new InvalidOperationException("oops"), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => throw new InvalidOperationException("oops"), outputScheduler: ImmediateScheduler.Instance);
             fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
             fixture.Execute().Subscribe(_ => { }, _ => { });
@@ -472,7 +470,7 @@ namespace ReactiveUI.Tests
         public void ExecuteTicksThroughTheResult()
         {
             var num = 0;
-            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Return(num), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Return(num), outputScheduler: ImmediateScheduler.Instance);
             fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
             num = 1;
@@ -494,7 +492,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
         {
-            ICommand? fixture = ReactiveCommand.Create<int>(_ => { }, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            ICommand? fixture = ReactiveCommand.Create<int>(_ => { }, outputScheduler: ImmediateScheduler.Instance);
             var ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute("foo"));
             Assert.Equal("Command requires parameters of type System.Int32, but received parameter of type System.String.", ex.Message);
 
@@ -510,7 +508,7 @@ namespace ReactiveUI.Tests
         public void ExecuteViaICommandWorksWithNullableTypes()
         {
             int? value = null;
-            ICommand? fixture = ReactiveCommand.Create<int?>(param => value = param, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            ICommand? fixture = ReactiveCommand.Create<int?>(param => value = param, outputScheduler: ImmediateScheduler.Instance);
 
             fixture.Execute(42);
             Assert.Equal(42, value);
@@ -529,7 +527,7 @@ namespace ReactiveUI.Tests
             var fixture = new ICommandHolder();
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture, x => x.TheCommand!);
-            fixture.TheCommand = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            fixture.TheCommand = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
 
             source.OnNext(Unit.Default);
             Assert.Equal(1, executionCount);
@@ -583,7 +581,7 @@ namespace ReactiveUI.Tests
             var fixture = new ICommandHolder();
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture, x => x.TheCommand!);
-            fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
 
             source.OnNext(Unit.Default);
             Assert.False(executed);
@@ -604,7 +602,7 @@ namespace ReactiveUI.Tests
             var fixture = new ICommandHolder();
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture, x => x.TheCommand);
-            fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
 
             source.OnNext(Unit.Default);
             Assert.False(executed);
@@ -625,7 +623,7 @@ namespace ReactiveUI.Tests
             var fixture = new ICommandHolder();
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture, x => x.TheCommand!);
-            fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance, ImmediateScheduler.Instance);
+            fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
 
             source.OnNext(Unit.Default);
             Assert.False(executed);
@@ -650,8 +648,7 @@ namespace ReactiveUI.Tests
                                                      ++count;
                                                      throw new InvalidOperationException();
                                                  },
-                                                 outputScheduler: ImmediateScheduler.Instance,
-                                                 canExecuteScheduler: ImmediateScheduler.Instance);
+                                                 outputScheduler: ImmediateScheduler.Instance);
             command.ThrownExceptions.Subscribe();
             fixture.TheCommand = command;
             var source = new Subject<Unit>();
@@ -670,7 +667,7 @@ namespace ReactiveUI.Tests
         public void InvokeCommandAgainstICommandInvokesTheCommand()
         {
             var executionCount = 0;
-            ICommand fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            ICommand fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture);
 
@@ -688,7 +685,7 @@ namespace ReactiveUI.Tests
         public void InvokeCommandAgainstNullableICommandInvokesTheCommand()
         {
             var executionCount = 0;
-            ICommand? fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            ICommand? fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture);
 
@@ -722,7 +719,7 @@ namespace ReactiveUI.Tests
         {
             var executed = false;
             var canExecute = new BehaviorSubject<bool>(false);
-            ICommand fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            ICommand fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture);
 
@@ -742,7 +739,7 @@ namespace ReactiveUI.Tests
         {
             var executed = false;
             var canExecute = new BehaviorSubject<bool>(false);
-            ICommand fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            ICommand fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture);
 
@@ -768,8 +765,7 @@ namespace ReactiveUI.Tests
                                                      ++count;
                                                      throw new InvalidOperationException();
                                                  },
-                                                 outputScheduler: ImmediateScheduler.Instance,
-                                                 canExecuteScheduler: ImmediateScheduler.Instance);
+                                                 outputScheduler: ImmediateScheduler.Instance);
             fixture.ThrownExceptions.Subscribe();
             var source = new Subject<Unit>();
             source.InvokeCommand((ICommand)fixture);
@@ -790,7 +786,7 @@ namespace ReactiveUI.Tests
             var fixture = new ReactiveCommandHolder();
             var source = new Subject<int>();
             source.InvokeCommand(fixture, x => x.TheCommand!);
-            fixture.TheCommand = ReactiveCommand.Create<int>(_ => ++executionCount, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            fixture.TheCommand = ReactiveCommand.Create<int>(_ => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
 
             source.OnNext(0);
             Assert.Equal(1, executionCount);
@@ -809,7 +805,7 @@ namespace ReactiveUI.Tests
             var fixture = new ReactiveCommandHolder();
             var source = new Subject<int>();
             source.InvokeCommand(fixture, x => x.TheCommand!);
-            fixture.TheCommand = ReactiveCommand.Create<int>(x => executeReceived = x, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            fixture.TheCommand = ReactiveCommand.Create<int>(x => executeReceived = x, outputScheduler: ImmediateScheduler.Instance);
 
             source.OnNext(42);
             Assert.Equal(42, executeReceived);
@@ -826,7 +822,7 @@ namespace ReactiveUI.Tests
             var fixture = new ReactiveCommandHolder();
             var source = new Subject<int>();
             source.InvokeCommand(fixture, x => x.TheCommand!);
-            fixture.TheCommand = ReactiveCommand.Create<int>(_ => executed = true, canExecute, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            fixture.TheCommand = ReactiveCommand.Create<int>(_ => executed = true, canExecute, ImmediateScheduler.Instance);
 
             source.OnNext(0);
             Assert.False(executed);
@@ -847,7 +843,7 @@ namespace ReactiveUI.Tests
             var fixture = new ReactiveCommandHolder();
             var source = new Subject<int>();
             source.InvokeCommand(fixture, x => x.TheCommand!);
-            fixture.TheCommand = ReactiveCommand.Create<int>(_ => executed = true, canExecute, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            fixture.TheCommand = ReactiveCommand.Create<int>(_ => executed = true, canExecute, ImmediateScheduler.Instance);
 
             source.OnNext(0);
             Assert.False(executed);
@@ -873,8 +869,7 @@ namespace ReactiveUI.Tests
                                                              ++count;
                                                              throw new InvalidOperationException();
                                                          },
-                                                         outputScheduler: ImmediateScheduler.Instance,
-                                                         canExecuteScheduler: ImmediateScheduler.Instance)
+                                                         outputScheduler: ImmediateScheduler.Instance)
             };
             fixture.TheCommand.ThrownExceptions.Subscribe();
             var source = new Subject<int>();
@@ -893,7 +888,7 @@ namespace ReactiveUI.Tests
         public void InvokeCommandAgainstReactiveCommandInvokesTheCommand()
         {
             var executionCount = 0;
-            var fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture);
 
@@ -911,7 +906,7 @@ namespace ReactiveUI.Tests
         public void InvokeCommandAgainstReactiveCommandPassesTheSpecifiedValueToExecute()
         {
             var executeReceived = 0;
-            var fixture = ReactiveCommand.Create<int>(x => executeReceived = x, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create<int>(x => executeReceived = x, outputScheduler: ImmediateScheduler.Instance);
             var source = new Subject<int>();
             source.InvokeCommand(fixture);
 
@@ -927,7 +922,7 @@ namespace ReactiveUI.Tests
         {
             var executed = false;
             var canExecute = new BehaviorSubject<bool>(false);
-            var fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture);
 
@@ -947,7 +942,7 @@ namespace ReactiveUI.Tests
         {
             var executed = false;
             var canExecute = new BehaviorSubject<bool>(false);
-            var fixture = ReactiveCommand.Create(() => executed = true, canExecute, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => executed = true, canExecute, outputScheduler: ImmediateScheduler.Instance);
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture);
 
@@ -973,8 +968,7 @@ namespace ReactiveUI.Tests
                                                      ++count;
                                                      throw new InvalidOperationException();
                                                  },
-                                                 outputScheduler: ImmediateScheduler.Instance,
-                                                 canExecuteScheduler: ImmediateScheduler.Instance);
+                                                 outputScheduler: ImmediateScheduler.Instance);
             fixture.ThrownExceptions.Subscribe();
             var source = new Subject<Unit>();
             source.InvokeCommand(fixture);
@@ -992,7 +986,7 @@ namespace ReactiveUI.Tests
         public void InvokeCommandWorksEvenIfTheSourceIsCold()
         {
             var executionCount = 0;
-            var fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
             var source = Observable.Return(Unit.Default);
             source.InvokeCommand(fixture);
 
@@ -1005,7 +999,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void IsExecutingIsBehavioral()
         {
-            var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
             fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
 
             Assert.Equal(1, isExecuting.Count);
@@ -1019,7 +1013,7 @@ namespace ReactiveUI.Tests
         public void IsExecutingRemainsTrueAsLongAsExecutionPipelineHasNotCompleted()
         {
             var execute = new Subject<Unit>();
-            var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: ImmediateScheduler.Instance);
 
             fixture.Execute().Subscribe();
 
@@ -1044,7 +1038,7 @@ namespace ReactiveUI.Tests
                 scheduler =>
                 {
                     var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), scheduler);
-                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler, canExecuteScheduler: scheduler);
+                    var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: scheduler);
                     fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
 
                     fixture.Execute().Subscribe();
@@ -1068,7 +1062,7 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(
                 scheduler =>
                 {
-                    var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: scheduler, canExecuteScheduler: scheduler);
+                    var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: scheduler);
                     fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
                     fixture.Execute().Subscribe();
@@ -1088,7 +1082,7 @@ namespace ReactiveUI.Tests
 #pragma warning disable IDE0053 // Use expression body for lambda expressions
 #pragma warning disable RCS1021 // Convert lambda expression body to expression-body.
             var fixture1 = ReactiveCommand.Create(() => { ++executionCount; }, outputScheduler: ImmediateScheduler.Instance);
-            var fixture2 = ReactiveCommand.Create<int>(_ => { ++executionCount; }, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture2 = ReactiveCommand.Create<int>(_ => { ++executionCount; }, outputScheduler: ImmediateScheduler.Instance);
 #pragma warning restore RCS1021 // Convert lambda expression body to expression-body.
 #pragma warning restore IDE0053 // Use expression body for lambda expressions
             var fixture3 = ReactiveCommand.Create(
@@ -1104,8 +1098,7 @@ namespace ReactiveUI.Tests
                                                                 ++executionCount;
                                                                 return 42;
                                                             },
-                                                            outputScheduler: ImmediateScheduler.Instance,
-                                                            canExecuteScheduler: ImmediateScheduler.Instance);
+                                                            outputScheduler: ImmediateScheduler.Instance);
             var execute1 = fixture1.Execute();
             var execute2 = fixture2.Execute();
             var execute3 = fixture3.Execute();
@@ -1132,10 +1125,10 @@ namespace ReactiveUI.Tests
         [Fact]
         public void SynchronousCommandsFailCorrectly()
         {
-            var fixture1 = ReactiveCommand.Create(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
-            var fixture2 = ReactiveCommand.Create<int>(_ => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
-            var fixture3 = ReactiveCommand.Create(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
-            var fixture4 = ReactiveCommand.Create<int, int>(_ => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
+            var fixture1 = ReactiveCommand.Create(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
+            var fixture2 = ReactiveCommand.Create<int>(_ => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
+            var fixture3 = ReactiveCommand.Create(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
+            var fixture4 = ReactiveCommand.Create<int, int>(_ => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
 
             var failureCount = 0;
             Observable.Merge(fixture1.ThrownExceptions, fixture2.ThrownExceptions, fixture3.ThrownExceptions, fixture4.ThrownExceptions).Subscribe(_ => ++failureCount);

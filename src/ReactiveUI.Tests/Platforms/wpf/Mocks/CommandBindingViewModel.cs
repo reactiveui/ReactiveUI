@@ -22,9 +22,9 @@ namespace ReactiveUI.Tests.Wpf
 
         public CommandBindingViewModel()
         {
-            _Command1 = ReactiveCommand.Create<int, int>(_ => { return _; }, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
-            _Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance, canExecuteScheduler: ImmediateScheduler.Instance);
-            _Command3 = ReactiveCommand.CreateFromTask(RunAsync, outputScheduler: RxApp.TaskpoolScheduler, canExecuteScheduler: ImmediateScheduler.Instance);
+            _Command1 = ReactiveCommand.Create<int, int>(_ => { return _; }, outputScheduler: ImmediateScheduler.Instance);
+            _Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+            _Command3 = ReactiveCommand.CreateFromTask(RunAsync, outputScheduler: RxApp.TaskpoolScheduler);
             _result = _Command3.ToProperty(this, x => x.Result, scheduler: RxApp.MainThreadScheduler);
         }
 
