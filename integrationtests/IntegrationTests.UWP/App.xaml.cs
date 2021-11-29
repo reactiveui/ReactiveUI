@@ -47,7 +47,7 @@ namespace IntegrationTests.UWP
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                if (e?.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     // TODO: Load state from previously suspended application
                 }
@@ -56,7 +56,7 @@ namespace IntegrationTests.UWP
                 Window.Current.Content = rootFrame;
             }
 
-            if (!e.PrelaunchActivated)
+            if (e?.PrelaunchActivated == false)
             {
                 if (rootFrame.Content is null)
                 {
@@ -90,7 +90,7 @@ namespace IntegrationTests.UWP
         /// <param name="e">Details about the suspend request.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
+            var deferral = e.SuspendingOperation.GetDeferral();
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();

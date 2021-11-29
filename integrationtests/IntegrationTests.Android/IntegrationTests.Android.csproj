@@ -100,9 +100,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.*" />
-    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.3.1.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj">
+      <Project>{824088e4-a1d2-4b71-843e-873d351073c8}</Project>
+      <Name>ReactiveUI.AndroidX</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\ReactiveUI\ReactiveUI.csproj">
       <Project>{f9808728-e148-438b-96ea-5f18c832cf4a}</Project>
       <Name>ReactiveUI</Name>
