@@ -70,7 +70,7 @@
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.4.244" PrivateAssets="all" />	
 
     <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.354" PrivateAssets="all" />
-    <PackageReference Include="Roslynator.Analyzers" Version="3.2.2" PrivateAssets="All" />
+    <PackageReference Include="Roslynator.Analyzers" Version="3.3.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
