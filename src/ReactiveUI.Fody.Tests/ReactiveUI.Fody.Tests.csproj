@@ -2,8 +2,6 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

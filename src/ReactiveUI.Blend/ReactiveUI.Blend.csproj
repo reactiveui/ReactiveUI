@@ -6,8 +6,6 @@
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <PackageDescription>Provides reactive extensions based xaml components based on the Blend SDK library, allowing you to fire a observable from XAML</PackageDescription>
     <PackageId>ReactiveUI.Blend</PackageId>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;Blend;wpf;net;</PackageTags>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
@@ -20,17 +18,17 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
     <Compile Include="Platforms\net4\**\*.cs" />
     <Reference Include="PresentationFramework.Aero" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.37" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net5')) ">
     <Compile Include="Platforms\net4\**\*.cs" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.37" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) ">
     <Compile Include="Platforms\net4\**\*.cs" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.37" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">

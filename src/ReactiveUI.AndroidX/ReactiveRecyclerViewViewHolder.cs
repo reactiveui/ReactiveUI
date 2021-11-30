@@ -47,6 +47,10 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         : base(view)
     {
         SetupRxObj();
+        if (view is null)
+        {
+            throw new ArgumentNullException(nameof(view));
+        }
 
         view.ViewAttachedToWindow += OnViewAttachedToWindow;
         view.ViewDetachedFromWindow += OnViewDetachedFromWindow;
