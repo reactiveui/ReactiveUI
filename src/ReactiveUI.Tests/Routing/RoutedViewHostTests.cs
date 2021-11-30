@@ -50,7 +50,7 @@ namespace ReactiveUI.Tests
         [StaFact]
         public void RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
         {
-            Locator.CurrentMutable.Register<RoutingState>(() => new(ImmediateScheduler.Instance));
+            Locator.CurrentMutable.Register<RoutingState>(() => new());
             Locator.CurrentMutable.Register<TestViewModel>(() => new());
             Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
 
@@ -92,7 +92,7 @@ namespace ReactiveUI.Tests
         [StaFact]
         public void RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
         {
-            Locator.CurrentMutable.Register<RoutingState>(() => new(ImmediateScheduler.Instance));
+            Locator.CurrentMutable.Register<RoutingState>(() => new());
             Locator.CurrentMutable.Register<TestViewModel>(() => new());
             Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
 

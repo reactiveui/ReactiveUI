@@ -25,7 +25,7 @@ public class RoutingState : ReactiveObject
 {
 
     [IgnoreDataMember]
-    private IScheduler _scheduler;
+    private readonly IScheduler _scheduler;
 
     /// <summary>
     /// Initializes static members of the <see cref="RoutingState"/> class.
@@ -35,18 +35,10 @@ public class RoutingState : ReactiveObject
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutingState"/> class.
     /// </summary>
-    public RoutingState()
-        : this(RxApp.MainThreadScheduler)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RoutingState"/> class.
-    /// </summary>
     /// <param name="scheduler">A scheduler for where to send navigation changes to.</param>
-    public RoutingState(IScheduler scheduler)
+    public RoutingState(IScheduler? scheduler = null)
     {
-        _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
+        _scheduler = scheduler ?? RxApp.MainThreadScheduler;
         NavigationStack = new ObservableCollection<IRoutableViewModel>();
         SetupRx();
     }
@@ -57,23 +49,6 @@ public class RoutingState : ReactiveObject
     /// </summary>
     [IgnoreDataMember]
     public ObservableCollection<IRoutableViewModel> NavigationStack { get; }
-
-    /// <summary>
-    /// Gets or sets the scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
-    /// </summary>
-    [IgnoreDataMember]
-    public IScheduler Scheduler
-    {
-        get => _scheduler;
-        set
-        {
-            if (_scheduler != value)
-            {
-                _scheduler = value;
-                SetupRx();
-            }
-        }
-    }
 
     /// <summary>
     /// Gets or sets a command which will navigate back to the previous element in the stack.
@@ -115,7 +90,6 @@ public class RoutingState : ReactiveObject
     private void SetupRx()
     {
         var navigateScheduler = _scheduler;
-
         NavigationChanged = NavigationStack.ToObservableChangeSet();
 
         var countAsBehavior = Observable.Defer(() => Observable.Return(NavigationStack.Count)).Concat(NavigationChanged.CountChanged().Select(_ => NavigationStack.Count));
@@ -147,8 +121,7 @@ public class RoutingState : ReactiveObject
          {
              NavigationStack.Clear();
              return Navigate.Execute(vm);
-         },
-         outputScheduler: navigateScheduler);
+         });
 
         CurrentViewModel = Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())).Concat(NavigationChanged.Select(_ => NavigationStack.LastOrDefault()));
     }

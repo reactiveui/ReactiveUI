@@ -41,6 +41,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     private readonly ReactiveCommand<TParam, IList<TResult>> _innerCommand;
     private readonly ScheduledSubject<Exception> _exceptions;
     private readonly IDisposable _exceptionsSubscription;
+    private readonly IScheduler _outputScheduler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CombinedReactiveCommand{TParam, TResult}"/> class.
@@ -48,16 +49,12 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// <param name="childCommands">The child commands which will be executed.</param>
     /// <param name="canExecute">A observable when the command can be executed.</param>
     /// <param name="outputScheduler">The scheduler where to dispatch the output from the command.</param>
-    /// <param name="canExecuteScheduler">
-    /// An optional scheduler that is used for CanExecute and IsExecuting events. Defaults to <c>RxApp.MainThreadScheduler</c>.
-    /// </param>
     /// <exception cref="ArgumentNullException">Fires when required arguments are null.</exception>
     /// <exception cref="ArgumentException">Fires if the child commands container is empty.</exception>
     protected internal CombinedReactiveCommand(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
         IObservable<bool> canExecute,
-        IScheduler outputScheduler,
-        IScheduler canExecuteScheduler)
+        IScheduler? outputScheduler = null)
     {
         if (childCommands is null)
         {
@@ -69,15 +66,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             throw new ArgumentNullException(nameof(canExecute));
         }
 
-        if (outputScheduler is null)
-        {
-            throw new ArgumentNullException(nameof(outputScheduler));
-        }
-
-        if (canExecuteScheduler is null)
-        {
-            throw new ArgumentNullException(nameof(canExecuteScheduler));
-        }
+        _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
 
         var childCommandsArray = childCommands.ToArray();
 
@@ -86,7 +75,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             throw new ArgumentException("No child commands provided.", nameof(childCommands));
         }
 
-        _exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
+        _exceptions = new ScheduledSubject<Exception>(_outputScheduler, RxApp.DefaultExceptionHandler);
 
         var canChildrenExecute = childCommandsArray.Select(x => x.CanExecute)
                                                    .CombineLatest()
@@ -101,8 +90,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                                  .CombineLatest(canChildrenExecute, (ce, cce) => ce && cce)
                                  .DistinctUntilChanged()
                                  .Replay(1)
-                                 .RefCount()
-                                 .ObserveOn(canExecuteScheduler);
+                                 .RefCount();
 
         _exceptionsSubscription = childCommandsArray.Select(x => x.ThrownExceptions)
                                                     .Merge()
@@ -114,8 +102,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                                                                             .Select(x => x.Execute(param))
                                                                             .CombineLatest(),
                                                                     combinedCanExecute,
-                                                                    outputScheduler,
-                                                                    canExecuteScheduler);
+                                                                    _outputScheduler);
 
         // we already handle exceptions on individual child commands above, but the same exception
         // will tick through innerCommand. Therefore, we need to ensure we ignore it or the default

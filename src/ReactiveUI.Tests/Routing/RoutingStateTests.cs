@@ -55,7 +55,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task CurrentViewModelObservableIsAccurate()
         {
-            var fixture = new RoutingState(RxApp.MainThreadScheduler);
+            var fixture = new RoutingState();
             fixture.CurrentViewModel.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
             Assert.Equal(1, output.Count);
@@ -155,10 +155,7 @@ namespace ReactiveUI.Tests
         public void SchedulerIsUsedForAllCommands()
         {
             var scheduler = new TestScheduler();
-            var fixture = new RoutingState
-            {
-                Scheduler = scheduler
-            };
+            var fixture = new RoutingState(scheduler);
 
             fixture
                 .Navigate
