@@ -1,7 +1,6 @@
 ![Build](https://github.com/reactiveui/ReactiveUI/workflows/Build/badge.svg) 
 [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI)
 [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=reactiveui/ReactiveUI)](https://dependabot.com)
 [![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack)
 
 <br>
