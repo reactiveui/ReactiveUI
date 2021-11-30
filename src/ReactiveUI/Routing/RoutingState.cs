@@ -98,10 +98,9 @@ public class RoutingState : ReactiveObject
                                                                       () =>
                                                                       {
                                                                           NavigationStack.RemoveAt(NavigationStack.Count - 1);
-                                                                          return Observable.Return(NavigationStack.Count > 0 ? NavigationStack[NavigationStack.Count - 1] : default);
+                                                                          return Observable.Return(NavigationStack.Count > 0 ? NavigationStack[NavigationStack.Count - 1] : default).ObserveOn(navigateScheduler);
                                                                       },
-                                                                      countAsBehavior.Select(x => x > 1),
-                                                                      navigateScheduler);
+                                                                      countAsBehavior.Select(x => x > 1));
 
         Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(
          vm =>
@@ -112,9 +111,8 @@ public class RoutingState : ReactiveObject
              }
 
              NavigationStack.Add(vm);
-             return Observable.Return(vm);
-         },
-         outputScheduler: navigateScheduler);
+             return Observable.Return(vm).ObserveOn(navigateScheduler);
+         });
 
         NavigateAndReset = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(
          vm =>
