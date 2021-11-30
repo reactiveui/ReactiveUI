@@ -107,7 +107,8 @@ public static class ReactiveCommand
                                                                                 observer.OnCompleted();
                                                                                 return Disposable.Empty;
                                                                             }),
-                                               canExecute ?? Observables.True);
+                                               canExecute ?? Observables.True,
+                                               outputScheduler);
     }
 
     /// <summary>
@@ -147,7 +148,8 @@ public static class ReactiveCommand
                                                        observer.OnCompleted();
                                                        return Disposable.Empty;
                                                    }),
-                                                  canExecute ?? Observables.True);
+                                                  canExecute ?? Observables.True,
+                                                  outputScheduler);
     }
 
     /// <summary>
@@ -187,7 +189,8 @@ public static class ReactiveCommand
                                                       observer.OnCompleted();
                                                       return Disposable.Empty;
                                                   }),
-                                                 canExecute ?? Observables.True);
+                                                 canExecute ?? Observables.True,
+                                                 outputScheduler);
     }
 
     /// <summary>
@@ -230,7 +233,8 @@ public static class ReactiveCommand
                                                          observer.OnCompleted();
                                                          return Disposable.Empty;
                                                      }),
-                                                    canExecute ?? Observables.True);
+                                                    canExecute ?? Observables.True,
+                                                    outputScheduler);
     }
 
     /// <summary>
@@ -298,7 +302,8 @@ public static class ReactiveCommand
 
         return new ReactiveCommand<Unit, TResult>(
                                                   _ => execute(),
-                                                  canExecute ?? Observables.True);
+                                                  canExecute ?? Observables.True,
+                                                  outputScheduler);
     }
 
     /// <summary>
@@ -334,7 +339,8 @@ public static class ReactiveCommand
 
         return new ReactiveCommand<TParam, TResult>(
                                                     execute,
-                                                    canExecute ?? Observables.True);
+                                                    canExecute ?? Observables.True,
+                                                    outputScheduler);
     }
 
     /// <summary>
@@ -365,7 +371,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => execute().ToObservable(), canExecute);
+        return CreateFromObservable(() => execute().ToObservable(), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -396,7 +402,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute);
+        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -424,7 +430,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => execute().ToObservable(), canExecute);
+        return CreateFromObservable(() => execute().ToObservable(), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -452,7 +458,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute);
+        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -488,7 +494,8 @@ public static class ReactiveCommand
 
         return CreateFromObservable<TParam, TResult>(
                                                      param => execute(param).ToObservable(),
-                                                     canExecute);
+                                                     canExecute,
+                                                     outputScheduler);
     }
 
     /// <summary>
@@ -524,7 +531,8 @@ public static class ReactiveCommand
 
         return CreateFromObservable<TParam, TResult>(
                                                      param => Observable.FromAsync(ct => execute(param, ct)),
-                                                     canExecute);
+                                                     canExecute,
+                                                     outputScheduler);
     }
 
     /// <summary>
@@ -557,7 +565,8 @@ public static class ReactiveCommand
 
         return CreateFromObservable<TParam, Unit>(
                                                   param => execute(param).ToObservable(),
-                                                  canExecute);
+                                                  canExecute,
+                                                  outputScheduler);
     }
 
     /// <summary>
@@ -590,7 +599,8 @@ public static class ReactiveCommand
 
         return CreateFromObservable<TParam, Unit>(
                                                   param => Observable.FromAsync(ct => execute(param, ct)),
-                                                  canExecute);
+                                                  canExecute,
+                                                  outputScheduler);
     }
 }
 

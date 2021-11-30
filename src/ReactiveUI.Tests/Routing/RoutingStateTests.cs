@@ -151,7 +151,7 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Schedulers the is used for all commands.
         /// </summary>
-        [Fact(Skip = "Wait until merged with main and ReactiveCommand update has been committed")]
+        [Fact]
         public void SchedulerIsUsedForAllCommands()
         {
             var scheduler = new TestScheduler();
