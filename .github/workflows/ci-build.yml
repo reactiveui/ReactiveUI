@@ -7,119 +7,14 @@ on:
     branches: [ main ]
 
 env:
-  configuration: Release
   productNamespacePrefix: "ReactiveUI"
 
 jobs:
   build:
-    runs-on: windows-2022
-    outputs:
-      nbgv: ${{ steps.nbgv.outputs.SemVer2 }}
-    steps:
-    
-    - name: Update VS2022 preview
-      shell: bash
-      run: |
-        dotnet tool update -g dotnet-vs
-        vs modify preview +mobile +xamarin +core +desktop +uwp +web
-        echo "##vso[task.prependpath]$(vs where preview --prop=InstallationPath)\MSBuild\Current\Bin"
-
-    - name: Install Windows SDK 10.0.16299
-      shell: pwsh
-      run: |
-        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/p/?linkid=864422 -OutFile winsdk.exe
-        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-        $startInfo.FileName = "winsdk.exe"
-        $startInfo.Arguments = "/norestart /quiet"
-        $process = New-Object System.Diagnostics.Process
-        $process.StartInfo = $startInfo
-        $process.Start()
-        $process.WaitForExit()
-        
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        lfs: true
-
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v1.9.0
-      with:
-        dotnet-version: 3.1.x
-
-    - name: Install .NET 5
-      uses: actions/setup-dotnet@v1.9.0
-      with:
-        dotnet-version: 5.0.x
-
-    - name: Install .NET 6
-      uses: actions/setup-dotnet@v1.9.0
-      with:
-        dotnet-version: 6.0.x
-        include-prerelease: true
-
-    - name: Install DotNet workloads
-      shell: bash
-      run: |
-        dotnet workload install android
-        dotnet workload install ios
-        dotnet workload install tvos
-        dotnet workload install macos
-        dotnet workload install maui
-        dotnet workload restore "src/ReactiveUI/ReactiveUI.csproj"
-        dotnet tool install -g Redth.Net.Maui.Check
-        maui-check --non-interactive --fix
-
-    - name: Add MSBuild to PATH
-      uses: glennawatson/setup-msbuild@v1.0.3
-      with:
-        prerelease: true
-
-    - name: NBGV
-      id: nbgv
-      uses: dotnet/nbgv@master
-      with:
-        setAllVars: true
-
-    - name: NuGet restore
-      run: |
-        dotnet restore ReactiveUI.sln
-      working-directory: src
-
-    # Removed until Pharmacist can be released with new package
-    #- name: Install Pharmacist and Generate Events
-    #  run: |
-    #    dotnet tool install -g Pharmacist
-    #    pharmacist generate-platform -t uap10.0.16299,uap10.0.17134,uap10.0.17763,uap10.0.18362,uap10.0.19041,xamarin.mac20,xamarin.tvos10,monoandroid10.0,monoandroid11.0,xamarin.ios10,xamarin.watchos10 -o "src/ReactiveUI.Events/" --output-prefix "Events_"
-    #    pharmacist generate-platform -t net461,net462,net47,net471,net472,net48,netcoreapp3.1,net5.0 --is-wpf -o "src/ReactiveUI.Events.WPF/" --output-prefix "Events_"
-    #    pharmacist generate-platform -t net461,net462,net47,net471,net472,net48,netcoreapp3.1,net5.0 --is-winforms -o "src/ReactiveUI.Events.Winforms/" --output-prefix "Events_"
-
-    - name: Build
-      run: |
-        msbuild /t:build,pack /nowarn:MSB4011,VSX1000 /p:NoPackageAnalysis=true /verbosity:minimal /p:Configuration=${{ env.configuration }} ReactiveUI.sln
-      working-directory: src
-
-    - name: Run Unit Tests and Generate Coverage
-      uses: glennawatson/coverlet-msbuild@v1
-      with:
-        project-files: 'src/**/*Tests*.csproj'
-        no-build: true
-        exclude-filter: '[${{env.productNamespacePrefix}}.*.Tests.*]*'
-        include-filter: '[${{env.productNamespacePrefix}}*]*'
-        output-format: cobertura
-        output: '../../artifacts/'
-        configuration: ${{ env.configuration }}
-
-    - name: Upload Code Coverage
-      shell: bash
-      run: |
-        echo $PWD
-        bash <(curl -s https://codecov.io/bash) -X gcov -X coveragepy -t ${{ env.CODECOV_TOKEN }} -s '$PWD/artifacts' -f '*.xml'
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-    - name: Create NuGet Artifacts
-      uses: actions/upload-artifact@master
-      with:
-        name: nuget
-        path: '**/*.nupkg'
+    uses: reactiveui/actions-common/.github/workflows/workflow-common-setup-and-build.yml@main
+    with:
+      configuration: Release
+      productNamespacePrefix: "ReactiveUI"
+      useVisualStudioPreview: false
+      useMauiCheckDotNetTool: false
+      solutionFile: "reactiveui.sln"
