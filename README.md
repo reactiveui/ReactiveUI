@@ -138,13 +138,7 @@ ReactiveUI is developed under an OSI-approved open source license, making it fre
 
 If you want to submit pull requests please first open a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose) to discuss. We are first time PR contributors friendly.
 
-The current source uses **Visual Studio 2019 Preview**. Please install the following workloads to enable building the source:
-
-- dotnet workload install android
-- dotnet workload install ios
-- dotnet workload install tvos
-- dotnet workload install macos
-- dotnet workload install maui
+See [Contribution Guidelines](https://www.reactiveui.net/contribute/) for further information how to contribute changes.
 
 ## Core Team
 
