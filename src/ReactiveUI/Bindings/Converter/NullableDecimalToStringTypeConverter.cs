@@ -8,20 +8,20 @@ using System;
 namespace ReactiveUI;
 
 /// <summary>
-/// Integer To String Type Converter.
+/// Decimal To String Type Converter.
 /// </summary>
 /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-public class LongToStringTypeConverter : IBindingTypeConverter
+public class NullableDecimalToStringTypeConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>
     public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        if (fromType == typeof(long) && toType == typeof(string))
+        if (fromType == typeof(decimal?) && toType == typeof(string))
         {
             return 10;
         }
 
-        if (fromType == typeof(string) && toType == typeof(long))
+        if (fromType == typeof(string) && toType == typeof(decimal?))
         {
             return 10;
         }
@@ -32,24 +32,30 @@ public class LongToStringTypeConverter : IBindingTypeConverter
     /// <inheritdoc/>
     public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
     {
-        if (toType == typeof(string) && from is long fromLong)
+        if (toType == typeof(string) && from is decimal fromDecimal)
         {
-            if (conversionHint is int longHint)
+            if (conversionHint is int decimalHint)
             {
-                result = fromLong.ToString($"D{longHint}");
+                result = fromDecimal.ToString($"F{decimalHint}");
                 return true;
             }
 
-            result = fromLong.ToString();
+            result = fromDecimal.ToString();
             return true;
         }
 
         if (from is string fromString)
         {
-            var success = long.TryParse(fromString, out var outLong);
+            var success = decimal.TryParse(fromString, out var outDecimal);
             if (success)
             {
-                result = outLong;
+                if (conversionHint is int decimalHint)
+                {
+                    result = Math.Round(outDecimal, decimalHint);
+                    return true;
+                }
+
+                result = outDecimal;
 
                 return true;
             }

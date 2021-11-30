@@ -425,6 +425,48 @@ namespace ReactiveUI
         public void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string? contract = null) { }
         public void SendMessage<T>(T message, string? contract = null) { }
     }
+    public class NullableByteToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableByteToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableDecimalToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableDecimalToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableDoubleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableDoubleToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableIntegerToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableIntegerToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableLongToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableLongToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableShortToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableShortToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableSingleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableSingleToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
     public static class OAPHCreationHelperMixin
     {
         public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)

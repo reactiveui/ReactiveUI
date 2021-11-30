@@ -3,8 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net472;net5.0-windows</TargetFrameworks>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 

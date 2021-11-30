@@ -100,7 +100,18 @@ namespace ReactiveUI.Blend
                 item._watcher = null;
             }
 
-            item._watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+            if (e == default)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
+            var newValue = (IObservable<string>)e.NewValue;
+            if (newValue is null)
+            {
+                throw new ArgumentNullException(nameof(e.NewValue));
+            }
+
+            item._watcher = newValue.ObserveOn(RxApp.MainThreadScheduler).Subscribe(
                 x =>
                 {
                     var target = item.TargetObject ?? item.AssociatedObject;

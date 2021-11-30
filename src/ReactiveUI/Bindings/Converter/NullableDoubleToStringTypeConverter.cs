@@ -8,20 +8,20 @@ using System;
 namespace ReactiveUI;
 
 /// <summary>
-/// Integer To String Type Converter.
+/// Double To String Type Converter.
 /// </summary>
 /// <seealso cref="ReactiveUI.IBindingTypeConverter" />
-public class LongToStringTypeConverter : IBindingTypeConverter
+public class NullableDoubleToStringTypeConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>
     public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        if (fromType == typeof(long) && toType == typeof(string))
+        if (fromType == typeof(double?) && toType == typeof(string))
         {
             return 10;
         }
 
-        if (fromType == typeof(string) && toType == typeof(long))
+        if (fromType == typeof(string) && toType == typeof(double?))
         {
             return 10;
         }
@@ -32,24 +32,30 @@ public class LongToStringTypeConverter : IBindingTypeConverter
     /// <inheritdoc/>
     public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
     {
-        if (toType == typeof(string) && from is long fromLong)
+        if (toType == typeof(string) && from is double fromDouble)
         {
-            if (conversionHint is int longHint)
+            if (conversionHint is int doubleHint)
             {
-                result = fromLong.ToString($"D{longHint}");
+                result = fromDouble.ToString($"F{doubleHint}");
                 return true;
             }
 
-            result = fromLong.ToString();
+            result = fromDouble.ToString();
             return true;
         }
 
         if (from is string fromString)
         {
-            var success = long.TryParse(fromString, out var outLong);
+            var success = double.TryParse(fromString, out var outDouble);
             if (success)
             {
-                result = outLong;
+                if (conversionHint is int doubleHint)
+                {
+                    result = Math.Round(outDouble, doubleHint);
+                    return true;
+                }
+
+                result = outDouble;
 
                 return true;
             }
