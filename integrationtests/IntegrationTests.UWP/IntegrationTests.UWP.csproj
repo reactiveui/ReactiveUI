@@ -140,8 +140,12 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.*" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ReactiveUI.Uwp\ReactiveUI.Uwp.csproj">
+      <Project>{7b5a4e3b-8706-4d5b-b979-c5e39289ce17}</Project>
+      <Name>ReactiveUI.Uwp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\ReactiveUI\ReactiveUI.csproj">
-      <Project>{31b50b33-5e0d-4290-9a34-f4fdbee0339b}</Project>
+      <Project>{17caf778-0fc0-46de-9bf0-b36049715eaa}</Project>
       <Name>ReactiveUI</Name>
     </ProjectReference>
     <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj">
