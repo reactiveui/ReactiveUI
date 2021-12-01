@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Splat.Autofac" Version="13.*" />
-    <PackageReference Include="Splat.DryIoc" Version="13.*" />
-    <PackageReference Include="Splat.Ninject" Version="13.*" />
+    <PackageReference Include="Splat.Autofac" Version="14.*" />
+    <PackageReference Include="Splat.DryIoc" Version="14.*" />
+    <PackageReference Include="Splat.Ninject" Version="14.*" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 <Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;uap10.0.16299;net5.0-windows10.0.19041;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net472;uap10.0.16299;net6.0-windows10.0.19041;netcoreapp3.1</TargetFrameworks>
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <PackageDescription>Provides reactive extensions based xaml components based on the Blend SDK library, allowing you to fire a observable from XAML</PackageDescription>
@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net5')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
     <Compile Include="Platforms\net4\**\*.cs" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
