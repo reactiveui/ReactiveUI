@@ -27,6 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Splat.Drawing" Version="13.*" />
+    <PackageReference Include="Splat.Drawing" Version="14.*" />
   </ItemGroup>
 </Project>
