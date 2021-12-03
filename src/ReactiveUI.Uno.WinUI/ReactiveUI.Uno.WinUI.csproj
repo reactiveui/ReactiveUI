@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Uno.WinUI" Version="3.10.11" />
+    <PackageReference Include="Uno.WinUI" Version="4.0.9" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">

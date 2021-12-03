@@ -38,11 +38,8 @@ namespace ReactiveUI.Uno
             }
 
 #pragma warning disable SA1114 // Parameter list after.
-#if NETSTANDARD
-            var viewLoaded = Observable.FromEvent<RoutedEventHandler, bool>(
-#else
-            var viewLoaded = Observable.FromEvent<TypedEventHandler<DependencyObject, object>, bool>(
-#endif
+            var viewLoaded = Observable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
+
                 eventHandler => (_, _) => eventHandler(true),
                 x => fe.Loading += x,
                 x => fe.Loading -= x);
