@@ -175,7 +175,7 @@ See [Contribution Guidelines](https://www.reactiveui.net/contribute/) for furthe
         <img width="100" height="100" src="https://github.com/chrispulman.png?s=150">
         <br>
         <a href="https://github.com/chrispulman">Chris Pulman</a>
-        <p>UK</p>
+        <p>United Kingdom</p>
       </td>
     </tr>
   </tbody>
