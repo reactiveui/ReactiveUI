@@ -44,6 +44,7 @@ public static class DependencyResolverMixins
             { RegistrationNamespace.Winforms, "ReactiveUI.Winforms" },
             { RegistrationNamespace.Wpf, "ReactiveUI.Wpf" },
             { RegistrationNamespace.Uno, "ReactiveUI.Uno" },
+            { RegistrationNamespace.UnoWinUI, "ReactiveUI.Uno.WinUI" },
             { RegistrationNamespace.Blazor, "ReactiveUI.Blazor" },
             { RegistrationNamespace.Drawing, "ReactiveUI.Drawing" },
             { RegistrationNamespace.Maui, "ReactiveUI.Maui" },
