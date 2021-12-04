@@ -34,6 +34,11 @@ public enum RegistrationNamespace
     Uno,
 
     /// <summary>
+    /// Uno Win UI.
+    /// </summary>
+    UnoWinUI,
+    
+    /// <summary>
     /// Blazor.
     /// </summary>
     Blazor,
