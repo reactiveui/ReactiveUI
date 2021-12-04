@@ -26,7 +26,7 @@
     <Compile Remove="Resources\**" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" !$(TargetFramework.StartsWith('net6.0-windows')) ">
     <PackageReference Include="Uno.WinUI" Version="4.0.9" />
   </ItemGroup>
 
