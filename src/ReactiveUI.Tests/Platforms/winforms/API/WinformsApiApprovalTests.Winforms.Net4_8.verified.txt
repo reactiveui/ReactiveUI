@@ -107,11 +107,3 @@ namespace ReactiveUI.Winforms
         public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
 }
-namespace System.Reactive.Concurrency
-{
-    public class ControlScheduler : System.Reactive.Concurrency.LocalScheduler, System.Reactive.Concurrency.ISchedulerPeriodic { }
-}
-namespace System.Reactive.Linq
-{
-    public static class ControlObservable { }
-}
