@@ -26,11 +26,11 @@
     <Compile Remove="Resources\**" />
   </ItemGroup>
 
-  <ItemGroup Condition=" !$(TargetFramework.StartsWith('net6.0-windows')) ">
+  <ItemGroup Condition=" !$(TargetFramework.StartsWith('net6.0-windows10')) ">
     <PackageReference Include="Uno.WinUI" Version="4.0.9" />
   </ItemGroup>
    
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows10')) ">
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
   </ItemGroup>
 
