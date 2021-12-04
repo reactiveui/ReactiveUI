@@ -16,7 +16,7 @@
     <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or $(TargetFramework) == 'net6.0-windows' ">
+  <ItemGroup Condition=" $(TargetFramework) == 'net6.0-windows' or $(TargetFramework) == 'net462' ">
     <Compile Include="..\ReactiveUI.Uwp\Rx\Concurrency\DispatcherScheduler.cs" LinkBase="Rx" />
     <Compile Include="..\ReactiveUI.Uwp\Rx\Internal\Constants.cs" LinkBase="Rx" />
     <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Uwp\Rx\Linq\ControlObservable.cs" />
