@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard20;MonoAndroid11.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos</TargetFrameworks>
+    <TargetFrameworks>netstandard20;MonoAndroid11.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos;net6.0-windows10.0.17763.0</TargetFrameworks>
     <PackageId>ReactiveUI.Uno.WinUI</PackageId>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno WinUI</PackageDescription>
     <DefineConstants>$(DefineConstants);HAS_UNO;HAS_WINUI</DefineConstants>
@@ -10,6 +10,9 @@
 
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <DefineConstants>$(DefineConstants);WASM</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <DefineConstants>$(DefineConstants);HAS_UNO_WINUI</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
@@ -26,10 +29,15 @@
     <Compile Remove="Resources\**" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" !$(TargetFramework.StartsWith('net6.0-windows10')) ">
     <PackageReference Include="Uno.WinUI" Version="4.0.9" />
   </ItemGroup>
-
+   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <DefineConstants>$(DefineConstants);HAS_UNO_WINUI</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows10')) ">
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
+  </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <PackageReference Include="Reactive.Wasm" Version="1.*" />
   </ItemGroup>
