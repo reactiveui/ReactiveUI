@@ -11,6 +11,9 @@
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <DefineConstants>$(DefineConstants);WASM</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <DefineConstants>$(DefineConstants);HAS_UNO_WINUI</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
     <!-- Hack to get around invalid version of Java.Interop -->
@@ -29,11 +32,12 @@
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('net6.0-windows10')) ">
     <PackageReference Include="Uno.WinUI" Version="4.0.9" />
   </ItemGroup>
-   
+   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <DefineConstants>$(DefineConstants);HAS_UNO_WINUI</DefineConstants>
+  </PropertyGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows10')) ">
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
   </ItemGroup>
-
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <PackageReference Include="Reactive.Wasm" Version="1.*" />
   </ItemGroup>
