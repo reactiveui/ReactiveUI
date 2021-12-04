@@ -29,6 +29,10 @@
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('net6.0-windows')) ">
     <PackageReference Include="Uno.WinUI" Version="4.0.9" />
   </ItemGroup>
+   
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows')) ">
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
+  </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <PackageReference Include="Reactive.Wasm" Version="1.*" />
