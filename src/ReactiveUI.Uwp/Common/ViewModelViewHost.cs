@@ -105,15 +105,17 @@ namespace ReactiveUI
 
             var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract);
             var viewModelChanged = this.WhenAnyValue(x => x.ViewModel).StartWith(ViewModel);
-
-            contractChanged
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => _viewContract = x ?? string.Empty);
-
             var vmAndContract = contractChanged
                 .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
 
-            this.WhenActivated(d => d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract))));
+            this.WhenActivated(d =>
+            {
+                d(contractChanged
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => _viewContract = x ?? string.Empty));
+
+                d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
+            });
         }
 
         /// <summary>
