@@ -2,7 +2,9 @@ name: Release
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - patches/*
     
 env:
   productNamespacePrefix: "Splat"
