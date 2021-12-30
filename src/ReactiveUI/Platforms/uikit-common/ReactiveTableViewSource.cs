@@ -11,6 +11,7 @@ using System.Reactive.Subjects;
 
 using Foundation;
 
+using ObjCRuntime;
 using UIKit;
 
 namespace ReactiveUI;
