@@ -51,7 +51,7 @@
     <PackageReference Include="FluentAssertions" Version="6.4.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="10.2.0" />
-    <PackageReference Include="coverlet.msbuild" Version="3.1.0" PrivateAssets="All" />
+    <PackageReference Include="coverlet.msbuild" Version="3.1.1" PrivateAssets="All" />
     <PackageReference Include="Verify.Xunit" Version="15.2.0" />
   </ItemGroup>
   
