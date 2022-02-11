@@ -63,7 +63,7 @@ namespace ReactiveUI
                     propertyName);
 
                 var ret = new POCOObservableForProperty();
-                return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
+                return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings);
             }
 
             var dpFetcher = GetDependencyPropertyFetcher(type, propertyName);
@@ -76,7 +76,7 @@ namespace ReactiveUI
                     propertyName);
 
                 var ret = new POCOObservableForProperty();
-                return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged);
+                return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings);
             }
 
             return Observable.Create<IObservedChange<object, object?>>(subj =>
