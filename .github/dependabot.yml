@@ -3,16 +3,16 @@ updates:
 - package-ecosystem: nuget
   directory: "/integrationtests"
   schedule:
-    interval: daily
+    interval: monthly
     time: "00:00"
   open-pull-requests-limit: 10
 - package-ecosystem: nuget
   directory: "/src"
   schedule:
-    interval: daily
+    interval: monthly
     time: "00:00"
   open-pull-requests-limit: 10
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: daily
+    interval: monthly
