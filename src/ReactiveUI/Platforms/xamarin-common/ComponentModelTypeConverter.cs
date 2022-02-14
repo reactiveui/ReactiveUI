@@ -27,7 +27,8 @@ public class ComponentModelTypeConverter : IBindingTypeConverter
 
          var converter = TypeDescriptor.GetConverter(types.fromType);
          return converter.CanConvertTo(types.toType) ? converter : null;
-     }, RxApp.SmallCacheLimit);
+     },
+     RxApp.SmallCacheLimit);
 
     /// <inheritdoc/>
     public int GetAffinityForObjects(Type fromType, Type toType)

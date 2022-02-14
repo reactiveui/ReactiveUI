@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('net6.0-windows10')) ">
-    <PackageReference Include="Uno.WinUI" Version="4.0.9" />
+    <PackageReference Include="Uno.WinUI" Version="4.0.13" />
   </ItemGroup>
    <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
     <DefineConstants>$(DefineConstants);HAS_UNO_WINUI</DefineConstants>

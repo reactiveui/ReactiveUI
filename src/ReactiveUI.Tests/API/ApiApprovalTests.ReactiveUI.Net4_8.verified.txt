@@ -280,7 +280,7 @@ namespace ReactiveUI
     }
     public interface IPropertyBindingHook
     {
-        bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<, >[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<, >[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction);
+        bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction);
     }
     public class IROObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
@@ -409,7 +409,7 @@ namespace ReactiveUI
     public class Interaction<TInput, TOutput>
     {
         public Interaction(System.Reactive.Concurrency.IScheduler? handlerScheduler = null) { }
-        protected System.Func<, >[] GetHandlers() { }
+        protected System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<System.Reactive.Unit>>[] GetHandlers() { }
         public virtual System.IObservable<TOutput> Handle(TInput input) { }
         public System.IDisposable RegisterHandler(System.Action<ReactiveUI.InteractionContext<TInput, TOutput>> handler) { }
         public System.IDisposable RegisterHandler(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
@@ -752,7 +752,7 @@ namespace ReactiveUI
         public static System.Type? ReallyFindType(string? type, bool throwOnFailure) { }
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression? expression) { }
         public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) { }
-        public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<, >[] changeValues, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
+        public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<object, object?>[] changeValues, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TrySetValueToPropertyChain<TValue>(object? target, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain, TValue value, bool shouldThrow = true) { }
     }
@@ -831,7 +831,7 @@ namespace ReactiveUI
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
     }
-    [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.All)]
+    [System.AttributeUsage(System.AttributeTargets.Class)]
     public sealed class SingleInstanceViewAttribute : System.Attribute
     {
         public SingleInstanceViewAttribute() { }
@@ -880,7 +880,7 @@ namespace ReactiveUI
         public ReactiveUI.Interaction<TInput, TOutput>? Interaction { get; }
         public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
     }
-    [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.All)]
+    [System.AttributeUsage(System.AttributeTargets.Class)]
     public sealed class ViewContractAttribute : System.Attribute
     {
         public ViewContractAttribute(string contract) { }
