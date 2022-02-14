@@ -10,7 +10,7 @@ namespace ReactiveUI.Winforms
     public class ContentControlBindingHook : ReactiveUI.IPropertyBindingHook
     {
         public ContentControlBindingHook() { }
-        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<, >[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<, >[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
+        public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
     }
     public class CreatesWinformsCommandBinding : ReactiveUI.ICreatesCommandBinding
     {
