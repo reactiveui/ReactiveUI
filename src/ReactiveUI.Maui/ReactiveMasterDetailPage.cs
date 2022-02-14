@@ -8,7 +8,7 @@ using Microsoft.Maui.Controls;
 namespace ReactiveUI.Maui;
 
 /// <summary>
-/// This is an <see cref="MasterDetailPage"/> that is also an <see cref="IViewFor{T}"/>.
+/// This is an MasterDetailPage that is also an <see cref="IViewFor{T}"/>.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="Microsoft.Maui.Controls" />

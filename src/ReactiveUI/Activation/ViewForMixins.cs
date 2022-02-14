@@ -27,7 +27,8 @@ public static class ViewForMixins
                        {
                            var score = x?.GetAffinityForView(t) ?? 0;
                            return score > acc.count ? (score, x) : acc;
-                       }).viewFetcher, RxApp.SmallCacheLimit);
+                       }).viewFetcher,
+            RxApp.SmallCacheLimit);
 
     static ViewForMixins() => RxApp.EnsureInitialized();
 

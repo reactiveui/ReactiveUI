@@ -25,7 +25,8 @@ public static class ReactiveNotifyPropertyChangedMixin
                              {
                                  var score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
                                  return score > acc.score ? (score, x) : acc;
-                             }).binding, RxApp.BigCacheLimit);
+                             }).binding,
+            RxApp.BigCacheLimit);
 
     static ReactiveNotifyPropertyChangedMixin() => RxApp.EnsureInitialized();
 

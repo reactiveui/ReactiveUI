@@ -22,7 +22,8 @@ internal class CreatesCommandBinding
                              {
                                  var score = x.GetAffinityForObject(t, false);
                                  return (score > acc.score) ? (score, x) : acc;
-                             }).binding, RxApp.SmallCacheLimit);
+                             }).binding,
+            RxApp.SmallCacheLimit);
 
     private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> _bindCommandEventCache =
         new(
@@ -31,7 +32,8 @@ internal class CreatesCommandBinding
                              {
                                  var score = x.GetAffinityForObject(t, true);
                                  return (score > acc.score) ? (score, x) : acc;
-                             }).binding, RxApp.SmallCacheLimit);
+                             }).binding,
+            RxApp.SmallCacheLimit);
 
     public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
