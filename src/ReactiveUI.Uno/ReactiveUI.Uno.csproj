@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('uap')) ">
-    <PackageReference Include="Uno.UI" Version="4.0.9" />
+    <PackageReference Include="Uno.UI" Version="4.0.13" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
