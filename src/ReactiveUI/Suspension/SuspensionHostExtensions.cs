@@ -7,6 +7,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using Splat;
 
 namespace ReactiveUI;
@@ -17,9 +18,9 @@ namespace ReactiveUI;
 public static class SuspensionHostExtensions
 {
     /// <summary>
-    /// Lock to ensure app state is loaded only once.
+    /// Func used to load app state exactly once.
     /// </summary>
-    private static readonly object appStateInitializationLock = new object();
+    private static Func<IObservable<Unit>>? ensureLoadAppStateFunc;
 
     /// <summary>
     /// Supsension driver reference field to prevent introducing breaking change.
@@ -39,10 +40,7 @@ public static class SuspensionHostExtensions
             throw new ArgumentNullException(nameof(item));
         }
 
-        if (item.AppState is null)
-        {
-            item.EnsureLoadAppState();
-        }
+        Interlocked.Exchange(ref ensureLoadAppStateFunc, null)?.Invoke();
 
         return (T)item.AppState!;
     }
@@ -81,13 +79,15 @@ public static class SuspensionHostExtensions
         }
 
         var ret = new CompositeDisposable();
-        suspensionDriver ??= Locator.Current.GetService<ISuspensionDriver>();
+        suspensionDriver ??= driver ?? Locator.Current.GetService<ISuspensionDriver>();
 
         if (suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
             return Disposable.Empty;
         }
+
+        ensureLoadAppStateFunc = () => EnsureLoadAppState(item, suspensionDriver);
 
         ret.Add(item.ShouldInvalidateState
                     .SelectMany(_ => suspensionDriver.InvalidateState())
@@ -100,7 +100,7 @@ public static class SuspensionHostExtensions
                     .Subscribe(_ => item.Log().Info("Persisted application state")));
 
         ret.Add(item.IsResuming.Merge(item.IsLaunchingNew)
-                    .SelectMany(_ => item.EnsureLoadAppState(suspensionDriver))
+                    .Do(_ => Interlocked.Exchange(ref ensureLoadAppStateFunc, null)?.Invoke())
                     .Subscribe());
 
         return ret;
@@ -114,32 +114,29 @@ public static class SuspensionHostExtensions
     /// <returns>A completed observable.</returns>
     private static IObservable<Unit> EnsureLoadAppState(this ISuspensionHost item, ISuspensionDriver? driver = null)
     {
-        lock (appStateInitializationLock)
+        if (item.AppState is not null)
         {
-            if (item.AppState is not null)
-            {
-                return Observable.Return(Unit.Default);
-            }
-
-            suspensionDriver ??= driver ?? Locator.Current.GetService<ISuspensionDriver>();
-
-            if (suspensionDriver is null)
-            {
-                item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-                return Observable.Return(Unit.Default);
-            }
-
-            try
-            {
-                item.AppState = suspensionDriver.LoadState().Wait();
-            }
-            catch (Exception ex)
-            {
-                item.Log().Warn(ex, "Failed to restore app state from storage, creating from scratch");
-                item.AppState = item.CreateNewAppState?.Invoke();
-            }
-
             return Observable.Return(Unit.Default);
         }
+
+        suspensionDriver ??= driver ?? Locator.Current.GetService<ISuspensionDriver>();
+
+        if (suspensionDriver is null)
+        {
+            item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
+            return Observable.Return(Unit.Default);
+        }
+
+        try
+        {
+            item.AppState = suspensionDriver.LoadState().Wait();
+        }
+        catch (Exception ex)
+        {
+            item.Log().Warn(ex, "Failed to restore app state from storage, creating from scratch");
+            item.AppState = item.CreateNewAppState?.Invoke();
+        }
+
+        return Observable.Return(Unit.Default);
     }
 }
