@@ -36,7 +36,7 @@
     <DefineConstants>$(DefineConstants);HAS_UNO_WINUI</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows10')) ">
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <PackageReference Include="Reactive.Wasm" Version="1.*" />
