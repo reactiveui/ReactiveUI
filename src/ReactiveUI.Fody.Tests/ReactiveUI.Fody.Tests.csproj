@@ -10,8 +10,8 @@
     <ProjectReference Include="..\ReactiveUI.Fody.Helpers\ReactiveUI.Fody.Helpers.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

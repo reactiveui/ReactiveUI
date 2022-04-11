@@ -8,12 +8,12 @@ using Microsoft.Maui.Controls;
 namespace ReactiveUI.Maui;
 
 /// <summary>
-/// This is an <see cref="CarouselPage"/> that is also an <see cref="IViewFor{T}"/>.
+/// This is an <see cref="CarouselView"/> that is also an <see cref="IViewFor{T}"/>.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-/// <seealso cref="CarouselPage" />
-/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
-public class ReactiveCarouselPage<TViewModel> : CarouselPage, IViewFor<TViewModel>
+/// <seealso cref="CarouselView" />
+/// <seealso cref="IViewFor{TViewModel}" />
+public class ReactiveCarouselView<TViewModel> : CarouselView, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>
@@ -22,7 +22,7 @@ public class ReactiveCarouselPage<TViewModel> : CarouselPage, IViewFor<TViewMode
     public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
      nameof(ViewModel),
      typeof(TViewModel),
-     typeof(ReactiveCarouselPage<TViewModel>),
+     typeof(ReactiveCarouselView<TViewModel>),
      default(TViewModel),
      BindingMode.OneWay,
      propertyChanged: OnViewModelChanged);
