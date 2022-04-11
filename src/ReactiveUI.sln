@@ -51,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.AndroidX", "Reac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Fody.Analyzer", "ReactiveUI.Fody.Analyzer\ReactiveUI.Fody.Analyzer.csproj", "{366789D4-4117-46CE-864F-BF1201F35319}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Fody.Analyzer.Test", "ReactiveUI.Fody.Analyzer.Test\ReactiveUI.Fody.Analyzer.Test.csproj", "{1FD70B38-E2FB-4A46-BE07-C0F6ACE6FD90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Fody.Analyzer.Tests", "ReactiveUI.Fody.Analyzer.Test\ReactiveUI.Fody.Analyzer.Tests.csproj", "{1FD70B38-E2FB-4A46-BE07-C0F6ACE6FD90}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Drawing", "ReactiveUI.Drawing\ReactiveUI.Drawing.csproj", "{999D555D-C567-457C-95F7-8AD61310C56E}"
 EndProject
