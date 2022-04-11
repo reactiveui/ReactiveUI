@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.7.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.7.0.2" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('MonoAndroid11'))">
