@@ -32,6 +32,9 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-ios'))">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;IOS</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-maccatalyst'))">
+    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;IOS</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac'))">
     <DefineConstants>$(DefineConstants);MONO;COCOA;MAC</DefineConstants>
   </PropertyGroup>
