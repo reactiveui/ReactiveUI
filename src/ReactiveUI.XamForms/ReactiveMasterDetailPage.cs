@@ -14,6 +14,7 @@ namespace ReactiveUI.XamForms;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="Xamarin.Forms.MasterDetailPage" />
 /// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+[Obsolete]
 public class ReactiveMasterDetailPage<TViewModel> : MasterDetailPage, IViewFor<TViewModel>
     where TViewModel : class
 {
