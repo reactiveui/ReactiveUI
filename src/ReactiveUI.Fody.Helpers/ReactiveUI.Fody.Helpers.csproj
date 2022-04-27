@@ -1,7 +1,7 @@
 <Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid11.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472;uap10.0.16299</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472;uap10.0.16299</TargetFrameworks>
     <PackageDescription>Fody extension to generate RaisePropertyChange notifications for properties and ObservableAsPropertyHelper properties.</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net472;uwp;tizen;unoplatform;fody;</PackageTags>
 
@@ -9,53 +9,13 @@
     <PackageId>ReactiveUI.Fody</PackageId>
     <WeaverDirPath>..\$(PackageId)\bin\$(Configuration)\</WeaverDirPath>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-
-    <!-- Due to fody insisting on having .net 4 classes, we can't pack on non-windows -->
-    <IsPackable Condition=" '$(OS)' != 'Windows_NT' ">false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <!-- Hack to get around invalid version of Java.Interop -->
-    <Reference Include="Java.Interop">
-       <!-- Path to a VS 2019 Java.Interop.dll -->
-       <HintPath>..\Java.Interop.dll</HintPath>
-    </Reference> 
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Fody" Version="6.6.0" PrivateAssets="None" />
     <PackageReference Include="FodyPackaging" Version="6.6.0" PrivateAssets="All" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS'))">
-    <Reference Include="System.Runtime.Serialization" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.TVOS10'))">
-    <Reference Include="System.Runtime.Serialization" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac'))">
-    <Reference Include="System.Runtime.Serialization" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(TargetFramework.StartsWith('MonoAndroid'))">
-    <Reference Include="System.Runtime.Serialization" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netcoreapp'))">
-    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />

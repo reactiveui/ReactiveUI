@@ -25,6 +25,7 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
 {
     private static readonly Dictionary<(Type viewType, string? propertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> _dispatchTable;
 
+#pragma warning disable CS0618 // Type or member is obsolete
     static AndroidObservableForWidgets() =>
         _dispatchTable = new[]
         {
@@ -38,6 +39,7 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
             CreateTimePickerMinuteFromWidget(),
             CreateFromAdapterView(),
         }.ToDictionary(k => (viewType: k.Type, propertyName: k.Property), v => v.Func);
+#pragma warning restore CS0618 // Type or member is obsolete
 
     /// <inheritdoc/>
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
