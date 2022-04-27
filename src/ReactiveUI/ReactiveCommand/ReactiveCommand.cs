@@ -725,7 +725,6 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
                              .Catch<TResult, Exception>(
                                                         ex =>
                                                         {
-                                                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
                                                             _exceptions.OnNext(ex);
                                                             return Observable.Throw<TResult>(ex);
                                                         }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
@@ -755,7 +754,6 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
                              .Catch<TResult, Exception>(
                                                         ex =>
                                                         {
-                                                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
                                                             _exceptions.OnNext(ex);
                                                             return Observable.Throw<TResult>(ex);
                                                         }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
