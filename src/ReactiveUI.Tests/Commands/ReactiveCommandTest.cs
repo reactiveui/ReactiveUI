@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2022 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2022 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -1157,7 +1157,8 @@ namespace ReactiveUI.Tests
                 {
                     await subj.Take(1);
                     throw new Exception("break execution");
-                });
+                },
+                outputScheduler: ImmediateScheduler.Instance);
 
             fixture.IsExecuting.Subscribe(x => isExecuting = x);
             fixture.ThrownExceptions.Subscribe(ex => fail = ex);
@@ -1172,7 +1173,7 @@ namespace ReactiveUI.Tests
             subj.OnNext(Unit.Default);
 
             // Wait 10 ms to allow execution to complete
-            await Task.Delay(10).ConfigureAwait(false);
+            await Task.Delay(500).ConfigureAwait(false);
 
             Assert.False(isExecuting);
             Assert.Equal("break execution", fail?.Message);
