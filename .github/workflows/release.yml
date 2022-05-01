@@ -9,8 +9,13 @@ on:
 env:
   productNamespacePrefix: "Splat"
 
+permissions:
+  contents: read
+
 jobs:
   release:
+    permissions:
+      contents: none
     uses: reactiveui/actions-common/.github/workflows/workflow-common-release.yml@main
     with:
       configuration: Release
