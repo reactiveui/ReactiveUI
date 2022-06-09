@@ -7,15 +7,10 @@ on:
       - patches/*
     
 env:
-  productNamespacePrefix: "Splat"
-
-permissions:
-  contents: read
+  productNamespacePrefix: "ReactiveUI"
 
 jobs:
   release:
-    permissions:
-      contents: none
     uses: reactiveui/actions-common/.github/workflows/workflow-common-release.yml@main
     with:
       configuration: Release
