@@ -711,7 +711,6 @@ namespace ReactiveUI
     public class ReactiveRecord : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging, System.IEquatable<ReactiveUI.ReactiveRecord>
     {
         public ReactiveRecord() { }
-        protected ReactiveRecord(ReactiveUI.ReactiveRecord original) { }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
@@ -721,17 +720,9 @@ namespace ReactiveUI
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
-        public virtual ReactiveUI.ReactiveRecord <Clone>$() { }
         public bool AreChangeNotificationsEnabled() { }
         public System.IDisposable DelayChangeNotifications() { }
-        public virtual bool Equals(ReactiveUI.ReactiveRecord? other) { }
-        public override bool Equals(object? obj) { }
-        public override int GetHashCode() { }
-        protected virtual bool PrintMembers(System.Text.StringBuilder builder) { }
         public System.IDisposable SuppressChangeNotifications() { }
-        public override string ToString() { }
-        public static bool operator !=(ReactiveUI.ReactiveRecord? left, ReactiveUI.ReactiveRecord? right) { }
-        public static bool operator ==(ReactiveUI.ReactiveRecord? left, ReactiveUI.ReactiveRecord? right) { }
     }
     public static class Reflection
     {
