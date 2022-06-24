@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fody" Version="6.6.3" PrivateAssets="None" />
-    <PackageReference Include="FodyPackaging" Version="6.6.2" PrivateAssets="All" />
+    <PackageReference Include="FodyPackaging" Version="6.6.3" PrivateAssets="All" />
   </ItemGroup>
 
 
