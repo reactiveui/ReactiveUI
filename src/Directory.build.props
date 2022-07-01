@@ -52,7 +52,7 @@
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="10.3.0" />
     <PackageReference Include="coverlet.msbuild" Version="3.1.2" PrivateAssets="All" />
-    <PackageReference Include="Verify.Xunit" Version="17.1.4" />
+    <PackageReference Include="Verify.Xunit" Version="17.1.6" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
