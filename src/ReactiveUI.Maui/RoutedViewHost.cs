@@ -161,7 +161,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
     [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
-    protected IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
+    protected virtual IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
         {
@@ -190,7 +190,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
     [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
-    protected Page PageForViewModel(IRoutableViewModel vm)
+    protected virtual Page PageForViewModel(IRoutableViewModel vm)
     {
         if (vm is null)
         {
@@ -232,7 +232,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     protected void SyncNavigationStacks()
     {
-
         if (Navigation.NavigationStack.Count != Router.NavigationStack.Count
             || StacksAreDifferent())
         {
