@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using Microsoft.Maui.Controls;
 using Splat;
@@ -179,7 +178,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         ret.ViewModel = vm;
 
         var pg = (Page)ret;
-        // pg.Title = vm.UrlPathSegment;
 
         return Observable.Return(pg);
     }
@@ -207,10 +205,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
         ret.ViewModel = vm;
 
-        var pg = (Page)ret;
-        // pg.Title = vm.UrlPathSegment;
-
-        return pg;
+        return (Page)ret;
     }
 
     /// <summary>
