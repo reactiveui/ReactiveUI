@@ -9,6 +9,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Splat;
 
