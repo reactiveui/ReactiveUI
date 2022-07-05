@@ -178,6 +178,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         ret.ViewModel = vm;
 
         var pg = (Page)ret;
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            pg.Title = vm.UrlPathSegment;
+        });
 
         return Observable.Return(pg);
     }
@@ -205,7 +209,13 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
         ret.ViewModel = vm;
 
-        return (Page)ret;
+        var pg = (Page)ret;
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            pg.Title = vm.UrlPathSegment;
+        });
+
+        return pg;
     }
 
     /// <summary>
