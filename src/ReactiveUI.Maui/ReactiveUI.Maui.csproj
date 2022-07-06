@@ -1,14 +1,46 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.17763.0</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;forms;net</PackageTags>
     <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <DefineConstants>HAS_WINUI</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="!$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <DefineConstants>HAS_MAUI</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.1" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Platforms\Windows\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Uwp\Common\AutoDataTemplateBindingHook.cs" Link="Platforms\Windows\AutoDataTemplateBindingHook.cs" />
+    <Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityHint.cs" Link="Platforms\Windows\BooleanToVisibilityHint.cs" />
+    <Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityTypeConverter.cs" Link="Platforms\Windows\BooleanToVisibilityTypeConverter.cs" />
+    <Compile Include="..\ReactiveUI.Uwp\Common\PlatformOperations.cs" Link="Platforms\Windows\PlatformOperations.cs" />
+    <Compile Include="..\ReactiveUI.WinUI\DependencyObjectObservableForProperty.cs" Link="Platforms\Windows\DependencyObjectObservableForProperty.cs" />
+    <Compile Include="..\ReactiveUI.WinUI\DispatcherQueueScheduler.cs" Link="Platforms\Windows\DispatcherQueueScheduler.cs" />
   </ItemGroup>
 
 </Project>

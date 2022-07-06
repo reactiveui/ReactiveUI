@@ -5,6 +5,11 @@
 
 using System;
 
+#if HAS_WINUI
+using System.Reactive.Concurrency;
+using Splat;
+#endif
+
 namespace ReactiveUI.Maui;
 
 /// <summary>
@@ -27,5 +32,21 @@ public class Registrations : IWantsToRegisterStuff
         }
 
         registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+#if HAS_WINUI
+        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+
+        if (!ModeDetector.InUnitTestRunner())
+        {
+            // NB: On .NET Core, trying to touch DispatcherScheduler blows up :cry:
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+        }
+
+        RxApp.SuppressViewCommandBindingMessage = true;
+#endif
     }
 }
