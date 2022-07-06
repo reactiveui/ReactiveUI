@@ -3,14 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 using Splat;
 
 namespace ReactiveUI.Maui;
@@ -31,6 +29,15 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
      typeof(RoutingState),
      typeof(RoutedViewHost),
      default(RoutingState));
+
+    /// <summary>
+    /// The Set Title on Navigate property.
+    /// </summary>
+    public static readonly BindableProperty SetTitleOnNavigateProperty = BindableProperty.Create(
+     nameof(SetTitleOnNavigate),
+     typeof(bool),
+     typeof(RoutedViewHost),
+     false);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
@@ -63,6 +70,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
             Router?
                 .Navigate
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .SelectMany(_ => PagesForViewModel(Router.GetCurrentViewModel()))
                 .SelectMany(async page =>
                 {
@@ -156,6 +164,15 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether gets or sets the Set Title of the view model stack.
+    /// </summary>
+    public bool SetTitleOnNavigate
+    {
+        get => (bool)GetValue(SetTitleOnNavigateProperty);
+        set => SetValue(SetTitleOnNavigateProperty, value);
+    }
+
+    /// <summary>
     /// Pages for view model.
     /// </summary>
     /// <param name="vm">The vm.</param>
@@ -165,7 +182,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         if (vm is null)
         {
-            return Observable<Page>.Empty;
+            return Observable.Empty<Page>();
         }
 
         var ret = ViewLocator.Current.ResolveView(vm);
@@ -179,10 +196,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         ret.ViewModel = vm;
 
         var pg = (Page)ret;
-        MainThread.BeginInvokeOnMainThread(() =>
+        if (SetTitleOnNavigate)
         {
             pg.Title = vm.UrlPathSegment;
-        });
+        }
 
         return Observable.Return(pg);
     }
@@ -211,10 +228,11 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         ret.ViewModel = vm;
 
         var pg = (Page)ret;
-        MainThread.BeginInvokeOnMainThread(() =>
+
+        if (SetTitleOnNavigate)
         {
-            pg.Title = vm.UrlPathSegment;
-        });
+            RxApp.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
+        }
 
         return pg;
     }
