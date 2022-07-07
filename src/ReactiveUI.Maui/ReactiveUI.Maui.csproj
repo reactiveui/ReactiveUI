@@ -6,7 +6,6 @@
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;forms;net</PackageTags>
     <UseMaui>true</UseMaui>
-    <SingleProject>true</SingleProject>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
