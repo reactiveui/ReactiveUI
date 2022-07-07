@@ -1,34 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.17763.0</TargetFrameworks>
-    <PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
-    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;forms;net</PackageTags>
-    <UseMaui>true</UseMaui>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.17763.0</TargetFrameworks>
+		<PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
+		<PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;forms;net</PackageTags>
+		<UseMaui>true</UseMaui>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
-    <DefineConstants>HAS_WINUI</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$(TargetFramework.StartsWith('net6.0-windows10'))">
-    <DefineConstants>HAS_MAUI</DefineConstants>
-  </PropertyGroup>
-  
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Include="..\ReactiveUI.Uwp\Common\AutoDataTemplateBindingHook.cs" Link="Common\AutoDataTemplateBindingHook.cs" />
-    <Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityHint.cs" Link="Common\BooleanToVisibilityHint.cs" />
-    <Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityTypeConverter.cs" Link="Common\BooleanToVisibilityTypeConverter.cs" />
-    <Compile Include="..\ReactiveUI.Uwp\Common\ReactivePage.cs" Link="Common\ReactivePage.cs" />
-    <Compile Include="..\ReactiveUI.WinUI\DependencyObjectObservableForProperty.cs" Link="DependencyObjectObservableForProperty.cs" />
-    <Compile Include="..\ReactiveUI.WinUI\DispatcherQueueScheduler.cs" Link="DispatcherQueueScheduler.cs" />
-  </ItemGroup>
+	<PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+		<DefineConstants>HAS_WINUI</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="!$(TargetFramework.StartsWith('net6.0-windows10'))">
+		<DefineConstants>HAS_MAUI</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\ReactiveUI.Uwp\Common\AutoDataTemplateBindingHook.cs" Link="Platforms\Windows\AutoDataTemplateBindingHook.cs" />
+		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityHint.cs" Link="Platforms\Windows\BooleanToVisibilityHint.cs" />
+		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityTypeConverter.cs" Link="Platforms\Windows\BooleanToVisibilityTypeConverter.cs" />
+		<Compile Include="..\ReactiveUI.Uwp\Common\PlatformOperations.cs" Link="Platforms\Windows\PlatformOperations.cs" />
+		<Compile Include="..\ReactiveUI.WinUI\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI.WinUI" />
+		<Compile Include="..\ReactiveUI.WinUI\DispatcherQueueScheduler.cs" LinkBase="ReactiveUI.WinUI" />
+	</ItemGroup>
 
 </Project>
