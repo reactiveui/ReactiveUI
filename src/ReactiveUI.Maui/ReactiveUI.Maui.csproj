@@ -26,7 +26,6 @@
 		<Compile Include="..\ReactiveUI.Uwp\Common\AutoDataTemplateBindingHook.cs" LinkBase="Common" />
 		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityHint.cs" LinkBase="Common" />
 		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityTypeConverter.cs" LinkBase="Common" />
-		<Compile Include="..\ReactiveUI.Uwp\Common\PlatformOperations.cs" LinkBase="Common" />
 		<Compile Include="..\ReactiveUI.WinUI\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI.WinUI" />
 		<Compile Include="..\ReactiveUI.WinUI\DispatcherQueueScheduler.cs" LinkBase="ReactiveUI.WinUI" />
 	</ItemGroup>
