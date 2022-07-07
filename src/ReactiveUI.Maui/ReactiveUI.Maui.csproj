@@ -23,10 +23,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Include="..\ReactiveUI.Uwp\Common\AutoDataTemplateBindingHook.cs" Link="Platforms\Windows\AutoDataTemplateBindingHook.cs" />
-		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityHint.cs" Link="Platforms\Windows\BooleanToVisibilityHint.cs" />
-		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityTypeConverter.cs" Link="Platforms\Windows\BooleanToVisibilityTypeConverter.cs" />
-		<Compile Include="..\ReactiveUI.Uwp\Common\PlatformOperations.cs" Link="Platforms\Windows\PlatformOperations.cs" />
+		<Compile Include="..\ReactiveUI.Uwp\Common\AutoDataTemplateBindingHook.cs" LinkBase="Common" />
+		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityHint.cs" LinkBase="Common" />
+		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityTypeConverter.cs" LinkBase="Common" />
+		<Compile Include="..\ReactiveUI.Uwp\Common\PlatformOperations.cs" LinkBase="Common" />
 		<Compile Include="..\ReactiveUI.WinUI\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI.WinUI" />
 		<Compile Include="..\ReactiveUI.WinUI\DispatcherQueueScheduler.cs" LinkBase="ReactiveUI.WinUI" />
 	</ItemGroup>
