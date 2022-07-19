@@ -44,9 +44,14 @@ public class NullableLongToStringTypeConverter : IBindingTypeConverter
             return true;
         }
 
+        if (from is null)
+        {
+            result = null!;
+            return true;
+        }
+
         if (from is string fromString)
         {
-
             if (string.IsNullOrEmpty(fromString))
             {
                 result = null!;
