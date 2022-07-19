@@ -46,6 +46,13 @@ public class NullableShortToStringTypeConverter : IBindingTypeConverter
 
         if (from is string fromString)
         {
+
+            if (string.IsNullOrEmpty(fromString))
+            {
+                result = null!;
+                return true;
+            }
+
             var success = short.TryParse(fromString, out var outShort);
             if (success)
             {

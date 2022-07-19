@@ -46,6 +46,12 @@ public class NullableIntegerToStringTypeConverter : IBindingTypeConverter
 
         if (from is string fromString)
         {
+            if (string.IsNullOrEmpty(fromString))
+            {
+                result = null!;
+                return true;
+            }
+
             var success = int.TryParse(fromString, out var outInt);
             if (success)
             {

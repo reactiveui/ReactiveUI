@@ -46,6 +46,13 @@ public class NullableSingleToStringTypeConverter : IBindingTypeConverter
 
         if (from is string fromString)
         {
+
+            if (string.IsNullOrEmpty(fromString))
+            {
+                result = null!;
+                return true;
+            }
+
             var success = float.TryParse(fromString, out var outSingle);
             if (success)
             {

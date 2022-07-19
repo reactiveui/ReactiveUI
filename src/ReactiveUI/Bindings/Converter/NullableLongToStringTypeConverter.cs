@@ -46,6 +46,13 @@ public class NullableLongToStringTypeConverter : IBindingTypeConverter
 
         if (from is string fromString)
         {
+
+            if (string.IsNullOrEmpty(fromString))
+            {
+                result = null!;
+                return true;
+            }
+
             var success = long.TryParse(fromString, out var outLong);
             if (success)
             {
