@@ -44,7 +44,7 @@ public class NullableShortToStringTypeConverter : IBindingTypeConverter
             return true;
         }
 
-        if(from is null)
+        if (from is null)
         {
             result = null!;
             return true;
