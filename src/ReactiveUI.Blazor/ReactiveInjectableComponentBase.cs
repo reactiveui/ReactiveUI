@@ -88,7 +88,7 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
             // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
             var viewModelChanged =
                 this.WhenAnyValue(x => x.ViewModel)
-                    .Where(x => x is not null)
+                    .WhereNotNull()
                     .Publish()
                     .RefCount(2);
 
@@ -97,7 +97,6 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
                 .DisposeWith(_compositeDisposable);
 
             viewModelChanged
-                .WhereNotNull()
                 .Select(x =>
                             Observable
                                 .FromEvent<PropertyChangedEventHandler, Unit>(
