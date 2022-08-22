@@ -715,7 +715,6 @@ namespace ReactiveUI
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
-        protected virtual System.Type EqualityContract { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
