@@ -17,7 +17,7 @@
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v12.0</TargetFrameworkVersion>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
@@ -31,7 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
-    <AndroidLinkMode>None</AndroidLinkMode>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <DocumentationFile>bin\Debug\IntegrationTests.Android.xml</DocumentationFile>
   </PropertyGroup>
@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="27.*" />
+    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj">
