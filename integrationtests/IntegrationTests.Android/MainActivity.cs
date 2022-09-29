@@ -73,7 +73,7 @@ namespace IntegrationTests.Android
             // WireUpControls looks through your layout file, finds all controls
             // with an id defined, and binds them to the controls defined in this class.
             // This is basically the same functionality as in
-            // http://jakewharton.github.io/butterknife/
+            // https://jakewharton.github.io/butterknife/
             this.WireUpControls();
 
             ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);
