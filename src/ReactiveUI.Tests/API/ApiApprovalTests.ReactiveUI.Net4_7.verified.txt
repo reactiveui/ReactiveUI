@@ -786,7 +786,7 @@ namespace ReactiveUI
         public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel?> NavigateBack { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
-        [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Runtime.Serialization.DataMember]
         public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
     }
     public static class RoutingStateMixins

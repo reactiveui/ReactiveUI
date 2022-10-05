@@ -12,7 +12,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.XamForms")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v6.0", FrameworkDisplayName="")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v6.0", FrameworkDisplayName=".NET 6.0")]
 namespace ReactiveUI
 {
     public static class AutoPersistHelper
@@ -779,7 +779,7 @@ namespace ReactiveUI
         public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel?> NavigateBack { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
-        [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Runtime.Serialization.DataMember]
         public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
     }
     public static class RoutingStateMixins
