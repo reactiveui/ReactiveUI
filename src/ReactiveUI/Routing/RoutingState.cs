@@ -47,7 +47,7 @@ public class RoutingState : ReactiveObject
     /// Gets the current navigation stack, the last element in the
     /// collection being the currently visible ViewModel.
     /// </summary>
-    [IgnoreDataMember]
+    [DataMember]
     public ObservableCollection<IRoutableViewModel> NavigationStack { get; }
 
     /// <summary>
