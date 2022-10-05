@@ -7,7 +7,7 @@ on:
       - patches/*
     
 env:
-  productNamespacePrefix: "Splat"
+  productNamespacePrefix: "ReactiveUI"
 
 jobs:
   release:

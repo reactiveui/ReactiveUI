@@ -628,8 +628,10 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
 {
     private readonly IObservable<bool> _canExecute;
     private readonly IDisposable _canExecuteSubscription;
+    [SuppressMessage("Design", "CA2213: Dispose member", Justification = "Internal use only")]
     private readonly ScheduledSubject<Exception> _exceptions;
     private readonly Func<TParam, IObservable<TResult>> _execute;
+    [SuppressMessage("Design", "CA2213: Dispose member", Justification = "Internal use only")]
     private readonly Subject<ExecutionInfo> _executionInfo;
     private readonly IObservable<bool> _isExecuting;
     private readonly IScheduler _outputScheduler;
@@ -725,7 +727,6 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
                              .Catch<TResult, Exception>(
                                                         ex =>
                                                         {
-                                                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
                                                             _exceptions.OnNext(ex);
                                                             return Observable.Throw<TResult>(ex);
                                                         }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
@@ -755,7 +756,6 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
                              .Catch<TResult, Exception>(
                                                         ex =>
                                                         {
-                                                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
                                                             _exceptions.OnNext(ex);
                                                             return Observable.Throw<TResult>(ex);
                                                         }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
@@ -781,8 +781,6 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
             return;
         }
 
-        _executionInfo.Dispose();
-        _exceptions.Dispose();
         _canExecuteSubscription.Dispose();
     }
 

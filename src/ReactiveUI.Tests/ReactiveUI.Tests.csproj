@@ -77,6 +77,7 @@
       <DependentUpon>TestFormNotCanActivate.resx</DependentUpon>
     </Compile>
   </ItemGroup>
+
   <ItemGroup>
     <Page Update="Platforms\wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

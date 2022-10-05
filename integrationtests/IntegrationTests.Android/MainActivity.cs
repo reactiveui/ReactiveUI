@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2022 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -73,7 +73,7 @@ namespace IntegrationTests.Android
             // WireUpControls looks through your layout file, finds all controls
             // with an id defined, and binds them to the controls defined in this class.
             // This is basically the same functionality as in
-            // http://jakewharton.github.io/butterknife/
+            // https://jakewharton.github.io/butterknife/
             this.WireUpControls();
 
             ViewModel = new LoginViewModel(RxApp.MainThreadScheduler);

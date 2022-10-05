@@ -6,9 +6,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using Microsoft.Maui.Controls;
 using Splat;
@@ -33,6 +33,15 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
      default(RoutingState));
 
     /// <summary>
+    /// The Set Title on Navigate property.
+    /// </summary>
+    public static readonly BindableProperty SetTitleOnNavigateProperty = BindableProperty.Create(
+     nameof(SetTitleOnNavigate),
+     typeof(bool),
+     typeof(RoutedViewHost),
+     false);
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
     /// <exception cref="Exception">You *must* register an IScreen class representing your App's main Screen.</exception>
@@ -40,80 +49,31 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         this.WhenActivated(disposable =>
         {
-            var currentlyPopping = false;
-            var popToRootPending = false;
-            var userInstigated = false;
-
-            this.WhenAnyObservable(x => x.Router.NavigationChanged)
-                .Where(_ => Router.NavigationStack.Count == 0)
-                .Select(x =>
-                {
-                    // Xamarin Forms does not let us completely clear down the navigation stack
-                    // instead, we have to delay this request momentarily until we receive the new root view
-                    // then, we can insert the new root view first, and then pop to it
-                    popToRootPending = true;
-                    return x;
-                })
-                .Subscribe()
-                .DisposeWith(disposable);
+            var currentlyNavigating = false;
 
             Router?
-                .NavigationChanged?
-                .CountChanged()
-                .Select(_ => Router.NavigationStack.Count)
-                .StartWith(Router.NavigationStack.Count)
-                .Buffer(2, 1)
-                .Select(counts => new
+                .NavigateBack
+                .Subscribe(async _ =>
                 {
-                    Delta = counts[0] - counts[1],
-                    Current = counts[1],
+                    try
+                    {
+                        currentlyNavigating = true;
+                        await PopAsync();
+                    }
+                    finally
+                    {
+                        currentlyNavigating = false;
+                    }
 
-                    // cache current viewmodel as it might change if some other Navigation command is executed midway
-                    CurrentViewModel = Router.GetCurrentViewModel()
+                    InvalidateCurrentViewModel();
+                    SyncNavigationStacks();
                 })
-                .Where(_ => !userInstigated)
-                .Where(x => x.Delta > 0)
-                .Select(
-                        async x =>
-                        {
-                            // XF doesn't provide a means of navigating back more than one screen at a time apart from navigating right back to the root page
-                            // since we want as sensible an animation as possible, we pop to root if that makes sense. Otherwise, we pop each individual
-                            // screen until the delta is made up, animating only the last one
-                            var popToRoot = x.Current == 1;
-                            currentlyPopping = true;
-
-                            try
-                            {
-                                if (popToRoot)
-                                {
-                                    await PopToRootAsync(true);
-                                }
-                                else if (!popToRootPending)
-                                {
-                                    for (var i = 0; i < x.Delta; ++i)
-                                    {
-                                        await PopAsync(i == x.Delta - 1);
-                                    }
-                                }
-                            }
-                            finally
-                            {
-                                currentlyPopping = false;
-                                if (CurrentPage is IViewFor page && x.CurrentViewModel is not null)
-                                {
-                                    page.ViewModel = x.CurrentViewModel;
-                                }
-                            }
-
-                            return Unit.Default;
-                        })
-                .Concat()
-                .Subscribe()
                 .DisposeWith(disposable);
 
             Router?
                 .Navigate
-                .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SelectMany(_ => PagesForViewModel(Router.GetCurrentViewModel()))
                 .SelectMany(async page =>
                 {
                     var animated = true;
@@ -123,17 +83,18 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                         animated = false;
                     }
 
-                    if (popToRootPending && Navigation.NavigationStack.Count > 0)
+                    try
                     {
-                        Navigation.InsertPageBefore(page, Navigation.NavigationStack[0]);
-                        await PopToRootAsync(animated);
-                    }
-                    else
-                    {
+                        currentlyNavigating = true;
                         await PushAsync(page, animated);
                     }
+                    finally
+                    {
+                        currentlyNavigating = false;
+                    }
 
-                    popToRootPending = false;
+                    SyncNavigationStacks();
+
                     return page;
                 })
                 .Subscribe()
@@ -151,26 +112,37 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             // NB: Catch when the user hit back as opposed to the application
             // requesting Back via NavigateBack
             poppingEvent
-                .Where(_ => !currentlyPopping && Router is not null)
+                .Where(_ => !currentlyNavigating && Router is not null)
                 .Subscribe(_ =>
                 {
-                    userInstigated = true;
 
-                    try
+                    Router!.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+
+                    InvalidateCurrentViewModel();
+                })
+                .DisposeWith(disposable);
+
+            var poppingToRootEvent = Observable.FromEvent<EventHandler<NavigationEventArgs>, Unit>(
+             eventHandler =>
+             {
+                 void Handler(object? sender, NavigationEventArgs e) => eventHandler(Unit.Default);
+                 return Handler;
+             },
+             x => PoppedToRoot += x,
+             x => PoppedToRoot -= x);
+
+            // NB: Catch when the user hit back as opposed to the application
+            // requesting Back via NavigateBack
+            poppingToRootEvent
+                .Where(_ => !currentlyNavigating && Router is not null)
+                .Subscribe(_ =>
+                {
+                    for (var i = Router!.NavigationStack.Count - 1; i > 0; i--)
                     {
-                        Router?.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
-                    }
-                    finally
-                    {
-                        userInstigated = false;
+                        Router.NavigationStack.RemoveAt(i);
                     }
 
-                    var vm = Router?.GetCurrentViewModel();
-                    if (CurrentPage is IViewFor page && vm is not null)
-                    {
-                        // don't replace view model if vm is null
-                        page.ViewModel = vm;
-                    }
+                    InvalidateCurrentViewModel();
                 })
                 .DisposeWith(disposable);
         });
@@ -182,24 +154,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         }
 
         Router = screen.Router;
-
-        this.WhenAnyValue(x => x.Router)
-            .SelectMany(router => router!.NavigationStack
-                                         .ToObservable()
-                                         .Select(x => (Page)ViewLocator.Current.ResolveView(x)!)
-                                         .SelectMany(x => PushAsync(x).ToObservable())
-                                         .Finally(() =>
-                                         {
-                                             var vm = router.GetCurrentViewModel();
-                                             if (vm is null)
-                                             {
-                                                 return;
-                                             }
-
-                                             ((IViewFor)CurrentPage).ViewModel = vm;
-                                             CurrentPage.Title = vm.UrlPathSegment;
-                                         }))
-            .Subscribe();
     }
 
     /// <summary>
@@ -212,12 +166,21 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether gets or sets the Set Title of the view model stack.
+    /// </summary>
+    public bool SetTitleOnNavigate
+    {
+        get => (bool)GetValue(SetTitleOnNavigateProperty);
+        set => SetValue(SetTitleOnNavigateProperty, value);
+    }
+
+    /// <summary>
     /// Pages for view model.
     /// </summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
     [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
-    protected IObservable<Page> PageForViewModel(IRoutableViewModel? vm)
+    protected virtual IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
         {
@@ -235,8 +198,97 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         ret.ViewModel = vm;
 
         var pg = (Page)ret;
-        pg.Title = vm.UrlPathSegment;
+        if (SetTitleOnNavigate)
+        {
+            pg.Title = vm.UrlPathSegment;
+        }
 
         return Observable.Return(pg);
+    }
+
+    /// <summary>
+    /// Page for view model.
+    /// </summary>
+    /// <param name="vm">The vm.</param>
+    /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
+    [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
+    protected virtual Page PageForViewModel(IRoutableViewModel vm)
+    {
+        if (vm is null)
+        {
+            throw new ArgumentNullException(nameof(vm));
+        }
+
+        var ret = ViewLocator.Current.ResolveView(vm);
+        if (ret is null)
+        {
+            var msg = $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{vm.GetType().Name}>";
+
+            throw new Exception(msg);
+        }
+
+        ret.ViewModel = vm;
+
+        var pg = (Page)ret;
+
+        if (SetTitleOnNavigate)
+        {
+            RxApp.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
+        }
+
+        return pg;
+    }
+
+    /// <summary>
+    /// Invalidates current page view model.
+    /// </summary>
+    protected void InvalidateCurrentViewModel()
+    {
+        var vm = Router?.GetCurrentViewModel();
+        if (CurrentPage is IViewFor page && vm is not null)
+        {
+            // don't replace view model if vm is null
+            page.ViewModel = vm;
+        }
+    }
+
+    /// <summary>
+    /// Syncs page's navigation stack  with <see cref="Router"/>
+    /// to affect <see cref="Router"/> manipulations like Add or Clear.
+    /// </summary>
+    protected void SyncNavigationStacks()
+    {
+        if (Navigation.NavigationStack.Count != Router.NavigationStack.Count
+            || StacksAreDifferent())
+        {
+            for (var i = Navigation.NavigationStack.Count - 2; i >= 0; i--)
+            {
+                Navigation.RemovePage(Navigation.NavigationStack[i]);
+            }
+
+            var rootPage = Navigation.NavigationStack[0];
+
+            for (var i = 0; i < Router.NavigationStack.Count - 1; i++)
+            {
+                var page = PageForViewModel(Router.NavigationStack[i]);
+                Navigation.InsertPageBefore(page, rootPage);
+            }
+        }
+    }
+
+    private bool StacksAreDifferent()
+    {
+        for (var i = 0; i < Router.NavigationStack.Count; i++)
+        {
+            var vm = Router.NavigationStack[i];
+            var page = Navigation.NavigationStack[i];
+
+            if (page is not IViewFor view || !ReferenceEquals(view.ViewModel, vm))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

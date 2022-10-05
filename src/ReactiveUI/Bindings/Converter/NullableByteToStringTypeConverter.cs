@@ -44,8 +44,20 @@ public class NullableByteToStringTypeConverter : IBindingTypeConverter
             return true;
         }
 
+        if (from is null)
+        {
+            result = null!;
+            return true;
+        }
+
         if (from is string fromString)
         {
+            if (string.IsNullOrEmpty(fromString))
+            {
+                result = null!;
+                return true;
+            }
+
             var success = byte.TryParse(fromString, out var outByte);
             if (success)
             {

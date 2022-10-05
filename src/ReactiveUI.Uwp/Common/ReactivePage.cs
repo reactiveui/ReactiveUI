@@ -5,7 +5,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-#if HAS_WINUI
+#if HAS_MAUI
+using Microsoft.Maui.Controls;
+
+#elif HAS_WINUI
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 #elif NETFX_CORE || HAS_UNO
@@ -96,6 +99,7 @@ namespace ReactiveUI
             Page, IViewFor<TViewModel>
             where TViewModel : class
     {
+#if !HAS_MAUI
         /// <summary>
         /// The view model dependency property.
         /// </summary>
@@ -105,6 +109,18 @@ namespace ReactiveUI
                 typeof(TViewModel),
                 typeof(ReactivePage<TViewModel>),
                 new PropertyMetadata(null));
+#else
+        /// <summary>
+        /// The view model bindable property.
+        /// </summary>
+        public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
+         nameof(ViewModel),
+         typeof(TViewModel),
+         typeof(ReactivePage<TViewModel>),
+         default(TViewModel),
+         BindingMode.OneWay,
+         propertyChanged: OnViewModelChanged);
+#endif
 
 #if HAS_UNO
         /// <summary>
@@ -166,5 +182,16 @@ namespace ReactiveUI
             get => ViewModel;
             set => ViewModel = (TViewModel?)value;
         }
+
+#if HAS_MAUI
+        /// <inheritdoc/>
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            ViewModel = BindingContext as TViewModel;
+        }
+
+        private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) => bindableObject.BindingContext = newValue;
+#endif
     }
 }
