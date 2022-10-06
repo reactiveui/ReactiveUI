@@ -50,7 +50,7 @@ internal static class ObservableCollectionChangedToListChangedTransformer
                 }
 
             case NotifyCollectionChangedAction.Move:
-                // http://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
+                // https://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
                 yield return new ListChangedEventArgs(
                                                       ListChangedType.ItemMoved,
                                                       ea.NewStartingIndex,
