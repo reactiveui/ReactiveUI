@@ -20,6 +20,6 @@ jobs:
     with:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
-      useVisualStudioPreview: false
+      useVisualStudioPreview: true
       useMauiCheckDotNetTool: false
       solutionFile: "reactiveui.sln"
