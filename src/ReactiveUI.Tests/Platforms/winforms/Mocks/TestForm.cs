@@ -45,5 +45,16 @@ namespace ReactiveUI.Tests.Winforms
         public IObservable<Unit> Deactivated => _deactivated.AsObservable().Publish().RefCount();
 
         IObservable<Unit> ICanActivate.Activated => _activated.AsObservable().Publish().RefCount();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _activated.Dispose();
+                _deactivated.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }
