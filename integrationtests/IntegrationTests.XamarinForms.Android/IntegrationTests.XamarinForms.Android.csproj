@@ -51,7 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Acr.UserDialogs" Version="7.2.0.564" />
-    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.2.0" />
+    <PackageReference Include="Xamarin.AndroidX.Core">
+      <Version>1.7.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.6.0" />
+    <PackageReference Include="Xamarin.Jetbrains.Annotations" Version="23.0.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

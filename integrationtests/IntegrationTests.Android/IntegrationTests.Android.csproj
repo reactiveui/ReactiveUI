@@ -99,8 +99,8 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.*" />
-    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.2.0" />
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
+    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.6.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj">
