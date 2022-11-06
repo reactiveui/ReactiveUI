@@ -17,7 +17,7 @@ namespace ReactiveUI.Tests
     /// </summary>
     public class ActivatingReactivePagesTests : IClassFixture<ApplicationFixture<App>>
     {
-        private ApplicationFixture<App> _fixture;
+        private readonly ApplicationFixture<App> _fixture;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActivatingReactivePagesTests"/> class.
