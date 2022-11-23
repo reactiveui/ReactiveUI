@@ -127,7 +127,7 @@
 
   <ItemGroup>
     <PackageReference Include="Splat" Version="14.*" />
-    <PackageReference Include="DynamicData" Version="7.12.1" />
+    <PackageReference Include="DynamicData" Version="7.12.8" />
   </ItemGroup>
 
   <ItemGroup>
