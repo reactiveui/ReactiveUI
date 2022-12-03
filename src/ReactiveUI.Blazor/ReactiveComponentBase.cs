@@ -20,13 +20,14 @@ namespace ReactiveUI.Blazor;
 /// A base component for handling property changes and updating the blazer view appropriately.
 /// </summary>
 /// <typeparam name="T">The type of view model. Must support INotifyPropertyChanged.</typeparam>
-public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPropertyChanged, ICanActivate, IDisposable
+public abstract class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPropertyChanged,
+    ICanActivate, IDisposable
     where T : class, INotifyPropertyChanged
 {
     private readonly Subject<Unit> _initSubject = new();
     [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
     private readonly Subject<Unit> _deactivateSubject = new();
-    private readonly CompositeDisposable _compositeDisposable = new();
+    protected readonly CompositeDisposable _compositeDisposable = new();
 
     private T? _viewModel;
 
@@ -37,7 +38,7 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
 
     /// <inheritdoc />
     [Parameter]
-    public T? ViewModel
+    public virtual T? ViewModel
     {
         get => _viewModel;
         set
@@ -60,10 +61,10 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     }
 
     /// <inheritdoc />
-    public IObservable<Unit> Activated => _initSubject.AsObservable();
+    public virtual IObservable<Unit> Activated => _initSubject.AsObservable();
 
     /// <inheritdoc />
-    public IObservable<Unit> Deactivated => _deactivateSubject.AsObservable();
+    public virtual IObservable<Unit> Deactivated => _deactivateSubject.AsObservable();
 
     /// <inheritdoc />
     public void Dispose()
@@ -83,43 +84,38 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     /// <inheritdoc/>
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
+        base.OnAfterRender(firstRender);
+        if (!firstRender)
         {
-            // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
-            var viewModelChanged =
-                this.WhenAnyValue(x => x.ViewModel)
-                    .WhereNotNull()
-                    .Publish()
-                    .RefCount(2);
-
-            viewModelChanged
-                .Subscribe(_ => InvokeAsync(StateHasChanged))
-                .DisposeWith(_compositeDisposable);
-
-            viewModelChanged
-                .Select(x =>
-                            Observable
-                                .FromEvent<PropertyChangedEventHandler?, Unit>(
-                                                                               eventHandler =>
-                                                                               {
-                                                                                   void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
-                                                                                   return Handler;
-                                                                               },
-                                                                               eh => x.PropertyChanged += eh,
-                                                                               eh => x.PropertyChanged -= eh))
-                .Switch()
-                .Subscribe(_ => InvokeAsync(StateHasChanged))
-                .DisposeWith(_compositeDisposable);
+            return;
         }
 
-        base.OnAfterRender(firstRender);
+        // The following subscriptions are here because if they are done in OnInitialized, they
+        // conflict with certain JavaScript frameworks.
+        this.WhenAnyValue(x => x.ViewModel)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(_ => InvokeAsync(StateHasChanged))
+            .DisposeWith(_compositeDisposable);
+
+        this.WhenAnyValue(x => x.ViewModel)
+            .WhereNotNull()
+            .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
+                eventHandler => (_, _) => eventHandler(Unit.Default),
+                eh => x.PropertyChanged += eh,
+                eh => x.PropertyChanged -= eh))
+            .Switch()
+            .Do(_ => InvokeAsync(StateHasChanged))
+            .Subscribe()
+            .DisposeWith(_compositeDisposable);
     }
 
     /// <summary>
     /// Invokes the property changed event.
     /// </summary>
     /// <param name="propertyName">The name of the property.</param>
-    protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     /// <summary>
     /// Cleans up the managed resources of the object.
