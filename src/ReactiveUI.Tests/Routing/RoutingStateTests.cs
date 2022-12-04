@@ -140,7 +140,7 @@ namespace ReactiveUI.Tests
             };
             var viewModel = new TestViewModel();
 
-            Assert.False(fixture.Router.NavigationStack.Any());
+            Assert.False(fixture.Router.NavigationStack.Count > 0);
 
             fixture.Router.NavigateAndReset.Execute(viewModel);
 

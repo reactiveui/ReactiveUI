@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid11.0;MonoAndroid12.1;tizen40;net6.0;net6.0-android;net6.0-ios;net6.0-tvos;net6.0-macos;net6.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472;uap10.0.16299</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid12.0;tizen40;net6.0;net6.0-android;net6.0-ios;net6.0-tvos;net6.0-macos;net6.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472;uap10.0.17763</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>

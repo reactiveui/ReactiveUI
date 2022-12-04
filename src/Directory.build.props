@@ -52,7 +52,7 @@
     <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="10.3.0" />
     <PackageReference Include="coverlet.msbuild" Version="3.2.0" PrivateAssets="All" />
-    <PackageReference Include="Verify.Xunit" Version="19.1.0" />
+    <PackageReference Include="Verify.Xunit" Version="19.3.0" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
@@ -72,7 +72,7 @@
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.5.119" PrivateAssets="all" />	
 
     <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.435" PrivateAssets="all" />
-    <PackageReference Include="Roslynator.Analyzers" Version="4.1.2" PrivateAssets="All" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.2.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />

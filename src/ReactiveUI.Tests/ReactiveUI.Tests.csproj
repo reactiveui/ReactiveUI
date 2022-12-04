@@ -45,7 +45,7 @@
         <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
         <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
         <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
-
+        <PackageReference Include="System.ValueTuple" Version="4.5.0" />
         <Compile Include="Platforms\common-gui\**\*.cs" />
         <Compile Include="Platforms\wpf\**\*.cs" />
         <Compile Include="Platforms\Winforms\**\*.cs" />

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>MonoAndroid11.0;MonoAndroid12.1</TargetFrameworks>
+    <TargetFrameworks>MonoAndroid12.0</TargetFrameworks>
     <PackageDescription>Provides ReactiveUI extensions for the Android Support Library</PackageDescription>
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;forms;monodroid;monotouch;xamarin.android;net;</PackageTags>
