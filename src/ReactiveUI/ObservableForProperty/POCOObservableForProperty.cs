@@ -35,7 +35,7 @@ public class POCOObservableForProperty : ICreatesObservableForProperty
         var type = sender.GetType();
         if (!_hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)
         {
-            this.Log().Warn($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
+            this.Log().Debug($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
             _hasWarned[(type, propertyName)] = true;
         }
 
