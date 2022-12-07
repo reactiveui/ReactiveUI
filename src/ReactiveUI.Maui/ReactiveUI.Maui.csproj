@@ -16,7 +16,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.5" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221116.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
