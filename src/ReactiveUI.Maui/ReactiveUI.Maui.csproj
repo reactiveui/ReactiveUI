@@ -1,23 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.17763.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0;net7.0-windows10.0.19041.0</TargetFrameworks>
 		<PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
 		<PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;forms;net</PackageTags>
 		<UseMaui>true</UseMaui>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+	<PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10')) or $(TargetFramework.StartsWith('net7.0-windows10'))">
 		<DefineConstants>HAS_WINUI</DefineConstants>
 	</PropertyGroup>
-	<PropertyGroup Condition="!$(TargetFramework.StartsWith('net6.0-windows10'))">
+	<PropertyGroup Condition="!$(TargetFramework.StartsWith('net6.0-windows10')) and !$(TargetFramework.StartsWith('net7.0-windows10'))">
 		<DefineConstants>HAS_MAUI</DefineConstants>
 	</PropertyGroup>
 
-	<ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.5" />
+	<ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10')) or $(TargetFramework.StartsWith('net7.0-windows10'))">
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221116.1" />
 	</ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.1" />
+  </ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
 	</ItemGroup>

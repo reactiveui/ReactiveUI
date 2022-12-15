@@ -1,11 +1,13 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid12.0;MonoAndroid12.1;MonoAndroid13.0;tizen40;net6.0;net6.0-android;net6.0-ios;net6.0-tvos;net6.0-macos;net6.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472;uap10.0.17763</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid12.0;MonoAndroid12.1;MonoAndroid13.0;tizen40;net6.0;net6.0-android;net6.0-ios;net6.0-tvos;net6.0-macos;net6.0-maccatalyst;net7.0;net7.0-android;net7.0-ios;net7.0-tvos;net7.0-macos;net7.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
     <PackageId>ReactiveUI</PackageId>
+    <!-- Disable "BinaryFormatter is obsolete" warnings for entire project -->
+    <NoWarn>$(NoWarn);SYSLIB0011</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,7 +44,7 @@
   </ItemGroup>
 
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-ios')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-ios')) or $(TargetFramework.StartsWith('net7.0-ios')) ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
     <Compile Include="Platforms\uikit-common\**\*.cs" />
@@ -55,21 +57,15 @@
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="netstandard" />
-    <Reference Include="Xamarin.Mac">
-      <HintPath Condition="Exists('c:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Xamarin.VisualStudio')">c:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Xamarin.VisualStudio\Xamarin.Mac.dll</HintPath>
-      <HintPath Condition="Exists('c:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\Xamarin.VisualStudio')">c:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\Xamarin.VisualStudio\Xamarin.Mac.dll</HintPath>
-      <HintPath Condition="Exists('c:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Xamarin.VisualStudio')">c:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Xamarin.VisualStudio\Xamarin.Mac.dll</HintPath>
-      <HintPath Condition="Exists('c:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\Extensions\Xamarin.VisualStudio')">c:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\Extensions\Xamarin.VisualStudio\Xamarin.Mac.dll</HintPath>
-  </Reference>
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-macos')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-macos')) or $(TargetFramework.StartsWith('net7.0-macos')) ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\mac\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-maccatalyst')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-maccatalyst')) or $(TargetFramework.StartsWith('net7.0-maccatalyst')) ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
     <Compile Include="Platforms\uikit-common\**\*.cs" />
@@ -84,7 +80,7 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-tvos')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-tvos')) or $(TargetFramework.StartsWith('net7.0-tvos')) ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\tvos\**\*.cs" />
     <Compile Include="Platforms\uikit-common\**\*.cs" />
@@ -97,12 +93,12 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-android')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-android')) or $(TargetFramework.StartsWith('net7.0-android')) ">
     <Compile Include="Platforms\android\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or $(TargetFramework.StartsWith('netcoreapp3')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0' ">
     <Compile Include="Platforms\net\**\*.cs" />
   </ItemGroup>
 

@@ -1,6 +1,6 @@
 <Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0;net7.0</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Blazor</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;eventsnet;netstandard;blazor;web;</PackageTags>
   </PropertyGroup>
@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.17" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) or $(TargetFramework.StartsWith('net7')) ">
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.10" />
   </ItemGroup>
   
