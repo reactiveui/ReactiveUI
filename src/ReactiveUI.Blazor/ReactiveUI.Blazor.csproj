@@ -10,11 +10,15 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.32" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) or $(TargetFramework.StartsWith('net7')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.10" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.14" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net7')) ">
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.3" />
   </ItemGroup>
   
   <ItemGroup>
