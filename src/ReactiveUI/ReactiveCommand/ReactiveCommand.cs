@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -402,7 +403,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
+        return CreateFromObservable(() => Signals.FromValue<TResult>(async ct => await execute(ct)), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -458,7 +459,10 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
+        return CreateFromObservable(
+            () => Signals.FromAsync<Unit>(execute),
+            canExecute,
+            outputScheduler);
     }
 
     /// <summary>
@@ -530,7 +534,7 @@ public static class ReactiveCommand
         }
 
         return CreateFromObservable<TParam, TResult>(
-                                                     param => Observable.FromAsync(ct => execute(param, ct)),
+                                                     param => Signals.FromValue<TResult>(async ct => await execute(param, ct)!),
                                                      canExecute,
                                                      outputScheduler);
     }
@@ -598,7 +602,7 @@ public static class ReactiveCommand
         }
 
         return CreateFromObservable<TParam, Unit>(
-                                                  param => Observable.FromAsync(ct => execute(param, ct)),
+                                                  param => Signals.FromValue<Unit>(async ct => await execute(param, ct)),
                                                   canExecute,
                                                   outputScheduler);
     }
@@ -624,7 +628,7 @@ public static class ReactiveCommand
                     "StyleCop.CSharp.MaintainabilityRules",
                     "SA1402:FileMayOnlyContainASingleType",
                     Justification = "Same class just generic.")]
-public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
+public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
 {
     private readonly IObservable<bool> _canExecute;
     private readonly IDisposable _canExecuteSubscription;
