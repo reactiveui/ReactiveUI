@@ -16,9 +16,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10')) or $(TargetFramework.StartsWith('net7.0-windows10'))">
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
-	</ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230217.4" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
   </ItemGroup>
 	<ItemGroup>
