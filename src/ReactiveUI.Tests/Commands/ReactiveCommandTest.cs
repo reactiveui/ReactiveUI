@@ -1148,38 +1148,40 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, failureCount);
         }
 
-        [Fact(Skip = "Issue with HandleNonSuccessAndDebuggerNotification exception randomley")]
-        public async Task ReactiveCommandCreateFromTaskHandlesTaskExceptionAsync()
-        {
-            var subj = new Subject<Unit>();
-            var isExecuting = false;
-            Exception? fail = null;
-            var fixture = ReactiveCommand.CreateFromTask(
-                async _ =>
+        [Fact]
+        public void ReactiveCommandCreateFromTaskHandlesTaskException() =>
+            new TestScheduler().With(
+                async scheduler =>
                 {
-                    await subj.Take(1);
-                    throw new Exception("break execution");
-                },
-                outputScheduler: ImmediateScheduler.Instance);
+                    var subj = new Subject<Unit>();
+                    Exception? fail = null;
+                    var fixture = ReactiveCommand.CreateFromTask(
+                        async _ =>
+                        {
+                            await subj.Take(1);
+                            throw new Exception("break execution");
+                        },
+                        outputScheduler: scheduler);
 
-            fixture.IsExecuting.Subscribe(x => isExecuting = x);
-            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+                    fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+                    fixture.ThrownExceptions.Subscribe(ex => fail = ex);
 
-            Assert.False(isExecuting);
-            Assert.Null(fail);
+                    Assert.False(isExecuting[0]);
+                    Assert.Null(fail);
 
-            fixture.Execute().Subscribe();
-            Assert.True(isExecuting);
-            Assert.Null(fail);
+                    fixture.Execute().Subscribe();
+                    scheduler.AdvanceByMs(10);
+                    Assert.True(isExecuting[1]);
+                    Assert.Null(fail);
+                    scheduler.AdvanceByMs(10);
+                    subj.OnNext(Unit.Default);
 
-            subj.OnNext(Unit.Default);
+                    scheduler.AdvanceByMs(10);
 
-            // Wait 10 ms to allow execution to complete
-            await Task.Delay(500).ConfigureAwait(false);
-
-            Assert.False(isExecuting);
-            Assert.Equal("break execution", fail?.Message);
-        }
+                    Assert.False(isExecuting[2]);
+                    Assert.Equal("break execution", fail?.Message);
+                    await Task.Delay(0).ConfigureAwait(false);
+                });
 
         [Fact]
         public async Task ReactiveCommandExecutesFromInvokeCommand()
@@ -1211,7 +1213,7 @@ namespace ReactiveUI.Tests
             var statusTrail = new List<(int, string)>();
             var position = 0;
             Exception? exception = null;
-            var fixture = Signals.FromValue<Unit>(
+            var fixture = Signal.FromValue<Unit>(
                  async (token) =>
             {
                 var ex = new Exception();
@@ -1264,7 +1266,7 @@ namespace ReactiveUI.Tests
             var statusTrail = new List<(int, string)>();
             var position = 0;
             Exception? exception = null;
-            var fixture = Signals.FromAsync<Unit>(
+            var fixture = Signal.FromAsync<Unit>(
                  async (token) =>
                  {
                      var ex = new Exception();

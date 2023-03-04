@@ -814,7 +814,7 @@ namespace ReactiveUI
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
     }
-    public static class Signals
+    public static class Signal
     {
         public static System.IObservable<T> FromAsync<T>(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task> actionAsync, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         public static System.IObservable<T> FromValue<T>(System.Action<System.Threading.CancellationToken> actionAsync, System.Reactive.Concurrency.IScheduler? scheduler = null) { }

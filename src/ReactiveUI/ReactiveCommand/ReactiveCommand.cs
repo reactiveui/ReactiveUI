@@ -403,7 +403,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Signals.FromValue<TResult>(async ct => await execute(ct)), canExecute, outputScheduler);
+        return CreateFromObservable(() => Signal.FromValue<TResult>(ct => execute(ct).Result), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -460,7 +460,7 @@ public static class ReactiveCommand
         }
 
         return CreateFromObservable(
-            () => Signals.FromAsync<Unit>(execute),
+            () => Signal.FromAsync<Unit>(execute),
             canExecute,
             outputScheduler);
     }
@@ -534,7 +534,7 @@ public static class ReactiveCommand
         }
 
         return CreateFromObservable<TParam, TResult>(
-                                                     param => Signals.FromValue<TResult>(async ct => await execute(param, ct)!),
+                                                     param => Signal.FromValue<TResult>(ct => execute(param, ct).Result),
                                                      canExecute,
                                                      outputScheduler);
     }
@@ -602,7 +602,7 @@ public static class ReactiveCommand
         }
 
         return CreateFromObservable<TParam, Unit>(
-                                                  param => Signals.FromValue<Unit>(async ct => await execute(param, ct)),
+                                                  param => Signal.FromValue<Unit>(async ct => await execute(param, ct)),
                                                   canExecute,
                                                   outputScheduler);
     }
@@ -666,15 +666,12 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
         _synchronizedExecutionInfo = Subject.Synchronize(_executionInfo, _outputScheduler);
         _isExecuting = _synchronizedExecutionInfo.Scan(
                                                        0,
-                                                       (acc, next) =>
-                                                       {
-                                                           return next.Demarcation switch
+                                                       (acc, next) => next.Demarcation switch
                                                            {
                                                                ExecutionDemarcation.Begin => acc + 1,
                                                                ExecutionDemarcation.End => acc - 1,
                                                                _ => acc
-                                                           };
-                                                       }).Select(inFlightCount => inFlightCount > 0)
+                                                           }).Select(inFlightCount => inFlightCount > 0)
                                                  .StartWith(false)
                                                  .DistinctUntilChanged()
                                                  .Replay(1)
@@ -724,16 +721,16 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             return Observable.Defer(
                                     () =>
                                     {
-                                        _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
+                                        _synchronizedExecutionInfo.OnNext(ReactiveCommand<TParam, TResult>.ExecutionInfo.CreateBegin());
                                         return Observable<TResult>.Empty;
-                                    }).Concat(_execute(parameter))
-                             .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                             .Catch<TResult, Exception>(
-                                                        ex =>
+                                    }).Concat(TryExecute(parameter))
+                             .Do(result => _synchronizedExecutionInfo.OnNext(ReactiveCommand<TParam, TResult>.ExecutionInfo.CreateResult(result)))
+                             .Catch(
+                                                        (Func<Exception, IObservable<TResult>>)(ex =>
                                                         {
                                                             _exceptions.OnNext(ex);
                                                             return Observable.Throw<TResult>(ex);
-                                                        }).Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
+                                                        })).Finally(() => _synchronizedExecutionInfo.OnNext(ReactiveCommand<TParam, TResult>.ExecutionInfo.CreateEnd()))
                              .PublishLast()
                              .RefCount();
         }
@@ -755,7 +752,7 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                                     {
                                         _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
                                         return Observable<TResult>.Empty;
-                                    }).Concat(_execute(default!))
+                                    }).Concat(TryExecute(default!))
                              .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
                              .Catch<TResult, Exception>(
                                                         ex =>
@@ -786,6 +783,18 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
         }
 
         _canExecuteSubscription.Dispose();
+    }
+
+    private IObservable<TResult> TryExecute(TParam parameter)
+    {
+        try
+        {
+            return _execute(parameter);
+        }
+        catch (Exception ex)
+        {
+            return Observable.Throw<TResult>(ex);
+        }
     }
 
     private readonly struct ExecutionInfo

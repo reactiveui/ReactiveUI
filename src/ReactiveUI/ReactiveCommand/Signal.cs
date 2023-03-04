@@ -16,7 +16,7 @@ namespace ReactiveUI;
 /// <summary>
 /// Signals.
 /// </summary>
-public static class Signals
+public static class Signal
 {
     /// <summary>
     /// Froms the asynchronous.
@@ -25,8 +25,10 @@ public static class Signals
     /// <param name="actionAsync">The action asynchronous.</param>
     /// <param name="scheduler">The scheduler.</param>
     /// <returns>An Observable of T.</returns>
+#pragma warning disable RCS1047 // Non-asynchronous method name should not end with 'Async'.
     public static IObservable<T> FromAsync<T>(Func<CancellationToken, Task> actionAsync, IScheduler? scheduler = null) =>
         FromValue(ct => RunCancellationTask<T>(actionAsync, ct), scheduler);
+#pragma warning restore RCS1047 // Non-asynchronous method name should not end with 'Async'.
 
     /// <summary>
     /// Froms the asynchronous.
@@ -46,27 +48,7 @@ public static class Signals
                 var ct = src.Token;
 
 #pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler
-                var task = Task.Factory.StartNew<T>(
-                    () =>
-                    {
-                        try
-                        {
-                            return actionAsync(ct);
-                        }
-                        catch (OperationCanceledException oce)
-                        {
-                            // Catch the cancellation exception and pass it to the observer if not user handled.
-                            obs.OnError(oce);
-                        }
-                        catch (Exception ex)
-                        {
-                            // Catch the exception and pass it to the observer if not user handled.
-                            obs.OnError(ex);
-                        }
-
-                        return default!;
-                    },
-                    ct);
+                var task = Task.Factory.StartNew(() => actionAsync(ct), ct);
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
                 try
                 {
@@ -84,11 +66,11 @@ public static class Signals
                 }
 
                 return Disposable.Create(() =>
-                         {
-                             ct.ThrowIfCancellationRequested();
-                             src.Cancel();
-                             src.Dispose();
-                         });
+                {
+                    ct.ThrowIfCancellationRequested();
+                    src.Cancel();
+                    src.Dispose();
+                });
             })).ObserveOn(s);
     }
 
@@ -112,24 +94,11 @@ public static class Signals
 #pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler
                 var task = Task.Factory.StartNew<T>(
                     () =>
-                {
-                    try
                     {
                         actionAsync(ct);
-                    }
-                    catch (OperationCanceledException oce)
-                    {
-                        // Catch the cancellation exception and pass it to the observer if not user handled.
-                        obs.OnError(oce);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Catch the exception and pass it to the observer if not user handled.
-                        obs.OnError(ex);
-                    }
 
-                    return default!;
-                },
+                        return default!;
+                    },
                     ct);
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
 
@@ -167,45 +136,27 @@ public static class Signals
     /// <returns>A instance of type T.</returns>
     public static T RunCancellationTask<T>(Func<CancellationToken, Task> execute, CancellationToken ct)
     {
+#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler
+        var tsk = Task.Factory.StartNew<T>(
+            () =>
+            {
+                var task = execute(ct);
+                task.HandleCancellation().Wait();
+
+                return default!;
+            },
+            ct);
+#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
         try
         {
-#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler
-            return Task.Factory.StartNew<T>(
-                () =>
-                {
-                    var task = execute(ct);
-                    try
-                    {
-                        task.HandleCancellation().Wait();
-                    }
-                    catch (AggregateException ae)
-                    {
-                        foreach (var ex in ae.InnerExceptions.Select(e => new Exception(e.Message, e)))
-                        {
-                            throw ex;
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-
-                    return default!;
-                },
-                ct).Result;
-#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
+            tsk.Wait(ct);
+            return tsk.Result;
         }
         catch (Exception ex)
         {
             if (ex is AggregateException ae)
             {
-                foreach (var innerEx in ae.InnerExceptions.Select(e => new Exception(e.Message, e)))
-                {
-                    throw innerEx;
-                }
+                ThrowExceptions(ae);
             }
 
             throw;
@@ -254,6 +205,14 @@ public static class Signals
         }
 
         return default;
+    }
+
+    private static void ThrowExceptions(AggregateException ae)
+    {
+        foreach (var innerEx in ae.InnerExceptions.Select(e => new Exception(e.Message, e)))
+        {
+            throw innerEx;
+        }
     }
 
     private static async Task<TResult> WhenCancelled<TResult>(this Task<TResult> asyncTask, CancellationToken cancellationToken)
