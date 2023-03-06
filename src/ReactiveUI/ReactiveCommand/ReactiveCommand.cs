@@ -15,6 +15,7 @@ using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
+using ReactiveUI.Signals;
 
 namespace ReactiveUI;
 
@@ -108,7 +109,7 @@ public static class ReactiveCommand
                                                                                 observer.OnCompleted();
                                                                                 return Disposable.Empty;
                                                                             }),
-                                               canExecute ?? Observables.True,
+                                               canExecute,
                                                outputScheduler);
     }
 
@@ -149,7 +150,7 @@ public static class ReactiveCommand
                                                        observer.OnCompleted();
                                                        return Disposable.Empty;
                                                    }),
-                                                  canExecute ?? Observables.True,
+                                                  canExecute,
                                                   outputScheduler);
     }
 
@@ -190,7 +191,7 @@ public static class ReactiveCommand
                                                       observer.OnCompleted();
                                                       return Disposable.Empty;
                                                   }),
-                                                 canExecute ?? Observables.True,
+                                                 canExecute,
                                                  outputScheduler);
     }
 
@@ -234,7 +235,7 @@ public static class ReactiveCommand
                                                          observer.OnCompleted();
                                                          return Disposable.Empty;
                                                      }),
-                                                    canExecute ?? Observables.True,
+                                                    canExecute,
                                                     outputScheduler);
     }
 
@@ -301,10 +302,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return new ReactiveCommand<Unit, TResult>(
-                                                  _ => execute(),
-                                                  canExecute ?? Observables.True,
-                                                  outputScheduler);
+        return new ReactiveCommand<Unit, TResult>(_ => execute(), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -338,10 +336,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return new ReactiveCommand<TParam, TResult>(
-                                                    execute,
-                                                    canExecute ?? Observables.True,
-                                                    outputScheduler);
+        return new ReactiveCommand<TParam, TResult>(execute, canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -394,7 +389,7 @@ public static class ReactiveCommand
     /// The type of the command's result.
     /// </typeparam>
     public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
-        Func<CancellationToken, Task<TResult>> execute,
+        Func<CancellationTokenSource, Task<TResult>> execute,
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
@@ -403,7 +398,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Signal.FromValue<TResult>(ct => execute(ct).Result), canExecute, outputScheduler);
+        return new ReactiveCommand<Unit, TResult>(_ => Signal.FromTask(ct => execute(ct)), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -450,7 +445,7 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     public static ReactiveCommand<Unit, Unit> CreateFromTask(
-        Func<CancellationToken, Task> execute,
+        Func<CancellationTokenSource, Task<Unit>> execute,
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
@@ -459,10 +454,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(
-            () => Signal.FromAsync<Unit>(execute),
-            canExecute,
-            outputScheduler);
+        return new ReactiveCommand<Unit, Unit>(_ => Signal.FromTask(ct => execute(ct)), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -524,7 +516,7 @@ public static class ReactiveCommand
     /// The type of the command's result.
     /// </typeparam>
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
-        Func<TParam, CancellationToken, Task<TResult>> execute,
+        Func<TParam, CancellationTokenSource, Task<TResult>> execute,
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
@@ -533,10 +525,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable<TParam, TResult>(
-                                                     param => Signal.FromValue<TResult>(ct => execute(param, ct).Result),
-                                                     canExecute,
-                                                     outputScheduler);
+        return new ReactiveCommand<TParam, TResult>(param => Signal.FromTask(ct => execute(param, ct)), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -592,7 +581,7 @@ public static class ReactiveCommand
     /// The type of the parameter passed through to command execution.
     /// </typeparam>
     public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
-        Func<TParam, CancellationToken, Task> execute,
+        Func<TParam, CancellationTokenSource, Task<Unit>> execute,
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
@@ -601,10 +590,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable<TParam, Unit>(
-                                                  param => Signal.FromValue<Unit>(async ct => await execute(param, ct)),
-                                                  canExecute,
-                                                  outputScheduler);
+        return new ReactiveCommand<TParam, Unit>(param => Signal.FromTask(ct => execute(param, ct)), canExecute, outputScheduler);
     }
 }
 
@@ -628,7 +614,7 @@ public static class ReactiveCommand
                     "StyleCop.CSharp.MaintainabilityRules",
                     "SA1402:FileMayOnlyContainASingleType",
                     Justification = "Same class just generic.")]
-public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
+public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
 {
     private readonly IObservable<bool> _canExecute;
     private readonly IDisposable _canExecuteSubscription;
@@ -641,6 +627,7 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     private readonly IScheduler _outputScheduler;
     private readonly IObservable<TResult> _results;
     private readonly ISubject<ExecutionInfo, ExecutionInfo> _synchronizedExecutionInfo;
+    private IObservable<TResult>? _currentExecute;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}"/> class.
@@ -654,11 +641,6 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
         IObservable<bool>? canExecute,
         IScheduler? outputScheduler = null)
     {
-        if (canExecute is null)
-        {
-            throw new ArgumentNullException(nameof(canExecute));
-        }
-
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
         _exceptions = new ScheduledSubject<Exception>(_outputScheduler, RxApp.DefaultExceptionHandler);
@@ -669,7 +651,7 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                                                        (acc, next) => next.Demarcation switch
                                                            {
                                                                ExecutionDemarcation.Begin => acc + 1,
-                                                               ExecutionDemarcation.End => acc - 1,
+                                                               ExecutionDemarcation.End => acc > 0 ? acc - 1 : acc = 0,
                                                                _ => acc
                                                            }).Select(inFlightCount => inFlightCount > 0)
                                                  .StartWith(false)
@@ -677,7 +659,7 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                                                  .Replay(1)
                                                  .RefCount();
 
-        _canExecute = canExecute.Catch<bool, Exception>(
+        _canExecute = (canExecute ?? Observables.True).Catch<bool, Exception>(
                                                         ex =>
                                                         {
                                                             _exceptions.OnNext(ex);
@@ -782,6 +764,12 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             return;
         }
 
+        // Handle FromAsyncTask with token
+        if (_currentExecute is IAsyncSignal<TResult> asyncObservable)
+        {
+            asyncObservable.Dispose();
+        }
+
         _canExecuteSubscription.Dispose();
     }
 
@@ -789,11 +777,20 @@ public partial class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     {
         try
         {
-            return _execute(parameter);
+            _currentExecute = _execute(parameter);
+
+            // Handle FromAsyncTask with token
+            if (_currentExecute is IAsyncSignal<TResult> asyncObservable && !asyncObservable.IsDisposed)
+            {
+                // self disposing subscription
+                asyncObservable.GetOperationCanceled(_exceptions);
+            }
+
+            return _currentExecute;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return Observable.Throw<TResult>(ex);
+            throw;
         }
     }
 

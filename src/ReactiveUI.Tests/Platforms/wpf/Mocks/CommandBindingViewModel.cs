@@ -13,37 +13,37 @@ namespace ReactiveUI.Tests.Wpf
 {
     public class CommandBindingViewModel : ReactiveObject
     {
-        private ReactiveCommand<int, int> _Command1;
-        private ReactiveCommand<Unit, Unit> _Command2;
-        private ReactiveCommand<Unit, int?> _Command3;
-        private ObservableAsPropertyHelper<int?> _result;
+        private readonly ObservableAsPropertyHelper<int?> _result;
+        private ReactiveCommand<int, int> _command1;
+        private ReactiveCommand<Unit, Unit> _command2;
+        private ReactiveCommand<Unit, int?> _command3;
 
         private int _value;
 
         public CommandBindingViewModel()
         {
-            _Command1 = ReactiveCommand.Create<int, int>(_ => { return _; }, outputScheduler: ImmediateScheduler.Instance);
-            _Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
-            _Command3 = ReactiveCommand.CreateFromTask(RunAsync, outputScheduler: RxApp.TaskpoolScheduler);
-            _result = _Command3.ToProperty(this, x => x.Result, scheduler: RxApp.MainThreadScheduler);
+            _command1 = ReactiveCommand.Create<int, int>(_ => { return _; }, outputScheduler: ImmediateScheduler.Instance);
+            _command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+            _command3 = ReactiveCommand.CreateFromTask(RunAsync, outputScheduler: RxApp.TaskpoolScheduler);
+            _result = _command3.ToProperty(this, x => x.Result, scheduler: RxApp.MainThreadScheduler);
         }
 
         public ReactiveCommand<int, int> Command1
         {
-            get => _Command1;
-            set => this.RaiseAndSetIfChanged(ref _Command1, value);
+            get => _command1;
+            set => this.RaiseAndSetIfChanged(ref _command1, value);
         }
 
         public ReactiveCommand<Unit, Unit> Command2
         {
-            get => _Command2;
-            set => this.RaiseAndSetIfChanged(ref _Command2, value);
+            get => _command2;
+            set => this.RaiseAndSetIfChanged(ref _command2, value);
         }
 
         public ReactiveCommand<Unit, int?> Command3
         {
-            get => _Command3;
-            set => this.RaiseAndSetIfChanged(ref _Command3, value);
+            get => _command3;
+            set => this.RaiseAndSetIfChanged(ref _command3, value);
         }
 
         public FakeNestedViewModel? NestedViewModel { get; set; }
@@ -56,9 +56,9 @@ namespace ReactiveUI.Tests.Wpf
 
         public int? Result => _result.Value;
 
-        private async Task<int?> RunAsync(CancellationToken cancellationToken)
+        private async Task<int?> RunAsync(CancellationTokenSource cancellationToken)
         {
-            await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(1000, cancellationToken.Token).ConfigureAwait(false);
             return cancellationToken.IsCancellationRequested ? null : 100;
         }
     }

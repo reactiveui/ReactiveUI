@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -16,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using Microsoft.Reactive.Testing;
+using ReactiveUI.Signals;
 using ReactiveUI.Testing;
 using Xunit;
 
@@ -1149,41 +1149,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ReactiveCommandCreateFromTaskHandlesTaskException() =>
-            new TestScheduler().With(
-                async scheduler =>
-                {
-                    var subj = new Subject<Unit>();
-                    Exception? fail = null;
-                    var fixture = ReactiveCommand.CreateFromTask(
-                        async _ =>
-                        {
-                            await subj.Take(1);
-                            throw new Exception("break execution");
-                        },
-                        outputScheduler: scheduler);
-
-                    fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
-                    fixture.ThrownExceptions.Subscribe(ex => fail = ex);
-
-                    Assert.False(isExecuting[0]);
-                    Assert.Null(fail);
-
-                    fixture.Execute().Subscribe();
-                    scheduler.AdvanceByMs(10);
-                    Assert.True(isExecuting[1]);
-                    Assert.Null(fail);
-                    scheduler.AdvanceByMs(10);
-                    subj.OnNext(Unit.Default);
-
-                    scheduler.AdvanceByMs(10);
-
-                    Assert.False(isExecuting[2]);
-                    Assert.Equal("break execution", fail?.Message);
-                    await Task.Delay(0).ConfigureAwait(false);
-                });
-
-        [Fact]
         public async Task ReactiveCommandExecutesFromInvokeCommand()
         {
             var semaphore = new SemaphoreSlim(0);
@@ -1208,95 +1173,338 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public async Task SignalsFromValueHandlesCancellation()
+        public async Task ReactiveCommandCreateFromTaskHandlesExecuteCancellation()
         {
             var statusTrail = new List<(int, string)>();
             var position = 0;
-            Exception? exception = null;
-            var fixture = Signal.FromValue<Unit>(
-                 async (token) =>
-            {
-                var ex = new Exception();
-                statusTrail.Add((position++, "started command"));
-                await Task.Delay(10000, token).HandleCancellation(async () =>
-                {
-                    // User Handles cancellation.
-                    statusTrail.Add((position++, "starting cancelling command"));
+            var fixture = ReactiveCommand.CreateFromTask(
+                        async cts =>
+                        {
+                            statusTrail.Add((position++, "started command"));
+                            await Task.Delay(10000, cts.Token).HandleCancellation(async () =>
+                            {
+                                // User Handles cancellation.
+                                statusTrail.Add((position++, "starting cancelling command"));
 
-                    // dummy cleanup
-                    await Task.Delay(5000, CancellationToken.None).ConfigureAwait(false);
-                    statusTrail.Add((position++, "finished cancelling command"));
-                }).ConfigureAwait(true);
+                                // dummy cleanup
+                                await Task.Delay(5000, CancellationToken.None).ConfigureAwait(false);
+                                statusTrail.Add((position++, "finished cancelling command"));
+                            }).ConfigureAwait(true);
+                            return Unit.Default;
+                        },
+                        outputScheduler: ImmediateScheduler.Instance);
 
-                statusTrail.Add((position++, "finished command Normally"));
-            }).Catch<Unit, Exception>(
-                ex =>
-                {
-                    //// should be OperationCanceledException
-                    //// OR user code exception
-
-                    exception = ex;
-                    statusTrail.Add((position++, "Exception Should Be here"));
-                    return Observable.Throw<Unit>(ex);
-                }).Finally(() => statusTrail.Add((position++, "Should always come here.")));
-
-            var cancel = fixture.Subscribe();
-            await Task.Delay(500).ConfigureAwait(true);
+            Exception? fail = null;
+            fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+            Assert.False(isExecuting[0]);
+            Assert.Null(fail);
+            var result = false;
+            var cancel = fixture.Execute().Subscribe(_ => result = true);
+            await Task.Delay(500);
+            Assert.True(isExecuting[1]);
             Assert.True(statusTrail.Select(x => x.Item2).Contains("started command"));
             cancel.Dispose();
 
-            // Wait 5050 ms to allow execution and cleanup to complete
-            await Task.Delay(6000).ConfigureAwait(false);
-
-            Assert.True(statusTrail.Select(x => x.Item2).Contains("Should always come here."));
+            // Wait 6000 ms to allow execution and cleanup to complete
+            await Task.Delay(6000);
             Assert.True(statusTrail.Select(x => x.Item2).Contains("starting cancelling command"));
             Assert.True(statusTrail.Select(x => x.Item2).Contains("finished cancelling command"));
-            Assert.True(statusTrail.Select(x => x.Item2).Contains("finished command Normally"));
-
             //// (0, "started command")
-            //// (1, "Should always come here.")
-            //// (2, "starting cancelling command")
+            //// (1, "starting cancelling command")
             //// (3, "finished cancelling command")
-            //// (4, "finished command Normally")
+
+            // No result expected as cancelled
+            Assert.False(result);
+            Assert.NotNull(fail as OperationCanceledException);
+
+            // Check execution completed
+            Assert.False(isExecuting[2]);
         }
 
         [Fact]
-        public async Task SignalsFromAsyncHandlesCancellationInBase()
+        public async Task ReactiveCommandCreateFromTaskHandlesTokenExecuteCancellation()
         {
             var statusTrail = new List<(int, string)>();
             var position = 0;
-            Exception? exception = null;
-            var fixture = Signal.FromAsync<Unit>(
-                 async (token) =>
-                 {
-                     var ex = new Exception();
-                     statusTrail.Add((position++, "started command"));
-                     await Task.Delay(10000, token).HandleCancellation().ConfigureAwait(true);
+            var fixture = ReactiveCommand.CreateFromTask(
+                        async cts =>
+                        {
+                            statusTrail.Add((position++, "started command"));
+                            await Task.Delay(1000, cts.Token).HandleCancellation();
+                            _ = Task.Run(async () =>
+                            {
+                                // Wait for 1s then cancel
+                                await Task.Delay(1000);
+                                cts.Cancel();
+                            });
+                            await Task.Delay(5000, cts.Token).HandleCancellation(async () =>
+                            {
+                                // User Handles cancellation.
+                                statusTrail.Add((position++, "starting cancelling command"));
 
-                     statusTrail.Add((position++, "finished command Normally"));
-                 }).Catch<Unit, Exception>(
-                ex =>
-                {
-                    //// should be OperationCanceledException
-                    //// OR user code exception
+                                // dummy cleanup
+                                await Task.Delay(5000, CancellationToken.None).ConfigureAwait(false);
+                                statusTrail.Add((position++, "finished cancelling command"));
+                            }).ConfigureAwait(true);
+                            return Unit.Default;
+                        },
+                        outputScheduler: ImmediateScheduler.Instance);
 
-                    exception = ex;
-                    statusTrail.Add((position++, "Exception Should Be here"));
-                    return Observable.Throw<Unit>(ex);
-                }).Finally(() => statusTrail.Add((position++, "Should always come here.")));
-
-            var cancel = fixture.Subscribe();
-            await Task.Delay(500).ConfigureAwait(true);
+            Exception? fail = null;
+            fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+            Assert.False(isExecuting[0]);
+            Assert.Null(fail);
+            var result = false;
+            var cancel = fixture.Execute().Subscribe(_ => result = true);
+            await Task.Delay(500);
+            Assert.True(isExecuting[1]);
             Assert.True(statusTrail.Select(x => x.Item2).Contains("started command"));
             cancel.Dispose();
 
-            // Wait 5050 ms to allow execution and cleanup to complete
-            await Task.Delay(6000).ConfigureAwait(false);
-
-            Assert.True(statusTrail.Select(x => x.Item2).Contains("Should always come here."));
-
+            // Wait 8000 ms to allow execution and cleanup to complete
+            await Task.Delay(8000);
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("starting cancelling command"));
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("finished cancelling command"));
             //// (0, "started command")
-            //// (1, "Should always come here.")
+            //// (1, "starting cancelling command")
+            //// (3, "finished cancelling command")
+
+            // No result expected as cancelled
+            Assert.False(result);
+            Assert.NotNull(fail as OperationCanceledException);
+
+            // Check execution completed
+            Assert.False(isExecuting[2]);
+        }
+
+        [Fact]
+        public void ReactiveCommandCreateFromTaskHandlesTaskException() =>
+            new TestScheduler().With(
+                async scheduler =>
+                {
+                    var subj = new Subject<Unit>();
+                    Exception? fail = null;
+                    var fixture = ReactiveCommand.CreateFromTask(
+                        async cts =>
+                        {
+                            await subj.Take(1).HandleCancellation(token: cts.Token);
+                            throw new Exception("break execution");
+                        },
+                        outputScheduler: scheduler);
+
+                    fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+                    fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+
+                    Assert.False(isExecuting[0]);
+                    Assert.Null(fail);
+
+                    fixture.Execute().Subscribe();
+                    scheduler.AdvanceByMs(10);
+                    Assert.True(isExecuting[1]);
+                    Assert.Null(fail);
+                    scheduler.AdvanceByMs(10);
+                    subj.OnNext(Unit.Default);
+
+                    scheduler.AdvanceByMs(10);
+
+                    Assert.False(isExecuting[2]);
+                    Assert.Equal("break execution", fail?.Message);
+
+                    // Required for correct async / await task handling
+                    await Task.Delay(0).ConfigureAwait(false);
+                });
+
+        [Fact]
+        public async Task ReactiveCommandCreateFromTaskHandlesCancellation()
+        {
+            var statusTrail = new List<(int, string)>();
+            var position = 0;
+            var fixture = ReactiveCommand.CreateFromTask(
+                        async cts =>
+                        {
+                            statusTrail.Add((position++, "started command"));
+                            await Task.Delay(10000, cts.Token).HandleCancellation(async () =>
+                            {
+                                // User Handles cancellation.
+                                statusTrail.Add((position++, "starting cancelling command"));
+
+                                // dummy cleanup
+                                await Task.Delay(5000, CancellationToken.None).ConfigureAwait(false);
+                                statusTrail.Add((position++, "finished cancelling command"));
+                            }).ConfigureAwait(true);
+                            return Unit.Default;
+                        },
+                        outputScheduler: ImmediateScheduler.Instance);
+
+            Exception? fail = null;
+            fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+            Assert.False(isExecuting[0]);
+            Assert.Null(fail);
+            var result = false;
+            fixture.Execute().Subscribe(_ => result = true);
+            await Task.Delay(500);
+            Assert.True(isExecuting[1]);
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("started command"));
+            fixture.Dispose();
+
+            // Wait 6000 ms to allow execution and cleanup to complete
+            await Task.Delay(6000);
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("starting cancelling command"));
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("finished cancelling command"));
+            //// (0, "started command")
+            //// (1, "starting cancelling command")
+            //// (3, "finished cancelling command")
+
+            // No result expected as cancelled
+            Assert.False(result);
+            Assert.NotNull(fail as OperationCanceledException);
+
+            // Check execution completed
+            Assert.False(isExecuting[2]);
+        }
+
+        [Fact]
+        public async Task ReactiveCommandCreateFromTaskHandlesTokenCancellation()
+        {
+            var statusTrail = new List<(int, string)>();
+            var position = 0;
+            var fixture = ReactiveCommand.CreateFromTask(
+                        async cts =>
+                        {
+                            statusTrail.Add((position++, "started command"));
+                            await Task.Delay(1000, cts.Token).HandleCancellation();
+                            _ = Task.Run(async () =>
+                            {
+                                // Wait for 1s then cancel
+                                await Task.Delay(1000);
+                                cts.Cancel();
+                            });
+                            await Task.Delay(5000, cts.Token).HandleCancellation(async () =>
+                            {
+                                // User Handles cancellation.
+                                statusTrail.Add((position++, "starting cancelling command"));
+
+                                // dummy cleanup
+                                await Task.Delay(5000, CancellationToken.None).ConfigureAwait(false);
+                                statusTrail.Add((position++, "finished cancelling command"));
+                            }).ConfigureAwait(true);
+                            return Unit.Default;
+                        },
+                        outputScheduler: ImmediateScheduler.Instance);
+
+            Exception? fail = null;
+            fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+            Assert.False(isExecuting[0]);
+            Assert.Null(fail);
+            var result = false;
+            fixture.Execute().Subscribe(_ => result = true);
+            await Task.Delay(500);
+            Assert.True(isExecuting[1]);
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("started command"));
+            fixture.Dispose();
+
+            // Wait 6000 ms to allow execution and cleanup to complete
+            await Task.Delay(8000);
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("starting cancelling command"));
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("finished cancelling command"));
+            //// (0, "started command")
+            //// (1, "starting cancelling command")
+            //// (3, "finished cancelling command")
+
+            // No result expected as cancelled
+            Assert.False(result);
+            Assert.NotNull(fail as OperationCanceledException);
+
+            // Check execution completed
+            Assert.False(isExecuting[2]);
+        }
+
+        [Fact]
+        public async Task ReactiveCommandCreateFromTaskHandlesCancellationInBase()
+        {
+            var statusTrail = new List<(int, string)>();
+            var position = 0;
+            var fixture = ReactiveCommand.CreateFromTask(
+                        async cts =>
+                        {
+                            statusTrail.Add((position++, "started command"));
+                            await Task.Delay(10000, cts.Token).ConfigureAwait(true);
+                            return Unit.Default;
+                        },
+                        outputScheduler: ImmediateScheduler.Instance);
+
+            Exception? fail = null;
+            fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+            Assert.False(isExecuting[0]);
+            Assert.Null(fail);
+            var result = false;
+            fixture.Execute().Subscribe(_ => result = true);
+            await Task.Delay(500);
+            Assert.True(isExecuting[1]);
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("started command"));
+            fixture.Dispose();
+
+            // Wait 6000 ms to allow execution and cleanup to complete
+            await Task.Delay(6000);
+            //// (0, "started command")
+
+            // No result expected as cancelled
+            Assert.False(result);
+            Assert.NotNull(fail as OperationCanceledException);
+
+            // Check execution completed
+            Assert.False(isExecuting[2]);
+        }
+
+        [Fact]
+        public async Task ReactiveCommandCreateFromTaskHandlesCompletion()
+        {
+            var statusTrail = new List<(int, string)>();
+            var position = 0;
+            var fixture = ReactiveCommand.CreateFromTask(
+                        async cts =>
+                        {
+                            statusTrail.Add((position++, "started command"));
+                            await Task.Delay(10000, cts.Token).HandleCancellation(async () =>
+                            {
+                                // User Handles cancellation.
+                                statusTrail.Add((position++, "starting cancelling command"));
+
+                                // dummy cleanup
+                                await Task.Delay(5000, CancellationToken.None).ConfigureAwait(false);
+                                statusTrail.Add((position++, "finished cancelling command"));
+                            }).ConfigureAwait(true);
+                            return Unit.Default;
+                        },
+                        outputScheduler: ImmediateScheduler.Instance);
+
+            Exception? fail = null;
+            fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+            Assert.False(isExecuting[0]);
+            Assert.Null(fail);
+            var result = false;
+            fixture.Execute().Subscribe(_ => result = true);
+            await Task.Delay(500);
+            Assert.True(isExecuting[1]);
+            Assert.True(statusTrail.Select(x => x.Item2).Contains("started command"));
+
+            // Wait 11000 ms to allow execution and cleanup to complete
+            await Task.Delay(11000);
+            Assert.False(statusTrail.Select(x => x.Item2).Contains("starting cancelling command"));
+            Assert.False(statusTrail.Select(x => x.Item2).Contains("finished cancelling command"));
+            //// (0, "started command")
+
+            Assert.True(result);
+            Assert.Null(fail);
+
+            // Check execution completed
+            Assert.False(isExecuting[2]);
         }
     }
 }

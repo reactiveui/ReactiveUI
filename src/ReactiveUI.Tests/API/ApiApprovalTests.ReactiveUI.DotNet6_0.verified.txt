@@ -631,13 +631,13 @@ namespace ReactiveUI
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromObservable<TResult>(System.Func<System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateFromTask(System.Func<System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
-        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateFromTask(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateFromTask(System.Func<System.Threading.CancellationTokenSource, System.Threading.Tasks.Task<System.Reactive.Unit>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromTask<TResult>(System.Func<System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
-        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromTask<TResult>(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromTask<TResult>(System.Func<System.Threading.CancellationTokenSource, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
-        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.CancellationTokenSource, System.Threading.Tasks.Task<System.Reactive.Unit>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
-        public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.CancellationTokenSource, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
     }
     public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
     {
@@ -813,15 +813,6 @@ namespace ReactiveUI
         public ShortToStringTypeConverter() { }
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
-    }
-    public static class Signal
-    {
-        public static System.IObservable<T> FromAsync<T>(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task> actionAsync, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
-        public static System.IObservable<T> FromValue<T>(System.Action<System.Threading.CancellationToken> actionAsync, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
-        public static System.IObservable<T> FromValue<T>(System.Func<System.Threading.CancellationToken, T> actionAsync, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
-        public static System.Threading.Tasks.Task HandleCancellation(this System.Threading.Tasks.Task asyncTask, System.Action? action = null) { }
-        public static System.Threading.Tasks.Task<TResult?> HandleCancellation<TResult>(this System.Threading.Tasks.Task<TResult> asyncTask, System.Action action) { }
-        public static T RunCancellationTask<T>(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.Threading.CancellationToken ct) { }
     }
     [System.AttributeUsage(System.AttributeTargets.Class)]
     public sealed class SingleInstanceViewAttribute : System.Attribute
@@ -1012,6 +1003,28 @@ namespace ReactiveUI
             where TSender :  class { }
         public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this TSender sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>?>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T10>?>> obs10, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T11>?>> obs11, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T12>?>> obs12, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, TRet> selector)
             where TSender :  class { }
+    }
+}
+namespace ReactiveUI.Signals
+{
+    public static class AsyncSignal
+    {
+        public static ReactiveUI.Signals.IAsyncSignal<TResult> Create<TResult>(System.Func<ReactiveUI.Signals.IAsyncSignal<TResult>, System.IObservable<TResult>> observableFactory, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+    }
+    public interface IAsyncSignal<out T> : System.IDisposable, System.IObservable<T>, System.Reactive.Disposables.ICancelable
+    {
+        System.Threading.CancellationTokenSource? CancellationTokenSource { get; }
+        bool IsCancellationRequested { get; }
+        System.IObservable<T>? Source { get; }
+        void GetOperationCanceled(System.IObserver<System.Exception> observer);
+    }
+    public static class Signal
+    {
+        public static ReactiveUI.Signals.IAsyncSignal<System.Reactive.Unit> FromTask(System.Func<System.Threading.CancellationTokenSource, System.Threading.Tasks.Task<System.Reactive.Unit>> execution, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public static ReactiveUI.Signals.IAsyncSignal<TResult> FromTask<TResult>(System.Func<System.Threading.CancellationTokenSource, System.Threading.Tasks.Task<TResult>> actionAsync, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public static System.Threading.Tasks.Task HandleCancellation(this System.Threading.Tasks.Task asyncTask, System.Action? action = null) { }
+        public static System.Threading.Tasks.Task<TResult?> HandleCancellation<TResult>(this System.Threading.Tasks.Task<TResult> asyncTask, System.Action? action = null) { }
+        public static System.Threading.Tasks.Task<TResult?> HandleCancellation<TResult>(this System.IObservable<TResult> asyncTask, System.Threading.CancellationToken token, System.Action? action = null) { }
     }
 }
 namespace System.Reactive.Disposables

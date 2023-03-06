@@ -84,4 +84,9 @@
     </Page>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\Mocks\ToDo\" />
+    <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
+  </ItemGroup>
+
 </Project>
