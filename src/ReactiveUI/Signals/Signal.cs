@@ -23,8 +23,11 @@ public static class Signal
     /// </summary>
     /// <param name="execution">The function to execute.</param>
     /// <param name="scheduler">The scheduler.</param>
-    /// <returns>An IAsyncSignal of T.</returns>
-    public static IAsyncSignal<Unit> FromTask(Func<CancellationTokenSource, Task<Unit>> execution, IScheduler? scheduler = null) =>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
+    /// <returns>
+    /// An IAsyncSignal of T.
+    /// </returns>
+    public static IAsyncSignal<Unit> FromTask(Func<CancellationTokenSource, Task<Unit>> execution, IScheduler? scheduler = null, CancellationTokenSource? cancellationTokenSource = null) =>
         AsyncSignal.Create<Unit>(
             ao => Observable.Defer(() => Observable.Create<Unit>(
             obs =>
@@ -74,13 +77,21 @@ public static class Signal
 
                     if (hasError || !hasCompleted)
                     {
-                        src.Cancel();
+                        try
+                        {
+                            src.Cancel();
+                        }
+                        catch (ObjectDisposedException)
+                        {
+                            throw new OperationCanceledException();
+                        }
                     }
 
                     src.Dispose();
                 });
             })),
-            scheduler);
+            scheduler,
+            cancellationTokenSource);
 
     /// <summary>
     /// Froms the asynchronous.
@@ -88,8 +99,11 @@ public static class Signal
     /// <typeparam name="TResult">The type of the return value.</typeparam>
     /// <param name="actionAsync">The action asynchronous.</param>
     /// <param name="scheduler">The scheduler.</param>
-    /// <returns>An Observable of T.</returns>
-    public static IAsyncSignal<TResult> FromTask<TResult>(Func<CancellationTokenSource, Task<TResult>> actionAsync, IScheduler? scheduler = null) =>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
+    /// <returns>
+    /// An Observable of T.
+    /// </returns>
+    public static IAsyncSignal<TResult> FromTask<TResult>(Func<CancellationTokenSource, Task<TResult>> actionAsync, IScheduler? scheduler = null, CancellationTokenSource? cancellationTokenSource = null) =>
         AsyncSignal.Create<TResult>(
             ao => Observable.Defer(() => Observable.Create<TResult>(
             obs =>
@@ -139,13 +153,21 @@ public static class Signal
 
                     if (hasError || !hasCompleted)
                     {
-                        src.Cancel();
+                        try
+                        {
+                            src.Cancel();
+                        }
+                        catch (ObjectDisposedException)
+                        {
+                            throw new OperationCanceledException();
+                        }
                     }
 
                     src.Dispose();
                 });
             })),
-            scheduler);
+            scheduler,
+            cancellationTokenSource);
 
     /// <summary>
     /// Handles the cancellation.

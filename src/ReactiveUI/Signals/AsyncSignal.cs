@@ -5,6 +5,7 @@
 
 using System;
 using System.Reactive.Concurrency;
+using System.Threading;
 
 namespace ReactiveUI.Signals;
 
@@ -19,20 +20,21 @@ public static class AsyncSignal
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="observableFactory">The observable factory.</param>
     /// <param name="scheduler">The scheduler.</param>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
     /// <returns>
     /// An AsyncObservable.
     /// </returns>
     /// <exception cref="ArgumentNullException">observableFactory.</exception>
-    public static IAsyncSignal<TResult> Create<TResult>(Func<IAsyncSignal<TResult>, IObservable<TResult>> observableFactory, IScheduler? scheduler = null) =>
-        Instance(observableFactory, scheduler);
+    public static IAsyncSignal<TResult> Create<TResult>(Func<IAsyncSignal<TResult>, IObservable<TResult>> observableFactory, IScheduler? scheduler = null, CancellationTokenSource? cancellationTokenSource = null) =>
+        Instance(observableFactory, scheduler, cancellationTokenSource);
 
-    private static IAsyncSignal<TResult> Instance<TResult>(Func<IAsyncSignal<TResult>, IObservable<TResult>> observableFactory, IScheduler? scheduler)
+    private static IAsyncSignal<TResult> Instance<TResult>(Func<IAsyncSignal<TResult>, IObservable<TResult>> observableFactory, IScheduler? scheduler, CancellationTokenSource? cancellationTokenSource)
     {
         if (observableFactory is null)
         {
             throw new ArgumentNullException(nameof(observableFactory));
         }
 
-        return new AsyncSignal<TResult>(observableFactory, scheduler);
+        return new AsyncSignal<TResult>(observableFactory, scheduler, cancellationTokenSource);
     }
 }

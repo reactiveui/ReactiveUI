@@ -371,34 +371,29 @@ public static class ReactiveCommand
     }
 
     /// <summary>
-    /// Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
+    /// Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}" /> with asynchronous execution logic.
     /// </summary>
-    /// <param name="execute">
-    /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
-    /// </param>
-    /// <param name="canExecute">
-    /// An optional observable that dictates the availability of the command for execution.
-    /// </param>
-    /// <param name="outputScheduler">
-    /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
-    /// </param>
+    /// <typeparam name="TResult">The type of the command's result.</typeparam>
+    /// <param name="execute">Provides a <see cref="Task" /> representing the command's asynchronous execution logic.</param>
+    /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
+    /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.</param>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
+    /// <exception cref="System.ArgumentNullException">execute.</exception>
     public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
         Func<CancellationTokenSource, Task<TResult>> execute,
         IObservable<bool>? canExecute = null,
-        IScheduler? outputScheduler = null)
+        IScheduler? outputScheduler = null,
+        CancellationTokenSource? cancellationTokenSource = null)
     {
         if (execute is null)
         {
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return new ReactiveCommand<Unit, TResult>(_ => Signal.FromTask(ct => execute(ct)), canExecute, outputScheduler);
+        return new ReactiveCommand<Unit, TResult>(_ => Signal.FromTask(ct => execute(ct), cancellationTokenSource: cancellationTokenSource), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -430,31 +425,28 @@ public static class ReactiveCommand
     }
 
     /// <summary>
-    /// Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
+    /// Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}" /> with asynchronous execution logic.
     /// </summary>
-    /// <param name="execute">
-    /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
-    /// </param>
-    /// <param name="canExecute">
-    /// An optional observable that dictates the availability of the command for execution.
-    /// </param>
-    /// <param name="outputScheduler">
-    /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
-    /// </param>
+    /// <param name="execute">Provides a <see cref="Task" /> representing the command's asynchronous execution logic.</param>
+    /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
+    /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.</param>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
+    /// <exception cref="System.ArgumentNullException">execute.</exception>
     public static ReactiveCommand<Unit, Unit> CreateFromTask(
         Func<CancellationTokenSource, Task<Unit>> execute,
         IObservable<bool>? canExecute = null,
-        IScheduler? outputScheduler = null)
+        IScheduler? outputScheduler = null,
+        CancellationTokenSource? cancellationTokenSource = null)
     {
         if (execute is null)
         {
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return new ReactiveCommand<Unit, Unit>(_ => Signal.FromTask(ct => execute(ct)), canExecute, outputScheduler);
+        return new ReactiveCommand<Unit, Unit>(_ => Signal.FromTask(ct => execute(ct), cancellationTokenSource: cancellationTokenSource), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -495,37 +487,30 @@ public static class ReactiveCommand
     }
 
     /// <summary>
-    /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam"/>.
+    /// Creates a <see cref="ReactiveCommand{TParam, TResult}" /> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam" />.
     /// </summary>
-    /// <param name="execute">
-    /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
-    /// </param>
-    /// <param name="canExecute">
-    /// An optional observable that dictates the availability of the command for execution.
-    /// </param>
-    /// <param name="outputScheduler">
-    /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
-    /// </param>
+    /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
+    /// <typeparam name="TResult">The type of the command's result.</typeparam>
+    /// <param name="execute">Provides a <see cref="Task" /> representing the command's asynchronous execution logic.</param>
+    /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
+    /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.</param>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
-    /// <typeparam name="TResult">
-    /// The type of the command's result.
-    /// </typeparam>
+    /// <exception cref="System.ArgumentNullException">execute.</exception>
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationTokenSource, Task<TResult>> execute,
         IObservable<bool>? canExecute = null,
-        IScheduler? outputScheduler = null)
+        IScheduler? outputScheduler = null,
+        CancellationTokenSource? cancellationTokenSource = null)
     {
         if (execute is null)
         {
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return new ReactiveCommand<TParam, TResult>(param => Signal.FromTask(ct => execute(param, ct)), canExecute, outputScheduler);
+        return new ReactiveCommand<TParam, TResult>(param => Signal.FromTask(ct => execute(param, ct), cancellationTokenSource: cancellationTokenSource), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -563,34 +548,29 @@ public static class ReactiveCommand
     }
 
     /// <summary>
-    /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam"/>.
+    /// Creates a <see cref="ReactiveCommand{TParam, TResult}" /> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam" />.
     /// </summary>
-    /// <param name="execute">
-    /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
-    /// </param>
-    /// <param name="canExecute">
-    /// An optional observable that dictates the availability of the command for execution.
-    /// </param>
-    /// <param name="outputScheduler">
-    /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
-    /// </param>
+    /// <typeparam name="TParam">The type of the parameter passed through to command execution.</typeparam>
+    /// <param name="execute">Provides a <see cref="Task" /> representing the command's asynchronous execution logic.</param>
+    /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
+    /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.</param>
+    /// <param name="cancellationTokenSource">The cancellation token source.</param>
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <typeparam name="TParam">
-    /// The type of the parameter passed through to command execution.
-    /// </typeparam>
+    /// <exception cref="System.ArgumentNullException">execute.</exception>
     public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
         Func<TParam, CancellationTokenSource, Task<Unit>> execute,
         IObservable<bool>? canExecute = null,
-        IScheduler? outputScheduler = null)
+        IScheduler? outputScheduler = null,
+        CancellationTokenSource? cancellationTokenSource = null)
     {
         if (execute is null)
         {
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return new ReactiveCommand<TParam, Unit>(param => Signal.FromTask(ct => execute(param, ct)), canExecute, outputScheduler);
+        return new ReactiveCommand<TParam, Unit>(param => Signal.FromTask(ct => execute(param, ct), cancellationTokenSource: cancellationTokenSource), canExecute, outputScheduler);
     }
 }
 
