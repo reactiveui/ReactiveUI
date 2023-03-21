@@ -1,0 +1,36 @@
+﻿<rxui:ReactiveWindow
+    x:Class="CommandTestApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:CommandTestApp"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    Title="MainWindow"
+    Width="800"
+    Height="450"
+    x:TypeArguments="local:MainWindowViewModel"
+    mc:Ignorable="d">
+    <StackPanel>
+        <Button
+            x:Name="NormalBtn"
+            Height="30"
+            Content="Normal" />
+        <Button
+            x:Name="NormalAsyncBtn"
+            Height="30"
+            Content="Normal Async" />
+        <Button
+            x:Name="ObservableBtn"
+            Height="30"
+            Content="Observable" />
+        <Button
+            x:Name="TaskBtn"
+            Height="30"
+            Content="Task" />
+        <Button
+            x:Name="TaskTokenBtn"
+            Height="30"
+            Content="TaskToken" />
+    </StackPanel>
+</rxui:ReactiveWindow>
