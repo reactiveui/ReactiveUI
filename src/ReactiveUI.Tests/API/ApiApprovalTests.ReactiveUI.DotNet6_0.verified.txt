@@ -66,7 +66,7 @@ namespace ReactiveUI
     }
     public class CombinedReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, System.Collections.Generic.IList<TResult>>
     {
-        protected CombinedReactiveCommand(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        protected CombinedReactiveCommand(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public override System.IObservable<bool> CanExecute { get; }
         public override System.IObservable<bool> IsExecuting { get; }
         public override System.IObservable<System.Exception> ThrownExceptions { get; }
@@ -623,10 +623,14 @@ namespace ReactiveUI
     }
     public static class ReactiveCommand
     {
-        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> Create(System.Action execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null, bool runAsync = false) { }
-        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> Create<TParam>(System.Action<TParam> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null, bool runAsync = false) { }
-        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> Create<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null, bool runAsync = false) { }
-        public static ReactiveUI.ReactiveCommand<TParam, TResult> Create<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null, bool runAsync = false) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> Create(System.Action execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> Create<TParam>(System.Action<TParam> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> Create<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> Create<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateAsync(System.Action execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateAsync<TParam>(System.Action<TParam> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateAsync<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateAsync<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromObservable<TResult>(System.Func<System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
@@ -665,7 +669,7 @@ namespace ReactiveUI
     }
     public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
     {
-        protected ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler = null, bool runAsync = false) { }
+        protected ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler, bool runAsync) { }
         public override System.IObservable<bool> CanExecute { get; }
         public override System.IObservable<bool> IsExecuting { get; }
         public override System.IObservable<System.Exception> ThrownExceptions { get; }

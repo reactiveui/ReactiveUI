@@ -1062,7 +1062,7 @@ namespace ReactiveUI.Tests
             new TestScheduler().WithAsync(
                 scheduler =>
                 {
-                    var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: scheduler, runAsync: true);
+                    var fixture = ReactiveCommand.CreateAsync(() => Observables.Unit, outputScheduler: scheduler);
                     fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
                     fixture.Execute().Subscribe();

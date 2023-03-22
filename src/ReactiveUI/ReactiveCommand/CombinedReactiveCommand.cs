@@ -53,17 +53,12 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// <exception cref="ArgumentException">Fires if the child commands container is empty.</exception>
     protected internal CombinedReactiveCommand(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
-        IObservable<bool> canExecute,
+        IObservable<bool>? canExecute,
         IScheduler? outputScheduler = null)
     {
         if (childCommands is null)
         {
             throw new ArgumentNullException(nameof(childCommands));
-        }
-
-        if (canExecute is null)
-        {
-            throw new ArgumentNullException(nameof(canExecute));
         }
 
         _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
@@ -80,7 +75,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
         var canChildrenExecute = childCommandsArray.Select(x => x.CanExecute)
                                                    .CombineLatest()
                                                    .Select(x => x.All(y => y));
-        var combinedCanExecute = canExecute
+        var combinedCanExecute = (canExecute ?? Observables.True)
                                  .Catch<bool, Exception>(ex =>
                                  {
                                      _exceptions.OnNext(ex);
@@ -102,7 +97,8 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                                                                             .Select(x => x.Execute(param))
                                                                             .CombineLatest(),
                                                                     combinedCanExecute,
-                                                                    _outputScheduler);
+                                                                    _outputScheduler,
+                                                                    false);
 
         // we already handle exceptions on individual child commands above, but the same exception
         // will tick through innerCommand. Therefore, we need to ensure we ignore it or the default

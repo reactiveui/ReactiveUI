@@ -199,7 +199,7 @@ namespace ReactiveUI.Tests
                 {
                     // Allow scheduler to run freely
                     var child1 = ReactiveCommand.Create(() => Observable.Return(1));
-                    var child2 = ReactiveCommand.Create(() => Observable.Return(2), runAsync: true);
+                    var child2 = ReactiveCommand.CreateAsync(() => Observable.Return(2));
                     var childCommands = new[] { child1, child2 };
                     var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: scheduler);
                     fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
