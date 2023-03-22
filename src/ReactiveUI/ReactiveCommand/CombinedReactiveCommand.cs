@@ -97,8 +97,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
                                                                             .Select(x => x.Execute(param))
                                                                             .CombineLatest(),
                                                                     combinedCanExecute,
-                                                                    _outputScheduler,
-                                                                    false);
+                                                                    _outputScheduler);
 
         // we already handle exceptions on individual child commands above, but the same exception
         // will tick through innerCommand. Therefore, we need to ensure we ignore it or the default
