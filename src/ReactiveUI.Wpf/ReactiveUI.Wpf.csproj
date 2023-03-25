@@ -28,5 +28,6 @@
 
   <ItemGroup Condition=" $(TargetFramework) == 'net462' or $(TargetFramework) == 'net6.0-windows10.0.17763.0' or $(TargetFramework) == 'net7.0-windows10.0.17763.0' ">
     <Compile Include="..\ReactiveUI.Uwp\Rx\Concurrency\DispatcherScheduler.cs" LinkBase="Rx" />
+    <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\DispatcherObservable.cs" LinkBase="Rx" />
   </ItemGroup>
 </Project>
