@@ -1005,7 +1005,3 @@ namespace ReactiveUI
             where TSender :  class { }
     }
 }
-namespace System.Reactive.Disposables
-{
-    public static class DisposableMixins { }
-}
