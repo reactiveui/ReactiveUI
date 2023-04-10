@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,7 +55,7 @@
       <Version>1.7.0.2</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Media" Version="1.6.0.3" />
-    <PackageReference Include="Xamarin.Jetbrains.Annotations" Version="24.0.0.1" />
+    <PackageReference Include="Xamarin.Jetbrains.Annotations" Version="24.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
