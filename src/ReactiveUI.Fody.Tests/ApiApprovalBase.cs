@@ -34,7 +34,7 @@ public abstract class ApiApprovalBase
             return Task.CompletedTask;
         }
 
-        var generatorOptions = new ApiGeneratorOptions { WhitelistedNamespacePrefixes = new[] { "ReactiveUI" } };
+        var generatorOptions = new ApiGeneratorOptions { AllowNamespacePrefixes = new[] { "ReactiveUI" } };
         var apiText = assembly.GeneratePublicApi(generatorOptions);
         var verifySettings = new VerifySettings();
         return Verifier.Verify(apiText, verifySettings, filePath)
