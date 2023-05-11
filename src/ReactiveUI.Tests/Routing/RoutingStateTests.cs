@@ -10,6 +10,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DynamicData;
 using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -37,13 +38,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, fixture.NavigationStack.Count);
             Assert.True(await fixture.NavigateBack.CanExecute.FirstAsync());
 
-            var navigatedTo = await fixture.NavigateBack.Execute();
-
-            if (navigatedTo is null)
-            {
-                throw new InvalidOperationException("Should have valid navigated to screen");
-            }
-
+            var navigatedTo = await fixture.NavigateBack.Execute() ?? throw new InvalidOperationException("Should have valid navigated to screen");
             Assert.Equal(navigatedTo.GetType(), input.GetType());
             Assert.Equal(1, fixture.NavigationStack.Count);
         }
@@ -152,35 +147,36 @@ namespace ReactiveUI.Tests
         /// Schedulers the is used for all commands.
         /// </summary>
         [Fact]
-        public void SchedulerIsUsedForAllCommands()
-        {
-            var scheduler = new TestScheduler();
-            var fixture = new RoutingState(scheduler);
+        public void SchedulerIsUsedForAllCommands() =>
+            new TestScheduler().With(
+                scheduler =>
+                {
+                    var fixture = new RoutingState(scheduler);
 
-            fixture
-                .Navigate
-                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigate).Subscribe();
-            fixture
-                .NavigateBack
-                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateBack).Subscribe();
-            fixture
-                .NavigateAndReset
-                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
+                    fixture
+                        .Navigate
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigate).Subscribe();
+                    fixture
+                        .NavigateBack
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateBack).Subscribe();
+                    fixture
+                        .NavigateAndReset
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
 
-            fixture.Navigate.Execute(new TestViewModel()).Subscribe();
-            Assert.Empty(navigate);
-            scheduler.Start();
-            Assert.NotEmpty(navigate);
+                    fixture.Navigate.Execute(new TestViewModel()).Subscribe();
+                    Assert.Empty(navigate);
+                    scheduler.Start();
+                    Assert.NotEmpty(navigate);
 
-            fixture.NavigateBack.Execute().Subscribe();
-            Assert.Empty(navigateBack);
-            scheduler.Start();
-            Assert.NotEmpty(navigateBack);
+                    fixture.NavigateBack.Execute().Subscribe();
+                    Assert.Empty(navigateBack);
+                    scheduler.Start();
+                    Assert.NotEmpty(navigateBack);
 
-            fixture.NavigateAndReset.Execute(new TestViewModel()).Subscribe();
-            Assert.Empty(navigateAndReset);
-            scheduler.Start();
-            Assert.NotEmpty(navigateAndReset);
-        }
+                    fixture.NavigateAndReset.Execute(new TestViewModel()).Subscribe();
+                    Assert.Empty(navigateAndReset);
+                    scheduler.Start();
+                    Assert.NotEmpty(navigateAndReset);
+                });
     }
 }

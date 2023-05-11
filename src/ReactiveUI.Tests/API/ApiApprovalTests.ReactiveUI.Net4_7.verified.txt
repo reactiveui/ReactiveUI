@@ -66,7 +66,7 @@ namespace ReactiveUI
     }
     public class CombinedReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, System.Collections.Generic.IList<TResult>>
     {
-        protected CombinedReactiveCommand(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool> canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        protected CombinedReactiveCommand(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public override System.IObservable<bool> CanExecute { get; }
         public override System.IObservable<bool> IsExecuting { get; }
         public override System.IObservable<System.Exception> ThrownExceptions { get; }
@@ -645,6 +645,10 @@ namespace ReactiveUI
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateRunInBackground(System.Action execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateRunInBackground<TParam>(System.Action<TParam> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateRunInBackground<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
     }
     public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
     {
@@ -672,7 +676,7 @@ namespace ReactiveUI
     }
     public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
     {
-        protected ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        protected ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler) { }
         public override System.IObservable<bool> CanExecute { get; }
         public override System.IObservable<bool> IsExecuting { get; }
         public override System.IObservable<System.Exception> ThrownExceptions { get; }

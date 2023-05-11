@@ -19,7 +19,7 @@ namespace ReactiveUI.Tests.Winforms
         public WinformCommandBindViewModel()
         {
             _command1 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
-            _command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+            _command2 = ReactiveCommand.CreateRunInBackground(() => { }, outputScheduler: ImmediateScheduler.Instance);
             _command3 = ReactiveCommand.Create<int>(i => ParameterResult = i * 10, outputScheduler: ImmediateScheduler.Instance);
         }
 

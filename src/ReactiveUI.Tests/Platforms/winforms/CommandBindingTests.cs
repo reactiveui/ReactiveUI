@@ -6,6 +6,7 @@
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using ReactiveUI.Winforms;
 using Xunit;
@@ -20,12 +21,13 @@ namespace ReactiveUI.Tests.Winforms
         /// <summary>
         /// Tests that the command binder binds to button.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void CommandBinderBindsToButton()
+        public async Task CommandBinderBindsToButtonAsync()
         {
             var fixture = new CreatesWinformsCommandBinding();
-            var cmd = ReactiveCommand.Create<int>(_ => { });
-            var input = new Button { };
+            var cmd = ReactiveCommand.CreateRunInBackground<int>(_ => { });
+            var input = new Button();
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
@@ -40,7 +42,7 @@ namespace ReactiveUI.Tests.Winforms
             using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {
                 input.PerformClick();
-
+                await Task.Delay(10);
                 Assert.True(commandExecuted);
                 Assert.NotNull(ea);
             }
@@ -54,7 +56,7 @@ namespace ReactiveUI.Tests.Winforms
         {
             var fixture = new CreatesWinformsCommandBinding();
             var cmd = ReactiveCommand.Create<int>(_ => { });
-            var input = new CustomClickableControl { };
+            var input = new CustomClickableControl();
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
@@ -83,7 +85,7 @@ namespace ReactiveUI.Tests.Winforms
         {
             var fixture = new CreatesWinformsCommandBinding();
             var cmd = ReactiveCommand.Create<int>(_ => { });
-            var input = new CustomClickableComponent { };
+            var input = new CustomClickableComponent();
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);

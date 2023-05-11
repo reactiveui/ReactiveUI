@@ -224,6 +224,26 @@ namespace ReactiveUI.Tests
         }
 
         /// <summary>
+        /// Creates the throws if execution parameter is null.
+        /// </summary>
+        [Fact]
+        public void CreateRunInBackgroundThrowsIfExecutionParameterIsNull()
+        {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground(null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground((Func<Unit>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground((Action<Unit>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground((Func<Unit, Unit>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground((Func<IObservable<Unit>>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground((Func<Task<Unit>>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground((Func<Unit, IObservable<Unit>>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground((Func<Unit, Task<Unit>>)null));
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        }
+
+        /// <summary>
         /// Exceptions the are delivered on output scheduler.
         /// </summary>
         [Fact]
@@ -1059,10 +1079,10 @@ namespace ReactiveUI.Tests
         /// </summary>
         [Fact]
         public void ResultIsTickedThroughSpecifiedScheduler() =>
-            new TestScheduler().With(
+            new TestScheduler().WithAsync(
                 scheduler =>
                 {
-                    var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: scheduler);
+                    var fixture = ReactiveCommand.CreateRunInBackground(() => Observables.Unit, outputScheduler: scheduler);
                     fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
                     fixture.Execute().Subscribe();
@@ -1070,6 +1090,7 @@ namespace ReactiveUI.Tests
 
                     scheduler.AdvanceByMs(1);
                     Assert.Equal(1, results.Count);
+                    return Task.CompletedTask;
                 });
 
         /// <summary>

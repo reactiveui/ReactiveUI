@@ -6,7 +6,6 @@
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ReactiveUI;
@@ -236,7 +235,7 @@ public abstract class ReactiveCommandBase<TParam, TResult> : IObservable<TResult
         // ensure that null is coerced to default(TParam) so that commands taking value types will use a sensible default if no parameter is supplied
         parameter ??= default(TParam);
 
-        if (parameter is not null && !(parameter is TParam))
+        if (parameter is not null && parameter is not TParam)
         {
             throw new InvalidOperationException(
                                                 $"Command requires parameters of type {typeof(TParam).FullName}, but received parameter of type {parameter.GetType().FullName}.");
