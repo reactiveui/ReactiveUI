@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6.0;net7.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid12.0;MonoAndroid12.1;MonoAndroid13.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472</TargetFrameworks>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="6.0.0" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 
