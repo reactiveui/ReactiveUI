@@ -536,7 +536,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
+        return CreateFromObservableCancellable(() => ObservableEx.FromAsyncWithPostCancelNotifications(execute), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -680,6 +680,93 @@ public static class ReactiveCommand
                                                   canExecute,
                                                   outputScheduler);
     }
+
+    /// <summary>
+    /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
+    /// </summary>
+    /// <param name="execute">
+    /// Provides an observable representing the command's asynchronous execution logic.
+    /// </param>
+    /// <param name="canExecute">
+    /// An optional observable that dictates the availability of the command for execution.
+    /// </param>
+    /// <param name="outputScheduler">
+    /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+    /// </param>
+    /// <returns>
+    /// The <c>ReactiveCommand</c> instance.
+    /// </returns>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
+    /// <remarks>
+    /// TODO: this is internal because it's part of the spike to illustrate how
+    /// https://github.com/reactiveui/ReactiveUI/issues/2153 might be dealt with, and I (idg10)
+    /// didn't want to introduce any changes to the public-facing API. However, if the ReactiveUI
+    /// team is in favour of the overall approach illustrated in this spike, it might be worth
+    /// considering making this method public, because there may be other scenarios besides tasks
+    /// in which it is useful to separate observation from cancellation.
+    /// </remarks>
+    internal static ReactiveCommand<Unit, TResult> CreateFromObservableCancellable<TResult>(
+        Func<IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
+        IObservable<bool>? canExecute = null,
+        IScheduler? outputScheduler = null)
+    {
+        if (execute is null)
+        {
+            throw new ArgumentNullException(nameof(execute));
+        }
+
+        return new ReactiveCommand<Unit, TResult>(
+            _ => execute(),
+            canExecute ?? Observable.Return(true),
+            outputScheduler);
+    }
+
+    /// <summary>
+    /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.
+    /// </summary>
+    /// <param name="execute">
+    /// Provides an observable representing the command's asynchronous execution logic.
+    /// </param>
+    /// <param name="canExecute">
+    /// An optional observable that dictates the availability of the command for execution.
+    /// </param>
+    /// <param name="outputScheduler">
+    /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+    /// </param>
+    /// <returns>
+    /// The <c>ReactiveCommand</c> instance.
+    /// </returns>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
+    /// <remarks>
+    /// TODO: this is internal because it's part of the spike to illustrate how
+    /// https://github.com/reactiveui/ReactiveUI/issues/2153 might be dealt with, and I (idg10)
+    /// didn't want to introduce any changes to the public-facing API. However, if the ReactiveUI
+    /// team is in favour of the overall approach illustrated in this spike, it might be worth
+    /// considering making this method public, because there may be other scenarios besides tasks
+    /// in which it is useful to separate observation from cancellation.
+    /// </remarks>
+    internal static ReactiveCommand<TParam, TResult> CreateFromObservableCancellable<TParam, TResult>(
+        Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
+        IObservable<bool>? canExecute = null,
+        IScheduler? outputScheduler = null)
+    {
+        if (execute is null)
+        {
+            throw new ArgumentNullException(nameof(execute));
+        }
+
+        return new ReactiveCommand<TParam, TResult>(
+            execute,
+            canExecute ?? Observable.Return(true),
+            outputScheduler);
+    }
 }
 
 /// <summary>
@@ -708,7 +795,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     private readonly IDisposable _canExecuteSubscription;
     [SuppressMessage("Design", "CA2213: Dispose member", Justification = "Internal use only")]
     private readonly ScheduledSubject<Exception> _exceptions;
-    private readonly Func<TParam, IObservable<TResult>> _execute;
+    private readonly Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> _execute;
     [SuppressMessage("Design", "CA2213: Dispose member", Justification = "Internal use only")]
     private readonly Subject<ExecutionInfo> _executionInfo;
     private readonly IObservable<bool> _isExecuting;
@@ -717,7 +804,9 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     private readonly ISubject<ExecutionInfo, ExecutionInfo> _synchronizedExecutionInfo;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}" /> class.
+    /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}" /> class for work
+    /// that signals cancellation through a separate callback (as opposed to cancelling by
+    /// unsubscribing).
     /// </summary>
     /// <param name="execute">The Func to perform when the command is executed.</param>
     /// <param name="canExecute">A observable which has a value if the command can execute.</param>
@@ -726,8 +815,8 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// execute.
     /// </exception>
     /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
-    protected internal ReactiveCommand(
-        Func<TParam, IObservable<TResult>> execute,
+    internal ReactiveCommand(
+        Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
         IObservable<bool>? canExecute,
         IScheduler? outputScheduler)
     {
@@ -740,11 +829,11 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
             .Scan(
                 0,
                 (acc, next) => next.Demarcation switch
-                    {
-                        ExecutionDemarcation.Begin => acc + 1,
-                        ExecutionDemarcation.End => acc > 0 ? acc - 1 : acc = 0,
-                        _ => acc
-                    })
+                {
+                    ExecutionDemarcation.Begin => acc + 1,
+                    ExecutionDemarcation.End => acc > 0 ? acc - 1 : acc = 0,
+                    _ => acc
+                })
             .Select(inFlightCount => inFlightCount > 0)
             .StartWith(false)
             .DistinctUntilChanged()
@@ -768,6 +857,50 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
 
         _canExecuteSubscription = _canExecute
                                   .Subscribe(OnCanExecuteChanged);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}" /> class.
+    /// </summary>
+    /// <param name="execute">The Func to perform when the command is executed.</param>
+    /// <param name="canExecute">A observable which has a value if the command can execute.</param>
+    /// <param name="outputScheduler">The scheduler where to send output after the main execution.</param>
+    /// <exception cref="System.ArgumentNullException">
+    /// execute.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
+    protected internal ReactiveCommand(
+        Func<TParam, IObservable<TResult>> execute,
+        IObservable<bool>? canExecute,
+        IScheduler? outputScheduler)
+        : this(
+            p =>
+            {
+                var underlyingObservable = execute(p);
+                return Observable.Defer(
+                    () =>
+                    {
+                        // Since ReactiveCommand has been modified to enable sources to separate the
+                        // act of cancellation from observation, we now need to jump through a hoop
+                        // to enable code that does actually want to collapse these two concerns
+                        // into one (meaning that either it doesn't care about getting notifications
+                        // after it has initiated cancellation by unsubscribing, or it does care but
+                        // it is buggy because it was relying on receiving messages from an observable
+                        // after unsubscribing from it, something that doesn't generally work in Rx).
+                        // The way ReactiveCommand is now constituted means that it expects to be
+                        // provided with a method it can invoke to trigger cancellation. For this
+                        // scenario, where the caller just wants cancellation to work by unsubscribing
+                        // from the source, we need to unsubscribe from the underlying source when
+                        // that callback is invoked.
+                        var unsubscribeToCancel = new Subject<Unit>();
+                        var cancel = () => unsubscribeToCancel.OnNext(Unit.Default);
+                        return Observable
+                            .Return((underlyingObservable.TakeUntil(unsubscribeToCancel), cancel));
+                    });
+            },
+            canExecute,
+            outputScheduler)
+    {
     }
 
     private enum ExecutionDemarcation
@@ -798,19 +931,86 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
                         {
                             _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
 
-                            return Observable<TResult>.Empty;
+                            return Observable<(IObservable<TResult>, Action)>.Empty;
                         })
-                    .Concat(_execute(parameter))
-                    .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                    .Catch<TResult, Exception>(
-                        ex =>
+                .Concat(_execute(parameter))
+
+                // At this point in the before-fixing-post-cancellation code, we had an IObservable<TResult>
+                // that would produce whatever came out of the observable returned by _execute. But
+                // because we now need this double wrapping to enable separation of observation and cancellation,
+                // we've got an (IObservable<TResult>, Action), so we'll need to flatten that inner observable
+                .SelectMany(sourceAndCancellation =>
                         {
-                            _exceptions.OnNext(ex);
-                            return Observable.Throw<TResult>(ex);
-                        })
-                    .Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
-                    .PublishLast()
-                    .RefCount();
+                            var (underlyingWorkObservable, cancelCallback) = sourceAndCancellation;
+
+                            // Each time the caller subscribes to the IObservable<TResult> returned by
+                            // this Execute method, it will kick off a new subscription to the observable
+                            // returned by _execute (thanks to it being passed to the call to Concat above).
+                            // So although we call the underlying _execute callback exactly once for each
+                            // call to Execute, it's possible that the resulting observable will see many
+                            // subscriptions. This particular lambda will run once for each call to Subscribe
+                            // that the caller makes on the IObservable<TResult> that we returned from Execute.
+                            //
+                            // The caller will expect that when they Subscribe to the IObservable<TResult>
+                            // returned by Execute, that will cause a subscription to the underlying
+                            // observable. To put it another way, logically speaking, the nested
+                            // IObservable<TResult> that we've just received from the sourceAndCancellationObservable
+                            // (underlyingWorkObservable) should be our effective result.
+                            // However, we need to ensure that we don't unsubscribe from that underlying source
+                            // until it's done, because we need observe it all the way through to completion
+                            // (to correctly report exceptions and IsExecuting).
+                            //
+                            // The tricky part is that the caller can choose to cancel the work by unsubscribing.
+                            // There are two important things we need to ensure in the case where the caller
+                            // unsubscribes from the IObservable<TResult> returned by Execute:
+                            //  1. we should attempt to cancel the underlying work
+                            //  2. we MUST NOT unsubscribe from underlyingWorkObservable
+                            // That second part is mandatory if we are to update IsExecuting and Exceptions
+                            // correctly in the face of cancellation.
+
+                            // That means that we can't just return the underlying source observable directly,
+                            // nor in any indirect way that would cause unsubscription from the IObservable<TResult>
+                            // returned by Execute to propagate directly to the underlyingWorkObservable.
+                            // When the caller subscribes, we need to attach our own subscription that can survive
+                            // for the entire duration of the underlyingWorkObservable, regardless of if or when the
+                            // caller unsubscribes. But we need there to be exactly one subscription to the
+                            // underlyingWorkObservable for each subscription the caller makes.
+                            // So we are going publish the underlyingWorkObservable - that enables us to support
+                            // two subscriptions (the caller's, and our internal monitoring one) with only a single
+                            // subscription to the underlying source.
+                            // We specify a minimum number of subscribers of 2 so that our housekeeping subscription
+                            // doesn't start until the application also subscribes - otherwise we might see early
+                            // results that they don't, and in the case of cold observers, our subscription might
+                            // consume everything and prevent the application from seeing anything!
+                            var sharedSource = underlyingWorkObservable.Publish().RefCount(2);
+
+                            // This is the subscription that survives for however long underlyingWorkObservable
+                            // takes to complete (or fail).
+                            sharedSource
+                                .Do(result =>
+                                {
+                                    _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result));
+                                })
+                                .Catch<TResult, Exception>(
+                                    ex =>
+                                    {
+                                        _exceptions.OnNext(ex);
+
+                                        // The old code had this:
+                                        // return Observable.Throw<TResult>(ex);
+                                        // but I don't think we need that here - it was so that the exception
+                                        // would propagate out to the caller's observer. But that was when
+                                        // this was piggy-backed in as part of the caller's subscription. Now
+                                        // that we have our own separate subscription for keeping IsExecuting
+                                        // and Exceptions up to date, we don't need to forward it.
+                                        return Observable.Empty<TResult>();
+                                    })
+                                .Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
+                                .Subscribe();
+
+                            return sharedSource
+                                .Finally(() => cancelCallback()); // TODO: is it a problem that this means we always cancel, even on normal completion?
+                        });
         }
         catch (Exception ex)
         {
@@ -823,33 +1023,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// <inheritdoc/>
     public override IObservable<TResult> Execute()
     {
-        try
-        {
-            return Observable.Defer(
-                    () =>
-                        {
-                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
-
-                            return Observable<TResult>.Empty;
-                        })
-                    .Concat(_execute(default!))
-                    .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                    .Catch<TResult, Exception>(
-                        ex =>
-                        {
-                            _exceptions.OnNext(ex);
-                            return Observable.Throw<TResult>(ex);
-                        })
-                    .Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
-                    .PublishLast()
-                    .RefCount();
-        }
-        catch (Exception ex)
-        {
-            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
-            _exceptions.OnNext(ex);
-            return Observable.Throw<TResult>(ex);
-        }
+        return Execute(default!);
     }
 
     /// <inheritdoc/>

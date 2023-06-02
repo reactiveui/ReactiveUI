@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -1198,6 +1199,103 @@ namespace ReactiveUI.Tests
 
             Assert.False(isExecuting);
             Assert.Equal("break execution", fail?.Message);
+        }
+
+        [Fact]
+        public async Task ReactiveCommandCreateFromTaskThenCancelSetsIsExecutingFalseOnlyAfterCancellationCompleteAsync()
+        {
+            // This tests for the problem described at https://github.com/reactiveui/ReactiveUI/issues/2153
+            // The exact sequence of events is important here. In particular, we need the test to be able
+            // to make observations while a task is in progress, while it is in the process of being cancelled,
+            // and after it has finished. This requires some careful sequencing. The System.Threading.Barrier
+            // class is designed for managing precisely this kind lock-step progress. Unfortunately, it
+            // doesn't directly intrinsically support async/await. Its SignalAndWait blocks the calling
+            // thread, which is a problem for async UI code, since that typically uses a single thread for
+            // most work. Calling SignalAndWait on the UI thread (or in this case, the test thread, which
+            // is effectively a stand-in for the UI thread) deadlocks, because the matching call to
+            // SignalAndWait that it's waiting can't happen until the UI thread becomes available.
+            // So we wrap the use of this in an async-friendly helper that calls SignalAndWait on a
+            // thread pool thread.
+            // https://learn.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.threading.asyncbarrier
+            // would arguably be a better solution, but due to some slightly unfortunate accidents of
+            // history, it and a whole load of other highly useful async synchronization primitives
+            // ended up in a DLL whose name makes it sound a lot like it will only work in Visual Studio.
+            // I didn't want to be the one to introduce a dependency on that component, hence this
+            // ad hoc wrapper instead, but I would recommend at least considering using the very
+            // misleadingly-named https://www.nuget.org/packages/Microsoft.VisualStudio.Threading.
+            using var phaseSync = new Barrier(2);
+            Task AwaitTestPhaseAsync() => Task.Run(() => phaseSync.SignalAndWait(CancellationToken.None));
+
+            var fixture = ReactiveCommand.CreateFromTask(async (token) =>
+            {
+                // Phase 1: command execution has begun.
+                await AwaitTestPhaseAsync();
+
+                Debug.WriteLine("started command");
+                try
+                {
+                    await Task.Delay(10000, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Phase 2: command task has detected cancellation request.
+                    await AwaitTestPhaseAsync();
+
+                    // Phase 3: test has observed IsExecuting while cancellation is in progress.
+                    await AwaitTestPhaseAsync();
+
+                    ////Debug.WriteLine("starting cancelling command");
+                    ////await Task.Delay(5000, CancellationToken.None);
+                    ////Debug.WriteLine("finished cancelling  command");
+                    throw;
+                }
+
+                Debug.WriteLine("finished command");
+            });
+
+            // This test needs to check the latest value emitted by IsExecuting at various points.
+            // The obvious way to do this would be with "await fixture.IsExecuting", but that ends
+            // up involving various bits of Rx scheduling machinery, which can interfere with the
+            // sequencing this test requires. (For example, "await fixture.IsExecuting" can end up
+            // waiting until after the entire Task we're testing here has actually completed!)
+            // So we just keep a variable up to date with the most recently observed value, enabling
+            // the test to inspect that at any time without an await.
+            var latestIsExecutingValue = false;
+            fixture.IsExecuting.Subscribe(isExecuting =>
+            {
+                Debug.WriteLine($"command executing = {isExecuting}");
+                Volatile.Write(ref latestIsExecutingValue, isExecuting);
+            });
+
+            var disposable = fixture.Execute().Subscribe();
+
+            // Phase 1: command execution has begun.
+            await AwaitTestPhaseAsync();
+
+            Assert.True(Volatile.Read(ref latestIsExecutingValue), "IsExecuting should be true when execution is underway");
+
+            disposable.Dispose();
+
+            // Phase 2: command task has detected cancellation request.
+            await AwaitTestPhaseAsync();
+
+            Assert.True(Volatile.Read(ref latestIsExecutingValue), "IsExecuting should remain true while cancellation is in progress");
+
+            // Phase 3: test has observed IsExecuting while cancellation is in progress.
+            await AwaitTestPhaseAsync();
+
+            // Finally, we need to wait for the task to complete. We can't directly observe this,
+            // because once the task has actually completed, it can't give us any sort of notification.
+            // If it were able to do something to notify us, then that would mean it was still
+            // running.
+            // So instead, we're just going to wait for IsExecuting to become false.
+            var start = Environment.TickCount;
+            while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
+            {
+                await Task.Yield();
+            }
+
+            Assert.False(Volatile.Read(ref latestIsExecutingValue), "IsExecuting should be false once cancellation completes");
         }
 
         [Fact]
