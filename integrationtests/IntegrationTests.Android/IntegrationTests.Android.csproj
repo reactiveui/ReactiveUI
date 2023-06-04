@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.6.0.3" />
+    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.6.0.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj">
