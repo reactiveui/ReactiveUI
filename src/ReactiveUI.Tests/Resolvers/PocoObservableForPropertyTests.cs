@@ -16,7 +16,9 @@ namespace ReactiveUI.Tests
 {
     public class PocoObservableForPropertyTests
     {
-        private static TestLogger? _testLoggerForNotificationPocoErrorOnBind;
+#pragma warning disable CA1812 // Class is not instantiated
+
+        ////private static TestLogger? _testLoggerForNotificationPocoErrorOnBind;
 
         [Fact]
         public void CheckGetAffinityForObjectValues()
@@ -28,81 +30,81 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, instance.GetAffinityForObject(typeof(INPCClass), null!, false));
         }
 
-        [Fact(Skip = "Test Scheduler is null on occasions")]
-        public void NotificationPocoErrorOnBind()
-        {
-            RxApp.EnsureInitialized();
+        ////[Fact(Skip = "Test Scheduler is null on occasions")]
+        ////public void NotificationPocoErrorOnBind()
+        ////{
+        ////    RxApp.EnsureInitialized();
 
-            ////// Use same logger, when the test is executed multiple times in the same AndroidRunner/AppDomain/AssemblyLoadContext
-            ////if (_testLoggerForNotificationPocoErrorOnBind is null)
-            ////{
-            ////    _testLoggerForNotificationPocoErrorOnBind = new TestLogger();
-            ////}
+        ////// Use same logger, when the test is executed multiple times in the same AndroidRunner/AppDomain/AssemblyLoadContext
+        ////if (_testLoggerForNotificationPocoErrorOnBind is null)
+        ////{
+        ////    _testLoggerForNotificationPocoErrorOnBind = new TestLogger();
+        ////}
 
-            ////// Run test twice and verify that POCO message is logged only once.
-            ////for (var i = 0; i < 2; i++)
-            ////{
-            ////    using (var testLoggerRegistration = new TestLoggerRegistration(_testLoggerForNotificationPocoErrorOnBind))
-            ////    {
-            ////        var instance = new POCOObservableForProperty();
+        ////// Run test twice and verify that POCO message is logged only once.
+        ////for (var i = 0; i < 2; i++)
+        ////{
+        ////    using (var testLoggerRegistration = new TestLoggerRegistration(_testLoggerForNotificationPocoErrorOnBind))
+        ////    {
+        ////        var instance = new POCOObservableForProperty();
 
-            ////        var testLogger = testLoggerRegistration.Logger;
+        ////        var testLogger = testLoggerRegistration.Logger;
 
-            ////        var testClass = new PocoType();
+        ////        var testClass = new PocoType();
 
-            ////        Expression<Func<PocoType, string>> expr = x => x.Property1!;
-            ////        var exp = Reflection.Rewrite(expr.Body);
+        ////        Expression<Func<PocoType, string>> expr = x => x.Property1!;
+        ////        var exp = Reflection.Rewrite(expr.Body);
 
-            ////        var propertyName = exp.GetMemberInfo()?.Name;
+        ////        var propertyName = exp.GetMemberInfo()?.Name;
 
-            ////        if (propertyName is null)
-            ////        {
-            ////            throw new InvalidOperationException("propertyName should not be null");
-            ////        }
+        ////        if (propertyName is null)
+        ////        {
+        ////            throw new InvalidOperationException("propertyName should not be null");
+        ////        }
 
-            ////        instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(_ => { });
+        ////        instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(_ => { });
 
-            ////        Assert.True(testLogger.LastMessages.Count > 0);
+        ////        Assert.True(testLogger.LastMessages.Count > 0);
 
-            ////        var expectedMessage = $"{nameof(POCOObservableForProperty)}: The class {typeof(PocoType).FullName} property {nameof(PocoType.Property1)} is a POCO type and won't send change notifications, WhenAny will only return a single value!";
-            ////        Assert.Equal(expectedMessage, testLogger.LastMessages[0]);
+        ////        var expectedMessage = $"{nameof(POCOObservableForProperty)}: The class {typeof(PocoType).FullName} property {nameof(PocoType.Property1)} is a POCO type and won't send change notifications, WhenAny will only return a single value!";
+        ////        Assert.Equal(expectedMessage, testLogger.LastMessages[0]);
 
-            ////        // Verify that the message is logged only once
-            ////        foreach (var logMessage in testLogger.LastMessages.Skip(1))
-            ////        {
-            ////            Assert.NotEqual(expectedMessage, logMessage);
-            ////        }
-            ////    }
-            ////}
-        }
+        ////        // Verify that the message is logged only once
+        ////        foreach (var logMessage in testLogger.LastMessages.Skip(1))
+        ////        {
+        ////            Assert.NotEqual(expectedMessage, logMessage);
+        ////        }
+        ////    }
+        ////}
+        ////}
 
-        [Fact(Skip = "Test Scheduler is null on occasions")]
-        public void NotificationPocoSuppressErrorOnBind()
-        {
-            RxApp.EnsureInitialized();
-            ////using (var testLoggerRegistration = new TestLoggerRegistration())
-            ////{
-            ////    var instance = new POCOObservableForProperty();
+        ////[Fact(Skip = "Test Scheduler is null on occasions")]
+        ////public void NotificationPocoSuppressErrorOnBind()
+        ////{
+        ////    RxApp.EnsureInitialized();
+        ////using (var testLoggerRegistration = new TestLoggerRegistration())
+        ////{
+        ////    var instance = new POCOObservableForProperty();
 
-            ////    var testLogger = testLoggerRegistration.Logger;
+        ////    var testLogger = testLoggerRegistration.Logger;
 
-            ////    var testClass = new PocoType();
+        ////    var testClass = new PocoType();
 
-            ////    Expression<Func<PocoType, string>> expr = x => x.Property1!;
-            ////    var exp = Reflection.Rewrite(expr.Body);
+        ////    Expression<Func<PocoType, string>> expr = x => x.Property1!;
+        ////    var exp = Reflection.Rewrite(expr.Body);
 
-            ////    var propertyName = exp.GetMemberInfo()?.Name;
+        ////    var propertyName = exp.GetMemberInfo()?.Name;
 
-            ////    if (propertyName is null)
-            ////    {
-            ////        throw new InvalidOperationException("propertyName should not be null");
-            ////    }
+        ////    if (propertyName is null)
+        ////    {
+        ////        throw new InvalidOperationException("propertyName should not be null");
+        ////    }
 
-            ////    instance.GetNotificationForProperty(testClass, exp, propertyName, false, true).Subscribe(_ => { });
+        ////    instance.GetNotificationForProperty(testClass, exp, propertyName, false, true).Subscribe(_ => { });
 
-            ////    testLogger.LastMessages.Should().NotContain(m => m.Contains(nameof(POCOObservableForProperty)));
-            ////}
-        }
+        ////    testLogger.LastMessages.Should().NotContain(m => m.Contains(nameof(POCOObservableForProperty)));
+        ////}
+        ////}
 
         private class PocoType
         {
@@ -111,8 +113,6 @@ namespace ReactiveUI.Tests
             public string? Property2 { get; set; }
         }
 
-#pragma warning disable CA1812 // Class is not instantiated
-
         private class INPCClass : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler? PropertyChanged;
@@ -120,53 +120,53 @@ namespace ReactiveUI.Tests
             public void NotifyPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         }
 
+        ////private class TestLogger : ILogger
+        ////{
+        ////    public List<string> LastMessages { get; } = new();
+
+        ////    public LogLevel Level => LogLevel.Debug;
+
+        ////    public void Write(Exception exception, string message, Type type, LogLevel logLevel) => LastMessages.Add(message);
+
+        ////    public void Write(string message, LogLevel logLevel) => LastMessages.Add(message);
+
+        ////    public void Write(Exception exception, string message, LogLevel logLevel) => LastMessages.Add(message);
+
+        ////    public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel) => LastMessages.Add(message);
+        ////}
+
+        ////private sealed class TestLoggerRegistration : IDisposable
+        ////{
+        ////    private readonly List<ILogger> _originalLoggers;
+
+        ////    public TestLoggerRegistration()
+        ////        : this(null)
+        ////    {
+        ////    }
+
+        ////    public TestLoggerRegistration(TestLogger? testLogger)
+        ////    {
+        ////        _originalLoggers = Locator.Current.GetServices<ILogger>().ToList();
+
+        ////        Logger = testLogger ?? new TestLogger();
+        ////        Locator.CurrentMutable.RegisterConstant<ILogger>(Logger);
+        ////    }
+
+        ////    public TestLogger Logger { get; }
+
+        ////    public void Dispose()
+        ////    {
+        ////        // It's not possible to unregister specific logger,
+        ////        // so all are unregistered and originals are re-registered.
+        ////        Locator.CurrentMutable.UnregisterAll<ILogger>();
+
+        ////        foreach (var logger in _originalLoggers)
+        ////        {
+        ////            Locator.CurrentMutable.RegisterConstant<ILogger>(logger);
+        ////        }
+        ////    }
+        ////}
+
 #pragma warning restore CA1812 // Class is not instantiated
-
-        private class TestLogger : ILogger
-        {
-            public List<string> LastMessages { get; } = new();
-
-            public LogLevel Level => LogLevel.Debug;
-
-            public void Write(Exception exception, string message, Type type, LogLevel logLevel) => LastMessages.Add(message);
-
-            public void Write(string message, LogLevel logLevel) => LastMessages.Add(message);
-
-            public void Write(Exception exception, string message, LogLevel logLevel) => LastMessages.Add(message);
-
-            public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel) => LastMessages.Add(message);
-        }
-
-        private sealed class TestLoggerRegistration : IDisposable
-        {
-            private readonly List<ILogger> _originalLoggers;
-
-            public TestLoggerRegistration()
-                : this(null)
-            {
-            }
-
-            public TestLoggerRegistration(TestLogger? testLogger)
-            {
-                _originalLoggers = Locator.Current.GetServices<ILogger>().ToList();
-
-                Logger = testLogger ?? new TestLogger();
-                Locator.CurrentMutable.RegisterConstant<ILogger>(Logger);
-            }
-
-            public TestLogger Logger { get; }
-
-            public void Dispose()
-            {
-                // It's not possible to unregister specific logger,
-                // so all are unregistered and originals are re-registered.
-                Locator.CurrentMutable.UnregisterAll<ILogger>();
-
-                foreach (var logger in _originalLoggers)
-                {
-                    Locator.CurrentMutable.RegisterConstant<ILogger>(logger);
-                }
-            }
-        }
     }
 }
