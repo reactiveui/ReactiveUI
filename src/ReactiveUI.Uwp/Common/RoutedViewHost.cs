@@ -106,15 +106,13 @@ namespace ReactiveUI
                 this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract),
                 (viewModel, contract) => (viewModel, contract));
 
+            // NB: The DistinctUntilChanged is useful because most views in
+            // WinRT will end up getting here twice - once for configuring
+            // the RoutedViewHost's ViewModel, and once on load via SizeChanged
             this.WhenActivated(d =>
-            {
-                // NB: The DistinctUntilChanged is useful because most views in
-                // WinRT will end up getting here twice - once for configuring
-                // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-                d(vmAndContract.DistinctUntilChanged<(IRoutableViewModel? viewModel, string? contract)>().Subscribe(
+                d(vmAndContract.DistinctUntilChanged().Subscribe(
                     ResolveViewForViewModel,
-                    ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
-            });
+                    ex => RxApp.DefaultExceptionHandler.OnNext(ex))));
         }
 
         /// <summary>
@@ -174,13 +172,7 @@ namespace ReactiveUI
             }
 
             var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-            var view = viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel);
-
-            if (view is null)
-            {
-                throw new Exception($"Couldn't find view for '{x.viewModel}'.");
-            }
-
+            var view = (viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel)) ?? throw new Exception($"Couldn't find view for '{x.viewModel}'.");
             view.ViewModel = x.viewModel;
             Content = view;
         }

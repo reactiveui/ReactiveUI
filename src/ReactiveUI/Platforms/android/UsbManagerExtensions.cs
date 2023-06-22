@@ -6,6 +6,7 @@
 using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Runtime.Versioning;
 using Android.App;
 using Android.Content;
 using Android.Hardware.Usb;
@@ -74,6 +75,12 @@ public static class UsbManagerExtensions
             _device = device;
         }
 
+#if NET7_0_OR_GREATER
+        [ObsoletedOSPlatform("android33.0")]
+#elif MONOANDROID13_0
+        [Obsolete("This method was deprecated in API level 33.", false)]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+#endif
         public override void OnReceive(Context? context, Intent? intent)
         {
             if (intent is null)
@@ -93,6 +100,10 @@ public static class UsbManagerExtensions
         }
     }
 
+#if MONOANDROID13_0
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
+#endif
+
     /// <summary>
     /// Private implementation of BroadcastReceiver to handle accessory permission requests.
     /// </summary>
@@ -108,6 +119,12 @@ public static class UsbManagerExtensions
             _accessory = accessory;
         }
 
+#if NET7_0_OR_GREATER
+        [ObsoletedOSPlatform("android33.0")]
+#elif MONOANDROID13_0
+        [Obsolete("This method was deprecated in API level 33.", false)]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+#endif
         public override void OnReceive(Context? context, Intent? intent)
         {
             if (intent?.GetParcelableExtra(UsbManager.ExtraAccessory) is not UsbAccessory extraAccessory)
@@ -124,5 +141,9 @@ public static class UsbManagerExtensions
             _observer.OnNext(permissionGranted);
             _observer.OnCompleted();
         }
+
+#if MONOANDROID13_0
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
+#endif
     }
 }
