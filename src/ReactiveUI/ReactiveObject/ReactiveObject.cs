@@ -7,6 +7,7 @@ using System;
 using System.ComponentModel;
 using System.Reactive;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 namespace ReactiveUI;
@@ -77,14 +78,17 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
 
     /// <inheritdoc />
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => _changing.Value;
 
     /// <inheritdoc />
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => _changed.Value;
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
     /// <inheritdoc/>

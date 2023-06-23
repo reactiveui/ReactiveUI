@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Tests
 {
@@ -11,15 +12,18 @@ namespace ReactiveUI.Tests
     public class WhenAnyTestFixture : ReactiveObject
     {
         [IgnoreDataMember]
+        [JsonIgnore]
 #pragma warning disable SA1401 // Fields should be private
         internal ObservableAsPropertyHelper<int?>? _accountsFound;
 
 #pragma warning restore SA1401 // Fields should be private
 
         [IgnoreDataMember]
+        [JsonIgnore]
         private AccountService _accountService = new();
 
         [IgnoreDataMember]
+        [JsonIgnore]
         private ProjectService _projectService = new();
 
         private string _value1 = "1";
@@ -42,6 +46,7 @@ namespace ReactiveUI.Tests
         /// The account service.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public AccountService AccountService
         {
             get => _accountService;
@@ -55,6 +60,7 @@ namespace ReactiveUI.Tests
         /// The project service.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public ProjectService ProjectService
         {
             get => _projectService;
@@ -65,6 +71,7 @@ namespace ReactiveUI.Tests
         /// Gets the first three letters of one word.
         /// </summary>
         [IgnoreDataMember]
+        [JsonIgnore]
         public int? AccountsFound => _accountsFound!.Value;
 
         /// <summary>
@@ -74,6 +81,7 @@ namespace ReactiveUI.Tests
         /// The value1.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string Value1
         {
             get => _value1;
@@ -87,6 +95,7 @@ namespace ReactiveUI.Tests
         /// The value2.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string? Value2
         {
             get => _value2;
@@ -100,6 +109,7 @@ namespace ReactiveUI.Tests
         /// The value3.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string Value3
         {
             get => _value3;
@@ -113,6 +123,7 @@ namespace ReactiveUI.Tests
         /// The value4.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string? Value4
         {
             get => _value4;
@@ -126,6 +137,7 @@ namespace ReactiveUI.Tests
         /// The value5.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string Value5
         {
             get => _value5;
@@ -139,6 +151,7 @@ namespace ReactiveUI.Tests
         /// The value6.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string? Value6
         {
             get => _value6;
@@ -152,6 +165,7 @@ namespace ReactiveUI.Tests
         /// The value7.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string Value7
         {
             get => _value7;
@@ -165,6 +179,7 @@ namespace ReactiveUI.Tests
         /// The value8.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string? Value8
         {
             get => _value8;
@@ -178,6 +193,7 @@ namespace ReactiveUI.Tests
         /// The value9.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string Value9
         {
             get => _value9;
@@ -191,6 +207,7 @@ namespace ReactiveUI.Tests
         /// The value10.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string? Value10
         {
             get => _value10;
@@ -204,6 +221,7 @@ namespace ReactiveUI.Tests
         /// The value11.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string Value11
         {
             get => _value11;
@@ -217,6 +235,7 @@ namespace ReactiveUI.Tests
         /// The value12.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string? Value12
         {
             get => _value12;

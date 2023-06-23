@@ -5,6 +5,7 @@
 
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Tests
 {
@@ -14,9 +15,11 @@ namespace ReactiveUI.Tests
     public class OaphNameOfTestFixture : TestFixture
     {
         [IgnoreDataMember]
+        [JsonIgnore]
         private readonly ObservableAsPropertyHelper<string?> _firstThreeLettersOfOneWord;
 
         [IgnoreDataMember]
+        [JsonIgnore]
         private readonly ObservableAsPropertyHelper<string> _lastThreeLettersOfOneWord;
 
         /// <summary>
@@ -32,12 +35,14 @@ namespace ReactiveUI.Tests
         /// Gets the first three letters of one word.
         /// </summary>
         [IgnoreDataMember]
+        [JsonIgnore]
         public string? FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;
 
         /// <summary>
         /// Gets the last three letters of one word.
         /// </summary>
         [IgnoreDataMember]
+        [JsonIgnore]
         public string LastThreeLettersOfOneWord => _lastThreeLettersOfOneWord.Value;
     }
 }

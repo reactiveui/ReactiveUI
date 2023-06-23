@@ -12,6 +12,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
 
@@ -31,6 +32,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1306: Field should start with a lower case letter", Justification = "Legacy reasons")]
     [IgnoreDataMember]
+    [JsonIgnore]
     protected Lazy<PropertyInfo[]>? AllPublicProperties;
 
     private readonly Subject<Unit> _activated = new();
@@ -100,7 +102,6 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
 
     /// <summary>
     /// Gets an observable that signals that this ViewHolder has been selected.
-    ///
     /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
     /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
     /// </summary>
@@ -108,14 +109,12 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
 
     /// <summary>
     /// Gets an observable that signals that this ViewHolder has been selected.
-    ///
     /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
     /// </summary>
     public IObservable<TViewModel?> SelectedWithViewModel { get; }
 
     /// <summary>
     /// Gets an observable that signals that this ViewHolder has been long-clicked.
-    ///
     /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
     /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
     /// </summary>
@@ -123,7 +122,6 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
 
     /// <summary>
     /// Gets an observable that signals that this ViewHolder has been long-clicked.
-    ///
     /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
     /// </summary>
     public IObservable<TViewModel?> LongClickedWithViewModel { get; }
@@ -150,6 +148,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// Gets an observable which signals when exceptions are thrown.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
@@ -161,10 +160,12 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.GetChangingObservable();
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.GetChangedObservable();
 
     /// <inheritdoc/>

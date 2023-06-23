@@ -5,6 +5,7 @@
 
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Tests
 {
@@ -15,6 +16,7 @@ namespace ReactiveUI.Tests
     public class OaphTestFixture : TestFixture
     {
         [IgnoreDataMember]
+        [JsonIgnore]
         private readonly ObservableAsPropertyHelper<string?> _firstThreeLettersOfOneWord;
 
         /// <summary>
@@ -26,6 +28,7 @@ namespace ReactiveUI.Tests
         /// Gets the first three letters of one word.
         /// </summary>
         [IgnoreDataMember]
+        [JsonIgnore]
         public string? FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;
     }
 }
