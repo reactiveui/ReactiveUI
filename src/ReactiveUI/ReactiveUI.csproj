@@ -44,7 +44,7 @@
   </ItemGroup>
 
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-ios')) or $(TargetFramework.StartsWith('net7.0-ios')) ">
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-ios'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
     <Compile Include="Platforms\uikit-common\**\*.cs" />
@@ -59,13 +59,13 @@
     <Reference Include="netstandard" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-macos')) or $(TargetFramework.StartsWith('net7.0-macos')) ">
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-macos'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\mac\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-maccatalyst')) or $(TargetFramework.StartsWith('net7.0-maccatalyst')) ">
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-maccatalyst'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
     <Compile Include="Platforms\uikit-common\**\*.cs" />
@@ -80,7 +80,7 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-tvos')) or $(TargetFramework.StartsWith('net7.0-tvos')) ">
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-tvos'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\tvos\**\*.cs" />
     <Compile Include="Platforms\uikit-common\**\*.cs" />
@@ -93,7 +93,7 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-android')) or $(TargetFramework.StartsWith('net7.0-android')) ">
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-android'))">
     <Compile Include="Platforms\android\**\*.cs" />
     <Compile Include="Platforms\xamarin-common\**\*.cs" />
   </ItemGroup>
