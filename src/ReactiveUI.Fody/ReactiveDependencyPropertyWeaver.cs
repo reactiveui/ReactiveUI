@@ -77,24 +77,9 @@ public class ReactiveDependencyPropertyWeaver
         var reactiveObject = new TypeReference("ReactiveUI", "IReactiveObject", ModuleDefinition, reactiveUI);
 
         var targetTypes = ModuleDefinition.GetAllTypes().Where(x => x.BaseType is not null && reactiveObject.IsAssignableFrom(x.BaseType)).ToArray();
-        var reactiveObjectExtensions = new TypeReference("ReactiveUI", "IReactiveObjectExtensions", ModuleDefinition, reactiveUI).Resolve();
-        if (reactiveObjectExtensions is null)
-        {
-            throw new Exception("reactiveObjectExtensions is null");
-        }
-
-        var raisePropertyChangedMethod = ModuleDefinition.ImportReference(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaisePropertyChanged"));
-        if (raisePropertyChangedMethod is null)
-        {
-            throw new Exception("raisePropertyChangedMethod is null");
-        }
-
-        var reactiveDependencyAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ReactiveDependencyAttribute", helpers);
-        if (reactiveDependencyAttribute is null)
-        {
-            throw new Exception("reactiveDecoratorAttribute is null");
-        }
-
+        var reactiveObjectExtensions = new TypeReference("ReactiveUI", "IReactiveObjectExtensions", ModuleDefinition, reactiveUI).Resolve() ?? throw new Exception("reactiveObjectExtensions is null");
+        var raisePropertyChangedMethod = ModuleDefinition.ImportReference(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaisePropertyChanged")) ?? throw new Exception("raisePropertyChangedMethod is null");
+        var reactiveDependencyAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ReactiveDependencyAttribute", helpers) ?? throw new Exception("reactiveDecoratorAttribute is null");
         foreach (var targetType in targetTypes.Where(x => x.Properties.Any(y => y.IsDefined(reactiveDependencyAttribute))).ToArray())
         {
             foreach (var facadeProperty in targetType.Properties.Where(x => x.IsDefined(reactiveDependencyAttribute)).ToArray())

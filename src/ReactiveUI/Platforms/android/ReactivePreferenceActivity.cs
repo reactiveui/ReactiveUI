@@ -10,6 +10,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -42,7 +43,12 @@ public class ReactivePreferenceActivity<TViewModel> : ReactivePreferenceActivity
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership)
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
+    protected ReactivePreferenceActivity(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }
@@ -85,7 +91,12 @@ public class ReactivePreferenceActivity : PreferenceActivity, IReactiveObject, I
     /// </summary>
     /// <param name="handle">The pointer.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership)
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
+    protected ReactivePreferenceActivity(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }

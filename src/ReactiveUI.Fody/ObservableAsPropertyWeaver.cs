@@ -99,7 +99,7 @@ public class ObservableAsPropertyWeaver
                 targetType.Fields.Add(field);
 
                 // It's an auto-property, so remove the generated field
-                if (property.SetMethod is not null && property.SetMethod.HasBody)
+                if (property.SetMethod?.HasBody == true)
                 {
                     // Remove old field (the generated backing field for the auto property)
                     var oldField = (FieldReference)property.GetMethod.Body.Instructions.Single(x => x.Operand is FieldReference).Operand;

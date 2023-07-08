@@ -8,6 +8,7 @@
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
+    <NoWarn>$(NoWarn);IDE1006;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,23 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />
+    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Uwp\Rx\Concurrency\DispatcherScheduler.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.EndsWith('-windows10.0.17763.0'))">
     <Compile Include="..\ReactiveUI.Uwp\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx" />
     <Compile Include="..\ReactiveUI.Uwp\Rx\Internal\Constants.cs" LinkBase="Rx" />
     <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Uwp\Rx\Linq\DispatcherObservable.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="RoutedViewHost.Designer.cs">
-      <SubType>UserControl</SubType>
-      <DependentUpon>RoutedViewHost.cs</DependentUpon>
-    </Compile>
-    <Compile Update="ReactiveUserControl.Designer.cs">
-      <SubType>UserControl</SubType>
-      <DependentUpon>ReactiveUserControl.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
 </Project>

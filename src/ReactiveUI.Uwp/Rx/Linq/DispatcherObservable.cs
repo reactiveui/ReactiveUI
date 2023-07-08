@@ -141,6 +141,7 @@ public static class DispatcherObservable
     /// <param name="source">Source sequence.</param>
     /// <returns>The source sequence whose observations happen on the current thread's dispatcher.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
+    [Obsolete("Use ObserveOn(RxApp.MainThreadScheduler)", false)]
     public static IObservable<TSource> ObserveOnDispatcher<TSource>(this IObservable<TSource> source)
     {
         if (source == null)
