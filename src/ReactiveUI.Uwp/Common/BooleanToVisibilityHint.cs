@@ -15,7 +15,6 @@ namespace ReactiveUI
     /// <summary>
     /// Enum that hints at the visibility of a ui element.
     /// </summary>
-    [SuppressMessage("Name", "CA1714: Flags enums should have plural names", Justification = "For legacy support")]
     [Flags]
     public enum BooleanToVisibilityHint
     {

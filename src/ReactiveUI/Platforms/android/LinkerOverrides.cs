@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 
 using Android.App;
@@ -20,8 +21,18 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 internal class LinkerOverrides
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android30.0")]
+#pragma warning disable CA1822 // Mark members as static
+#else
+    [Obsolete("This method was deprecated in API level 30.", false)]
+#endif
+#pragma warning disable IDE0051 // Remove unused private members
     private void KeepMe()
+#pragma warning restore IDE0051 // Remove unused private members
+#if NET7_0_OR_GREATER
+#pragma warning restore CA1822 // Mark members as static
+#endif
     {
         var txt = new TextView(null);
         txt.Text = txt.Text;

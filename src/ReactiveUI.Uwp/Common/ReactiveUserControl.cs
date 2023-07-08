@@ -88,12 +88,11 @@ namespace ReactiveUI
 #if HAS_UNO && IOS
     [global::Foundation.Register]
 #endif
-    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
     public
 #if HAS_UNO
         partial
 #endif
-        class ReactiveUserControl<TViewModel> :
+    class ReactiveUserControl<TViewModel> :
             UserControl, IViewFor<TViewModel>
             where TViewModel : class
     {

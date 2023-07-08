@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.Versioning;
 using Android.Preferences;
 using Android.Runtime;
 
@@ -38,7 +39,12 @@ public class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
+    protected ReactivePreferenceFragment(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }
@@ -80,7 +86,12 @@ public class ReactivePreferenceFragment : PreferenceFragment, IReactiveNotifyPro
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
+    protected ReactivePreferenceFragment(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }
@@ -120,7 +131,11 @@ public class ReactivePreferenceFragment : PreferenceFragment, IReactiveNotifyPro
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args); // TODO: Create Test
 
     /// <inheritdoc/>
-    [Obsolete("deprecated")]
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
     public override void OnPause()
     {
         base.OnPause();
@@ -128,7 +143,11 @@ public class ReactivePreferenceFragment : PreferenceFragment, IReactiveNotifyPro
     }
 
     /// <inheritdoc/>
-    [Obsolete("deprecated")]
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
     public override void OnResume()
     {
         base.OnResume();

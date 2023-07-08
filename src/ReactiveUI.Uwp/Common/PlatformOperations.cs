@@ -33,7 +33,9 @@ namespace ReactiveUI
                 return null;
             }
 #else
+#pragma warning disable IDE0022 // Use expression body for method
             return null;
+#pragma warning restore IDE0022 // Use expression body for method
 #endif
         }
     }

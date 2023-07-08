@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
@@ -182,6 +183,21 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(vm.BooleanProperty, view.BooleanProperty.Checked);
 
             disp.Dispose();
+        }
+
+        [Fact]
+        public void PanelSetMethodBindingConverter_GetAffinityForObjects()
+        {
+            var fixture = new PanelSetMethodBindingConverter();
+            var test1 = fixture.GetAffinityForObjects(typeof(List<Control>), typeof(Control.ControlCollection));
+            var test2 = fixture.GetAffinityForObjects(typeof(List<TextBox>), typeof(Control.ControlCollection));
+            var test3 = fixture.GetAffinityForObjects(typeof(List<Label>), typeof(Control.ControlCollection));
+            var test4 = fixture.GetAffinityForObjects(typeof(Control.ControlCollection), typeof(IEnumerable<GridItem>));
+
+            Assert.Equal(0, test1);
+            Assert.Equal(10, test2);
+            Assert.Equal(10, test3);
+            Assert.Equal(0, test4);
         }
     }
 }
