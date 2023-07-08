@@ -4,12 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Splat;
 
@@ -20,7 +20,6 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <seealso cref="Microsoft.Maui.Controls.NavigationPage" />
 /// <seealso cref="ReactiveUI.IActivatableView" />
-[SuppressMessage("Readability", "RCS1090: Call 'ConfigureAwait(false)", Justification = "This class interacts with the UI thread.")]
 public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 {
     /// <summary>
@@ -47,7 +46,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <exception cref="Exception">You *must* register an IScreen class representing your App's main Screen.</exception>
     public RoutedViewHost()
     {
-        this.WhenActivated(disposable =>
+        this.WhenActivated(async disposable =>
         {
             var currentlyNavigating = false;
 
@@ -66,7 +65,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                     }
 
                     InvalidateCurrentViewModel();
-                    SyncNavigationStacks();
+                    await SyncNavigationStacksAsync();
                 })
                 .DisposeWith(disposable);
 
@@ -93,7 +92,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                         currentlyNavigating = false;
                     }
 
-                    SyncNavigationStacks();
+                    await SyncNavigationStacksAsync();
 
                     return page;
                 })
@@ -115,8 +114,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                 .Where(_ => !currentlyNavigating && Router is not null)
                 .Subscribe(_ =>
                 {
-
-                    Router!.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                    if (Router?.NavigationStack.Count > 0)
+                    {
+                        Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                    }
 
                     InvalidateCurrentViewModel();
                 })
@@ -137,22 +138,21 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                 .Where(_ => !currentlyNavigating && Router is not null)
                 .Subscribe(_ =>
                 {
-                    for (var i = Router!.NavigationStack.Count - 1; i > 0; i--)
+                    for (var i = Router?.NavigationStack.Count - 1; i > 0; i--)
                     {
-                        Router.NavigationStack.RemoveAt(i);
+                        if (i.HasValue)
+                        {
+                            Router?.NavigationStack.RemoveAt(i.Value);
+                        }
                     }
 
                     InvalidateCurrentViewModel();
                 })
                 .DisposeWith(disposable);
+            await SyncNavigationStacksAsync();
         });
 
-        var screen = Locator.Current.GetService<IScreen>();
-        if (screen is null)
-        {
-            throw new Exception("You *must* register an IScreen class representing your App's main Screen");
-        }
-
+        var screen = Locator.Current.GetService<IScreen>() ?? throw new Exception("You *must* register an IScreen class representing your App's main Screen");
         Router = screen.Router;
     }
 
@@ -179,7 +179,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
-    [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
     protected virtual IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
@@ -211,7 +210,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
-    [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
     protected virtual Page PageForViewModel(IRoutableViewModel vm)
     {
         if (vm is null)
@@ -256,22 +254,38 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// Syncs page's navigation stack  with <see cref="Router"/>
     /// to affect <see cref="Router"/> manipulations like Add or Clear.
     /// </summary>
-    protected void SyncNavigationStacks()
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    protected async Task SyncNavigationStacksAsync()
     {
         if (Navigation.NavigationStack.Count != Router.NavigationStack.Count
             || StacksAreDifferent())
         {
-            for (var i = Navigation.NavigationStack.Count - 2; i >= 0; i--)
+            if (Navigation.NavigationStack.Count > 2)
             {
-                Navigation.RemovePage(Navigation.NavigationStack[i]);
+                for (var i = Navigation.NavigationStack.Count - 2; i >= 0; i--)
+                {
+                    Navigation.RemovePage(Navigation.NavigationStack[i]);
+                }
             }
 
-            var rootPage = Navigation.NavigationStack[0];
-
-            for (var i = 0; i < Router.NavigationStack.Count - 1; i++)
+            Page? rootPage;
+            if (Navigation.NavigationStack.Count >= 1)
             {
-                var page = PageForViewModel(Router.NavigationStack[i]);
-                Navigation.InsertPageBefore(page, rootPage);
+                rootPage = Navigation.NavigationStack[0];
+            }
+            else
+            {
+                rootPage = PageForViewModel(Router.NavigationStack[0]);
+                await Navigation.PushAsync(rootPage, false);
+            }
+
+            if (Router.NavigationStack.Count >= 1)
+            {
+                for (var i = 0; i < Router.NavigationStack.Count - 1; i++)
+                {
+                    var page = PageForViewModel(Router.NavigationStack[i]);
+                    Navigation.InsertPageBefore(page, rootPage);
+                }
             }
         }
     }

@@ -8,9 +8,12 @@ using System;
 #if HAS_WINUI
 using System.Reactive.Concurrency;
 using Splat;
-#endif
 
+namespace ReactiveUI.WinUI;
+#endif
+#if HAS_MAUI
 namespace ReactiveUI.Maui;
+#endif
 
 /// <summary>
 /// The main registration for common classes for the Splat dependency injection.
@@ -35,6 +38,7 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
 
 #if HAS_WINUI
+        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
         registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
         registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
         registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
