@@ -55,8 +55,12 @@ internal class LinkerOverrides
         var cv = new CalendarView(null!);
         cv.Date = cv.Date;
 
+#pragma warning disable CA1422 // Validate platform compatibility
+#pragma warning disable CS0618 // Type or member is obsolete
         var th = new TabHost(null);
         th.CurrentTab = th.CurrentTab;
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CA1422 // Validate platform compatibility
 
         var tp = new TimePicker(null);
         tp.Hour = tp.Hour;

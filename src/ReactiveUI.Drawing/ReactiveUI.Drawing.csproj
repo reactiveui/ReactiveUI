@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid12.0;MonoAndroid12.1;MonoAndroid13.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;tizen40;netstandard2.0;net6.0-android;net6.0-ios;net6.0-tvos;net6.0-macos;net6.0-maccatalyst;net7.0-android;net7.0-ios;net7.0-tvos;net7.0-macos;net7.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472;net6.0-windows10.0.17763;net7.0-windows10.0.17763</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472;net6.0-windows10.0.17763.0;net7.0-windows10.0.17763.0</TargetFrameworks>
     <AssemblyName>ReactiveUI.Drawing</AssemblyName>
     <RootNamespace>ReactiveUI.Drawing</RootNamespace>
     <PackageDescription>A extension to the ReactiveUI platform that provides Splat bitmap operation support.</PackageDescription>
