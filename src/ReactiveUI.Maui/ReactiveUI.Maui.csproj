@@ -6,13 +6,14 @@
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;forms;net</PackageTags>
     <UseMaui>true</UseMaui>
+    <DefineConstants>IS_MAUI</DefineConstants>
   </PropertyGroup>
 
 	<PropertyGroup Condition="$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
-		<DefineConstants>HAS_WINUI</DefineConstants>
+		<DefineConstants>$(DefineConstants);HAS_WINUI;</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="!$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
-		<DefineConstants>HAS_MAUI</DefineConstants>
+		<DefineConstants>$(DefineConstants);HAS_MAUI;</DefineConstants>
 	</PropertyGroup>
 
   <ItemGroup Condition="$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
@@ -25,9 +26,6 @@
 
   <ItemGroup>
     <Compile Remove="Common\RoutedViewHost.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 
 </Project>

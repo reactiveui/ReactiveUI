@@ -8,10 +8,12 @@ using System;
 #if HAS_WINUI
 using System.Reactive.Concurrency;
 using Splat;
+#endif
 
+#if IS_WINUI
 namespace ReactiveUI.WinUI;
 #endif
-#if HAS_MAUI
+#if IS_MAUI
 namespace ReactiveUI.Maui;
 #endif
 

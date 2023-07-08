@@ -9,11 +9,16 @@ using System.Reflection;
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 using Windows.Foundation;
-
-namespace ReactiveUI.WinUI;
 #endif
 #if HAS_MAUI
 using System.ComponentModel;
+using Microsoft.Maui.Controls;
+#endif
+
+#if IS_WINUI
+namespace ReactiveUI.WinUI;
+#endif
+#if IS_MAUI
 using Microsoft.Maui.Controls;
 
 namespace ReactiveUI.Maui;
@@ -28,12 +33,15 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     /// <inheritdoc/>
     public int GetAffinityForView(Type view) =>
 #if HAS_WINUI
+#if IS_MAUI
+       typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+#endif
        typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
 #endif
 #if HAS_MAUI
-        typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+       typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
        typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-        typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
+       typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
 #endif
             ? 10 : 0;
 
@@ -44,6 +52,9 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             GetActivationFor(view as ICanActivate) ??
 #if HAS_WINUI
             GetActivationFor(view as FrameworkElement) ??
+#if IS_MAUI
+            GetActivationFor(view as Page) ??
+#endif
 #endif
 #if HAS_MAUI
             GetActivationFor(view as Page) ??
@@ -55,9 +66,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         return activation.DistinctUntilChanged();
     }
 
-    private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) => canActivate?.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
+    private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) =>
+        canActivate?.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
 
-#if HAS_MAUI
+#if HAS_MAUI || (HAS_WINUI && IS_MAUI)
     private static IObservable<bool>? GetActivationFor(Page? page)
     {
         if (page is null)
@@ -85,7 +97,9 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         return appearing.Merge(disappearing);
     }
+#endif
 
+#if HAS_MAUI
     private static IObservable<bool>? GetActivationFor(View? view)
     {
         if (view is null)
@@ -138,11 +152,11 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 #endif
 
 #if HAS_WINUI
-    private static IObservable<bool> GetActivationFor(FrameworkElement? view)
+    private static IObservable<bool>? GetActivationFor(FrameworkElement? view)
     {
         if (view is null)
         {
-            return Observable<bool>.Empty;
+            return null;
         }
 
         var viewLoaded = Observable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
