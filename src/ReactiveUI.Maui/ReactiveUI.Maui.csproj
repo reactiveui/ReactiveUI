@@ -8,16 +8,20 @@
     <UseMaui>true</UseMaui>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(TargetFramework.EndsWith('-windows10.0.17763.0'))">
-    <DefineConstants>HAS_WINUI</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$(TargetFramework.EndsWith('-windows10.0.17763.0'))">
-    <DefineConstants>HAS_MAUI</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
+		<DefineConstants>HAS_WINUI</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="!$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
+		<DefineConstants>HAS_MAUI</DefineConstants>
+	</PropertyGroup>
 
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-windows10.0.17763.0'))">
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230602002" />
   </ItemGroup>
+  
+	<ItemGroup>
+		<ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+	</ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Common\RoutedViewHost.cs" />
