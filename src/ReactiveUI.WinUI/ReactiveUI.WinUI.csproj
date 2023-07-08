@@ -6,7 +6,7 @@
     <RootNamespace>ReactiveUI.WinUI.Desktop</RootNamespace>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;winui</PackageTags>
     <UseWinUI>true</UseWinUI>
-    <DefineConstants>IS_WINUI;HAS_WINUI;</DefineConstants>
+    <DefineConstants>IS_WINUI;WINUI_TARGET;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

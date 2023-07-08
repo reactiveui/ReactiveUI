@@ -5,7 +5,7 @@
 
 using System;
 
-#if HAS_WINUI
+#if WINUI_TARGET
 using System.Reactive.Concurrency;
 using Splat;
 #endif
@@ -39,7 +39,7 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
         registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
 
-#if HAS_WINUI
+#if WINUI_TARGET
         registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
         registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
         registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
