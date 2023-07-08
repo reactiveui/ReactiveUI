@@ -1,12 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0;net7.0-windows10.0.19041.0</TargetFrameworks>
-		<PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
-		<PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;forms;net</PackageTags>
-		<UseMaui>true</UseMaui>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0;net7.0-windows10.0.19041.0</TargetFrameworks>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;forms;net</PackageTags>
+    <UseMaui>true</UseMaui>
+  </PropertyGroup>
 
 	<PropertyGroup Condition="$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
 		<DefineConstants>HAS_WINUI</DefineConstants>
@@ -23,13 +23,11 @@
 		<ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Compile Include="..\ReactiveUI.Uwp\Common\AutoDataTemplateBindingHook.cs" LinkBase="Common" />
-		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityHint.cs" LinkBase="Common" />
-		<Compile Include="..\ReactiveUI.Uwp\Common\BooleanToVisibilityTypeConverter.cs" LinkBase="Common" />
-		<Compile Include="..\ReactiveUI.Uwp\Common\ReactivePage.cs" LinkBase="Common" />
-		<Compile Include="..\ReactiveUI.WinUI\DependencyObjectObservableForProperty.cs" LinkBase="ReactiveUI.WinUI" />
-		<Compile Include="..\ReactiveUI.WinUI\DispatcherQueueScheduler.cs" LinkBase="ReactiveUI.WinUI" />
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Common\RoutedViewHost.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
 
 </Project>

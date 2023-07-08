@@ -17,7 +17,10 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
+    <Compile Include="..\ReactiveUI.Maui\common\**\*.cs" LinkBase="common" />
+    <Compile Include="..\ReactiveUI.Maui\WinUI\**\*.cs" />
+    <Compile Include="..\ReactiveUI.Maui\ActivationForViewFetcher.cs" />
+    <Compile Include="..\ReactiveUI.Maui\Registrations.cs" />
   </ItemGroup>
 
 </Project>
