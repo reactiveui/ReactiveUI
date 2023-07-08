@@ -23,18 +23,14 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the default item template.
         /// </summary>
-        [SuppressMessage("Design", "CA1307: Use the currency locale settings", Justification = "Not available on all platforms.")]
         public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(() =>
         {
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-                     "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
+                     "xmlns:xaml='clr-namespace:ReactiveUI'>" +
                  "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
              "</DataTemplate>";
 
-            var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
-            assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
-
-            return (DataTemplate)XamlReader.Load(template.Replace("__ASSEMBLYNAME__", assemblyName));
+            return (DataTemplate)XamlReader.Load(template);
         });
 
         /// <inheritdoc/>
