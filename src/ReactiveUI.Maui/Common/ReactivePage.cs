@@ -3,12 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if HAS_MAUI
-using Microsoft.Maui.Controls;
-#endif
-#if HAS_WINUI
+#if WINUI_TARGET
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+#else
+using Microsoft.Maui.Controls;
 #endif
 
 namespace ReactiveUI
@@ -81,7 +80,7 @@ namespace ReactiveUI
             Page, IViewFor<TViewModel>
             where TViewModel : class
     {
-#if HAS_WINUI
+#if WINUI_TARGET
         /// <summary>
         /// The view model dependency property.
         /// </summary>
@@ -123,7 +122,7 @@ namespace ReactiveUI
             set => ViewModel = (TViewModel?)value;
         }
 
-#if HAS_MAUI
+#if !WINUI_TARGET
         /// <inheritdoc/>
         protected override void OnBindingContextChanged()
         {

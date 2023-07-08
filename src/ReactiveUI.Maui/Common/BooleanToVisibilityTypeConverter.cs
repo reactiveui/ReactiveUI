@@ -4,11 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-#if HAS_MAUI
-using Microsoft.Maui;
-#endif
-#if HAS_WINUI
+#if WINUI_TARGET
 using Microsoft.UI.Xaml;
+#else
+using Microsoft.Maui;
 #endif
 
 namespace ReactiveUI
@@ -46,7 +45,7 @@ namespace ReactiveUI
             {
                 var fromAsBool = (hint & BooleanToVisibilityHint.Inverse) != 0 ? !fromBool : fromBool;
 
-#if !NETFX_CORE && !HAS_UNO && !HAS_WINUI
+#if !WINUI_TARGET
                 var notVisible = (hint & BooleanToVisibilityHint.UseHidden) != 0 ? Visibility.Hidden : Visibility.Collapsed;
 #else
                 var notVisible = Visibility.Collapsed;

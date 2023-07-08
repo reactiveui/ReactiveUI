@@ -4,9 +4,9 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for WinUI Desktop</PackageDescription>
     <RootNamespace>ReactiveUI.WinUI.Desktop</RootNamespace>
-    <DefineConstants>HAS_WINUI</DefineConstants>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;winui</PackageTags>
     <UseWinUI>true</UseWinUI>
+    <DefineConstants>IS_WINUI;WINUI_TARGET;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
