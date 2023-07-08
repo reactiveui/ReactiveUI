@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if !HAS_MAUI
+#if HAS_WINUI
 using System;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -13,11 +13,7 @@ using System.Reflection;
 using Microsoft.UI.Xaml;
 using Splat;
 
-#if HAS_UNO
-namespace ReactiveUI.Uno
-#else
 namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// Creates a observable for a property if available that is based on a DependencyProperty.
