@@ -16,12 +16,10 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
-    <Compile Include="Platforms\net4\**\*.cs" />
     <Reference Include="PresentationFramework.Aero" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) or $(TargetFramework.StartsWith('net7')) ">
+  <ItemGroup>
     <Compile Include="Platforms\net4\**\*.cs" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>

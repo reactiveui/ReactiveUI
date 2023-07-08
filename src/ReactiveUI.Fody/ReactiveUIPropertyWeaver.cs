@@ -79,24 +79,9 @@ public class ReactiveUIPropertyWeaver
         LogInfo?.Invoke($"{helpers.Name} {helpers.Version}");
         var reactiveObject = new TypeReference("ReactiveUI", "IReactiveObject", ModuleDefinition, reactiveUI);
         var targetTypes = ModuleDefinition.GetAllTypes().Where(x => x.BaseType is not null && reactiveObject.IsAssignableFrom(x.BaseType)).ToArray();
-        var reactiveObjectExtensions = new TypeReference("ReactiveUI", "IReactiveObjectExtensions", ModuleDefinition, reactiveUI).Resolve();
-        if (reactiveObjectExtensions is null)
-        {
-            throw new Exception("reactiveObjectExtensions is null");
-        }
-
-        var raiseAndSetIfChangedMethod = ModuleDefinition.ImportReference(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaiseAndSetIfChanged"));
-        if (raiseAndSetIfChangedMethod is null)
-        {
-            throw new Exception("raiseAndSetIfChangedMethod is null");
-        }
-
-        var reactiveAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ReactiveAttribute", helpers);
-        if (reactiveAttribute is null)
-        {
-            throw new Exception("reactiveAttribute is null");
-        }
-
+        var reactiveObjectExtensions = new TypeReference("ReactiveUI", "IReactiveObjectExtensions", ModuleDefinition, reactiveUI).Resolve() ?? throw new Exception("reactiveObjectExtensions is null");
+        var raiseAndSetIfChangedMethod = ModuleDefinition.ImportReference(reactiveObjectExtensions.Methods.Single(x => x.Name == "RaiseAndSetIfChanged")) ?? throw new Exception("raiseAndSetIfChangedMethod is null");
+        var reactiveAttribute = ModuleDefinition.FindType("ReactiveUI.Fody.Helpers", "ReactiveAttribute", helpers) ?? throw new Exception("reactiveAttribute is null");
         foreach (var targetType in targetTypes)
         {
             foreach (var property in targetType.Properties.Where(x => x.IsDefined(reactiveAttribute)).ToArray())
