@@ -43,6 +43,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// Initializes a new instance of the <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> class.
     /// </summary>
     /// <param name="view">The view.</param>
+    [Obsolete("This method was deprecated in API level 23.", false)]
     protected ReactiveRecyclerViewViewHolder(View view)
         : base(view)
     {
