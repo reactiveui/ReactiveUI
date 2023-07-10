@@ -3,30 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if !HAS_MAUI
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-
-#if HAS_WINUI
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Markup;
-#elif NETFX_CORE || HAS_UNO
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Markup;
-#else
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
-#endif
 
-#if HAS_UNO
-namespace ReactiveUI.Uno
-#else
 namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
@@ -40,13 +23,6 @@ namespace ReactiveUI
         /// </summary>
         public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(() =>
         {
-#if NETFX_CORE || HAS_UNO
-            const string template =
-@"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>
-    <xaml:ViewModelViewHost ViewModel=""{Binding}"" VerticalContentAlignment=""Stretch"" HorizontalContentAlignment=""Stretch"" IsTabStop=""False"" />
-</DataTemplate>";
-            return (DataTemplate)XamlReader.Load(template);
-#else
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
                      "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
                  "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
@@ -55,12 +31,7 @@ namespace ReactiveUI
             var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
             assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
 
-#if HAS_WINUI
-            return (DataTemplate)XamlReader.Load(template.Replace("__ASSEMBLYNAME__", assemblyName));
-#else
             return (DataTemplate)XamlReader.Parse(template.Replace("__ASSEMBLYNAME__", assemblyName));
-#endif
-#endif
         });
 
         /// <inheritdoc/>
@@ -104,4 +75,3 @@ namespace ReactiveUI
         }
     }
 }
-#endif
