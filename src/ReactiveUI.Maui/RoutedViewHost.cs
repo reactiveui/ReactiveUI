@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Specialized;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -40,6 +41,8 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
      typeof(RoutedViewHost),
      false);
 
+    private string? _action;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
@@ -49,6 +52,13 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         this.WhenActivated(async disposable =>
         {
             var currentlyNavigating = false;
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+             x => Router!.NavigationStack.CollectionChanged += x,
+             x => Router!.NavigationStack.CollectionChanged -= x)
+            .Where(_ => !currentlyNavigating && Router?.NavigationStack.Count == 0)
+            .Subscribe(async _ => await SyncNavigationStacksAsync())
+            .DisposeWith(disposable);
 
             Router?
                 .NavigateBack
@@ -64,6 +74,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                         currentlyNavigating = false;
                     }
 
+                    _action = "NavigatedBack";
                     InvalidateCurrentViewModel();
                     await SyncNavigationStacksAsync();
                 })
@@ -108,8 +119,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
              x => Popped += x,
              x => Popped -= x);
 
-            // NB: Catch when the user hit back as opposed to the application
-            // requesting Back via NavigateBack
+            // NB: User pressed the Application back as opposed to requesting Back via Router.NavigateBack.
             poppingEvent
                 .Where(_ => !currentlyNavigating && Router is not null)
                 .Subscribe(_ =>
@@ -119,6 +129,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                         Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
                     }
 
+                    _action = "Popped";
                     InvalidateCurrentViewModel();
                 })
                 .DisposeWith(disposable);
@@ -132,8 +143,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
              x => PoppedToRoot += x,
              x => PoppedToRoot -= x);
 
-            // NB: Catch when the user hit back as opposed to the application
-            // requesting Back via NavigateBack
             poppingToRootEvent
                 .Where(_ => !currentlyNavigating && Router is not null)
                 .Subscribe(_ =>
@@ -146,6 +155,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                         }
                     }
 
+                    _action = "PoppedToRoot";
                     InvalidateCurrentViewModel();
                 })
                 .DisposeWith(disposable);
@@ -183,7 +193,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         if (vm is null)
         {
-            return Observable<Page>.Empty;
+            return Observable.Empty<Page>();
         }
 
         var ret = ViewLocator.Current.ResolveView(vm);
@@ -245,8 +255,15 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         var vm = Router?.GetCurrentViewModel();
         if (CurrentPage is IViewFor page && vm is not null)
         {
-            // don't replace view model if vm is null
-            page.ViewModel = vm;
+            if (page.ViewModel?.GetType() == vm.GetType())
+            {
+                // don't replace view model if vm is null or an incompatible type.
+                page.ViewModel = vm;
+            }
+            else
+            {
+                this.Log().Info($"The view type '{page.GetType().FullName}' is not compatible with '{vm.GetType().FullName}' this was called by {_action}, the viewmodel was not invalidated");
+            }
         }
     }
 
