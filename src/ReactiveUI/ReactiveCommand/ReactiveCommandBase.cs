@@ -82,39 +82,19 @@ public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TP
         remove => _canExecuteChanged -= value;
     }
 
-    /// <summary>
-    /// Gets an observable whose value indicates whether the command can currently execute.
-    /// </summary>
-    /// <remarks>
-    /// The value provided by this observable is governed both by any <c>canExecute</c> observable provided during
-    /// command creation, as well as the current execution status of the command. A command that is currently executing
-    /// will always yield <c>false</c> from this observable, even if the <c>canExecute</c> pipeline is currently <c>true</c>.
-    /// </remarks>
+    /// <inheritdoc />
     public abstract IObservable<bool> CanExecute
     {
         get;
     }
 
-    /// <summary>
-    /// Gets an observable whose value indicates whether the command is currently executing.
-    /// </summary>
-    /// <remarks>
-    /// This observable can be particularly useful for updating UI, such as showing an activity indicator whilst a command
-    /// is executing.
-    /// </remarks>
+    /// <inheritdoc />
     public abstract IObservable<bool> IsExecuting
     {
         get;
     }
 
-    /// <summary>
-    /// Gets an observable that ticks any exceptions in command execution logic.
-    /// </summary>
-    /// <remarks>
-    /// Any exceptions that are not observed via this observable will propagate out and cause the application to be torn
-    /// down. Therefore, you will always want to subscribe to this observable if you expect errors could occur (e.g. if
-    /// your command execution includes network activity).
-    /// </remarks>
+    /// <inheritdoc />
     public abstract IObservable<Exception> ThrownExceptions
     {
         get;
