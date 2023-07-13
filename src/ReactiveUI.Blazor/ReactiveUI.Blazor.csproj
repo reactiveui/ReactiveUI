@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net7')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.9" />
   </ItemGroup>
   
   <ItemGroup>

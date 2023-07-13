@@ -297,6 +297,11 @@ namespace ReactiveUI
         System.IObservable<bool> CanExecute { get; }
         System.IObservable<bool> IsExecuting { get; }
     }
+    public interface IReactiveCommand<in TParam, out TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, System.IDisposable, System.IObservable<TResult>
+    {
+        System.IObservable<TResult> Execute();
+        System.IObservable<TResult> Execute(TParam parameter);
+    }
     public interface IReactiveNotifyPropertyChanged<out TSender>
     {
         System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
@@ -645,7 +650,7 @@ namespace ReactiveUI
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateRunInBackground<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
     }
-    public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
+    public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, ReactiveUI.IReactiveCommand<TParam, TResult>, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
     {
         protected ReactiveCommandBase() { }
         public abstract System.IObservable<bool> CanExecute { get; }
