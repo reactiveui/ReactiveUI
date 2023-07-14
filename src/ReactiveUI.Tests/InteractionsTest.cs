@@ -26,9 +26,9 @@ namespace ReactiveUI.Tests
         {
             var interaction = new Interaction<Unit, Unit>();
 
-            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Action<InteractionContext<Unit, Unit>>)null!));
+            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Action<IInteractionContext<Unit, Unit>>)null!));
             Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler(null!));
-            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<InteractionContext<Unit, Unit>, IObservable<Unit>>)null!));
+            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<IInteractionContext<Unit, Unit>, IObservable<Unit>>)null!));
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace ReactiveUI.Tests
 
             interaction.RegisterHandler(context =>
             {
-                var output = context.GetOutput();
+                var output = ((InteractionContext<Unit, Unit>)context).GetOutput();
             });
 
             var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(Unit.Default).Subscribe());

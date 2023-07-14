@@ -21,22 +21,17 @@ namespace ReactiveUI;
 /// <typeparam name="TOutput">
 /// The type of the interaction's output.
 /// </typeparam>
-public sealed class InteractionContext<TInput, TOutput> : IInteractionContext<TInput, TOutput>
+public interface IInteractionContext<out TInput, in TOutput>
 {
-    private TOutput _output = default!;
-    private int _outputSet;
-
-    internal InteractionContext(TInput input) => Input = input;
-
     /// <summary>
     /// Gets the input for the interaction.
     /// </summary>
-    public TInput Input { get; }
+    TInput Input { get; }
 
     /// <summary>
     /// Gets a value indicating whether the interaction is handled. That is, whether the output has been set.
     /// </summary>
-    public bool IsHandled => _outputSet == 1;
+    bool IsHandled { get; }
 
     /// <summary>
     /// Sets the output for the interaction.
@@ -44,35 +39,5 @@ public sealed class InteractionContext<TInput, TOutput> : IInteractionContext<TI
     /// <param name="output">
     /// The output.
     /// </param>
-    /// <exception cref="InvalidOperationException">
-    /// If the output has already been set.
-    /// </exception>
-    public void SetOutput(TOutput output)
-    {
-        if (Interlocked.CompareExchange(ref _outputSet, 1, 0) != 0)
-        {
-            throw new InvalidOperationException("Output has already been set.");
-        }
-
-        _output = output;
-    }
-
-    /// <summary>
-    /// Gets the output of the interaction.
-    /// </summary>
-    /// <returns>
-    /// The output.
-    /// </returns>
-    /// <exception cref="InvalidOperationException">
-    /// If the output has not been set.
-    /// </exception>
-    public TOutput GetOutput()
-    {
-        if (_outputSet == 0)
-        {
-            throw new InvalidOperationException("Output has not been set.");
-        }
-
-        return _output;
-    }
+    void SetOutput(TOutput output);
 }
