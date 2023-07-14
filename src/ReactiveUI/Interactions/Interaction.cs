@@ -128,6 +128,13 @@ public class Interaction<TInput, TOutput> : IInteraction<TInput, TOutput>
         }
     }
 
+    /// <summary>
+    /// Gets a interaction context which is used to provide information about the interaction.
+    /// </summary>
+    /// <param name="input">The input that is being passed in.</param>
+    /// <returns>The interaction context.</returns>
+    protected virtual IInteractionContext<TInput, TOutput> GenerateContext(TInput input) => new InteractionContext<TInput, TOutput>(input);
+
     private void AddHandler(Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
     {
         lock (_sync)
