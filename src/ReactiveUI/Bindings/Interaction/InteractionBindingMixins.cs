@@ -10,16 +10,12 @@ namespace ReactiveUI;
 /// </summary>
 public static class InteractionBindingMixins
 {
-    private static readonly IInteractionBinderImplementation _binderImplementation;
+    private static readonly InteractionBinderImplementation _binderImplementation = new();
 
-    static InteractionBindingMixins()
-    {
-        RxApp.EnsureInitialized();
-        _binderImplementation = new InteractionBinderImplementation();
-    }
+    static InteractionBindingMixins() => RxApp.EnsureInitialized();
 
     /// <summary>
-    /// Binds the <see cref="Interaction{TInput, TOutput}"/> on a ViewModel to the specified handler.
+    /// Binds the <see cref="IInteraction{TInput, TOutput}"/> on a ViewModel to the specified handler.
     /// </summary>
     /// <param name="view">The view to bind to.</param>
     /// <param name="viewModel">The view model to bind to.</param>
@@ -33,18 +29,18 @@ public static class InteractionBindingMixins
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
-        Func<InteractionContext<TInput, TOutput>, Task> handler)
-        where TViewModel : class
-        where TView : class, IViewFor =>
+        Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,
+        Func<IInteractionContext<TInput, TOutput>, Task> handler)
+            where TViewModel : class
+            where TView : class, IViewFor =>
         _binderImplementation.BindInteraction(
-                                              viewModel,
-                                              view,
-                                              propertyName,
-                                              handler);
+                viewModel,
+                view,
+                propertyName,
+                handler);
 
     /// <summary>
-    /// Binds the <see cref="Interaction{TInput, TOutput}"/> on a ViewModel to the specified handler.
+    /// Binds the <see cref="IInteraction{TInput, TOutput}"/> on a ViewModel to the specified handler.
     /// </summary>
     /// <param name="view">The view to bind to.</param>
     /// <param name="viewModel">The view model to bind to.</param>
@@ -59,13 +55,13 @@ public static class InteractionBindingMixins
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
-        Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
-        where TViewModel : class
-        where TView : class, IViewFor =>
+        Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,
+        Func<IInteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
+            where TViewModel : class
+            where TView : class, IViewFor =>
         _binderImplementation.BindInteraction(
-                                              viewModel,
-                                              view,
-                                              propertyName,
-                                              handler);
+            viewModel,
+            view,
+            propertyName,
+            handler);
 }
