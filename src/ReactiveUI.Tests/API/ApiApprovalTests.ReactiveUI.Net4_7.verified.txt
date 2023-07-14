@@ -216,14 +216,27 @@ namespace ReactiveUI
     }
     public interface IInteractionBinderImplementation : Splat.IEnableLogger
     {
-        System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+        System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
-        System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+        System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor
         ;
+    }
+    public interface IInteractionContext<out TInput, in TOutput>
+    {
+        TInput Input { get; }
+        bool IsHandled { get; }
+        void SetOutput(TOutput output);
+    }
+    public interface IInteraction<TInput, TOutput>
+    {
+        System.IObservable<TOutput> Handle(TInput input);
+        System.IDisposable RegisterHandler(System.Action<ReactiveUI.IInteractionContext<TInput, TOutput>> handler);
+        System.IDisposable RegisterHandler(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler);
+        System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler);
     }
     public interface IMessageBus : Splat.IEnableLogger
     {
@@ -245,6 +258,10 @@ namespace ReactiveUI
         System.Linq.Expressions.Expression? Expression { get; }
         TSender Sender { get; }
         TValue Value { get; }
+    }
+    public interface IOutputContext<out TInput, TOutput> : ReactiveUI.IInteractionContext<TInput, TOutput>
+    {
+        TOutput GetOutput();
     }
     public interface IPlatformOperations
     {
@@ -388,37 +405,38 @@ namespace ReactiveUI
     public class InteractionBinderImplementation : ReactiveUI.IInteractionBinderImplementation, Splat.IEnableLogger
     {
         public InteractionBinderImplementation() { }
-        public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+        public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
-        public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+        public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
     public static class InteractionBindingMixins
     {
-        public static System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+        public static System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
-        public static System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.Interaction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+        public static System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
-    public sealed class InteractionContext<TInput, TOutput>
+    public sealed class InteractionContext<TInput, TOutput> : ReactiveUI.IInteractionContext<TInput, TOutput>, ReactiveUI.IOutputContext<TInput, TOutput>
     {
         public TInput Input { get; }
         public bool IsHandled { get; }
         public TOutput GetOutput() { }
         public void SetOutput(TOutput output) { }
     }
-    public class Interaction<TInput, TOutput>
+    public class Interaction<TInput, TOutput> : ReactiveUI.IInteraction<TInput, TOutput>
     {
         public Interaction(System.Reactive.Concurrency.IScheduler? handlerScheduler = null) { }
-        protected System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<System.Reactive.Unit>>[] GetHandlers() { }
+        protected virtual ReactiveUI.IOutputContext<TInput, TOutput> GenerateContext(TInput input) { }
+        protected System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<System.Reactive.Unit>>[] GetHandlers() { }
         public virtual System.IObservable<TOutput> Handle(TInput input) { }
-        public System.IDisposable RegisterHandler(System.Action<ReactiveUI.InteractionContext<TInput, TOutput>> handler) { }
-        public System.IDisposable RegisterHandler(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
-        public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.InteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
+        public System.IDisposable RegisterHandler(System.Action<ReactiveUI.IInteractionContext<TInput, TOutput>> handler) { }
+        public System.IDisposable RegisterHandler(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
+        public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
     }
     public class LongToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {
