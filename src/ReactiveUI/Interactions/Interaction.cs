@@ -51,7 +51,7 @@ public class Interaction<TInput, TOutput> : IInteraction<TInput, TOutput>
     /// <param name="handlerScheduler">
     /// The scheduler to use when invoking handlers, which defaults to <c>CurrentThreadScheduler.Instance</c> if <see langword="null"/>.
     /// </param>
-    public Interaction(IScheduler? handlerScheduler = null) => _handlerScheduler ??= CurrentThreadScheduler.Instance;
+    public Interaction(IScheduler? handlerScheduler = null) => _handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
 
     /// <inheritdoc/>
     public IDisposable RegisterHandler(Action<IInteractionContext<TInput, TOutput>> handler)
