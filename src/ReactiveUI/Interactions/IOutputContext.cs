@@ -10,7 +10,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <typeparam name="TInput">The input.</typeparam>
 /// <typeparam name="TOutput">The output.</typeparam>
-public interface IOutputContext<TInput, TOutput> : IInteractionContext<TInput, TOutput>
+public interface IOutputContext<out TInput, TOutput> : IInteractionContext<TInput, TOutput>
 {
     /// <summary>
     /// Gets the output of the interaction.
