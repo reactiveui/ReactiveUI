@@ -133,7 +133,7 @@ public class Interaction<TInput, TOutput> : IInteraction<TInput, TOutput>
     /// </summary>
     /// <param name="input">The input that is being passed in.</param>
     /// <returns>The interaction context.</returns>
-    protected virtual IInteractionContext<TInput, TOutput> GenerateContext(TInput input) => new InteractionContext<TInput, TOutput>(input);
+    protected virtual IOutputContext<TInput, TOutput> GenerateContext(TInput input) => new InteractionContext<TInput, TOutput>(input);
 
     private void AddHandler(Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
     {
