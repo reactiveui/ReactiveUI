@@ -96,7 +96,7 @@ public class Interaction<TInput, TOutput> : IInteraction<TInput, TOutput>
     /// <inheritdoc />
     public virtual IObservable<TOutput> Handle(TInput input)
     {
-        var context = new InteractionContext<TInput, TOutput>(input);
+        var context = GenerateContext(input);
 
         return GetHandlers()
             .Reverse()
