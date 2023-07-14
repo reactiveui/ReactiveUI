@@ -4,15 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reactive.Linq;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+
 using ReactiveUI;
-using Splat;
 
 namespace ReactiveUI
 {

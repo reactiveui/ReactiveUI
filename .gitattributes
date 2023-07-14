@@ -2,7 +2,7 @@
 * text=auto
 
 # Text files that should be normalized to LF in odb.
-*.cs     text eol=lf diff=csharp
+*.cs     text diff=csharp
 *.xaml   text
 *.config text
 *.c      text
@@ -35,8 +35,8 @@
 *.pdb    binary
 *.sdf    binary
 *.7z     binary
-# Generated file should just use CRLF, it's fiiine
-SolutionInfo.cs text eol=crlf diff=csharp
+
+# lfs files
 *.mht filter=lfs diff=lfs merge=lfs -text
 *.ppam filter=lfs diff=lfs merge=lfs -text
 *.wmv filter=lfs diff=lfs merge=lfs -text

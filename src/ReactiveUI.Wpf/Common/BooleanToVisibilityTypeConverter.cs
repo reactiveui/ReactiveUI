@@ -7,7 +7,6 @@
 using Microsoft.Maui;
 
 #endif
-using System;
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 #elif NETFX_CORE || HAS_UNO

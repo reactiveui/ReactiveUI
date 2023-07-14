@@ -3,17 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Autofac;
+
 using DryIoc;
 
 using FluentAssertions;
 
 using Ninject;
 
-using Splat;
 using Splat.Autofac;
 using Splat.DryIoc;
 using Splat.Ninject;
@@ -34,7 +31,7 @@ namespace ReactiveUI.Splat.Tests
         public void DryIocDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
         {
             // Invoke RxApp which initializes the ReactiveUI platform.
-            var container = new Container();
+            var container = new DryIoc.Container();
             container.UseDryIocDependencyResolver();
             Locator.CurrentMutable.InitializeReactiveUI();
 
@@ -52,7 +49,7 @@ namespace ReactiveUI.Splat.Tests
         public void DryIocDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
         {
             // Invoke RxApp which initializes the ReactiveUI platform.
-            var container = new Container();
+            var container = new DryIoc.Container();
             container.UseDryIocDependencyResolver();
             Locator.CurrentMutable.InitializeReactiveUI();
 
