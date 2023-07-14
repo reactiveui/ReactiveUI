@@ -5,7 +5,6 @@
 
 using System.Globalization;
 using System.Reflection;
-using System.Threading;
 
 using Xunit.Sdk;
 

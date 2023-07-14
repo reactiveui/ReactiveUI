@@ -6,8 +6,9 @@
 using ReactiveUI.XamForms;
 using ReactiveUI.XamForms.Tests.Activation;
 using ReactiveUI.XamForms.Tests.Activation.Mocks;
-using Splat;
+
 using Xamarin.Forms;
+
 using Xunit;
 
 namespace ReactiveUI.Tests

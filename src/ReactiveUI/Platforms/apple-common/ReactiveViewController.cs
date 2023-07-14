@@ -3,17 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using Foundation;
 
 #if UIKIT
-using UIKit;
-using NSView = UIKit.UIView;
 using NSViewController = UIKit.UIViewController;
 #else
 using AppKit;

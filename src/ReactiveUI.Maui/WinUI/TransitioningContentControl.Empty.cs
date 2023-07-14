@@ -5,6 +5,7 @@
 
 #if WINUI_TARGET
 using System.Diagnostics.CodeAnalysis;
+
 using Microsoft.UI.Xaml.Controls;
 
 namespace ReactiveUI;

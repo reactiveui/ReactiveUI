@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive.Linq;
+
 using Xunit;
 
 namespace ReactiveUI.Tests
