@@ -223,10 +223,7 @@ namespace ReactiveUI.Tests.Wpf
             var view = new CommandBindingView { ViewModel = vm };
 
             // Create a paramenter feed
-            vm.Command2.Subscribe(_ =>
-            {
-                vm.Value++;
-            });
+            vm.Command2.Subscribe(_ => vm.Value++);
             view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
 
             // Bind the command and the Func<T> parameter.

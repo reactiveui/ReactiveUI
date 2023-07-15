@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
-
+using ReactiveUI.Testing;
 using ReactiveUI.Winforms;
 
 using Xunit;
@@ -23,6 +23,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public async Task CommandBinderBindsToButtonAsync()
         {
+            using var testSequencer = new TestSequencer();
             var fixture = new CreatesWinformsCommandBinding();
             var cmd = ReactiveCommand.CreateRunInBackground<int>(_ => { });
             var input = new Button();
@@ -31,16 +32,17 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             var commandExecuted = false;
             object? ea = null;
-            cmd.Subscribe(o =>
+            cmd.Subscribe(async o =>
             {
                 ea = o;
                 commandExecuted = true;
+                await testSequencer.AdvancePhaseAsync("Phase 1");
             });
 
             using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
             {
                 input.PerformClick();
-                await Task.Delay(10);
+                await testSequencer.AdvancePhaseAsync("Phase 1");
                 Assert.True(commandExecuted);
                 Assert.NotNull(ea);
             }

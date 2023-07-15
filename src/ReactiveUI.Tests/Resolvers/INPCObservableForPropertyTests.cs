@@ -38,13 +38,7 @@ namespace ReactiveUI.Tests
 
             var changes = new List<IObservedChange<object?, object?>>();
 
-            var propertyName = exp.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null");
-            }
-
+            var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
             instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.Property1 = "test1";
@@ -68,13 +62,7 @@ namespace ReactiveUI.Tests
 
             var changes = new List<IObservedChange<object?, object?>>();
 
-            var propertyName = exp.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null");
-            }
-
+            var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
             instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.Property1 = "test1";
@@ -98,13 +86,7 @@ namespace ReactiveUI.Tests
 
             var changes = new List<IObservedChange<object?, object?>>();
 
-            var propertyName = exp.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null");
-            }
-
+            var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
             instance.GetNotificationForProperty(testClass, exp, propertyName, false).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.OnPropertyChanged(null);
@@ -128,13 +110,7 @@ namespace ReactiveUI.Tests
 
             var changes = new List<IObservedChange<object?, object?>>();
 
-            var propertyName = exp.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null");
-            }
-
+            var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
             instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.OnPropertyChanging(null);

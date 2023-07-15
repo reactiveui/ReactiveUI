@@ -34,13 +34,7 @@ namespace ReactiveUI.Tests.Xaml
 
             var results = new List<IObservedChange<object, object?>>();
             Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("There is no valid property name");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("There is no valid property name");
             var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
             var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
 
@@ -66,13 +60,7 @@ namespace ReactiveUI.Tests.Xaml
 
             var results = new List<IObservedChange<object, object?>>();
             Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("There is no valid property name");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("There is no valid property name");
             var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
             var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
 

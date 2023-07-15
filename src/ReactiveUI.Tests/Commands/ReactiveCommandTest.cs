@@ -1199,25 +1199,21 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task ReactiveCommandExecutesFromInvokeCommand()
         {
-            var semaphore = new SemaphoreSlim(0);
-            var command = ReactiveCommand.Create(() => semaphore.Release());
+            using var testSequencer = new TestSequencer();
+
+            var command = ReactiveCommand.Create(async () => await testSequencer.AdvancePhaseAsync("Phase 1"));
+            var result = 0;
+
+            // False, True, False
+            command.IsExecuting.Subscribe(_ => result++);
 
             Observable.Return(Unit.Default)
                       .InvokeCommand(command);
 
-            var result = 0;
-            var task = semaphore.WaitAsync();
-            if (await Task.WhenAny(Task.Delay(TimeSpan.FromMilliseconds(100)), task).ConfigureAwait(true) == task)
-            {
-                result = 1;
-            }
-            else
-            {
-                result = -1;
-            }
+            await testSequencer.AdvancePhaseAsync("Phase 1");
+            Assert.Equal(3, result);
 
-            await Task.Delay(200).ConfigureAwait(false);
-            Assert.Equal(1, result);
+            testSequencer.Dispose();
         }
     }
 }

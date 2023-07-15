@@ -43,4 +43,14 @@ namespace ReactiveUI.Testing
             where T : System.Reactive.Concurrency.IScheduler { }
         public static System.IDisposable WithScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
     }
+    public class TestSequencer : System.IDisposable
+    {
+        public TestSequencer() { }
+        public long CompletedPhases { get; }
+        public long CurrentPhase { get; }
+        public System.Threading.Tasks.Task AdvancePhaseAsync(string comment = "", long? expectedPhase = default) { }
+        public System.Threading.Tasks.Task CompletePhaseAsync(string comment = "") { }
+        public void Dispose() { }
+        protected virtual void Dispose(bool disposing) { }
+    }
 }

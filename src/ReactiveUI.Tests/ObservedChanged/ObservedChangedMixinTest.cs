@@ -160,18 +160,17 @@ namespace ReactiveUI.Tests
         /// Tests to make sure that BindTo can handle Stack Overflow conditions.
         /// </summary>
         [Fact]
-        public void BindToStackOverFlowTest()
-        {
-            // Before the code changes packed in the same commit
-            // as this test the test would go into an infinite
-            // event storm. The critical issue is that the
-            // property StackOverflowTrigger will clone the
-            // value before setting it.
-            //
-            // If this test executes through without hanging then
-            // the problem has been fixed.
+        public void BindToStackOverFlowTest() =>
             new TestScheduler().With(_ =>
             {
+                // Before the code changes packed in the same commit
+                // as this test the test would go into an infinite
+                // event storm. The critical issue is that the
+                // property StackOverflowTrigger will clone the
+                // value before setting it.
+                //
+                // If this test executes through without hanging then
+                // the problem has been fixed.
                 var fixtureA = new TestFixture();
                 var fixtureB = new TestFixture();
 
@@ -179,6 +178,5 @@ namespace ReactiveUI.Tests
 
                 source.BindTo(fixtureA, x => x.StackOverflowTrigger);
             });
-        }
     }
 }

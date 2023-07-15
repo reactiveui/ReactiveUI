@@ -33,7 +33,7 @@ namespace ReactiveUI.Tests.Xaml
         public void EventBinderBindsToExplicitInheritedEvent()
         {
             var fixture = new FakeView();
-            fixture.BindCommand(fixture!.ViewModel!, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
+            fixture.BindCommand(fixture!.ViewModel, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace ReactiveUI.Tests.Xaml
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
 
             var invokeCount = 0;
-            cmd.Subscribe(_ => invokeCount += 1);
+            cmd.Subscribe(_ => ++invokeCount);
 
             var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
             Assert.NotNull(disp);

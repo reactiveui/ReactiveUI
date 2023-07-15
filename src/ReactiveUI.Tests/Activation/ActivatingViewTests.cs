@@ -26,9 +26,10 @@ namespace ReactiveUI.Tests
             using (locator.WithResolver())
             {
                 var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView();
-
-                fixture.ViewModel = vm;
+                var fixture = new ActivatingView
+                {
+                    ViewModel = vm
+                };
                 Assert.Equal(0, vm.IsActiveCount);
                 Assert.Equal(0, fixture.IsActiveCount);
 
@@ -56,9 +57,10 @@ namespace ReactiveUI.Tests
             using (locator.WithResolver())
             {
                 var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView();
-
-                fixture.ViewModel = vm;
+                var fixture = new ActivatingView
+                {
+                    ViewModel = vm
+                };
                 Assert.Equal(0, vm.IsActiveCount);
                 Assert.Equal(0, fixture.IsActiveCount);
 
@@ -151,9 +153,10 @@ namespace ReactiveUI.Tests
             using (locator.WithResolver())
             {
                 var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView();
-
-                fixture.ViewModel = vm;
+                var fixture = new ActivatingView
+                {
+                    ViewModel = vm
+                };
                 Assert.Equal(0, vm.IsActiveCount);
                 Assert.Equal(0, fixture.IsActiveCount);
 

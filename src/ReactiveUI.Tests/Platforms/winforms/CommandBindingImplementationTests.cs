@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
-
+using ReactiveUI.Testing;
 using Xunit;
 
 namespace ReactiveUI.Tests.Winforms
@@ -45,15 +45,21 @@ namespace ReactiveUI.Tests.Winforms
         /// <summary>
         /// Tests the command bind explicit event wire up.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void CommandBindToExplicitEventWireup()
+        public async Task CommandBindToExplicitEventWireupAsync()
         {
+            using var testSequencer = new TestSequencer();
             var vm = new WinformCommandBindViewModel();
             var view = new WinformCommandBindView { ViewModel = vm };
             var fixture = new CommandBinderImplementation();
 
             var invokeCount = 0;
-            vm.Command2.Subscribe(_ => ++invokeCount);
+            vm.Command2.Subscribe(async _ =>
+            {
+                ++invokeCount;
+                await testSequencer.AdvancePhaseAsync();
+            });
 
             var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
 
@@ -62,6 +68,8 @@ namespace ReactiveUI.Tests.Winforms
             disp.Dispose();
 
             view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+
+            await testSequencer.AdvancePhaseAsync();
             Assert.Equal(1, invokeCount);
         }
 
