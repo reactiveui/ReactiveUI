@@ -48,8 +48,7 @@ namespace ReactiveUI.Testing
         public TestSequencer() { }
         public long CompletedPhases { get; }
         public long CurrentPhase { get; }
-        public System.Threading.Tasks.Task AdvancePhaseAsync(string comment = "", long? expectedPhase = default) { }
-        public System.Threading.Tasks.Task CompletePhaseAsync(string comment = "") { }
+        public System.Threading.Tasks.Task AdvancePhaseAsync(string comment = "") { }
         public void Dispose() { }
         protected virtual void Dispose(bool disposing) { }
     }

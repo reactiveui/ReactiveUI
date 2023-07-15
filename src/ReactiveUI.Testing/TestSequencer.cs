@@ -39,39 +39,20 @@ namespace ReactiveUI.Testing
         /// Advances this phase instance.
         /// </summary>
         /// <param name="comment">The comment for Test visual identification Purposes only.</param>
-        /// <param name="expectedPhase">The expected phase, if defined the process will hold until the phase count matches.</param>
         /// <returns>
         /// A <see cref="Task" /> representing the asynchronous operation.
         /// </returns>
 #pragma warning disable RCS1163 // Unused parameter.
-        public async Task AdvancePhaseAsync(string comment = "", long? expectedPhase = null)
+        public Task AdvancePhaseAsync(string comment = "")
 #pragma warning restore RCS1163 // Unused parameter.
         {
-            var expected = expectedPhase;
-            while (expected.HasValue && expected.Value != CompletedPhases)
-            {
-                await Task.Yield();
-            }
-
             if (_phaseSync.ParticipantCount == _phaseSync.ParticipantsRemaining)
             {
                 CurrentPhase = CompletedPhases + 1;
             }
 
-            await Task.Run(() => _phaseSync?.SignalAndWait(CancellationToken.None));
+            return Task.Run(() => _phaseSync?.SignalAndWait(CancellationToken.None));
         }
-
-        /// <summary>
-        /// Completes the current phase.
-        /// </summary>
-        /// <param name="comment">The comment for Test visual identification Purposes only.</param>
-        /// <returns>
-        /// A <see cref="Task" /> representing the asynchronous operation.
-        /// </returns>
-#pragma warning disable RCS1163 // Unused parameter.
-        public Task CompletePhaseAsync(string comment = "") =>
-            Task.Run(() => _phaseSync?.SignalAndWait(CancellationToken.None));
-#pragma warning restore RCS1163 // Unused parameter.
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
