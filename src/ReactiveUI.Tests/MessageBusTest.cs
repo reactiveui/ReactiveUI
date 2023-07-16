@@ -89,7 +89,7 @@ namespace ReactiveUI.Tests
             var bus = new MessageBus();
 
             var receivedMessage = false;
-            var dispose = bus.Listen<int>().Subscribe(x => receivedMessage = true);
+            var dispose = bus.Listen<int>().Subscribe(_ => receivedMessage = true);
             bus.SendMessage(1);
             Assert.True(receivedMessage);
 
@@ -114,10 +114,10 @@ namespace ReactiveUI.Tests
             var receivedMessage2 = false;
 
             bus.RegisterMessageSource(source1);
-            bus.Listen<int>().Subscribe(x => receivedMessage1 = true);
+            bus.Listen<int>().Subscribe(_ => receivedMessage1 = true);
 
             bus.RegisterMessageSource(source2);
-            bus.Listen<int>().Subscribe(x => receivedMessage2 = true);
+            bus.Listen<int>().Subscribe(_ => receivedMessage2 = true);
 
             source1.OnNext(1);
             Assert.True(receivedMessage1);
@@ -140,12 +140,12 @@ namespace ReactiveUI.Tests
             var mb = new MessageBus();
             int? listenedThreadId = null;
             int? otherThreadId = null;
-            var thisThreadId = Thread.CurrentThread.ManagedThreadId;
+            var thisThreadId = Environment.CurrentManagedThreadId;
 
             var otherThread = new Thread(new ThreadStart(() =>
             {
-                otherThreadId = Thread.CurrentThread.ManagedThreadId;
-                mb.Listen<int>().Subscribe(_ => listenedThreadId = Thread.CurrentThread.ManagedThreadId);
+                otherThreadId = Environment.CurrentManagedThreadId;
+                mb.Listen<int>().Subscribe(_ => listenedThreadId = Environment.CurrentManagedThreadId);
                 mb.SendMessage(42);
             }));
 

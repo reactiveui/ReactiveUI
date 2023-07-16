@@ -32,7 +32,8 @@ namespace ReactiveUI.Tests
                 var fixture = new ObservableAsPropertyHelper<int>(
                     input,
                     x => output.Add(x),
-                    -5);
+                    -5,
+                    scheduler: scheduler);
 
                 scheduler.Start();
 
@@ -58,7 +59,8 @@ namespace ReactiveUI.Tests
                 var fixture = new ObservableAsPropertyHelper<int>(
                     input,
                     x => output.Add(x),
-                    1);
+                    1,
+                    scheduler: scheduler);
 
                 scheduler.Start();
 
@@ -81,7 +83,8 @@ namespace ReactiveUI.Tests
                 var fixture = new ObservableAsPropertyHelper<int>(
                     Observable<int>.Never,
                     x => output.Add(x),
-                    32);
+                    32,
+                    scheduler: scheduler);
 
                 Assert.Equal(32, fixture.Value);
             });
@@ -91,27 +94,27 @@ namespace ReactiveUI.Tests
         /// Tests that Observable As Property Helpers should provide latest value.
         /// </summary>
         [Fact]
-        public void OAPHShouldProvideLatestValue()
-        {
-            var scheduler = new TestScheduler();
-            var input = new Subject<int>();
+        public void OAPHShouldProvideLatestValue() =>
+            new TestScheduler().With(scheduler =>
+            {
+                var input = new Subject<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(
-                input,
-                _ => { },
-                -5,
-                scheduler: scheduler);
+                var fixture = new ObservableAsPropertyHelper<int>(
+                    input,
+                    _ => { },
+                    -5,
+                    scheduler: scheduler);
 
-            Assert.Equal(-5, fixture.Value);
-            new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
+                Assert.Equal(-5, fixture.Value);
+                new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
-            scheduler.Start();
-            Assert.Equal(4, fixture.Value);
+                scheduler.Start();
+                Assert.Equal(4, fixture.Value);
 
-            input.OnCompleted();
-            scheduler.Start();
-            Assert.Equal(4, fixture.Value);
-        }
+                input.OnCompleted();
+                scheduler.Start();
+                Assert.Equal(4, fixture.Value);
+            });
 
         /// <summary>
         /// Tests that Observable As Property Helpers should subscribe immediately to source.
@@ -231,9 +234,10 @@ namespace ReactiveUI.Tests
         public void OAPHDeferSubscriptionWithInitialFuncValueShouldNotEmitInitialValueNorAccessFunc()
         {
             var observable = Observable.Empty<int>();
-            Func<int> throwIfAccessed = () => throw new Exception();
 
-            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, getInitialValue: throwIfAccessed, deferSubscription: true);
+            static int ThrowIfAccessed() => throw new Exception();
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, getInitialValue: ThrowIfAccessed, deferSubscription: true);
 
             Assert.False(fixture.IsSubscribed);
 
@@ -271,13 +275,13 @@ namespace ReactiveUI.Tests
         {
             var observable = Observable.Empty<int>();
             var wasAccessed = false;
-            Func<int> getInitialValue = () =>
+            int GetInitialValue()
             {
                 wasAccessed = true;
                 return 42;
-            };
+            }
 
-            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, getInitialValue: getInitialValue, deferSubscription: true);
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, getInitialValue: GetInitialValue, deferSubscription: true);
 
             Assert.False(fixture.IsSubscribed);
             Assert.False(wasAccessed);
@@ -312,30 +316,30 @@ namespace ReactiveUI.Tests
         /// Tests that Observable As Property Helpers should rethrow errors.
         /// </summary>
         [Fact]
-        public void OAPHShouldRethrowErrors()
-        {
-            var input = new Subject<int>();
-            var scheduler = new TestScheduler();
+        public void OAPHShouldRethrowErrors() =>
+            new TestScheduler().With(scheduler =>
+            {
+                var input = new Subject<int>();
 
-            var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: scheduler);
-            var errors = new List<Exception>();
+                var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: scheduler);
+                var errors = new List<Exception>();
 
-            Assert.Equal(-5, fixture.Value);
-            new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
+                Assert.Equal(-5, fixture.Value);
+                new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
-            fixture.ThrownExceptions.Subscribe(errors.Add);
+                fixture.ThrownExceptions.Subscribe(errors.Add);
 
-            scheduler.Start();
+                scheduler.Start();
 
-            Assert.Equal(4, fixture.Value);
+                Assert.Equal(4, fixture.Value);
 
-            input.OnError(new Exception("Die!"));
+                input.OnError(new Exception("Die!"));
 
-            scheduler.Start();
+                scheduler.Start();
 
-            Assert.Equal(4, fixture.Value);
-            Assert.Equal(1, errors.Count);
-        }
+                Assert.Equal(4, fixture.Value);
+                Assert.Equal(1, errors.Count);
+            });
 
         /// <summary>
         /// Test that no thrown exceptions subscriber equals Observable As Property Helper death.
@@ -481,24 +485,23 @@ namespace ReactiveUI.Tests
         /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
         /// </summary>
         [Fact]
-        public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName() =>
-            new TestScheduler().With(scheduler =>
+        public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName()
+        {
+            var fixture = new OAPHIndexerTestFixture(0, ImmediateScheduler.Instance);
+            var propertiesChanged = new List<string>();
+
+            fixture.PropertyChanged += (_, args) =>
             {
-                var fixture = new OAPHIndexerTestFixture(0);
-                var propertiesChanged = new List<string>();
-
-                fixture.PropertyChanged += (_, args) =>
+                if (args.PropertyName is not null)
                 {
-                    if (args.PropertyName is not null)
-                    {
-                        propertiesChanged.Add(args.PropertyName);
-                    }
-                };
+                    propertiesChanged.Add(args.PropertyName);
+                }
+            };
 
-                fixture.Text = "awesome";
+            fixture.Text = "awesome";
 
-                Assert.Equal(new[] { "Text", "Item[]" }, propertiesChanged);
-            });
+            Assert.Equal(new[] { "Text", "Item[]" }, propertiesChanged);
+        }
 
         /// <summary>
         /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
@@ -506,10 +509,9 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName1() =>
             new TestScheduler().With(scheduler =>
-            {
                 Assert.Throws<NotSupportedException>(() =>
                 {
-                    var fixture = new OAPHIndexerTestFixture(1);
+                    var fixture = new OAPHIndexerTestFixture(1, scheduler);
                     var propertiesChanged = new List<string>();
 
                     fixture.PropertyChanged += (_, args) =>
@@ -521,8 +523,7 @@ namespace ReactiveUI.Tests
                     };
 
                     fixture.Text = "awesome";
-                });
-            });
+                }));
 
         /// <summary>
         /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
@@ -530,12 +531,10 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName2() =>
             new TestScheduler().With(scheduler =>
-            {
                 Assert.Throws<ArgumentException>(() =>
                 {
-                    var fixture = new OAPHIndexerTestFixture(2);
-                });
-            });
+                    var fixture = new OAPHIndexerTestFixture(2, scheduler);
+                }));
 
         /// <summary>
         /// Nullables the types test shouldnt need decorators with toproperty.

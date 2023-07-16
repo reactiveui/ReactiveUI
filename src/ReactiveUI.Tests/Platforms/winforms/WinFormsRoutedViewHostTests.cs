@@ -16,7 +16,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldDisposePreviousView()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var router = new RoutingState();
             var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
             router?.Navigate?.Execute(new FakeWinformViewModel());
@@ -50,7 +50,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void WhenRoutedToViewModelItShouldAddViewToControls()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var router = new RoutingState();
             var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
             router?.Navigate?.Execute(new FakeWinformViewModel());

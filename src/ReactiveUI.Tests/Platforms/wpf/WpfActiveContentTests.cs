@@ -6,7 +6,7 @@
 using System.Windows;
 
 using DynamicData;
-
+using ReactiveUI.Testing;
 using Xunit;
 
 namespace ReactiveUI.Tests.Wpf
@@ -18,8 +18,6 @@ namespace ReactiveUI.Tests.Wpf
     /// </summary>
     public class WpfActiveContentTests : IClassFixture<WpfActiveContentFixture>
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
         /// <summary>
         /// Initializes a new instance of the <see cref="WpfActiveContentTests"/> class.
         /// </summary>
@@ -74,7 +72,7 @@ namespace ReactiveUI.Tests.Wpf
         public void TransitioningContentControlTest()
         {
             var window = Fixture?.App?.MockWindowFactory();
-            window!.WhenActivated(async d =>
+            window!.WhenActivated(async _ =>
             {
                 window!.TransitioningContent.Duration = TimeSpan.FromMilliseconds(200);
                 var transitioning = false;
@@ -156,41 +154,42 @@ namespace ReactiveUI.Tests.Wpf
         public void TransitioninContentControlDpiTest()
         {
             var window = Fixture?.App?.TCMockWindowFactory();
+            const int delay = 2000;
 
-            window!.WhenActivated(async d =>
+            window!.WhenActivated(async _ =>
             {
                 TransitioningContentControl.OverrideDpi = true;
                 window!.TransitioningContent.Height = 500;
                 window.TransitioningContent.Width = 500;
                 window.TransitioningContent.Content = new FirstView();
-                await Task.Delay(5000).ConfigureAwait(true);
+                await Task.Delay(delay).ConfigureAwait(true);
                 window.TransitioningContent.Content = new SecondView();
-                await Task.Delay(5000).ConfigureAwait(true);
+                await Task.Delay(delay).ConfigureAwait(true);
                 window.TransitioningContent.Height = 300;
                 window.TransitioningContent.Width = 300;
                 window.TransitioningContent.Content = new FirstView();
-                await Task.Delay(5000).ConfigureAwait(true);
+                await Task.Delay(delay).ConfigureAwait(true);
                 window.TransitioningContent.Content = new SecondView();
                 window.TransitioningContent.Height = 0.25;
                 window.TransitioningContent.Width = 0.25;
                 window.TransitioningContent.Content = new FirstView();
-                await Task.Delay(5000).ConfigureAwait(true);
+                await Task.Delay(delay).ConfigureAwait(true);
                 window.TransitioningContent.Content = new SecondView();
                 window.TransitioningContent.Height = 500;
                 window.TransitioningContent.Width = 500;
                 window.TransitioningContent.Content = new FirstView();
-                await Task.Delay(5000).ConfigureAwait(true);
+                await Task.Delay(delay).ConfigureAwait(true);
                 window.TransitioningContent.Content = new SecondView();
-                await Task.Delay(5000).ConfigureAwait(true);
+                await Task.Delay(delay).ConfigureAwait(true);
                 window.TransitioningContent.Height = 300;
                 window.TransitioningContent.Width = 300;
                 window.TransitioningContent.Content = new FirstView();
-                await Task.Delay(5000).ConfigureAwait(true);
+                await Task.Delay(delay).ConfigureAwait(true);
                 window.TransitioningContent.Content = new SecondView();
                 window.TransitioningContent.Height = 0.25;
                 window.TransitioningContent.Width = 0.25;
                 window.TransitioningContent.Content = new FirstView();
-                await Task.Delay(5000).ConfigureAwait(true);
+                await Task.Delay(delay).ConfigureAwait(true);
                 window.TransitioningContent.Content = new SecondView();
                 window.Close();
             });
@@ -206,11 +205,12 @@ namespace ReactiveUI.Tests.Wpf
             {
                 try
                 {
+                    using var testSequencer = new TestSequencer();
                     window!.TransitioningContent.VerticalContentAlignment = VerticalAlignment.Stretch;
                     window!.TransitioningContent.HorizontalContentAlignment = HorizontalAlignment.Stretch;
                     var view = new CanExecuteExecutingView();
                     window!.TransitioningContent.Content = view;
-                    await Task.Delay(5000).ConfigureAwait(true);
+                    await Task.Delay(2000).ConfigureAwait(true);
 
                     var isExecutingExecuted = false;
                     view!.ViewModel!.Command3.IsExecuting
@@ -224,9 +224,13 @@ namespace ReactiveUI.Tests.Wpf
                     }).DisposeWith(d);
 
                     int? result = null;
-                    view!.ViewModel!.Command3.Subscribe(r => result = r);
+                    view!.ViewModel!.Command3.Subscribe(async r =>
+                    {
+                        result = r;
+                        await testSequencer.AdvancePhaseAsync();
+                    });
                     await view!.ViewModel!.Command3.Execute();
-                    await Task.Delay(5000).ConfigureAwait(true);
+                    await testSequencer.AdvancePhaseAsync();
                     Assert.Equal(100, result);
                     Assert.True(isExecutingExecuted);
                 }
@@ -238,7 +242,5 @@ namespace ReactiveUI.Tests.Wpf
             });
             window!.ShowDialog();
         }
-
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     }
 }

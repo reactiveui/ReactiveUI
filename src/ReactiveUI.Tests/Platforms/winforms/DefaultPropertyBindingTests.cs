@@ -32,13 +32,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Expression<Func<TextBox, string>> expression = x => x.Text;
 
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null.");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
@@ -65,13 +59,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"));
 
             Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null.");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
@@ -99,13 +87,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"));
 
             Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = x => x.Value;
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null.");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 

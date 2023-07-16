@@ -21,8 +21,10 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NullObservablesDoNotCauseExceptions()
         {
-            var fixture = new TestWhenAnyObsViewModel();
-            fixture.Command1 = null;
+            var fixture = new TestWhenAnyObsViewModel
+            {
+                Command1 = null
+            };
 
             // these are the overloads of WhenAnyObservable that perform a Merge
             fixture.WhenAnyObservable(x => x.Command1).Subscribe();

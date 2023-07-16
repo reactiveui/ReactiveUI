@@ -32,7 +32,7 @@ namespace ReactiveUI.Fody.Analyzer.Test
         [Fact]
         public void ShouldGiveAnErrorWhenClassDoesNotImplement()
         {
-            var test = @"
+            const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -68,7 +68,7 @@ namespace ReactiveUI.Fody.Analyzer.Test
         [Fact]
         public void ShouldNotGiveAnErrorWhenClassInherits()
         {
-            var test = @"
+            const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -95,7 +95,7 @@ namespace ReactiveUI.Fody.Analyzer.Test
         [Fact]
         public void ShouldNotGiveAnErrorWhenClassImplements()
         {
-            var test = @"
+            const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -122,7 +122,7 @@ namespace ReactiveUI.Fody.Analyzer.Test
         [Fact]
         public void ShouldGiveErrorForNonAutoProperty()
         {
-            var test = @"
+            const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;

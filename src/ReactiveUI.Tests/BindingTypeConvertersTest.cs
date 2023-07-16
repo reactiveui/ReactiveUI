@@ -7,8 +7,6 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    using System;
-
     /// <summary>
     /// Tests for binding type converters.
     /// </summary>
@@ -66,7 +64,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void EqualityTypeConverterDoReferenceCastShouldConvertValueTypes()
         {
-            var doubleValue = 1.0;
+            const double doubleValue = 1.0;
             var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double));
             Assert.Equal(doubleValue, result);
         }

@@ -215,7 +215,7 @@ namespace ReactiveUI.Tests.Xaml
             var view = new CommandBindView { ViewModel = new() };
 
             var received = 0;
-            var cmd = ReactiveCommand.Create<int>(i => { received = i; });
+            var cmd = ReactiveCommand.Create<int>(i => received = i);
             view.ViewModel.Command1 = cmd;
             view.ViewModel.Value = 10;
             var value = view.ViewModel.WhenAnyValue(v => v.Value);

@@ -23,8 +23,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ChangingShouldAlwaysArriveBeforeChanged()
         {
-            var beforeSet = "Foo";
-            var afterSet = "Bar";
+            const string beforeSet = "Foo";
+            const string afterSet = "Bar";
 
             var fixture = new TestFixture
             {
@@ -126,7 +126,7 @@ namespace ReactiveUI.Tests
                 IsOnlyOneWord = "Foo"
             };
 
-            fixture.Changed.Subscribe(x => { throw new Exception("Die!"); });
+            fixture.Changed.Subscribe(_ => throw new Exception("Die!"));
             fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList).Subscribe();
 
             fixture.IsOnlyOneWord = "Bar";
@@ -202,12 +202,7 @@ namespace ReactiveUI.Tests
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz"
             };
-            var json = JSONHelper.Serialize(fixture);
-
-            if (json is null)
-            {
-                throw new InvalidOperationException("JSON string should not be null");
-            }
+            var json = JSONHelper.Serialize(fixture) ?? throw new InvalidOperationException("JSON string should not be null");
 
             // Should look something like:
             // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
@@ -257,7 +252,7 @@ namespace ReactiveUI.Tests
         {
             var fixture = new TestFixture();
             var observable = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Skip(1);
-            observable.Subscribe(x => throw new Exception("This is a test."));
+            observable.Subscribe(_ => throw new Exception("This is a test."));
 
             var result = Record.Exception(() => fixture.IsOnlyOneWord = "Two Words");
 

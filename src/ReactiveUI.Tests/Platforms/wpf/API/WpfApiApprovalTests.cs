@@ -22,7 +22,7 @@ namespace ReactiveUI.Tests.Wpf
         /// Checks the approved vs the received API.
         /// </summary>
         /// <returns>A task to monitor the process.</returns>
-        [Fact(Skip = "Need to resolve GeneratedInternalTypeHelper")]
+        [Fact]
         public Task Wpf() => CheckApproval(typeof(ReactiveWindow<>).Assembly);
     }
 }
