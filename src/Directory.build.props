@@ -49,7 +49,7 @@
     <PackageReference Include="xunit.runner.console" Version="2.5.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0" />
     <PackageReference Include="Xunit.StaFact" Version="1.1.11" />
-    <PackageReference Include="FluentAssertions" Version="6.11.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="6.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="11.0.0" />
     <PackageReference Include="coverlet.msbuild" Version="6.0.0" PrivateAssets="All" />
