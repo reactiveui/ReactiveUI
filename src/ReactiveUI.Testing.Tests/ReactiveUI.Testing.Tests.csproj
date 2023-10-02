@@ -1,6 +1,6 @@
-<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net462;net6.0</TargetFrameworks>
+    <TargetFrameworks>net472;net6.0</TargetFrameworks>
     <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
     <FodyTargetFramework Condition=" $(TargetFramework.StartsWith('net4')) ">$(TargetFramework)</FodyTargetFramework>
   </PropertyGroup>

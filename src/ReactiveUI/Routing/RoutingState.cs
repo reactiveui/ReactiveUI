@@ -19,7 +19,6 @@ namespace ReactiveUI;
 [DataContract]
 public class RoutingState : ReactiveObject
 {
-
     [IgnoreDataMember]
     private readonly IScheduler _scheduler;
 
@@ -50,7 +49,7 @@ public class RoutingState : ReactiveObject
     /// Gets or sets a command which will navigate back to the previous element in the stack.
     /// </summary>
     [IgnoreDataMember]
-    public ReactiveCommand<Unit, IRoutableViewModel?> NavigateBack { get; protected set; }
+    public ReactiveCommand<Unit, IRoutableViewModel> NavigateBack { get; protected set; }
 
     /// <summary>
     /// Gets or sets a command that navigates to the a new element in the stack - the Execute parameter
@@ -72,7 +71,7 @@ public class RoutingState : ReactiveObject
     /// Gets or sets the current view model which is to be shown for the Routing.
     /// </summary>
     [IgnoreDataMember]
-    public IObservable<IRoutableViewModel?> CurrentViewModel { get; protected set; }
+    public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
     /// <summary>
     /// Gets or sets an observable which will signal when the Navigation changes.
@@ -81,7 +80,11 @@ public class RoutingState : ReactiveObject
     public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
 
     [OnDeserialized]
+#pragma warning disable RCS1163 // Unused parameter.
+#pragma warning disable RCS1231 // Make parameter ref read-only.
     private void SetupRx(StreamingContext sc) => SetupRx();
+#pragma warning restore RCS1231 // Make parameter ref read-only.
+#pragma warning restore RCS1163 // Unused parameter.
 
     private void SetupRx()
     {
@@ -90,13 +93,13 @@ public class RoutingState : ReactiveObject
 
         var countAsBehavior = Observable.Defer(() => Observable.Return(NavigationStack.Count)).Concat(NavigationChanged.CountChanged().Select(_ => NavigationStack.Count));
         NavigateBack =
-            ReactiveCommand.CreateFromObservable<IRoutableViewModel?>(
-                                                                      () =>
-                                                                      {
-                                                                          NavigationStack.RemoveAt(NavigationStack.Count - 1);
-                                                                          return Observable.Return(NavigationStack.Count > 0 ? NavigationStack[NavigationStack.Count - 1] : default).ObserveOn(navigateScheduler);
-                                                                      },
-                                                                      countAsBehavior.Select(x => x > 1));
+            ReactiveCommand.CreateFromObservable(
+                            () =>
+                            {
+                                NavigationStack.RemoveAt(NavigationStack.Count - 1);
+                                return Observable.Return(NavigationStack.Count > 0 ? NavigationStack[NavigationStack.Count - 1] : default!).ObserveOn(navigateScheduler);
+                            },
+                            countAsBehavior.Select(x => x > 1));
 
         Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(
          vm =>
@@ -117,6 +120,6 @@ public class RoutingState : ReactiveObject
              return Navigate.Execute(vm);
          });
 
-        CurrentViewModel = Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())).Concat(NavigationChanged.Select(_ => NavigationStack.LastOrDefault()));
+        CurrentViewModel = Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault()!)).Concat(NavigationChanged.Select(_ => NavigationStack.LastOrDefault()!));
     }
 }
