@@ -7,8 +7,14 @@
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
     <PackageId>ReactiveUI</PackageId>
     <!-- Disable "BinaryFormatter is obsolete" warnings for entire project -->
-    <NoWarn>$(NoWarn);SYSLIB0011;IDE1006;</NoWarn>
-  </PropertyGroup>
+    <NoWarn>$(NoWarn);SYSLIB0011;IDE1006</NoWarn>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+	</PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
@@ -123,7 +129,7 @@
 
   <ItemGroup>
     <PackageReference Include="Splat" Version="14.*" />
-    <PackageReference Include="DynamicData" Version="7.*" />
+    <PackageReference Include="DynamicData" Version="8.*" />
   </ItemGroup>
 
   <ItemGroup>

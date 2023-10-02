@@ -16,11 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.10.1.1" />
-    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.0.6" />
-    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.19" />
-    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.9.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.6.1.2" />
+    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.12.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.1.1" />
+    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.21" />
+    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.9.0.3" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.6.2.1" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
