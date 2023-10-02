@@ -61,7 +61,8 @@ namespace ReactiveUI
     public static class ChangeSetMixin
     {
         public static System.IObservable<DynamicData.IChangeSet> CountChanged(this System.IObservable<DynamicData.IChangeSet> changeSet) { }
-        public static System.IObservable<DynamicData.IChangeSet<T>> CountChanged<T>(this System.IObservable<DynamicData.IChangeSet<T>> changeSet) { }
+        public static System.IObservable<DynamicData.IChangeSet<T>> CountChanged<T>(this System.IObservable<DynamicData.IChangeSet<T>> changeSet)
+            where T :  notnull { }
         public static bool HasCountChanged(this DynamicData.IChangeSet changeSet) { }
     }
     public class CombinedReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, System.Collections.Generic.IList<TResult>>
@@ -804,13 +805,13 @@ namespace ReactiveUI
     {
         public RoutingState(System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public System.IObservable<ReactiveUI.IRoutableViewModel?> CurrentViewModel { get; set; }
+        public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> Navigate { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> NavigateAndReset { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
-        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel?> NavigateBack { get; set; }
+        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel> NavigateBack { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
         [System.Runtime.Serialization.DataMember]

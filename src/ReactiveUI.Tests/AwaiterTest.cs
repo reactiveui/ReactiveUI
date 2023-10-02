@@ -16,6 +16,7 @@ namespace ReactiveUI.Tests
         /// A smoke test for Awaiters.
         /// </summary>
         [Fact]
+        [SuppressMessage("Usage", "xUnit1031:Do not use blocking task operations in test method", Justification = "Intentional")]
         public void AwaiterSmokeTest()
         {
             var fixture = AwaitAnObservable();
