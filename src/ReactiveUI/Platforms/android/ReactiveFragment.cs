@@ -18,7 +18,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-[Obsolete("This class was deprecated in API level 28. Use the ReactiveFragment in ReactiveUI.AndroidX (recommended) or ReactiveUI.AndroidSupport for consistent behavior across all devices and access to Lifecycle.", false)]
+[Obsolete("This class was deprecated in API level 28. Use the ReactiveFragment in ReactiveUI.AndroidX (recommended) or ReactiveUI.AndroidSupport for consistent behaviour across all devices and access to Lifecycle.", false)]
 public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewModel>, ICanActivate
     where TViewModel : class
 {
@@ -65,7 +65,7 @@ public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewMode
 /// This is a Fragment that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-[Obsolete("This class was deprecated in API level 28. Use the ReactiveFragment in ReactiveUI.AndroidX (recommended) or ReactiveUI.AndroidSupport for consistent behavior across all devices and access to Lifecycle.", false)]
+[Obsolete("This class was deprecated in API level 28. Use the ReactiveFragment in ReactiveUI.AndroidX (recommended) or ReactiveUI.AndroidSupport for consistent behaviour across all devices and access to Lifecycle.", false)]
 public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
 {
     private readonly Subject<Unit> _activated = new();

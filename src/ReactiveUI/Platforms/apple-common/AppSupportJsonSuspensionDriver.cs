@@ -76,10 +76,8 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
     private static string CreateAppDirectory(NSSearchPathDirectory targetDir, string subDir = "Data")
     {
-        NSError err;
-
         var fm = new NSFileManager();
-        var url = fm.GetUrl(targetDir, NSSearchPathDomain.All, null, true, out err);
+        var url = fm.GetUrl(targetDir, NSSearchPathDomain.All, null, true, out var err);
         var ret = Path.Combine(url.RelativePath!, NSBundle.MainBundle.BundleIdentifier, subDir);
         if (!Directory.Exists(ret))
         {

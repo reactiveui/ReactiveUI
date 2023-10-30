@@ -14,7 +14,7 @@ namespace ReactiveUI;
 /// </summary>
 public class POCOObservableForProperty : ICreatesObservableForProperty
 {
-    private static readonly IDictionary<(Type, string), bool> _hasWarned = new ConcurrentDictionary<(Type, string), bool>();
+    private static readonly ConcurrentDictionary<(Type, string), bool> _hasWarned = new();
 
     /// <inheritdoc/>
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => 1;

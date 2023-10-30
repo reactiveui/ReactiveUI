@@ -205,7 +205,7 @@ namespace ReactiveUI
 #pragma warning restore RCS1221 // Use pattern matching instead of combination of 'as' operator and null check.
                         if (viewController is null)
                         {
-                            //// TODO: As viewController = NULL at this point this excetion will never show the FullName, find fixed text to replace this with.
+                            //// TODO: As viewController = NULL at this point this execution will never show the FullName, find fixed text to replace this with.
 
                             throw new Exception($"Resolved view type '{viewController?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                         }

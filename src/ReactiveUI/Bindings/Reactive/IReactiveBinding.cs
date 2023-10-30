@@ -17,7 +17,7 @@ public interface IReactiveBinding<out TView, out TValue> : IDisposable
     where TView : IViewFor
 {
     /// <summary>
-    /// Gets an expression representing the property on the viewmodel bound to the view.
+    /// Gets an expression representing the property on the ViewModel bound to the view.
     /// This can be a child property, for example x.Foo.Bar.Baz in which case
     /// that will be the expression.
     /// </summary>
@@ -29,7 +29,7 @@ public interface IReactiveBinding<out TView, out TValue> : IDisposable
     TView View { get; }
 
     /// <summary>
-    /// Gets an expression representing the property on the view bound to the viewmodel.
+    /// Gets an expression representing the property on the view bound to the ViewModel.
     /// This can be a child property, for example x.Foo.Bar.Baz in which case
     /// that will be the expression.
     /// </summary>

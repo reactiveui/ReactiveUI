@@ -24,7 +24,7 @@ namespace ReactiveUI;
 /// By default, handlers are invoked in reverse order of registration. That is, handlers registered later
 /// are given the opportunity to handle interactions before handlers that were registered earlier. This
 /// chaining mechanism enables handlers to be registered temporarily in a specific context, such that
-/// interactions can be handled differently according to the situation. This behavior can be modified
+/// interactions can be handled differently according to the situation. This behaviour can be modified
 /// by overriding the <see cref="Handle"/> method in a subclass.
 /// </para>
 /// <para>

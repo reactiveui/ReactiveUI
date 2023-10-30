@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -12,7 +10,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This non-generic base class defines the creation behavior of the ReactiveCommand's.
+/// This non-generic base class defines the creation behaviour of the ReactiveCommand's.
 /// </para>
 /// <para>
 /// <see cref="ReactiveCommand{TInput, Output}"/> adds the concept of Input and Output generic types.

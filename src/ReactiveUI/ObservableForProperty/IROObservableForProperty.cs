@@ -43,20 +43,20 @@ public class IROObservableForProperty : ICreatesObservableForProperty
             if (expression.NodeType == ExpressionType.Index)
             {
                 return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                          .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                          .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
             }
 
             return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
         }
 
         if (expression.NodeType == ExpressionType.Index)
         {
             return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
         }
 
         return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                  .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                  .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
     }
 }

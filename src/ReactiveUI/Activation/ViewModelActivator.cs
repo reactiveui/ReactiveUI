@@ -45,9 +45,9 @@ public sealed class ViewModelActivator : IDisposable
     /// </summary>
     public ViewModelActivator()
     {
-        _blocks = new List<Func<IEnumerable<IDisposable>>>();
-        _activated = new Subject<Unit>();
-        _deactivated = new Subject<Unit>();
+        _blocks = new();
+        _activated = new();
+        _deactivated = new();
     }
 
     /// <summary>

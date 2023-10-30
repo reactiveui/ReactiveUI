@@ -31,7 +31,7 @@ public static class AutoPersistHelper
     /// <summary>
     /// AutoPersist allows you to automatically call a method when an object
     /// has changed, throttling on a certain interval. Note that this object
-    /// must mark its persistable properties via the [DataMember] attribute.
+    /// must mark its persistent properties via the [DataMember] attribute.
     /// Changes to properties not marked with DataMember will not trigger the
     /// object to be saved.
     /// </summary>
@@ -54,7 +54,7 @@ public static class AutoPersistHelper
     /// <summary>
     /// AutoPersist allows you to automatically call a method when an object
     /// has changed, throttling on a certain interval. Note that this object
-    /// must mark its persistable properties via the [DataMember] attribute.
+    /// must mark its persistent properties via the [DataMember] attribute.
     /// Changes to properties not marked with DataMember will not trigger the
     /// object to be saved.
     /// </summary>
@@ -242,7 +242,7 @@ public static class AutoPersistHelper
     /// <param name="onRemove">
     /// A method to be called when an object is removed from the collection.
     /// </param>
-    /// <returns>A Disposable that deactivates this behavior.</returns>
+    /// <returns>A Disposable that deactivates this behaviour.</returns>
     public static IDisposable ActOnEveryObject<TItem>(this ObservableCollection<TItem> @this, Action<TItem> onAdd, Action<TItem> onRemove) // TODO: Create Test
         where TItem : IReactiveObject =>
         ActOnEveryObject<TItem, ObservableCollection<TItem>>(@this, onAdd, onRemove);
@@ -262,7 +262,7 @@ public static class AutoPersistHelper
     /// <param name="onRemove">
     /// A method to be called when an object is removed from the collection.
     /// </param>
-    /// <returns>A Disposable that deactivates this behavior.</returns>
+    /// <returns>A Disposable that deactivates this behaviour.</returns>
     public static IDisposable ActOnEveryObject<TItem>(this ReadOnlyObservableCollection<TItem> @this, Action<TItem> onAdd, Action<TItem> onRemove) // TODO: Create Test
         where TItem : IReactiveObject =>
         ActOnEveryObject<TItem, ReadOnlyObservableCollection<TItem>>(@this, onAdd, onRemove);
@@ -283,7 +283,7 @@ public static class AutoPersistHelper
     /// <param name="onRemove">
     /// A method to be called when an object is removed from the collection.
     /// </param>
-    /// <returns>A Disposable that deactivates this behavior.</returns>
+    /// <returns>A Disposable that deactivates this behaviour.</returns>
     public static IDisposable ActOnEveryObject<TItem, TCollection>(this TCollection collection, Action<TItem> onAdd, Action<TItem> onRemove)
         where TItem : IReactiveObject
         where TCollection : INotifyCollectionChanged, IEnumerable<TItem>
@@ -333,7 +333,7 @@ public static class AutoPersistHelper
     /// <param name="onRemove">
     /// A method to be called when an object is removed from the collection.
     /// </param>
-    /// <returns>A Disposable that deactivates this behavior.</returns>
+    /// <returns>A Disposable that deactivates this behaviour.</returns>
     public static IDisposable ActOnEveryObject<TItem>(this IObservable<IChangeSet<TItem>> @this, Action<TItem> onAdd, Action<TItem> onRemove)
         where TItem : IReactiveObject =>
         @this.Subscribe(changeSet =>

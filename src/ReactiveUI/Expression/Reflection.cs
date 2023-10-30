@@ -327,7 +327,7 @@ public static class Reflection
     /// Gets the appropriate EventArgs derived object for the specified event name for a Type.
     /// </summary>
     /// <param name="type">The type of object to find the event on.</param>
-    /// <param name="eventName">The mame of the event.</param>
+    /// <param name="eventName">The name of the event.</param>
     /// <returns>The Type of the EventArgs to use.</returns>
     /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
     public static Type GetEventArgsTypeForEvent(Type type, string? eventName) // TODO: Create Test
@@ -350,12 +350,12 @@ public static class Reflection
 
     /// <summary>
     /// Checks to make sure that the specified method names on the target object
-    /// are overriden.
+    /// are overridden.
     /// </summary>
     /// <param name="callingTypeName">The name of the calling type.</param>
     /// <param name="targetObject">The object to check.</param>
     /// <param name="methodsToCheck">The name of the methods to check.</param>
-    /// <exception cref="Exception">Thrown if the methods aren't overriden on the target object.</exception>
+    /// <exception cref="Exception">Thrown if the methods aren't overridden on the target object.</exception>
     public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) // TODO: Create Test
     {
         var (methodName, methodImplementation) = methodsToCheck

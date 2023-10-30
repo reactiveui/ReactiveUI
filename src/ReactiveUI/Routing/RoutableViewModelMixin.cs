@@ -65,7 +65,7 @@ public static class RoutableViewModelMixin
     /// and resubscribe each time it is reused.
     /// </para>
     /// </summary>
-    /// <param name="item">The viewmodel to watch for navigation changes.</param>
+    /// <param name="item">The ViewModel to watch for navigation changes.</param>
     /// <returns>An IObservable{Unit} that signals when the ViewModel has
     /// been added or brought to the top of the navigation stack. The
     /// observable completes when the ViewModel is no longer a part of the
@@ -100,7 +100,7 @@ public static class RoutableViewModelMixin
     /// and resubscribe each time it is reused.
     /// </para>
     /// </summary>
-    /// /// <param name="item">The viewmodel to watch for navigation changes.</param>
+    /// /// <param name="item">The ViewModel to watch for navigation changes.</param>
     /// <returns>An IObservable{Unit} that signals when the ViewModel is no
     /// longer the topmost ViewModel in the navigation stack. The observable
     /// completes when the ViewModel is no longer a part of the navigation

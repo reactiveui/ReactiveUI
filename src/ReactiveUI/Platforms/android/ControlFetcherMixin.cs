@@ -13,7 +13,7 @@ using Android.Views;
 namespace ReactiveUI;
 
 /// <summary>
-/// ControlFetcherMixin helps you automatically wire-up Activities and
+/// Control Fetcher Mix-in helps you automatically wire-up Activities and
 /// Fragments via property names, similar to Butter Knife, as well as allows
 /// you to fetch controls manually.
 /// </summary>

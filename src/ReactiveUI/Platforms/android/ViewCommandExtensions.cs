@@ -42,10 +42,7 @@ public static class ViewCommandExtensions
             command.Execute(null);
         });
 
-        var cech = new EventHandler((o, e) =>
-        {
-            control.Enabled = command.CanExecute(null);
-        });
+        var cech = new EventHandler((o, e) => control.Enabled = command.CanExecute(null));
 
         command.CanExecuteChanged += cech;
         control.Click += ev;

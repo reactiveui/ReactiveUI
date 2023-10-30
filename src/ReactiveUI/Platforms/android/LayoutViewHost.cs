@@ -30,7 +30,7 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
     /// <param name="layoutId">The layout identifier.</param>
     /// <param name="parent">The parent.</param>
     /// <param name="attachToRoot">if set to <c>true</c> [attach to root].</param>
-    /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wireup].</param>
+    /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wire-up].</param>
     protected LayoutViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
     {
         var inflater = LayoutInflater.FromContext(ctx);
