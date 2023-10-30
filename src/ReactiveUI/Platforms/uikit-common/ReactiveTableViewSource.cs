@@ -173,7 +173,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override nint RowsInSection(UITableView tableview, nint section)
     {
-        // iOS may call this method even when we have no sections, but only if we've overridden
+        // iOS may call this method even when we have no sections, but only if we've overriden
         // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
         if (section >= _commonSource.NumberOfSections())
         {
@@ -214,7 +214,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override nfloat GetHeightForHeader(UITableView tableView, nint section)
     {
-        // iOS may call this method even when we have no sections, but only if we've overridden
+        // iOS may call this method even when we have no sections, but only if we've overriden
         // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
         if (section >= _commonSource.NumberOfSections())
         {
@@ -230,7 +230,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override nfloat GetHeightForFooter(UITableView tableView, nint section)
     {
-        // iOS may call this method even when we have no sections, but only if we've overridden
+        // iOS may call this method even when we have no sections, but only if we've overriden
         // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
         if (section >= _commonSource.NumberOfSections())
         {

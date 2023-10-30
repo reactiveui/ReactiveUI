@@ -20,7 +20,7 @@ namespace ReactiveUI;
 /// is defined as abstract, so subclasses must provide it.
 /// </para>
 /// <para>
-/// Reactive commands encapsulate the behaviour of running some execution logic and then surfacing the results on the UI
+/// Reactive commands encapsulate the behavior of running some execution logic and then surfacing the results on the UI
 /// thread. Importantly, no scheduling is performed against input observables (the <c>canExecute</c> and execution pipelines).
 /// </para>
 /// <para>

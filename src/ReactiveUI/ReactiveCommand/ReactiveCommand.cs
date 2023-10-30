@@ -10,7 +10,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This non-generic base class defines the creation behaviour of the ReactiveCommand's.
+/// This non-generic base class defines the creation behavior of the ReactiveCommand's.
 /// </para>
 /// <para>
 /// <see cref="ReactiveCommand{TInput, Output}"/> adds the concept of Input and Output generic types.

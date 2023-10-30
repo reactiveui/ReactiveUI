@@ -350,12 +350,12 @@ public static class Reflection
 
     /// <summary>
     /// Checks to make sure that the specified method names on the target object
-    /// are overridden.
+    /// are overriden.
     /// </summary>
     /// <param name="callingTypeName">The name of the calling type.</param>
     /// <param name="targetObject">The object to check.</param>
     /// <param name="methodsToCheck">The name of the methods to check.</param>
-    /// <exception cref="Exception">Thrown if the methods aren't overridden on the target object.</exception>
+    /// <exception cref="Exception">Thrown if the methods aren't overriden on the target object.</exception>
     public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) // TODO: Create Test
     {
         var (methodName, methodImplementation) = methodsToCheck

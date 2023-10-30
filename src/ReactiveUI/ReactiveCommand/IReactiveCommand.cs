@@ -9,7 +9,7 @@ namespace ReactiveUI;
 /// Encapsulates a user action behind a reactive interface.
 /// This is for interop inside for the command binding.
 /// Not meant for external use due to the fact it doesn't implement ICommand
-/// to force the user to favour the Reactive style command execution.
+/// to force the user to favor the Reactive style command execution.
 /// </summary>
 public interface IReactiveCommand : IDisposable, IHandleObservableErrors
 {
@@ -43,7 +43,7 @@ public interface IReactiveCommand : IDisposable, IHandleObservableErrors
 /// Encapsulates a user action behind a reactive interface.
 /// This is for interop inside for the command binding.
 /// Not meant for external use due to the fact it doesn't implement ICommand
-/// to force the user to favour the Reactive style command execution.
+/// to force the user to favor the Reactive style command execution.
 /// </summary>
 /// <typeparam name="TParam">
 /// The type of parameter values passed in during command execution.
