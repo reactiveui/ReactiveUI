@@ -33,7 +33,7 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
     /// the binding will attempt to subscribe recursively to updates in order to
     /// always get and set the correct property.</param>
-    /// <param name="signalViewUpdate">An observable, that when signalled, indicates that the view property
+    /// <param name="signalViewUpdate">An observable, that when signaled, indicates that the view property
     /// has been changed, and that the binding should update the view model
     /// property accordingly.</param>
     /// <param name="conversionHint">An object that can provide a hint for the converter.
@@ -82,7 +82,7 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
     /// the binding will attempt to subscribe recursively to updates in order to
     /// always get and set the correct property.</param>
-    /// <param name="signalViewUpdate">An observable, that when signalled, indicates that the view property
+    /// <param name="signalViewUpdate">An observable, that when signaled, indicates that the view property
     /// has been changed, and that the binding should update the view model
     /// property accordingly.</param>
     /// <param name="vmToViewConverter">Delegate to convert the value of the view model's property's type to a value of the

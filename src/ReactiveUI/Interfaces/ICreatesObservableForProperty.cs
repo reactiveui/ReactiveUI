@@ -41,7 +41,7 @@ public interface ICreatesObservableForProperty : IEnableLogger
     ///     property value actually changes. If false, signal after the
     ///     property changes.</param>
     /// <param name="suppressWarnings">If true, no warnings should be logged.</param>
-    /// <returns>An IObservable which is signalled whenever the specified
+    /// <returns>An IObservable which is signaled whenever the specified
     /// property on the object changes. If this cannot be done for a
     /// specified value of beforeChanged, return Observable.Never.</returns>
     IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);

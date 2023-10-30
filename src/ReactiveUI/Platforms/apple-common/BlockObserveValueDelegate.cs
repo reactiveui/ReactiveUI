@@ -7,11 +7,7 @@ using Foundation;
 
 namespace ReactiveUI;
 
-internal class BlockObserveValueDelegate : NSObject
+internal class BlockObserveValueDelegate(Action<string, NSObject, NSDictionary> block) : NSObject
 {
-    private readonly Action<string, NSObject, NSDictionary> _block;
-
-    public BlockObserveValueDelegate(Action<string, NSObject, NSDictionary> block) => _block = block;
-
-    public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context) => _block(keyPath, ofObject, change);
+    public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context) => block(keyPath, ofObject, change);
 }

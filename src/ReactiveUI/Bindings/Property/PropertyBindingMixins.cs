@@ -91,7 +91,7 @@ public static class PropertyBindingMixins
     /// <param name="viewProperty">The property on the view that is to be bound.
     /// This can be a chain of properties of the form. <c>view =&gt; view.Foo.Bar.Baz</c>
     /// and the binder will attempt to set the last one each time the view model property is updated.</param>
-    /// <param name="signalViewUpdate">An observable, that when signalled, indicates that the view property
+    /// <param name="signalViewUpdate">An observable, that when signaled, indicates that the view property
     /// has been changed, and that the binding should update the view model
     /// property accordingly.</param>
     /// <param name="conversionHint">An object that can provide a hint for the converter.
@@ -177,7 +177,7 @@ public static class PropertyBindingMixins
     /// <param name="viewProperty">The property on the view that is to be bound.
     /// This can be a chain of properties of the form. <c>view =&gt; view.Foo.Bar.Baz</c>
     /// and the binder will attempt to set the last one each time the view model property is updated.</param>
-    /// <param name="signalViewUpdate">An observable, that when signalled, indicates that the view property
+    /// <param name="signalViewUpdate">An observable, that when signaled, indicates that the view property
     /// has been changed, and that the binding should update the view model
     /// property accordingly.</param>
     /// <param name="vmToViewConverter">Delegate to convert the value of the view model's property's type to a value of the

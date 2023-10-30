@@ -11,19 +11,17 @@ namespace ReactiveUI.Fody.Helpers;
 /// Attribute that marks a property as a Reactive Dependency.
 /// </summary>
 /// <seealso cref="System.Attribute" />
+/// <remarks>
+/// Initializes a new instance of the <see cref="ReactiveDependencyAttribute"/> class.
+/// </remarks>
+/// <param name="targetName">Name of the target.</param>
 [AttributeUsage(AttributeTargets.Property)]
-public sealed class ReactiveDependencyAttribute : Attribute
+public sealed class ReactiveDependencyAttribute(string targetName) : Attribute
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveDependencyAttribute"/> class.
-    /// </summary>
-    /// <param name="targetName">Name of the target.</param>
-    public ReactiveDependencyAttribute(string targetName) => Target = targetName;
-
     /// <summary>
     /// Gets the name of the backing property.
     /// </summary>
-    public string Target { get; }
+    public string Target { get; } = targetName;
 
     /// <summary>
     /// Gets or sets the target property on the backing property.

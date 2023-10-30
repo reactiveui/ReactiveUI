@@ -147,7 +147,7 @@ public static class ReactiveNotifyPropertyChangedMixin
         {
             // ensure cast to TValue will succeed, throw useful exception otherwise
             var val = x.GetValue();
-            if (val is not null && !(val is TValue))
+            if (val is not null && val is not TValue)
             {
                 throw new InvalidCastException($"Unable to cast from {val.GetType()} to {typeof(TValue)}.");
             }
@@ -161,7 +161,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
     {
         // Make sure a change at a root node propagates events down
-        var kicker = new ObservedChange<object?, object?>(sourceChange.Value!, expression, default);
+        var kicker = new ObservedChange<object?, object?>(sourceChange.Value, expression, default);
 
         // Handle null values in the chain
         if (sourceChange.Value is null)
