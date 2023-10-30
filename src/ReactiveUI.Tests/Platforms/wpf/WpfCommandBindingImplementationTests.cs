@@ -10,8 +10,6 @@ using System.Windows.Input;
 
 using FluentAssertions;
 
-using Xunit;
-
 using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Wpf

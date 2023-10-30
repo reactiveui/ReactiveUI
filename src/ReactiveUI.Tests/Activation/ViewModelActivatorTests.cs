@@ -5,8 +5,6 @@
 
 using DynamicData;
 
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>

@@ -4,11 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
-using System.ComponentModel;
 
 using DynamicData;
-
-using Xunit;
 
 namespace ReactiveUI.Tests
 {

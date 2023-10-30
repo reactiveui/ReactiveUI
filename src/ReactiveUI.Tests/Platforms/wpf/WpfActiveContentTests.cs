@@ -7,7 +7,6 @@ using System.Windows;
 
 using DynamicData;
 using ReactiveUI.Testing;
-using Xunit;
 
 namespace ReactiveUI.Tests.Wpf
 {

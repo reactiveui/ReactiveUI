@@ -70,10 +70,6 @@
     <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(MSBuildProjectName.Contains('Fody')) != 'true'">
-    <Compile Include="$(MSBuildThisFileDirectory)GlobalUsings.cs" />
-  </ItemGroup>
-
   <ItemGroup>	
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="all" />	
     <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.507" PrivateAssets="all" />
