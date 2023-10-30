@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
 
 using Android.Support.V4.View;
 using Android.Views;

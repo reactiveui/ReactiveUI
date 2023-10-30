@@ -8,8 +8,6 @@ using System.Globalization;
 
 using DynamicData.Binding;
 
-using Xunit;
-
 #if NETFX_CORE
 #else
 

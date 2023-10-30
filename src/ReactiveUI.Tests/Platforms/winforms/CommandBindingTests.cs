@@ -7,8 +7,6 @@ using System.Windows.Forms;
 using ReactiveUI.Testing;
 using ReactiveUI.Winforms;
 
-using Xunit;
-
 namespace ReactiveUI.Tests.Winforms
 {
     /// <summary>

@@ -9,8 +9,6 @@ using DynamicData;
 
 using ReactiveUI.Tests.Wpf;
 
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     public class ViewModelViewHostTests
