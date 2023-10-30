@@ -10,8 +10,6 @@ using DynamicData;
 
 using ReactiveUI.Winforms;
 
-using Xunit;
-
 namespace ReactiveUI.Tests.Winforms
 {
     /// <summary>

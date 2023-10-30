@@ -9,8 +9,6 @@ using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
 
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>

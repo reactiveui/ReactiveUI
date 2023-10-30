@@ -5,8 +5,6 @@
 
 using System.Diagnostics;
 
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>

@@ -6,8 +6,6 @@
 using DynamicData;
 using DynamicData.Binding;
 
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>

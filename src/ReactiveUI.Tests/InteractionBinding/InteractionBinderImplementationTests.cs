@@ -5,8 +5,6 @@
 
 using FluentAssertions;
 
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>
