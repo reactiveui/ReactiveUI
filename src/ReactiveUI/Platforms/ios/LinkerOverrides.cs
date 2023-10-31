@@ -16,7 +16,7 @@ internal class LinkerOverrides
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
     public void KeepMe()
     {
-        // UIButon
+        // UIButton
         var btn = new UIButton();
         var title = btn.Title(UIControlState.Disabled);
         btn.SetTitle("foo", UIControlState.Disabled);

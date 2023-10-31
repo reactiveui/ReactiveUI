@@ -67,26 +67,26 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     }
 
     /// <summary>
-    /// Dids the finish launching.
+    /// Did finish launching.
     /// </summary>
     /// <param name="notification">The notification.</param>
 #pragma warning disable RCS1163 // Unused parameter.
     public void DidFinishLaunching(NSNotification notification) => _isResuming.OnNext(Unit.Default);
 
     /// <summary>
-    /// Dids the resign active.
+    /// Did resign active.
     /// </summary>
     /// <param name="notification">The notification.</param>
     public void DidResignActive(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
 
     /// <summary>
-    /// Dids the become active.
+    /// Did become active.
     /// </summary>
     /// <param name="notification">The notification.</param>
     public void DidBecomeActive(NSNotification notification) => _isUnpausing.OnNext(Unit.Default);
 
     /// <summary>
-    /// Dids the hide.
+    /// Did hide.
     /// </summary>
     /// <param name="notification">The notification.</param>
     public void DidHide(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);

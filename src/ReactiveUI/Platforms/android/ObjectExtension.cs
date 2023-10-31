@@ -16,7 +16,7 @@ internal static class ObjectExtension
             return default!;
         }
 
-        if (!(value is JavaHolder))
+        if (value is not JavaHolder)
         {
             throw new InvalidOperationException("Unable to convert to .NET object. Only Java.Lang.Object created with .ToJavaObject() can be converted.");
         }

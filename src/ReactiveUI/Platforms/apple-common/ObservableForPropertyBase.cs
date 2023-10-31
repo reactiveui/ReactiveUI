@@ -141,7 +141,7 @@ namespace ReactiveUI
         {
             if (!_config.TryGetValue(type, out var typeProperties))
             {
-                typeProperties = new Dictionary<string, ObservablePropertyInfo>();
+                typeProperties = new();
                 _config[type] = typeProperties;
             }
 

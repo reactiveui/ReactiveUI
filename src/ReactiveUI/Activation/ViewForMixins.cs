@@ -227,14 +227,14 @@ public static class ViewForMixins
                            },
                            view);
 
-    private static IDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
+    private static CompositeDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
     {
         var viewDisposable = new SerialDisposable();
 
         return new CompositeDisposable(
                                        activation.Subscribe(activated =>
                                        {
-                                           // NB: We need to make sure to respect ordering so that the cleanup
+                                           // NB: We need to make sure to respect ordering so that the clean up
                                            // happens before we invoke block again
                                            viewDisposable.Disposable = Disposable.Empty;
                                            if (activated)
@@ -245,7 +245,7 @@ public static class ViewForMixins
                                        viewDisposable);
     }
 
-    private static IDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation)
+    private static CompositeDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation)
     {
         var vmDisposable = new SerialDisposable();
         var viewVmDisposable = new SerialDisposable();
@@ -259,7 +259,7 @@ public static class ViewForMixins
                                                    .Select(x => x as IActivatableViewModel)
                                                    .Subscribe(x =>
                                                    {
-                                                       // NB: We need to make sure to respect ordering so that the cleanup
+                                                       // NB: We need to make sure to respect ordering so that the clean up
                                                        // happens before we activate again
                                                        vmDisposable.Disposable = Disposable.Empty;
                                                        if (x is not null)

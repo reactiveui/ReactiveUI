@@ -31,7 +31,7 @@ public static class AutoPersistHelper
     /// <summary>
     /// AutoPersist allows you to automatically call a method when an object
     /// has changed, throttling on a certain interval. Note that this object
-    /// must mark its persistable properties via the [DataMember] attribute.
+    /// must mark its persistent properties via the [DataMember] attribute.
     /// Changes to properties not marked with DataMember will not trigger the
     /// object to be saved.
     /// </summary>
@@ -54,7 +54,7 @@ public static class AutoPersistHelper
     /// <summary>
     /// AutoPersist allows you to automatically call a method when an object
     /// has changed, throttling on a certain interval. Note that this object
-    /// must mark its persistable properties via the [DataMember] attribute.
+    /// must mark its persistent properties via the [DataMember] attribute.
     /// Changes to properties not marked with DataMember will not trigger the
     /// object to be saved.
     /// </summary>

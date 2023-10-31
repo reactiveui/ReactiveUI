@@ -61,18 +61,9 @@ public static class UsbManagerExtensions
     /// <summary>
     /// Private implementation of BroadcastReceiver to handle device permission requests.
     /// </summary>
-    private class UsbDevicePermissionReceiver
-        : BroadcastReceiver
+    private class UsbDevicePermissionReceiver(IObserver<bool> observer, UsbDevice device)
+                : BroadcastReceiver
     {
-        private readonly IObserver<bool> _observer;
-        private readonly UsbDevice _device;
-
-        public UsbDevicePermissionReceiver(IObserver<bool> observer, UsbDevice device)
-        {
-            _observer = observer;
-            _device = device;
-        }
-
 #if NET7_0_OR_GREATER
         [ObsoletedOSPlatform("android33.0")]
 #elif MONOANDROID13_0
@@ -87,14 +78,14 @@ public static class UsbManagerExtensions
             }
 
             var extraDevice = intent.GetParcelableExtra(UsbManager.ExtraDevice) as UsbDevice;
-            if (_device.DeviceName != extraDevice?.DeviceName)
+            if (device.DeviceName != extraDevice?.DeviceName)
             {
                 return;
             }
 
             var permissionGranted = intent.GetBooleanExtra(UsbManager.ExtraPermissionGranted, false);
-            _observer.OnNext(permissionGranted);
-            _observer.OnCompleted();
+            observer.OnNext(permissionGranted);
+            observer.OnCompleted();
         }
     }
 
@@ -105,18 +96,9 @@ public static class UsbManagerExtensions
     /// <summary>
     /// Private implementation of BroadcastReceiver to handle accessory permission requests.
     /// </summary>
-    private class UsbAccessoryPermissionReceiver
-        : BroadcastReceiver
+    private class UsbAccessoryPermissionReceiver(IObserver<bool> observer, UsbAccessory accessory)
+                : BroadcastReceiver
     {
-        private readonly IObserver<bool> _observer;
-        private readonly UsbAccessory _accessory;
-
-        public UsbAccessoryPermissionReceiver(IObserver<bool> observer, UsbAccessory accessory)
-        {
-            _observer = observer;
-            _accessory = accessory;
-        }
-
 #if NET7_0_OR_GREATER
         [ObsoletedOSPlatform("android33.0")]
 #elif MONOANDROID13_0
@@ -130,14 +112,14 @@ public static class UsbManagerExtensions
                 return;
             }
 
-            if (_accessory.Manufacturer != extraAccessory.Manufacturer || _accessory.Model != extraAccessory.Model)
+            if (accessory.Manufacturer != extraAccessory.Manufacturer || accessory.Model != extraAccessory.Model)
             {
                 return;
             }
 
             var permissionGranted = intent.GetBooleanExtra(UsbManager.ExtraPermissionGranted, false);
-            _observer.OnNext(permissionGranted);
-            _observer.OnCompleted();
+            observer.OnNext(permissionGranted);
+            observer.OnCompleted();
         }
 
 #if MONOANDROID13_0

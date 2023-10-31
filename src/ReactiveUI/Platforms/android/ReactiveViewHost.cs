@@ -38,7 +38,7 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     /// <param name="layoutId">The layout identifier.</param>
     /// <param name="parent">The parent.</param>
     /// <param name="attachToRoot">if set to <c>true</c> [attach to root].</param>
-    /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wireup].</param>
+    /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wire-up].</param>
     protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
         : base(ctx, layoutId, parent, attachToRoot, performAutoWireup) =>
         SetupRxObj();

@@ -16,7 +16,7 @@ public static class SuspensionHostExtensions
     private static Func<IObservable<Unit>>? ensureLoadAppStateFunc;
 
     /// <summary>
-    /// Supsension driver reference field to prevent introducing breaking change.
+    /// Suspension driver reference field to prevent introducing breaking change.
     /// </summary>
     private static ISuspensionDriver? suspensionDriver;
 

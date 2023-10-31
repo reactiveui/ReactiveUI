@@ -5,27 +5,19 @@
 
 namespace ReactiveUI;
 
-internal sealed class ChainedComparer<T> : IComparer<T>
+internal sealed class ChainedComparer<T>(IComparer<T>? parent, Comparison<T> comparison) : IComparer<T>
 {
-    private readonly IComparer<T>? _parent;
-    private readonly Comparison<T> _inner;
-
-    public ChainedComparer(IComparer<T>? parent, Comparison<T> comparison)
-    {
-        _parent = parent;
-        _inner = comparison;
-    }
 
     /// <inheritdoc />
     public int Compare(T? x, T? y)
     {
-        var parentResult = _parent?.Compare(x!, y!) ?? 0;
+        var parentResult = parent?.Compare(x!, y!) ?? 0;
 
         if (x is null && y is null)
         {
             return 0;
         }
 
-        return parentResult != 0 ? parentResult : _inner(x!, y!);
+        return parentResult != 0 ? parentResult : comparison(x!, y!);
     }
 }

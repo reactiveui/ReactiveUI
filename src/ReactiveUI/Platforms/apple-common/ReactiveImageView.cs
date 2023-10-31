@@ -66,7 +66,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
         /// </summary>
         /// <param name="image">The image.</param>
-        /// <param name="highlightedImage">The higlighted image.</param>
+        /// <param name="highlightedImage">The highlighted image.</param>
         protected ReactiveImageView(NSImage image, NSImage highlightedImage)
             : base(image, highlightedImage)
         {
