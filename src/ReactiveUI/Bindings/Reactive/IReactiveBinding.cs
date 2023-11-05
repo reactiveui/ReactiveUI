@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq.Expressions;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -20,7 +17,7 @@ public interface IReactiveBinding<out TView, out TValue> : IDisposable
     where TView : IViewFor
 {
     /// <summary>
-    /// Gets an expression representing the property on the viewmodel bound to the view.
+    /// Gets an expression representing the property on the ViewModel bound to the view.
     /// This can be a child property, for example x.Foo.Bar.Baz in which case
     /// that will be the expression.
     /// </summary>
@@ -32,7 +29,7 @@ public interface IReactiveBinding<out TView, out TValue> : IDisposable
     TView View { get; }
 
     /// <summary>
-    /// Gets an expression representing the property on the view bound to the viewmodel.
+    /// Gets an expression representing the property on the view bound to the ViewModel.
     /// This can be a child property, for example x.Foo.Bar.Baz in which case
     /// that will be the expression.
     /// </summary>

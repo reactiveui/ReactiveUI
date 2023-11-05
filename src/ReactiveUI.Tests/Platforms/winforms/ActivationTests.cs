@@ -3,10 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Xunit;
 
 namespace ReactiveUI.Tests.Winforms
 {

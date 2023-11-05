@@ -3,14 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-
 #if UIKIT
 using UIKit;
-using NSView = UIKit.UIView;
 using NSViewController = UIKit.UIViewController;
 #else
 using AppKit;
@@ -211,7 +205,7 @@ namespace ReactiveUI
 #pragma warning restore RCS1221 // Use pattern matching instead of combination of 'as' operator and null check.
                         if (viewController is null)
                         {
-                            //// TODO: As viewController = NULL at this point this excetion will never show the FullName, find fixed text to replace this with.
+                            //// TODO: As viewController = NULL at this point this execution will never show the FullName, find fixed text to replace this with.
 
                             throw new Exception($"Resolved view type '{viewController?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                         }

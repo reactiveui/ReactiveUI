@@ -3,16 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.Versioning;
 
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
 using Android.Widget;
 
 namespace ReactiveUI;
@@ -20,8 +12,18 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 internal class LinkerOverrides
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android30.0")]
+#pragma warning disable CA1822 // Mark members as static
+#else
+    [Obsolete("This method was deprecated in API level 30.", false)]
+#endif
+#pragma warning disable IDE0051 // Remove unused private members
     private void KeepMe()
+#pragma warning restore IDE0051 // Remove unused private members
+#if NET7_0_OR_GREATER
+#pragma warning restore CA1822 // Mark members as static
+#endif
     {
         var txt = new TextView(null);
         txt.Text = txt.Text;
@@ -44,8 +46,12 @@ internal class LinkerOverrides
         var cv = new CalendarView(null!);
         cv.Date = cv.Date;
 
+#pragma warning disable CA1422 // Validate platform compatibility
+#pragma warning disable CS0618 // Type or member is obsolete
         var th = new TabHost(null);
         th.CurrentTab = th.CurrentTab;
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CA1422 // Validate platform compatibility
 
         var tp = new TimePicker(null);
         tp.Hour = tp.Hour;

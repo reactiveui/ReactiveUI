@@ -3,12 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Reactive.Concurrency;
 using System.Windows;
 
 using DynamicData;
-using Xunit;
 
 using FactAttribute = Xunit.WpfFactAttribute;
 
@@ -25,15 +22,19 @@ namespace ReactiveUI.Tests.Wpf
             var obs = activation.GetActivationForView(uc);
             obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-            var loaded = new RoutedEventArgs();
-            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
 
             uc.RaiseEvent(loaded);
 
             new[] { true }.AssertAreEqual(activated);
 
-            var unloaded = new RoutedEventArgs();
-            unloaded.RoutedEvent = FrameworkElement.UnloadedEvent;
+            var unloaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.UnloadedEvent
+            };
 
             uc.RaiseEvent(unloaded);
 
@@ -43,15 +44,19 @@ namespace ReactiveUI.Tests.Wpf
         [Fact]
         public void IsHitTestVisibleActivatesFrameworkElement()
         {
-            var uc = new WpfTestUserControl();
-            uc.IsHitTestVisible = false;
+            var uc = new WpfTestUserControl
+            {
+                IsHitTestVisible = false
+            };
             var activation = new ActivationForViewFetcher();
 
             var obs = activation.GetActivationForView(uc);
             obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-            var loaded = new RoutedEventArgs();
-            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
 
             uc.RaiseEvent(loaded);
 
@@ -63,8 +68,10 @@ namespace ReactiveUI.Tests.Wpf
             // IsHitTestVisible true, we don't want the event to repeat unnecessarily.
             new[] { true }.AssertAreEqual(activated);
 
-            var unloaded = new RoutedEventArgs();
-            unloaded.RoutedEvent = FrameworkElement.UnloadedEvent;
+            var unloaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.UnloadedEvent
+            };
 
             uc.RaiseEvent(unloaded);
 
@@ -81,8 +88,10 @@ namespace ReactiveUI.Tests.Wpf
             var obs = activation.GetActivationForView(uc);
             obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-            var loaded = new RoutedEventArgs();
-            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
 
             uc.RaiseEvent(loaded);
 
@@ -102,8 +111,10 @@ namespace ReactiveUI.Tests.Wpf
             var obs = activation.GetActivationForView(uc);
             obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-            var loaded = new RoutedEventArgs();
-            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
 
             uc.RaiseEvent(loaded);
 
@@ -119,8 +130,10 @@ namespace ReactiveUI.Tests.Wpf
 
             new[] { true, false, true }.AssertAreEqual(activated);
 
-            var unloaded = new RoutedEventArgs();
-            unloaded.RoutedEvent = FrameworkElement.UnloadedEvent;
+            var unloaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.UnloadedEvent
+            };
 
             uc.RaiseEvent(unloaded);
 

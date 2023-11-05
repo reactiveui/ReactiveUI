@@ -1,13 +1,17 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
-
+  <!--
+    Added 19041 target as a workaround for System.Reactive targeting net5.0-windows10.0.19041.0
+    When 19041 is selected by the end user it causes the ControlScheduler in System.Reactive to be exposed and used.
+    -->
   <PropertyGroup>
-    <TargetFrameworks>net462;net472;net48;net6.0-windows10.0.17763.0;net7.0-windows10.0.17763.0</TargetFrameworks>
+    <TargetFrameworks>net462;net472;net48;net6.0-windows10.0.17763.0;net7.0-windows10.0.17763.0;net6.0-windows10.0.19041.0;net7.0-windows10.0.19041.0</TargetFrameworks>
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Forms</PackageDescription>
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
+    <NoWarn>$(NoWarn);IDE1006;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,23 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />
+    <Compile Include="..\ReactiveUI.Wpf\Rx\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Wpf\Rx\**\Dispatcher*.cs;..\ReactiveUI.Wpf\Rx\Internal\*.cs;..\ReactiveUI.Wpf\Rx\Concurrency\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows')) or $(TargetFramework.StartsWith('net7.0-windows')) ">
-    <Compile Include="..\ReactiveUI.Uwp\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx" />
-    <Compile Include="..\ReactiveUI.Uwp\Rx\Internal\Constants.cs" LinkBase="Rx" />
-    <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Uwp\Rx\Linq\DispatcherObservable.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="RoutedViewHost.Designer.cs">
-      <SubType>UserControl</SubType>
-      <DependentUpon>RoutedViewHost.cs</DependentUpon>
-    </Compile>
-    <Compile Update="ReactiveUserControl.Designer.cs">
-      <SubType>UserControl</SubType>
-      <DependentUpon>ReactiveUserControl.cs</DependentUpon>
-    </Compile>
+  <ItemGroup Condition="$(TargetFramework) == 'net462' or $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
+    <Compile Include="..\ReactiveUI.Wpf\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx\Concurrency" />
   </ItemGroup>
 </Project>

@@ -3,18 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-
-using Splat;
 
 namespace ReactiveUI;
 
@@ -267,10 +256,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         }
 
         var setter = _setMethodCache.Get((fromType, targetType));
-
-#pragma warning disable IDE0031 // Use null propagation
         return setter is null ? null : setter.PerformSet;
-#pragma warning restore IDE0031 // Use null propagation
     }
 
     private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
@@ -342,7 +328,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                                                                        })
                                                                  : (() => new IObservedChange<object, object?>[]
                                                                        {
-                                                                           new ObservedChange<object, object?>(null!, null!, viewModel)
+                                                                           new ObservedChange<object, object?>(null!, null, viewModel)
                                                                        });
 
         var vFetcher = new Func<IObservedChange<object, object?>[]>(() =>
@@ -364,7 +350,6 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         return shouldBind;
     }
 
-    [SuppressMessage("Roslynator", "RCS1176: Use var instead of explicit", Justification = "Required for generics")]
     private IReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,

@@ -3,11 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Reactive.Linq;
-
-using Xunit;
-
 #if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -19,7 +14,6 @@ using Windows.UI.Xaml.Markup;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using FactAttribute = Xunit.WpfFactAttribute;
 #endif
 
@@ -37,7 +31,7 @@ namespace ReactiveUI.Tests.Xaml
         public void EventBinderBindsToExplicitInheritedEvent()
         {
             var fixture = new FakeView();
-            fixture.BindCommand(fixture!.ViewModel!, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
+            fixture.BindCommand(fixture!.ViewModel, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
         }
 
         /// <summary>
@@ -53,7 +47,7 @@ namespace ReactiveUI.Tests.Xaml
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
 
             var invokeCount = 0;
-            cmd.Subscribe(_ => invokeCount += 1);
+            cmd.Subscribe(_ => ++invokeCount);
 
             var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
             Assert.NotNull(disp);

@@ -3,16 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reflection;
-using System.Windows.Forms;
-
-using Splat;
 
 namespace ReactiveUI.Winforms;
 
@@ -48,13 +39,7 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
             throw new ArgumentNullException(nameof(sender));
         }
 
-        var ei = EventInfoCache.Get((sender.GetType(), propertyName));
-
-        if (ei is null)
-        {
-            throw new InvalidOperationException("Could not find a valid event for expression.");
-        }
-
+        var ei = EventInfoCache.Get((sender.GetType(), propertyName)) ?? throw new InvalidOperationException("Could not find a valid event for expression.");
         return Observable.Create<IObservedChange<object, object?>>(subj =>
         {
             var completed = false;

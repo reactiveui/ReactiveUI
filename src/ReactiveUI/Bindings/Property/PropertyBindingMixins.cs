@@ -3,10 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq.Expressions;
-using System.Reactive;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -79,7 +75,7 @@ public static class PropertyBindingMixins
 
     /// <summary>
     /// Binds the specified view model property to the given view property, and
-    /// provide a custom view update signaler to signal when the view property has been updated.
+    /// provide a custom view update signaller to signal when the view property has been updated.
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
     /// <typeparam name="TView">The type of the view being bound.</typeparam>

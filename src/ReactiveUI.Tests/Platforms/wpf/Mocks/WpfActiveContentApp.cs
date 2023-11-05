@@ -3,15 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Windows;
 
 namespace ReactiveUI.Tests.Wpf
 {
     public class WpfActiveContentApp : Application
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
         /// <summary>
         /// Gets the mock window factory.
         /// </summary>
@@ -35,7 +32,5 @@ namespace ReactiveUI.Tests.Wpf
         /// The WPF test window factory.
         /// </value>
         public Func<WpfTestWindow> WpfTestWindowFactory { get; } = () => new();
-
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     }
 }

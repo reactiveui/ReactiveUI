@@ -3,11 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Linq;
 using System.Windows.Forms;
-using ReactiveUI;
-using ReactiveUI.Winforms;
-using Xunit;
 
 using WinFormsRoutedViewHost = ReactiveUI.Winforms.RoutedControlHost;
 
@@ -18,7 +14,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldDisposePreviousView()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var router = new RoutingState();
             var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
             router?.Navigate?.Execute(new FakeWinformViewModel());
@@ -52,7 +48,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void WhenRoutedToViewModelItShouldAddViewToControls()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
             var router = new RoutingState();
             var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
             router?.Navigate?.Execute(new FakeWinformViewModel());

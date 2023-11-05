@@ -3,19 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
+
 using DynamicData;
+
 using Microsoft.Reactive.Testing;
+
 using ReactiveUI.Testing;
-using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -1169,59 +1163,91 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public async Task ReactiveCommandCreateFromTaskHandlesTaskExceptionAsync()
-        {
-            var subj = new Subject<Unit>();
-            var isExecuting = false;
-            Exception? fail = null;
-            var fixture = ReactiveCommand.CreateFromTask(
-                async _ =>
+            {
+                using var testSequencer = new TestSequencer();
+                var subj = new Subject<Unit>();
+                var isExecuting = false;
+                Exception? fail = null;
+                var fixture = ReactiveCommand.CreateFromTask(
+                    async _ =>
+                    {
+                        await subj.Take(1);
+                        throw new Exception("break execution");
+                    },
+                    outputScheduler: ImmediateScheduler.Instance);
+
+                fixture.IsExecuting.Subscribe(async x =>
                 {
-                    await subj.Take(1);
-                    throw new Exception("break execution");
-                },
-                outputScheduler: ImmediateScheduler.Instance);
+                    isExecuting = x;
+                    await testSequencer.AdvancePhaseAsync("Executing {false, true, false}");
+                });
+                fixture.ThrownExceptions.Subscribe(async ex =>
+                {
+                    fail = ex;
+                    await testSequencer.AdvancePhaseAsync("Exception");
+                });
 
-            fixture.IsExecuting.Subscribe(x => isExecuting = x);
-            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+                await testSequencer.AdvancePhaseAsync("Executing {false}");
+                Assert.False(isExecuting);
+                Assert.Null(fail);
 
-            Assert.False(isExecuting);
-            Assert.Null(fail);
+                fixture.Execute().Subscribe();
+                await testSequencer.AdvancePhaseAsync("Executing {true}");
+                Assert.True(isExecuting);
+                Assert.Null(fail);
 
-            fixture.Execute().Subscribe();
-            Assert.True(isExecuting);
-            Assert.Null(fail);
+                subj.OnNext(Unit.Default);
 
-            subj.OnNext(Unit.Default);
-
-            // Wait 10 ms to allow execution to complete
-            await Task.Delay(500).ConfigureAwait(false);
-
-            Assert.False(isExecuting);
-            Assert.Equal("break execution", fail?.Message);
-        }
+                // Wait to allow execution to complete
+                await testSequencer.AdvancePhaseAsync("Executing {false}");
+                await testSequencer.AdvancePhaseAsync("Exception");
+                Assert.False(isExecuting);
+                Assert.Equal("break execution", fail?.Message);
+                testSequencer.Dispose();
+            }
 
         [Fact]
         public async Task ReactiveCommandExecutesFromInvokeCommand()
         {
-            var semaphore = new SemaphoreSlim(0);
-            var command = ReactiveCommand.Create(() => semaphore.Release());
+            using var testSequencer = new TestSequencer();
+
+            var command = ReactiveCommand.Create(async () => await testSequencer.AdvancePhaseAsync("Phase 1"));
+            var result = 0;
+
+            // False, True, False
+            command.IsExecuting.Subscribe(_ => result++);
 
             Observable.Return(Unit.Default)
                       .InvokeCommand(command);
 
-            var result = 0;
-            var task = semaphore.WaitAsync();
-            if (await Task.WhenAny(Task.Delay(TimeSpan.FromMilliseconds(100)), task).ConfigureAwait(true) == task)
-            {
-                result = 1;
-            }
-            else
-            {
-                result = -1;
-            }
+            await testSequencer.AdvancePhaseAsync("Phase 1");
+            Assert.Equal(3, result);
 
-            await Task.Delay(200).ConfigureAwait(false);
-            Assert.Equal(1, result);
+            testSequencer.Dispose();
         }
+
+        [Fact]
+        public void ShouldCallAsyncMethodOnSettingReactiveSetpoint() =>
+            new TestScheduler().WithAsync(scheduler =>
+            {
+                // set
+                var fooVm = new Mocks.FooViewModel(new());
+
+                Assert.Equal(42, fooVm.Foo.Value); // initial value unchanged
+
+                // act
+                scheduler.AdvanceByMs(11); // async processing
+                Assert.Equal(0, fooVm.Foo.Value); // value set to default Setpoint value
+
+                fooVm.Setpoint = 123;
+                scheduler.AdvanceByMs(5); // async task processing
+
+                // assert
+                Assert.Equal(0, fooVm.Foo.Value); // value unchanged as async task still processing
+                scheduler.AdvanceByMs(6); // process async setpoint setting
+
+                Assert.Equal(123, fooVm.Foo.Value);
+                return Task.CompletedTask;
+            });
     }
 }

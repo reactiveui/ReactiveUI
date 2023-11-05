@@ -3,14 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
-
-using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -42,13 +35,7 @@ namespace ReactiveUI.Tests
 
             var changes = new List<IObservedChange<object?, object?>>();
 
-            var propertyName = exp.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null");
-            }
-
+            var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
             instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.Property1 = "test1";
@@ -72,13 +59,7 @@ namespace ReactiveUI.Tests
 
             var changes = new List<IObservedChange<object?, object?>>();
 
-            var propertyName = exp.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null");
-            }
-
+            var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
             instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.Property1 = "test1";
@@ -102,13 +83,7 @@ namespace ReactiveUI.Tests
 
             var changes = new List<IObservedChange<object?, object?>>();
 
-            var propertyName = exp.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null");
-            }
-
+            var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
             instance.GetNotificationForProperty(testClass, exp, propertyName, false).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.OnPropertyChanged(null);
@@ -132,13 +107,7 @@ namespace ReactiveUI.Tests
 
             var changes = new List<IObservedChange<object?, object?>>();
 
-            var propertyName = exp.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null");
-            }
-
+            var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
             instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(c => changes.Add(c));
 
             testClass.OnPropertyChanging(null);

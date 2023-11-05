@@ -3,10 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using Splat;
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>
@@ -15,7 +11,7 @@ namespace ReactiveUI.Tests
     public class DefaultViewLocatorTests
     {
         /// <summary>
-        /// Tests that the the default name of the view model is replaced with view when determining the service.
+        /// Tests that the default name of the view model is replaced with view when determining the service.
         /// </summary>
         [Fact]
         public void ByDefaultViewModelIsReplacedWithViewWhenDeterminingTheServiceName()
@@ -72,9 +68,11 @@ namespace ReactiveUI.Tests
 
             using (resolver.WithResolver())
             {
-                var fixture = new DefaultViewLocator();
-                fixture.ViewModelToViewFunc =
-                    viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention");
+                var fixture = new DefaultViewLocator
+                {
+                    ViewModelToViewFunc =
+                    viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention")
+                };
                 var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
@@ -256,9 +254,11 @@ namespace ReactiveUI.Tests
 
             using (resolver.WithResolver())
             {
-                var fixture = new DefaultViewLocator();
-                fixture.ViewModelToViewFunc = viewModelName =>
-                    "DoesNotExist, " + typeof(DefaultViewLocatorTests).Assembly.FullName;
+                var fixture = new DefaultViewLocator
+                {
+                    ViewModelToViewFunc = viewModelName =>
+                    "DoesNotExist, " + typeof(DefaultViewLocatorTests).Assembly.FullName
+                };
                 var vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
@@ -388,8 +388,10 @@ namespace ReactiveUI.Tests
 
             using (resolver.WithResolver())
             {
-                var fixture = new DefaultViewLocator();
-                fixture.ViewModelToViewFunc = x => x.Replace("ViewModel", "CustomView");
+                var fixture = new DefaultViewLocator
+                {
+                    ViewModelToViewFunc = x => x.Replace("ViewModel", "CustomView")
+                };
                 var vm = new RoutableFooViewModel();
 
                 var result = fixture.ResolveView<IRoutableViewModel>(vm);

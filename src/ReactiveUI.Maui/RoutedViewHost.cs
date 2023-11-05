@@ -3,15 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+using System.Collections.Specialized;
 using System.Reflection;
+
 using Microsoft.Maui.Controls;
-using Splat;
 
 namespace ReactiveUI.Maui;
 
@@ -20,7 +15,6 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <seealso cref="Microsoft.Maui.Controls.NavigationPage" />
 /// <seealso cref="ReactiveUI.IActivatableView" />
-[SuppressMessage("Readability", "RCS1090: Call 'ConfigureAwait(false)", Justification = "This class interacts with the UI thread.")]
 public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 {
     /// <summary>
@@ -41,15 +35,24 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
      typeof(RoutedViewHost),
      false);
 
+    private string? _action;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
     /// <exception cref="Exception">You *must* register an IScreen class representing your App's main Screen.</exception>
     public RoutedViewHost()
     {
-        this.WhenActivated(disposable =>
+        this.WhenActivated(async disposable =>
         {
             var currentlyNavigating = false;
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+             x => Router!.NavigationStack.CollectionChanged += x,
+             x => Router!.NavigationStack.CollectionChanged -= x)
+            .Where(_ => !currentlyNavigating && Router?.NavigationStack.Count == 0)
+            .Subscribe(async _ => await SyncNavigationStacksAsync())
+            .DisposeWith(disposable);
 
             Router?
                 .NavigateBack
@@ -65,8 +68,9 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                         currentlyNavigating = false;
                     }
 
+                    _action = "NavigatedBack";
                     InvalidateCurrentViewModel();
-                    SyncNavigationStacks();
+                    await SyncNavigationStacksAsync();
                 })
                 .DisposeWith(disposable);
 
@@ -93,7 +97,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                         currentlyNavigating = false;
                     }
 
-                    SyncNavigationStacks();
+                    await SyncNavigationStacksAsync();
 
                     return page;
                 })
@@ -109,15 +113,17 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
              x => Popped += x,
              x => Popped -= x);
 
-            // NB: Catch when the user hit back as opposed to the application
-            // requesting Back via NavigateBack
+            // NB: User pressed the Application back as opposed to requesting Back via Router.NavigateBack.
             poppingEvent
                 .Where(_ => !currentlyNavigating && Router is not null)
                 .Subscribe(_ =>
                 {
+                    if (Router?.NavigationStack.Count > 0)
+                    {
+                        Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                    }
 
-                    Router!.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
-
+                    _action = "Popped";
                     InvalidateCurrentViewModel();
                 })
                 .DisposeWith(disposable);
@@ -131,28 +137,26 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
              x => PoppedToRoot += x,
              x => PoppedToRoot -= x);
 
-            // NB: Catch when the user hit back as opposed to the application
-            // requesting Back via NavigateBack
             poppingToRootEvent
                 .Where(_ => !currentlyNavigating && Router is not null)
                 .Subscribe(_ =>
                 {
-                    for (var i = Router!.NavigationStack.Count - 1; i > 0; i--)
+                    for (var i = Router?.NavigationStack.Count - 1; i > 0; i--)
                     {
-                        Router.NavigationStack.RemoveAt(i);
+                        if (i.HasValue)
+                        {
+                            Router?.NavigationStack.RemoveAt(i.Value);
+                        }
                     }
 
+                    _action = "PoppedToRoot";
                     InvalidateCurrentViewModel();
                 })
                 .DisposeWith(disposable);
+            await SyncNavigationStacksAsync();
         });
 
-        var screen = Locator.Current.GetService<IScreen>();
-        if (screen is null)
-        {
-            throw new Exception("You *must* register an IScreen class representing your App's main Screen");
-        }
-
+        var screen = Locator.Current.GetService<IScreen>() ?? throw new Exception("You *must* register an IScreen class representing your App's main Screen");
         Router = screen.Router;
     }
 
@@ -179,12 +183,11 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
-    [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
     protected virtual IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
         {
-            return Observable<Page>.Empty;
+            return Observable.Empty<Page>();
         }
 
         var ret = ViewLocator.Current.ResolveView(vm);
@@ -211,7 +214,6 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
-    [SuppressMessage("Design", "CA1822: Can be made static", Justification = "Might be used by implementors.")]
     protected virtual Page PageForViewModel(IRoutableViewModel vm)
     {
         if (vm is null)
@@ -247,8 +249,15 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         var vm = Router?.GetCurrentViewModel();
         if (CurrentPage is IViewFor page && vm is not null)
         {
-            // don't replace view model if vm is null
-            page.ViewModel = vm;
+            if (page.ViewModel?.GetType() == vm.GetType())
+            {
+                // don't replace view model if vm is null or an incompatible type.
+                page.ViewModel = vm;
+            }
+            else
+            {
+                this.Log().Info($"The view type '{page.GetType().FullName}' is not compatible with '{vm.GetType().FullName}' this was called by {_action}, the viewmodel was not invalidated");
+            }
         }
     }
 
@@ -256,22 +265,38 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// Syncs page's navigation stack  with <see cref="Router"/>
     /// to affect <see cref="Router"/> manipulations like Add or Clear.
     /// </summary>
-    protected void SyncNavigationStacks()
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    protected async Task SyncNavigationStacksAsync()
     {
         if (Navigation.NavigationStack.Count != Router.NavigationStack.Count
             || StacksAreDifferent())
         {
-            for (var i = Navigation.NavigationStack.Count - 2; i >= 0; i--)
+            if (Navigation.NavigationStack.Count > 2)
             {
-                Navigation.RemovePage(Navigation.NavigationStack[i]);
+                for (var i = Navigation.NavigationStack.Count - 2; i >= 0; i--)
+                {
+                    Navigation.RemovePage(Navigation.NavigationStack[i]);
+                }
             }
 
-            var rootPage = Navigation.NavigationStack[0];
-
-            for (var i = 0; i < Router.NavigationStack.Count - 1; i++)
+            Page? rootPage;
+            if (Navigation.NavigationStack.Count >= 1)
             {
-                var page = PageForViewModel(Router.NavigationStack[i]);
-                Navigation.InsertPageBefore(page, rootPage);
+                rootPage = Navigation.NavigationStack[0];
+            }
+            else
+            {
+                rootPage = PageForViewModel(Router.NavigationStack[0]);
+                await Navigation.PushAsync(rootPage, false);
+            }
+
+            if (Router.NavigationStack.Count >= 1)
+            {
+                for (var i = 0; i < Router.NavigationStack.Count - 1; i++)
+                {
+                    var page = PageForViewModel(Router.NavigationStack[i]);
+                    Navigation.InsertPageBefore(page, rootPage);
+                }
             }
         }
     }

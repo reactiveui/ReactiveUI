@@ -3,14 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive.Linq;
-
 using DynamicData;
-using Xunit;
 
 #if NETFX_CORE
 using Windows.UI.Xaml;
@@ -40,13 +33,7 @@ namespace ReactiveUI.Tests.Xaml
 
             var results = new List<IObservedChange<object, object?>>();
             Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("There is no valid property name");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("There is no valid property name");
             var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
             var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
 
@@ -72,13 +59,7 @@ namespace ReactiveUI.Tests.Xaml
 
             var results = new List<IObservedChange<object, object?>>();
             Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("There is no valid property name");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("There is no valid property name");
             var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
             var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
 

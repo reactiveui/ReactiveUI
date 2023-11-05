@@ -3,20 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Collections;
 using System.Globalization;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Windows;
-using DynamicData;
+
 using DynamicData.Binding;
-using ReactiveUI.Tests.Wpf;
-using Xunit;
 
 #if NETFX_CORE
 #else

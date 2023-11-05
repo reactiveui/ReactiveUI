@@ -3,17 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Android.Views;
+
 using AndroidX.RecyclerView.Widget;
 
 namespace ReactiveUI.AndroidX;
@@ -45,6 +39,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// Initializes a new instance of the <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> class.
     /// </summary>
     /// <param name="view">The view.</param>
+    [Obsolete("This method was deprecated in API level 23.", false)]
     protected ReactiveRecyclerViewViewHolder(View view)
         : base(view)
     {

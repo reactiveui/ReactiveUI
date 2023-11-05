@@ -9,7 +9,6 @@
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;net472</PackageTags>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,17 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\ReactiveUI.Uwp\common\**\*.cs" LinkBase="common" />
-    <None Include="..\ReactiveUI.Uwp\Rx\**\*.cs" LinkBase="Rx" />    
+    <Compile Remove="Rx\Internal\Constants.cs;Rx\**\Dispatcher*.cs;Rx\**\Control*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework) == 'net462' or $(TargetFramework.StartsWith('net6.0-windows')) or $(TargetFramework.StartsWith('net7.0-windows')) ">
-    <Compile Include="..\ReactiveUI.Uwp\Rx\Internal\Constants.cs" LinkBase="Rx" />
-    <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Uwp\Rx\Linq\*Observable.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework) == 'net462' or $(TargetFramework) == 'net6.0-windows10.0.17763.0' or $(TargetFramework) == 'net7.0-windows10.0.17763.0' ">
-    <Compile Include="..\ReactiveUI.Uwp\Rx\Concurrency\DispatcherScheduler.cs" LinkBase="Rx" />
-    <Compile Include="..\ReactiveUI.Uwp\Rx\Linq\DispatcherObservable.cs" LinkBase="Rx" />
+  <ItemGroup Condition="$(TargetFramework) == 'net462' or $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
+    <Compile Include="Rx\Internal\Constants.cs;Rx\**\Dispatcher*.cs" />
   </ItemGroup>
 </Project>

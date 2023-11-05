@@ -3,13 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactiveUI;
 
@@ -106,7 +101,7 @@ internal class ExpressionRewriter : ExpressionVisitor
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
         // Rewrite a method call to an indexer as an index expression
-        if (node.Arguments.Any(e => !(e is ConstantExpression)) || !node.Method.IsSpecialName)
+        if (node.Arguments.Any(e => e is not ConstantExpression) || !node.Method.IsSpecialName)
         {
             throw new NotSupportedException("Index expressions are only supported with constants.");
         }
@@ -125,7 +120,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 
     protected override Expression VisitIndex(IndexExpression node)
     {
-        if (node.Arguments.Any(e => !(e is ConstantExpression)))
+        if (node.Arguments.Any(e => e is not ConstantExpression))
         {
             throw new NotSupportedException("Index expressions are only supported with constants.");
         }

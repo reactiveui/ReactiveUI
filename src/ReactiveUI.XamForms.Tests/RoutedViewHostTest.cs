@@ -3,11 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
 using ReactiveUI.XamForms.Tests.Mocks;
-using Splat;
+
 using Xunit;
 
 namespace ReactiveUI.XamForms.Tests
@@ -362,13 +359,7 @@ namespace ReactiveUI.XamForms.Tests
         {
             if (initialViewModel is not null)
             {
-                var mainViewModel = Locator.Current.GetService<IRoutableViewModel>(initialViewModel);
-
-                if (mainViewModel is null)
-                {
-                    throw new InvalidOperationException("There should be a valid view model.");
-                }
-
+                var mainViewModel = Locator.Current.GetService<IRoutableViewModel>(initialViewModel) ?? throw new InvalidOperationException("There should be a valid view model.");
                 _navigationViewModel.Router.NavigationStack.Add(mainViewModel);
             }
 

@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace ReactiveUI.Tests.Wpf
@@ -16,9 +13,8 @@ namespace ReactiveUI.Tests.Wpf
     /// <seealso cref="System.IDisposable" />
     public class WpfActiveContentFixture : IDisposable
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        private readonly Thread? _uiThread;
         private bool _loadComplete;
-        private Thread _uiThread;
         private bool _disposedValue;
 
         /// <summary>
@@ -69,11 +65,9 @@ namespace ReactiveUI.Tests.Wpf
                     () => App.Shutdown(),
                     DispatcherPriority.Normal);
                 Thread.Sleep(500);
-                _uiThread.Join();
+                _uiThread?.Join();
                 _disposedValue = true;
             }
         }
-
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     }
 }

@@ -3,17 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-
 using Android.App;
 using Android.OS;
-
-using Splat;
 
 namespace ReactiveUI;
 
@@ -57,7 +48,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     }
 
     /// <summary>
-    /// Gets a subject to indicate whether the application has untimely dismised.
+    /// Gets a subject to indicate whether the application has untimely dismissed.
     /// </summary>
     public static Subject<Unit> UntimelyDemise { get; } = new();
 
@@ -69,7 +60,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        // Do not change this code. Put clean up code in Dispose(bool disposing) above.
         Dispose(true);
         GC.SuppressFinalize(this);
     }
@@ -96,15 +87,11 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         _disposedValue = true;
     }
 
-    private class ObservableLifecycle : Java.Lang.Object, Application.IActivityLifecycleCallbacks
+    private class ObservableLifecycle(AutoSuspendHelper @this) : Java.Lang.Object, Application.IActivityLifecycleCallbacks
     {
-        private readonly AutoSuspendHelper _this;
+        public void OnActivityCreated(Activity? activity, Bundle? savedInstanceState) => @this._onCreate.OnNext(savedInstanceState);
 
-        public ObservableLifecycle(AutoSuspendHelper @this) => _this = @this;
-
-        public void OnActivityCreated(Activity? activity, Bundle? savedInstanceState) => _this._onCreate.OnNext(savedInstanceState);
-
-        public void OnActivityResumed(Activity? activity) => _this._onRestart.OnNext(Unit.Default);
+        public void OnActivityResumed(Activity? activity) => @this._onRestart.OnNext(Unit.Default);
 
         public void OnActivitySaveInstanceState(Activity? activity, Bundle? outState)
         {
@@ -112,10 +99,10 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
             // we can tell the difference between created from scratch and resume.
             outState?.PutString("___dummy_value_please_create_a_bundle", "VeryYes");
 
-            _this._onSaveInstanceState.OnNext(outState);
+            @this._onSaveInstanceState.OnNext(outState);
         }
 
-        public void OnActivityPaused(Activity? activity) => _this._onPause.OnNext(Unit.Default);
+        public void OnActivityPaused(Activity? activity) => @this._onPause.OnNext(Unit.Default);
 
         public void OnActivityDestroyed(Activity? activity)
         {

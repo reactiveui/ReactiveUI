@@ -3,16 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using VerifyXunit;
-
-using Xunit;
 
 namespace ReactiveUI.Tests.Wpf
 {
@@ -27,7 +18,7 @@ namespace ReactiveUI.Tests.Wpf
         /// Checks the approved vs the received API.
         /// </summary>
         /// <returns>A task to monitor the process.</returns>
-        [Fact(Skip = "Need to resolve GeneratedInternalTypeHelper")]
+        [Fact]
         public Task Wpf() => CheckApproval(typeof(ReactiveWindow<>).Assembly);
     }
 }

@@ -3,12 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
+using System.Runtime.Versioning;
+
 using Android.App;
 using Android.Runtime;
 
@@ -38,7 +36,12 @@ public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewMode
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactiveFragment(IntPtr handle, JniHandleOwnership ownership)
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
+    protected ReactiveFragment(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }
@@ -80,7 +83,12 @@ public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<Reactiv
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactiveFragment(IntPtr handle, JniHandleOwnership ownership)
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
+    protected ReactiveFragment(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }
@@ -132,7 +140,11 @@ public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<Reactiv
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>
-    [Obsolete("deprecated")]
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
     public override void OnPause()
     {
         base.OnPause();
@@ -140,7 +152,11 @@ public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<Reactiv
     }
 
     /// <inheritdoc/>
-    [Obsolete("deprecated")]
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
     public override void OnResume()
     {
         base.OnResume();

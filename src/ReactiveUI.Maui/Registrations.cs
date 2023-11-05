@@ -3,14 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-
-#if HAS_WINUI
-using System.Reactive.Concurrency;
-using Splat;
+#if IS_WINUI
+namespace ReactiveUI.WinUI;
 #endif
-
+#if IS_MAUI
 namespace ReactiveUI.Maui;
+#endif
 
 /// <summary>
 /// The main registration for common classes for the Splat dependency injection.
@@ -34,7 +32,8 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
         registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
 
-#if HAS_WINUI
+#if WINUI_TARGET
+        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
         registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
         registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
         registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));

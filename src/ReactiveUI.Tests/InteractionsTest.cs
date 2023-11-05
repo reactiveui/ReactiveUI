@@ -3,15 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
 using DynamicData;
+
 using Microsoft.Reactive.Testing;
+
 using ReactiveUI.Testing;
-using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -28,9 +24,9 @@ namespace ReactiveUI.Tests
         {
             var interaction = new Interaction<Unit, Unit>();
 
-            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Action<InteractionContext<Unit, Unit>>)null!));
+            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Action<IInteractionContext<Unit, Unit>>)null!));
             Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler(null!));
-            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<InteractionContext<Unit, Unit>, IObservable<Unit>>)null!));
+            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<IInteractionContext<Unit, Unit>, IObservable<Unit>>)null!));
         }
 
         /// <summary>
@@ -79,7 +75,7 @@ namespace ReactiveUI.Tests
 
             interaction.RegisterHandler(context =>
             {
-                var output = context.GetOutput();
+                var output = ((InteractionContext<Unit, Unit>)context).GetOutput();
             });
 
             var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(Unit.Default).Subscribe());

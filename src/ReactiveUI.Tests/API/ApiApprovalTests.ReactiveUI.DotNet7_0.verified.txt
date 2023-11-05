@@ -1,0 +1,1037 @@
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidSupport")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidX")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Drawing")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.TestRunner.Android")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno.WinUI")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uwp")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinUI")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.XamForms")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.17763.0")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v7.0", FrameworkDisplayName=".NET 7.0")]
+[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.17763.0")]
+namespace ReactiveUI
+{
+    public static class AutoPersistHelper
+    {
+        public static System.IDisposable ActOnEveryObject<TItem>(this System.Collections.ObjectModel.ObservableCollection<TItem> @this, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable ActOnEveryObject<TItem>(this System.Collections.ObjectModel.ReadOnlyObservableCollection<TItem> @this, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable ActOnEveryObject<TItem>(this System.IObservable<DynamicData.IChangeSet<TItem>> @this, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable ActOnEveryObject<TItem, TCollection>(this TCollection collection, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject
+            where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<TItem> { }
+        public static System.IDisposable AutoPersist<T>(this T @this, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.TimeSpan? interval = default)
+            where T : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersist<T, TDontCare>(this T @this, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.TimeSpan? interval = default)
+            where T : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersistCollection<TItem>(this System.Collections.ObjectModel.ObservableCollection<TItem> @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.TimeSpan? interval = default)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersistCollection<TItem, TDontCare>(this System.Collections.ObjectModel.ObservableCollection<TItem> @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.TimeSpan? interval = default)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersistCollection<TItem, TDontCare>(this System.Collections.ObjectModel.ReadOnlyObservableCollection<TItem> @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.TimeSpan? interval = default)
+            where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable AutoPersistCollection<TItem, TCollection, TDontCare>(this TCollection @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.TimeSpan? interval = default)
+            where TItem : ReactiveUI.IReactiveObject
+            where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<TItem> { }
+    }
+    public enum BindingDirection
+    {
+        OneWay = 0,
+        TwoWay = 1,
+        AsyncOneWay = 2,
+    }
+    public class ByteToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public ByteToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class CanActivateViewFetcher : ReactiveUI.IActivationForViewFetcher
+    {
+        public CanActivateViewFetcher() { }
+        public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
+        public int GetAffinityForView(System.Type view) { }
+    }
+    public static class ChangeSetMixin
+    {
+        public static System.IObservable<DynamicData.IChangeSet> CountChanged(this System.IObservable<DynamicData.IChangeSet> changeSet) { }
+        public static System.IObservable<DynamicData.IChangeSet<T>> CountChanged<T>(this System.IObservable<DynamicData.IChangeSet<T>> changeSet)
+            where T :  notnull { }
+        public static bool HasCountChanged(this DynamicData.IChangeSet changeSet) { }
+    }
+    public class CombinedReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, System.Collections.Generic.IList<TResult>>
+    {
+        protected CombinedReactiveCommand(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public override System.IObservable<bool> CanExecute { get; }
+        public override System.IObservable<bool> IsExecuting { get; }
+        public override System.IObservable<System.Exception> ThrownExceptions { get; }
+        protected override void Dispose(bool disposing) { }
+        public override System.IObservable<System.Collections.Generic.IList<TResult>> Execute() { }
+        public override System.IObservable<System.Collections.Generic.IList<TResult>> Execute(TParam parameter) { }
+        public override System.IDisposable Subscribe(System.IObserver<System.Collections.Generic.IList<TResult>> observer) { }
+    }
+    public static class CommandBinder
+    {
+        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, string? toEvent = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
+            where TViewModel :  class
+            where TProp : System.Windows.Input.ICommand { }
+        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.IObservable<TParam?> withParameter, string? toEvent = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
+            where TViewModel :  class
+            where TProp : System.Windows.Input.ICommand { }
+        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
+            where TViewModel :  class
+            where TProp : System.Windows.Input.ICommand { }
+    }
+    public class CommandBinderImplementation : Splat.IEnableLogger
+    {
+        public CommandBinderImplementation() { }
+        public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam?> withParameter, string? toEvent = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
+            where TViewModel :  class
+            where TProp : System.Windows.Input.ICommand { }
+        public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>
+            where TViewModel :  class
+            where TProp : System.Windows.Input.ICommand { }
+    }
+    public static class ComparerChainingExtensions
+    {
+        public static System.Collections.Generic.IComparer<T> ThenBy<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue> selector) { }
+        public static System.Collections.Generic.IComparer<T> ThenBy<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+        public static System.Collections.Generic.IComparer<T> ThenByDescending<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue> selector) { }
+        public static System.Collections.Generic.IComparer<T> ThenByDescending<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+    }
+    public class ComponentModelTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public ComponentModelTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object? result) { }
+    }
+    public class CreatesCommandBindingViaCommandParameter : ReactiveUI.ICreatesCommandBinding
+    {
+        public CreatesCommandBindingViaCommandParameter() { }
+        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
+        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
+        public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
+    }
+    public class CreatesCommandBindingViaEvent : ReactiveUI.ICreatesCommandBinding
+    {
+        public CreatesCommandBindingViaEvent() { }
+        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
+        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
+        public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
+    }
+    public class DecimalToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public DecimalToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
+    {
+        public System.Func<string, string> ViewModelToViewFunc { get; set; }
+        public ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null) { }
+    }
+    public static class DependencyResolverMixins
+    {
+        public static void InitializeReactiveUI(this Splat.IMutableDependencyResolver resolver, params ReactiveUI.RegistrationNamespace[] registrationNamespaces) { }
+        public static void RegisterViewsForViewModels(this Splat.IMutableDependencyResolver resolver, System.Reflection.Assembly assembly) { }
+    }
+    public class DoubleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public DoubleToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class DummySuspensionDriver : ReactiveUI.ISuspensionDriver
+    {
+        public DummySuspensionDriver() { }
+        public System.IObservable<System.Reactive.Unit> InvalidateState() { }
+        public System.IObservable<object> LoadState() { }
+        public System.IObservable<System.Reactive.Unit> SaveState(object state) { }
+    }
+    public class EqualityTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public EqualityTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object? result) { }
+        public static object? DoReferenceCast(object? from, System.Type targetType) { }
+    }
+    public static class ExpressionMixins
+    {
+        public static object?[]? GetArgumentsArray(this System.Linq.Expressions.Expression expression) { }
+        public static System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> GetExpressionChain(this System.Linq.Expressions.Expression expression) { }
+        public static System.Reflection.MemberInfo? GetMemberInfo(this System.Linq.Expressions.Expression expression) { }
+        public static System.Linq.Expressions.Expression? GetParent(this System.Linq.Expressions.Expression expression) { }
+    }
+    public interface IActivatableView { }
+    public interface IActivatableViewModel
+    {
+        ReactiveUI.ViewModelActivator Activator { get; }
+    }
+    public interface IActivationForViewFetcher
+    {
+        System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view);
+        int GetAffinityForView(System.Type view);
+    }
+    public interface IBindingTypeConverter : Splat.IEnableLogger
+    {
+        int GetAffinityForObjects(System.Type fromType, System.Type toType);
+        bool TryConvert(object? from, System.Type toType, object? conversionHint, out object? result);
+    }
+    public interface ICanActivate
+    {
+        System.IObservable<System.Reactive.Unit> Activated { get; }
+        System.IObservable<System.Reactive.Unit> Deactivated { get; }
+    }
+    public interface IComparerBuilder<T>
+    {
+        System.Collections.Generic.IComparer<T> OrderBy<TValue>(System.Func<T, TValue> selector);
+        System.Collections.Generic.IComparer<T> OrderBy<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer);
+        System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector);
+        System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer);
+    }
+    public interface ICreatesCommandBinding
+    {
+        System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter);
+        System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName);
+        int GetAffinityForObject(System.Type type, bool hasEventTarget);
+    }
+    public interface ICreatesObservableForProperty : Splat.IEnableLogger
+    {
+        int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false);
+        System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
+    }
+    public interface IHandleObservableErrors
+    {
+        System.IObservable<System.Exception> ThrownExceptions { get; }
+    }
+    public interface IInteractionBinderImplementation : Splat.IEnableLogger
+    {
+        System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor;
+        System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor;
+    }
+    public interface IInteractionContext<out TInput, in TOutput>
+    {
+        TInput Input { get; }
+        bool IsHandled { get; }
+        void SetOutput(TOutput output);
+    }
+    public interface IInteraction<TInput, TOutput>
+    {
+        System.IObservable<TOutput> Handle(TInput input);
+        System.IDisposable RegisterHandler(System.Action<ReactiveUI.IInteractionContext<TInput, TOutput>> handler);
+        System.IDisposable RegisterHandler(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler);
+        System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler);
+    }
+    public interface IMessageBus : Splat.IEnableLogger
+    {
+        bool IsRegistered(System.Type type, string? contract = null);
+        System.IObservable<T> Listen<T>(string? contract = null);
+        System.IObservable<T> ListenIncludeLatest<T>(string? contract = null);
+        System.IDisposable RegisterMessageSource<T>(System.IObservable<T> source, string? contract = null);
+        void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string? contract = null);
+        void SendMessage<T>(T message, string? contract = null);
+    }
+    public class INPCObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
+    {
+        public INPCObservableForProperty() { }
+        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object?, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+    }
+    public interface IObservedChange<out TSender, out TValue>
+    {
+        System.Linq.Expressions.Expression? Expression { get; }
+        TSender Sender { get; }
+        TValue Value { get; }
+    }
+    public interface IOutputContext<out TInput, TOutput> : ReactiveUI.IInteractionContext<TInput, TOutput>
+    {
+        TOutput GetOutput();
+    }
+    public interface IPlatformOperations
+    {
+        string? GetOrientation();
+    }
+    public interface IPropertyBinderImplementation : Splat.IEnableLogger
+    {
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "view",
+                "isViewModel"})]
+        ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp?, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp?> viewToVmConverter, ReactiveUI.TriggerUpdate triggerUpdate = 0)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor;
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
+                "view",
+                "isViewModel"})]
+        ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null, ReactiveUI.TriggerUpdate triggerUpdate = 0)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor;
+        System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> propertyExpression, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+            where TTarget :  class;
+        ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor;
+        ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor;
+    }
+    public interface IPropertyBindingHook
+    {
+        bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction);
+    }
+    public class IROObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
+    {
+        public IROObservableForProperty() { }
+        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+    }
+    public interface IReactiveBinding<out TView, out TValue> : System.IDisposable
+        where out TView : ReactiveUI.IViewFor
+    {
+        System.IObservable<TValue?> Changed { get; }
+        ReactiveUI.BindingDirection Direction { get; }
+        TView View { get; }
+        System.Linq.Expressions.Expression ViewExpression { get; }
+        System.Linq.Expressions.Expression ViewModelExpression { get; }
+    }
+    public interface IReactiveCommand : ReactiveUI.IHandleObservableErrors, System.IDisposable
+    {
+        System.IObservable<bool> CanExecute { get; }
+        System.IObservable<bool> IsExecuting { get; }
+    }
+    public interface IReactiveCommand<in TParam, out TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, System.IDisposable, System.IObservable<TResult>
+    {
+        System.IObservable<TResult> Execute();
+        System.IObservable<TResult> Execute(TParam parameter);
+    }
+    public interface IReactiveNotifyPropertyChanged<out TSender>
+    {
+        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
+        System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
+        System.IDisposable SuppressChangeNotifications();
+    }
+    public interface IReactiveObject : Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
+    {
+        void RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs args);
+        void RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs args);
+    }
+    public static class IReactiveObjectExtensions
+    {
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj reactiveObject, ref TRet backingField, TRet newValue, [System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+            where TObj : ReactiveUI.IReactiveObject { }
+        public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+            where TSender : ReactiveUI.IReactiveObject { }
+        public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+            where TSender : ReactiveUI.IReactiveObject { }
+        public static void SubscribePropertyChangedEvents<TSender>(this TSender reactiveObject)
+            where TSender : ReactiveUI.IReactiveObject { }
+        public static void SubscribePropertyChangingEvents<TSender>(this TSender reactiveObject)
+            where TSender : ReactiveUI.IReactiveObject { }
+    }
+    public interface IReactivePropertyChangedEventArgs<out TSender>
+    {
+        string? PropertyName { get; }
+        TSender Sender { get; }
+    }
+    public interface IRoutableViewModel : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
+    {
+        ReactiveUI.IScreen HostScreen { get; }
+        string? UrlPathSegment { get; }
+    }
+    public interface IScreen
+    {
+        ReactiveUI.RoutingState Router { get; }
+    }
+    public interface ISetMethodBindingConverter : Splat.IEnableLogger
+    {
+        int GetAffinityForObjects(System.Type? fromType, System.Type? toType);
+        object? PerformSet(object? toTarget, object? newValue, object?[]? arguments);
+    }
+    public interface ISuspensionDriver
+    {
+        System.IObservable<System.Reactive.Unit> InvalidateState();
+        System.IObservable<object> LoadState();
+        System.IObservable<System.Reactive.Unit> SaveState(object state);
+    }
+    public interface ISuspensionHost : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
+    {
+        object? AppState { get; set; }
+        System.Func<object>? CreateNewAppState { get; set; }
+        System.IObservable<System.Reactive.Unit> IsLaunchingNew { get; set; }
+        System.IObservable<System.Reactive.Unit> IsResuming { get; set; }
+        System.IObservable<System.Reactive.Unit> IsUnpausing { get; set; }
+        System.IObservable<System.Reactive.Unit> ShouldInvalidateState { get; set; }
+        System.IObservable<System.IDisposable> ShouldPersistState { get; set; }
+    }
+    public interface IViewFor : ReactiveUI.IActivatableView
+    {
+        object? ViewModel { get; set; }
+    }
+    public interface IViewFor<T> : ReactiveUI.IActivatableView, ReactiveUI.IViewFor
+        where T :  class
+    {
+        T ViewModel { get; set; }
+    }
+    public interface IViewLocator : Splat.IEnableLogger
+    {
+        ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
+    }
+    public class IntegerToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public IntegerToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class InteractionBinderImplementation : ReactiveUI.IInteractionBinderImplementation, Splat.IEnableLogger
+    {
+        public InteractionBinderImplementation() { }
+        public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+    }
+    public static class InteractionBindingMixins
+    {
+        public static System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        public static System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+    }
+    public sealed class InteractionContext<TInput, TOutput> : ReactiveUI.IInteractionContext<TInput, TOutput>, ReactiveUI.IOutputContext<TInput, TOutput>
+    {
+        public TInput Input { get; }
+        public bool IsHandled { get; }
+        public TOutput GetOutput() { }
+        public void SetOutput(TOutput output) { }
+    }
+    public class Interaction<TInput, TOutput> : ReactiveUI.IInteraction<TInput, TOutput>
+    {
+        public Interaction(System.Reactive.Concurrency.IScheduler? handlerScheduler = null) { }
+        protected virtual ReactiveUI.IOutputContext<TInput, TOutput> GenerateContext(TInput input) { }
+        protected System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<System.Reactive.Unit>>[] GetHandlers() { }
+        public virtual System.IObservable<TOutput> Handle(TInput input) { }
+        public System.IDisposable RegisterHandler(System.Action<ReactiveUI.IInteractionContext<TInput, TOutput>> handler) { }
+        public System.IDisposable RegisterHandler(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
+        public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
+    }
+    public class LongToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public LongToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class MessageBus : ReactiveUI.IMessageBus, Splat.IEnableLogger
+    {
+        public MessageBus() { }
+        public static ReactiveUI.IMessageBus Current { get; set; }
+        public bool IsRegistered(System.Type type, string? contract = null) { }
+        public System.IObservable<T> Listen<T>(string? contract = null) { }
+        public System.IObservable<T> ListenIncludeLatest<T>(string? contract = null) { }
+        public System.IDisposable RegisterMessageSource<T>(System.IObservable<T> source, string? contract = null) { }
+        public void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string? contract = null) { }
+        public void SendMessage<T>(T message, string? contract = null) { }
+    }
+    public class NullableByteToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableByteToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableDecimalToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableDecimalToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableDoubleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableDoubleToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableIntegerToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableIntegerToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableLongToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableLongToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableShortToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableShortToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class NullableSingleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public NullableSingleToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public static class OAPHCreationHelperMixin
+    {
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, System.Linq.Expressions.Expression<System.Func<TObj, TRet>> property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, TRet initialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(this System.IObservable<TRet> target, TObj source, string property, out ReactiveUI.ObservableAsPropertyHelper<TRet> result, System.Func<TRet> getInitialValue, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null)
+            where TObj :  class, ReactiveUI.IReactiveObject { }
+    }
+    public sealed class ObservableAsPropertyHelper<T> : ReactiveUI.IHandleObservableErrors, Splat.IEnableLogger, System.IDisposable
+    {
+        public ObservableAsPropertyHelper(System.IObservable<T?> observable, System.Action<T?> onChanged, T? initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T?> observable, System.Action<T?> onChanged, System.Action<T?>? onChanging = null, System.Func<T?>? getInitialValue = null, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public ObservableAsPropertyHelper(System.IObservable<T?> observable, System.Action<T?> onChanged, System.Action<T?>? onChanging = null, T? initialValue = default, bool deferSubscription = false, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        public bool IsSubscribed { get; }
+        public System.IObservable<System.Exception> ThrownExceptions { get; }
+        public T Value { get; }
+        public void Dispose() { }
+        public static ReactiveUI.ObservableAsPropertyHelper<T> Default(T? initialValue = default, System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+    }
+    public static class ObservableFuncMixins
+    {
+        public static System.IObservable<TResult?> ToObservable<TSource, TResult>(this System.Linq.Expressions.Expression<System.Func<TSource, TResult?>> expression, TSource? source, bool beforeChange = false, bool skipInitial = false) { }
+    }
+    public static class ObservableLoggingMixin
+    {
+        public static System.IObservable<T> Log<T, TObj>(this System.IObservable<T> @this, TObj logObject, string? message = null, System.Func<T, string>? stringifier = null)
+            where TObj : Splat.IEnableLogger { }
+        public static System.IObservable<T> LoggedCatch<T, TObj>(this System.IObservable<T> @this, TObj klass, System.IObservable<T>? next = null, string? message = null)
+            where TObj : Splat.IEnableLogger { }
+        public static System.IObservable<T> LoggedCatch<T, TObj, TException>(this System.IObservable<T> @this, TObj klass, System.Func<TException, System.IObservable<T>> next, string? message = null)
+            where TObj : Splat.IEnableLogger
+            where TException : System.Exception { }
+    }
+    public static class ObservableMixins
+    {
+        public static System.IObservable<T> WhereNotNull<T>(this System.IObservable<T?> observable) { }
+    }
+    public class ObservedChange<TSender, TValue> : ReactiveUI.IObservedChange<TSender, TValue>
+    {
+        public ObservedChange(TSender sender, System.Linq.Expressions.Expression? expression, TValue value) { }
+        public System.Linq.Expressions.Expression? Expression { get; }
+        public TSender Sender { get; }
+        public TValue Value { get; }
+    }
+    public static class ObservedChangedMixin
+    {
+        public static string GetPropertyName<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
+        public static TValue GetValue<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
+        public static TValue? GetValueOrDefault<TSender, TValue>(this ReactiveUI.IObservedChange<TSender, TValue> item) { }
+        public static System.IObservable<TValue> Value<TSender, TValue>(this System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> item) { }
+    }
+    public static class OrderedComparer
+    {
+        public static ReactiveUI.IComparerBuilder<T> For<T>() { }
+        public static ReactiveUI.IComparerBuilder<T> For<T>(System.Collections.Generic.IEnumerable<T> enumerable) { }
+    }
+    public static class OrderedComparer<T>
+    {
+        public static System.Collections.Generic.IComparer<T> OrderBy<TValue>(System.Func<T, TValue> selector) { }
+        public static System.Collections.Generic.IComparer<T> OrderBy<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+        public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector) { }
+        public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
+    }
+    public class POCOObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
+    {
+        public POCOObservableForProperty() { }
+        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+    }
+    public static class PlatformRegistrationManager
+    {
+        public static void SetRegistrationNamespaces(params ReactiveUI.RegistrationNamespace[] namespaces) { }
+    }
+    public class PlatformRegistrations
+    {
+        public PlatformRegistrations() { }
+        public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
+    }
+    public class PropertyBinderImplementation : ReactiveUI.IPropertyBinderImplementation, Splat.IEnableLogger
+    {
+        public PropertyBinderImplementation() { }
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "view",
+                "isViewModel"})]
+        public ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp?, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp?> viewToVmConverter, ReactiveUI.TriggerUpdate triggerUpdate = 0)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
+                "view",
+                "isViewModel"})]
+        public ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null, ReactiveUI.TriggerUpdate triggerUpdate = 0)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        public System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> propertyExpression, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+            where TTarget :  class { }
+        public ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        public ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+    }
+    public static class PropertyBindingMixins
+    {
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "view",
+                "isViewModel"})]
+        public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.Func<TVMProp?, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp?> viewToVmConverter)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
+                "view",
+                "isViewModel"})]
+        public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "view",
+                "isViewModel"})]
+        public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp?, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp?> viewToVmConverter, ReactiveUI.TriggerUpdate triggerUpdate = 0)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
+                "view",
+                "isViewModel"})]
+        public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null, ReactiveUI.TriggerUpdate triggerUpdate = 0)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        public static System.IDisposable BindTo<TValue, TTarget, TTValue>(this System.IObservable<TValue> @this, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> property, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+            where TTarget :  class { }
+        public static ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+        public static ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor { }
+    }
+    public static class ReactiveCommand
+    {
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> Create(System.Action execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> Create<TParam>(System.Action<TParam> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> Create<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> Create<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromObservable<TResult>(System.Func<System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateFromTask(System.Func<System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateFromTask(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromTask<TResult>(System.Func<System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromTask<TResult>(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateRunInBackground(System.Action execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateRunInBackground<TParam>(System.Action<TParam> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateRunInBackground<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+    }
+    public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, ReactiveUI.IReactiveCommand<TParam, TResult>, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
+    {
+        protected ReactiveCommandBase() { }
+        public abstract System.IObservable<bool> CanExecute { get; }
+        public abstract System.IObservable<bool> IsExecuting { get; }
+        public abstract System.IObservable<System.Exception> ThrownExceptions { get; }
+        public void Dispose() { }
+        protected abstract void Dispose(bool disposing);
+        public abstract System.IObservable<TResult> Execute();
+        public abstract System.IObservable<TResult> Execute(TParam parameter);
+        protected virtual bool ICommandCanExecute(object? parameter) { }
+        protected virtual void ICommandExecute(object? parameter) { }
+        protected void OnCanExecuteChanged(bool newValue) { }
+        public abstract System.IDisposable Subscribe(System.IObserver<TResult> observer);
+    }
+    public static class ReactiveCommandMixins
+    {
+        public static System.IDisposable InvokeCommand<T>(this System.IObservable<T> item, System.Windows.Input.ICommand? command) { }
+        public static System.IDisposable InvokeCommand<T, TResult>(this System.IObservable<T> item, ReactiveUI.ReactiveCommandBase<T, TResult>? command) { }
+        public static System.IDisposable InvokeCommand<T, TTarget>(this System.IObservable<T> item, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, System.Windows.Input.ICommand?>> commandProperty)
+            where TTarget :  class { }
+        public static System.IDisposable InvokeCommand<T, TResult, TTarget>(this System.IObservable<T> item, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, ReactiveUI.ReactiveCommandBase<T, TResult>?>> commandProperty)
+            where TTarget :  class { }
+    }
+    public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
+    {
+        protected ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler) { }
+        public override System.IObservable<bool> CanExecute { get; }
+        public override System.IObservable<bool> IsExecuting { get; }
+        public override System.IObservable<System.Exception> ThrownExceptions { get; }
+        protected override void Dispose(bool disposing) { }
+        public override System.IObservable<TResult> Execute() { }
+        public override System.IObservable<TResult> Execute(TParam parameter) { }
+        public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
+    }
+    public static class ReactiveNotifyPropertyChangedMixin
+    {
+        public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, bool beforeChange = false, bool skipInitial = true) { }
+        public static System.IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender? item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, System.Func<TValue?, TRet> selector, bool beforeChange = false)
+            where TSender :  class { }
+        public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender? source, System.Linq.Expressions.Expression? expression, bool beforeChange = false, bool skipInitial = true, bool suppressWarnings = false) { }
+    }
+    [System.Runtime.Serialization.DataContract]
+    public class ReactiveObject : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
+    {
+        public ReactiveObject() { }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<System.Exception> ThrownExceptions { get; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
+        public bool AreChangeNotificationsEnabled() { }
+        public System.IDisposable DelayChangeNotifications() { }
+        public System.IDisposable SuppressChangeNotifications() { }
+    }
+    public class ReactivePropertyChangedEventArgs<TSender> : System.ComponentModel.PropertyChangedEventArgs, ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
+    {
+        public ReactivePropertyChangedEventArgs(TSender sender, string propertyName) { }
+        public TSender Sender { get; }
+    }
+    public class ReactivePropertyChangingEventArgs<TSender> : System.ComponentModel.PropertyChangingEventArgs, ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
+    {
+        public ReactivePropertyChangingEventArgs(TSender sender, string? propertyName) { }
+        public TSender Sender { get; }
+    }
+    [System.Runtime.Serialization.DataContract]
+    public class ReactiveRecord : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging, System.IEquatable<ReactiveUI.ReactiveRecord>
+    {
+        public ReactiveRecord() { }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<System.Exception> ThrownExceptions { get; }
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
+        public bool AreChangeNotificationsEnabled() { }
+        public System.IDisposable DelayChangeNotifications() { }
+        public System.IDisposable SuppressChangeNotifications() { }
+    }
+    public static class Reflection
+    {
+        public static string ExpressionToPropertyNames(System.Linq.Expressions.Expression? expression) { }
+        public static System.Type GetEventArgsTypeForEvent(System.Type type, string? eventName) { }
+        public static System.Func<object?, object?[]?, object?>? GetValueFetcherForProperty(System.Reflection.MemberInfo? member) { }
+        public static System.Func<object?, object?[]?, object?> GetValueFetcherOrThrow(System.Reflection.MemberInfo? member) { }
+        public static System.Action<object?, object?, object?[]?> GetValueSetterForProperty(System.Reflection.MemberInfo? member) { }
+        public static System.Action<object?, object?, object?[]?>? GetValueSetterOrThrow(System.Reflection.MemberInfo? member) { }
+        public static bool IsStatic(this System.Reflection.PropertyInfo item) { }
+        public static System.Type? ReallyFindType(string? type, bool throwOnFailure) { }
+        public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression? expression) { }
+        public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) { }
+        public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<object, object?>[] changeValues, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
+        public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
+        public static bool TrySetValueToPropertyChain<TValue>(object? target, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain, TValue value, bool shouldThrow = true) { }
+    }
+    public enum RegistrationNamespace
+    {
+        None = 0,
+        XamForms = 1,
+        Winforms = 2,
+        Wpf = 3,
+        Uno = 4,
+        UnoWinUI = 5,
+        Blazor = 6,
+        Drawing = 7,
+        Avalonia = 8,
+        Maui = 9,
+        Uwp = 10,
+        WinUI = 11,
+    }
+    public class Registrations
+    {
+        public Registrations() { }
+        public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
+    }
+    public static class RoutableViewModelMixin
+    {
+        public static System.IDisposable WhenNavigatedTo(this ReactiveUI.IRoutableViewModel item, System.Func<System.IDisposable> onNavigatedTo) { }
+        public static System.IObservable<System.Reactive.Unit> WhenNavigatedToObservable(this ReactiveUI.IRoutableViewModel item) { }
+        public static System.IObservable<System.Reactive.Unit> WhenNavigatingFromObservable(this ReactiveUI.IRoutableViewModel item) { }
+    }
+    [System.Runtime.Serialization.DataContract]
+    public class RoutingState : ReactiveUI.ReactiveObject
+    {
+        public RoutingState(System.Reactive.Concurrency.IScheduler? scheduler = null) { }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; set; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> Navigate { get; set; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> NavigateAndReset { get; set; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel> NavigateBack { get; set; }
+        [System.Runtime.Serialization.IgnoreDataMember]
+        public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
+    }
+    public static class RoutingStateMixins
+    {
+        public static T? FindViewModelInStack<T>(this ReactiveUI.RoutingState item)
+            where T : ReactiveUI.IRoutableViewModel { }
+        public static ReactiveUI.IRoutableViewModel? GetCurrentViewModel(this ReactiveUI.RoutingState item) { }
+    }
+    public static class RxApp
+    {
+        public const int BigCacheLimit = 256;
+        public const int SmallCacheLimit = 64;
+        public static System.IObserver<System.Exception> DefaultExceptionHandler { get; set; }
+        public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
+        public static bool SuppressViewCommandBindingMessage { get; set; }
+        public static ReactiveUI.ISuspensionHost SuspensionHost { get; set; }
+        public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
+    }
+    public class ScheduledSubject<T> : System.IDisposable, System.IObservable<T>, System.IObserver<T>, System.Reactive.Subjects.ISubject<T>, System.Reactive.Subjects.ISubject<T, T>
+    {
+        public ScheduledSubject(System.Reactive.Concurrency.IScheduler scheduler, System.IObserver<T>? defaultObserver = null, System.Reactive.Subjects.ISubject<T>? defaultSubject = null) { }
+        public void Dispose() { }
+        protected virtual void Dispose(bool isDisposing) { }
+        public void OnCompleted() { }
+        public void OnError(System.Exception error) { }
+        public void OnNext(T value) { }
+        public System.IDisposable Subscribe(System.IObserver<T> observer) { }
+    }
+    public class ShortToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public ShortToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    public sealed class SingleInstanceViewAttribute : System.Attribute
+    {
+        public SingleInstanceViewAttribute() { }
+    }
+    public class SingleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public SingleToStringTypeConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
+    }
+    public class StringConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
+    {
+        public StringConverter() { }
+        public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
+        public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object? result) { }
+    }
+    public static class SuspensionHostExtensions
+    {
+        public static T GetAppState<T>(this ReactiveUI.ISuspensionHost item) { }
+        public static System.IObservable<T> ObserveAppState<T>(this ReactiveUI.ISuspensionHost item)
+            where T :  class { }
+        public static System.IDisposable SetupDefaultSuspendResume(this ReactiveUI.ISuspensionHost item, ReactiveUI.ISuspensionDriver? driver = null) { }
+    }
+    public enum TriggerUpdate
+    {
+        ViewToViewModel = 0,
+        ViewModelToView = 1,
+    }
+    [System.Serializable]
+    public class UnhandledErrorException : System.Exception
+    {
+        public UnhandledErrorException() { }
+        public UnhandledErrorException(string message) { }
+        protected UnhandledErrorException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        public UnhandledErrorException(string message, System.Exception innerException) { }
+    }
+    [System.Serializable]
+    public class UnhandledInteractionException<TInput, TOutput> : System.Exception
+    {
+        public UnhandledInteractionException() { }
+        public UnhandledInteractionException(string message) { }
+        public UnhandledInteractionException(ReactiveUI.Interaction<TInput, TOutput> interaction, TInput input) { }
+        protected UnhandledInteractionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        public UnhandledInteractionException(string message, System.Exception innerException) { }
+        public TInput Input { get; }
+        public ReactiveUI.Interaction<TInput, TOutput>? Interaction { get; }
+        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+    }
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    public sealed class ViewContractAttribute : System.Attribute
+    {
+        public ViewContractAttribute(string contract) { }
+        public string Contract { get; }
+    }
+    public static class ViewForMixins
+    {
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Action<System.IDisposable>> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Action<System.Action<System.IDisposable>> block) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Action<System.Reactive.Disposables.CompositeDisposable> block) { }
+        public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor? view = null) { }
+        public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor? view) { }
+    }
+    public static class ViewLocator
+    {
+        public static ReactiveUI.IViewLocator Current { get; }
+    }
+    [System.Serializable]
+    public class ViewLocatorNotFoundException : System.Exception
+    {
+        public ViewLocatorNotFoundException() { }
+        public ViewLocatorNotFoundException(string message) { }
+        protected ViewLocatorNotFoundException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        public ViewLocatorNotFoundException(string message, System.Exception innerException) { }
+    }
+    public sealed class ViewModelActivator : System.IDisposable
+    {
+        public ViewModelActivator() { }
+        public System.IObservable<System.Reactive.Unit> Activated { get; }
+        public System.IObservable<System.Reactive.Unit> Deactivated { get; }
+        public System.IDisposable Activate() { }
+        public void Deactivate(bool ignoreRefCount = false) { }
+        public void Dispose() { }
+    }
+    public class WaitForDispatcherScheduler : System.Reactive.Concurrency.IScheduler
+    {
+        public WaitForDispatcherScheduler(System.Func<System.Reactive.Concurrency.IScheduler> schedulerFactory) { }
+        public System.DateTimeOffset Now { get; }
+        public System.IDisposable Schedule<TState>(TState state, System.Func<System.Reactive.Concurrency.IScheduler, TState, System.IDisposable> action) { }
+        public System.IDisposable Schedule<TState>(TState state, System.DateTimeOffset dueTime, System.Func<System.Reactive.Concurrency.IScheduler, TState, System.IDisposable> action) { }
+        public System.IDisposable Schedule<TState>(TState state, System.TimeSpan dueTime, System.Func<System.Reactive.Concurrency.IScheduler, TState, System.IDisposable> action) { }
+    }
+    public static class WhenAnyMixin
+    {
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Func<ReactiveUI.IObservedChange<TSender, T1>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4, T5>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, ReactiveUI.IObservedChange<TSender, T5>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4, T5, T6>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, ReactiveUI.IObservedChange<TSender, T5>, ReactiveUI.IObservedChange<TSender, T6>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4, T5, T6, T7>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, ReactiveUI.IObservedChange<TSender, T5>, ReactiveUI.IObservedChange<TSender, T6>, ReactiveUI.IObservedChange<TSender, T7>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, ReactiveUI.IObservedChange<TSender, T5>, ReactiveUI.IObservedChange<TSender, T6>, ReactiveUI.IObservedChange<TSender, T7>, ReactiveUI.IObservedChange<TSender, T8>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Linq.Expressions.Expression<System.Func<TSender, T9>> property9, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, ReactiveUI.IObservedChange<TSender, T5>, ReactiveUI.IObservedChange<TSender, T6>, ReactiveUI.IObservedChange<TSender, T7>, ReactiveUI.IObservedChange<TSender, T8>, ReactiveUI.IObservedChange<TSender, T9>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Linq.Expressions.Expression<System.Func<TSender, T9>> property9, System.Linq.Expressions.Expression<System.Func<TSender, T10>> property10, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, ReactiveUI.IObservedChange<TSender, T5>, ReactiveUI.IObservedChange<TSender, T6>, ReactiveUI.IObservedChange<TSender, T7>, ReactiveUI.IObservedChange<TSender, T8>, ReactiveUI.IObservedChange<TSender, T9>, ReactiveUI.IObservedChange<TSender, T10>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Linq.Expressions.Expression<System.Func<TSender, T9>> property9, System.Linq.Expressions.Expression<System.Func<TSender, T10>> property10, System.Linq.Expressions.Expression<System.Func<TSender, T11>> property11, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, ReactiveUI.IObservedChange<TSender, T5>, ReactiveUI.IObservedChange<TSender, T6>, ReactiveUI.IObservedChange<TSender, T7>, ReactiveUI.IObservedChange<TSender, T8>, ReactiveUI.IObservedChange<TSender, T9>, ReactiveUI.IObservedChange<TSender, T10>, ReactiveUI.IObservedChange<TSender, T11>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAny<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Linq.Expressions.Expression<System.Func<TSender, T9>> property9, System.Linq.Expressions.Expression<System.Func<TSender, T10>> property10, System.Linq.Expressions.Expression<System.Func<TSender, T11>> property11, System.Linq.Expressions.Expression<System.Func<TSender, T12>> property12, System.Func<ReactiveUI.IObservedChange<TSender, T1>, ReactiveUI.IObservedChange<TSender, T2>, ReactiveUI.IObservedChange<TSender, T3>, ReactiveUI.IObservedChange<TSender, T4>, ReactiveUI.IObservedChange<TSender, T5>, ReactiveUI.IObservedChange<TSender, T6>, ReactiveUI.IObservedChange<TSender, T7>, ReactiveUI.IObservedChange<TSender, T8>, ReactiveUI.IObservedChange<TSender, T9>, ReactiveUI.IObservedChange<TSender, T10>, ReactiveUI.IObservedChange<TSender, T11>, ReactiveUI.IObservedChange<TSender, T12>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Linq.Expressions.Expression? property5, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Linq.Expressions.Expression? property5, System.Linq.Expressions.Expression? property6, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Linq.Expressions.Expression? property5, System.Linq.Expressions.Expression? property6, System.Linq.Expressions.Expression? property7, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Linq.Expressions.Expression? property5, System.Linq.Expressions.Expression? property6, System.Linq.Expressions.Expression? property7, System.Linq.Expressions.Expression? property8, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Linq.Expressions.Expression? property5, System.Linq.Expressions.Expression? property6, System.Linq.Expressions.Expression? property7, System.Linq.Expressions.Expression? property8, System.Linq.Expressions.Expression? property9, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Linq.Expressions.Expression? property5, System.Linq.Expressions.Expression? property6, System.Linq.Expressions.Expression? property7, System.Linq.Expressions.Expression? property8, System.Linq.Expressions.Expression? property9, System.Linq.Expressions.Expression? property10, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Linq.Expressions.Expression? property5, System.Linq.Expressions.Expression? property6, System.Linq.Expressions.Expression? property7, System.Linq.Expressions.Expression? property8, System.Linq.Expressions.Expression? property9, System.Linq.Expressions.Expression? property10, System.Linq.Expressions.Expression? property11, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression? property1, System.Linq.Expressions.Expression? property2, System.Linq.Expressions.Expression? property3, System.Linq.Expressions.Expression? property4, System.Linq.Expressions.Expression? property5, System.Linq.Expressions.Expression? property6, System.Linq.Expressions.Expression? property7, System.Linq.Expressions.Expression? property8, System.Linq.Expressions.Expression? property9, System.Linq.Expressions.Expression? property10, System.Linq.Expressions.Expression? property11, System.Linq.Expressions.Expression? property12, System.Func<ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, ReactiveUI.IObservedChange<TSender?, object?>, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, TRet>> property1) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Func<T1, TRet> selector) { }
+        public static System.IObservable<System.ValueTuple<T1, T2>> WhenAnyValue<TSender, T1, T2>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Func<T1, T2, TRet> selector) { }
+        public static System.IObservable<System.ValueTuple<T1, T2, T3>> WhenAnyValue<TSender, T1, T2, T3>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Func<T1, T2, T3, TRet> selector) { }
+        public static System.IObservable<System.ValueTuple<T1, T2, T3, T4>> WhenAnyValue<TSender, T1, T2, T3, T4>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Func<T1, T2, T3, T4, TRet> selector) { }
+        public static System.IObservable<System.ValueTuple<T1, T2, T3, T4, T5>> WhenAnyValue<TSender, T1, T2, T3, T4, T5>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4, T5>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Func<T1, T2, T3, T4, T5, TRet> selector) { }
+        public static System.IObservable<System.ValueTuple<T1, T2, T3, T4, T5, T6>> WhenAnyValue<TSender, T1, T2, T3, T4, T5, T6>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4, T5, T6>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Func<T1, T2, T3, T4, T5, T6, TRet> selector) { }
+        public static System.IObservable<System.ValueTuple<T1, T2, T3, T4, T5, T6, T7>> WhenAnyValue<TSender, T1, T2, T3, T4, T5, T6, T7>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4, T5, T6, T7>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Func<T1, T2, T3, T4, T5, T6, T7, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Func<T1, T2, T3, T4, T5, T6, T7, T8, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Linq.Expressions.Expression<System.Func<TSender, T9>> property9, System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Linq.Expressions.Expression<System.Func<TSender, T9>> property9, System.Linq.Expressions.Expression<System.Func<TSender, T10>> property10, System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Linq.Expressions.Expression<System.Func<TSender, T9>> property9, System.Linq.Expressions.Expression<System.Func<TSender, T10>> property10, System.Linq.Expressions.Expression<System.Func<TSender, T11>> property11, System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TRet> selector) { }
+        public static System.IObservable<TRet> WhenAnyValue<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, T1>> property1, System.Linq.Expressions.Expression<System.Func<TSender, T2>> property2, System.Linq.Expressions.Expression<System.Func<TSender, T3>> property3, System.Linq.Expressions.Expression<System.Func<TSender, T4>> property4, System.Linq.Expressions.Expression<System.Func<TSender, T5>> property5, System.Linq.Expressions.Expression<System.Func<TSender, T6>> property6, System.Linq.Expressions.Expression<System.Func<TSender, T7>> property7, System.Linq.Expressions.Expression<System.Func<TSender, T8>> property8, System.Linq.Expressions.Expression<System.Func<TSender, T9>> property9, System.Linq.Expressions.Expression<System.Func<TSender, T10>> property10, System.Linq.Expressions.Expression<System.Func<TSender, T11>> property11, System.Linq.Expressions.Expression<System.Func<TSender, T12>> property12, System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TRet> selector) { }
+    }
+    public static class WhenAnyObservableMixin
+    {
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs5)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs6)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs7)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs8)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs9)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs10)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs10, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs11)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs10, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs11, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<TRet>?>> obs12)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Func<T1?, T2?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Func<T1?, T2?, T3?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Func<T1?, T2?, T3?, T4?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Func<T1?, T2?, T3?, T4?, T5?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>?>> obs7, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, T7?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>?>> obs8, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>?>> obs9, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>?>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T10>?>> obs10, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>?>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T10>?>> obs10, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T11>?>> obs11, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, TRet> selector)
+            where TSender :  class { }
+        public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>?>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T10>?>> obs10, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T11>?>> obs11, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T12>?>> obs12, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, TRet> selector)
+            where TSender :  class { }
+    }
+}

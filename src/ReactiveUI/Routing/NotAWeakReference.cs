@@ -7,11 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-internal class NotAWeakReference
+internal class NotAWeakReference(object target)
 {
-    public NotAWeakReference(object target) => Target = target;
-
-    public object Target { get; }
+    public object Target { get; } = target;
 
     [SuppressMessage("Microsoft.Maintainability", "CA1822", Justification = "Keep existing API.")]
     public bool IsAlive => true;

@@ -3,12 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Disposables;
-using System.Text;
 using System.Windows.Input;
+
 using Android.Views;
 
 namespace ReactiveUI;
@@ -46,10 +42,7 @@ public static class ViewCommandExtensions
             command.Execute(null);
         });
 
-        var cech = new EventHandler((o, e) =>
-        {
-            control.Enabled = command.CanExecute(null);
-        });
+        var cech = new EventHandler((o, e) => control.Enabled = command.CanExecute(null));
 
         command.CanExecuteChanged += cech;
         control.Click += ev;

@@ -3,17 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using Xunit;
-
 #if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
-using System.Windows.Controls;
-using System.Windows.Input;
 using FactAttribute = Xunit.WpfFactAttribute;
 #endif
 
@@ -220,7 +213,7 @@ namespace ReactiveUI.Tests.Xaml
             var view = new CommandBindView { ViewModel = new() };
 
             var received = 0;
-            var cmd = ReactiveCommand.Create<int>(i => { received = i; });
+            var cmd = ReactiveCommand.Create<int>(i => received = i);
             view.ViewModel.Command1 = cmd;
             view.ViewModel.Value = 10;
             var value = view.ViewModel.WhenAnyValue(v => v.Value);

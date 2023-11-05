@@ -3,10 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using Splat;
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>
@@ -28,9 +24,10 @@ namespace ReactiveUI.Tests
             using (locator.WithResolver())
             {
                 var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView();
-
-                fixture.ViewModel = vm;
+                var fixture = new ActivatingView
+                {
+                    ViewModel = vm
+                };
                 Assert.Equal(0, vm.IsActiveCount);
                 Assert.Equal(0, fixture.IsActiveCount);
 
@@ -58,9 +55,10 @@ namespace ReactiveUI.Tests
             using (locator.WithResolver())
             {
                 var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView();
-
-                fixture.ViewModel = vm;
+                var fixture = new ActivatingView
+                {
+                    ViewModel = vm
+                };
                 Assert.Equal(0, vm.IsActiveCount);
                 Assert.Equal(0, fixture.IsActiveCount);
 
@@ -153,9 +151,10 @@ namespace ReactiveUI.Tests
             using (locator.WithResolver())
             {
                 var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView();
-
-                fixture.ViewModel = vm;
+                var fixture = new ActivatingView
+                {
+                    ViewModel = vm
+                };
                 Assert.Equal(0, vm.IsActiveCount);
                 Assert.Equal(0, fixture.IsActiveCount);
 

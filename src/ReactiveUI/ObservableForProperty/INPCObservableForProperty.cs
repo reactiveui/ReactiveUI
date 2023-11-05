@@ -3,11 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
-using System.Reactive.Linq;
 using System.Reflection;
 
 namespace ReactiveUI;
@@ -47,12 +43,12 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             {
                 return obs.Where(x => string.IsNullOrEmpty(x)
                                       || x?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                          .Select(_ => new ObservedChange<object?, object?>(sender, expression, default!));
+                          .Select(_ => new ObservedChange<object?, object?>(sender, expression, default));
             }
 
             return obs.Where(x => string.IsNullOrEmpty(x)
                                   || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object?, object?>(sender, expression, default!));
+                      .Select(_ => new ObservedChange<object?, object?>(sender, expression, default));
         }
         else if (sender is INotifyPropertyChanged after)
         {
@@ -69,12 +65,12 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             {
                 return obs.Where(x => string.IsNullOrEmpty(x)
                                       || x?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                          .Select(_ => new ObservedChange<object?, object?>(sender, expression, default!));
+                          .Select(_ => new ObservedChange<object?, object?>(sender, expression, default));
             }
 
             return obs.Where(x => string.IsNullOrEmpty(x)
                                   || x?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object?, object?>(sender, expression, default!));
+                      .Select(_ => new ObservedChange<object?, object?>(sender, expression, default));
         }
         else
         {

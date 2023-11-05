@@ -3,15 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Globalization;
-using System.Linq.Expressions;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Windows.Forms;
+
 using DynamicData;
+
 using ReactiveUI.Winforms;
-using Xunit;
 
 namespace ReactiveUI.Tests.Winforms
 {
@@ -33,13 +30,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Expression<Func<TextBox, string>> expression = x => x.Text;
 
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null.");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
@@ -66,13 +57,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"));
 
             Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null.");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
@@ -100,13 +85,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"));
 
             Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = x => x.Value;
-            var propertyName = expression.Body.GetMemberInfo()?.Name;
-
-            if (propertyName is null)
-            {
-                throw new InvalidOperationException("propertyName should not be null.");
-            }
-
+            var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
             var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
             Assert.Equal(0, output.Count);
 
@@ -182,6 +161,21 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(vm.BooleanProperty, view.BooleanProperty.Checked);
 
             disp.Dispose();
+        }
+
+        [Fact]
+        public void PanelSetMethodBindingConverter_GetAffinityForObjects()
+        {
+            var fixture = new PanelSetMethodBindingConverter();
+            var test1 = fixture.GetAffinityForObjects(typeof(List<Control>), typeof(Control.ControlCollection));
+            var test2 = fixture.GetAffinityForObjects(typeof(List<TextBox>), typeof(Control.ControlCollection));
+            var test3 = fixture.GetAffinityForObjects(typeof(List<Label>), typeof(Control.ControlCollection));
+            var test4 = fixture.GetAffinityForObjects(typeof(Control.ControlCollection), typeof(IEnumerable<GridItem>));
+
+            Assert.Equal(0, test1);
+            Assert.Equal(10, test2);
+            Assert.Equal(10, test3);
+            Assert.Equal(0, test4);
         }
     }
 }

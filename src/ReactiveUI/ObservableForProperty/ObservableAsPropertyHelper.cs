@@ -3,15 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Diagnostics.Contracts;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Threading;
-using Splat;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -220,7 +211,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// <summary>
     /// Constructs a "default" ObservableAsPropertyHelper object. This is
     /// useful for when you will initialize the OAPH later, but don't want
-    /// bindings to access a null OAPH at startup.
+    /// bindings to access a null OAPH at start up.
     /// </summary>
     /// <param name="initialValue">
     /// The initial (and only) value of the property.

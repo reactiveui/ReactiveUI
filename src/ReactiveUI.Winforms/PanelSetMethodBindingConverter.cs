@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms;
@@ -23,14 +20,9 @@ public class PanelSetMethodBindingConverter : ISetMethodBindingConverter
             return 0;
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
-        if (fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control))) ?? false)
-#pragma warning restore IDE0046 // Convert to conditional expression
-        {
-            return 10;
-        }
-
-        return 0;
+        return fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control))) ?? false
+            ? 10
+            : 0;
     }
 
     /// <inheritdoc />

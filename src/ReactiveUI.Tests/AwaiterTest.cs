@@ -3,15 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>
@@ -23,6 +14,7 @@ namespace ReactiveUI.Tests
         /// A smoke test for Awaiters.
         /// </summary>
         [Fact]
+        [SuppressMessage("Usage", "xUnit1031:Do not use blocking task operations in test method", Justification = "Intentional")]
         public void AwaiterSmokeTest()
         {
             var fixture = AwaitAnObservable();

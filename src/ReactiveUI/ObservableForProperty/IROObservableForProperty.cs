@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq.Expressions;
-using System.Reactive.Linq;
 using System.Reflection;
 
 namespace ReactiveUI;
@@ -46,20 +43,20 @@ public class IROObservableForProperty : ICreatesObservableForProperty
             if (expression.NodeType == ExpressionType.Index)
             {
                 return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                          .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                          .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
             }
 
             return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
         }
 
         if (expression.NodeType == ExpressionType.Index)
         {
             return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
         }
 
         return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                  .Select(_ => new ObservedChange<object, object?>(sender, expression, default!));
+                  .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
     }
 }

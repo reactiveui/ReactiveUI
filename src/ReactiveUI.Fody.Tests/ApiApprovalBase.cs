@@ -19,7 +19,11 @@ using VerifyXunit;
 /// Tests for API approvals.
 /// </summary>
 [ExcludeFromCodeCoverage]
+#pragma warning disable CA1050 // Declare types in namespaces
+#pragma warning disable RCS1110 // Declare type inside namespace.
 public abstract class ApiApprovalBase
+#pragma warning restore RCS1110 // Declare type inside namespace.
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Checks the assembly to detect the public API. Generates a received/approved version of the API.

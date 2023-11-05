@@ -3,18 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Threading;
 using DynamicData;
+
 using Microsoft.Reactive.Testing;
+
 using ReactiveUI.Testing;
-using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -443,7 +436,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void WhenAnyShouldRunInContext()
         {
-            var tid = Thread.CurrentThread.ManagedThreadId;
+            var tid = Environment.CurrentManagedThreadId;
 
             TaskPoolScheduler.Default.With(
                                            _ =>
@@ -456,7 +449,7 @@ namespace ReactiveUI.Tests
                                                    PocoProperty = "Bamf"
                                                };
 
-                                               fixture.WhenAnyValue(x => x.IsNotNullString).Subscribe(__ => whenAnyTid = Thread.CurrentThread.ManagedThreadId);
+                                               fixture.WhenAnyValue(x => x.IsNotNullString).Subscribe(__ => whenAnyTid = Environment.CurrentManagedThreadId);
 
                                                var timeout = 10;
                                                fixture.IsNotNullString = "Bar";
@@ -575,11 +568,11 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(
                 scheduler =>
                 {
-                    var fixture = new HostTestFixture()
+                    var fixture = new HostTestFixture
                     {
-                        Child = new TestFixture()
+                        Child = new TestFixture(),
+                        SomeOtherParam = 5
                     };
-                    fixture.SomeOtherParam = 5;
                     fixture.Child.IsNotNullString = "Foo";
 
                     var output1 = new List<IObservedChange<HostTestFixture, int>>();
@@ -651,11 +644,11 @@ namespace ReactiveUI.Tests
             new TestScheduler().With(
                 scheduler =>
                 {
-                    var fixture = new HostTestFixture()
+                    var fixture = new HostTestFixture
                     {
-                        Child = new TestFixture()
+                        Child = new TestFixture(),
+                        SomeOtherParam = 5
                     };
-                    fixture.SomeOtherParam = 5;
                     fixture.Child.IsNotNullString = "Foo";
 
                     var output1 = new List<int>();
@@ -1334,8 +1327,10 @@ namespace ReactiveUI.Tests
             Assert.Equal(null, fixture.Owner);
             Assert.Equal(null, fixture.OwnerName);
 
-            fixture.Owner = new();
-            fixture.Owner.Name = "Fred";
+            fixture.Owner = new()
+            {
+                Name = "Fred"
+            };
             Assert.NotNull(fixture.Owner);
             Assert.Equal("Fred", fixture.OwnerName);
 

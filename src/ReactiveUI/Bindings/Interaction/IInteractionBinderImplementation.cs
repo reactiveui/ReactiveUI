@@ -3,11 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Splat;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -16,7 +11,7 @@ namespace ReactiveUI;
 public interface IInteractionBinderImplementation : IEnableLogger
 {
     /// <summary>
-    /// Binds the <see cref="Interaction{TInput, TOutput}"/> on a ViewModel to the specified handler.
+    /// Binds the <see cref="IInteraction{TInput, TOutput}"/> on a ViewModel to the specified handler.
     /// </summary>
     /// <param name="viewModel">The view model to bind to.</param>
     /// <param name="view">The view to bind to.</param>
@@ -30,13 +25,13 @@ public interface IInteractionBinderImplementation : IEnableLogger
     IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         TViewModel? viewModel,
         TView view,
-        Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
-        Func<InteractionContext<TInput, TOutput>, Task> handler)
+        Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,
+        Func<IInteractionContext<TInput, TOutput>, Task> handler)
         where TViewModel : class
         where TView : class, IViewFor;
 
     /// <summary>
-    /// Binds the <see cref="Interaction{TInput, TOutput}"/> on a ViewModel to the specified handler.
+    /// Binds the <see cref="IInteraction{TInput, TOutput}"/> on a ViewModel to the specified handler.
     /// </summary>
     /// <param name="viewModel">The view model to bind to.</param>
     /// <param name="view">The view to bind to.</param>
@@ -51,8 +46,8 @@ public interface IInteractionBinderImplementation : IEnableLogger
     IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         TViewModel? viewModel,
         TView view,
-        Expression<Func<TViewModel, Interaction<TInput, TOutput>>> propertyName,
-        Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
+        Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,
+        Func<IInteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
         where TViewModel : class
         where TView : class, IViewFor;
 }

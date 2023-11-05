@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
-
 namespace ReactiveUI.Tests
 {
     /// <summary>
@@ -18,25 +15,25 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Initializes a new instance of the <see cref="OAPHIndexerTestFixture"/> class.
         /// </summary>
-        public OAPHIndexerTestFixture(int test)
+        public OAPHIndexerTestFixture(int test, IScheduler scheduler)
         {
             switch (test)
             {
                 case 0:
                     var temp = this.WhenAnyValue(f => f.Text)
-                                               .ToProperty(this, f => f["Whatever"])
+                                               .ToProperty(this, f => f["Whatever"], scheduler: scheduler)
                                                .Value;
                     break;
 
                 case 1:
                     var temp1 = this.WhenAnyValue(f => f.Text)
-                                               .ToProperty(new ReactiveObject(), f => f.ToString())
+                                               .ToProperty(new ReactiveObject(), f => f.ToString(), scheduler: scheduler)
                                                .Value;
                     break;
 
                 case 2:
                     var temp2 = Observable.Return("happy")
-                                                .ToProperty(this, string.Empty)
+                                                .ToProperty(this, string.Empty, scheduler: scheduler)
                                                 .Value;
                     break;
             }

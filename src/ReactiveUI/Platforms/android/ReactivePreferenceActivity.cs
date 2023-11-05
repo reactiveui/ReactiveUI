@@ -3,14 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
-using System.Threading.Tasks;
+using System.Runtime.Versioning;
+
 using Android.App;
 using Android.Content;
 using Android.Preferences;
@@ -42,7 +38,12 @@ public class ReactivePreferenceActivity<TViewModel> : ReactivePreferenceActivity
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership)
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
+    protected ReactivePreferenceActivity(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }
@@ -85,7 +86,12 @@ public class ReactivePreferenceActivity : PreferenceActivity, IReactiveObject, I
     /// </summary>
     /// <param name="handle">The pointer.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceActivity(IntPtr handle, JniHandleOwnership ownership)
+#if NET7_0_OR_GREATER
+    [ObsoletedOSPlatform("android28.0")]
+#else
+    [Obsolete("This method was deprecated in API level 28.", false)]
+#endif
+    protected ReactivePreferenceActivity(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }

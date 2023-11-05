@@ -3,11 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.IO;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+
 using Foundation;
 
 namespace ReactiveUI;
@@ -78,10 +76,8 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
     private static string CreateAppDirectory(NSSearchPathDirectory targetDir, string subDir = "Data")
     {
-        NSError err;
-
         var fm = new NSFileManager();
-        var url = fm.GetUrl(targetDir, NSSearchPathDomain.All, null, true, out err);
+        var url = fm.GetUrl(targetDir, NSSearchPathDomain.All, null, true, out var err);
         var ret = Path.Combine(url.RelativePath!, NSBundle.MainBundle.BundleIdentifier, subDir);
         if (!Directory.Exists(ret))
         {

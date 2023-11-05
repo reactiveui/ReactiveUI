@@ -3,11 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-
 using DynamicData;
 
 namespace ReactiveUI;
@@ -70,7 +65,7 @@ public static class RoutableViewModelMixin
     /// and resubscribe each time it is reused.
     /// </para>
     /// </summary>
-    /// <param name="item">The viewmodel to watch for navigation changes.</param>
+    /// <param name="item">The ViewModel to watch for navigation changes.</param>
     /// <returns>An IObservable{Unit} that signals when the ViewModel has
     /// been added or brought to the top of the navigation stack. The
     /// observable completes when the ViewModel is no longer a part of the
@@ -105,7 +100,7 @@ public static class RoutableViewModelMixin
     /// and resubscribe each time it is reused.
     /// </para>
     /// </summary>
-    /// /// <param name="item">The viewmodel to watch for navigation changes.</param>
+    /// /// <param name="item">The ViewModel to watch for navigation changes.</param>
     /// <returns>An IObservable{Unit} that signals when the ViewModel is no
     /// longer the topmost ViewModel in the navigation stack. The observable
     /// completes when the ViewModel is no longer a part of the navigation

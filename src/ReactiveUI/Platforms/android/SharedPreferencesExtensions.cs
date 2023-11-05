@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Android.Content;
 
 namespace ReactiveUI;
@@ -31,14 +28,10 @@ public static class SharedPreferencesExtensions
     /// <summary>
     /// Private implementation of ISharedPreferencesOnSharedPreferenceChangeListener.
     /// </summary>
-    private class OnSharedPreferenceChangeListener
-        : Java.Lang.Object,
+    private class OnSharedPreferenceChangeListener(IObserver<string?> observer)
+                : Java.Lang.Object,
             ISharedPreferencesOnSharedPreferenceChangeListener
     {
-        private readonly IObserver<string?> _observer;
-
-        public OnSharedPreferenceChangeListener(IObserver<string?> observer) => _observer = observer;
-
-        void ISharedPreferencesOnSharedPreferenceChangeListener.OnSharedPreferenceChanged(ISharedPreferences? sharedPreferences, string? key) => _observer.OnNext(key);
+        void ISharedPreferencesOnSharedPreferenceChangeListener.OnSharedPreferenceChanged(ISharedPreferences? sharedPreferences, string? key) => observer.OnNext(key);
     }
 }

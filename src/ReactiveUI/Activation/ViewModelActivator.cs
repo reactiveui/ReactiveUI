@@ -3,14 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
-using System.Threading;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -53,9 +45,9 @@ public sealed class ViewModelActivator : IDisposable
     /// </summary>
     public ViewModelActivator()
     {
-        _blocks = new List<Func<IEnumerable<IDisposable>>>();
-        _activated = new Subject<Unit>();
-        _deactivated = new Subject<Unit>();
+        _blocks = new();
+        _activated = new();
+        _deactivated = new();
     }
 
     /// <summary>

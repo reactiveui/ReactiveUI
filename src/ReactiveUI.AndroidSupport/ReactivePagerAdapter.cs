@@ -3,16 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+
 using Android.Support.V4.View;
 using Android.Views;
+
 using DynamicData;
 using DynamicData.Binding;
-using Splat;
+
 using Object = Java.Lang.Object;
 
 namespace ReactiveUI.AndroidSupport;

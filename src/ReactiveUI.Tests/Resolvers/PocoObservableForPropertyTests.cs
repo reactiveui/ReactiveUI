@@ -3,15 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
-using FluentAssertions;
-using Splat;
-using Xunit;
-
 namespace ReactiveUI.Tests
 {
     public class PocoObservableForPropertyTests
