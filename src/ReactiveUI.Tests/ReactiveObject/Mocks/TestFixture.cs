@@ -90,6 +90,7 @@ namespace ReactiveUI.Tests
         /// </summary>
         [DataMember]
         [field: IgnoreDataMember]
+        [JsonRequired]
         public string? PocoProperty { get; set; }
 
         /// <summary>

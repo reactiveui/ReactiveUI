@@ -54,7 +54,9 @@ internal class LinkerOverrides
 #pragma warning restore CA1422 // Validate platform compatibility
 
         var tp = new TimePicker(null);
+#pragma warning disable CA1416 // Validate platform compatibility
         tp.Hour = tp.Hour;
         tp.Minute = tp.Minute;
+#pragma warning restore CA1416 // Validate platform compatibility
     }
 }

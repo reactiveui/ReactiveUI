@@ -807,7 +807,7 @@ namespace ReactiveUI
         public RoutingState(System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
-        public System.IObservable<ReactiveUI.IRoutableViewModel?> CurrentViewModel { get; set; }
+        public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
         public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> Navigate { get; set; }
@@ -816,7 +816,7 @@ namespace ReactiveUI
         public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> NavigateAndReset { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
-        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel?> NavigateBack { get; set; }
+        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel> NavigateBack { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
