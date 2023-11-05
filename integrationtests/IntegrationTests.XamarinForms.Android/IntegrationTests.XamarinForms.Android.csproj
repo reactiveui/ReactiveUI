@@ -55,7 +55,7 @@
       <Version>1.7.0.2</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Media" Version="1.6.0.7" />
-    <PackageReference Include="Xamarin.Jetbrains.Annotations" Version="24.0.1.4" />
+    <PackageReference Include="Xamarin.Jetbrains.Annotations" Version="24.0.1.5" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
