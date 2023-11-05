@@ -174,5 +174,25 @@ namespace ReactiveUI.Tests
                     scheduler.Start();
                     Assert.NotEmpty(navigateAndReset);
                 });
+
+        [Fact]
+        public void RoutingStateThrows() =>
+            new TestScheduler().With(
+                scheduler =>
+                {
+                    var fixture = new RoutingState(scheduler);
+
+                    fixture
+                        .Navigate
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigate).Subscribe();
+                    fixture
+                        .NavigateBack
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateBack).Subscribe();
+                    fixture
+                        .NavigateAndReset
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
+
+                    Assert.Throws<Exception>(() => fixture.Navigate.Execute(default(TestViewModel)!).Subscribe());
+                });
     }
 }

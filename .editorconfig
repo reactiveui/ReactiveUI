@@ -296,7 +296,7 @@ dotnet_diagnostic.SA1006.severity = error
 dotnet_diagnostic.SA1007.severity = error
 dotnet_diagnostic.SA1008.severity = error
 dotnet_diagnostic.SA1009.severity = error
-dotnet_diagnostic.SA1010.severity = error
+dotnet_diagnostic.SA1010.severity = suggestion
 dotnet_diagnostic.SA1011.severity = error
 dotnet_diagnostic.SA1012.severity = error
 dotnet_diagnostic.SA1013.severity = error
@@ -525,3 +525,5 @@ indent_size = 2
 end_of_line = lf
 [*.{cmd, bat}]
 end_of_line = crlf
+
+vsspell_dictionary_languages = en-US

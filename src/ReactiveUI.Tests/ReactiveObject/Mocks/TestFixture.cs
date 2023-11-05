@@ -109,7 +109,7 @@ namespace ReactiveUI.Tests
         /// </summary>
         [DataMember]
         [JsonRequired]
-        public ObservableCollectionExtended<int> TestCollection { get; protected set; }
+        public ObservableCollectionExtended<int> TestCollection { get; set; }
 
         /// <summary>
         /// Gets or sets the uses expr raise set.

@@ -37,12 +37,12 @@ public class RoutingState : ReactiveObject
     }
 
     /// <summary>
-    /// Gets the current navigation stack, the last element in the
+    /// Gets or sets the current navigation stack, the last element in the
     /// collection being the currently visible ViewModel.
     /// </summary>
     [DataMember]
     [JsonRequired]
-    public ObservableCollection<IRoutableViewModel> NavigationStack { get; }
+    public ObservableCollection<IRoutableViewModel> NavigationStack { get; set; }
 
     /// <summary>
     /// Gets or sets a command which will navigate back to the previous element in the stack.

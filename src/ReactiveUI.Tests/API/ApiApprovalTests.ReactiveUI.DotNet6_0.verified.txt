@@ -822,7 +822,7 @@ namespace ReactiveUI
         public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
         [System.Runtime.Serialization.DataMember]
         [System.Text.Json.Serialization.JsonRequired]
-        public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
+        public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; set; }
     }
     public static class RoutingStateMixins
     {

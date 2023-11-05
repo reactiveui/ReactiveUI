@@ -7,7 +7,6 @@ namespace ReactiveUI;
 
 internal sealed class ChainedComparer<T>(IComparer<T>? parent, Comparison<T> comparison) : IComparer<T>
 {
-
     /// <inheritdoc />
     public int Compare(T? x, T? y)
     {

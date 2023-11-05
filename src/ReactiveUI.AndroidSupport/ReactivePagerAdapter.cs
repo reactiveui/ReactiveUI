@@ -89,7 +89,7 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
             throw new ArgumentNullException(nameof(item));
         }
 
-        if (!(item is View view))
+        if (item is not View view)
         {
             throw new ArgumentException("Item must be of type View", nameof(item));
         }

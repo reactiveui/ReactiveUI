@@ -39,19 +39,17 @@ namespace ReactiveUI;
 /// <typeparam name="TOutput">
 /// The interaction's output type.
 /// </typeparam>
-public class Interaction<TInput, TOutput> : IInteraction<TInput, TOutput>
+/// <remarks>
+/// Initializes a new instance of the <see cref="Interaction{TInput, TOutput}"/> class.
+/// </remarks>
+/// <param name="handlerScheduler">
+/// The scheduler to use when invoking handlers, which defaults to <c>CurrentThreadScheduler.Instance</c> if <see langword="null"/>.
+/// </param>
+public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) : IInteraction<TInput, TOutput>
 {
     private readonly List<Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>>> _handlers = new();
     private readonly object _sync = new();
-    private readonly IScheduler _handlerScheduler;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Interaction{TInput, TOutput}"/> class.
-    /// </summary>
-    /// <param name="handlerScheduler">
-    /// The scheduler to use when invoking handlers, which defaults to <c>CurrentThreadScheduler.Instance</c> if <see langword="null"/>.
-    /// </param>
-    public Interaction(IScheduler? handlerScheduler = null) => _handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
+    private readonly IScheduler _handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
 
     /// <inheritdoc/>
     public IDisposable RegisterHandler(Action<IInteractionContext<TInput, TOutput>> handler)
@@ -124,7 +122,7 @@ public class Interaction<TInput, TOutput> : IInteraction<TInput, TOutput>
     {
         lock (_sync)
         {
-            return _handlers.ToArray();
+            return [.. _handlers];
         }
     }
 

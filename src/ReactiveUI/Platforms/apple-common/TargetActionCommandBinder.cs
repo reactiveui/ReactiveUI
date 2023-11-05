@@ -125,11 +125,9 @@ namespace ReactiveUI
             throw new NotImplementedException();
 #pragma warning restore RCS1079 // Throwing of new NotImplementedException.
 
-        private class ControlDelegate : NSObject
+        private class ControlDelegate(Action<NSObject> block) : NSObject
         {
-            private readonly Action<NSObject> _block;
-
-            public ControlDelegate(Action<NSObject> block) => _block = block;
+            private readonly Action<NSObject> _block = block;
 
             public bool IsEnabled { get; set; }
 
