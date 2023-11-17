@@ -15,11 +15,11 @@ namespace ReactiveUI.Winforms;
 public class CreatesWinformsCommandBinding : ICreatesCommandBinding
 {
     // NB: These are in priority order
-    private static readonly List<(string name, Type type)> _defaultEventsToBind = new()
-    {
+    private static readonly List<(string name, Type type)> _defaultEventsToBind =
+    [
         ("Click", typeof(EventArgs)),
         ("MouseUp", typeof(System.Windows.Forms.MouseEventArgs)),
-    };
+    ];
 
     /// <inheritdoc/>
     public int GetAffinityForObject(Type type, bool hasEventTarget)

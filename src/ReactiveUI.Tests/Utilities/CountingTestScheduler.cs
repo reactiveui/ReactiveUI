@@ -3,42 +3,41 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+public class CountingTestScheduler : IScheduler
 {
-    public class CountingTestScheduler : IScheduler
+    public CountingTestScheduler(IScheduler innerScheduler)
     {
-        public CountingTestScheduler(IScheduler innerScheduler)
-        {
-            InnerScheduler = innerScheduler;
-            ScheduledItems = new List<(Action action, TimeSpan? dueTime)>();
-        }
+        InnerScheduler = innerScheduler;
+        ScheduledItems = [];
+    }
 
-        public IScheduler InnerScheduler { get; }
+    public IScheduler InnerScheduler { get; }
 
-        public List<(Action action, TimeSpan? dueTime)> ScheduledItems { get; }
+    public List<(Action action, TimeSpan? dueTime)> ScheduledItems { get; }
 
-        /// <inheritdoc/>
-        public DateTimeOffset Now => InnerScheduler.Now;
+    /// <inheritdoc/>
+    public DateTimeOffset Now => InnerScheduler.Now;
 
-        /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
-        {
-            ScheduledItems.Add((() => action(this, state), null));
-            return InnerScheduler.Schedule(state, dueTime, action);
-        }
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
+    {
+        ScheduledItems.Add((() => action(this, state), null));
+        return InnerScheduler.Schedule(state, dueTime, action);
+    }
 
-        /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
-        {
-            ScheduledItems.Add((() => action(this, state), dueTime));
-            return InnerScheduler.Schedule(state, dueTime, action);
-        }
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+    {
+        ScheduledItems.Add((() => action(this, state), dueTime));
+        return InnerScheduler.Schedule(state, dueTime, action);
+    }
 
-        /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
-        {
-            ScheduledItems.Add((() => action(this, state), null));
-            return InnerScheduler.Schedule(state, action);
-        }
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
+    {
+        ScheduledItems.Add((() => action(this, state), null));
+        return InnerScheduler.Schedule(state, action);
     }
 }

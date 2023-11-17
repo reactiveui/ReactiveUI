@@ -17,52 +17,51 @@ using System.Windows.Controls;
 using FactAttribute = Xunit.WpfFactAttribute;
 #endif
 
-namespace ReactiveUI.Tests.Xaml
+namespace ReactiveUI.Tests.Xaml;
+
+/// <summary>
+/// Tests for XAML and commands.
+/// </summary>
+public class XamlViewCommandTests
 {
     /// <summary>
-    /// Tests for XAML and commands.
+    /// Test that event binder binds to explicit inherited event.
     /// </summary>
-    public class XamlViewCommandTests
+    [Fact]
+    public void EventBinderBindsToExplicitInheritedEvent()
     {
-        /// <summary>
-        /// Test that event binder binds to explicit inherited event.
-        /// </summary>
-        [Fact]
-        public void EventBinderBindsToExplicitInheritedEvent()
-        {
-            var fixture = new FakeView();
-            fixture.BindCommand(fixture!.ViewModel, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
-        }
+        var fixture = new FakeView();
+        fixture.BindCommand(fixture!.ViewModel, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
+    }
 
-        /// <summary>
-        /// Test that event binder binds to implicit event.
-        /// </summary>
-        [Fact]
-        public void EventBinderBindsToImplicitEvent()
-        {
-            var input = new Button();
-            var fixture = new CreatesCommandBindingViaEvent();
-            var cmd = ReactiveCommand.Create<int>(_ => { });
+    /// <summary>
+    /// Test that event binder binds to implicit event.
+    /// </summary>
+    [Fact]
+    public void EventBinderBindsToImplicitEvent()
+    {
+        var input = new Button();
+        var fixture = new CreatesCommandBindingViaEvent();
+        var cmd = ReactiveCommand.Create<int>(_ => { });
 
-            Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
 
-            var invokeCount = 0;
-            cmd.Subscribe(_ => ++invokeCount);
+        var invokeCount = 0;
+        cmd.Subscribe(_ => ++invokeCount);
 
-            var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
-            Assert.NotNull(disp);
-            Assert.Equal(0, invokeCount);
+        var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
+        Assert.NotNull(disp);
+        Assert.Equal(0, invokeCount);
 
-            var automationPeer = new ButtonAutomationPeer(input);
-            var invoker = (IInvokeProvider)automationPeer.GetPattern(PatternInterface.Invoke);
+        var automationPeer = new ButtonAutomationPeer(input);
+        var invoker = (IInvokeProvider)automationPeer.GetPattern(PatternInterface.Invoke);
 
-            invoker.Invoke();
-            DispatcherUtilities.DoEvents();
-            Assert.Equal(1, invokeCount);
+        invoker.Invoke();
+        DispatcherUtilities.DoEvents();
+        Assert.Equal(1, invokeCount);
 
-            disp?.Dispose();
-            invoker.Invoke();
-            Assert.Equal(1, invokeCount);
-        }
+        disp?.Dispose();
+        invoker.Invoke();
+        Assert.Equal(1, invokeCount);
     }
 }

@@ -3,21 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
-{
-    /// <summary>
-    /// A routable view.
-    /// </summary>
-    public class RoutableFooView : IViewFor<IRoutableFooViewModel>
-    {
-        /// <inheritdoc/>
-        object? IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (IRoutableFooViewModel?)value;
-        }
+namespace ReactiveUI.Tests;
 
-        /// <inheritdoc/>
-        public IRoutableFooViewModel? ViewModel { get; set; }
+/// <summary>
+/// A routable view.
+/// </summary>
+public class RoutableFooView : IViewFor<IRoutableFooViewModel>
+{
+    /// <inheritdoc/>
+    object? IViewFor.ViewModel
+    {
+        get => ViewModel;
+        set => ViewModel = (IRoutableFooViewModel?)value;
     }
+
+    /// <inheritdoc/>
+    public IRoutableFooViewModel? ViewModel { get; set; }
 }

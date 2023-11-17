@@ -3,18 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
-{
-    internal static class CompatMixins
-    {
-        public static void Run<T>(this IEnumerable<T> @this, Action<T> block)
-        {
-            foreach (var v in @this)
-            {
-                block(v);
-            }
-        }
+namespace ReactiveUI.Tests;
 
-        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count) => @this.Take(@this.Count() - count);
+internal static class CompatMixins
+{
+    public static void Run<T>(this IEnumerable<T> @this, Action<T> block)
+    {
+        foreach (var v in @this)
+        {
+            block(v);
+        }
     }
+
+    public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> @this, int count) => @this.Take(@this.Count() - count);
 }

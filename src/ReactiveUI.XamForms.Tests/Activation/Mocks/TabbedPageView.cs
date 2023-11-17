@@ -3,26 +3,25 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.XamForms.Tests.Activation
+namespace ReactiveUI.XamForms.Tests.Activation;
+
+/// <summary>
+/// Tabbed Page View.
+/// </summary>
+public class TabbedPageView : ReactiveTabbedPage<TabbedPageViewModel>
 {
     /// <summary>
-    /// Tabbed Page View.
+    /// Initializes a new instance of the <see cref="TabbedPageView"/> class.
     /// </summary>
-    public class TabbedPageView : ReactiveTabbedPage<TabbedPageViewModel>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabbedPageView"/> class.
-        /// </summary>
-        public TabbedPageView() =>
-            this.WhenActivated(d =>
-            {
-                IsActiveCount++;
-                d(Disposable.Create(() => IsActiveCount--));
-            });
+    public TabbedPageView() =>
+        this.WhenActivated(d =>
+        {
+            IsActiveCount++;
+            d(Disposable.Create(() => IsActiveCount--));
+        });
 
-        /// <summary>
-        /// Gets or sets the active count.
-        /// </summary>
-        public int IsActiveCount { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the active count.
+    /// </summary>
+    public int IsActiveCount { get; set; }
 }

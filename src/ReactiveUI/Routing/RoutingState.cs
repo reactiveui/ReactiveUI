@@ -34,7 +34,7 @@ public class RoutingState : ReactiveObject
     public RoutingState(IScheduler? scheduler = null)
     {
         _scheduler = scheduler ?? RxApp.MainThreadScheduler;
-        NavigationStack = new();
+        NavigationStack = [];
         SetupRx();
     }
 

@@ -3,20 +3,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+/// <summary>
+/// Always False Mode Detector.
+/// </summary>
+/// <seealso cref="Splat.IModeDetector" />
+public class AlwaysFalseModeDetector : IModeDetector
 {
     /// <summary>
-    /// Always False Mode Detector.
+    /// Gets a value indicating whether the current library or application is running through a unit test.
     /// </summary>
-    /// <seealso cref="Splat.IModeDetector" />
-    public class AlwaysFalseModeDetector : IModeDetector
-    {
-        /// <summary>
-        /// Gets a value indicating whether the current library or application is running through a unit test.
-        /// </summary>
-        /// <returns>
-        /// If we are currently running in a unit test.
-        /// </returns>
-        public bool? InUnitTestRunner() => false;
-    }
+    /// <returns>
+    /// If we are currently running in a unit test.
+    /// </returns>
+    public bool? InUnitTestRunner() => false;
 }

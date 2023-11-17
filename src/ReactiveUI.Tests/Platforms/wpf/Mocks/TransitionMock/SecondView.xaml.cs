@@ -5,16 +5,15 @@
 
 using System.Windows.Controls;
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+/// <summary>
+/// Interaction logic for SecondView.xaml.
+/// </summary>
+public partial class SecondView : UserControl
 {
-    /// <summary>
-    /// Interaction logic for SecondView.xaml.
-    /// </summary>
-    public partial class SecondView : UserControl
+    public SecondView()
     {
-        public SecondView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

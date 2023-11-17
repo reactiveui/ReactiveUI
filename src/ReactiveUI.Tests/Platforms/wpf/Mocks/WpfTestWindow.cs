@@ -6,17 +6,16 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+public class WpfTestWindow : Window, IActivatableView
 {
-    public class WpfTestWindow : Window, IActivatableView
+    public WpfTestWindow()
     {
-        public WpfTestWindow()
-        {
-            RootGrid = new Grid();
+        RootGrid = new Grid();
 
-            AddChild(RootGrid);
-        }
-
-        public Grid RootGrid { get; }
+        AddChild(RootGrid);
     }
+
+    public Grid RootGrid { get; }
 }

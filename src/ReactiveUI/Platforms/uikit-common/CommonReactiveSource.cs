@@ -34,7 +34,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     {
         _adapter = adapter;
         _mainThreadId = Thread.CurrentThread.ManagedThreadId;
-        _mainDisposables = new CompositeDisposable();
+        _mainDisposables = [];
         _sectionInfoDisposable = new SerialDisposable();
         _mainDisposables.Add(_sectionInfoDisposable);
         _pendingChanges = new List<(int section, PendingChange pendingChange)>();

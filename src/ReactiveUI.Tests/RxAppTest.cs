@@ -5,21 +5,20 @@
 
 using System.Diagnostics;
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+/// <summary>
+/// Tests the RxApp class.
+/// </summary>
+public class RxAppTest
 {
     /// <summary>
-    /// Tests the RxApp class.
+    /// Tests that schedulers should be current thread in test runner.
     /// </summary>
-    public class RxAppTest
+    [Fact]
+    public void SchedulerShouldBeCurrentThreadInTestRunner()
     {
-        /// <summary>
-        /// Tests that schedulers should be current thread in test runner.
-        /// </summary>
-        [Fact]
-        public void SchedulerShouldBeCurrentThreadInTestRunner()
-        {
-            Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
-            Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
-        }
+        Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
+        Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
     }
 }

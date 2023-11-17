@@ -5,19 +5,18 @@
 
 using Xamarin.Forms;
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+/// <summary>
+/// Application Mock.
+/// </summary>
+/// <seealso cref="Application" />
+public class ApplicationMock : Application
 {
     /// <summary>
-    /// Application Mock.
+    /// Initializes a new instance of the <see cref="ApplicationMock"/> class.
     /// </summary>
-    /// <seealso cref="Application" />
-    public class ApplicationMock : Application
+    public ApplicationMock()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationMock"/> class.
-        /// </summary>
-        public ApplicationMock()
-        {
-        }
     }
 }

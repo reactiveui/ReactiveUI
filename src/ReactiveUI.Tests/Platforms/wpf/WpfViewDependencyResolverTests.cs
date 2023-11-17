@@ -5,40 +5,39 @@
 
 using FactAttribute = Xunit.WpfFactAttribute;
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+/// <summary>
+/// Tests for the WPF View Resolver.
+/// </summary>
+/// <seealso cref="System.IDisposable" />
+public sealed class WpfViewDependencyResolverTests : IDisposable
 {
+    private readonly IDependencyResolver _resolver;
+
     /// <summary>
-    /// Tests for the WPF View Resolver.
+    /// Initializes a new instance of the <see cref="WpfViewDependencyResolverTests"/> class.
     /// </summary>
-    /// <seealso cref="System.IDisposable" />
-    public sealed class WpfViewDependencyResolverTests : IDisposable
+    public WpfViewDependencyResolverTests()
     {
-        private readonly IDependencyResolver _resolver;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WpfViewDependencyResolverTests"/> class.
-        /// </summary>
-        public WpfViewDependencyResolverTests()
-        {
-            _resolver = new ModernDependencyResolver();
-            _resolver.InitializeSplat();
-            _resolver.InitializeReactiveUI();
-            _resolver.RegisterViewsForViewModels(GetType().Assembly);
-        }
-
-        /// <summary>
-        /// Tests that  Register views for view model should register all views.
-        /// </summary>
-        [Fact]
-        public void RegisterViewsForViewModelShouldRegisterAllViews()
-        {
-            using (_resolver.WithResolver())
-            {
-                Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
-            }
-        }
-
-        /// <inheritdoc/>
-        public void Dispose() => _resolver?.Dispose();
+        _resolver = new ModernDependencyResolver();
+        _resolver.InitializeSplat();
+        _resolver.InitializeReactiveUI();
+        _resolver.RegisterViewsForViewModels(GetType().Assembly);
     }
+
+    /// <summary>
+    /// Tests that  Register views for view model should register all views.
+    /// </summary>
+    [Fact]
+    public void RegisterViewsForViewModelShouldRegisterAllViews()
+    {
+        using (_resolver.WithResolver())
+        {
+            Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose() => _resolver?.Dispose();
 }

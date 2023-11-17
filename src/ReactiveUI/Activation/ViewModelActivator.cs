@@ -45,7 +45,7 @@ public sealed class ViewModelActivator : IDisposable
     /// </summary>
     public ViewModelActivator()
     {
-        _blocks = new();
+        _blocks = [];
         _activated = new();
         _deactivated = new();
     }

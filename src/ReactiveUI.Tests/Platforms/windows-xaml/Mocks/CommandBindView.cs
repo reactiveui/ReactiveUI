@@ -10,40 +10,39 @@ using Windows.UI.Xaml.Controls;
 using System.Windows.Controls;
 #endif
 
-namespace ReactiveUI.Tests.Xaml
+namespace ReactiveUI.Tests.Xaml;
+
+/// <summary>
+/// Mock command binding view.
+/// </summary>
+public class CommandBindView : IViewFor<CommandBindViewModel>
 {
     /// <summary>
-    /// Mock command binding view.
+    /// Initializes a new instance of the <see cref="CommandBindView"/> class.
     /// </summary>
-    public class CommandBindView : IViewFor<CommandBindViewModel>
+    public CommandBindView()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandBindView"/> class.
-        /// </summary>
-        public CommandBindView()
-        {
-            Command1 = new CustomClickButton();
-            Command2 = new Image();
-        }
-
-        /// <inheritdoc/>
-        object? IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (CommandBindViewModel?)value;
-        }
-
-        /// <inheritdoc/>
-        public CommandBindViewModel? ViewModel { get; set; }
-
-        /// <summary>
-        /// Gets or sets the command1.
-        /// </summary>
-        public CustomClickButton Command1 { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the command2.
-        /// </summary>
-        public Image Command2 { get; protected set; }
+        Command1 = new CustomClickButton();
+        Command2 = new Image();
     }
+
+    /// <inheritdoc/>
+    object? IViewFor.ViewModel
+    {
+        get => ViewModel;
+        set => ViewModel = (CommandBindViewModel?)value;
+    }
+
+    /// <inheritdoc/>
+    public CommandBindViewModel? ViewModel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the command1.
+    /// </summary>
+    public CustomClickButton Command1 { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the command2.
+    /// </summary>
+    public Image Command2 { get; protected set; }
 }

@@ -5,28 +5,27 @@
 
 using System.Runtime.Serialization;
 
-namespace ReactiveUI.Tests
-{
-    /// <summary>
-    /// Project.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.ReactiveObject" />
-    [DataContract]
-    public class Project : ReactiveObject
-    {
-        private string? _name;
+namespace ReactiveUI.Tests;
 
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        [DataMember]
-        public string? Name
-        {
-            get => _name;
-            set => this.RaiseAndSetIfChanged(ref _name, value);
-        }
+/// <summary>
+/// Project.
+/// </summary>
+/// <seealso cref="ReactiveUI.ReactiveObject" />
+[DataContract]
+public class Project : ReactiveObject
+{
+    private string? _name;
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    /// <value>
+    /// The name.
+    /// </value>
+    [DataMember]
+    public string? Name
+    {
+        get => _name;
+        set => this.RaiseAndSetIfChanged(ref _name, value);
     }
 }

@@ -3,17 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+/// <summary>
+/// Interaction logic for MockWindow.xaml.
+/// </summary>
+public partial class MockWindow
 {
-    /// <summary>
-    /// Interaction logic for MockWindow.xaml.
-    /// </summary>
-    public partial class MockWindow
+    public MockWindow()
     {
-        public MockWindow()
-        {
-            InitializeComponent();
-            ViewModel = new();
-        }
+        InitializeComponent();
+        ViewModel = new();
     }
 }

@@ -20,7 +20,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// Configuration map.
     /// </summary>
     private readonly Dictionary<Type, CommandBindingInfo> _config =
-        new();
+        [];
 
     /// <inheritdoc/>
     public int GetAffinityForObject(Type type, bool hasEventTarget)

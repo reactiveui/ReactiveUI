@@ -3,23 +3,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
-{
-    /// <summary>
-    /// A ReactiveObject which hosts a ReactiveCommand.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.ReactiveObject" />
-    public class ReactiveCommandHolder : ReactiveObject
-    {
-        private ReactiveCommand<int, Unit>? _theCommand;
+namespace ReactiveUI.Tests;
 
-        /// <summary>
-        /// Gets or sets the command.
-        /// </summary>
-        public ReactiveCommand<int, Unit>? TheCommand
-        {
-            get => _theCommand;
-            set => this.RaiseAndSetIfChanged(ref _theCommand, value);
-        }
+/// <summary>
+/// A ReactiveObject which hosts a ReactiveCommand.
+/// </summary>
+/// <seealso cref="ReactiveUI.ReactiveObject" />
+public class ReactiveCommandHolder : ReactiveObject
+{
+    private ReactiveCommand<int, Unit>? _theCommand;
+
+    /// <summary>
+    /// Gets or sets the command.
+    /// </summary>
+    public ReactiveCommand<int, Unit>? TheCommand
+    {
+        get => _theCommand;
+        set => this.RaiseAndSetIfChanged(ref _theCommand, value);
     }
 }

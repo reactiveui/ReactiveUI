@@ -3,26 +3,25 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+/// <summary>
+/// A activating view model which is derived from another ActivatingViewModel.
+/// </summary>
+public class DerivedActivatingViewModel : ActivatingViewModel
 {
     /// <summary>
-    /// A activating view model which is derived from another ActivatingViewModel.
+    /// Initializes a new instance of the <see cref="DerivedActivatingViewModel"/> class.
     /// </summary>
-    public class DerivedActivatingViewModel : ActivatingViewModel
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DerivedActivatingViewModel"/> class.
-        /// </summary>
-        public DerivedActivatingViewModel() =>
-            this.WhenActivated(d =>
-            {
-                IsActiveCountAlso++;
-                d(Disposable.Create(() => IsActiveCountAlso--));
-            });
+    public DerivedActivatingViewModel() =>
+        this.WhenActivated(d =>
+        {
+            IsActiveCountAlso++;
+            d(Disposable.Create(() => IsActiveCountAlso--));
+        });
 
-        /// <summary>
-        /// Gets or sets the active count.
-        /// </summary>
-        public int IsActiveCountAlso { get; protected set; }
-    }
+    /// <summary>
+    /// Gets or sets the active count.
+    /// </summary>
+    public int IsActiveCountAlso { get; protected set; }
 }

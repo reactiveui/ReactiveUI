@@ -6,21 +6,20 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace ReactiveUI.XamForms.Tests.Activation.Mocks
+namespace ReactiveUI.XamForms.Tests.Activation.Mocks;
+
+/// <summary>
+/// FlyoutPageView Detail.
+/// </summary>
+/// <seealso cref="Xamarin.Forms.ContentPage" />
+[XamlCompilation(XamlCompilationOptions.Compile)]
+public partial class FlyoutPageViewDetail : ContentPage
 {
     /// <summary>
-    /// FlyoutPageView Detail.
+    /// Initializes a new instance of the <see cref="FlyoutPageViewDetail"/> class.
     /// </summary>
-    /// <seealso cref="Xamarin.Forms.ContentPage" />
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class FlyoutPageViewDetail : ContentPage
+    public FlyoutPageViewDetail()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FlyoutPageViewDetail"/> class.
-        /// </summary>
-        public FlyoutPageViewDetail()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

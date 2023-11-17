@@ -3,12 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Winforms
+namespace ReactiveUI.Tests.Winforms;
+
+/// <summary>
+/// Another view.
+/// </summary>
+public class AnotherView : ReactiveUI.Winforms.ReactiveUserControl<AnotherViewModel>
 {
-    /// <summary>
-    /// Another view.
-    /// </summary>
-    public class AnotherView : ReactiveUI.Winforms.ReactiveUserControl<AnotherViewModel>
-    {
-    }
 }

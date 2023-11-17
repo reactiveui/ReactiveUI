@@ -8,31 +8,31 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
 using Xunit;
 
-namespace ReactiveUI.Fody.Analyzer.Test
+namespace ReactiveUI.Fody.Analyzer.Test;
+
+/// <summary>
+/// Unit Tests to check the proper operation of ReactiveObjectAnalyzer.
+/// </summary>
+public class ReactiveObjectAnalyzerTest : DiagnosticVerifier
 {
     /// <summary>
-    /// Unit Tests to check the proper operation of ReactiveObjectAnalyzer.
+    /// Unit Test to ensure that we do not flag an empty file with errors.
     /// </summary>
-    public class ReactiveObjectAnalyzerTest : DiagnosticVerifier
+    [Fact]
+    public void CheckEmptyFileReturnsNoFailures()
     {
-        /// <summary>
-        /// Unit Test to ensure that we do not flag an empty file with errors.
-        /// </summary>
-        [Fact]
-        public void CheckEmptyFileReturnsNoFailures()
-        {
-            var test = string.Empty;
-            VerifyCSharpDiagnostic(test);
-        }
+        var test = string.Empty;
+        VerifyCSharpDiagnostic(test);
+    }
 
-        /// <summary>
-        /// Check that a class which does not implement IReactiveObject throws an error, when it uses
-        /// the [Reactive] attribute in one of its properties.
-        /// </summary>
-        [Fact]
-        public void ShouldGiveAnErrorWhenClassDoesNotImplement()
-        {
-            const string test = @"
+    /// <summary>
+    /// Check that a class which does not implement IReactiveObject throws an error, when it uses
+    /// the [Reactive] attribute in one of its properties.
+    /// </summary>
+    [Fact]
+    public void ShouldGiveAnErrorWhenClassDoesNotImplement()
+    {
+        const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -50,25 +50,25 @@ namespace ReactiveUI.Fody.Analyzer.Test
         }
     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = "RUI_0001",
-                Message = "Type 'TypeName' does not implement IReactiveObject",
-                Severity = DiagnosticSeverity.Error,
-                Locations =
-                    new[] { new DiagnosticResultLocation("Test0.cs", 15, 14) }
-            };
-            VerifyCSharpDiagnostic(test, expected);
-        }
-
-        /// <summary>
-        /// Check that a class which does inherits ReactiveObject does not throw
-        /// an error, when it uses the [Reactive] attribute in one of its properties.
-        /// </summary>
-        [Fact]
-        public void ShouldNotGiveAnErrorWhenClassInherits()
+        var expected = new DiagnosticResult
         {
-            const string test = @"
+            Id = "RUI_0001",
+            Message = "Type 'TypeName' does not implement IReactiveObject",
+            Severity = DiagnosticSeverity.Error,
+            Locations =
+                new[] { new DiagnosticResultLocation("Test0.cs", 15, 14) }
+        };
+        VerifyCSharpDiagnostic(test, expected);
+    }
+
+    /// <summary>
+    /// Check that a class which does inherits ReactiveObject does not throw
+    /// an error, when it uses the [Reactive] attribute in one of its properties.
+    /// </summary>
+    [Fact]
+    public void ShouldNotGiveAnErrorWhenClassInherits()
+    {
+        const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -85,17 +85,17 @@ namespace ReactiveUI.Fody.Analyzer.Test
             [Reactive] public string Prop { get; set; }
         }
     }";
-            VerifyCSharpDiagnostic(test);
-        }
+        VerifyCSharpDiagnostic(test);
+    }
 
-        /// <summary>
-        /// Check that a class which does implements IReactiveObject does not throw
-        /// an error, when it uses the [Reactive] attribute in one of its properties.
-        /// </summary>
-        [Fact]
-        public void ShouldNotGiveAnErrorWhenClassImplements()
-        {
-            const string test = @"
+    /// <summary>
+    /// Check that a class which does implements IReactiveObject does not throw
+    /// an error, when it uses the [Reactive] attribute in one of its properties.
+    /// </summary>
+    [Fact]
+    public void ShouldNotGiveAnErrorWhenClassImplements()
+    {
+        const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -112,17 +112,17 @@ namespace ReactiveUI.Fody.Analyzer.Test
             [Reactive] public string Prop { get; set; }
         }
     }";
-            VerifyCSharpDiagnostic(test);
-        }
+        VerifyCSharpDiagnostic(test);
+    }
 
-        /// <summary>
-        /// Check that a class should not be allowed to have a non-auto-property
-        /// when used with the [Reactive] attribute.
-        /// </summary>
-        [Fact]
-        public void ShouldGiveErrorForNonAutoProperty()
-        {
-            const string test = @"
+    /// <summary>
+    /// Check that a class should not be allowed to have a non-auto-property
+    /// when used with the [Reactive] attribute.
+    /// </summary>
+    [Fact]
+    public void ShouldGiveErrorForNonAutoProperty()
+    {
+        const string test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -145,21 +145,20 @@ namespace ReactiveUI.Fody.Analyzer.Test
         }
     }";
 
-            var expected = new DiagnosticResult
-            {
-                Id = "RUI_0002",
-                Message = "Property 'Prop' on 'TypeName' should be an auto property",
-                Severity = DiagnosticSeverity.Error,
-                Locations =
-                    new[] { new DiagnosticResultLocation("Test0.cs", 15, 14) }
-            };
-            VerifyCSharpDiagnostic(test, expected);
-        }
-
-        /// <summary>
-        /// Returns the Roslyn Analyzer under test.
-        /// </summary>
-        /// <returns>ReactiveObjectAnalyzer.</returns>
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new ReactiveObjectAnalyzer();
+        var expected = new DiagnosticResult
+        {
+            Id = "RUI_0002",
+            Message = "Property 'Prop' on 'TypeName' should be an auto property",
+            Severity = DiagnosticSeverity.Error,
+            Locations =
+                new[] { new DiagnosticResultLocation("Test0.cs", 15, 14) }
+        };
+        VerifyCSharpDiagnostic(test, expected);
     }
+
+    /// <summary>
+    /// Returns the Roslyn Analyzer under test.
+    /// </summary>
+    /// <returns>ReactiveObjectAnalyzer.</returns>
+    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new ReactiveObjectAnalyzer();
 }

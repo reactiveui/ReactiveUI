@@ -6,50 +6,49 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace ReactiveUI.XamForms.Tests.Activation.Mocks
+namespace ReactiveUI.XamForms.Tests.Activation.Mocks;
+
+/// <summary>
+/// Flyout Page View.
+/// </summary>
+[XamlCompilation(XamlCompilationOptions.Compile)]
+public partial class FlyoutPageView
 {
     /// <summary>
-    /// Flyout Page View.
+    /// Initializes a new instance of the <see cref="FlyoutPageView"/> class.
     /// </summary>
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class FlyoutPageView
+    public FlyoutPageView()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FlyoutPageView"/> class.
-        /// </summary>
-        public FlyoutPageView()
+        InitializeComponent();
+
+        this.WhenActivated(d =>
         {
-            InitializeComponent();
+            IsActiveCount++;
+            d(Disposable.Create(() => IsActiveCount--));
+        });
 
-            this.WhenActivated(d =>
-            {
-                IsActiveCount++;
-                d(Disposable.Create(() => IsActiveCount--));
-            });
+        FlyoutPage.ListView.ItemSelected += ListView_ItemSelected;
+    }
 
-            FlyoutPage.ListView.ItemSelected += ListView_ItemSelected;
+    /// <summary>
+    /// Gets or sets the active count.
+    /// </summary>
+    public int IsActiveCount { get; set; }
+
+    private void ListView_ItemSelected(object? sender, SelectedItemChangedEventArgs e)
+    {
+        var item = e.SelectedItem as FlyoutPageViewFlyoutMenuItem;
+        if (item is null)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Gets or sets the active count.
-        /// </summary>
-        public int IsActiveCount { get; set; }
+        var page = (Page?)Activator.CreateInstance(item.TargetType);
+        page!.Title = item.Title;
 
-        private void ListView_ItemSelected(object? sender, SelectedItemChangedEventArgs e)
-        {
-            var item = e.SelectedItem as FlyoutPageViewFlyoutMenuItem;
-            if (item is null)
-            {
-                return;
-            }
+        Detail = new NavigationPage(page);
+        IsPresented = false;
 
-            var page = (Page?)Activator.CreateInstance(item.TargetType);
-            page!.Title = item.Title;
-
-            Detail = new NavigationPage(page);
-            IsPresented = false;
-
-            FlyoutPage.ListView.SelectedItem = null;
-        }
+        FlyoutPage.ListView.SelectedItem = null;
     }
 }

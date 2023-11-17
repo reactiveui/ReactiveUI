@@ -5,27 +5,26 @@
 
 using VerifyXunit;
 
-namespace ReactiveUI.Tests.API
+namespace ReactiveUI.Tests.API;
+
+/// <summary>
+/// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
+/// </summary>
+[ExcludeFromCodeCoverage]
+[UsesVerify]
+public class ApiApprovalTests : ApiApprovalBase
 {
     /// <summary>
-    /// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
+    /// Generates public API for the ReactiveUI.Testing API.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    [UsesVerify]
-    public class ApiApprovalTests : ApiApprovalBase
-    {
-        /// <summary>
-        /// Generates public API for the ReactiveUI.Testing API.
-        /// </summary>
-        /// <returns>A task to monitor the process.</returns>
-        [Fact]
-        public Task Testing() => CheckApproval(typeof(Testing.SchedulerExtensions).Assembly);
+    /// <returns>A task to monitor the process.</returns>
+    [Fact]
+    public Task Testing() => CheckApproval(typeof(Testing.SchedulerExtensions).Assembly);
 
-        /// <summary>
-        /// Generates public API for the ReactiveUI API.
-        /// </summary>
-        /// <returns>A task to monitor the process.</returns>
-        [Fact]
-        public Task ReactiveUI() => CheckApproval(typeof(RxApp).Assembly);
-    }
+    /// <summary>
+    /// Generates public API for the ReactiveUI API.
+    /// </summary>
+    /// <returns>A task to monitor the process.</returns>
+    [Fact]
+    public Task ReactiveUI() => CheckApproval(typeof(RxApp).Assembly);
 }

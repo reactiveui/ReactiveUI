@@ -9,124 +9,123 @@ using DynamicData;
 
 using ReactiveUI.Tests.Wpf;
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+public class RoutedViewHostTests
 {
-    public class RoutedViewHostTests
+    [StaFact]
+    public void RoutedViewHostDefaultContentNotNull()
     {
-        [StaFact]
-        public void RoutedViewHostDefaultContentNotNull()
+        var uc = new RoutedViewHost
         {
-            var uc = new RoutedViewHost
-            {
-                DefaultContent = new System.Windows.Controls.Label()
-            };
-            var window = new WpfTestWindow();
-            window.RootGrid.Children.Add(uc);
+            DefaultContent = new System.Windows.Controls.Label()
+        };
+        var window = new WpfTestWindow();
+        window.RootGrid.Children.Add(uc);
 
-            var activation = new ActivationForViewFetcher();
+        var activation = new ActivationForViewFetcher();
 
-            activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
+        activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
 
-            activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
+        activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
 
-            var loaded = new RoutedEventArgs
-            {
-                RoutedEvent = FrameworkElement.LoadedEvent
-            };
-
-            window.RaiseEvent(loaded);
-            uc.RaiseEvent(loaded);
-
-            new[] { true }.AssertAreEqual(windowActivated);
-            new[] { true }.AssertAreEqual(controlActivated);
-
-            Assert.NotNull(uc.Content);
-
-            window.Dispatcher.InvokeShutdown();
-        }
-
-        [StaFact]
-        public void RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
+        var loaded = new RoutedEventArgs
         {
-            Locator.CurrentMutable.Register<RoutingState>(() => new());
-            Locator.CurrentMutable.Register<TestViewModel>(() => new());
-            Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
+            RoutedEvent = FrameworkElement.LoadedEvent
+        };
 
-            var uc = new RoutedViewHost
-            {
-                DefaultContent = new System.Windows.Controls.Label(),
-                Router = Locator.Current.GetService<RoutingState>()!
-            };
-            var window = new WpfTestWindow();
-            window.RootGrid.Children.Add(uc);
+        window.RaiseEvent(loaded);
+        uc.RaiseEvent(loaded);
 
-            var activation = new ActivationForViewFetcher();
+        new[] { true }.AssertAreEqual(windowActivated);
+        new[] { true }.AssertAreEqual(controlActivated);
 
-            activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
+        Assert.NotNull(uc.Content);
 
-            activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
+        window.Dispatcher.InvokeShutdown();
+    }
 
-            var loaded = new RoutedEventArgs
-            {
-                RoutedEvent = FrameworkElement.LoadedEvent
-            };
+    [StaFact]
+    public void RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
+    {
+        Locator.CurrentMutable.Register<RoutingState>(() => new());
+        Locator.CurrentMutable.Register<TestViewModel>(() => new());
+        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
 
-            window.RaiseEvent(loaded);
-            uc.RaiseEvent(loaded);
-
-            new[] { true }.AssertAreEqual(windowActivated);
-            new[] { true }.AssertAreEqual(controlActivated);
-
-            // Default Content
-            Assert.IsType<System.Windows.Controls.Label>(uc.Content);
-
-            // Test Navigation after activated
-            uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
-            Assert.IsType<TestView>(uc.Content);
-
-            window.Dispatcher.InvokeShutdown();
-        }
-
-        [StaFact]
-        public void RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
+        var uc = new RoutedViewHost
         {
-            Locator.CurrentMutable.Register<RoutingState>(() => new());
-            Locator.CurrentMutable.Register<TestViewModel>(() => new());
-            Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
+            DefaultContent = new System.Windows.Controls.Label(),
+            Router = Locator.Current.GetService<RoutingState>()!
+        };
+        var window = new WpfTestWindow();
+        window.RootGrid.Children.Add(uc);
 
-            var uc = new RoutedViewHost
-            {
-                DefaultContent = new System.Windows.Controls.Label(),
-                Router = Locator.Current.GetService<RoutingState>()!
-            };
-            var window = new WpfTestWindow();
-            window.RootGrid.Children.Add(uc);
+        var activation = new ActivationForViewFetcher();
 
-            var activation = new ActivationForViewFetcher();
+        activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
 
-            activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
+        activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
 
-            activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
+        var loaded = new RoutedEventArgs
+        {
+            RoutedEvent = FrameworkElement.LoadedEvent
+        };
 
-            var loaded = new RoutedEventArgs
-            {
-                RoutedEvent = FrameworkElement.LoadedEvent
-            };
+        window.RaiseEvent(loaded);
+        uc.RaiseEvent(loaded);
 
-            // Test navigation before Activation.
-            uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
+        new[] { true }.AssertAreEqual(windowActivated);
+        new[] { true }.AssertAreEqual(controlActivated);
 
-            // Activate
-            window.RaiseEvent(loaded);
-            uc.RaiseEvent(loaded);
+        // Default Content
+        Assert.IsType<System.Windows.Controls.Label>(uc.Content);
 
-            new[] { true }.AssertAreEqual(windowActivated);
-            new[] { true }.AssertAreEqual(controlActivated);
+        // Test Navigation after activated
+        uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
+        Assert.IsType<TestView>(uc.Content);
 
-            // Test Navigation before activated
-            Assert.IsType<TestView>(uc.Content);
+        window.Dispatcher.InvokeShutdown();
+    }
 
-            window.Dispatcher.InvokeShutdown();
-        }
+    [StaFact]
+    public void RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
+    {
+        Locator.CurrentMutable.Register<RoutingState>(() => new());
+        Locator.CurrentMutable.Register<TestViewModel>(() => new());
+        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
+
+        var uc = new RoutedViewHost
+        {
+            DefaultContent = new System.Windows.Controls.Label(),
+            Router = Locator.Current.GetService<RoutingState>()!
+        };
+        var window = new WpfTestWindow();
+        window.RootGrid.Children.Add(uc);
+
+        var activation = new ActivationForViewFetcher();
+
+        activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
+
+        activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
+
+        var loaded = new RoutedEventArgs
+        {
+            RoutedEvent = FrameworkElement.LoadedEvent
+        };
+
+        // Test navigation before Activation.
+        uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
+
+        // Activate
+        window.RaiseEvent(loaded);
+        uc.RaiseEvent(loaded);
+
+        new[] { true }.AssertAreEqual(windowActivated);
+        new[] { true }.AssertAreEqual(controlActivated);
+
+        // Test Navigation before activated
+        Assert.IsType<TestView>(uc.Content);
+
+        window.Dispatcher.InvokeShutdown();
     }
 }

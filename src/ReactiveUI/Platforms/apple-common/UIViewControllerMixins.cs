@@ -10,41 +10,40 @@ using NSViewController = UIKit.UIViewController;
 using AppKit;
 #endif
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+internal static class UIViewControllerMixins
 {
-    internal static class UIViewControllerMixins
+    internal static void ActivateSubviews(this NSViewController controller, bool activate)
     {
-        internal static void ActivateSubviews(this NSViewController controller, bool activate)
+        if (controller is null)
         {
-            if (controller is null)
-            {
-                throw new ArgumentNullException(nameof(controller));
-            }
-
-            if (controller.View is null)
-            {
-                throw new ArgumentException("The view on the controller is null.", nameof(controller));
-            }
-
-            controller.View.ActivateSubviews(activate);
+            throw new ArgumentNullException(nameof(controller));
         }
 
-        private static void ActivateSubviews(this NSView masterView, bool activate)
+        if (controller.View is null)
         {
-            if (masterView is null)
+            throw new ArgumentException("The view on the controller is null.", nameof(controller));
+        }
+
+        controller.View.ActivateSubviews(activate);
+    }
+
+    private static void ActivateSubviews(this NSView masterView, bool activate)
+    {
+        if (masterView is null)
+        {
+            throw new ArgumentNullException(nameof(masterView));
+        }
+
+        foreach (var view in masterView.Subviews)
+        {
+            if (view is ICanForceManualActivation subview)
             {
-                throw new ArgumentNullException(nameof(masterView));
+                subview.Activate(activate);
             }
 
-            foreach (var view in masterView.Subviews)
-            {
-                if (view is ICanForceManualActivation subview)
-                {
-                    subview.Activate(activate);
-                }
-
-                view.ActivateSubviews(activate);
-            }
+            view.ActivateSubviews(activate);
         }
     }
 }

@@ -3,22 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.XamForms.Tests.Mocks
+namespace ReactiveUI.XamForms.Tests.Mocks;
+
+/// <summary>
+/// The main view model.
+/// </summary>
+public class MainViewModel : ReactiveObject, IRoutableViewModel
 {
     /// <summary>
-    /// The main view model.
+    /// Initializes a new instance of the <see cref="MainViewModel"/> class.
     /// </summary>
-    public class MainViewModel : ReactiveObject, IRoutableViewModel
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MainViewModel"/> class.
-        /// </summary>
-        public MainViewModel() => HostScreen = Locator.Current.GetService<IScreen>() ?? throw new InvalidOperationException("There is no valid screen");
+    public MainViewModel() => HostScreen = Locator.Current.GetService<IScreen>() ?? throw new InvalidOperationException("There is no valid screen");
 
-        /// <inheritdoc/>
-        public string? UrlPathSegment => "Main view";
+    /// <inheritdoc/>
+    public string? UrlPathSegment => "Main view";
 
-        /// <inheritdoc/>
-        public IScreen HostScreen { get; }
-    }
+    /// <inheritdoc/>
+    public IScreen HostScreen { get; }
 }

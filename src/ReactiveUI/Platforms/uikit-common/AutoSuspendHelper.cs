@@ -82,7 +82,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
         LaunchOptions = launchOptions is not null
                             ? launchOptions.Keys.ToDictionary(k => k.ToString(), v => launchOptions[v].ToString())
-                            : new Dictionary<string, string>();
+                            : [];
 
         // NB: This is run in-context (i.e. not scheduled), so by the time this
         // statement returns, UIWindow should be created already
