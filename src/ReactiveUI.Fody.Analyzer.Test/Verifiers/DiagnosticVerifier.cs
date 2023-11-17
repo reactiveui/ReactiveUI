@@ -39,7 +39,7 @@ public abstract partial class DiagnosticVerifier
     /// </summary>
     /// <param name="source">A class in the form of a string to run the analyzer on.</param>
     /// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source.</param>
-    protected void VerifyCSharpDiagnostic(string source, params DiagnosticResult[] expected) => VerifyDiagnostics(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
+    protected void VerifyCSharpDiagnostic(string source, params DiagnosticResult[] expected) => VerifyDiagnostics([source], LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
 
     /// <summary>
     /// Called to test a VB DiagnosticAnalyzer when applied on the single inputted string as a source
@@ -47,7 +47,7 @@ public abstract partial class DiagnosticVerifier
     /// </summary>
     /// <param name="source">A class in the form of a string to run the analyzer on.</param>
     /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
-    protected void VerifyBasicDiagnostic(string source, params DiagnosticResult[] expected) => VerifyDiagnostics(new[] { source }, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
+    protected void VerifyBasicDiagnostic(string source, params DiagnosticResult[] expected) => VerifyDiagnostics([source], LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
 
     /// <summary>
     /// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source

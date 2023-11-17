@@ -56,7 +56,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 
     protected override Expression VisitBinary(BinaryExpression node)
     {
-        if (!(node.Right is ConstantExpression))
+        if (node.Right is not ConstantExpression)
         {
             throw new NotSupportedException("Array index expressions are only supported with constants.");
         }

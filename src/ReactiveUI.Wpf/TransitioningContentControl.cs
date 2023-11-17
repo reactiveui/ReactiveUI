@@ -74,12 +74,14 @@ public class TransitioningContentControl : ContentControl
     /// <summary>
     /// Occurs when a transition has completed.
     /// </summary>
+#pragma warning disable RCS1159 // Use EventHandler<T>.
     public event RoutedEventHandler? TransitionCompleted;
 
     /// <summary>
     /// Occurs when a transition has started.
     /// </summary>
     public event RoutedEventHandler? TransitionStarted;
+#pragma warning restore RCS1159 // Use EventHandler<T>.
 
     /// <summary>
     /// Represents the type of transition that a TransitioningContentControl will perform.
@@ -372,12 +374,11 @@ public class TransitioningContentControl : ContentControl
                          .Where(o => o.Name == transitionName)
                          .Select(o => o.Storyboard).FirstOrDefault();
 
-        if (transition is null)
+        return transition switch
         {
-            throw new ArgumentException("Invalid transition");
-        }
-
-        return transition;
+            null => throw new ArgumentException("Invalid transition"),
+            _ => transition
+        };
     }
 
     /// <summary>

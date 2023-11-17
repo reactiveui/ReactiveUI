@@ -3,11 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Android.App;
-using Android.Content;
-using Android.Runtime;
-using Android.Support.V7.App;
-
 namespace ReactiveUI.AndroidSupport;
 
 /// <summary>
@@ -65,7 +60,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IRe
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactiveAppCompatActivity(IntPtr handle, JniHandleOwnership ownership)
+    protected ReactiveAppCompatActivity(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }

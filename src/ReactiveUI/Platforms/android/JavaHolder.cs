@@ -9,10 +9,8 @@ using Object = Java.Lang.Object;
 
 namespace ReactiveUI;
 
-internal class JavaHolder : Object
+internal class JavaHolder(object instance) : Object
 {
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Used for interop purposes")]
-    public readonly object Instance;
-
-    public JavaHolder(object instance) => Instance = instance;
+    public readonly object Instance = instance;
 }

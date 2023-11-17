@@ -254,12 +254,10 @@ public class RoutableViewModelMixinTests
         public RoutingState Router { get; } = new();
     }
 
-    private class RoutableViewModel : ReactiveObject, IRoutableViewModel
+    private class RoutableViewModel(IScreen screen) : ReactiveObject, IRoutableViewModel
     {
-        public RoutableViewModel(IScreen screen) => HostScreen = screen;
-
         public string UrlPathSegment => "Test";
 
-        public IScreen HostScreen { get; }
+        public IScreen HostScreen { get; } = screen;
     }
 }

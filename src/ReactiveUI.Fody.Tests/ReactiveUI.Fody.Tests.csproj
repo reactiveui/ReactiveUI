@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <WeaverFiles Include="..\ReactiveUI.Fody\bin\$(Configuration)\$(FodyTargetFramework)\ReactiveUI.Fody.*" />
+    <WeaverFiles Include="..\ReactiveUI.Fody\bin\$(Configuration)\$(FodyTargetFramework)\ReactiveUI.Fody.*" Exclude="..\ReactiveUI.Fody\bin\$(Configuration)\$(FodyTargetFramework)\*.json" />
   </ItemGroup>
 
   <ItemGroup>

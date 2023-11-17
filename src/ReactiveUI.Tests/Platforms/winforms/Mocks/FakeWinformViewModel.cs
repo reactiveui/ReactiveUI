@@ -8,7 +8,11 @@ namespace ReactiveUI.Tests.Winforms;
 /// <summary>
 /// A fake view model.
 /// </summary>
-public class FakeWinformViewModel : ReactiveObject, IRoutableViewModel
+/// <remarks>
+/// Initializes a new instance of the <see cref="FakeWinformViewModel"/> class.
+/// </remarks>
+/// <param name="screen">The screen.</param>
+public class FakeWinformViewModel(IScreen? screen = null) : ReactiveObject, IRoutableViewModel
 {
     private bool _someBooleanProperty;
     private int _someInteger;
@@ -19,17 +23,11 @@ public class FakeWinformViewModel : ReactiveObject, IRoutableViewModel
     private string? _property3;
     private string? _property4;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FakeWinformViewModel"/> class.
-    /// </summary>
-    /// <param name="screen">The screen.</param>
-    public FakeWinformViewModel(IScreen? screen = null) => HostScreen = screen ?? new TestScreen();
-
     /// <inheritdoc/>
     public string UrlPathSegment => "fake";
 
     /// <inheritdoc/>
-    public IScreen HostScreen { get; }
+    public IScreen HostScreen { get; } = screen ?? new TestScreen();
 
     /// <summary>
     /// Gets or sets some integer.

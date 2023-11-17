@@ -13,7 +13,11 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 public static class IReactiveObjectExtensions
 {
+#if NETSTANDARD || NETFRAMEWORK
     private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new();
+#else
+    private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = [];
+#endif
 
     /// <summary>
     /// Contains the state information about the current status of a Reactive Object.
@@ -107,6 +111,7 @@ public static class IReactiveObjectExtensions
         [CallerMemberName] string? propertyName = null)
         where TObj : IReactiveObject
     {
+#pragma warning disable RCS1256 // Invalid argument null check.
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(propertyName);
 #else
@@ -115,6 +120,7 @@ public static class IReactiveObjectExtensions
             throw new ArgumentNullException(nameof(propertyName));
         }
 #endif
+#pragma warning restore RCS1256 // Invalid argument null check.
 
         if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
         {

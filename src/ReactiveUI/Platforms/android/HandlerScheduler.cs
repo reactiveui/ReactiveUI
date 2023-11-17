@@ -12,24 +12,18 @@ namespace ReactiveUI;
 /// Activity's main thread. This is the moral equivalent of
 /// DispatcherScheduler.
 /// </summary>
-public class HandlerScheduler : IScheduler, IEnableLogger
+/// <remarks>
+/// Initializes a new instance of the <see cref="HandlerScheduler"/> class.
+/// </remarks>
+/// <param name="handler">The handler.</param>
+/// <param name="threadIdAssociatedWithHandler">The thread identifier associated with handler.</param>
+public class HandlerScheduler(Handler handler, long? threadIdAssociatedWithHandler) : IScheduler, IEnableLogger
 {
-    private readonly Handler _handler;
-    private readonly long _looperId;
+    private readonly Handler _handler = handler;
+    private readonly long _looperId = threadIdAssociatedWithHandler ?? -1;
 
     static HandlerScheduler() =>
         MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper!), Looper.MainLooper?.Thread?.Id);
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="HandlerScheduler"/> class.
-    /// </summary>
-    /// <param name="handler">The handler.</param>
-    /// <param name="threadIdAssociatedWithHandler">The thread identifier associated with handler.</param>
-    public HandlerScheduler(Handler handler, long? threadIdAssociatedWithHandler)
-    {
-        _handler = handler;
-        _looperId = threadIdAssociatedWithHandler ?? -1;
-    }
 
     /// <summary>
     /// Gets a common instance to avoid allocations to the MainThread for the HandlerScheduler.

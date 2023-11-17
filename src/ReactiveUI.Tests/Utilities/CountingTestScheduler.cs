@@ -5,17 +5,11 @@
 
 namespace ReactiveUI.Tests;
 
-public class CountingTestScheduler : IScheduler
+public class CountingTestScheduler(IScheduler innerScheduler) : IScheduler
 {
-    public CountingTestScheduler(IScheduler innerScheduler)
-    {
-        InnerScheduler = innerScheduler;
-        ScheduledItems = [];
-    }
+    public IScheduler InnerScheduler { get; } = innerScheduler;
 
-    public IScheduler InnerScheduler { get; }
-
-    public List<(Action action, TimeSpan? dueTime)> ScheduledItems { get; }
+    public List<(Action action, TimeSpan? dueTime)> ScheduledItems { get; } = [];
 
     /// <inheritdoc/>
     public DateTimeOffset Now => InnerScheduler.Now;

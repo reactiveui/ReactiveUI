@@ -3,14 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Collections.Specialized;
-
-using Android.Support.V4.View;
-using Android.Views;
-
-using DynamicData;
-using DynamicData.Binding;
-
 using Object = Java.Lang.Object;
 
 namespace ReactiveUI.AndroidSupport;
@@ -89,7 +81,7 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
             throw new ArgumentNullException(nameof(item));
         }
 
-        if (!(item is View view))
+        if (item is not View view)
         {
             throw new ArgumentException("Item must be of type View", nameof(item));
         }
@@ -107,31 +99,5 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
         }
 
         base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// ReactivePagerAdapter is a PagerAdapter that will interface with a
-/// Observable change set, in a similar fashion to ReactiveTableViewSource.
-/// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-/// <typeparam name="TCollection">The type of collection.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public class ReactivePagerAdapter<TViewModel, TCollection> : ReactivePagerAdapter<TViewModel>
-    where TViewModel : class
-    where TCollection : INotifyCollectionChanged, IEnumerable<TViewModel>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel, TCollection}"/> class.
-    /// </summary>
-    /// <param name="collection">The collection to page.</param>
-    /// <param name="viewCreator">The function which will create the view.</param>
-    /// <param name="viewInitializer">A action which will initialize the view.</param>
-    public ReactivePagerAdapter(
-        TCollection collection,
-        Func<TViewModel, ViewGroup, View> viewCreator,
-        Action<TViewModel, View>? viewInitializer = null)
-        : base(collection.ToObservableChangeSet<TCollection, TViewModel>(), viewCreator, viewInitializer)
-    {
     }
 }

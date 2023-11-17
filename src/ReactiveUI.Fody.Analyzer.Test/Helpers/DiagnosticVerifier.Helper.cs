@@ -98,7 +98,7 @@ public abstract partial class DiagnosticVerifier
     /// <param name="source">Classes in the form of a string.</param>
     /// <param name="language">The language the source code is in.</param>
     /// <returns>A Document created from the source string.</returns>
-    protected static Document? CreateDocument(string source, string language = LanguageNames.CSharp) => CreateProject(new[] { source }, language)?.Documents.First();
+    protected static Document? CreateDocument(string source, string language = LanguageNames.CSharp) => CreateProject([source], language)?.Documents.First();
 
     /// <summary>
     /// Given classes in the form of strings, their language, and an IDiagnosticAnalyzer to apply to it, return the diagnostics found in the string after converting it to a document.

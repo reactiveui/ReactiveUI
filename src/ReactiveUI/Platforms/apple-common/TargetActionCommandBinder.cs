@@ -31,19 +31,19 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// </summary>
     public TargetActionCommandBinder() =>
 #if UIKIT
-        _validTypes = new[]
-        {
+        _validTypes =
+        [
             typeof(UIControl),
-        };
+        ];
 #else
-        _validTypes = new[]
-        {
+        _validTypes =
+        [
             typeof(NSControl),
             typeof(NSCell),
             typeof(NSMenu),
             typeof(NSMenuItem),
             typeof(NSToolbarItem),
-        };
+        ];
 #endif
 
     /// <inheritdoc/>
@@ -125,11 +125,9 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         throw new NotImplementedException();
 #pragma warning restore RCS1079 // Throwing of new NotImplementedException.
 
-    private class ControlDelegate : NSObject
+    private class ControlDelegate(Action<NSObject> block) : NSObject
     {
-        private readonly Action<NSObject> _block;
-
-        public ControlDelegate(Action<NSObject> block) => _block = block;
+        private readonly Action<NSObject> _block = block;
 
         public bool IsEnabled { get; set; }
 

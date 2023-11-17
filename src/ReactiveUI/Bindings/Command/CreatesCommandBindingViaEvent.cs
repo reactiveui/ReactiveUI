@@ -66,7 +66,7 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
         var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
         mi = mi.MakeGenericMethod(eventInfo.Args);
 
-        return (IDisposable?)mi.Invoke(this, new[] { command, target, commandParameter, eventInfo.EventInfo?.Name });
+        return (IDisposable?)mi.Invoke(this, [command, target, commandParameter, eventInfo.EventInfo?.Name]);
     }
 
     /// <inheritdoc/>

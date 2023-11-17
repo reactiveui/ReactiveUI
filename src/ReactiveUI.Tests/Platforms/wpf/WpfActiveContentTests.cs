@@ -15,13 +15,12 @@ namespace ReactiveUI.Tests.Wpf;
 /// NOTE: Only one Test can create an AppDomain, all Active content tests must go in this class.
 /// Add to WpfActiveContentApp to add any additional mock windows.
 /// </summary>
-public class WpfActiveContentTests : IClassFixture<WpfActiveContentFixture>
+/// <remarks>
+/// Initializes a new instance of the <see cref="WpfActiveContentTests"/> class.
+/// </remarks>
+/// <param name="fixture">The fixture.</param>
+public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixture<WpfActiveContentFixture>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WpfActiveContentTests"/> class.
-    /// </summary>
-    /// <param name="fixture">The fixture.</param>
-    public WpfActiveContentTests(WpfActiveContentFixture fixture) => Fixture = fixture;
 
     /// <summary>
     /// Gets the fixture.
@@ -29,7 +28,7 @@ public class WpfActiveContentTests : IClassFixture<WpfActiveContentFixture>
     /// <value>
     /// The fixture.
     /// </value>
-    public WpfActiveContentFixture Fixture { get; }
+    public WpfActiveContentFixture Fixture { get; } = fixture;
 
     [StaFact]
     public void BindListFunctionalTest()

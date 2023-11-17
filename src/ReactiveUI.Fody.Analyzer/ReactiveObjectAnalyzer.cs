@@ -51,10 +51,14 @@ public class ReactiveObjectAnalyzer : DiagnosticAnalyzer
     /// <param name="context">The Roslyn Context.</param>
     public override void Initialize(AnalysisContext context)
     {
+#if NET6_0_OR_GREATER
+        System.ArgumentNullException.ThrowIfNull(context);
+#else
         if (context is null)
         {
             throw new System.ArgumentNullException(nameof(context));
         }
+#endif
 
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);

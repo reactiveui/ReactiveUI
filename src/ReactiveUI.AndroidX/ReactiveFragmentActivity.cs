@@ -14,40 +14,6 @@ namespace ReactiveUI.AndroidX;
 /// This is an Activity that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public class ReactiveFragmentActivity<TViewModel> : ReactiveFragmentActivity, IViewFor<TViewModel>, ICanActivate
-    where TViewModel : class
-{
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveFragmentActivity{TViewModel}"/> class.
-    /// </summary>
-    protected ReactiveFragmentActivity()
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => _viewModel;
-        set => _viewModel = (TViewModel?)value;
-    }
-}
-
-/// <summary>
-/// This is an Activity that is both an Activity and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
 public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveFragmentActivity>, IHandleObservableErrors
 {
     private readonly Subject<Unit> _activated = new();
@@ -150,10 +116,12 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReac
     /// <inheritdoc/>
     protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
     {
+#pragma warning disable RCS1256 // Invalid argument null check.
         if (data is null)
         {
             throw new ArgumentNullException(nameof(data));
         }
+#pragma warning restore RCS1256 // Invalid argument null check.
 
         base.OnActivityResult(requestCode, resultCode, data);
         _activityResult.OnNext((requestCode, resultCode, data));

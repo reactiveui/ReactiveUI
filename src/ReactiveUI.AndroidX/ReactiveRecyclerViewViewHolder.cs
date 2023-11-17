@@ -5,9 +5,7 @@
 
 using System.Reflection;
 using System.Runtime.Serialization;
-
 using Android.Views;
-
 using AndroidX.RecyclerView.Widget;
 
 namespace ReactiveUI.AndroidX;
@@ -24,7 +22,6 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Legacy reasons")]
     [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1306: Field should start with a lower case letter", Justification = "Legacy reasons")]
     [IgnoreDataMember]
     protected Lazy<PropertyInfo[]>? AllPublicProperties;
 
@@ -38,7 +35,6 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// Initializes a new instance of the <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> class.
     /// </summary>
     /// <param name="view">The view.</param>
-    [Obsolete("This method was deprecated in API level 23.", false)]
     protected ReactiveRecyclerViewViewHolder(View view)
         : base(view)
     {
@@ -54,7 +50,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         Selected = Observable.FromEvent<EventHandler, int>(
                                                            eventHandler =>
                                                            {
-                                                               void Handler(object sender, EventArgs e) => eventHandler(AdapterPosition);
+                                                               void Handler(object sender, EventArgs e) => eventHandler(AbsoluteAdapterPosition);
                                                                return Handler;
                                                            },
                                                            h => view.Click += h,
@@ -63,7 +59,8 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         LongClicked = Observable.FromEvent<EventHandler<View.LongClickEventArgs>, int>(
          eventHandler =>
          {
-             void Handler(object sender, View.LongClickEventArgs e) => eventHandler(AdapterPosition);
+             void Handler(object sender, View.LongClickEventArgs e) => eventHandler(AbsoluteAdapterPosition);
+
              return Handler;
          },
          h => view.LongClick += h,
@@ -95,32 +92,32 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <summary>
-    /// Gets an observable that signals that this ViewHolder has been selected.
-    ///
+    /// <para>Gets an observable that signals that this ViewHolder has been selected.</para>
+    /// <para>
     /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
-    /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
+    /// and corresponds to the <see cref="RecyclerView.ViewHolder.AbsoluteAdapterPosition"/> property.
+    /// </para>
     /// </summary>
     public IObservable<int> Selected { get; }
 
     /// <summary>
-    /// Gets an observable that signals that this ViewHolder has been selected.
-    ///
-    /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
+    /// <para>Gets an observable that signals that this ViewHolder has been selected.</para>
+    /// <para>The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.</para>
     /// </summary>
     public IObservable<TViewModel?> SelectedWithViewModel { get; }
 
     /// <summary>
-    /// Gets an observable that signals that this ViewHolder has been long-clicked.
-    ///
+    /// <para>Gets an observable that signals that this ViewHolder has been long-clicked.</para>
+    /// <para>
     /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
-    /// and corresponds to the <see cref="RecyclerView.ViewHolder.AdapterPosition"/> property.
+    /// and corresponds to the <see cref="RecyclerView.ViewHolder.AbsoluteAdapterPosition"/> property.
+    /// </para>
     /// </summary>
     public IObservable<int> LongClicked { get; }
 
     /// <summary>
-    /// Gets an observable that signals that this ViewHolder has been long-clicked.
-    ///
-    /// The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.
+    /// <para>Gets an observable that signals that this ViewHolder has been long-clicked.</para>
+    /// <para>The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.</para>
     /// </summary>
     public IObservable<TViewModel?> LongClickedWithViewModel { get; }
 
@@ -194,7 +191,9 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     }
 
     [OnDeserialized]
-    private void SetupRxObj(StreamingContext sc) => SetupRxObj();
+#pragma warning disable RCS1163 // Unused parameter.
+    private void SetupRxObj(in StreamingContext sc) => SetupRxObj();
+#pragma warning restore RCS1163 // Unused parameter.
 
     private void SetupRxObj() =>
         AllPublicProperties = new Lazy<PropertyInfo[]>(() =>

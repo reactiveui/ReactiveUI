@@ -12,12 +12,12 @@ using NSAction = System.Action;
 namespace ReactiveUI;
 
 /// <summary>
+/// <para>
 /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
 /// AppDelegate to inherit from this class, then call:
-///
-/// Locator.Current.GetService{ISuspensionHost}().SetupDefaultSuspendResume();
-///
-/// This will get your suspension host.
+/// </para>
+/// <para>Locator.Current.GetService{ISuspensionHost}().SetupDefaultSuspendResume();.</para>
+/// <para>This will get your suspension host.</para>
 /// </summary>
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {

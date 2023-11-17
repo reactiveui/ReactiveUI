@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using Android.Runtime;
-
 using AndroidX.Preference;
 
 namespace ReactiveUI.AndroidX;
@@ -13,50 +12,6 @@ namespace ReactiveUI.AndroidX;
 /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public abstract class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment, IViewFor<TViewModel>, ICanActivate
-    where TViewModel : class
-{
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactivePreferenceFragment{TViewModel}"/> class.
-    /// </summary>
-    protected ReactivePreferenceFragment()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactivePreferenceFragment{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="handle">The handle.</param>
-    /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
-        : base(handle, ownership)
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => _viewModel;
-        set => _viewModel = (TViewModel?)value;
-    }
-}
-
-/// <summary>
-/// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
 public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat, IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
 {
     private readonly Subject<Unit> _activated = new();
@@ -74,7 +29,7 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat, IRe
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
+    protected ReactivePreferenceFragment(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }

@@ -46,10 +46,20 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(target);
+#else
+        if (command is null)
+        {
+            throw new ArgumentNullException(nameof(command));
+        }
+
         if (target is null)
         {
             throw new ArgumentNullException(nameof(target));
         }
+#endif
 
         const BindingFlags bf = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 
@@ -66,12 +76,16 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
         var mi = GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
         mi = mi.MakeGenericMethod(eventInfo.Args);
 
-        return (IDisposable?)mi.Invoke(this, new[] { command, target, commandParameter, eventInfo.EventInfo?.Name });
+        return (IDisposable?)mi.Invoke(this, [command, target, commandParameter, eventInfo.EventInfo?.Name]);
     }
 
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(target);
+#else
         if (command is null)
         {
             throw new ArgumentNullException(nameof(command));
@@ -81,6 +95,7 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
         {
             throw new ArgumentNullException(nameof(target));
         }
+#endif
 
         var ret = new CompositeDisposable();
 

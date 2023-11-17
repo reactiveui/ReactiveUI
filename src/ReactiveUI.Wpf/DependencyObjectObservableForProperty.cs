@@ -27,22 +27,20 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     /// <inheritdoc/>
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(sender);
+#else
         if (sender is null)
         {
             throw new ArgumentNullException(nameof(sender));
         }
+#endif
 
         var type = sender.GetType();
 
-        var dependencyProperty = GetDependencyProperty(type, propertyName);
-
-        if (dependencyProperty is null)
-        {
-            throw new ArgumentException(
+        var dependencyProperty = GetDependencyProperty(type, propertyName) ?? throw new ArgumentException(
                                         $"The property {propertyName} does not have a dependency property.",
                                         nameof(propertyName));
-        }
-
         var dependencyPropertyDescriptor = DependencyPropertyDescriptor.FromProperty(dependencyProperty, type);
 
         if (dependencyPropertyDescriptor is null)
@@ -57,10 +55,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
 
         return Observable.Create<IObservedChange<object, object?>>(subj =>
         {
-            var handler = new EventHandler((_, _) =>
-            {
-                subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
-            });
+            var handler = new EventHandler((_, _) => subj.OnNext(new ObservedChange<object, object?>(sender, expression, default)));
 
             dependencyPropertyDescriptor.AddValueChanged(sender, handler);
             return Disposable.Create(() => dependencyPropertyDescriptor.RemoveValueChanged(sender, handler));

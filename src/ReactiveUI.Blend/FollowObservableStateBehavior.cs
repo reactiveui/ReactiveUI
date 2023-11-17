@@ -102,12 +102,9 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
             throw new ArgumentNullException(nameof(e));
         }
 
-        var newValue = (IObservable<string>)e.NewValue;
-        if (newValue is null)
-        {
-            throw new ArgumentNullException(nameof(e.NewValue));
-        }
-
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+        var newValue = (IObservable<string>)e.NewValue ?? throw new ArgumentNullException(nameof(e.NewValue));
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
         item._watcher = newValue.ObserveOn(RxApp.MainThreadScheduler).Subscribe(
             x =>
             {

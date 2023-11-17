@@ -5,6 +5,7 @@
 
 using Android.Content;
 using Android.OS;
+using Context = Android.Content.Context;
 
 namespace ReactiveUI;
 
@@ -55,21 +56,17 @@ public static class ContextExtensions
     /// A private implementation of IServiceConnection and IDisposable.
     /// </summary>
     /// <typeparam name="TBinder">The binder type.</typeparam>
-    private class ServiceConnection<TBinder> : Java.Lang.Object, IServiceConnection
+    private class ServiceConnection<TBinder>(Context context, IObserver<TBinder?> observer) : Java.Lang.Object, IServiceConnection
         where TBinder : class, IBinder
     {
-        private readonly Context _context;
-        private readonly IObserver<TBinder?> _observer;
+        private readonly Context _context = context;
+        private readonly IObserver<TBinder?> _observer = observer;
 
         private bool _disposed;
 
-        public ServiceConnection(Context context, IObserver<TBinder?> observer)
-        {
-            _context = context;
-            _observer = observer;
-        }
-
+#pragma warning disable RCS1168 // Parameter name differs from base name.
         void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? binder) => _observer.OnNext((TBinder?)binder);
+#pragma warning restore RCS1168 // Parameter name differs from base name.
 
         void IServiceConnection.OnServiceDisconnected(ComponentName? name) =>
 
@@ -83,7 +80,7 @@ public static class ContextExtensions
                 if (disposing)
                 {
                     _context.UnbindService(this);
-
+                    _context.Dispose();
                     _disposed = true;
                 }
             }
