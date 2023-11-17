@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net462;net472;net6.0-windows10.0.17763.0;net7.0-windows10.0.17763.0;net8.0-windows10.0.17763.0</TargetFrameworks>

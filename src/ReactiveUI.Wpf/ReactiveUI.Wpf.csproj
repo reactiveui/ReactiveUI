@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!--
     Added 19041 target as a workaround for System.Reactive targeting net5.0-windows10.0.19041.0
