@@ -154,7 +154,9 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         var viewLoaded = Observable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
          eventHandler =>
          {
-             void Handler(FrameworkElement sender, object e) => eventHandler(true);
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+             void Handler(FrameworkElement _, object __) => eventHandler(true);
+#pragma warning restore SA1313 // Parameter names should begin with lower-case letter
              return Handler;
          },
          x => view.Loading += x,
@@ -163,7 +165,9 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
                                                                           eventHandler =>
                                                                           {
-                                                                              void Handler(object sender, RoutedEventArgs e) => eventHandler(false);
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+                                                                              void Handler(object _, RoutedEventArgs __) => eventHandler(false);
+#pragma warning restore SA1313 // Parameter names should begin with lower-case letter
                                                                               return Handler;
                                                                           },
                                                                           x => view.Unloaded += x,

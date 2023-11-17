@@ -69,7 +69,9 @@ namespace ReactiveUI
                 : Observable.FromEvent<SizeChangedEventHandler, string?>(
                   eventHandler =>
                   {
-                      void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+                      void Handler(object? _, SizeChangedEventArgs __) => eventHandler(platformGetter());
+#pragma warning restore SA1313 // Parameter names should begin with lower-case letter
                       return Handler;
                   },
                   x => SizeChanged += x,
