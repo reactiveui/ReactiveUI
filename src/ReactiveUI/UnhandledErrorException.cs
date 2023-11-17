@@ -11,7 +11,9 @@ namespace ReactiveUI;
 /// Indicates that an object implementing <see cref="IHandleObservableErrors"/> has caused an error and nothing is attached
 /// to <see cref="IHandleObservableErrors.ThrownExceptions"/> to handle that error.
 /// </summary>
+#if !NET8_0_OR_GREATER
 [Serializable]
+#endif
 public class UnhandledErrorException : Exception
 {
     /// <summary>
@@ -46,13 +48,19 @@ public class UnhandledErrorException : Exception
     {
     }
 
+#if !NET8_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the <see cref="UnhandledErrorException"/> class.
     /// </summary>
     /// <param name="info">The serialization information.</param>
     /// <param name="context">The serialization context.</param>
+#if NET6_0_OR_GREATER
+    protected UnhandledErrorException(SerializationInfo info, in StreamingContext context)
+#else
     protected UnhandledErrorException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
+#endif
+            : base(info, context)
     {
     }
+#endif
 }

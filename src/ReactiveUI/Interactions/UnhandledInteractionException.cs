@@ -16,7 +16,9 @@ namespace ReactiveUI;
 /// <typeparam name="TOutput">
 /// The type of the interaction's output.
 /// </typeparam>
+#if !NET8_0_OR_GREATER
 [Serializable]
+#endif
 public class UnhandledInteractionException<TInput, TOutput> : Exception
 {
     [field: NonSerialized]
@@ -60,14 +62,20 @@ public class UnhandledInteractionException<TInput, TOutput> : Exception
     {
     }
 
+#if !NET8_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the <see cref="UnhandledInteractionException{TInput, TOutput}"/> class.
     /// </summary>
     /// <param name="info">The serialization information.</param>
     /// <param name="context">The serialization context.</param>
+#if NET6_0_OR_GREATER || MONOANDROID13_0
+    protected UnhandledInteractionException(SerializationInfo info, in StreamingContext context)
+#else
     protected UnhandledInteractionException(SerializationInfo info, StreamingContext context)
+#endif
         : base(info, context) =>
         Input = (TInput)info.GetValue(nameof(Input), typeof(TInput))!;
+#endif
 
     /// <summary>
     /// Gets the interaction that was not handled.
@@ -79,15 +87,21 @@ public class UnhandledInteractionException<TInput, TOutput> : Exception
     /// </summary>
     public TInput Input { get; } = default!;
 
+#if !NET8_0_OR_GREATER
     /// <inheritdoc/>
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(info);
+#else
         if (info is null)
         {
             throw new ArgumentNullException(nameof(info));
         }
+#endif
 
         info.AddValue(nameof(Input), Input);
         base.GetObjectData(info, context);
     }
+#endif
 }

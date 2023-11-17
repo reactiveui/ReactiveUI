@@ -1,8 +1,8 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net472;net6.0-windows10.0.17763.0;net7.0-windows10.0.17763.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net472;net6.0-windows10.0.17763.0;net7.0-windows10.0.17763.0;net8.0-windows10.0.17763.0</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
@@ -21,22 +21,7 @@
   </ItemGroup>
 
   <Choose>
-    <When Condition=" $(TargetFramework.StartsWith('net6.0-windows')) ">
-      <PropertyGroup>
-        <UseWpf>true</UseWpf>
-        <UseWindowsForms>true</UseWindowsForms>
-      </PropertyGroup>
-      <ItemGroup>
-        <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
-        <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
-        <Compile Include="Platforms\common-gui\**\*.cs" />
-        <Compile Include="Platforms\wpf\**\*.cs" />
-        <Compile Include="Platforms\Winforms\**\*.cs" />
-        <Compile Include="Platforms\windows-xaml\**\*.cs" />
-        <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
-      </ItemGroup>
-    </When>
-    <When Condition=" $(TargetFramework.StartsWith('net7.0-windows')) ">
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) ">
       <PropertyGroup>
         <UseWpf>true</UseWpf>
         <UseWindowsForms>true</UseWindowsForms>

@@ -47,7 +47,7 @@ namespace ReactiveUI
 #if !WINUI_TARGET
                 var notVisible = (hint & BooleanToVisibilityHint.UseHidden) != 0 ? Visibility.Hidden : Visibility.Collapsed;
 #else
-                var notVisible = Visibility.Collapsed;
+                const Visibility notVisible = Visibility.Collapsed;
 #endif
                 result = fromAsBool ? Visibility.Visible : notVisible;
                 return true;

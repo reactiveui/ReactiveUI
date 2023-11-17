@@ -24,6 +24,7 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
 
 #if NET7_0_OR_GREATER
     [ObsoletedOSPlatform("android23.0")]
+    [SupportedOSPlatform("android23.0")]
 #else
     [Obsolete("This method was deprecated in API level 23.", false)]
 #endif
@@ -55,10 +56,14 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// <inheritdoc/>
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
+#if NET7_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(sender);
+#else
         if (sender is null)
         {
             throw new ArgumentNullException(nameof(sender));
         }
+#endif
 
         var type = sender.GetType();
         var tableItem = _dispatchTable.Keys.First(x => x.viewType?.IsAssignableFrom(type) == true && x.propertyName?.Equals(propertyName) == true);
@@ -115,6 +120,7 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
 
 #if NET7_0_OR_GREATER
     [ObsoletedOSPlatform("android23.0")]
+    [SupportedOSPlatform("android23.0")]
 #else
     [Obsolete("This method was deprecated in API level 23.", false)]
 #endif
@@ -130,6 +136,7 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
 
 #if NET7_0_OR_GREATER
     [ObsoletedOSPlatform("android23.0")]
+    [SupportedOSPlatform("android23.0")]
 #else
     [Obsolete("This method was deprecated in API level 23.", false)]
 #endif

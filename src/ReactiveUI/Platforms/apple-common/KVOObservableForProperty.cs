@@ -113,14 +113,21 @@ public class KVOObservableForProperty : ICreatesObservableForProperty
             goto attemptGuess;
         }
 
-        return attr.Selector;
+        if (attr.Selector is not null)
+        {
+            return attr.Selector;
+        }
 
-        attemptGuess:
+    attemptGuess:
         if (propIsBoolean)
         {
             propertyName = "Is" + propertyName;
         }
 
+#if XAMARINIOS || XAMARINMAC || XAMARINTVOS
         return char.ToLowerInvariant(propertyName[0]).ToString(CultureInfo.InvariantCulture) + propertyName.Substring(1);
+#else
+        return string.Concat(char.ToLowerInvariant(propertyName[0]).ToString(CultureInfo.InvariantCulture), propertyName.AsSpan(1));
+#endif
     }
 }
