@@ -35,9 +35,9 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <XunitVersion>2.6.1</XunitVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="$(IsTestProject) != 'true'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-  </PropertyGroup>
+  <!--<PropertyGroup Condition="$(IsTestProject) != 'true'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>-->
 
   <!-- MonoAndroid doesn't seem to want to allow debugging for maintainers -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
