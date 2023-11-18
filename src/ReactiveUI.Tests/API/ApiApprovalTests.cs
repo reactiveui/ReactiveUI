@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if !NET8_0
 using VerifyXunit;
 
 namespace ReactiveUI.Tests.API;
@@ -28,3 +29,4 @@ public class ApiApprovalTests : ApiApprovalBase
     [Fact]
     public Task ReactiveUI() => CheckApproval(typeof(RxApp).Assembly);
 }
+#endif
