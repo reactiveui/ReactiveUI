@@ -34,7 +34,7 @@ public class POCOObservableForProperty : ICreatesObservableForProperty
             _hasWarned[(type, propertyName)] = true;
         }
 
-        return Observable.Return(new ObservedChange<object, object?>(sender, expression, default), RxApp.MainThreadScheduler)
+        return Observable.Return(new ObservedChange<object, object?>(sender, expression, default), RxApp.MainThreadScheduler ?? CurrentThreadScheduler.Instance)
                          .Concat(Observable<IObservedChange<object, object?>>.Never);
     }
 }

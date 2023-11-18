@@ -122,10 +122,7 @@ public static class RxApp
 
         LogHost.Default.Info("Initializing to normal mode");
 
-        if (_mainThreadScheduler is null)
-        {
-            _mainThreadScheduler = DefaultScheduler.Instance;
-        }
+        _mainThreadScheduler ??= DefaultScheduler.Instance;
     }
 
     /// <summary>
