@@ -16,7 +16,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <summary>
     /// Configuration map.
     /// </summary>
-    private readonly Dictionary<Type, CommandBindingInfo> _config = new();
+    private readonly Dictionary<Type, CommandBindingInfo> _config = [];
 
     /// <inheritdoc/>
     public int GetAffinityForObject(Type type, bool hasEventTarget)
@@ -70,9 +70,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 #if MONO
         where TEventArgs : EventArgs
 #endif
-#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
         => throw new NotImplementedException();
-#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
 
     /// <summary>
     /// Creates a commands binding from event and a property.

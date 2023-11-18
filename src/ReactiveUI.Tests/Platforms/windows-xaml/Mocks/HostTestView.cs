@@ -11,30 +11,29 @@ using System.Windows;
 using System.Windows.Controls;
 #endif
 
-namespace ReactiveUI.Tests.Xaml
+namespace ReactiveUI.Tests.Xaml;
+
+/// <summary>
+/// A host test view.
+/// </summary>
+public class HostTestView : Control, IViewFor<HostTestFixture>
 {
     /// <summary>
-    /// A host test view.
+    /// The view model property.
     /// </summary>
-    public class HostTestView : Control, IViewFor<HostTestFixture>
+    public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
+
+    /// <inheritdoc/>
+    public HostTestFixture? ViewModel
     {
-        /// <summary>
-        /// The view model property.
-        /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
+        get => (HostTestFixture)GetValue(ViewModelProperty);
+        set => SetValue(ViewModelProperty, value);
+    }
 
-        /// <inheritdoc/>
-        public HostTestFixture? ViewModel
-        {
-            get => (HostTestFixture)GetValue(ViewModelProperty);
-            set => SetValue(ViewModelProperty, value);
-        }
-
-        /// <inheritdoc/>
-        object? IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (HostTestFixture?)value;
-        }
+    /// <inheritdoc/>
+    object? IViewFor.ViewModel
+    {
+        get => ViewModel;
+        set => ViewModel = (HostTestFixture?)value;
     }
 }

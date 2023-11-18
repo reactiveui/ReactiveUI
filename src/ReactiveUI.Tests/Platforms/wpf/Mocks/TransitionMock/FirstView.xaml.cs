@@ -5,16 +5,15 @@
 
 using System.Windows.Controls;
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+/// <summary>
+/// Interaction logic for FirstView.xaml.
+/// </summary>
+public partial class FirstView : UserControl
 {
-    /// <summary>
-    /// Interaction logic for FirstView.xaml.
-    /// </summary>
-    public partial class FirstView : UserControl
+    public FirstView()
     {
-        public FirstView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

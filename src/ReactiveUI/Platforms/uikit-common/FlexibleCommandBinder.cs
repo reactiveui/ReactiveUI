@@ -20,7 +20,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// Configuration map.
     /// </summary>
     private readonly Dictionary<Type, CommandBindingInfo> _config =
-        new();
+        [];
 
     /// <inheritdoc/>
     public int GetAffinityForObject(Type type, bool hasEventTarget)
@@ -71,10 +71,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
-        where TEventArgs : EventArgs =>
-#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
-        throw new NotImplementedException();
-#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
+        where TEventArgs : EventArgs => throw new NotImplementedException();
 
     /// <summary>
     /// Creates a commands binding from event and a property.

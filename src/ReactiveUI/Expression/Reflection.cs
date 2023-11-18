@@ -56,10 +56,14 @@ public static class Reflection
     /// <returns>A string form for the property the expression is pointing to.</returns>
     public static string ExpressionToPropertyNames(Expression? expression) // TODO: Create Test
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(expression);
+#else
         if (expression is null)
         {
             throw new ArgumentNullException(nameof(expression));
         }
+#endif
 
         var sb = new StringBuilder();
 
@@ -104,10 +108,14 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
     public static Func<object?, object?[]?, object?>? GetValueFetcherForProperty(MemberInfo? member) // TODO: Create Test
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(member);
+#else
         if (member is null)
         {
             throw new ArgumentNullException(nameof(member));
         }
+#endif
 
         var field = member as FieldInfo;
         if (field is not null)
@@ -129,10 +137,14 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
     public static Func<object?, object?[]?, object?> GetValueFetcherOrThrow(MemberInfo? member) // TODO: Create Test
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(member);
+#else
         if (member is null)
         {
             throw new ArgumentNullException(nameof(member));
         }
+#endif
 
         var ret = GetValueFetcherForProperty(member);
 
@@ -149,10 +161,14 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
     public static Action<object?, object?, object?[]?> GetValueSetterForProperty(MemberInfo? member) // TODO: Create Test
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(member);
+#else
         if (member is null)
         {
             throw new ArgumentNullException(nameof(member));
         }
+#endif
 
         var field = member as FieldInfo;
         if (field is not null)
@@ -174,10 +190,14 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
     public static Action<object?, object?, object?[]?>? GetValueSetterOrThrow(MemberInfo? member) // TODO: Create Test
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(member);
+#else
         if (member is null)
         {
             throw new ArgumentNullException(nameof(member));
         }
+#endif
 
         var ret = GetValueSetterForProperty(member);
 
@@ -332,10 +352,14 @@ public static class Reflection
     /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
     public static Type GetEventArgsTypeForEvent(Type type, string? eventName) // TODO: Create Test
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(type);
+#else
         if (type is null)
         {
             throw new ArgumentNullException(nameof(type));
         }
+#endif
 
         var ti = type;
         var ei = ti.GetRuntimeEvent(eventName!);
@@ -379,19 +403,20 @@ public static class Reflection
     /// <returns>If the property is static or not.</returns>
     public static bool IsStatic(this PropertyInfo item) // TODO: Create Test
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(item);
+#else
         if (item is null)
         {
             throw new ArgumentNullException(nameof(item));
         }
+#endif
 
         var method = (item.GetMethod ?? item.SetMethod)!;
         return method.IsStatic;
     }
 
-#pragma warning disable RCS1163 // Unused parameter.
-
     internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel? viewModel, TView view, Expression? expression)
-#pragma warning restore RCS1163 // Unused parameter.
         where TView : class, IViewFor
         where TViewModel : class =>
         view.WhenAnyValue(x => x.ViewModel)

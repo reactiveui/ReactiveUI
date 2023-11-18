@@ -13,7 +13,7 @@ namespace ReactiveUI.Winforms;
 [DefaultProperty("ViewModel")]
 public partial class RoutedControlHost : UserControl, IReactiveObject
 {
-    private readonly CompositeDisposable _disposables = new();
+    private readonly CompositeDisposable _disposables = [];
     private RoutingState? _router;
     private Control? _defaultContent;
     private IObservable<string>? _viewContractObservable;

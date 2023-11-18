@@ -7,15 +7,15 @@ using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using DynamicData.Binding;
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+/// <summary>
+/// A test fixture.
+/// </summary>
+/// <seealso cref="ReactiveUI.ReactiveObject" />
+[DataContract]
+public class TestFixture : ReactiveObject
 {
-    /// <summary>
-    /// A test fixture.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.ReactiveObject" />
-    [DataContract]
-    public class TestFixture : ReactiveObject
-    {
         [IgnoreDataMember]
         [JsonIgnore]
         private string? _isNotNullString;
@@ -121,5 +121,4 @@ namespace ReactiveUI.Tests
             get => _usesExprRaiseSet;
             set => this.RaiseAndSetIfChanged(ref _usesExprRaiseSet, value);
         }
-    }
 }

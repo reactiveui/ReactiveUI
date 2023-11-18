@@ -19,7 +19,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     private readonly ISubject<T?> _subject;
     private readonly Func<T?> _getInitialValue;
     private T? _lastValue;
-    private CompositeDisposable _disposable = new();
+    private CompositeDisposable _disposable = [];
     private int _activated;
 
     /// <summary>

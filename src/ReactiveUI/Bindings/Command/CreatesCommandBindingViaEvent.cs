@@ -10,87 +10,86 @@ using System.Windows.Input;
 using Windows.UI.Xaml.Input;
 #endif
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>
+/// This binder is the default binder for connecting to arbitrary events.
+/// </summary>
+public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 {
-    /// <summary>
-    /// This binder is the default binder for connecting to arbitrary events.
-    /// </summary>
-    public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
-    {
-        // NB: These are in priority order
-        private static readonly List<(string name, Type type)> _defaultEventsToBind = new()
-        {
-            ("Click", typeof(EventArgs)),
-            ("TouchUpInside", typeof(EventArgs)),
-            ("MouseUp", typeof(EventArgs)),
+    // NB: These are in priority order
+    private static readonly List<(string name, Type type)> _defaultEventsToBind =
+    [
+        ("Click", typeof(EventArgs)),
+        ("TouchUpInside", typeof(EventArgs)),
+        ("MouseUp", typeof(EventArgs)),
 #if NETFX_CORE
-            ("PointerReleased", typeof(PointerRoutedEventArgs)),
-            ("Tapped", typeof(TappedRoutedEventArgs)),
+        ("PointerReleased", typeof(PointerRoutedEventArgs)),
+        ("Tapped", typeof(TappedRoutedEventArgs)),
 #endif
-        };
+    ];
 
-        /// <inheritdoc/>
-        public int GetAffinityForObject(Type type, bool hasEventTarget)
+    /// <inheritdoc/>
+    public int GetAffinityForObject(Type type, bool hasEventTarget)
+    {
+        if (hasEventTarget)
         {
-            if (hasEventTarget)
-            {
-                return 5;
-            }
-
-            return _defaultEventsToBind.Any(x =>
-            {
-                var ei = type.GetRuntimeEvent(x.name);
-                return ei is not null;
-            }) ? 3 : 0;
+            return 5;
         }
 
-        /// <inheritdoc/>
-        public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
+        return _defaultEventsToBind.Any(x =>
         {
-            if (target is null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
+            var ei = type.GetRuntimeEvent(x.name);
+            return ei is not null;
+        }) ? 3 : 0;
+    }
 
-            var type = target.GetType();
-            var eventInfo = _defaultEventsToBind
-                .Select(x => new { EventInfo = type.GetRuntimeEvent(x.name), Args = x.type })
-                .FirstOrDefault(x => x.EventInfo is not null);
-
-            if (eventInfo is null)
-            {
-                throw new Exception(
-                       $"Couldn't find a default event to bind to on {target.GetType().FullName}, specify an event explicitly");
-            }
-
-            var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
-            mi = mi.MakeGenericMethod(eventInfo.Args);
-
-            return (IDisposable?)mi.Invoke(this, new[] { command, target, commandParameter, eventInfo.EventInfo?.Name });
+    /// <inheritdoc/>
+    public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
+    {
+        if (target is null)
+        {
+            throw new ArgumentNullException(nameof(target));
         }
 
-        /// <inheritdoc/>
-        public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+        var type = target.GetType();
+        var eventInfo = _defaultEventsToBind
+            .Select(x => new { EventInfo = type.GetRuntimeEvent(x.name), Args = x.type })
+            .FirstOrDefault(x => x.EventInfo is not null);
+
+        if (eventInfo is null)
+        {
+            throw new Exception(
+                   $"Couldn't find a default event to bind to on {target.GetType().FullName}, specify an event explicitly");
+        }
+
+        var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
+        mi = mi.MakeGenericMethod(eventInfo.Args);
+
+        return (IDisposable?)mi.Invoke(this, [command, target, commandParameter, eventInfo.EventInfo?.Name]);
+    }
+
+    /// <inheritdoc/>
+    public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
-            where TEventArgs : EventArgs
+        where TEventArgs : EventArgs
 #endif
+    {
+        var ret = new CompositeDisposable();
+
+        object? latestParameter = null;
+        var evt = Observable.FromEventPattern<TEventArgs>(target!, eventName);
+
+        ret.Add(commandParameter.Subscribe(x => latestParameter = x));
+
+        ret.Add(evt.Subscribe(_ =>
         {
-            var ret = new CompositeDisposable();
-
-            object? latestParameter = null;
-            var evt = Observable.FromEventPattern<TEventArgs>(target!, eventName);
-
-            ret.Add(commandParameter.Subscribe(x => latestParameter = x));
-
-            ret.Add(evt.Subscribe(_ =>
+            if (command!.CanExecute(latestParameter))
             {
-                if (command!.CanExecute(latestParameter))
-                {
-                    command.Execute(latestParameter);
-                }
-            }));
+                command.Execute(latestParameter);
+            }
+        }));
 
-            return ret;
-        }
+        return ret;
     }
 }

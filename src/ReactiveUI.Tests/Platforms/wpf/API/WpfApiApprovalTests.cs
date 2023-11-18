@@ -5,20 +5,19 @@
 
 using VerifyXunit;
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+/// <summary>
+/// Checks the WPF API to make sure there aren't any unexpected public API changes.
+/// </summary>
+[ExcludeFromCodeCoverage]
+[UsesVerify]
+public class WpfApiApprovalTests : ApiApprovalBase
 {
     /// <summary>
-    /// Checks the WPF API to make sure there aren't any unexpected public API changes.
+    /// Checks the approved vs the received API.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    [UsesVerify]
-    public class WpfApiApprovalTests : ApiApprovalBase
-    {
-        /// <summary>
-        /// Checks the approved vs the received API.
-        /// </summary>
-        /// <returns>A task to monitor the process.</returns>
-        [Fact]
-        public Task Wpf() => CheckApproval(typeof(ReactiveWindow<>).Assembly);
-    }
+    /// <returns>A task to monitor the process.</returns>
+    [Fact]
+    public Task Wpf() => CheckApproval(typeof(ReactiveWindow<>).Assembly);
 }

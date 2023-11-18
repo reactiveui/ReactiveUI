@@ -63,7 +63,7 @@ internal class CreatesCommandBinding
         var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
         mi = mi.MakeGenericMethod(eventArgsType);
 
-        var ret = (IDisposable)mi.Invoke(binder, new[] { command, target, commandParameter, eventName })!;
+        var ret = (IDisposable)mi.Invoke(binder, [command, target, commandParameter, eventName])!;
 
         // If we made it this far then this will not fail.
         if (ret is null)

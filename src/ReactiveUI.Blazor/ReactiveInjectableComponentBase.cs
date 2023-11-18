@@ -19,7 +19,7 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
     private readonly Subject<Unit> _initSubject = new();
     [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
     private readonly Subject<Unit> _deactivateSubject = new();
-    private readonly CompositeDisposable _compositeDisposable = new();
+    private readonly CompositeDisposable _compositeDisposable = [];
 
     private T? _viewModel;
 

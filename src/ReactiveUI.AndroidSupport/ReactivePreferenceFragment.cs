@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Android.Runtime;
 using Android.Support.V7.Preferences;
 
 namespace ReactiveUI.AndroidSupport;
@@ -31,7 +30,7 @@ public abstract class ReactivePreferenceFragment<TViewModel> : ReactivePreferenc
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
+    protected ReactivePreferenceFragment(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }
@@ -72,7 +71,7 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat, IRe
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactivePreferenceFragment(IntPtr handle, JniHandleOwnership ownership)
+    protected ReactivePreferenceFragment(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }

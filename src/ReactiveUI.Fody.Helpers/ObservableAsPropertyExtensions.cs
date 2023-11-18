@@ -39,6 +39,10 @@ public static class ObservableAsPropertyExtensions
         IScheduler? scheduler = null)
         where TObj : ReactiveObject
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(item);
+        ArgumentNullException.ThrowIfNull(property);
+#else
         if (item is null)
         {
             throw new ArgumentNullException(nameof(item));
@@ -48,22 +52,13 @@ public static class ObservableAsPropertyExtensions
         {
             throw new ArgumentNullException(nameof(property));
         }
+#endif
 
         var result = item.ToProperty(source, property, deferSubscription, scheduler);
 
         // Now assign the field via reflection.
-        var propertyInfo = property.GetPropertyInfo();
-        if (propertyInfo is null)
-        {
-            throw new Exception("Could not resolve expression " + property + " into a property.");
-        }
-
-        var field = propertyInfo.DeclaringType?.GetTypeInfo().GetDeclaredField("$" + propertyInfo.Name);
-        if (field is null)
-        {
-            throw new Exception("Backing field not found for " + propertyInfo);
-        }
-
+        var propertyInfo = property.GetPropertyInfo() ?? throw new Exception("Could not resolve expression " + property + " into a property.");
+        var field = propertyInfo.DeclaringType?.GetTypeInfo().GetDeclaredField("$" + propertyInfo.Name) ?? throw new Exception("Backing field not found for " + propertyInfo);
         field.SetValue(source, result);
 
         return result;
@@ -95,6 +90,10 @@ public static class ObservableAsPropertyExtensions
         IScheduler? scheduler = null)
         where TObj : ReactiveObject
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(item);
+        ArgumentNullException.ThrowIfNull(property);
+#else
         if (item is null)
         {
             throw new ArgumentNullException(nameof(item));
@@ -104,22 +103,13 @@ public static class ObservableAsPropertyExtensions
         {
             throw new ArgumentNullException(nameof(property));
         }
+#endif
 
         var result = item.ToProperty(source, property, initialValue, deferSubscription, scheduler);
 
         // Now assign the field via reflection.
-        var propertyInfo = property.GetPropertyInfo();
-        if (propertyInfo is null)
-        {
-            throw new Exception("Could not resolve expression " + property + " into a property.");
-        }
-
-        var field = propertyInfo.DeclaringType?.GetTypeInfo().GetDeclaredField("$" + propertyInfo.Name);
-        if (field is null)
-        {
-            throw new Exception("Backing field not found for " + propertyInfo);
-        }
-
+        var propertyInfo = property.GetPropertyInfo() ?? throw new Exception("Could not resolve expression " + property + " into a property.");
+        var field = propertyInfo.DeclaringType?.GetTypeInfo().GetDeclaredField("$" + propertyInfo.Name) ?? throw new Exception("Backing field not found for " + propertyInfo);
         field.SetValue(source, result);
 
         return result;

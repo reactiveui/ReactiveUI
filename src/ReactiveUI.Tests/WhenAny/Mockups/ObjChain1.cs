@@ -3,16 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
-{
-    public class ObjChain1 : ReactiveObject
-    {
-        private ObjChain2 _model = new();
+namespace ReactiveUI.Tests;
 
-        public ObjChain2 Model
-        {
-            get => _model;
-            set => this.RaiseAndSetIfChanged(ref _model, value);
-        }
+public class ObjChain1 : ReactiveObject
+{
+    private ObjChain2 _model = new();
+
+    public ObjChain2 Model
+    {
+        get => _model;
+        set => this.RaiseAndSetIfChanged(ref _model, value);
     }
 }

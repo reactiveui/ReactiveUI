@@ -5,57 +5,56 @@
 
 using System.Diagnostics;
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+/// <summary>
+/// OAPH mode tests.
+/// </summary>
+public class ObservableAsPropertyHelperModeTests
 {
     /// <summary>
-    /// OAPH mode tests.
+    /// Tests that ToProperty should only subscribe only once.
     /// </summary>
-    public class ObservableAsPropertyHelperModeTests
+    [Fact]
+    public void ToPropertyShouldSubscribeOnlyOnce()
     {
-        /// <summary>
-        /// Tests that ToProperty should only subscribe only once.
-        /// </summary>
-        [Fact]
-        public void ToPropertyShouldSubscribeOnlyOnce()
+        using (ProductionMode.Set())
         {
-            using (ProductionMode.Set())
-            {
-                var f = new RaceConditionFixture();
+            var f = new RaceConditionFixture();
 
-                // This line is important because it triggers connect to
-                // be called recursively thus cause the subscription
-                // to be called twice. Not sure if this is a reactive UI
-                // or RX bug.
-                f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
+            // This line is important because it triggers connect to
+            // be called recursively thus cause the subscription
+            // to be called twice. Not sure if this is a reactive UI
+            // or RX bug.
+            f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
 
-                // Trigger subscription to the underlying observable.
-                Assert.Equal(true, f.A);
+            // Trigger subscription to the underlying observable.
+            Assert.Equal(true, f.A);
 
-                Assert.Equal(1, f.Count);
-            }
+            Assert.Equal(1, f.Count);
         }
+    }
 
-        /// <summary>
-        /// Tests to make sure that ToProperty overload with the nameof only subscribes once.
-        /// </summary>
-        [Fact]
-        public void ToProperty_NameOf_ShouldSubscribeOnlyOnce()
+    /// <summary>
+    /// Tests to make sure that ToProperty overload with the nameof only subscribes once.
+    /// </summary>
+    [Fact]
+    public void ToProperty_NameOf_ShouldSubscribeOnlyOnce()
+    {
+        using (ProductionMode.Set())
         {
-            using (ProductionMode.Set())
-            {
-                var f = new RaceConditionNameOfFixture();
+            var f = new RaceConditionNameOfFixture();
 
-                // This line is important because it triggers connect to
-                // be called recursively thus cause the subscription
-                // to be called twice. Not sure if this is a reactive UI
-                // or RX bug.
-                f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
+            // This line is important because it triggers connect to
+            // be called recursively thus cause the subscription
+            // to be called twice. Not sure if this is a reactive UI
+            // or RX bug.
+            f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
 
-                // Trigger subscription to the underlying observable.
-                Assert.Equal(true, f.A);
+            // Trigger subscription to the underlying observable.
+            Assert.Equal(true, f.A);
 
-                Assert.Equal(1, f.Count);
-            }
+            Assert.Equal(1, f.Count);
         }
     }
 }

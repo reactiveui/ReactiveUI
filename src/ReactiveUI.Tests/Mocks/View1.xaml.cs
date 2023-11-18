@@ -5,19 +5,18 @@
 
 using System.Windows.Controls;
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+/// <summary>
+/// Interaction logic for View1.xaml.
+/// </summary>
+public partial class View1 : UserControl
 {
     /// <summary>
-    /// Interaction logic for View1.xaml.
+    /// Initializes a new instance of the <see cref="View1"/> class.
     /// </summary>
-    public partial class View1 : UserControl
+    public View1()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="View1"/> class.
-        /// </summary>
-        public View1()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

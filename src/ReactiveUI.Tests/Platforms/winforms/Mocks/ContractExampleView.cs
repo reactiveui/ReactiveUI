@@ -3,13 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Winforms
+namespace ReactiveUI.Tests.Winforms;
+
+/// <summary>
+/// A view model that is contracted.
+/// </summary>
+[ViewContract("contract")]
+public class ContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>
 {
-    /// <summary>
-    /// A view model that is contracted.
-    /// </summary>
-    [ViewContract("contract")]
-    public class ContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>
-    {
-    }
 }

@@ -6,8 +6,7 @@
 using System.Windows;
 using System.Windows.Markup;
 
-#pragma warning disable SA1114
-#pragma warning disable SA1115
+#pragma warning disable SA1114, SA1115
 
 [assembly: XmlnsDefinition("http://reactiveui.net", "ReactiveUI")]
 [assembly: ThemeInfo(

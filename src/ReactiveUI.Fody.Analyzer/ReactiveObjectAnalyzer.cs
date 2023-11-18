@@ -20,7 +20,6 @@ public class ReactiveObjectAnalyzer : DiagnosticAnalyzer
 {
     // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
     // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
-#pragma warning disable IDE1006 // Naming Styles
     private static readonly DiagnosticDescriptor InheritanceRule = new(
                                                                        "RUI_0001",
                                                                        "Type must implement IReactiveObject",
@@ -38,7 +37,6 @@ public class ReactiveObjectAnalyzer : DiagnosticAnalyzer
                                                                         DiagnosticSeverity.Error,
                                                                         isEnabledByDefault: true,
                                                                         description: "[Reactive] properties should be an auto property.");
-#pragma warning restore IDE1006 // Naming Styles
 
     /// <summary>
     /// Gets checks that this Analyzer supports.
@@ -51,10 +49,14 @@ public class ReactiveObjectAnalyzer : DiagnosticAnalyzer
     /// <param name="context">The Roslyn Context.</param>
     public override void Initialize(AnalysisContext context)
     {
+#if NET6_0_OR_GREATER
+        System.ArgumentNullException.ThrowIfNull(context);
+#else
         if (context is null)
         {
             throw new System.ArgumentNullException(nameof(context));
         }
+#endif
 
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);

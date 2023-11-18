@@ -22,5 +22,5 @@ public class ObservableAsTestModel : ReactiveObject
     /// Gets the test property which will reference our generated observable.
     /// </summary>
     [ObservableAsProperty]
-    public string? TestProperty { get; private set; }
+    public string? TestProperty { get; }
 }

@@ -5,28 +5,27 @@
 
 using System.Windows.Forms;
 
-namespace ReactiveUI.Tests.Winforms
+namespace ReactiveUI.Tests.Winforms;
+
+public class WinformCommandBindView : IViewFor<WinformCommandBindViewModel>
 {
-    public class WinformCommandBindView : IViewFor<WinformCommandBindViewModel>
+    public WinformCommandBindView()
     {
-        public WinformCommandBindView()
-        {
-            Command1 = new Button();
-            Command2 = new CustomClickableControl();
-        }
-
-        /// <inheritdoc/>
-        object? IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (WinformCommandBindViewModel?)value;
-        }
-
-        /// <inheritdoc/>
-        public WinformCommandBindViewModel? ViewModel { get; set; }
-
-        public Button Command1 { get; protected set; }
-
-        public CustomClickableControl Command2 { get; protected set; }
+        Command1 = new Button();
+        Command2 = new CustomClickableControl();
     }
+
+    /// <inheritdoc/>
+    object? IViewFor.ViewModel
+    {
+        get => ViewModel;
+        set => ViewModel = (WinformCommandBindViewModel?)value;
+    }
+
+    /// <inheritdoc/>
+    public WinformCommandBindViewModel? ViewModel { get; set; }
+
+    public Button Command1 { get; protected set; }
+
+    public CustomClickableControl Command2 { get; protected set; }
 }

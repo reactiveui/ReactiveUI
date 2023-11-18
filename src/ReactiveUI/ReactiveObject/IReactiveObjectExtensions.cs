@@ -13,7 +13,11 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 public static class IReactiveObjectExtensions
 {
+#if NETSTANDARD || NETFRAMEWORK
     private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new();
+#else
+    private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = [];
+#endif
 
     /// <summary>
     /// Contains the state information about the current status of a Reactive Object.
@@ -107,10 +111,14 @@ public static class IReactiveObjectExtensions
         [CallerMemberName] string? propertyName = null)
         where TObj : IReactiveObject
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(propertyName);
+#else
         if (propertyName is null)
         {
             throw new ArgumentNullException(nameof(propertyName));
         }
+#endif
 
         if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
         {
@@ -213,10 +221,14 @@ public static class IReactiveObjectExtensions
     internal static void RaisingPropertyChanging<TSender>(this TSender reactiveObject, string propertyName)
         where TSender : IReactiveObject
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(propertyName);
+#else
         if (propertyName is null)
         {
             throw new ArgumentNullException(nameof(propertyName));
         }
+#endif
 
         var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
 
@@ -226,10 +238,14 @@ public static class IReactiveObjectExtensions
     internal static void RaisingPropertyChanged<TSender>(this TSender reactiveObject, string propertyName)
         where TSender : IReactiveObject
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(propertyName);
+#else
         if (propertyName is null)
         {
             throw new ArgumentNullException(nameof(propertyName));
         }
+#endif
 
         var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
 

@@ -6,33 +6,32 @@
 using System.IO;
 using System.Text;
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+public static class JSONHelper
 {
-    public static class JSONHelper
+    public static string? Serialize<T>(T serializeObject)
     {
-        public static string? Serialize<T>(T serializeObject)
+        if (serializeObject is null)
         {
-            if (serializeObject is null)
-            {
-                return null;
-            }
-
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(serializeObject.GetType());
-            var ms = new MemoryStream();
-            serializer.WriteObject(ms, serializeObject);
-            return Encoding.Default.GetString(ms.ToArray());
+            return null;
         }
 
-        public static T? Deserialize<T>(string json)
-            where T : class
-        {
-            var obj = Activator.CreateInstance<T>();
+        var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(serializeObject.GetType());
+        var ms = new MemoryStream();
+        serializer.WriteObject(ms, serializeObject);
+        return Encoding.Default.GetString(ms.ToArray());
+    }
 
-            var ms = new MemoryStream(Encoding.Unicode.GetBytes(json));
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
-            obj = serializer.ReadObject(ms) as T;
-            ms.Close();
-            return obj;
-        }
+    public static T? Deserialize<T>(string json)
+        where T : class
+    {
+        var obj = Activator.CreateInstance<T>();
+
+        var ms = new MemoryStream(Encoding.Unicode.GetBytes(json));
+        var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
+        obj = serializer.ReadObject(ms) as T;
+        ms.Close();
+        return obj;
     }
 }

@@ -6,7 +6,6 @@
 using Android.App;
 using Android.Content;
 using Android.Runtime;
-
 using AndroidX.AppCompat.App;
 
 namespace ReactiveUI.AndroidX;
@@ -15,40 +14,6 @@ namespace ReactiveUI.AndroidX;
 /// This is an Activity that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public class ReactiveAppCompatActivity<TViewModel> : ReactiveAppCompatActivity, IViewFor<TViewModel>, ICanActivate
-    where TViewModel : class
-{
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity{TViewModel}"/> class.
-    /// </summary>
-    protected ReactiveAppCompatActivity()
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => _viewModel;
-        set => _viewModel = (TViewModel?)value;
-    }
-}
-
-/// <summary>
-/// This is an Activity that is both an Activity and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
 public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
 {
     private readonly Subject<Unit> _activated = new();
@@ -67,7 +32,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IRe
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
-    protected ReactiveAppCompatActivity(IntPtr handle, JniHandleOwnership ownership)
+    protected ReactiveAppCompatActivity(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }

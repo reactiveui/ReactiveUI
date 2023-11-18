@@ -6,131 +6,130 @@
 using System.Windows.Forms;
 using ReactiveUI.Testing;
 
-namespace ReactiveUI.Tests.Winforms
+namespace ReactiveUI.Tests.Winforms;
+
+/// <summary>
+/// Checks the command bindings.
+/// </summary>
+public class CommandBindingImplementationTests
 {
     /// <summary>
-    /// Checks the command bindings.
+    /// Tests the command bind by name wireup.
     /// </summary>
-    public class CommandBindingImplementationTests
+    [Fact]
+    public void CommandBindByNameWireup()
     {
-        /// <summary>
-        /// Tests the command bind by name wireup.
-        /// </summary>
-        [Fact]
-        public void CommandBindByNameWireup()
+        var vm = new WinformCommandBindViewModel();
+        var view = new WinformCommandBindView { ViewModel = vm };
+        var fixture = new CommandBinderImplementation();
+
+        var invokeCount = 0;
+        vm.Command1.Subscribe(_ => ++invokeCount);
+
+        var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+
+        view.Command1.PerformClick();
+
+        Assert.Equal(1, invokeCount);
+
+        var newCmd = ReactiveCommand.Create(() => { });
+        vm.Command1 = newCmd;
+
+        view.Command1.PerformClick();
+        Assert.Equal(1, invokeCount);
+
+        disp.Dispose();
+    }
+
+    /// <summary>
+    /// Tests the command bind explicit event wire up.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task CommandBindToExplicitEventWireupAsync()
+    {
+        using var testSequencer = new TestSequencer();
+        var vm = new WinformCommandBindViewModel();
+        var view = new WinformCommandBindView { ViewModel = vm };
+        var fixture = new CommandBinderImplementation();
+
+        var invokeCount = 0;
+        vm.Command2.Subscribe(async _ =>
         {
-            var vm = new WinformCommandBindViewModel();
-            var view = new WinformCommandBindView { ViewModel = vm };
-            var fixture = new CommandBinderImplementation();
-
-            var invokeCount = 0;
-            vm.Command1.Subscribe(_ => ++invokeCount);
-
-            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
-
-            view.Command1.PerformClick();
-
-            Assert.Equal(1, invokeCount);
-
-            var newCmd = ReactiveCommand.Create(() => { });
-            vm.Command1 = newCmd;
-
-            view.Command1.PerformClick();
-            Assert.Equal(1, invokeCount);
-
-            disp.Dispose();
-        }
-
-        /// <summary>
-        /// Tests the command bind explicit event wire up.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task CommandBindToExplicitEventWireupAsync()
-        {
-            using var testSequencer = new TestSequencer();
-            var vm = new WinformCommandBindViewModel();
-            var view = new WinformCommandBindView { ViewModel = vm };
-            var fixture = new CommandBinderImplementation();
-
-            var invokeCount = 0;
-            vm.Command2.Subscribe(async _ =>
-            {
-                ++invokeCount;
-                await testSequencer.AdvancePhaseAsync();
-            });
-
-            var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
-
-            view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-
-            disp.Dispose();
-
-            view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-
+            ++invokeCount;
             await testSequencer.AdvancePhaseAsync();
-            Assert.Equal(1, invokeCount);
-        }
+        });
 
-        [Fact]
-        public void CommandBindByNameWireupWithParameter()
-        {
-            var vm = new WinformCommandBindViewModel();
-            var view = new WinformCommandBindView { ViewModel = vm };
-            ICommandBinderImplementation fixture = new CommandBinderImplementation();
+        var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
 
-            var invokeCount = 0;
-            vm.Command3.Subscribe(_ => ++invokeCount);
+        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
 
-            var disp = CommandBinderImplementationMixins.BindCommand(fixture, vm, view, vm => vm.Command3, v => v.Command1, vm => vm.Parameter);
+        disp.Dispose();
 
-            view.Command1.PerformClick();
-            Assert.Equal(1, invokeCount);
-            Assert.Equal(10, vm.ParameterResult);
+        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
 
-            // update the parameter to ensure its updated when the command is executed
-            vm.Parameter = 2;
-            view.Command1.PerformClick();
-            Assert.Equal(2, invokeCount);
-            Assert.Equal(20, vm.ParameterResult);
+        await testSequencer.AdvancePhaseAsync();
+        Assert.Equal(1, invokeCount);
+    }
 
-            // break the Command3 subscription
-            var newCmd = ReactiveCommand.Create<int>(i => vm.ParameterResult = i * 2);
-            vm.Command3 = newCmd;
+    [Fact]
+    public void CommandBindByNameWireupWithParameter()
+    {
+        var vm = new WinformCommandBindViewModel();
+        var view = new WinformCommandBindView { ViewModel = vm };
+        ICommandBinderImplementation fixture = new CommandBinderImplementation();
 
-            // ensure that the invoke count does not update and that the Command3 is now using the new math
-            view.Command1.PerformClick();
-            Assert.Equal(2, invokeCount);
-            Assert.Equal(4, vm.ParameterResult);
+        var invokeCount = 0;
+        vm.Command3.Subscribe(_ => ++invokeCount);
 
-            disp.Dispose();
-        }
+        var disp = CommandBinderImplementationMixins.BindCommand(fixture, vm, view, vm => vm.Command3, v => v.Command1, vm => vm.Parameter);
 
-        [Fact]
-        public void CommandBindToExplicitEventWireupWithParameter()
-        {
-            var vm = new WinformCommandBindViewModel();
-            var view = new WinformCommandBindView { ViewModel = vm };
-            var fixture = new CommandBinderImplementation();
+        view.Command1.PerformClick();
+        Assert.Equal(1, invokeCount);
+        Assert.Equal(10, vm.ParameterResult);
 
-            var invokeCount = 0;
-            vm.Command3.Subscribe(_ => ++invokeCount);
+        // update the parameter to ensure its updated when the command is executed
+        vm.Parameter = 2;
+        view.Command1.PerformClick();
+        Assert.Equal(2, invokeCount);
+        Assert.Equal(20, vm.ParameterResult);
 
-            var disp = CommandBinderImplementationMixins.BindCommand(fixture, vm, view, x => x.Command3, x => x.Command2, vm => vm.Parameter, "MouseUp");
+        // break the Command3 subscription
+        var newCmd = ReactiveCommand.Create<int>(i => vm.ParameterResult = i * 2);
+        vm.Command3 = newCmd;
 
-            view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-            Assert.Equal(10, vm.ParameterResult);
-            Assert.Equal(1, invokeCount);
+        // ensure that the invoke count does not update and that the Command3 is now using the new math
+        view.Command1.PerformClick();
+        Assert.Equal(2, invokeCount);
+        Assert.Equal(4, vm.ParameterResult);
 
-            vm.Parameter = 2;
-            view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-            Assert.Equal(20, vm.ParameterResult);
-            Assert.Equal(2, invokeCount);
+        disp.Dispose();
+    }
 
-            disp.Dispose();
+    [Fact]
+    public void CommandBindToExplicitEventWireupWithParameter()
+    {
+        var vm = new WinformCommandBindViewModel();
+        var view = new WinformCommandBindView { ViewModel = vm };
+        var fixture = new CommandBinderImplementation();
 
-            view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-            Assert.Equal(2, invokeCount);
-        }
+        var invokeCount = 0;
+        vm.Command3.Subscribe(_ => ++invokeCount);
+
+        var disp = CommandBinderImplementationMixins.BindCommand(fixture, vm, view, x => x.Command3, x => x.Command2, vm => vm.Parameter, "MouseUp");
+
+        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        Assert.Equal(10, vm.ParameterResult);
+        Assert.Equal(1, invokeCount);
+
+        vm.Parameter = 2;
+        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        Assert.Equal(20, vm.ParameterResult);
+        Assert.Equal(2, invokeCount);
+
+        disp.Dispose();
+
+        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        Assert.Equal(2, invokeCount);
     }
 }

@@ -3,31 +3,30 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Testing.Tests
+namespace ReactiveUI.Testing.Tests;
+
+/// <summary>
+/// Test fixture.
+/// </summary>
+public class TestFixture
 {
     /// <summary>
-    /// Test fixture.
+    /// Gets or sets the count.
     /// </summary>
-    public class TestFixture
-    {
-        /// <summary>
-        /// Gets or sets the count.
-        /// </summary>
-        public int Count { get; set; }
+    public int Count { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        public string? Name { get; set; }
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string? Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the tests.
-        /// </summary>
-        public IEnumerable<string>? Tests { get; set; }
+    /// <summary>
+    /// Gets or sets the tests.
+    /// </summary>
+    public IEnumerable<string>? Tests { get; set; }
 
-        /// <summary>
-        /// Gets or sets the variables.
-        /// </summary>
-        public Dictionary<string, string>? Variables { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the variables.
+    /// </summary>
+    public Dictionary<string, string>? Variables { get; set; }
 }

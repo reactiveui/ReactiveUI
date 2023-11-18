@@ -3,22 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Winforms
+namespace ReactiveUI.Tests.Winforms;
+
+/// <summary>
+/// A signle instance example view.
+/// </summary>
+[SingleInstanceView]
+public class SingleInstanceExampleView : ReactiveUI.Winforms.ReactiveUserControl<SingleInstanceExampleViewModel>
 {
     /// <summary>
-    /// A signle instance example view.
+    /// Initializes a new instance of the <see cref="SingleInstanceExampleView"/> class.
     /// </summary>
-    [SingleInstanceView]
-    public class SingleInstanceExampleView : ReactiveUI.Winforms.ReactiveUserControl<SingleInstanceExampleViewModel>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SingleInstanceExampleView"/> class.
-        /// </summary>
-        public SingleInstanceExampleView() => Instances++;
+    public SingleInstanceExampleView() => Instances++;
 
-        /// <summary>
-        /// Gets the instances.
-        /// </summary>
-        public static int Instances { get; private set; }
-    }
+    /// <summary>
+    /// Gets the instances.
+    /// </summary>
+    public static int Instances { get; private set; }
 }

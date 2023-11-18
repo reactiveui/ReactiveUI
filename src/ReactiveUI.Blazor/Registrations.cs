@@ -16,10 +16,14 @@ public class Registrations : IWantsToRegisterStuff
     /// <inheritdoc/>
     public void Register(Action<Func<object>, Type> registerFunction)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(registerFunction);
+#else
         if (registerFunction is null)
         {
             throw new ArgumentNullException(nameof(registerFunction));
         }
+#endif
 
         registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));

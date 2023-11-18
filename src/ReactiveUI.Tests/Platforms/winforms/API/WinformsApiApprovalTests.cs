@@ -5,20 +5,19 @@
 
 using VerifyXunit;
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+/// <summary>
+/// Checks the WinForms API to make sure there aren't any unexpected public API changes.
+/// </summary>
+[ExcludeFromCodeCoverage]
+[UsesVerify]
+public class WinformsApiApprovalTests : ApiApprovalBase
 {
     /// <summary>
-    /// Checks the WinForms API to make sure there aren't any unexpected public API changes.
+    /// Checks the approved vs the received API.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    [UsesVerify]
-    public class WinformsApiApprovalTests : ApiApprovalBase
-    {
-        /// <summary>
-        /// Checks the approved vs the received API.
-        /// </summary>
-        /// <returns>A task to monitor the process.</returns>
-        [Fact]
-        public Task Winforms() => CheckApproval(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly);
-    }
+    /// <returns>A task to monitor the process.</returns>
+    [Fact]
+    public Task Winforms() => CheckApproval(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly);
 }

@@ -3,12 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
-{
-    /// <summary>
-    /// A single instance example view model.
-    /// </summary>
+namespace ReactiveUI.Tests;
+
+/// <summary>
+/// A single instance example view model.
+/// </summary>
 public class SingleInstanceExampleViewModel : ReactiveObject
-    {
-    }
+{
 }

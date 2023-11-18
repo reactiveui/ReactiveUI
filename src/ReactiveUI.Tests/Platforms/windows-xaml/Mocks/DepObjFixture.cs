@@ -11,26 +11,25 @@ using Windows.UI.Xaml.Controls;
 #else
 #endif
 
-namespace ReactiveUI.Tests.Xaml
+namespace ReactiveUI.Tests.Xaml;
+
+/// <summary>
+/// A dependency object fixture.
+/// </summary>
+public class DepObjFixture : FrameworkElement
 {
     /// <summary>
-    /// A dependency object fixture.
+    /// The test string property.
     /// </summary>
-    public class DepObjFixture : FrameworkElement
-    {
-        /// <summary>
-        /// The test string property.
-        /// </summary>
-        public static readonly DependencyProperty TestStringProperty =
-            DependencyProperty.Register("TestString", typeof(string), typeof(DepObjFixture), new PropertyMetadata(null));
+    public static readonly DependencyProperty TestStringProperty =
+        DependencyProperty.Register("TestString", typeof(string), typeof(DepObjFixture), new PropertyMetadata(null));
 
-        /// <summary>
-        /// Gets or sets the test string.
-        /// </summary>
-        public string TestString
-        {
-            get => (string)GetValue(TestStringProperty);
-            set => SetValue(TestStringProperty, value);
-        }
+    /// <summary>
+    /// Gets or sets the test string.
+    /// </summary>
+    public string TestString
+    {
+        get => (string)GetValue(TestStringProperty);
+        set => SetValue(TestStringProperty, value);
     }
 }

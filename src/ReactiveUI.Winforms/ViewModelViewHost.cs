@@ -13,7 +13,7 @@ namespace ReactiveUI.Winforms;
 [DefaultProperty("ViewModel")]
 public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
 {
-    private readonly CompositeDisposable _disposables = new CompositeDisposable();
+    private readonly CompositeDisposable _disposables = [];
     private Control? _defaultContent;
     private IObservable<string>? _viewContractObservable;
     private object? _viewModel;
@@ -116,16 +116,10 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     }
 
     /// <inheritdoc/>
-    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-    {
-        PropertyChanging?.Invoke(this, args);
-    }
+    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
     /// <inheritdoc/>
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-    {
-        PropertyChanged?.Invoke(this, args);
-    }
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <summary>
     /// Clean up any resources being used.

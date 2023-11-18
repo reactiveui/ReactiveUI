@@ -7,41 +7,40 @@
 using System.Windows.Threading;
 #endif
 
-namespace ReactiveUI.Tests.Xaml
+namespace ReactiveUI.Tests.Xaml;
+
+/// <summary>
+/// Helper utility to handle dispatcher in tests.
+/// </summary>
+public static class DispatcherUtilities
 {
     /// <summary>
-    /// Helper utility to handle dispatcher in tests.
+    /// Makes the dispatcher perform the events to keep it running.
     /// </summary>
-    public static class DispatcherUtilities
+    public static void DoEvents()
     {
-        /// <summary>
-        /// Makes the dispatcher perform the events to keep it running.
-        /// </summary>
-        public static void DoEvents()
-        {
 #if !NETFX_CORE
-            var frame = new DispatcherFrame();
-            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
-            Dispatcher.PushFrame(frame);
+        var frame = new DispatcherFrame();
+        Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+        Dispatcher.PushFrame(frame);
 #endif
-        }
+    }
 
-        /// <summary>
-        /// Gets the frame to exit.
-        /// </summary>
-        /// <param name="f">Unused frame object..</param>
-        /// <returns>Unused return value.</returns>
-        public static object? ExitFrame(object f)
-        {
+    /// <summary>
+    /// Gets the frame to exit.
+    /// </summary>
+    /// <param name="f">Unused frame object..</param>
+    /// <returns>Unused return value.</returns>
+    public static object? ExitFrame(object f)
+    {
 #if !NETFX_CORE
-            if (f is not DispatcherFrame frame)
-            {
-                return null;
-            }
-
-            frame.Continue = false;
-#endif
+        if (f is not DispatcherFrame frame)
+        {
             return null;
         }
+
+        frame.Continue = false;
+#endif
+        return null;
     }
 }

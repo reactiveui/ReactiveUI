@@ -12,7 +12,7 @@ namespace ReactiveUI;
 /// </summary>
 public static class RoutableViewModelMixin
 {
-    private static readonly ListChangeReason[] _navigationStackRemovalOperations = { ListChangeReason.Remove, ListChangeReason.RemoveRange };
+    private static readonly ListChangeReason[] _navigationStackRemovalOperations = [ListChangeReason.Remove, ListChangeReason.RemoveRange];
 
     /// <summary>
     /// This method allows you to set up connections that only operate

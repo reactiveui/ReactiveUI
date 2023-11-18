@@ -5,38 +5,37 @@
 
 using System.Windows.Controls;
 
-namespace ReactiveUI.Tests.Wpf
+namespace ReactiveUI.Tests.Wpf;
+
+/// <summary>
+/// A fake xaml command binding view.
+/// </summary>
+public class FakeXamlCommandBindingView : IViewFor<CommandBindingViewModel>
 {
+    private readonly Button _buttonDeclaredInXaml;
+
     /// <summary>
-    /// A fake xaml command binding view.
+    /// Initializes a new instance of the <see cref="FakeXamlCommandBindingView"/> class.
     /// </summary>
-    public class FakeXamlCommandBindingView : IViewFor<CommandBindingViewModel>
+    public FakeXamlCommandBindingView()
     {
-        private readonly Button _buttonDeclaredInXaml;
+        _buttonDeclaredInXaml = new Button();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FakeXamlCommandBindingView"/> class.
-        /// </summary>
-        public FakeXamlCommandBindingView()
-        {
-            _buttonDeclaredInXaml = new Button();
-
-            this.BindCommand(ViewModel, vm => vm!.Command2!, v => v._buttonDeclaredInXaml);
-        }
-
-        /// <summary>
-        /// Gets the name of button declared in xaml.
-        /// </summary>
-        public string NameOfButtonDeclaredInXaml => nameof(_buttonDeclaredInXaml);
-
-        /// <inheritdoc/>
-        object? IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (CommandBindingViewModel?)value;
-        }
-
-        /// <inheritdoc/>
-        public CommandBindingViewModel? ViewModel { get; set; }
+        this.BindCommand(ViewModel, vm => vm!.Command2!, v => v._buttonDeclaredInXaml);
     }
+
+    /// <summary>
+    /// Gets the name of button declared in xaml.
+    /// </summary>
+    public string NameOfButtonDeclaredInXaml => nameof(_buttonDeclaredInXaml);
+
+    /// <inheritdoc/>
+    object? IViewFor.ViewModel
+    {
+        get => ViewModel;
+        set => ViewModel = (CommandBindingViewModel?)value;
+    }
+
+    /// <inheritdoc/>
+    public CommandBindingViewModel? ViewModel { get; set; }
 }

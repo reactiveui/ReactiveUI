@@ -19,18 +19,18 @@ internal static class ObservableCollectionChangedToListChangedTransformer
         switch (ea.Action)
         {
             case NotifyCollectionChangedAction.Reset:
-                yield return new ListChangedEventArgs(ListChangedType.Reset, -1);
+                yield return new(ListChangedType.Reset, -1);
                 break;
 
             case NotifyCollectionChangedAction.Replace:
-                yield return new ListChangedEventArgs(ListChangedType.ItemChanged, ea.NewStartingIndex);
+                yield return new(ListChangedType.ItemChanged, ea.NewStartingIndex);
                 break;
 
             case NotifyCollectionChangedAction.Remove when ea.OldItems is not null:
                 {
                     foreach (var index in Enumerable.Range(ea.OldStartingIndex, ea.OldItems.Count))
                     {
-                        yield return new ListChangedEventArgs(ListChangedType.ItemDeleted, index);
+                        yield return new(ListChangedType.ItemDeleted, index);
                     }
 
                     break;
@@ -40,7 +40,7 @@ internal static class ObservableCollectionChangedToListChangedTransformer
                 {
                     foreach (var index in Enumerable.Range(ea.NewStartingIndex, ea.NewItems.Count))
                     {
-                        yield return new ListChangedEventArgs(ListChangedType.ItemAdded, index);
+                        yield return new(ListChangedType.ItemAdded, index);
                     }
 
                     break;
@@ -48,10 +48,10 @@ internal static class ObservableCollectionChangedToListChangedTransformer
 
             case NotifyCollectionChangedAction.Move:
                 // https://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
-                yield return new ListChangedEventArgs(
-                                                      ListChangedType.ItemMoved,
-                                                      ea.NewStartingIndex,
-                                                      ea.OldStartingIndex);
+                yield return new(
+                                ListChangedType.ItemMoved,
+                                ea.NewStartingIndex,
+                                ea.OldStartingIndex);
                 break;
         }
     }

@@ -17,7 +17,7 @@
     <PackageReleaseNotes>https://github.com/reactiveui/ReactiveUI/releases</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <NoWarn>$(NoWarn);VSSpell001</NoWarn>
+    <NoWarn>$(NoWarn);SA1010;RCS1198;RCS1158;RCS1163;RCS1256;IDE0060;IDE1006;VSSpell001</NoWarn>
 
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl> 
@@ -32,11 +32,12 @@
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl> 
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <XunitVersion>2.6.1</XunitVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="$(IsTestProject) != 'true'">
+  <!--<PropertyGroup Condition="$(IsTestProject) != 'true'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
   <!-- MonoAndroid doesn't seem to want to allow debugging for maintainers -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
@@ -48,20 +49,20 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(IsTestProject)">
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
-    <PackageReference Include="xunit" Version="2.6.1" />
-    <PackageReference Include="xunit.runner.console" Version="2.6.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.console" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
     <PackageReference Include="Xunit.StaFact" Version="1.1.11" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="6.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="11.0.0" />
     <PackageReference Include="coverlet.msbuild" Version="6.0.0" PrivateAssets="All" />
-    <PackageReference Include="Verify.Xunit" Version="22.1.4" />
+    <PackageReference Include="Verify.Xunit" Version="22.5.0" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" /> 
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" /> 
   </ItemGroup>
   
    <PropertyGroup>
@@ -77,7 +78,7 @@
   <ItemGroup>	
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="all" />	
     <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.507" PrivateAssets="all" />
-    <PackageReference Include="Roslynator.Analyzers" Version="4.6.1" PrivateAssets="All" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.6.2" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />

@@ -105,7 +105,7 @@ public class EqualityTypeConverter : IBindingTypeConverter
 
         try
         {
-            result = mi.Invoke(null, new[] { from, toType });
+            result = mi.Invoke(null, [from, toType]);
         }
         catch (Exception ex)
         {

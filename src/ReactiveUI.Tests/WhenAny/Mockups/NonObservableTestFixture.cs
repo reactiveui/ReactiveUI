@@ -3,10 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+public class NonObservableTestFixture
 {
-    public class NonObservableTestFixture
-    {
-        public TestFixture? Child { get; set; }
-    }
+    public TestFixture? Child { get; set; }
 }

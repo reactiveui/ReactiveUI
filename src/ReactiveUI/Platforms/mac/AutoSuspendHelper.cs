@@ -70,7 +70,6 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// Did finish launching.
     /// </summary>
     /// <param name="notification">The notification.</param>
-#pragma warning disable RCS1163 // Unused parameter.
     public void DidFinishLaunching(NSNotification notification) => _isResuming.OnNext(Unit.Default);
 
     /// <summary>
@@ -90,7 +89,6 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// </summary>
     /// <param name="notification">The notification.</param>
     public void DidHide(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
-#pragma warning restore RCS1163 // Unused parameter.
 
     /// <inheritdoc />
     public void Dispose()

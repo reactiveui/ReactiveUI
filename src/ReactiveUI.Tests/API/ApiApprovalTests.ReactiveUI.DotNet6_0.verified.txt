@@ -890,7 +890,7 @@ namespace ReactiveUI
     {
         public UnhandledErrorException() { }
         public UnhandledErrorException(string message) { }
-        protected UnhandledErrorException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        protected UnhandledErrorException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public UnhandledErrorException(string message, System.Exception innerException) { }
     }
     [System.Serializable]
@@ -899,7 +899,7 @@ namespace ReactiveUI
         public UnhandledInteractionException() { }
         public UnhandledInteractionException(string message) { }
         public UnhandledInteractionException(ReactiveUI.Interaction<TInput, TOutput> interaction, TInput input) { }
-        protected UnhandledInteractionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        protected UnhandledInteractionException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public UnhandledInteractionException(string message, System.Exception innerException) { }
         public TInput Input { get; }
         public ReactiveUI.Interaction<TInput, TOutput>? Interaction { get; }
@@ -931,7 +931,7 @@ namespace ReactiveUI
     {
         public ViewLocatorNotFoundException() { }
         public ViewLocatorNotFoundException(string message) { }
-        protected ViewLocatorNotFoundException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        protected ViewLocatorNotFoundException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public ViewLocatorNotFoundException(string message, System.Exception innerException) { }
     }
     public sealed class ViewModelActivator : System.IDisposable

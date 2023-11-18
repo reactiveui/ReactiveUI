@@ -34,10 +34,14 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
     /// <inheritdoc/>
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(sender);
+#else
         if (sender is null)
         {
             throw new ArgumentNullException(nameof(sender));
         }
+#endif
 
         var ei = EventInfoCache.Get((sender.GetType(), propertyName)) ?? throw new InvalidOperationException("Could not find a valid event for expression.");
         return Observable.Create<IObservedChange<object, object?>>(subj =>

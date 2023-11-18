@@ -47,7 +47,7 @@ namespace ReactiveUI;
 /// </param>
 public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) : IInteraction<TInput, TOutput>
 {
-    private readonly List<Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>>> _handlers = new();
+    private readonly List<Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>>> _handlers = [];
     private readonly object _sync = new();
     private readonly IScheduler _handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
 

@@ -10,29 +10,28 @@ using PublicApiGenerator;
 
 using VerifyXunit;
 
-namespace ReactiveUI.Tests
-{
-    [ExcludeFromCodeCoverage]
-    [UsesVerify]
-    public abstract class ApiApprovalBase
-    {
-        protected static Task CheckApproval(Assembly assembly, [CallerFilePath]string? filePath = null)
-        {
-            if (filePath is null)
-            {
-                return Task.CompletedTask;
-            }
+namespace ReactiveUI.Tests;
 
-            var generatorOptions = new ApiGeneratorOptions { AllowNamespacePrefixes = new[] { "ReactiveUI" } };
-            var apiText = assembly.GeneratePublicApi(generatorOptions);
-            return Verifier.Verify(apiText, null, filePath)
-                .UniqueForRuntimeAndVersion()
-                .ScrubEmptyLines()
-                .ScrubLines(l =>
-                    l.StartsWith("[assembly: AssemblyVersion(", StringComparison.InvariantCulture) ||
-                    l.StartsWith("[assembly: AssemblyFileVersion(", StringComparison.InvariantCulture) ||
-                    l.StartsWith("[assembly: AssemblyInformationalVersion(", StringComparison.InvariantCulture) ||
-                    l.StartsWith("[assembly: System.Reflection.AssemblyMetadata(", StringComparison.InvariantCulture));
+[ExcludeFromCodeCoverage]
+[UsesVerify]
+public abstract class ApiApprovalBase
+{
+    protected static Task CheckApproval(Assembly assembly, [CallerFilePath]string? filePath = null)
+    {
+        if (filePath is null)
+        {
+            return Task.CompletedTask;
         }
+
+        var generatorOptions = new ApiGeneratorOptions { AllowNamespacePrefixes = ["ReactiveUI"] };
+        var apiText = assembly.GeneratePublicApi(generatorOptions);
+        return Verifier.Verify(apiText, null, filePath)
+            .UniqueForRuntimeAndVersion()
+            .ScrubEmptyLines()
+            .ScrubLines(l =>
+                l.StartsWith("[assembly: AssemblyVersion(", StringComparison.InvariantCulture) ||
+                l.StartsWith("[assembly: AssemblyFileVersion(", StringComparison.InvariantCulture) ||
+                l.StartsWith("[assembly: AssemblyInformationalVersion(", StringComparison.InvariantCulture) ||
+                l.StartsWith("[assembly: System.Reflection.AssemblyMetadata(", StringComparison.InvariantCulture));
     }
 }

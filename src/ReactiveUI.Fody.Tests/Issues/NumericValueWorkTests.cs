@@ -21,10 +21,10 @@ public static class NumericValueWorkTests
     {
         var testModel = new TestModel();
 
-        testModel.DoubleProperty.Should().Be(default(double));
-        testModel.IntProperty.Should().Be(default(int));
-        testModel.FloatProperty.Should().Be(default(float));
-        testModel.LongProperty.Should().Be(default(long));
+        testModel.DoubleProperty.Should().Be(default);
+        testModel.IntProperty.Should().Be(default);
+        testModel.FloatProperty.Should().Be(default);
+        testModel.LongProperty.Should().Be(default);
     }
 
     /// <summary>

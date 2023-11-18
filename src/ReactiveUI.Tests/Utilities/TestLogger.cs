@@ -3,31 +3,30 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+public class TestLogger : ILogger
 {
-    public class TestLogger : ILogger
+    public TestLogger()
     {
-        public TestLogger()
-        {
-            Messages = new List<(string message, Type type, LogLevel logLevel)>();
-            Level = LogLevel.Debug;
-        }
-
-        public List<(string message, Type type, LogLevel logLevel)> Messages { get; }
-
-        /// <inheritdoc/>
-        public LogLevel Level { get; set; }
-
-        /// <inheritdoc/>
-        public void Write(Exception exception, string message, Type type, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
-
-        /// <inheritdoc/>
-        public void Write(string message, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
-
-        /// <inheritdoc/>
-        public void Write(Exception exception, string message, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
-
-        /// <inheritdoc/>
-        public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel) => Messages.Add((message, type, logLevel));
+        Messages = [];
+        Level = LogLevel.Debug;
     }
+
+    public List<(string message, Type type, LogLevel logLevel)> Messages { get; }
+
+    /// <inheritdoc/>
+    public LogLevel Level { get; set; }
+
+    /// <inheritdoc/>
+    public void Write(Exception exception, string message, Type type, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
+
+    /// <inheritdoc/>
+    public void Write(string message, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
+
+    /// <inheritdoc/>
+    public void Write(Exception exception, string message, LogLevel logLevel) => Messages.Add((message, typeof(TestLogger), logLevel));
+
+    /// <inheritdoc/>
+    public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel) => Messages.Add((message, type, logLevel));
 }

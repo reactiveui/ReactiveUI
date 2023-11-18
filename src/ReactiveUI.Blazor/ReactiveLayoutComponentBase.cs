@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.CompilerServices;
-
 using Microsoft.AspNetCore.Components;
 
 namespace ReactiveUI.Blazor;
@@ -70,7 +69,9 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
     }
 
     /// <inheritdoc />
+#pragma warning disable RCS1168 // Parameter name differs from base name.
     protected override void OnAfterRender(bool isFirstRender)
+#pragma warning restore RCS1168 // Parameter name differs from base name.
     {
         if (isFirstRender)
         {

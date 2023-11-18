@@ -46,9 +46,7 @@ public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReacti
     /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell"/> class.
     /// </summary>
     /// <param name="coder">The coder.</param>
-#pragma warning disable RCS1163 // Unused parameter.
     protected ReactiveCollectionViewCell(NSCoder coder)
-#pragma warning restore RCS1163 // Unused parameter.
         : base(NSObjectFlag.Empty)
     {
     }
@@ -64,7 +62,7 @@ public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReacti
     /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveCollectionViewCell(IntPtr handle)
+    protected ReactiveCollectionViewCell(in IntPtr handle)
         : base(handle)
     {
     }
@@ -150,9 +148,7 @@ public abstract class ReactiveCollectionViewCell<TViewModel> : ReactiveCollectio
     /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell{TViewModel}"/> class.
     /// </summary>
     /// <param name="coder">The coder.</param>
-#pragma warning disable RCS1163 // Unused parameter.
     protected ReactiveCollectionViewCell(NSCoder coder)
-#pragma warning restore RCS1163 // Unused parameter.
         : base(NSObjectFlag.Empty)
     {
     }
@@ -177,7 +173,7 @@ public abstract class ReactiveCollectionViewCell<TViewModel> : ReactiveCollectio
     /// Initializes a new instance of the <see cref="ReactiveCollectionViewCell{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveCollectionViewCell(IntPtr handle)
+    protected ReactiveCollectionViewCell(in IntPtr handle)
         : base(handle)
     {
     }

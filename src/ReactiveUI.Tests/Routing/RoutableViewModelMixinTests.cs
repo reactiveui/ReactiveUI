@@ -3,264 +3,261 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests;
+
+/// <summary>
+/// Routable ViewModel MixinTests.
+/// </summary>
+public class RoutableViewModelMixinTests
 {
     /// <summary>
-    /// Routable ViewModel MixinTests.
+    /// Whens the navigated to calls on navigated to when view model is first added.
     /// </summary>
-    public class RoutableViewModelMixinTests
+    [Fact]
+    public void WhenNavigatedToCallsOnNavigatedToWhenViewModelIsFirstAdded()
     {
-        /// <summary>
-        /// Whens the navigated to calls on navigated to when view model is first added.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatedToCallsOnNavigatedToWhenViewModelIsFirstAdded()
+        var count = 0;
+
+        var screen = new TestScreen();
+        var vm = new RoutableViewModel(screen);
+
+        vm.WhenNavigatedTo(() =>
         {
-            var count = 0;
+            count++;
 
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
+            return Disposable.Empty;
+        });
 
-            vm.WhenNavigatedTo(() =>
-            {
-                count++;
+        screen.Router.Navigate.Execute(vm);
 
-                return Disposable.Empty;
-            });
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.Navigate.Execute(vm);
+    /// <summary>
+    /// Whens the navigated to calls on navigated to when view model returns to top of stack.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatedToCallsOnNavigatedToWhenViewModelReturnsToTopOfStack()
+    {
+        var count = 0;
 
-            Assert.Equal(1, count);
-        }
+        var screen = new TestScreen();
+        var vm = new RoutableViewModel(screen);
+        var vm2 = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigated to calls on navigated to when view model returns to top of stack.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatedToCallsOnNavigatedToWhenViewModelReturnsToTopOfStack()
+        vm.WhenNavigatedTo(() =>
         {
-            var count = 0;
+            count++;
 
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
-            var vm2 = new RoutableViewModel(screen);
+            return Disposable.Empty;
+        });
 
-            vm.WhenNavigatedTo(() =>
-            {
-                count++;
+        screen.Router.Navigate.Execute(vm);
+        screen.Router.Navigate.Execute(vm2);
+        screen.Router.Navigate.Execute(vm);
 
-                return Disposable.Empty;
-            });
+        Assert.Equal(2, count);
+    }
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.Navigate.Execute(vm2);
-            screen.Router.Navigate.Execute(vm);
+    /// <summary>
+    /// Whens the navigated to calls dispose when view model loses focus.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatedToCallsDisposeWhenViewModelLosesFocus()
+    {
+        var count = 0;
 
-            Assert.Equal(2, count);
-        }
+        var screen = new TestScreen();
+        var vm = new RoutableViewModel(screen);
+        var vm2 = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigated to calls dispose when view model loses focus.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatedToCallsDisposeWhenViewModelLosesFocus()
-        {
-            var count = 0;
+        vm.WhenNavigatedTo(() => Disposable.Create(() => count++));
 
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
-            var vm2 = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm);
 
-            vm.WhenNavigatedTo(() => Disposable.Create(() => count++));
+        Assert.Equal(0, count);
 
-            screen.Router.Navigate.Execute(vm);
+        screen.Router.Navigate.Execute(vm2);
 
-            Assert.Equal(0, count);
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.Navigate.Execute(vm2);
+    /// <summary>
+    /// Whens the navigated to calls dispose when navigation stack is reset.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatedToCallsDisposeWhenNavigationStackIsReset()
+    {
+        var count = 0;
 
-            Assert.Equal(1, count);
-        }
+        var screen = new TestScreen();
+        var vm1 = new RoutableViewModel(screen);
+        var vm2 = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigated to calls dispose when navigation stack is reset.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatedToCallsDisposeWhenNavigationStackIsReset()
-        {
-            var count = 0;
+        vm1.WhenNavigatedTo(() => Disposable.Create(() => count++));
 
-            var screen = new TestScreen();
-            var vm1 = new RoutableViewModel(screen);
-            var vm2 = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm1);
 
-            vm1.WhenNavigatedTo(() => Disposable.Create(() => count++));
+        Assert.Equal(0, count);
 
-            screen.Router.Navigate.Execute(vm1);
+        screen.Router.NavigateAndReset.Execute(vm2);
 
-            Assert.Equal(0, count);
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.NavigateAndReset.Execute(vm2);
+    /// <summary>
+    /// Whens the navigated to observable fires when view model added to navigation stack.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatedToObservableFiresWhenViewModelAddedToNavigationStack()
+    {
+        var count = 0;
 
-            Assert.Equal(1, count);
-        }
+        var screen = new TestScreen();
+        var vm = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigated to observable fires when view model added to navigation stack.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatedToObservableFiresWhenViewModelAddedToNavigationStack()
-        {
-            var count = 0;
+        vm.WhenNavigatedToObservable().Subscribe(_ => count++);
 
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm);
 
-            vm.WhenNavigatedToObservable().Subscribe(_ => count++);
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.Navigate.Execute(vm);
+    /// <summary>
+    /// Whens the navigated to observable fires when view model returns to navigation stack.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatedToObservableFiresWhenViewModelReturnsToNavigationStack()
+    {
+        var count = 0;
 
-            Assert.Equal(1, count);
-        }
+        var screen = new TestScreen();
+        var vm = new RoutableViewModel(screen);
+        var vm2 = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigated to observable fires when view model returns to navigation stack.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatedToObservableFiresWhenViewModelReturnsToNavigationStack()
-        {
-            var count = 0;
+        vm.WhenNavigatedToObservable().Subscribe(_ => count++);
 
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
-            var vm2 = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm);
+        screen.Router.Navigate.Execute(vm2);
+        screen.Router.Navigate.Execute(vm);
 
-            vm.WhenNavigatedToObservable().Subscribe(_ => count++);
+        Assert.Equal(2, count);
+    }
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.Navigate.Execute(vm2);
-            screen.Router.Navigate.Execute(vm);
+    /// <summary>
+    /// Whens the navigated to observable completes when view model is removed from navigation stack.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatedToObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
+    {
+        var count = 0;
 
-            Assert.Equal(2, count);
-        }
+        var screen = new TestScreen();
+        var vm = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigated to observable completes when view model is removed from navigation stack.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatedToObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
-        {
-            var count = 0;
+        vm.WhenNavigatedToObservable().Subscribe(
+            _ => { },
+            () => count++);
 
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm);
+        screen.Router.NavigateBack.Execute();
 
-            vm.WhenNavigatedToObservable().Subscribe(
-                _ => { },
-                () => count++);
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.NavigateBack.Execute();
+    /// <summary>
+    /// Whens the navigated to observable completes when navigation stack is reset.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatedToObservableCompletesWhenNavigationStackIsReset()
+    {
+        var count = 0;
 
-            Assert.Equal(1, count);
-        }
+        var screen = new TestScreen();
+        var vm1 = new RoutableViewModel(screen);
+        var vm2 = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigated to observable completes when navigation stack is reset.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatedToObservableCompletesWhenNavigationStackIsReset()
-        {
-            var count = 0;
+        vm1.WhenNavigatedToObservable().Subscribe(
+            _ => { },
+            () => count++);
 
-            var screen = new TestScreen();
-            var vm1 = new RoutableViewModel(screen);
-            var vm2 = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm1);
+        screen.Router.NavigateAndReset.Execute(vm2);
 
-            vm1.WhenNavigatedToObservable().Subscribe(
-                _ => { },
-                () => count++);
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.Navigate.Execute(vm1);
-            screen.Router.NavigateAndReset.Execute(vm2);
+    /// <summary>
+    /// Whens the navigating from observable fires when view model loses focus.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatingFromObservableFiresWhenViewModelLosesFocus()
+    {
+        var count = 0;
+        var screen = new TestScreen();
+        var vm = new RoutableViewModel(screen);
+        var vm2 = new RoutableViewModel(screen);
 
-            Assert.Equal(1, count);
-        }
+        vm.WhenNavigatingFromObservable().Subscribe(_ => count++);
 
-        /// <summary>
-        /// Whens the navigating from observable fires when view model loses focus.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatingFromObservableFiresWhenViewModelLosesFocus()
-        {
-            var count = 0;
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
-            var vm2 = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm);
+        screen.Router.Navigate.Execute(vm2);
 
-            vm.WhenNavigatingFromObservable().Subscribe(_ => count++);
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.Navigate.Execute(vm2);
+    /// <summary>
+    /// Whens the navigating from observable completes when view model is removed from navigation stack.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatingFromObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
+    {
+        var count = 0;
 
-            Assert.Equal(1, count);
-        }
+        var screen = new TestScreen();
+        var vm = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigating from observable completes when view model is removed from navigation stack.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatingFromObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
-        {
-            var count = 0;
+        vm.WhenNavigatingFromObservable().Subscribe(
+            _ => { },
+            () => count++);
 
-            var screen = new TestScreen();
-            var vm = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm);
+        screen.Router.NavigateBack.Execute();
 
-            vm.WhenNavigatingFromObservable().Subscribe(
-                _ => { },
-                () => count++);
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.NavigateBack.Execute();
+    /// <summary>
+    /// Whens the navigating from observable completes when navigation stack is reset.
+    /// </summary>
+    [Fact]
+    public void WhenNavigatingFromObservableCompletesWhenNavigationStackIsReset()
+    {
+        var count = 0;
 
-            Assert.Equal(1, count);
-        }
+        var screen = new TestScreen();
+        var vm1 = new RoutableViewModel(screen);
+        var vm2 = new RoutableViewModel(screen);
 
-        /// <summary>
-        /// Whens the navigating from observable completes when navigation stack is reset.
-        /// </summary>
-        [Fact]
-        public void WhenNavigatingFromObservableCompletesWhenNavigationStackIsReset()
-        {
-            var count = 0;
+        vm1.WhenNavigatingFromObservable().Subscribe(
+            _ => { },
+            () => count++);
 
-            var screen = new TestScreen();
-            var vm1 = new RoutableViewModel(screen);
-            var vm2 = new RoutableViewModel(screen);
+        screen.Router.Navigate.Execute(vm1);
+        screen.Router.NavigateAndReset.Execute(vm2);
 
-            vm1.WhenNavigatingFromObservable().Subscribe(
-                _ => { },
-                () => count++);
+        Assert.Equal(1, count);
+    }
 
-            screen.Router.Navigate.Execute(vm1);
-            screen.Router.NavigateAndReset.Execute(vm2);
+    private class TestScreen : IScreen
+    {
+        public RoutingState Router { get; } = new();
+    }
 
-            Assert.Equal(1, count);
-        }
+    private class RoutableViewModel(IScreen screen) : ReactiveObject, IRoutableViewModel
+    {
+        public string UrlPathSegment => "Test";
 
-        private class TestScreen : IScreen
-        {
-            public RoutingState Router { get; } = new();
-        }
-
-        private class RoutableViewModel : ReactiveObject, IRoutableViewModel
-        {
-            public RoutableViewModel(IScreen screen) => HostScreen = screen;
-
-            public string UrlPathSegment => "Test";
-
-            public IScreen HostScreen { get; }
-        }
+        public IScreen HostScreen { get; } = screen;
     }
 }

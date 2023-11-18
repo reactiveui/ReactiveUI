@@ -6,31 +6,30 @@
 #if HAS_UNO
 namespace ReactiveUI.Uno
 #else
-namespace ReactiveUI
+namespace ReactiveUI;
 #endif
+
+/// <summary>
+/// Returns the current orientation of the device on Windows.
+/// </summary>
+public class PlatformOperations : IPlatformOperations
 {
-    /// <summary>
-    /// Returns the current orientation of the device on Windows.
-    /// </summary>
-    public class PlatformOperations : IPlatformOperations
+    /// <inheritdoc/>
+    public string? GetOrientation()
     {
-        /// <inheritdoc/>
-        public string? GetOrientation()
-        {
 #if NETFX_CORE || HAS_UNO
-            try
-            {
-                return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+        try
+        {
+            return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
+        }
+        catch (Exception)
+        {
+            return null;
+        }
 #else
 #pragma warning disable IDE0022 // Use expression body for method
-            return null;
+        return null;
 #pragma warning restore IDE0022 // Use expression body for method
 #endif
-        }
     }
 }

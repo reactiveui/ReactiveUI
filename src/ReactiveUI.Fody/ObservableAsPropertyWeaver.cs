@@ -5,7 +5,6 @@
 
 using System;
 using System.Linq;
-
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -144,6 +143,10 @@ public class ObservableAsPropertyWeaver
     /// <param name="type">The type.</param>
     public void EmitDefaultValue(MethodBody methodBody, ILProcessor il, TypeReference type)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(methodBody);
+        ArgumentNullException.ThrowIfNull(il);
+#else
         if (methodBody is null)
         {
             throw new ArgumentNullException(nameof(methodBody));
@@ -153,6 +156,7 @@ public class ObservableAsPropertyWeaver
         {
             throw new ArgumentNullException(nameof(il));
         }
+#endif
 
         if (ModuleDefinition is not null)
         {
