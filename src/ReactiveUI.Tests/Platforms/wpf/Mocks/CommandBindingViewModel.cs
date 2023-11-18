@@ -7,16 +7,15 @@ namespace ReactiveUI.Tests.Wpf;
 
 public class CommandBindingViewModel : ReactiveObject
 {
+    private readonly ObservableAsPropertyHelper<int?> _result;
     private ReactiveCommand<int, int> _Command1;
     private ReactiveCommand<Unit, Unit> _Command2;
     private ReactiveCommand<Unit, int?> _Command3;
-    private ObservableAsPropertyHelper<int?> _result;
-
     private int _value;
 
     public CommandBindingViewModel()
     {
-        _Command1 = ReactiveCommand.Create<int, int>(_ => { return _; }, outputScheduler: ImmediateScheduler.Instance);
+        _Command1 = ReactiveCommand.Create<int, int>(_ => _, outputScheduler: ImmediateScheduler.Instance);
         _Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
         _Command3 = ReactiveCommand.CreateFromTask(RunAsync, outputScheduler: RxApp.TaskpoolScheduler);
         _result = _Command3.ToProperty(this, x => x.Result, scheduler: RxApp.MainThreadScheduler);

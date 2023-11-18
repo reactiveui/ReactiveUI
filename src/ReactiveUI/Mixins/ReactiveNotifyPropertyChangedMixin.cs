@@ -182,20 +182,14 @@ public static class ReactiveNotifyPropertyChangedMixin
             throw new ArgumentNullException(nameof(expression));
         }
 
-        var memberInfo = expression.GetMemberInfo();
-        if (memberInfo is null)
-        {
-            throw new ArgumentException("The expression does not have valid member info", nameof(expression));
-        }
-
+        var memberInfo = expression.GetMemberInfo() ?? throw new ArgumentException("The expression does not have valid member info", nameof(expression));
         var propertyName = memberInfo.Name;
         var result = _notifyFactoryCache.Get((sender.GetType(), propertyName, beforeChange));
 
-        if (result is null)
+        return result switch
         {
-            throw new Exception($"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
-        }
-
-        return result.GetNotificationForProperty(sender, expression, propertyName, beforeChange, suppressWarnings);
+            null => throw new Exception($"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance."),
+            _ => result.GetNotificationForProperty(sender, expression, propertyName, beforeChange, suppressWarnings)
+        };
     }
 }
