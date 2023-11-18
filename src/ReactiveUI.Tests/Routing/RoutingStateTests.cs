@@ -127,16 +127,75 @@ public class RoutingStateTests
     {
         var fixture = new TestScreen
         {
-            Router = new RoutingState()
-        };
-        var viewModel = new TestViewModel();
+            var fixture = new TestScreen
+            {
+                Router = new RoutingState()
+            };
+            var viewModel = new TestViewModel();
 
-        Assert.False(fixture.Router.NavigationStack.Count > 0);
+            Assert.False(fixture.Router.NavigationStack.Count > 0);
 
-        fixture.Router.NavigateAndReset.Execute(viewModel);
+            fixture.Router.NavigateAndReset.Execute(viewModel);
 
-        Assert.True(fixture.Router.NavigationStack.Count == 1);
-        Assert.True(ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel));
+            Assert.True(fixture.Router.NavigationStack.Count == 1);
+            Assert.True(ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel));
+        }
+
+        /// <summary>
+        /// Schedulers the is used for all commands.
+        /// </summary>
+        [Fact]
+        public void SchedulerIsUsedForAllCommands() =>
+            new TestScheduler().With(
+                scheduler =>
+                {
+                    var fixture = new RoutingState(scheduler);
+
+                    fixture
+                        .Navigate
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigate).Subscribe();
+                    fixture
+                        .NavigateBack
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateBack).Subscribe();
+                    fixture
+                        .NavigateAndReset
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
+
+                    fixture.Navigate.Execute(new TestViewModel()).Subscribe();
+                    Assert.Empty(navigate);
+                    scheduler.Start();
+                    Assert.NotEmpty(navigate);
+
+                    fixture.NavigateBack.Execute().Subscribe();
+                    Assert.Empty(navigateBack);
+                    scheduler.Start();
+                    Assert.NotEmpty(navigateBack);
+
+                    fixture.NavigateAndReset.Execute(new TestViewModel()).Subscribe();
+                    Assert.Empty(navigateAndReset);
+                    scheduler.Start();
+                    Assert.NotEmpty(navigateAndReset);
+                });
+
+        [Fact]
+        public void RoutingStateThrows() =>
+            new TestScheduler().With(
+                scheduler =>
+                {
+                    var fixture = new RoutingState(scheduler);
+
+                    fixture
+                        .Navigate
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigate).Subscribe();
+                    fixture
+                        .NavigateBack
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateBack).Subscribe();
+                    fixture
+                        .NavigateAndReset
+                        .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
+
+                    Assert.Throws<Exception>(() => fixture.Navigate.Execute(default(TestViewModel)!).Subscribe());
+                });
     }
 
     /// <summary>

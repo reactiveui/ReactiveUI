@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
-
 using DynamicData;
 using DynamicData.Binding;
 #pragma warning disable 8618
@@ -20,6 +17,7 @@ namespace ReactiveUI;
 public class RoutingState : ReactiveObject
 {
     [IgnoreDataMember]
+    [JsonIgnore]
     private readonly IScheduler _scheduler;
 
     /// <summary>
@@ -39,16 +37,18 @@ public class RoutingState : ReactiveObject
     }
 
     /// <summary>
-    /// Gets the current navigation stack, the last element in the
+    /// Gets or sets the current navigation stack, the last element in the
     /// collection being the currently visible ViewModel.
     /// </summary>
     [DataMember]
-    public ObservableCollection<IRoutableViewModel> NavigationStack { get; }
+    [JsonRequired]
+    public ObservableCollection<IRoutableViewModel> NavigationStack { get; set; }
 
     /// <summary>
     /// Gets or sets a command which will navigate back to the previous element in the stack.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public ReactiveCommand<Unit, IRoutableViewModel> NavigateBack { get; protected set; }
 
     /// <summary>
@@ -56,6 +56,7 @@ public class RoutingState : ReactiveObject
     /// must be a ViewModel that implements IRoutableViewModel.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; }
 
     /// <summary>
@@ -65,18 +66,21 @@ public class RoutingState : ReactiveObject
     /// IRoutableViewModel.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
 
     /// <summary>
     /// Gets or sets the current view model which is to be shown for the Routing.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
     /// <summary>
     /// Gets or sets an observable which will signal when the Navigation changes.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
 
     [OnDeserialized]

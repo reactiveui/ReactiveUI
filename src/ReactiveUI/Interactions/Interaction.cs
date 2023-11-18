@@ -122,7 +122,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     {
         lock (_sync)
         {
-            return _handlers.ToArray();
+            return [.. _handlers];
         }
     }
 

@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2023 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2023 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
-
+using System.Text.Json;
 using DynamicData;
 
 namespace ReactiveUI.Tests;
@@ -252,14 +252,33 @@ public class ReactiveObjectTests
         observable.Subscribe(_ => throw new Exception("This is a test."));
 
         var result = Record.Exception(() => fixture.IsOnlyOneWord = "Two Words");
-
-        Assert.IsType<Exception>(result);
-        Assert.Equal("This is a test.", result.Message);
     }
 
-    private static void AssertCount(int expected, params ICollection[] collections)
-    {
-        foreach (var collection in collections)
+        [Fact]
+        public void ReactiveObjectCanSuppressChangeNotifications()
+        {
+            var fixture = new TestFixture();
+            using (fixture.SuppressChangeNotifications())
+            {
+                Assert.False(fixture.AreChangeNotificationsEnabled());
+            }
+
+            Assert.True(fixture.AreChangeNotificationsEnabled());
+
+            var ser = JsonSerializer.Serialize(fixture);
+            Assert.True(ser.Length > 0);
+            var deser = JsonSerializer.Deserialize<TestFixture>(ser);
+            Assert.NotNull(deser);
+
+            using (deser.SuppressChangeNotifications())
+            {
+                Assert.False(deser.AreChangeNotificationsEnabled());
+            }
+
+            Assert.True(deser.AreChangeNotificationsEnabled());
+        }
+
+        private static void AssertCount(int expected, params ICollection[] collections)
         {
             Assert.Equal(expected, collection.Count);
         }

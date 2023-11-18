@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.ComponentModel;
-using System.Runtime.Serialization;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -74,16 +71,19 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
 
     /// <inheritdoc />
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => // TODO: Create Test
         _changing.Value;
 
     /// <inheritdoc />
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => // TODO: Create Test
         _changed.Value;
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
     /// <inheritdoc/>

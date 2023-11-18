@@ -231,13 +231,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
             return Disposable.Empty;
         }
 
-        var converter = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TValue), typeof(TTValue?));
-
-        if (converter is null)
-        {
-            throw new ArgumentException($"Can't convert {typeof(TValue)} to {typeof(TTValue)}. To fix this, register a IBindingTypeConverter");
-        }
-
+        var converter = (vmToViewConverterOverride ?? GetConverterForTypes(typeof(TValue), typeof(TTValue?))) ?? throw new ArgumentException($"Can't convert {typeof(TValue)} to {typeof(TTValue)}. To fix this, register a IBindingTypeConverter");
         var source = observedChange.SelectMany(x => !converter.TryConvert(x, typeof(TTValue?), conversionHint, out var tmp) ? Observable<object>.Empty : Observable.Return(tmp));
 
         var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target, viewExpression);

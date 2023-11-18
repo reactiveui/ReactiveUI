@@ -50,7 +50,9 @@ internal class LinkerOverrides
         var th = new TabHost(null);
         th.CurrentTab = th.CurrentTab;
         var tp = new TimePicker(null);
+#pragma warning disable CA1416 // Validate platform compatibility
         tp.Hour = tp.Hour;
         tp.Minute = tp.Minute;
+#pragma warning restore CA1416 // Validate platform compatibility
     }
 }

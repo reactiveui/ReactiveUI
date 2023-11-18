@@ -5,6 +5,9 @@
 
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using Android.Support.V7.Widget;
+using Android.Views;
 
 namespace ReactiveUI.AndroidSupport;
 
@@ -20,6 +23,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Legacy reasons")]
     [IgnoreDataMember]
+    [JsonIgnore]
     protected Lazy<PropertyInfo[]> AllPublicProperties = null!;
 
     private readonly Subject<Unit> _activated = new();
@@ -139,6 +143,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// Gets an observable which signals when exceptions are thrown.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
@@ -150,10 +155,12 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.GetChangingObservable();
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.GetChangedObservable();
 
     /// <inheritdoc/>

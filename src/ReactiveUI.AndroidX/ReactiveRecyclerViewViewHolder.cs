@@ -5,6 +5,7 @@
 
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
 
@@ -23,6 +24,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Legacy reasons")]
     [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
     [IgnoreDataMember]
+    [JsonIgnore]
     protected Lazy<PropertyInfo[]>? AllPublicProperties;
 
     private readonly Subject<Unit> _activated = new();
@@ -143,6 +145,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// Gets an observable which signals when exceptions are thrown.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
@@ -154,10 +157,12 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.GetChangingObservable();
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.GetChangedObservable();
 
     /// <inheritdoc/>
