@@ -60,6 +60,10 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(target);
+#else
         if (command is null)
         {
             throw new ArgumentNullException(nameof(command));
@@ -69,6 +73,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         {
             throw new ArgumentNullException(nameof(target));
         }
+#endif
 
         commandParameter ??= Observable.Return(target);
 
@@ -80,7 +85,8 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
                 {
                     command.Execute(latestParam);
                 }
-            }) { IsEnabled = command.CanExecute(latestParam) };
+            })
+        { IsEnabled = command.CanExecute(latestParam) };
 
         var sel = new Selector("theAction:");
 
@@ -120,14 +126,11 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
-        where TEventArgs : EventArgs =>
-#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
-        throw new NotImplementedException();
-#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
+        where TEventArgs : EventArgs => throw new NotImplementedException();
 
-        private class ControlDelegate(Action<NSObject> block) : NSObject
-        {
-            private readonly Action<NSObject> _block = block;
+    private class ControlDelegate(Action<NSObject> block) : NSObject
+    {
+        private readonly Action<NSObject> _block = block;
 
         public bool IsEnabled { get; set; }
 
@@ -136,11 +139,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
 #if !UIKIT
         [Export("validateMenuItem:")]
-#pragma warning disable RCS1163 // Unused parameter.
-#pragma warning disable IDE0060 // Remove unused parameter
         public bool ValidateMenuItem(NSMenuItem menuItem) => IsEnabled;
-#pragma warning restore IDE0060 // Remove unused parameter
-#pragma warning restore RCS1163 // Unused parameter.
 #endif
     }
 }

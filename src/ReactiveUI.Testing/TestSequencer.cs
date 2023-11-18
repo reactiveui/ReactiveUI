@@ -42,9 +42,7 @@ public class TestSequencer : IDisposable
     /// <returns>
     /// A <see cref="Task" /> representing the asynchronous operation.
     /// </returns>
-#pragma warning disable RCS1163 // Unused parameter.
     public Task AdvancePhaseAsync(string comment = "")
-#pragma warning restore RCS1163 // Unused parameter.
     {
         if (_phaseSync.ParticipantCount == _phaseSync.ParticipantsRemaining)
         {

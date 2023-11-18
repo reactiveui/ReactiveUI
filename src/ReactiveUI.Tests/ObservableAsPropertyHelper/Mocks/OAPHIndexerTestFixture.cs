@@ -53,7 +53,5 @@ internal class OAPHIndexerTestFixture : ReactiveObject
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
     /// <returns>The string.</returns>
-#pragma warning disable RCS1163 // Unused parameter.
     public string? this[string propertyName] => string.Empty;
-#pragma warning restore RCS1163 // Unused parameter.
 }

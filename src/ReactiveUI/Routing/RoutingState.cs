@@ -84,11 +84,7 @@ public class RoutingState : ReactiveObject
     public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
 
     [OnDeserialized]
-#pragma warning disable RCS1163 // Unused parameter.
-#pragma warning disable RCS1231 // Make parameter ref read-only.
     private void SetupRx(StreamingContext sc) => SetupRx();
-#pragma warning restore RCS1231 // Make parameter ref read-only.
-#pragma warning restore RCS1163 // Unused parameter.
 
     private void SetupRx()
     {

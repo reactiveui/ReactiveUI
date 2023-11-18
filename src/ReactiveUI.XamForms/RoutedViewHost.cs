@@ -14,7 +14,6 @@ namespace ReactiveUI.XamForms;
 /// </summary>
 /// <seealso cref="Xamarin.Forms.NavigationPage" />
 /// <seealso cref="ReactiveUI.IActivatableView" />
-[SuppressMessage("Readability", "RCS1090: Call 'ConfigureAwait(false)", Justification = "This class interacts with the UI thread.")]
 public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 {
     /// <summary>

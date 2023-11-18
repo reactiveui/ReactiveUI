@@ -182,17 +182,21 @@ public class InteractionsTest
             Assert.Equal("A", interaction.Handle(false).FirstAsync().Wait());
             Assert.Equal("A", interaction.Handle(true).FirstAsync().Wait());
         }
+    }
 
-        [Fact]
-        public void UnhandledInteractionExceptionTests()
-        {
-            var uie = new UnhandledInteractionException<Unit, string>();
-            Assert.NotNull(uie);
-            uie.GetObjectData(new(typeof(string), new System.Runtime.Serialization.FormatterConverter()), default);
-            var uieme = new UnhandledInteractionException<Unit, string>("exception", new Exception("inner exception"));
-            Assert.NotNull(uieme);
-            Assert.Throws<ArgumentNullException>(() => uieme.GetObjectData(default!, default));
-        }
+    [Fact]
+    public void UnhandledInteractionExceptionTests()
+    {
+        var uie = new UnhandledInteractionException<Unit, string>();
+        Assert.NotNull(uie);
+#pragma warning disable SYSLIB0051 // Type or member is obsolete
+#pragma warning disable SYSLIB0050 // Type or member is obsolete
+        uie.GetObjectData(new(typeof(string), new System.Runtime.Serialization.FormatterConverter()), default);
+#pragma warning restore SYSLIB0050 // Type or member is obsolete
+        var uieme = new UnhandledInteractionException<Unit, string>("exception", new Exception("inner exception"));
+        Assert.NotNull(uieme);
+        Assert.Throws<ArgumentNullException>(() => uieme.GetObjectData(default!, default));
+#pragma warning restore SYSLIB0051 // Type or member is obsolete
     }
 
     /// <summary>

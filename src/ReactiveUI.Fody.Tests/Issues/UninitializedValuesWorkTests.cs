@@ -23,7 +23,7 @@ public class UninitializedValuesWorkTests
         var model = new TestModel();
         Assert.Equal(null, model.MyProperty);
         Assert.Equal(0, model.MyIntProperty);
-        Assert.Equal(default(DateTime), model.MyDateTimeProperty);
+        Assert.Equal(default, model.MyDateTimeProperty);
     }
 
     private class TestModel : ReactiveObject
@@ -31,10 +31,10 @@ public class UninitializedValuesWorkTests
         public TestModel() => OtherProperty = MyProperty;
 
         [ObservableAsProperty]
-        public string? MyProperty { get; private set; }
+        public string? MyProperty { get; }
 
         [ObservableAsProperty]
-        public int MyIntProperty { get; private set; }
+        public int MyIntProperty { get; }
 
         [ObservableAsProperty]
         public DateTime MyDateTimeProperty { get; private set; }

@@ -194,9 +194,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     }
 
     [OnDeserialized]
-#pragma warning disable RCS1163 // Unused parameter.
     private void SetupRxObj(in StreamingContext sc) => SetupRxObj();
-#pragma warning restore RCS1163 // Unused parameter.
 
     private void SetupRxObj() =>
         AllPublicProperties = new(() => GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());

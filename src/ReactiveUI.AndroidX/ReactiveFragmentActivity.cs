@@ -116,12 +116,10 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReac
     /// <inheritdoc/>
     protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
     {
-#pragma warning disable RCS1256 // Invalid argument null check.
         if (data is null)
         {
             throw new ArgumentNullException(nameof(data));
         }
-#pragma warning restore RCS1256 // Invalid argument null check.
 
         base.OnActivityResult(requestCode, resultCode, data);
         _activityResult.OnNext((requestCode, resultCode, data));

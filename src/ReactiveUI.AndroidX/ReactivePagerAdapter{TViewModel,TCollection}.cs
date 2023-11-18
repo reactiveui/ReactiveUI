@@ -32,4 +32,3 @@ public class ReactivePagerAdapter<TViewModel, TCollection>(
     where TCollection : INotifyCollectionChanged, IEnumerable<TViewModel>
 {
 }
-#pragma warning restore SA1600 // Elements should be documented

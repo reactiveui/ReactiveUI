@@ -111,7 +111,6 @@ public static class IReactiveObjectExtensions
         [CallerMemberName] string? propertyName = null)
         where TObj : IReactiveObject
     {
-#pragma warning disable RCS1256 // Invalid argument null check.
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(propertyName);
 #else
@@ -120,7 +119,6 @@ public static class IReactiveObjectExtensions
             throw new ArgumentNullException(nameof(propertyName));
         }
 #endif
-#pragma warning restore RCS1256 // Invalid argument null check.
 
         if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
         {

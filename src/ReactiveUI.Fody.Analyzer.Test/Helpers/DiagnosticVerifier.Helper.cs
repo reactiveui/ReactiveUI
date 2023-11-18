@@ -24,17 +24,16 @@ namespace TestHelper;
 /// </summary>
 public abstract partial class DiagnosticVerifier
 {
+    private const string DefaultFilePathPrefix = "Test";
+    private const string CSharpDefaultFileExt = "cs";
+    private const string VisualBasicDefaultExt = "vb";
+    private const string TestProjectName = "TestProject";
     private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
     private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
     private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
     private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
     private static readonly MetadataReference ReactiveUi = MetadataReference.CreateFromFile(typeof(IReactiveObject).Assembly.Location);
     private static readonly MetadataReference ReactiveUiHelper = MetadataReference.CreateFromFile(typeof(ReactiveAttribute).Assembly.Location);
-
-    private static string DefaultFilePathPrefix = "Test";
-    private static string CSharpDefaultFileExt = "cs";
-    private static string VisualBasicDefaultExt = "vb";
-    private static string TestProjectName = "TestProject";
 
     /// <summary>
     /// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.
@@ -45,10 +44,14 @@ public abstract partial class DiagnosticVerifier
     /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location.</returns>
     protected static Diagnostic[] GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, Document[] documents)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(documents);
+#else
         if (documents is null)
         {
             throw new ArgumentNullException(nameof(documents));
         }
+#endif
 
         var projects = new HashSet<Project>();
         foreach (var document in documents)
@@ -59,7 +62,7 @@ public abstract partial class DiagnosticVerifier
         var diagnostics = new List<Diagnostic>();
         foreach (var project in projects)
         {
-            var compilationWithAnalyzers = project.GetCompilationAsync().Result?.WithAnalyzers(ImmutableArray.Create(analyzer));
+            var compilationWithAnalyzers = project.GetCompilationAsync().Result?.WithAnalyzers([analyzer]);
             var currentDiagnostics = compilationWithAnalyzers?.GetAnalyzerDiagnosticsAsync().Result;
 
             if (currentDiagnostics is null)
@@ -130,7 +133,7 @@ public abstract partial class DiagnosticVerifier
         }
 
         var project = CreateProject(sources, language);
-        var documents = project?.Documents.ToArray() ?? Array.Empty<Document>();
+        var documents = project?.Documents.ToArray() ?? [];
 
         if (sources.Length != documents.Length)
         {
@@ -148,7 +151,7 @@ public abstract partial class DiagnosticVerifier
     /// <returns>A Project created out of the Documents created from the source strings.</returns>
     private static Project? CreateProject(string[] sources, string language = LanguageNames.CSharp)
     {
-        var fileNamePrefix = DefaultFilePathPrefix;
+        const string fileNamePrefix = DefaultFilePathPrefix;
         var fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
         var projectId = ProjectId.CreateNewId(debugName: TestProjectName);

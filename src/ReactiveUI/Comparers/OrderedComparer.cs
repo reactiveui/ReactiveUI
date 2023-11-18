@@ -22,9 +22,7 @@ public static class OrderedComparer
     /// <typeparam name="T">The type.</typeparam>
     /// <param name="enumerable">The enumerable.</param>
     /// <returns>A comparer builder.</returns>
-#pragma warning disable RCS1163 // Unused parameter.
     public static IComparerBuilder<T> For<T>(IEnumerable<T> enumerable) => For<T>();
-#pragma warning restore RCS1163 // Unused parameter.
 
     /// <summary>
     /// Creates a comparer builder for the specified type. Note that the builder is not a comparer in itself,

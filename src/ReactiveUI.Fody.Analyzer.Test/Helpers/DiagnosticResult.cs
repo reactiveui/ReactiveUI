@@ -20,7 +20,6 @@ public struct DiagnosticResult : IEquatable<DiagnosticResult>
     /// <summary>
     /// Gets or sets the locations of the Analysis Result.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Deliberate usage.")]
     public IList<DiagnosticResultLocation> Locations
     {
         get => _locations ??= Array.Empty<DiagnosticResultLocation>();

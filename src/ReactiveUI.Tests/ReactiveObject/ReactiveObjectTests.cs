@@ -254,31 +254,33 @@ public class ReactiveObjectTests
         var result = Record.Exception(() => fixture.IsOnlyOneWord = "Two Words");
     }
 
-        [Fact]
-        public void ReactiveObjectCanSuppressChangeNotifications()
+    [Fact]
+    public void ReactiveObjectCanSuppressChangeNotifications()
+    {
+        var fixture = new TestFixture();
+        using (fixture.SuppressChangeNotifications())
         {
-            var fixture = new TestFixture();
-            using (fixture.SuppressChangeNotifications())
-            {
-                Assert.False(fixture.AreChangeNotificationsEnabled());
-            }
-
-            Assert.True(fixture.AreChangeNotificationsEnabled());
-
-            var ser = JsonSerializer.Serialize(fixture);
-            Assert.True(ser.Length > 0);
-            var deser = JsonSerializer.Deserialize<TestFixture>(ser);
-            Assert.NotNull(deser);
-
-            using (deser.SuppressChangeNotifications())
-            {
-                Assert.False(deser.AreChangeNotificationsEnabled());
-            }
-
-            Assert.True(deser.AreChangeNotificationsEnabled());
+            Assert.False(fixture.AreChangeNotificationsEnabled());
         }
 
-        private static void AssertCount(int expected, params ICollection[] collections)
+        Assert.True(fixture.AreChangeNotificationsEnabled());
+
+        var ser = JsonSerializer.Serialize(fixture);
+        Assert.True(ser.Length > 0);
+        var deser = JsonSerializer.Deserialize<TestFixture>(ser);
+        Assert.NotNull(deser);
+
+        using (deser.SuppressChangeNotifications())
+        {
+            Assert.False(deser.AreChangeNotificationsEnabled());
+        }
+
+        Assert.True(deser.AreChangeNotificationsEnabled());
+    }
+
+    private static void AssertCount(int expected, params ICollection[] collections)
+    {
+        foreach (var collection in collections)
         {
             Assert.Equal(expected, collection.Count);
         }

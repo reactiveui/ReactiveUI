@@ -19,7 +19,6 @@ namespace ReactiveUI;
 /// This is a UIControl that is both and UIControl and has a ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     private readonly Subject<Unit> _deactivated = new();
@@ -154,7 +153,6 @@ public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<Reactiv
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
 public abstract class ReactiveControl<TViewModel> : ReactiveControl, IViewFor<TViewModel>
     where TViewModel : class

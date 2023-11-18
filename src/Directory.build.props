@@ -17,7 +17,7 @@
     <PackageReleaseNotes>https://github.com/reactiveui/ReactiveUI/releases</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <NoWarn>$(NoWarn);SA1010;RCS1198;RCS1158;RCS1256;IDE1006;VSSpell001</NoWarn>
+    <NoWarn>$(NoWarn);SA1010;RCS1198;RCS1158;RCS1163;RCS1256;IDE0060;IDE1006;VSSpell001</NoWarn>
 
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl> 

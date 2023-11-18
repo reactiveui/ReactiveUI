@@ -46,9 +46,7 @@ public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPr
     /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
     /// </summary>
     /// <param name="coder">The coder.</param>
-#pragma warning disable RCS1163 // Unused parameter.
     protected ReactiveTableViewCell(NSCoder coder)
-#pragma warning restore RCS1163 // Unused parameter.
         : base(NSObjectFlag.Empty)
     {
     }
@@ -179,9 +177,7 @@ public abstract class ReactiveTableViewCell<TViewModel> : ReactiveTableViewCell,
     /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
     /// </summary>
     /// <param name="coder">The coder.</param>
-#pragma warning disable RCS1163 // Unused parameter.
     protected ReactiveTableViewCell(NSCoder coder)
-#pragma warning restore RCS1163 // Unused parameter.
         : base(NSObjectFlag.Empty)
     {
     }

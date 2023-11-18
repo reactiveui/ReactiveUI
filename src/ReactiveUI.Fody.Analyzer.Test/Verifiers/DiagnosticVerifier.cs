@@ -149,7 +149,6 @@ public abstract partial class DiagnosticVerifier
     /// <param name="diagnostic">The diagnostic that was found in the code.</param>
     /// <param name="actual">The Location of the Diagnostic found in the code.</param>
     /// <param name="expected">The DiagnosticResultLocation that should have been found.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Not in NET472")]
     private static void VerifyDiagnosticLocation(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
     {
         var actualSpan = actual.GetLineSpan();

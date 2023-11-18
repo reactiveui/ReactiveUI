@@ -128,9 +128,7 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
         if ((int)Build.VERSION.SdkInt >= 23)
         {
-#pragma warning disable CA1416 // Validate platform compatibility
             return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.Hour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
-#pragma warning restore CA1416 // Validate platform compatibility
         }
 
         return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentHour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
@@ -146,9 +144,7 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
         if ((int)Build.VERSION.SdkInt >= 23)
         {
-#pragma warning disable CA1416 // Validate platform compatibility
             return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.Minute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
-#pragma warning restore CA1416 // Validate platform compatibility
         }
 
         return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentMinute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);

@@ -17,7 +17,6 @@ namespace ReactiveUI;
 /// This is a View that is both a NSSplitViewController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 public abstract class ReactiveSplitViewController : NSSplitViewController, IReactiveNotifyPropertyChanged<ReactiveSplitViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     private readonly Subject<Unit> _activated = new();
@@ -159,7 +158,6 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 public abstract class ReactiveSplitViewController<TViewModel> : ReactiveSplitViewController, IViewFor<TViewModel>
     where TViewModel : class
 {
