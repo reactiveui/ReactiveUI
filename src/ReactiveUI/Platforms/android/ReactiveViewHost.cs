@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Serialization;
-
+using System.Text.Json.Serialization;
 using Android.Content;
 using Android.Views;
 
@@ -27,6 +27,7 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Legacy reasons")]
     [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
     [IgnoreDataMember]
+    [JsonIgnore]
     protected Lazy<PropertyInfo[]>? allPublicProperties;
 
     private TViewModel? _viewModel;
@@ -70,16 +71,19 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
 
     /// <inheritdoc />
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changing => this.GetChangingObservable();
 
     /// <inheritdoc />
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changed => this.GetChangedObservable();
 
     /// <summary>
     /// Gets the thrown exceptions.
     /// </summary>
     [IgnoreDataMember]
+    [JsonIgnore]
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <summary>

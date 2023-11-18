@@ -56,7 +56,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 
     protected override Expression VisitBinary(BinaryExpression node)
     {
-        if (!(node.Right is ConstantExpression))
+        if (node.Right is not ConstantExpression)
         {
             throw new NotSupportedException("Array index expressions are only supported with constants.");
         }
@@ -76,13 +76,11 @@ internal class ExpressionRewriter : ExpressionVisitor
 
             var memberInfo = expression.Type.GetRuntimeProperty("Length");
 
-            if (memberInfo is null)
+            return memberInfo switch
             {
-                throw new InvalidOperationException("Could not find valid information for the array length operator.");
-            }
-
-            // translate arraylength into normal member expression
-            return Expression.MakeMemberAccess(expression, memberInfo);
+                null => throw new InvalidOperationException("Could not find valid information for the array length operator."),
+                _ => Expression.MakeMemberAccess(expression, memberInfo)
+            };
         }
         else if (node.NodeType == ExpressionType.Convert && node.Operand is not null)
         {

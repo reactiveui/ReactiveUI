@@ -43,7 +43,7 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
     protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
-        if (!(sender is ObservableTrigger triggerItem))
+        if (sender is not ObservableTrigger triggerItem)
         {
             throw new ArgumentException("Sender must be of type " + nameof(ObservableTrigger), nameof(sender));
         }

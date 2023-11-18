@@ -434,25 +434,16 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
     // rather than storing NotifyCollectionChangeEventArgs instances, we store instances of this class instead
     // storing NotifyCollectionChangeEventArgs doesn't always work because external code can mutate the instance before we get a chance to apply it
-    private sealed class PendingChange
+    private sealed class PendingChange(NotifyCollectionChangedEventArgs ea)
     {
-        public PendingChange(NotifyCollectionChangedEventArgs ea)
-        {
-            Action = ea.Action;
-            OldItems = ea.OldItems?.Cast<object>().ToList();
-            NewItems = ea.NewItems?.Cast<object>().ToList();
-            OldStartingIndex = ea.OldStartingIndex;
-            NewStartingIndex = ea.NewStartingIndex;
-        }
+        public NotifyCollectionChangedAction Action { get; } = ea.Action;
 
-        public NotifyCollectionChangedAction Action { get; }
+        public IList? OldItems { get; } = ea.OldItems?.Cast<object>().ToList();
 
-        public IList? OldItems { get; }
+        public IList? NewItems { get; } = ea.NewItems?.Cast<object>().ToList();
 
-        public IList? NewItems { get; }
+        public int OldStartingIndex { get; } = ea.OldStartingIndex;
 
-        public int OldStartingIndex { get; }
-
-        public int NewStartingIndex { get; }
+        public int NewStartingIndex { get; } = ea.NewStartingIndex;
     }
 }

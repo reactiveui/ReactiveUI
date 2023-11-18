@@ -129,7 +129,8 @@
 
   <ItemGroup>
     <PackageReference Include="Splat" Version="14.*" />
-    <PackageReference Include="DynamicData" Version="8.*" />
+    <PackageReference Include="DynamicData" Version="7.*" />
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
   </ItemGroup>
 
   <ItemGroup>

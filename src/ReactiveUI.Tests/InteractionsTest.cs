@@ -263,5 +263,16 @@ namespace ReactiveUI.Tests
             var result = interaction.Handle(Unit.Default).FirstAsync().Wait();
             Assert.Equal("result", result);
         }
+
+        [Fact]
+        public void UnhandledInteractionExceptionTests()
+        {
+            var uie = new UnhandledInteractionException<Unit, string>();
+            Assert.NotNull(uie);
+            uie.GetObjectData(new(typeof(string), new System.Runtime.Serialization.FormatterConverter()), default);
+            var uieme = new UnhandledInteractionException<Unit, string>("exception", new Exception("inner exception"));
+            Assert.NotNull(uieme);
+            Assert.Throws<ArgumentNullException>(() => uieme.GetObjectData(default!, default));
+        }
     }
 }

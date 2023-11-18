@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Serialization;
-
+using System.Text.Json.Serialization;
 using DynamicData.Binding;
 
 namespace ReactiveUI.Tests
@@ -17,20 +17,25 @@ namespace ReactiveUI.Tests
     public class TestFixture : ReactiveObject
     {
         [IgnoreDataMember]
+        [JsonIgnore]
         private string? _isNotNullString;
 
         [IgnoreDataMember]
+        [JsonIgnore]
         private string? _isOnlyOneWord;
 
         private string? _notSerialized;
 
         [IgnoreDataMember]
+        [JsonIgnore]
         private int? _nullableInt;
 
         [IgnoreDataMember]
+        [JsonIgnore]
         private List<string>? _stackOverflowTrigger;
 
         [IgnoreDataMember]
+        [JsonIgnore]
         private string? _usesExprRaiseSet;
 
         /// <summary>
@@ -42,6 +47,7 @@ namespace ReactiveUI.Tests
         /// Gets or sets the is not null string.
         /// </summary>
         [DataMember]
+        [JsonRequired]
         public string? IsNotNullString
         {
             get => _isNotNullString;
@@ -52,6 +58,7 @@ namespace ReactiveUI.Tests
         /// Gets or sets the is only one word.
         /// </summary>
         [DataMember]
+        [JsonRequired]
         public string? IsOnlyOneWord
         {
             get => _isOnlyOneWord;
@@ -71,6 +78,7 @@ namespace ReactiveUI.Tests
         /// Gets or sets the nullable int.
         /// </summary>
         [DataMember]
+        [JsonRequired]
         public int? NullableInt
         {
             get => _nullableInt;
@@ -82,12 +90,14 @@ namespace ReactiveUI.Tests
         /// </summary>
         [DataMember]
         [field: IgnoreDataMember]
+        [JsonRequired]
         public string? PocoProperty { get; set; }
 
         /// <summary>
         /// Gets or sets the stack overflow trigger.
         /// </summary>
         [DataMember]
+        [JsonRequired]
         public List<string>? StackOverflowTrigger
         {
             get => _stackOverflowTrigger;
@@ -98,12 +108,14 @@ namespace ReactiveUI.Tests
         /// Gets or sets the test collection.
         /// </summary>
         [DataMember]
-        public ObservableCollectionExtended<int> TestCollection { get; protected set; }
+        [JsonRequired]
+        public ObservableCollectionExtended<int> TestCollection { get; set; }
 
         /// <summary>
         /// Gets or sets the uses expr raise set.
         /// </summary>
         [DataMember]
+        [JsonRequired]
         public string? UsesExprRaiseSet
         {
             get => _usesExprRaiseSet;

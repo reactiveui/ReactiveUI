@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
-
+using System.Text.Json;
 using DynamicData;
 
 namespace ReactiveUI.Tests
@@ -255,6 +255,30 @@ namespace ReactiveUI.Tests
 
             Assert.IsType<Exception>(result);
             Assert.Equal("This is a test.", result.Message);
+        }
+
+        [Fact]
+        public void ReactiveObjectCanSuppressChangeNotifications()
+        {
+            var fixture = new TestFixture();
+            using (fixture.SuppressChangeNotifications())
+            {
+                Assert.False(fixture.AreChangeNotificationsEnabled());
+            }
+
+            Assert.True(fixture.AreChangeNotificationsEnabled());
+
+            var ser = JsonSerializer.Serialize(fixture);
+            Assert.True(ser.Length > 0);
+            var deser = JsonSerializer.Deserialize<TestFixture>(ser);
+            Assert.NotNull(deser);
+
+            using (deser.SuppressChangeNotifications())
+            {
+                Assert.False(deser.AreChangeNotificationsEnabled());
+            }
+
+            Assert.True(deser.AreChangeNotificationsEnabled());
         }
 
         private static void AssertCount(int expected, params ICollection[] collections)

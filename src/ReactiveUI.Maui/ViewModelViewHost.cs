@@ -82,7 +82,7 @@ public class ViewModelViewHost : ContentView, IViewFor
                         throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
                     }
 
-                    if (!(view is View castView))
+                    if (view is not View castView)
                     {
                         throw new Exception($"View '{view.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
                     }

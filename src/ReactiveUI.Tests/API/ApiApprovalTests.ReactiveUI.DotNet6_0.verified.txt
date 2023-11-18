@@ -716,10 +716,13 @@ namespace ReactiveUI
     {
         public ReactiveObject() { }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
@@ -742,10 +745,13 @@ namespace ReactiveUI
     {
         public ReactiveRecord() { }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
@@ -800,17 +806,23 @@ namespace ReactiveUI
     {
         public RoutingState(System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> Navigate { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> NavigateAndReset { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel> NavigateBack { get; set; }
         [System.Runtime.Serialization.IgnoreDataMember]
+        [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
         [System.Runtime.Serialization.DataMember]
-        public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; }
+        [System.Text.Json.Serialization.JsonRequired]
+        public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; set; }
     }
     public static class RoutingStateMixins
     {

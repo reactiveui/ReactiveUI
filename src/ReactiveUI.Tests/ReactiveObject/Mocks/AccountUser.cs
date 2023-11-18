@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Tests
 {
@@ -23,6 +24,7 @@ namespace ReactiveUI.Tests
         /// The last name.
         /// </value>
         [DataMember]
+        [JsonRequired]
         public string? LastName
         {
             get => _lastName;

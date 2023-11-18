@@ -13,10 +13,11 @@
     <DefaultPackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, Xamarin.TVOS, Tizen, WPF, Windows Forms, Universal Windows Platform (UWP) and the Uno Platform.</DefaultPackageDescription>
     <PackageDescription>$(DefaultPackageDescription)</PackageDescription>
     <Owners>xanaisbettsx;ghuntley</Owners>
-    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net461;uwp;tizen;unoplatform</PackageTags>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net462;winui;maui;tizen;unoplatform</PackageTags>
     <PackageReleaseNotes>https://github.com/reactiveui/ReactiveUI/releases</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <NoWarn>$(NoWarn);VSSpell001</NoWarn>
 
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl> 
@@ -32,6 +33,9 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl> 
+  </PropertyGroup>
+  <PropertyGroup Condition="$(IsTestProject) != 'true'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!-- MonoAndroid doesn't seem to want to allow debugging for maintainers -->

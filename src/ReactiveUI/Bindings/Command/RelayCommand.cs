@@ -10,17 +10,11 @@ namespace ReactiveUI;
 /// <summary>
 /// Internal relay command used for Command binding.
 /// </summary>
-internal class RelayCommand : ICommand
+internal class RelayCommand(Func<object?, bool>? canExecute = null, Action<object?>? execute = null) : ICommand
 {
-    private readonly Func<object?, bool> _canExecute;
-    private readonly Action<object?> _execute;
+    private readonly Func<object?, bool> _canExecute = canExecute ?? (_ => true);
+    private readonly Action<object?> _execute = execute ?? (_ => { });
     private bool? _prevCanExecute;
-
-    public RelayCommand(Func<object?, bool>? canExecute = null, Action<object?>? execute = null)
-    {
-        _canExecute = canExecute ?? (_ => true);
-        _execute = execute ?? (_ => { });
-    }
 
     public event EventHandler? CanExecuteChanged;
 

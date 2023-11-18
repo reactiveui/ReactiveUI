@@ -6,6 +6,7 @@
 global using global::Splat;
 global using global::System;
 global using global::System.Collections.Generic;
+global using global::System.Collections.ObjectModel;
 global using global::System.ComponentModel;
 global using global::System.Diagnostics.CodeAnalysis;
 global using global::System.Linq;
@@ -16,5 +17,7 @@ global using global::System.Reactive.Disposables;
 global using global::System.Reactive.Linq;
 global using global::System.Reactive.Subjects;
 global using global::System.Reactive.Threading.Tasks;
+global using global::System.Runtime.Serialization;
+global using global::System.Text.Json.Serialization;
 global using global::System.Threading;
 global using global::System.Threading.Tasks;

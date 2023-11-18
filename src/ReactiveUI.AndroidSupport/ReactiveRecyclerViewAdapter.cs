@@ -63,7 +63,7 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
             throw new ArgumentNullException(nameof(holder));
         }
 
-        if (!(holder is IViewFor viewForHolder))
+        if (holder is not IViewFor viewForHolder)
         {
             throw new ArgumentException("Holder must be derived from IViewFor", nameof(holder));
         }
