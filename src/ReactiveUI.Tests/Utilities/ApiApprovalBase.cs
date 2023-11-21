@@ -16,16 +16,11 @@ namespace ReactiveUI.Tests;
 [UsesVerify]
 public abstract class ApiApprovalBase
 {
-    protected static Task CheckApproval(Assembly assembly, [CallerFilePath]string? filePath = null)
+    protected static Task CheckApproval(Assembly assembly)
     {
-        if (filePath is null)
-        {
-            return Task.CompletedTask;
-        }
-
         var generatorOptions = new ApiGeneratorOptions { AllowNamespacePrefixes = ["ReactiveUI"] };
         var apiText = assembly.GeneratePublicApi(generatorOptions);
-        return Verifier.Verify(apiText, null, filePath)
+        return Verifier.Verify(apiText)
             .UniqueForRuntimeAndVersion()
             .ScrubEmptyLines()
             .ScrubLines(l =>
