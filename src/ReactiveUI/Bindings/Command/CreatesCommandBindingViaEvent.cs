@@ -55,14 +55,8 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
         var type = target.GetType();
         var eventInfo = _defaultEventsToBind
             .Select(x => new { EventInfo = type.GetRuntimeEvent(x.name), Args = x.type })
-            .FirstOrDefault(x => x.EventInfo is not null);
-
-        if (eventInfo is null)
-        {
-            throw new Exception(
+            .FirstOrDefault(x => x.EventInfo is not null) ?? throw new Exception(
                    $"Couldn't find a default event to bind to on {target.GetType().FullName}, specify an event explicitly");
-        }
-
         var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
         mi = mi.MakeGenericMethod(eventInfo.Args);
 
