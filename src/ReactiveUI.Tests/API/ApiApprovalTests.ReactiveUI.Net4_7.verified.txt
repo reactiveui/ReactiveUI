@@ -90,18 +90,6 @@ namespace ReactiveUI
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
-        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
-        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.IObservable<TParam?> withParameter, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
-        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
     }
     public class CommandBinderImplementation : Splat.IEnableLogger
     {
@@ -111,14 +99,6 @@ namespace ReactiveUI
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
         public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
-        public ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam?> withParameter, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
-        public ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
