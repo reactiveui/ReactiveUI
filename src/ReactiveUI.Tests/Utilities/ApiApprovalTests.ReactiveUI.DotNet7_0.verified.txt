@@ -12,7 +12,9 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.XamForms")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.7.2", FrameworkDisplayName=".NET Framework 4.7.2")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.17763.0")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v7.0", FrameworkDisplayName=".NET 7.0")]
+[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.17763.0")]
 namespace ReactiveUI
 {
     public static class AutoPersistHelper
@@ -90,18 +92,6 @@ namespace ReactiveUI
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
-        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
-        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.IObservable<TParam?> withParameter, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
-        public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
     }
     public class CommandBinderImplementation : Splat.IEnableLogger
     {
@@ -111,14 +101,6 @@ namespace ReactiveUI
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
         public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
-        public ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam?> withParameter, string? toEvent = null)
-            where TView :  class, ReactiveUI.IViewFor
-            where TViewModel :  class
-            where TProp : System.Windows.Input.ICommand { }
-        public ReactiveUI.IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
@@ -239,12 +221,10 @@ namespace ReactiveUI
     {
         System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
         System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
     }
     public interface IInteractionContext<out TInput, in TOutput>
     {
@@ -295,26 +275,21 @@ namespace ReactiveUI
                 "isViewModel"})]
         ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp?, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp?> viewToVmConverter, ReactiveUI.TriggerUpdate triggerUpdate = 0)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
         [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "view",
                 "isViewModel"})]
         ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null, ReactiveUI.TriggerUpdate triggerUpdate = 0)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
         System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> propertyExpression, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
-            where TTarget :  class
-        ;
+            where TTarget :  class;
         ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
         ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-        ;
+            where TView :  class, ReactiveUI.IViewFor;
     }
     public interface IPropertyBindingHook
     {
@@ -915,7 +890,7 @@ namespace ReactiveUI
     {
         public UnhandledErrorException() { }
         public UnhandledErrorException(string message) { }
-        protected UnhandledErrorException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        protected UnhandledErrorException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public UnhandledErrorException(string message, System.Exception innerException) { }
     }
     [System.Serializable]
@@ -924,7 +899,7 @@ namespace ReactiveUI
         public UnhandledInteractionException() { }
         public UnhandledInteractionException(string message) { }
         public UnhandledInteractionException(ReactiveUI.Interaction<TInput, TOutput> interaction, TInput input) { }
-        protected UnhandledInteractionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        protected UnhandledInteractionException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public UnhandledInteractionException(string message, System.Exception innerException) { }
         public TInput Input { get; }
         public ReactiveUI.Interaction<TInput, TOutput>? Interaction { get; }
@@ -956,7 +931,7 @@ namespace ReactiveUI
     {
         public ViewLocatorNotFoundException() { }
         public ViewLocatorNotFoundException(string message) { }
-        protected ViewLocatorNotFoundException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        protected ViewLocatorNotFoundException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public ViewLocatorNotFoundException(string message, System.Exception innerException) { }
     }
     public sealed class ViewModelActivator : System.IDisposable
