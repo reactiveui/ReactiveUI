@@ -4,9 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-
+using System.Threading.Tasks;
 using ReactiveUI.Fody.Helpers;
-
+using ReactiveUI.Tests;
+using VerifyXunit;
 using Xunit;
 
 namespace ReactiveUI.Fody.Tests.API;
@@ -18,11 +19,13 @@ namespace ReactiveUI.Fody.Tests.API;
 /// for version changing reasons.
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class ApiApprovalTests : ApiApprovalBase
+[UsesVerify]
+public class ApiApprovalTests
 {
     /// <summary>
     /// Checks the version API.
     /// </summary>
+    /// <returns>A task to monitor the process.</returns>
     [Fact]
-    public void ReactiveUIFody() => CheckApproval(typeof(ReactiveAttribute).Assembly);
+    public Task ReactiveUIFody() => typeof(ReactiveAttribute).Assembly.CheckApproval(["ReactiveUI"]);
 }
