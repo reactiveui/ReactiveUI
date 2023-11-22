@@ -45,68 +45,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         Expression<Func<TView, TControl>> controlProperty,
         Expression<Func<TViewModel, TParam?>> withParameter,
         string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
-        where TViewModel : class
-        where TProp : ICommand
-    {
-        if (vmProperty is null)
-        {
-            throw new ArgumentNullException(nameof(vmProperty));
-        }
-
-        if (controlProperty is null)
-        {
-            throw new ArgumentNullException(nameof(controlProperty));
-        }
-
-        var vmExpression = Reflection.Rewrite(vmProperty.Body);
-        var controlExpression = Reflection.Rewrite(controlProperty.Body);
-        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
-
-        var bindingDisposable = BindCommandInternal(source, view, controlExpression, withParameter.ToObservable(viewModel), toEvent);
-
-        return new ReactiveBinding<TView, TProp>(
-                                                 view,
-                                                 controlExpression,
-                                                 vmExpression,
-                                                 source,
-                                                 BindingDirection.OneWay,
-                                                 bindingDisposable);
-    }
-
-    /// <summary>
-    /// Bind a command from the ViewModel to an explicitly specified control
-    /// on the View.
-    /// </summary>
-    /// <typeparam name="TView">The view type.</typeparam>
-    /// <typeparam name="TViewModel">The view model type.</typeparam>
-    /// <typeparam name="TProp">The property type.</typeparam>
-    /// <typeparam name="TControl">The control type.</typeparam>
-    /// <typeparam name="TParam">The parameter type.</typeparam>
-    /// <param name="viewModel">The View model.</param>
-    /// <param name="view">The View.</param>
-    /// <param name="vmProperty">The ViewModel command to bind.</param>
-    /// <param name="controlProperty">The name of the control on the view.</param>
-    /// <param name="withParameter">The ViewModel property to pass as the
-    /// param of the ICommand.</param>
-    /// <param name="toEvent">If specified, bind to the specific event
-    /// instead of the default.
-    /// NOTE: If this parameter is used inside WhenActivated, it's
-    /// important to dispose the binding when the view is deactivated.</param>
-    /// <returns>
-    /// A class representing the binding. Dispose it to disconnect
-    /// the binding.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">nameof(vmProperty)
-    /// or
-    /// nameof(vmProperty).</exception>
-    public IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(
-        TViewModel? viewModel,
-        TView view,
-        Expression<Func<TViewModel, TProp?>> vmProperty,
-        Expression<Func<TView, TControl>> controlProperty,
-        Expression<Func<TViewModel, TParam?>> withParameter,
-        string? toEvent = null)
         where TView : class, IViewFor
         where TViewModel : class
         where TProp : ICommand
@@ -158,63 +96,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// NOTE: If this parameter is used inside WhenActivated, it's
     /// important to dispose the binding when the view is deactivated.</param>
     public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-        TViewModel? viewModel,
-        TView view,
-        Expression<Func<TViewModel, TProp?>> vmProperty,
-        Expression<Func<TView, TControl>> controlProperty,
-        IObservable<TParam?> withParameter,
-        string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
-        where TViewModel : class
-        where TProp : ICommand
-    {
-        if (vmProperty is null)
-        {
-            throw new ArgumentNullException(nameof(vmProperty));
-        }
-
-        if (controlProperty is null)
-        {
-            throw new ArgumentNullException(nameof(controlProperty));
-        }
-
-        var vmExpression = Reflection.Rewrite(vmProperty.Body);
-        var controlExpression = Reflection.Rewrite(controlProperty.Body);
-        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
-
-        var bindingDisposable = BindCommandInternal(source, view, controlExpression, withParameter, toEvent);
-
-        return new ReactiveBinding<TView, TProp>(
-                                                 view,
-                                                 controlExpression,
-                                                 vmExpression,
-                                                 source,
-                                                 BindingDirection.OneWay,
-                                                 bindingDisposable);
-    }
-
-    /// <summary>
-    /// Bind a command from the ViewModel to an explicitly specified control
-    /// on the View.
-    /// </summary>
-    /// <typeparam name="TView">The view type.</typeparam>
-    /// <typeparam name="TViewModel">The view model type.</typeparam>
-    /// <typeparam name="TProp">The property type.</typeparam>
-    /// <typeparam name="TControl">The control type.</typeparam>
-    /// <typeparam name="TParam">The parameter type.</typeparam>
-    /// <returns>A class representing the binding. Dispose it to disconnect
-    /// the binding.</returns>
-    /// <param name="viewModel">The View model.</param>
-    /// <param name="view">The View.</param>
-    /// <param name="vmProperty">The ViewModel command to bind.</param>
-    /// <param name="controlProperty">The name of the control on the view.</param>
-    /// <param name="withParameter">The ViewModel property to pass as the
-    /// param of the ICommand.</param>
-    /// <param name="toEvent">If specified, bind to the specific event
-    /// instead of the default.
-    /// NOTE: If this parameter is used inside WhenActivated, it's
-    /// important to dispose the binding when the view is deactivated.</param>
-    public IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TProp?>> vmProperty,
