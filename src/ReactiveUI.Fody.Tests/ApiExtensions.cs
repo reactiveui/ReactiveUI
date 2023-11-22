@@ -8,40 +8,32 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using PublicApiGenerator;
-
-using VerifyTests;
-
 using VerifyXunit;
 
+namespace ReactiveUI.Tests;
+
 /// <summary>
-/// Tests for API approvals.
+/// A helper for doing API approvals.
 /// </summary>
 [ExcludeFromCodeCoverage]
-#pragma warning disable CA1050 // Declare types in namespaces
-#pragma warning disable RCS1110 // Declare type inside namespace.
-public abstract class ApiApprovalBase
-#pragma warning restore RCS1110 // Declare type inside namespace.
-#pragma warning restore CA1050 // Declare types in namespaces
+[UsesVerify]
+public static class ApiExtensions
 {
     /// <summary>
-    /// Checks the assembly to detect the public API. Generates a received/approved version of the API.
+    /// Checks to make sure the API is approved.
     /// </summary>
-    /// <param name="assembly">The assembly to check.</param>
-    /// <param name="filePath">Auto populated file path.</param>
-    /// <returns>A task to monitor the progress.</returns>
-    protected static Task CheckApproval(Assembly assembly, [CallerFilePath]string? filePath = null)
+    /// <param name="assembly">The assembly that is being checked.</param>
+    /// <param name="namespaces">The namespaces.</param>
+    /// <param name="filePath">The caller file path.</param>
+    /// <returns>
+    /// A Task.
+    /// </returns>
+    public static async Task CheckApproval(this Assembly assembly, string[] namespaces, [CallerFilePath] string filePath = "")
     {
-        if (filePath is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var generatorOptions = new ApiGeneratorOptions { AllowNamespacePrefixes = ["ReactiveUI"] };
+        var generatorOptions = new ApiGeneratorOptions { AllowNamespacePrefixes = namespaces };
         var apiText = assembly.GeneratePublicApi(generatorOptions);
-        var verifySettings = new VerifySettings();
-        return Verifier.Verify(apiText, verifySettings, filePath)
+        var result = await Verifier.Verify(apiText, null, filePath)
             .UniqueForRuntimeAndVersion()
             .ScrubEmptyLines()
             .ScrubLines(l =>

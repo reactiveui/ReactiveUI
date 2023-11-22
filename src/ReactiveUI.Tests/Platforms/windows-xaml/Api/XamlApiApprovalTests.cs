@@ -3,18 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using VerifyXunit;
+
 namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>
 /// API approvals for the xaml project.
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class XamlApiApprovalTests : ApiApprovalBase
+[UsesVerify]
+public class XamlApiApprovalTests
 {
     /// <summary>
     /// Generates the public API for the blend project.
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
     [Fact]
-    public Task Blend() => CheckApproval(typeof(Blend.FollowObservableStateBehavior).Assembly);
+    public Task Blend() => typeof(Blend.FollowObservableStateBehavior).Assembly.CheckApproval(["ReactiveUI"]);
 }

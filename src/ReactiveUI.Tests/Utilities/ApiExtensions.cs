@@ -12,20 +12,27 @@ using VerifyXunit;
 
 namespace ReactiveUI.Tests;
 
+/// <summary>
+/// A helper for doing API approvals.
+/// </summary>
 [ExcludeFromCodeCoverage]
 [UsesVerify]
-public abstract class ApiApprovalBase
+public static class ApiExtensions
 {
-    protected static Task CheckApproval(Assembly assembly, [CallerFilePath]string? filePath = null)
+    /// <summary>
+    /// Checks to make sure the API is approved.
+    /// </summary>
+    /// <param name="assembly">The assembly that is being checked.</param>
+    /// <param name="namespaces">The namespaces.</param>
+    /// <param name="filePath">The caller file path.</param>
+    /// <returns>
+    /// A Task.
+    /// </returns>
+    public static async Task CheckApproval(this Assembly assembly, string[] namespaces, [CallerFilePath] string filePath = "")
     {
-        if (filePath is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var generatorOptions = new ApiGeneratorOptions { AllowNamespacePrefixes = ["ReactiveUI"] };
+        var generatorOptions = new ApiGeneratorOptions { AllowNamespacePrefixes = namespaces };
         var apiText = assembly.GeneratePublicApi(generatorOptions);
-        return Verifier.Verify(apiText, null, filePath)
+        var result = await Verifier.Verify(apiText, null, filePath)
             .UniqueForRuntimeAndVersion()
             .ScrubEmptyLines()
             .ScrubLines(l =>

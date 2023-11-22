@@ -12,12 +12,12 @@ namespace ReactiveUI.Tests.Wpf;
 /// </summary>
 [ExcludeFromCodeCoverage]
 [UsesVerify]
-public class WpfApiApprovalTests : ApiApprovalBase
+public class WpfApiApprovalTests
 {
     /// <summary>
     /// Checks the approved vs the received API.
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
     [Fact]
-    public Task Wpf() => CheckApproval(typeof(ReactiveWindow<>).Assembly);
+    public Task Wpf() => typeof(ReactiveWindow<>).Assembly.CheckApproval(["ReactiveUI"]);
 }

@@ -12,12 +12,12 @@ namespace ReactiveUI.Tests;
 /// </summary>
 [ExcludeFromCodeCoverage]
 [UsesVerify]
-public class WinformsApiApprovalTests : ApiApprovalBase
+public class WinformsApiApprovalTests
 {
     /// <summary>
     /// Checks the approved vs the received API.
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
     [Fact]
-    public Task Winforms() => CheckApproval(typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly);
+    public Task Winforms() => typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly.CheckApproval(["ReactiveUI"]);
 }
