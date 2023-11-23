@@ -32,6 +32,11 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string? GetOrientation() { }
     }
+    public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
+    {
+        public ReactiveUserControlNonGeneric() { }
+        protected override void Dispose(bool disposing) { }
+    }
     public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
