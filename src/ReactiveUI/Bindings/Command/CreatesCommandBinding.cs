@@ -35,42 +35,20 @@ internal class CreatesCommandBinding
     public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
         var type = target!.GetType();
-        var binder = _bindCommandCache.Get(type);
-        if (binder is null)
-        {
-            throw new Exception($"Couldn't find a Command Binder for {type.FullName}");
-        }
-
-        var ret = binder.BindCommandToObject(command, target, commandParameter);
-        if (ret is null)
-        {
-            throw new Exception($"Couldn't bind Command Binder for {type.FullName}");
-        }
-
+        var binder = _bindCommandCache.Get(type) ?? throw new Exception($"Couldn't find a Command Binder for {type.FullName}");
+        var ret = binder.BindCommandToObject(command, target, commandParameter) ?? throw new Exception($"Couldn't bind Command Binder for {type.FullName}");
         return ret;
     }
 
     public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter, string? eventName)
     {
         var type = target!.GetType();
-        var binder = _bindCommandEventCache.Get(type);
-        if (binder is null)
-        {
-            throw new Exception($"Couldn't find an Event Binder for {type.FullName} and event {eventName}");
-        }
-
+        var binder = _bindCommandEventCache.Get(type) ?? throw new Exception($"Couldn't find an Event Binder for {type.FullName} and event {eventName}");
         var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
         var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
         mi = mi.MakeGenericMethod(eventArgsType);
 
-        var ret = (IDisposable)mi.Invoke(binder, [command, target, commandParameter, eventName])!;
-
-        // If we made it this far then this will not fail.
-        if (ret is null)
-        {
-            throw new Exception($"Couldn't bind Command Binder for {type.FullName} and event {eventName}");
-        }
-
+        var ret = (IDisposable)mi.Invoke(binder, [command, target, commandParameter, eventName])! ?? throw new Exception($"Couldn't bind Command Binder for {type.FullName} and event {eventName}");
         return ret;
     }
 }

@@ -34,7 +34,7 @@ internal interface ICommandBinderImplementation : IEnableLogger
         Expression<Func<TView, TControl>> controlProperty,
         Expression<Func<TViewModel, TParam?>> withParameter,
         string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
+        where TView : class, IViewFor
         where TViewModel : class
         where TProp : ICommand;
 
@@ -60,7 +60,7 @@ internal interface ICommandBinderImplementation : IEnableLogger
         Expression<Func<TView, TControl>> controlProperty,
         IObservable<TParam?> withParameter,
         string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
+        where TView : class, IViewFor
         where TViewModel : class
         where TProp : ICommand;
 }

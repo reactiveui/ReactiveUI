@@ -50,7 +50,7 @@ public static class CommandBinder
         Expression<Func<TView, TControl>> controlName,
         IObservable<TParam?> withParameter,
         string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
+        where TView : class, IViewFor
         where TViewModel : class
         where TProp : ICommand =>
         _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
@@ -79,7 +79,7 @@ public static class CommandBinder
         Expression<Func<TViewModel, TProp?>> propertyName,
         Expression<Func<TView, TControl>> controlName,
         string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
+        where TView : class, IViewFor
         where TViewModel : class
         where TProp : ICommand =>
         _binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
@@ -112,7 +112,7 @@ public static class CommandBinder
         Expression<Func<TView, TControl>> controlName,
         Expression<Func<TViewModel, TParam?>> withParameter,
         string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
+        where TView : class, IViewFor
         where TViewModel : class
         where TProp : ICommand
     {

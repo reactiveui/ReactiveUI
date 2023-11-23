@@ -19,7 +19,7 @@ internal static class CommandBinderImplementationMixins
         Expression<Func<TViewModel, TProp?>> propertyName,
         Expression<Func<TView, TControl>> controlName,
         string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
+        where TView : class, IViewFor
         where TViewModel : class
         where TProp : ICommand =>
         @this.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
@@ -32,7 +32,7 @@ internal static class CommandBinderImplementationMixins
         Expression<Func<TView, TControl>> controlName,
         Expression<Func<TViewModel, TParam>> withParameter,
         string? toEvent = null)
-        where TView : class, IViewFor<TViewModel>
+        where TView : class, IViewFor
         where TViewModel : class
         where TProp : ICommand
     {
