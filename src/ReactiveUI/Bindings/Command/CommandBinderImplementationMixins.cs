@@ -46,39 +46,4 @@ internal static class CommandBinderImplementationMixins
 
         return @this.BindCommand(viewModel, view, propertyName, controlName, param, toEvent);
     }
-
-    public static IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl>(
-        this ICommandBinderImplementation @this,
-        TViewModel? viewModel,
-        TView view,
-        Expression<Func<TViewModel, TProp?>> propertyName,
-        Expression<Func<TView, TControl>> controlName,
-        string? toEvent = null)
-        where TView : class, IViewFor
-        where TViewModel : class
-        where TProp : ICommand =>
-        @this.BindCommandNonGeneric(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
-
-    public static IReactiveBinding<TView, TProp> BindCommandNonGeneric<TView, TViewModel, TProp, TControl, TParam>(
-        this ICommandBinderImplementation @this,
-        TViewModel? viewModel,
-        TView view,
-        Expression<Func<TViewModel, TProp?>> propertyName,
-        Expression<Func<TView, TControl>> controlName,
-        Expression<Func<TViewModel, TParam>> withParameter,
-        string? toEvent = null)
-        where TView : class, IViewFor
-        where TViewModel : class
-        where TProp : ICommand
-    {
-        if (withParameter is null)
-        {
-            throw new ArgumentNullException(nameof(withParameter));
-        }
-
-        var paramExpression = Reflection.Rewrite(withParameter.Body);
-        var param = Reflection.ViewModelWhenAnyValue(viewModel, view, paramExpression);
-
-        return @this.BindCommandNonGeneric(viewModel, view, propertyName, controlName, param, toEvent);
-    }
 }
