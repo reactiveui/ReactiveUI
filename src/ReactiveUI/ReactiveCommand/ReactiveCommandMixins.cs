@@ -51,10 +51,10 @@ public static class ReactiveCommandMixins
     /// <param name="command">The command to be executed.</param>
     /// <returns>An object that when disposes, disconnects the Observable
     /// from the command.</returns>
-    public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult>? command) =>
+    public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, IReactiveCommand<T, TResult>? command) =>
         command is null
             ? throw new ArgumentNullException(nameof(command))
-            : WithLatestFromFixed(item, command.CanExecute, (value, canExecute) => new InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>(command, canExecute, value))
+            : WithLatestFromFixed(item, command.CanExecute, (value, canExecute) => new InvokeCommandInfo<IReactiveCommand<T, TResult>, T>(command, canExecute, value))
               .Where(ii => ii.CanExecute)
               .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
               .Subscribe();
