@@ -158,8 +158,11 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
 
         if (deferSubscription)
         {
-            _lastValue = default;
-            Source = observable.DistinctUntilChanged();
+            // Although there are no subscribers yet, we should skip all the values that are equal getInitialValue() instead of equal default(T?) because
+            // default(T?) is never accessable anyway when subscriptions are deferred. We're going to assume that the current value is {getInitialValue()} even
+            // if it hasn't been evaluated yet
+            Source = observable.SkipWhile(x => EqualityComparer<T>.Default.Equals(x, getInitialValue() /* Don't use field to avoid capturing this */))
+                               .DistinctUntilChanged();
         }
         else
         {
@@ -184,7 +187,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
                 if (localReferenceInCaseDisposeIsCalled is not null)
                 {
                     _lastValue = _getInitialValue();
-                    Source.StartWith(_lastValue).Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
+                    Source.Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
                 }
             }
 
