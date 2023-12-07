@@ -76,6 +76,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
             Router?
                 .Navigate
+                .Where(_ => Navigation.NavigationStack.Count != Router.NavigationStack.Count)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .SelectMany(_ => PagesForViewModel(Router.GetCurrentViewModel()))
                 .SelectMany(async page =>
