@@ -72,16 +72,19 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     /// <inheritdoc />
     [IgnoreDataMember]
     [JsonIgnore]
+    [Browsable(false), Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => _changing.Value;
 
     /// <inheritdoc />
     [IgnoreDataMember]
     [JsonIgnore]
+    [Browsable(false), Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => _changed.Value;
 
     /// <inheritdoc/>
     [IgnoreDataMember]
     [JsonIgnore]
+    [Browsable(false), Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
     public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
     /// <inheritdoc/>
