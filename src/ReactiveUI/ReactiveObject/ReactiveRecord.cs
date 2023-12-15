@@ -72,21 +72,24 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     /// <inheritdoc />
     [IgnoreDataMember]
     [JsonIgnore]
-    [Browsable(false), Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
+    [Browsable(false)]
+    [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => // TODO: Create Test
         _changing.Value;
 
     /// <inheritdoc />
     [IgnoreDataMember]
     [JsonIgnore]
-    [Browsable(false), Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
+    [Browsable(false)]
+    [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => // TODO: Create Test
         _changed.Value;
 
     /// <inheritdoc/>
     [IgnoreDataMember]
     [JsonIgnore]
-    [Browsable(false), Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
+    [Browsable(false)]
+    [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
     public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
 
     /// <inheritdoc/>
