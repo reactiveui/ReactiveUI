@@ -8,7 +8,9 @@ global using global::System;
 global using global::System.Collections.Generic;
 global using global::System.Collections.ObjectModel;
 global using global::System.ComponentModel;
+#if !MONO
 global using global::System.ComponentModel.DataAnnotations;
+#endif
 global using global::System.Diagnostics.CodeAnalysis;
 global using global::System.Linq;
 global using global::System.Linq.Expressions;
