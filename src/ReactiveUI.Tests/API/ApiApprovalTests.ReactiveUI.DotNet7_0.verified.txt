@@ -715,12 +715,18 @@ namespace ReactiveUI
     public class ReactiveObject : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         public ReactiveObject() { }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false, AutoGenerateFilter=false, Order=-1)]
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false, AutoGenerateFilter=false, Order=-1)]
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false, AutoGenerateFilter=false, Order=-1)]
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<System.Exception> ThrownExceptions { get; }
@@ -744,12 +750,18 @@ namespace ReactiveUI
     public class ReactiveRecord : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging, System.IEquatable<ReactiveUI.ReactiveRecord>
     {
         public ReactiveRecord() { }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false, AutoGenerateFilter=false, Order=-1)]
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changed { get; }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false, AutoGenerateFilter=false, Order=-1)]
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.IReactiveObject>> Changing { get; }
+        [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false, AutoGenerateFilter=false, Order=-1)]
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
         public System.IObservable<System.Exception> ThrownExceptions { get; }
