@@ -290,10 +290,62 @@ public class ObservableAsPropertyHelperTest
         Assert.Equal(42, result);
     }
 
-    /// <summary>
-    /// Tests that Observable As Property Helpers initial value should emit initial value.
-    /// </summary>
-    /// <param name="initialValue">The initial value.</param>
+    /// <summary>Test that Observable As Property Helpers defers subscription with initial function value doesn't call on changed when subscribed.</summary>
+    /// <param name = "initialValue" >The initial value.</param>
+    [Theory]
+    [InlineData(default(int))]
+    [InlineData(42)]
+    public void OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSubscribed(int initialValue)
+    {
+        var observable = Observable.Empty<int>();
+
+        var wasOnChangingCalled = false;
+        Action<int> onChanging = v => wasOnChangingCalled = true;
+        var wasOnChangedCalled = false;
+        Action<int> onChanged = v => wasOnChangedCalled = true;
+
+        var fixture = new ObservableAsPropertyHelper<int>(observable, onChanged, onChanging, () => initialValue, true);
+
+        Assert.False(fixture.IsSubscribed);
+        Assert.False(wasOnChangingCalled);
+        Assert.False(wasOnChangedCalled);
+
+        var result = fixture.Value;
+
+        Assert.True(fixture.IsSubscribed);
+        Assert.False(wasOnChangingCalled);
+        Assert.False(wasOnChangedCalled);
+        Assert.Equal(initialValue, result);
+    }
+
+    /// <summary>Test that Observable As Property Helpers defers subscription with initial function value doesn't call on changed when source provides initial value after subscription.</summary>
+    /// <param name = "initialValue" >The initial value.</param>
+    [Theory]
+    [InlineData(default(int))]
+    [InlineData(42)]
+    public void OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSourceProvidesInitialValue(int initialValue)
+    {
+        var observable = new Subject<int>();
+
+        var wasOnChangingCalled = false;
+        Action<int> onChanging = v => wasOnChangingCalled = true;
+        var wasOnChangedCalled = false;
+        Action<int> onChanged = v => wasOnChangedCalled = true;
+
+        var fixture = new ObservableAsPropertyHelper<int>(observable, onChanged, onChanging, () => initialValue, true);
+
+        var result = fixture.Value;
+
+        Assert.Equal(initialValue, result);
+
+        observable.OnNext(initialValue);
+
+        Assert.False(wasOnChangingCalled);
+        Assert.False(wasOnChangedCalled);
+    }
+
+    /// <summary>Tests that Observable As Property Helpers initial value should emit initial value.</summary>
+    /// <param name = "initialValue" >The initial value.</param>
     [Theory]
     [InlineData(default(int))]
     [InlineData(42)]

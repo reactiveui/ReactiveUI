@@ -154,18 +154,23 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
                            ex => _thrownExceptions.Value.OnNext(ex))
                 .DisposeWith(_disposable);
 
-        _getInitialValue = getInitialValue!;
+        _getInitialValue = getInitialValue ??= () => default(T?);
 
         if (deferSubscription)
         {
-            _lastValue = default;
-            Source = observable.DistinctUntilChanged();
+            // Although there are no subscribers yet, we should skip all the values that are equal getInitialValue() instead of equal default(T?) because
+            // default(T?) is never accessible anyway when subscriptions are deferred. We're going to assume that the current value is getInitialValue() even
+            // if it hasn't been evaluated yet
+            Source = observable.SkipWhile(x => EqualityComparer<T?>.Default.Equals(x, getInitialValue() /* Don't use field to avoid capturing this */))
+                               .DistinctUntilChanged();
         }
         else
         {
             _lastValue = _getInitialValue();
-            Source = observable.StartWith(_lastValue).DistinctUntilChanged();
-            Source.Subscribe(_subject).DisposeWith(_disposable);
+            Source = observable.StartWith(_lastValue)
+                               .DistinctUntilChanged();
+            Source.Subscribe(_subject)
+                  .DisposeWith(_disposable);
             _activated = 1;
         }
     }
@@ -184,7 +189,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
                 if (localReferenceInCaseDisposeIsCalled is not null)
                 {
                     _lastValue = _getInitialValue();
-                    Source.StartWith(_lastValue).Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
+                    Source.Subscribe(_subject).DisposeWith(localReferenceInCaseDisposeIsCalled);
                 }
             }
 
