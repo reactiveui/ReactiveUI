@@ -132,6 +132,9 @@
   <ItemGroup>
     <PackageReference Include="Splat" Version="14.*" />
     <PackageReference Include="DynamicData" Version="8.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!$(TargetFramework.StartsWith('Xamarin'))">
     <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
 

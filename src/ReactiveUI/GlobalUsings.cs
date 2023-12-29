@@ -21,6 +21,8 @@ global using global::System.Reactive.Linq;
 global using global::System.Reactive.Subjects;
 global using global::System.Reactive.Threading.Tasks;
 global using global::System.Runtime.Serialization;
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
 global using global::System.Text.Json.Serialization;
+#endif
 global using global::System.Threading;
 global using global::System.Threading.Tasks;

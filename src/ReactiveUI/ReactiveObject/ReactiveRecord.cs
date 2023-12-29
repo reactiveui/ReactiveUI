@@ -71,7 +71,9 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
 
     /// <inheritdoc />
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
 #if !MONO
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
@@ -81,7 +83,9 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
 
     /// <inheritdoc />
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
 #if !MONO
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
@@ -91,7 +95,9 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
 
     /// <inheritdoc/>
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
 #if !MONO
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]

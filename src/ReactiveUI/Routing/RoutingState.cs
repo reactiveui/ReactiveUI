@@ -17,7 +17,9 @@ namespace ReactiveUI;
 public class RoutingState : ReactiveObject
 {
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
     private readonly IScheduler _scheduler;
 
     /// <summary>
@@ -41,14 +43,18 @@ public class RoutingState : ReactiveObject
     /// collection being the currently visible ViewModel.
     /// </summary>
     [DataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonRequired]
+#endif
     public ObservableCollection<IRoutableViewModel> NavigationStack { get; set; }
 
     /// <summary>
     /// Gets or sets a command which will navigate back to the previous element in the stack.
     /// </summary>
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
     public ReactiveCommand<Unit, IRoutableViewModel> NavigateBack { get; protected set; }
 
     /// <summary>
@@ -56,7 +62,9 @@ public class RoutingState : ReactiveObject
     /// must be a ViewModel that implements IRoutableViewModel.
     /// </summary>
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
     public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; }
 
     /// <summary>
@@ -66,21 +74,27 @@ public class RoutingState : ReactiveObject
     /// IRoutableViewModel.
     /// </summary>
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
     public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
 
     /// <summary>
     /// Gets or sets the current view model which is to be shown for the Routing.
     /// </summary>
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
     public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
     /// <summary>
     /// Gets or sets an observable which will signal when the Navigation changes.
     /// </summary>
     [IgnoreDataMember]
+#if !(XAMARINIOS || XAMARINMAC || XAMARINTVOS)
     [JsonIgnore]
+#endif
     public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
 
     [OnDeserialized]
