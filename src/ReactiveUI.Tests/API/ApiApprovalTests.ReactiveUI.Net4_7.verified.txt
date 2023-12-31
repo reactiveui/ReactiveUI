@@ -700,6 +700,9 @@ namespace ReactiveUI
     }
     public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
     {
+        protected ReactiveCommand([System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
+                "Result",
+                "Cancel"})] System.Func<TParam, System.IObservable<System.ValueTuple<System.IObservable<TResult>, System.Action>>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler) { }
         protected ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler) { }
         public override System.IObservable<bool> CanExecute { get; }
         public override System.IObservable<bool> IsExecuting { get; }

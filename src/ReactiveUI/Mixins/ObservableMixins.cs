@@ -21,4 +21,101 @@ public static class ObservableMixins
         observable
             .Where(x => x is not null)
             .Select(x => x!);
+
+    /// <summary>
+    /// Converts an asynchronous action into an observable sequence. Each subscription
+    ///     to the resulting sequence causes the action to be started. The CancellationToken
+    ///     passed to the asynchronous action is tied to the observable sequence's subscription
+    ///     that triggered the action's invocation and can be used for best-effort cancellation.
+    /// </summary>
+    /// <param name="actionAsync">Asynchronous action to convert.</param>
+    /// <returns>An observable sequence exposing a Unit value upon completion of the action, or an exception.</returns>
+    internal static IObservable<(IObservable<Unit> Result, Action Cancel)> FromAsyncWithAllNotifications(
+        Func<CancellationToken, Task> actionAsync) => Observable.Defer(
+            () =>
+            {
+                var cts = new CancellationTokenSource();
+                var result = Observable.FromAsync(
+                    async ctsBase =>
+                    {
+                        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsBase);
+                        await actionAsync(linkedCts.Token);
+                    });
+                return Observable.Return<(IObservable<Unit> Result, Action Cancel)>((result, () => cts.Cancel()));
+            });
+
+    /// <summary>
+    /// Converts an asynchronous action into an observable sequence. Each subscription
+    ///     to the resulting sequence causes the action to be started. The CancellationToken
+    ///     passed to the asynchronous action is tied to the observable sequence's subscription
+    ///     that triggered the action's invocation and can be used for best-effort cancellation.
+    /// </summary>
+    /// <typeparam name="TParam">The type of the parameter.</typeparam>
+    /// <param name="actionAsync">Asynchronous action to convert.</param>
+    /// <param name="param">The parameter.</param>
+    /// <returns>An observable sequence exposing a Unit value upon completion of the action, or an exception.</returns>
+    internal static IObservable<(IObservable<Unit> Result, Action Cancel)> FromAsyncWithAllNotifications<TParam>(
+        Func<TParam, CancellationToken, Task> actionAsync, TParam param) => Observable.Defer(
+            () =>
+            {
+                var cts = new CancellationTokenSource();
+                var result = Observable.FromAsync(
+                    async ctsBase =>
+                    {
+                        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsBase);
+                        await actionAsync(param, linkedCts.Token);
+                    });
+
+                return Observable.Return<(IObservable<Unit> Result, Action Cancel)>((result, () => cts.Cancel()));
+            });
+
+    /// <summary>
+    /// Converts an asynchronous action into an observable sequence. Each subscription
+    ///     to the resulting sequence causes the action to be started. The CancellationToken
+    ///     passed to the asynchronous action is tied to the observable sequence's subscription
+    ///     that triggered the action's invocation and can be used for best-effort cancellation.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="actionAsync">Asynchronous action to convert.</param>
+    /// <returns>An observable sequence exposing a Unit value upon completion of the action, or an exception.</returns>
+    internal static IObservable<(IObservable<TResult> Result, Action Cancel)> FromAsyncWithAllNotifications<TResult>(
+        Func<CancellationToken, Task<TResult>> actionAsync) => Observable.Defer(
+            () =>
+            {
+                var cts = new CancellationTokenSource();
+                var result = Observable.FromAsync(
+                    async ctsBase =>
+                    {
+                        var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ctsBase);
+                        return await actionAsync(linkedCts.Token);
+                    });
+
+                return Observable.Return<(IObservable<TResult> Result, Action Cancel)>((result, () => cts.Cancel()));
+            });
+
+    /// <summary>
+    /// Converts an asynchronous action into an observable sequence. Each subscription
+    ///     to the resulting sequence causes the action to be started. The CancellationToken
+    ///     passed to the asynchronous action is tied to the observable sequence's subscription
+    ///     that triggered the action's invocation and can be used for best-effort cancellation.
+    /// </summary>
+    /// <typeparam name="TParam">The type of the parameter.</typeparam>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="actionAsync">Asynchronous action to convert.</param>
+    /// <param name="param">The parameter.</param>
+    /// <returns>An observable sequence exposing a Unit value upon completion of the action, or an exception.</returns>
+    internal static IObservable<(IObservable<TResult> Result, Action Cancel)> FromAsyncWithAllNotifications<TParam, TResult>(
+        Func<TParam, CancellationToken, Task<TResult>> actionAsync, TParam param) => Observable.Defer(
+            () =>
+            {
+                var cts = new CancellationTokenSource();
+                var result = Observable.FromAsync(
+                    async cancelFromRx =>
+                    {
+                        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancelFromRx);
+                        return await actionAsync(param, linkedCts.Token);
+                    });
+
+                return Observable.Return<(IObservable<TResult> Result, Action Cancel)>((result, () => cts.Cancel()));
+            });
 }

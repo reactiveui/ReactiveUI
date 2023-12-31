@@ -468,7 +468,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
+        return CreateFromObservableCancellable<Unit, TResult>(() => ObservableMixins.FromAsyncWithAllNotifications(execute), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -524,7 +524,7 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable(() => Observable.FromAsync(execute), canExecute, outputScheduler);
+        return CreateFromObservableCancellable<Unit, Unit>(() => ObservableMixins.FromAsyncWithAllNotifications(execute), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -595,8 +595,8 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable<TParam, TResult>(
-                                                     param => Observable.FromAsync(ct => execute(param, ct)),
+        return CreateFromObservableCancellable<TParam, TResult>(
+                                                     param => ObservableMixins.FromAsyncWithAllNotifications(ct => execute(param, ct)),
                                                      canExecute,
                                                      outputScheduler);
     }
@@ -663,10 +663,75 @@ public static class ReactiveCommand
             throw new ArgumentNullException(nameof(execute));
         }
 
-        return CreateFromObservable<TParam, Unit>(
-                                                  param => Observable.FromAsync(ct => execute(param, ct)),
+        return CreateFromObservableCancellable<TParam, Unit>(
+                                                  param => ObservableMixins.FromAsyncWithAllNotifications(ct => execute(param, ct)),
                                                   canExecute,
                                                   outputScheduler);
+    }
+
+    /// <summary>
+    /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}" /> with asynchronous execution logic.
+    /// </summary>
+    /// <typeparam name="TParam">The type of the parameter.</typeparam>
+    /// <typeparam name="TResult">The type of the command's result.</typeparam>
+    /// <param name="execute">Provides an observable representing the command's asynchronous execution logic.</param>
+    /// <param name="canExecute">An optional observable that dictates the availability of the command for execution.</param>
+    /// <param name="outputScheduler">An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.</param>
+    /// <returns>
+    /// The <c>ReactiveCommand</c> instance.
+    /// </returns>
+    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    internal static ReactiveCommand<TParam, TResult> CreateFromObservableCancellable<TParam, TResult>(
+        Func<IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
+        IObservable<bool>? canExecute = null,
+        IScheduler? outputScheduler = null)
+    {
+        if (execute is null)
+        {
+            throw new ArgumentNullException(nameof(execute));
+        }
+
+        return new ReactiveCommand<TParam, TResult>(
+            _ => execute(),
+            canExecute,
+            outputScheduler);
+    }
+
+    /// <summary>
+    /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.
+    /// </summary>
+    /// <param name="execute">
+    /// Provides an observable representing the command's asynchronous execution logic.
+    /// </param>
+    /// <param name="canExecute">
+    /// An optional observable that dictates the availability of the command for execution.
+    /// </param>
+    /// <param name="outputScheduler">
+    /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+    /// </param>
+    /// <returns>
+    /// The <c>ReactiveCommand</c> instance.
+    /// </returns>
+    /// <typeparam name="TParam">
+    /// The type of the parameter passed through to command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the command's result.
+    /// </typeparam>
+    internal static ReactiveCommand<TParam, TResult> CreateFromObservableCancellable<TParam, TResult>(
+        Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
+        IObservable<bool>? canExecute = null,
+        IScheduler? outputScheduler = null)
+    {
+        if (execute is null)
+        {
+            throw new ArgumentNullException(nameof(execute));
+        }
+
+        return new ReactiveCommand<TParam, TResult>(
+            execute,
+            canExecute,
+            outputScheduler);
     }
 }
 
@@ -696,7 +761,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     private readonly IDisposable _canExecuteSubscription;
     [SuppressMessage("Design", "CA2213: Dispose member", Justification = "Internal use only")]
     private readonly ScheduledSubject<Exception> _exceptions;
-    private readonly Func<TParam, IObservable<TResult>> _execute;
+    private readonly Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> _execute;
     [SuppressMessage("Design", "CA2213: Dispose member", Justification = "Internal use only")]
     private readonly Subject<ExecutionInfo> _executionInfo;
     private readonly IObservable<bool> _isExecuting;
@@ -705,7 +770,9 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     private readonly ISubject<ExecutionInfo, ExecutionInfo> _synchronizedExecutionInfo;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}" /> class.
+    /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}" /> class for work
+    /// that signals cancellation through a separate callback (as opposed to cancelling by
+    /// unsubscribing).
     /// </summary>
     /// <param name="execute">The Func to perform when the command is executed.</param>
     /// <param name="canExecute">A observable which has a value if the command can execute.</param>
@@ -715,7 +782,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// </exception>
     /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
     protected internal ReactiveCommand(
-        Func<TParam, IObservable<TResult>> execute,
+        Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
         IObservable<bool>? canExecute,
         IScheduler? outputScheduler)
     {
@@ -728,11 +795,11 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
             .Scan(
                 0,
                 (acc, next) => next.Demarcation switch
-                    {
-                        ExecutionDemarcation.Begin => acc + 1,
-                        ExecutionDemarcation.End => acc > 0 ? acc - 1 : acc = 0,
-                        _ => acc
-                    })
+                {
+                    ExecutionDemarcation.Begin => acc + 1,
+                    ExecutionDemarcation.End => acc > 0 ? acc - 1 : acc = 0,
+                    _ => acc
+                })
             .Select(inFlightCount => inFlightCount > 0)
             .StartWith(false)
             .DistinctUntilChanged()
@@ -756,6 +823,38 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
 
         _canExecuteSubscription = _canExecute
                                   .Subscribe(OnCanExecuteChanged);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReactiveCommand{TParam, TResult}" /> class.
+    /// </summary>
+    /// <param name="execute">The Func to perform when the command is executed.</param>
+    /// <param name="canExecute">A observable which has a value if the command can execute.</param>
+    /// <param name="outputScheduler">The scheduler where to send output after the main execution.</param>
+    /// <exception cref="System.ArgumentNullException">
+    /// execute.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
+    protected internal ReactiveCommand(
+        Func<TParam, IObservable<TResult>> execute,
+        IObservable<bool>? canExecute,
+        IScheduler? outputScheduler)
+        : this(
+            p =>
+            {
+                var resultObservable = execute(p);
+                return Observable.Defer(
+                    () =>
+                    {
+                        var cancelationSubject = new Subject<Unit>();
+                        void Cancel() => cancelationSubject.OnNext(Unit.Default);
+                        return Observable
+                            .Return((resultObservable.TakeUntil(cancelationSubject), (Action)Cancel));
+                    });
+            },
+            canExecute,
+            outputScheduler)
+    {
     }
 
     private enum ExecutionDemarcation
@@ -783,22 +882,31 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         {
             return Observable.Defer(
                     () =>
-                        {
-                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
+                    {
+                        _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
+                        return Observable<(IObservable<TResult>, Action)>.Empty;
+                    })
+                .Concat(_execute(parameter))
+                .SelectMany(sourceAndCancellation =>
+                {
+                    var (sourceObservable, cancelCallback) = sourceAndCancellation;
+                    var sharedSource = sourceObservable.Publish().RefCount(2);
 
-                            return Observable<TResult>.Empty;
-                        })
-                    .Concat(_execute(parameter))
-                    .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                    .Catch<TResult, Exception>(
-                        ex =>
-                        {
-                            _exceptions.OnNext(ex);
-                            return Observable.Throw<TResult>(ex);
-                        })
-                    .Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
-                    .PublishLast()
-                    .RefCount();
+                    // This is the subscription that survives for however long sourceObservable takes to complete (or fail).
+                    sharedSource
+                        .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
+                        .Catch<TResult, Exception>(
+                            ex =>
+                            {
+                                _exceptions.OnNext(ex);
+                                return Observable.Empty<TResult>();
+                            })
+                        .Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
+                        .Subscribe();
+
+                    // TODO: Check if it is a problem that we always cancel, even on normal completion!!!
+                    return sharedSource.Finally(() => cancelCallback());
+                });
         }
         catch (Exception ex)
         {
@@ -809,39 +917,11 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     }
 
     /// <inheritdoc/>
-    public override IObservable<TResult> Execute()
-    {
-        try
-        {
-            return Observable.Defer(
-                    () =>
-                        {
-                            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
-
-                            return Observable<TResult>.Empty;
-                        })
-                    .Concat(_execute(default!))
-                    .Do(result => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                    .Catch<TResult, Exception>(
-                        ex =>
-                        {
-                            _exceptions.OnNext(ex);
-                            return Observable.Throw<TResult>(ex);
-                        })
-                    .Finally(() => _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd()))
-                    .PublishLast()
-                    .RefCount();
-        }
-        catch (Exception ex)
-        {
-            _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnd());
-            _exceptions.OnNext(ex);
-            return Observable.Throw<TResult>(ex);
-        }
-    }
+    public override IObservable<TResult> Execute() => Execute(default!);
 
     /// <inheritdoc/>
-    public override IDisposable Subscribe(IObserver<TResult> observer) => _results.Subscribe(observer);
+    public override IDisposable Subscribe(IObserver<TResult> observer) =>
+        _results.Subscribe(observer);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -866,11 +946,13 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
 
         public TResult Result { get; }
 
-        public static ExecutionInfo CreateBegin() => new(ExecutionDemarcation.Begin, default!);
+        public static ExecutionInfo CreateBegin() =>
+            new(ExecutionDemarcation.Begin, default!);
 
         public static ExecutionInfo CreateResult(TResult result) =>
             new(ExecutionDemarcation.Result, result);
 
-        public static ExecutionInfo CreateEnd() => new(ExecutionDemarcation.End, default!);
+        public static ExecutionInfo CreateEnd() =>
+            new(ExecutionDemarcation.End, default!);
     }
 }
