@@ -31,6 +31,8 @@
 
   <ItemGroup>
     <Compile Remove="Common\RoutedViewHost.cs" />
+    <Compile Remove="Common\ViewModelViewHost.cs" />
+    <Compile Remove="WinUI\TransitioningContentControl.Empty.cs" />
   </ItemGroup>
 
 </Project>
