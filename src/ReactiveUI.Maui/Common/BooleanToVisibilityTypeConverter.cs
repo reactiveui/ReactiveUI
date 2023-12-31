@@ -9,7 +9,11 @@ using Microsoft.UI.Xaml;
 using Microsoft.Maui;
 #endif
 
+#if IS_MAUI
+namespace ReactiveUI.Maui;
+#else
 namespace ReactiveUI;
+#endif
 
 /// <summary>
 /// This type convert converts between Boolean and XAML Visibility - the

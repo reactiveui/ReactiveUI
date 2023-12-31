@@ -125,12 +125,9 @@ public static class DependencyResolverMixins
     private static Func<object> TypeFactory(TypeInfo typeInfo)
     {
         var parameterlessConstructor = typeInfo.DeclaredConstructors.FirstOrDefault(ci => ci.IsPublic && ci.GetParameters().Length == 0);
-        if (parameterlessConstructor is null)
-        {
-            throw new Exception($"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.");
-        }
-
-        return Expression.Lambda<Func<object>>(Expression.New(parameterlessConstructor)).Compile();
+        return parameterlessConstructor is null
+            ? throw new Exception($"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.")
+            : Expression.Lambda<Func<object>>(Expression.New(parameterlessConstructor)).Compile();
     }
 
     private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)

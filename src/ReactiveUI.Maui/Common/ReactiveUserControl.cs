@@ -4,13 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
-using System;
-using System.Diagnostics.CodeAnalysis;
-
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
+#if IS_MAUI
+namespace ReactiveUI.Maui;
+#else
 namespace ReactiveUI;
+#endif
 
 /// <summary>
 /// A <see cref="UserControl"/> that is reactive.
