@@ -4,16 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
-using System;
 using System.Globalization;
+#if IS_MAUI
 using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+#endif
 using System.Reflection;
-
 using Microsoft.UI.Xaml;
-
-using Splat;
 
 namespace ReactiveUI;
 
