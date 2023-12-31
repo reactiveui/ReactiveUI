@@ -3,17 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if WINUI_TARGET
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-
-using Splat;
 
 namespace ReactiveUI;
 
@@ -22,8 +12,7 @@ namespace ReactiveUI;
 /// the ViewModel property and display it. This control is very useful
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
-public
-    class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
+public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
     /// <summary>
     /// The default content dependency property.
@@ -158,4 +147,3 @@ public
         Content = viewInstance;
     }
 }
-#endif

@@ -24,10 +24,7 @@ public class Registrations : IWantsToRegisterStuff
     /// <inheritdoc/>
     public void Register(Action<Func<object>, Type> registerFunction)
     {
-        if (registerFunction is null)
-        {
-            throw new ArgumentNullException(nameof(registerFunction));
-        }
+        ArgumentNullException.ThrowIfNull(registerFunction);
 
         registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
         registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));

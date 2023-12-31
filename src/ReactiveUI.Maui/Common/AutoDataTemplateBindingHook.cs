@@ -4,9 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
