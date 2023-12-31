@@ -60,9 +60,7 @@ public class ViewModelViewHost : ContentView, IViewFor
                                                                               this.WhenAnyObservable(x => x.ViewContractObservable),
                                                                               (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-        this.WhenActivated(() =>
-        {
-            return new[]
+        this.WhenActivated(() => new[]
             {
                 vmAndContract.Subscribe(x =>
                 {
@@ -75,13 +73,7 @@ public class ViewModelViewHost : ContentView, IViewFor
                     }
 
                     var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel);
-
-                    if (view is null)
-                    {
-                        throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
-                    }
-
+                    var view = (viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel)) ?? throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
                     if (view is not View castView)
                     {
                         throw new Exception($"View '{view.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
@@ -90,8 +82,7 @@ public class ViewModelViewHost : ContentView, IViewFor
                     view.ViewModel = x.ViewModel;
                     Content = castView;
                 })
-            };
-        });
+            });
     }
 
     /// <summary>
