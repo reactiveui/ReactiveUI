@@ -10,7 +10,11 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Maui.Controls;
 #endif
 
+#if IS_MAUI
+namespace ReactiveUI.Maui;
+#else
 namespace ReactiveUI;
+#endif
 
 /// <summary>
 /// A <see cref="Page"/> that is reactive.
