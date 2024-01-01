@@ -3,10 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Windows.Input;
 
 using DynamicData;
-
+using FluentAssertions;
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
@@ -1163,48 +1164,115 @@ public class ReactiveCommandTest
 
     [Fact]
     public async Task ReactiveCommandCreateFromTaskHandlesTaskExceptionAsync()
+    {
+        using var testSequencer = new TestSequencer();
+        var subj = new Subject<Unit>();
+        var isExecuting = false;
+        Exception? fail = null;
+        var fixture = ReactiveCommand.CreateFromTask(
+            async _ =>
+            {
+                await subj.Take(1);
+                throw new Exception("break execution");
+            },
+            outputScheduler: ImmediateScheduler.Instance);
+
+        fixture.IsExecuting.Subscribe(async x =>
         {
-            using var testSequencer = new TestSequencer();
-            var subj = new Subject<Unit>();
-            var isExecuting = false;
-            Exception? fail = null;
-            var fixture = ReactiveCommand.CreateFromTask(
-                async _ =>
-                {
-                    await subj.Take(1);
-                    throw new Exception("break execution");
-                },
-                outputScheduler: ImmediateScheduler.Instance);
-
-            fixture.IsExecuting.Subscribe(async x =>
-            {
-                isExecuting = x;
-                await testSequencer.AdvancePhaseAsync("Executing {false, true, false}");
-            });
-            fixture.ThrownExceptions.Subscribe(async ex =>
-            {
-                fail = ex;
-                await testSequencer.AdvancePhaseAsync("Exception");
-            });
-
-            await testSequencer.AdvancePhaseAsync("Executing {false}");
-            Assert.False(isExecuting);
-            Assert.Null(fail);
-
-            fixture.Execute().Subscribe();
-            await testSequencer.AdvancePhaseAsync("Executing {true}");
-            Assert.True(isExecuting);
-            Assert.Null(fail);
-
-            subj.OnNext(Unit.Default);
-
-            // Wait to allow execution to complete
-            await testSequencer.AdvancePhaseAsync("Executing {false}");
+            isExecuting = x;
+            await testSequencer.AdvancePhaseAsync("Executing {false, true, false}");
+        });
+        fixture.ThrownExceptions.Subscribe(async ex =>
+        {
+            fail = ex;
             await testSequencer.AdvancePhaseAsync("Exception");
-            Assert.False(isExecuting);
-            Assert.Equal("break execution", fail?.Message);
-            testSequencer.Dispose();
+        });
+
+        await testSequencer.AdvancePhaseAsync("Executing {false}");
+        Assert.False(isExecuting);
+        Assert.Null(fail);
+
+        fixture.Execute().Subscribe();
+        await testSequencer.AdvancePhaseAsync("Executing {true}");
+        Assert.True(isExecuting);
+        Assert.Null(fail);
+
+        subj.OnNext(Unit.Default);
+
+        // Wait to allow execution to complete
+        await testSequencer.AdvancePhaseAsync("Executing {false}");
+        await testSequencer.AdvancePhaseAsync("Exception");
+        Assert.False(isExecuting);
+        Assert.Equal("break execution", fail?.Message);
+        testSequencer.Dispose();
+    }
+
+    [Fact]
+    public async Task ReactiveCommandCreateFromTaskThenCancelSetsIsExecutingFalseOnlyAfterCancellationCompleteAsync()
+    {
+        using var testSequencer = new TestSequencer();
+        var statusTrail = new List<(int Position, string Status)>();
+        var position = 0;
+
+        var fixture = ReactiveCommand.CreateFromTask(async (token) =>
+        {
+            // Phase 1: command execution has begun.
+            await testSequencer.AdvancePhaseAsync("Phase 1");
+            statusTrail.Add((position++, "started command"));
+            try
+            {
+                await Task.Delay(10000, token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Phase 2: command task has detected cancellation request.
+                await testSequencer.AdvancePhaseAsync("Phase 2");
+
+                // Phase 3: test has observed IsExecuting while cancellation is in progress.
+                await testSequencer.AdvancePhaseAsync("Phase 3");
+                throw;
+            }
+
+            statusTrail.Add((position++, "finished command"));
+        });
+
+        var latestIsExecutingValue = false;
+        fixture.IsExecuting.Subscribe(isExecuting =>
+        {
+            statusTrail.Add((position++, $"command executing = {isExecuting}"));
+            Volatile.Write(ref latestIsExecutingValue, isExecuting);
+        });
+
+        var disposable = fixture.Execute().Subscribe();
+
+        // Phase 1: command execution has begun.
+        await testSequencer.AdvancePhaseAsync("Phase 1");
+
+        Volatile.Read(ref latestIsExecutingValue).Should().BeTrue("IsExecuting should be true when execution is underway");
+
+        disposable.Dispose();
+
+        // Phase 2: command task has detected cancellation request.
+        await testSequencer.AdvancePhaseAsync("Phase 2");
+
+        Volatile.Read(ref latestIsExecutingValue).Should().BeTrue("IsExecuting should remain true while cancellation is in progress");
+
+        // Phase 3: test has observed IsExecuting while cancellation is in progress.
+        await testSequencer.AdvancePhaseAsync("Phase 3");
+
+        var start = Environment.TickCount;
+        while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
+        {
+            await Task.Yield();
         }
+
+        Volatile.Read(ref latestIsExecutingValue).Should().BeFalse("IsExecuting should be false once cancellation completes");
+        statusTrail.Should().Equal(
+                           (0, "command executing = False"),
+                           (1, "command executing = True"),
+                           (2, "started command"),
+                           (3, "command executing = False"));
+    }
 
     [Fact]
     public async Task ReactiveCommandExecutesFromInvokeCommand()
@@ -1233,20 +1301,259 @@ public class ReactiveCommandTest
             // set
             var fooVm = new Mocks.FooViewModel(new());
 
-            Assert.Equal(42, fooVm.Foo.Value); // initial value unchanged
+            fooVm.Foo.Value.Should().Be(42, "initial value unchanged");
 
             // act
             scheduler.AdvanceByMs(11); // async processing
-            Assert.Equal(0, fooVm.Foo.Value); // value set to default Setpoint value
+            fooVm.Foo.Value.Should().Be(0, "value set to default Setpoint value");
 
             fooVm.Setpoint = 123;
             scheduler.AdvanceByMs(5); // async task processing
 
             // assert
-            Assert.Equal(0, fooVm.Foo.Value); // value unchanged as async task still processing
+            fooVm.Foo.Value.Should().Be(0, "value unchanged as async task still processing");
             scheduler.AdvanceByMs(6); // process async setpoint setting
 
-            Assert.Equal(123, fooVm.Foo.Value);
+            fooVm.Foo.Value.Should().Be(123, "value set to Setpoint value");
             return Task.CompletedTask;
         });
+
+    [Fact]
+    public async Task ReactiveCommandCreateFromTaskHandlesExecuteCancellation()
+    {
+        using var testSequencer = new TestSequencer();
+        var statusTrail = new List<(int Position, string Status)>();
+        var position = 0;
+        var fixture = ReactiveCommand.CreateFromTask(
+                    async cts =>
+                    {
+                        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+                        statusTrail.Add((position++, "started command"));
+                        try
+                        {
+                            await Task.Delay(10000, cts);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // User Handles cancellation.
+                            statusTrail.Add((position++, "starting cancelling command"));
+                            await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
+
+                            // dummy cleanup
+                            await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
+                            statusTrail.Add((position++, "finished cancelling command"));
+                            throw;
+                        }
+
+                        return Unit.Default;
+                    },
+                    outputScheduler: ImmediateScheduler.Instance);
+
+        Exception? fail = null;
+        fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+        var latestIsExecutingValue = false;
+        fixture.IsExecuting.Subscribe(isExecuting =>
+        {
+            statusTrail.Add((position++, $"command executing = {isExecuting}"));
+            Volatile.Write(ref latestIsExecutingValue, isExecuting);
+        });
+
+        fail.Should().BeNull();
+        var result = false;
+        var disposable = fixture.Execute().Subscribe(_ => result = true);
+        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+        Volatile.Read(ref latestIsExecutingValue).Should().BeTrue();
+        statusTrail.Any(x => x.Status == "started command").Should().BeTrue();
+        disposable.Dispose();
+        await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
+        Volatile.Read(ref latestIsExecutingValue).Should().BeTrue();
+        await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
+
+        var start = Environment.TickCount;
+        while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
+        {
+            await Task.Yield();
+        }
+
+        // No result expected as cancelled
+        result.Should().BeFalse();
+        statusTrail.Should().Equal(
+                           (0, "command executing = False"),
+                           (1, "command executing = True"),
+                           (2, "started command"),
+                           (3, "starting cancelling command"),
+                           (4, "finished cancelling command"),
+                           (5, "command executing = False"));
+        (fail as OperationCanceledException).Should().NotBeNull();
+    }
+
+    [Fact]
+    public void ReactiveCommandCreateFromTaskHandlesTaskException() =>
+        new TestScheduler().With(
+            async scheduler =>
+            {
+                var subj = new Subject<Unit>();
+                Exception? fail = null;
+                var fixture = ReactiveCommand.CreateFromTask(
+                    async cts =>
+                    {
+                        await subj.Take(1);
+                        throw new Exception("break execution");
+                    },
+                    outputScheduler: scheduler);
+                fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+                fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+                isExecuting[0].Should().BeFalse();
+                fail.Should().BeNull();
+                fixture.Execute().Subscribe();
+
+                scheduler.AdvanceByMs(10);
+                isExecuting[1].Should().BeTrue();
+                fail.Should().BeNull();
+
+                scheduler.AdvanceByMs(10);
+                subj.OnNext(Unit.Default);
+
+                scheduler.AdvanceByMs(10);
+                isExecuting[2].Should().BeFalse();
+                fail?.Message.Should().Be("break execution");
+
+                // Required for correct async / await task handling
+                await Task.Delay(0);
+            });
+
+    [Fact]
+    public async Task ReactiveCommandCreateFromTaskHandlesCancellation()
+    {
+        using var testSequencer = new TestSequencer();
+        var statusTrail = new List<(int Position, string Status)>();
+        var position = 0;
+        var fixture = ReactiveCommand.CreateFromTask(
+                    async cts =>
+                    {
+                        statusTrail.Add((position++, "started command"));
+                        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+                        try
+                        {
+                            await Task.Delay(10000, cts);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // User Handles cancellation.
+                            statusTrail.Add((position++, "starting cancelling command"));
+                            await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
+
+                            // dummy cleanup
+                            statusTrail.Add((position++, "finished cancelling command"));
+                            await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
+                            throw;
+                        }
+
+                        return Unit.Default;
+                    },
+                    outputScheduler: ImmediateScheduler.Instance);
+
+        Exception? fail = null;
+        fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+        var latestIsExecutingValue = false;
+        fixture.IsExecuting.Subscribe(isExecuting =>
+        {
+            statusTrail.Add((position++, $"command executing = {isExecuting}"));
+            Volatile.Write(ref latestIsExecutingValue, isExecuting);
+        });
+
+        fail.Should().BeNull();
+        var result = false;
+        var disposable = fixture.Execute().Subscribe(_ => result = true);
+        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+        Volatile.Read(ref latestIsExecutingValue).Should().BeTrue();
+        statusTrail.Any(x => x.Status == "started command").Should().BeTrue();
+        disposable.Dispose();
+        await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
+        Volatile.Read(ref latestIsExecutingValue).Should().BeTrue();
+        await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
+        var start = Environment.TickCount;
+        while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
+        {
+            await Task.Yield();
+        }
+
+        // No result expected as cancelled
+        result.Should().BeFalse();
+        statusTrail.Should().Equal(
+                           (0, "command executing = False"),
+                           (1, "command executing = True"),
+                           (2, "started command"),
+                           (3, "starting cancelling command"),
+                           (4, "finished cancelling command"),
+                           (5, "command executing = False"));
+        (fail as OperationCanceledException).Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ReactiveCommandCreateFromTaskHandlesCompletion()
+    {
+        using var testSequencer = new TestSequencer();
+        var statusTrail = new List<(int Position, string Status)>();
+        var position = 0;
+        var fixture = ReactiveCommand.CreateFromTask(
+                    async cts =>
+                    {
+                        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+                        statusTrail.Add((position++, "started command"));
+                        try
+                        {
+                            await Task.Delay(1000, cts);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // User Handles cancellation.
+                            statusTrail.Add((position++, "starting cancelling command"));
+
+                            // dummy cleanup
+                            await Task.Delay(5000, CancellationToken.None);
+                            statusTrail.Add((position++, "finished cancelling command"));
+                            throw;
+                        }
+
+                        statusTrail.Add((position++, "finished command"));
+                        await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
+                        return Unit.Default;
+                    },
+                    outputScheduler: ImmediateScheduler.Instance);
+
+        Exception? fail = null;
+        fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+        var latestIsExecutingValue = false;
+        fixture.IsExecuting.Subscribe(isExecuting =>
+        {
+            statusTrail.Add((position++, $"command executing = {isExecuting}"));
+            Volatile.Write(ref latestIsExecutingValue, isExecuting);
+        });
+
+        fail.Should().BeNull();
+        var result = false;
+        fixture.Execute().Subscribe(_ => result = true);
+        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+        Volatile.Read(ref latestIsExecutingValue).Should().BeTrue();
+        await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
+
+        var start = Environment.TickCount;
+        while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
+        {
+            await Task.Yield();
+        }
+
+        result.Should().BeTrue();
+        statusTrail.Should().Equal(
+                           (0, "command executing = False"),
+                           (1, "command executing = True"),
+                           (2, "started command"),
+                           (3, "finished command"),
+                           (4, "command executing = False"));
+        fail.Should().BeNull();
+
+        // Check execution completed
+        Volatile.Read(ref latestIsExecutingValue).Should().BeFalse();
+    }
 }
