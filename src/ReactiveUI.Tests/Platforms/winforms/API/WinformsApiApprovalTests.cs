@@ -3,15 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using VerifyXunit;
-
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Checks the WinForms API to make sure there aren't any unexpected public API changes.
 /// </summary>
 [ExcludeFromCodeCoverage]
-[UsesVerify]
 public class WinformsApiApprovalTests
 {
     /// <summary>

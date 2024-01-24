@@ -3,15 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using VerifyXunit;
-
 namespace ReactiveUI.Tests.API;
 
 /// <summary>
 /// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
 /// </summary>
 [ExcludeFromCodeCoverage]
-[UsesVerify]
 public class ApiApprovalTests
 {
     /// <summary>

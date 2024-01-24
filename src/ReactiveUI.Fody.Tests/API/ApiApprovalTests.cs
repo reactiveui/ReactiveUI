@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Tests;
-using VerifyXunit;
 using Xunit;
 
 namespace ReactiveUI.Fody.Tests.API;
@@ -19,7 +18,6 @@ namespace ReactiveUI.Fody.Tests.API;
 /// for version changing reasons.
 /// </summary>
 [ExcludeFromCodeCoverage]
-[UsesVerify]
 public class ApiApprovalTests
 {
     /// <summary>
