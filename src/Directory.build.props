@@ -33,7 +33,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <XunitVersion>2.6.4</XunitVersion>
+    <XunitVersion>2.6.6</XunitVersion>
   </PropertyGroup>
   <!--<PropertyGroup Condition="$(IsTestProject) != 'true'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -58,7 +58,7 @@
     <PackageReference Include="Microsoft.Reactive.Testing" Version="6.0.0" />
     <PackageReference Include="PublicApiGenerator" Version="11.1.0" />
     <PackageReference Include="coverlet.msbuild" Version="6.0.0" PrivateAssets="All" />
-    <PackageReference Include="Verify.Xunit" Version="22.11.1" />
+    <PackageReference Include="Verify.Xunit" Version="23.0.1" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
