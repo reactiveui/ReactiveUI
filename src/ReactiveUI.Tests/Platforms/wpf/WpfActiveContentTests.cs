@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-
+using System.Windows.Controls;
 using DynamicData;
 using ReactiveUI.Testing;
 
@@ -64,6 +64,108 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
         Assert.Equal(test1, view.ViewModel!.ActiveItem);
 
         window.Close();
+    }
+
+    [StaFact]
+    public void ViewModelHostViewTestFallback()
+    {
+        var oldLocator = Locator.GetLocator();
+
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+        resolver.InitializeReactiveUI();
+
+        // test the resolving behavior
+        using (resolver.WithResolver())
+        {
+            ResolveViewBIfViewBIsRegistered(resolver);
+            ResolveView0WithFallbck(resolver);
+            ResolveNoneWithFallbckByPass(resolver);
+        }
+
+        void ResolveViewBIfViewBIsRegistered(ModernDependencyResolver resolver)
+        {
+            resolver.Register(() => new FakeViewWithContract.View0(), typeof(IViewFor<FakeViewWithContract.MyViewModel>));
+            resolver.Register(() => new FakeViewWithContract.ViewA(), typeof(IViewFor<FakeViewWithContract.MyViewModel>), FakeViewWithContract.ContractA);
+            resolver.Register(() => new FakeViewWithContract.ViewB(), typeof(IViewFor<FakeViewWithContract.MyViewModel>), FakeViewWithContract.ContractB);
+
+            var window = Fixture?.App?.WpfTestWindowFactory();
+
+            var viewmodel = new FakeViewWithContract.MyViewModel();
+            var vmvhost = new ViewModelViewHost()
+            {
+                ViewModel = viewmodel,
+                ViewContract = FakeViewWithContract.ContractB,
+            };
+            window!.RootGrid.Children.Clear();
+            window!.RootGrid.Children.Add(vmvhost);
+
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
+            window.RaiseEvent(loaded);
+            vmvhost.RaiseEvent(loaded);
+
+            Assert.NotNull(vmvhost.Content);
+            Assert.IsType(typeof(FakeViewWithContract.ViewB), vmvhost.Content);
+            window.Close();
+        }
+
+        void ResolveView0WithFallbck(ModernDependencyResolver resolver)
+        {
+            resolver.UnregisterCurrent(typeof(IViewFor<FakeViewWithContract.MyViewModel>), FakeViewWithContract.ContractB);
+
+            var window = Fixture?.App?.WpfTestWindowFactory();
+
+            var viewmodel = new FakeViewWithContract.MyViewModel();
+            var vmvhost = new ViewModelViewHost()
+            {
+                ViewModel = viewmodel,
+                ViewContract = FakeViewWithContract.ContractB,
+                ContractFallbackByPass = false,
+            };
+            window!.RootGrid.Children.Clear();
+            window!.RootGrid.Children.Add(vmvhost);
+
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
+            window.RaiseEvent(loaded);
+            vmvhost.RaiseEvent(loaded);
+
+            Assert.NotNull(vmvhost.Content);
+            Assert.IsType(typeof(FakeViewWithContract.View0), vmvhost.Content);
+            window.Close();
+        }
+
+        void ResolveNoneWithFallbckByPass(ModernDependencyResolver resolver)
+        {
+            resolver.UnregisterCurrent(typeof(IViewFor<FakeViewWithContract.MyViewModel>), FakeViewWithContract.ContractB);
+
+            var window = Fixture?.App?.WpfTestWindowFactory();
+
+            var viewmodel = new FakeViewWithContract.MyViewModel();
+            var vmvhost = new ViewModelViewHost()
+            {
+                ViewModel = viewmodel,
+                ViewContract = FakeViewWithContract.ContractB,
+                ContractFallbackByPass = true,
+            };
+            window!.RootGrid.Children.Clear();
+            window!.RootGrid.Children.Add(vmvhost);
+
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
+            window.RaiseEvent(loaded);
+            vmvhost.RaiseEvent(loaded);
+
+            Assert.Null(vmvhost.Content);
+            window.Close();
+        }
     }
 
     [StaFact]

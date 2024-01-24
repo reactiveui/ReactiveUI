@@ -58,6 +58,10 @@
     <None Remove="Platforms\wpf\Mocks\CanExecuteMock\AlwaysFalseModeDetector.cs" />
     <None Remove="Platforms\wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml.cs" />
     <None Remove="Platforms\wpf\Mocks\CanExecuteMock\LiveModeDetector.cs" />
+    <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator.cs" />
+    <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator1.cs" />
+    <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator2.cs" />
+    <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator3.cs" />
     <None Remove="Platforms\wpf\WpfGeneralFixture.cs" />
     <None Remove="Platforms\wpf\WpfGeneralFixtureApp.cs" />
   </ItemGroup>
