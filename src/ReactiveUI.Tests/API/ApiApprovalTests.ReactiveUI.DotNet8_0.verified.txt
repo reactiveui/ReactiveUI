@@ -13,7 +13,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.XamForms")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.17763.0")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v8.0", FrameworkDisplayName=".NET 8.0")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v7.0", FrameworkDisplayName=".NET 7.0")]
 [assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.17763.0")]
 namespace ReactiveUI
 {
@@ -900,20 +900,25 @@ namespace ReactiveUI
         ViewToViewModel = 0,
         ViewModelToView = 1,
     }
+    [System.Serializable]
     public class UnhandledErrorException : System.Exception
     {
         public UnhandledErrorException() { }
         public UnhandledErrorException(string message) { }
+        protected UnhandledErrorException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public UnhandledErrorException(string message, System.Exception innerException) { }
     }
+    [System.Serializable]
     public class UnhandledInteractionException<TInput, TOutput> : System.Exception
     {
         public UnhandledInteractionException() { }
         public UnhandledInteractionException(string message) { }
         public UnhandledInteractionException(ReactiveUI.Interaction<TInput, TOutput> interaction, TInput input) { }
+        protected UnhandledInteractionException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public UnhandledInteractionException(string message, System.Exception innerException) { }
         public TInput Input { get; }
         public ReactiveUI.Interaction<TInput, TOutput>? Interaction { get; }
+        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
     }
     [System.AttributeUsage(System.AttributeTargets.Class)]
     public sealed class ViewContractAttribute : System.Attribute
@@ -936,10 +941,12 @@ namespace ReactiveUI
     {
         public static ReactiveUI.IViewLocator Current { get; }
     }
+    [System.Serializable]
     public class ViewLocatorNotFoundException : System.Exception
     {
         public ViewLocatorNotFoundException() { }
         public ViewLocatorNotFoundException(string message) { }
+        protected ViewLocatorNotFoundException(System.Runtime.Serialization.SerializationInfo info, in System.Runtime.Serialization.StreamingContext context) { }
         public ViewLocatorNotFoundException(string message, System.Exception innerException) { }
     }
     public sealed class ViewModelActivator : System.IDisposable

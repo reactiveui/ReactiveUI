@@ -17,7 +17,6 @@ namespace ReactiveUI.Tests;
 /// A helper for doing API approvals.
 /// </summary>
 [ExcludeFromCodeCoverage]
-[UsesVerify]
 public static class ApiExtensions
 {
     /// <summary>
