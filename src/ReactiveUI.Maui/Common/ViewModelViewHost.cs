@@ -32,6 +32,12 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
     public static readonly DependencyProperty ViewContractObservableProperty =
         DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
 
+    /// <summary>
+    ///  The ContractFallbackByPass dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ContractFallbackByPassProperty =
+        DependencyProperty.Register("ContractFallbackByPass", typeof(bool), typeof(ViewModelViewHost), new PropertyMetadata(false));
+
     private string? _viewContract;
 
     /// <summary>
@@ -120,11 +126,25 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether should bypass the default contract fallback behavior.
+    /// </summary>
+    public bool ContractFallbackByPass
+    {
+        get => (bool)GetValue(ContractFallbackByPassProperty);
+        set => SetValue(ContractFallbackByPassProperty, value);
+    }
+
+    /// <summary>
     /// Gets or sets the view locator.
     /// </summary>
     public IViewLocator? ViewLocator { get; set; }
 
-    private void ResolveViewForViewModel(object? viewModel, string? contract)
+    /// <summary>
+    /// resolve view for view model with respect to contract.
+    /// </summary>
+    /// <param name="viewModel">ViewModel.</param>
+    /// <param name="contract">contract used by ViewLocator.</param>
+    protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)
         {
@@ -133,7 +153,11 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
         }
 
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var viewInstance = viewLocator.ResolveView(viewModel, contract) ?? viewLocator.ResolveView(viewModel);
+        var viewInstance = viewLocator.ResolveView(viewModel, contract);
+        if (viewInstance is null && !ContractFallbackByPass)
+        {
+            viewInstance = viewLocator.ResolveView(viewModel);
+        }
 
         if (viewInstance is null)
         {

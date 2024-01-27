@@ -118,15 +118,18 @@ namespace ReactiveUI
     }
     public class ViewModelViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, Splat.IEnableLogger
     {
+        public static readonly System.Windows.DependencyProperty ContractFallbackByPassProperty;
         public static readonly System.Windows.DependencyProperty DefaultContentProperty;
         public static readonly System.Windows.DependencyProperty ViewContractObservableProperty;
         public static readonly System.Windows.DependencyProperty ViewModelProperty;
         public ViewModelViewHost() { }
+        public bool ContractFallbackByPass { get; set; }
         public object DefaultContent { get; set; }
         public string? ViewContract { get; set; }
         public System.IObservable<string?> ViewContractObservable { get; set; }
         public ReactiveUI.IViewLocator? ViewLocator { get; set; }
         public object? ViewModel { get; set; }
+        protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
     }
 }
 namespace ReactiveUI.Wpf

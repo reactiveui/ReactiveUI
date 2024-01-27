@@ -40,6 +40,15 @@ public class ViewModelViewHost : ContentView, IViewFor
      typeof(ViewModelViewHost),
      Observable<string>.Never);
 
+    /// <summary>
+    ///  The ContractFallbackByPass dependency property.
+    /// </summary>
+    public static readonly BindableProperty ContractFallbackByPassProperty = BindableProperty.Create(
+        nameof(ContractFallbackByPass),
+        typeof(bool),
+        typeof(ViewModelViewHost),
+        false);
+
     private string? _viewContract;
 
     /// <summary>
@@ -66,21 +75,7 @@ public class ViewModelViewHost : ContentView, IViewFor
                 {
                     _viewContract = x.Contract;
 
-                    if (x.ViewModel is null)
-                    {
-                        Content = DefaultContent;
-                        return;
-                    }
-
-                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    var view = (viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel)) ?? throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
-                    if (view is not View castView)
-                    {
-                        throw new Exception($"View '{view.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
-                    }
-
-                    view.ViewModel = x.ViewModel;
-                    Content = castView;
+                    ResolveViewForViewModel(x.ViewModel, x.Contract);
                 })
             });
     }
@@ -125,7 +120,52 @@ public class ViewModelViewHost : ContentView, IViewFor
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether should bypass the default contract fallback behavior.
+    /// </summary>
+    public bool ContractFallbackByPass
+    {
+        get => (bool)GetValue(ContractFallbackByPassProperty);
+        set => SetValue(ContractFallbackByPassProperty, value);
+    }
+
+    /// <summary>
     /// Gets or sets the override for the view locator to use when resolving the view. If unspecified, <see cref="ViewLocator.Current"/> will be used.
     /// </summary>
     public IViewLocator? ViewLocator { get; set; }
+
+    /// <summary>
+    /// resolve view for view model with respect to contract.
+    /// </summary>
+    /// <param name="viewModel">ViewModel.</param>
+    /// <param name="contract">contract used by ViewLocator.</param>
+    protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
+    {
+        if (viewModel is null)
+        {
+            Content = DefaultContent;
+            return;
+        }
+
+        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+
+        var viewInstance = viewLocator.ResolveView(viewModel, contract);
+        if (viewInstance is null && !ContractFallbackByPass)
+        {
+            viewInstance = viewLocator.ResolveView(viewModel);
+        }
+
+        if (viewInstance is null)
+        {
+            throw new Exception($"Couldn't find view for '{viewModel}'.");
+        }
+
+        if (viewInstance is not View castView)
+        {
+            throw new Exception($"View '{viewInstance.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
+        }
+
+        viewInstance.ViewModel = viewModel;
+
+        Content = castView;
+    }
 }
