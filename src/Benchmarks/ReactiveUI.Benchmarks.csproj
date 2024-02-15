@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
-    <PackageId>BenchmarkDotNet.Samples</PackageId>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <DebugSymbols>true</DebugSymbols>
     <OutputType>Exe</OutputType>
     <NoWarn>;1591;1701;1702;1705;CA1822</NoWarn>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
@@ -17,9 +14,6 @@
   <ItemGroup>
     <PackageReference Include="DynamicData" />
     <PackageReference Include="BenchmarkDotNet" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
-    <Reference Include="System.Reflection" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
