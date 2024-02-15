@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
@@ -11,15 +10,13 @@
     <NoWarn>;1591;1701;1702;1705;CA1822</NoWarn>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="CreateReactiveListBenchmark.cs" />
     <Compile Remove="ReactiveListOperationBenchmark.cs" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="DynamicData" Version="*" />
-    <PackageReference Include="BenchmarkDotNet" Version="*" />
+    <PackageReference Include="DynamicData" />
+    <PackageReference Include="BenchmarkDotNet" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">
     <Reference Include="System.Reflection" />

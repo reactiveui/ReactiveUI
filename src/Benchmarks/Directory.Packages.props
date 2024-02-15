@@ -1,0 +1,52 @@
+﻿<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SplatVersion>0.1.0</SplatVersion>
+    <XUnitVersion>2.0.0-rc4-build2924</XUnitVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="BenchmarkDotNet" Version="0.13.12" />
+    <PackageVersion Include="coverlet.msbuild" Version="1.0.0" />
+    <PackageVersion Include="DynamicData" Version="8.3.27" />
+    <PackageVersion Include="FluentAssertions" Version="1.3.0.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20161024-02" />
+    <PackageVersion Include="Microsoft.Reactive.Testing" Version="0.0.1-alpha-00362" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62905-03" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="1.0.0-beta-gf8a674c064" />
+    <PackageVersion Include="PublicApiGenerator" Version="4.0.0" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="1.0.0-beta" />
+    <PackageVersion Include="Splat" Version="$(SplatVersion)" />
+    <PackageVersion Include="stylecop.analyzers" Version="1.0.0-alpha001" />
+    <PackageVersion Include="System.Text.Json" Version="1.0.0" />
+    <PackageVersion Include="Verify.Xunit" Version="1.0.0-beta.1" />
+    <PackageVersion Include="xunit" Version="$(XUnitVersion)" />
+    <PackageVersion Include="xunit.runner.console" Version="$(XUnitVersion)" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="0.99.2-build2552" />
+    <PackageVersion Include="Xunit.StaFact" Version="0.1.7-alpha" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0'))">
+    <PackageVersion Include="System.ComponentModel.Annotations" Version="4.0.0-beta-23019" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
+    <PackageVersion Include="System.ComponentModel" Version="4.0.0-beta-22231" />
+    <PackageVersion Include="System.ComponentModel.Annotations" Version="4.0.0-beta-23019" />
+    <PackageVersion Include="System.Diagnostics.Contracts" Version="4.0.0-beta-22231" />
+    <PackageVersion Include="System.Dynamic.Runtime" Version="4.0.0-beta-22231" />
+    <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.0.0-beta-22231" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('tizen'))">
+    <PackageVersion Include="Microsoft.Win32.Primitives" Version="4.0.0-beta-22231" />
+    <PackageVersion Include="System.Collections" Version="4.0.0-beta-23019" />
+    <PackageVersion Include="System.Diagnostics.Debug" Version="4.0.0-beta-23019" />
+    <PackageVersion Include="System.Diagnostics.Tracing" Version="4.0.0-beta-23019" />
+    <PackageVersion Include="System.IO.FileSystem" Version="4.0.0-beta-22231" />
+    <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.0.0-beta-22231" />
+    <PackageVersion Include="System.Net.Primitives" Version="3.9.0-beta-23019" />
+    <PackageVersion Include="System.Runtime.InteropServices" Version="4.0.0-beta-23019" />
+    <PackageVersion Include="System.Text.Encoding.Extensions" Version="4.0.0-beta-23019" />
+    <PackageVersion Include="System.Threading" Version="4.0.0-beta-22231" />
+  </ItemGroup>
+</Project>

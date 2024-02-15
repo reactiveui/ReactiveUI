@@ -5,27 +5,21 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;eventsnet;netstandard;blazor;web;</PackageTags>
     <NoWarn>$(NoWarn);BL0007;</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Reactive.Wasm" Version="1.*" />
+    <PackageReference Include="Reactive.Wasm" />
   </ItemGroup>
-
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.32" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" />
   </ItemGroup>
-
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.25" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" />
   </ItemGroup>
-
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net7')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" />
   </ItemGroup>
-
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net8')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" />
   </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
