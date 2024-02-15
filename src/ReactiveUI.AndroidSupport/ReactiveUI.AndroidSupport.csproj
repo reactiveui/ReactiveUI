@@ -1,31 +1,27 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
-
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid13.0</TargetFrameworks>
     <PackageDescription>Provides ReactiveUI extensions for the Android Support Library</PackageDescription>
     <PackageId>ReactiveUI.AndroidSupport</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;forms;monodroid;monotouch;xamarin.android;net;</PackageTags>
   </PropertyGroup>
-
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
     <!-- Hack to get around invalid version of Java.Interop -->
     <Reference Include="Java.Interop">
-       <!-- Path to a VS 2019 Java.Interop.dll -->
-       <HintPath>..\Java.Interop.dll</HintPath>
-    </Reference> 
+      <!-- Path to a VS 2019 Java.Interop.dll -->
+      <HintPath>..\Java.Interop.dll</HintPath>
+    </Reference>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="28.*" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.Preference" Version="28.*" />
-    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" Version="28.*" />
-    <PackageReference Include="Xamarin.Android.Support.Vector.Drawable" Version="28.*" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" />
+    <PackageReference Include="Xamarin.Android.Support.v4" />
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" />
+    <PackageReference Include="Xamarin.Android.Support.v7.Preference" />
+    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" />
+    <PackageReference Include="Xamarin.Android.Support.Vector.Drawable" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
