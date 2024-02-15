@@ -8,16 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Reactive.Wasm" />
   </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net7')) ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net8')) ">
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" />
   </ItemGroup>
   <ItemGroup>
