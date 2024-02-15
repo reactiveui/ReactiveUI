@@ -12,9 +12,7 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.XamForms")]
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.17763.0")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v8.0", FrameworkDisplayName=".NET 8.0")]
-[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.17763.0")]
 namespace ReactiveUI
 {
     public static class AutoPersistHelper
@@ -348,6 +346,10 @@ namespace ReactiveUI
     {
         string? PropertyName { get; }
         TSender Sender { get; }
+    }
+    public interface IReactiveProperty<T> : System.IDisposable, System.IObservable<T?>, System.Reactive.Disposables.ICancelable
+    {
+        T Value { get; set; }
     }
     public interface IRoutableViewModel : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
@@ -748,6 +750,20 @@ namespace ReactiveUI
     {
         public ReactivePropertyChangingEventArgs(TSender sender, string? propertyName) { }
         public TSender Sender { get; }
+    }
+    [System.Runtime.Serialization.DataContract]
+    public class ReactiveProperty<T> : ReactiveUI.ReactiveObject, ReactiveUI.IReactiveProperty<T>, System.IDisposable, System.IObservable<T?>, System.Reactive.Disposables.ICancelable
+    {
+        public ReactiveProperty() { }
+        public ReactiveProperty(T? initialValue) { }
+        public ReactiveProperty(T? initialValue, System.Reactive.Concurrency.IScheduler? scheduler) { }
+        public bool IsDisposed { get; }
+        [System.Runtime.Serialization.DataMember]
+        [System.Text.Json.Serialization.JsonInclude]
+        public T Value { get; set; }
+        public void Dispose() { }
+        protected virtual void Dispose(bool disposing) { }
+        public System.IDisposable Subscribe(System.IObserver<T?> observer) { }
     }
     [System.Runtime.Serialization.DataContract]
     public class ReactiveRecord : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging, System.IEquatable<ReactiveUI.ReactiveRecord>
