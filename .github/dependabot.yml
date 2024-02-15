@@ -9,10 +9,10 @@ updates:
 - package-ecosystem: nuget
   directory: "/src"
   schedule:
-    interval: monthly
+    interval: weekly
     time: "00:00"
   open-pull-requests-limit: 10
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: monthly
+    interval: weekly
