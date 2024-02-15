@@ -7,32 +7,28 @@
     <PackageDescription>A extension to the ReactiveUI platform that provides Splat bitmap operation support.</PackageDescription>
     <PackageId>ReactiveUI.Drawing</PackageId>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
-	</PropertyGroup>
-
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+  </PropertyGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
     <!-- Hack to get around invalid version of Java.Interop -->
     <Reference Include="Java.Interop">
-       <!-- Path to a VS 2019 Java.Interop.dll -->
-       <HintPath>..\Java.Interop.dll</HintPath>
-    </Reference> 
+      <!-- Path to a VS 2019 Java.Interop.dll -->
+      <HintPath>..\Java.Interop.dll</HintPath>
+    </Reference>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Remove="Resources\**" />
     <EmbeddedResource Remove="Resources\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Splat.Drawing" Version="14.*" />
+    <PackageReference Include="Splat.Drawing" />
   </ItemGroup>
 </Project>
