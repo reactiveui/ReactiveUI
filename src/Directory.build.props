@@ -32,7 +32,6 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <XunitVersion>2.6.6</XunitVersion>
   </PropertyGroup>
   <!--<PropertyGroup Condition="$(IsTestProject) != 'true'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
