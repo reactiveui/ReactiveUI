@@ -67,10 +67,10 @@
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net6'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="6.0.27" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.2" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net7'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="7.0.16" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.2" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net8'))">
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.2" />
@@ -78,7 +78,7 @@
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="3.1.32" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.2" />
     <PackageVersion Include="System.ComponentModel" Version="4.3.0" />
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0" />
