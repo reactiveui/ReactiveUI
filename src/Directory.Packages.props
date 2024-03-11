@@ -10,7 +10,7 @@
     <XUnitVersion>2.6.6</XUnitVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.1" />
     <PackageVersion Include="DynamicData" Version="8.3.27" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
     <PackageVersion Include="Fody" Version="$(FodyVersion)" />
