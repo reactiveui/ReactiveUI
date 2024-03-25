@@ -51,7 +51,7 @@
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.1" />
     <PackageVersion Include="Xamarin.Forms" Version="5.0.0.2622" />
     <PackageVersion Include="Xamarin.Forms.Mocks" Version="4.7.0.1" />
-    <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.9.0.3" />
+    <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.10.0.3" />
     <PackageVersion Include="xunit" Version="$(XUnitVersion)" />
     <PackageVersion Include="xunit.runner.console" Version="$(XUnitVersion)" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
