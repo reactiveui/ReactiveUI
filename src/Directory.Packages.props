@@ -48,7 +48,7 @@
     <PackageVersion Include="Xamarin.AndroidX.Core" Version="1.12.0.4" />
     <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.24" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.7.0.1" />
-    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.4" />
     <PackageVersion Include="Xamarin.Forms" Version="5.0.0.2622" />
     <PackageVersion Include="Xamarin.Forms.Mocks" Version="4.7.0.1" />
     <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.10.0.3" />
