@@ -347,9 +347,12 @@ namespace ReactiveUI
         string? PropertyName { get; }
         TSender Sender { get; }
     }
-    public interface IReactiveProperty<T> : System.IDisposable, System.IObservable<T?>, System.Reactive.Disposables.ICancelable
+    public interface IReactiveProperty<T> : System.ComponentModel.INotifyDataErrorInfo, System.ComponentModel.INotifyPropertyChanged, System.IDisposable, System.IObservable<T?>, System.Reactive.Disposables.ICancelable
     {
+        System.IObservable<System.Collections.IEnumerable?> ObserveErrorChanged { get; }
+        System.IObservable<bool> ObserveHasErrors { get; }
         T Value { get; set; }
+        void Refresh();
     }
     public interface IRoutableViewModel : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
@@ -751,18 +754,37 @@ namespace ReactiveUI
         public ReactivePropertyChangingEventArgs(TSender sender, string? propertyName) { }
         public TSender Sender { get; }
     }
+    public static class ReactivePropertyMixins
+    {
+        public static ReactiveUI.ReactiveProperty<T> AddValidation<T>(this ReactiveUI.ReactiveProperty<T> self, System.Linq.Expressions.Expression<System.Func<ReactiveUI.ReactiveProperty<T>?>> selfSelector) { }
+        public static System.IObservable<string?> ObserveValidationErrors<T>(this ReactiveUI.ReactiveProperty<T> self) { }
+    }
     [System.Runtime.Serialization.DataContract]
-    public class ReactiveProperty<T> : ReactiveUI.ReactiveObject, ReactiveUI.IReactiveProperty<T>, System.IDisposable, System.IObservable<T?>, System.Reactive.Disposables.ICancelable
+    public class ReactiveProperty<T> : ReactiveUI.ReactiveObject, ReactiveUI.IReactiveProperty<T>, System.ComponentModel.INotifyDataErrorInfo, System.ComponentModel.INotifyPropertyChanged, System.IDisposable, System.IObservable<T?>, System.Reactive.Disposables.ICancelable
     {
         public ReactiveProperty() { }
         public ReactiveProperty(T? initialValue) { }
-        public ReactiveProperty(T? initialValue, System.Reactive.Concurrency.IScheduler? scheduler) { }
+        public ReactiveProperty(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues) { }
+        public ReactiveProperty(T? initialValue, System.Reactive.Concurrency.IScheduler? scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues) { }
+        public bool HasErrors { get; }
         public bool IsDisposed { get; }
+        public System.IObservable<System.Collections.IEnumerable?> ObserveErrorChanged { get; }
+        public System.IObservable<bool> ObserveHasErrors { get; }
         [System.Runtime.Serialization.DataMember]
         [System.Text.Json.Serialization.JsonInclude]
         public T Value { get; set; }
+        public event System.EventHandler<System.ComponentModel.DataErrorsChangedEventArgs>? ErrorsChanged;
+        public ReactiveUI.ReactiveProperty<T> AddValidationError(System.Func<System.IObservable<T?>, System.IObservable<System.Collections.IEnumerable?>> validator, bool ignoreInitialError = false) { }
+        public ReactiveUI.ReactiveProperty<T> AddValidationError(System.Func<System.IObservable<T?>, System.IObservable<string?>> validator, bool ignoreInitialError = false) { }
+        public ReactiveUI.ReactiveProperty<T> AddValidationError(System.Func<T?, System.Collections.IEnumerable?> validator, bool ignoreInitialError = false) { }
+        public ReactiveUI.ReactiveProperty<T> AddValidationError(System.Func<T?, System.Threading.Tasks.Task<System.Collections.IEnumerable?>> validator, bool ignoreInitialError = false) { }
+        public ReactiveUI.ReactiveProperty<T> AddValidationError(System.Func<T?, System.Threading.Tasks.Task<string?>> validator, bool ignoreInitialError = false) { }
+        public ReactiveUI.ReactiveProperty<T> AddValidationError(System.Func<T?, string?> validator, bool ignoreInitialError = false) { }
+        public void CheckValidation() { }
         public void Dispose() { }
         protected virtual void Dispose(bool disposing) { }
+        public System.Collections.IEnumerable? GetErrors(string? propertyName) { }
+        public void Refresh() { }
         public System.IDisposable Subscribe(System.IObserver<T?> observer) { }
     }
     [System.Runtime.Serialization.DataContract]
