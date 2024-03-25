@@ -37,7 +37,7 @@
     <PackageVersion Include="System.Collections.Immutable" Version="8.0.0" />
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageVersion Include="System.Text.Json" Version="8.0.2" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.3" />
     <PackageVersion Include="Verify.Xunit" Version="23.2.0" />
     <PackageVersion Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="$(XamarinAndroidSupportVersion)" />
     <PackageVersion Include="Xamarin.Android.Support.v4" Version="$(XamarinAndroidSupportVersion)" />
@@ -67,13 +67,13 @@
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net6'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="6.0.27" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="6.0.28" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net7'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="7.0.16" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="7.0.17" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net8'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.3" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
   </ItemGroup>
