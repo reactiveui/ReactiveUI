@@ -11,7 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
-    <PackageVersion Include="DynamicData" Version="8.3.93" />
+    <PackageVersion Include="DynamicData" Version="8.4.1" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
     <PackageVersion Include="Fody" Version="$(FodyVersion)" />
     <PackageVersion Include="FodyHelpers" Version="$(FodyVersion)" />
