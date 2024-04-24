@@ -227,16 +227,19 @@ public static partial class ControlFetcherMixin
                                        assembly,
                                        currentAssembly =>
                                        {
-                                           var resources = currentAssembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
+#if NET8_0_OR_GREATER
+                                            var resources = Assembly.Load(currentAssembly
+                                                            .GetReferencedAssemblies()
+                                                            .First(an => an.FullName.StartsWith("_Microsoft.Android.Resource.Designer")).ToString())
+                                                            .GetModules()
+                                                            .SelectMany(x => x.GetTypes())
+                                                            .First(x => x.Name == "ResourceConstant");
+#else
+                                            var resources = currentAssembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
+#endif
 
-                                           var idType = resources.GetNestedType("Id");
-
-                                           if (idType is null)
-                                           {
-                                               throw new InvalidOperationException("Id is not a valid nested type in the resources.");
-                                           }
-
-                                           return idType.GetFields()
+                                            var idType = resources.GetNestedType("Id") ?? throw new InvalidOperationException("Id is not a valid nested type in the resources.");
+                                            return idType.GetFields()
                                                         .Where(x => x.FieldType == typeof(int))
                                                         .ToDictionary(k => k.Name, v => ((int?)v.GetRawConstantValue()) ?? 0, StringComparer.InvariantCultureIgnoreCase);
                                        });
