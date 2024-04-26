@@ -38,7 +38,7 @@
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
-    <PackageVersion Include="Verify.Xunit" Version="23.2.0" />
+    <PackageVersion Include="Verify.Xunit" Version="24.1.0" />
     <PackageVersion Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="$(XamarinAndroidSupportVersion)" />
     <PackageVersion Include="Xamarin.Android.Support.v4" Version="$(XamarinAndroidSupportVersion)" />
     <PackageVersion Include="Xamarin.Android.Support.v7.AppCompat" Version="$(XamarinAndroidSupportVersion)" />
