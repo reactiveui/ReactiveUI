@@ -55,7 +55,7 @@ public abstract class ReactiveNavigationController : UINavigationController, IRe
     /// Initializes a new instance of the <see cref="ReactiveNavigationController"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveNavigationController(IntPtr handle)
+    protected ReactiveNavigationController(in IntPtr handle)
         : base(handle)
     {
     }
@@ -195,7 +195,7 @@ public abstract class ReactiveNavigationController<TViewModel> : ReactiveNavigat
     /// Initializes a new instance of the <see cref="ReactiveNavigationController{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveNavigationController(IntPtr handle)
+    protected ReactiveNavigationController(in IntPtr handle)
         : base(handle)
     {
     }

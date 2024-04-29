@@ -82,7 +82,7 @@ public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPr
     /// Initializes a new instance of the <see cref="ReactiveTableViewCell"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveTableViewCell(IntPtr handle)
+    protected ReactiveTableViewCell(in IntPtr handle)
         : base(handle)
     {
     }
@@ -213,7 +213,7 @@ public abstract class ReactiveTableViewCell<TViewModel> : ReactiveTableViewCell,
     /// Initializes a new instance of the <see cref="ReactiveTableViewCell{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveTableViewCell(IntPtr handle)
+    protected ReactiveTableViewCell(in IntPtr handle)
         : base(handle)
     {
     }

@@ -1,6 +1,6 @@
-<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid13.0</TargetFrameworks>
+    <TargetFrameworks>$(BaseTargetFrameworks)</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net472</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
@@ -8,18 +8,8 @@
     <PackageId>ReactiveUI.Testing</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;</PackageTags>
   </PropertyGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <!-- Hack to get around invalid version of Java.Interop -->
-    <Reference Include="Java.Interop">
-      <!-- Path to a VS 2019 Java.Interop.dll -->
-      <HintPath>..\Java.Interop.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Reactive.Testing" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
-    <Reference Include="netstandard" />
   </ItemGroup>
 </Project>

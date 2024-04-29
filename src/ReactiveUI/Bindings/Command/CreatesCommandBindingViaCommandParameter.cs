@@ -37,12 +37,9 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        target.ArgumentNullExceptionThrowIfNull(nameof(target));
 
-        var type = target.GetType();
+        var type = target!.GetType();
         var cmdPi = type.GetRuntimeProperty("Command");
         var cmdParamPi = type.GetRuntimeProperty("CommandParameter");
         var ret = new CompositeDisposable();

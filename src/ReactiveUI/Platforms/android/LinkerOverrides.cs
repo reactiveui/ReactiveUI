@@ -3,9 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if NET7_0_OR_GREATER
 using System.Runtime.Versioning;
-#endif
 using Android.Widget;
 
 namespace ReactiveUI;
@@ -13,25 +11,19 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 internal class LinkerOverrides
 {
-#if NET7_0_OR_GREATER
     [ObsoletedOSPlatform("android30.0")]
     [SupportedOSPlatform("android23.0")]
 #pragma warning disable CA1822 // Mark members as static
-#else
-    [Obsolete("This method was deprecated in API level 30.", false)]
-#endif
 #pragma warning disable IDE0051 // Remove unused private members
     private void KeepMe()
 #pragma warning restore IDE0051 // Remove unused private members
-#if NET7_0_OR_GREATER
 #pragma warning restore CA1822 // Mark members as static
-#endif
     {
         var txt = new TextView(null);
         txt.Text = txt.Text;
 
         var iv = new ImageView(null);
-        var obj = iv.Drawable;
+        _ = iv.Drawable;
 
         var prog = new ProgressBar(null);
         prog.Progress = prog.Progress;

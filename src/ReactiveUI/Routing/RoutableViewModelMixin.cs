@@ -27,10 +27,7 @@ public static class RoutableViewModelMixin
     /// earlier than normal.</returns>
     public static IDisposable WhenNavigatedTo(this IRoutableViewModel item, Func<IDisposable> onNavigatedTo)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         IDisposable? inner = null;
 
@@ -72,10 +69,7 @@ public static class RoutableViewModelMixin
     /// navigation stack.</returns>
     public static IObservable<Unit> WhenNavigatedToObservable(this IRoutableViewModel item)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         var router = item.HostScreen.Router;
         var navigationStackChanged = router.NavigationChanged.CountChanged();
@@ -107,15 +101,12 @@ public static class RoutableViewModelMixin
     /// stack.</returns>
     public static IObservable<Unit> WhenNavigatingFromObservable(this IRoutableViewModel item)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         var router = item.HostScreen.Router;
         var navigationStackChanged = router.NavigationChanged.CountChanged();
         var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
-        var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel?[2], (previous, _) => new[] { previous[1], router.GetCurrentViewModel() });
+        var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel?[2], (previous, _) => [previous[1], router.GetCurrentViewModel()]);
 
         return viewModelsChanged
                .Where(x => x[0] == item)

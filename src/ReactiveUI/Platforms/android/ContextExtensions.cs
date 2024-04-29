@@ -75,14 +75,11 @@ public static class ContextExtensions
 
         protected override void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (!_disposed && disposing)
             {
-                if (disposing)
-                {
-                    _context.UnbindService(this);
-                    _context.Dispose();
-                    _disposed = true;
-                }
+                _context.UnbindService(this);
+                _context.Dispose();
+                _disposed = true;
             }
 
             base.Dispose(disposing);

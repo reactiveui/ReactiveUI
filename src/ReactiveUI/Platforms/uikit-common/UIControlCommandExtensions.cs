@@ -23,15 +23,8 @@ public static class UIControlCommandExtensions
     /// <returns>A disposable.</returns>
     public static IDisposable BindToTarget(this ICommand item, UIControl control, UIControlEvent events)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-
-        if (control is null)
-        {
-            throw new ArgumentNullException(nameof(control));
-        }
+        ArgumentNullException.ThrowIfNull(item);
+        ArgumentNullException.ThrowIfNull(control);
 
         var ev = new EventHandler((o, e) =>
         {
@@ -43,10 +36,7 @@ public static class UIControlCommandExtensions
             item.Execute(null);
         });
 
-        var cech = new EventHandler((o, e) =>
-        {
-            control.Enabled = item.CanExecute(null);
-        });
+        var cech = new EventHandler((o, e) => control.Enabled = item.CanExecute(null));
 
         item.CanExecuteChanged += cech;
         control.AddTarget(ev, events);

@@ -62,7 +62,7 @@ public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<Reactiv
     /// Initializes a new instance of the <see cref="ReactiveControl"/> class.
     /// </summary>
     /// <param name="handle">The handle.</param>
-    protected ReactiveControl(IntPtr handle)
+    protected ReactiveControl(in IntPtr handle)
         : base(handle)
     {
     }
@@ -188,7 +188,7 @@ public abstract class ReactiveControl<TViewModel> : ReactiveControl, IViewFor<TV
     /// Initializes a new instance of the <see cref="ReactiveControl{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer handle.</param>
-    protected ReactiveControl(IntPtr handle)
+    protected ReactiveControl(in IntPtr handle)
         : base(handle)
     {
     }

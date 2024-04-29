@@ -84,7 +84,7 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
     /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveImageView(IntPtr handle)
+    protected ReactiveImageView(in IntPtr handle)
         : base(handle)
     {
     }
@@ -228,7 +228,7 @@ public abstract class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFo
     /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveImageView(IntPtr handle)
+    protected ReactiveImageView(in IntPtr handle)
         : base(handle)
     {
     }

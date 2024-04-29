@@ -28,10 +28,7 @@ public static class SuspensionHostExtensions
     /// <returns>The app state.</returns>
     public static T GetAppState<T>(this ISuspensionHost item)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         Interlocked.Exchange(ref ensureLoadAppStateFunc, null)?.Invoke();
 
@@ -47,10 +44,7 @@ public static class SuspensionHostExtensions
     public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
         where T : class
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         return item.WhenAny(suspensionHost => suspensionHost.AppState, observedChange => observedChange.Value)
                    .WhereNotNull()
@@ -66,10 +60,7 @@ public static class SuspensionHostExtensions
     /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
     public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         var ret = new CompositeDisposable();
         suspensionDriver ??= driver ?? Locator.Current.GetService<ISuspensionDriver>();

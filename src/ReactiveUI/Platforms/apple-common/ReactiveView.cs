@@ -52,7 +52,7 @@ public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>
     /// Initializes a new instance of the <see cref="ReactiveView"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveView(IntPtr handle)
+    protected ReactiveView(in IntPtr handle)
         : base(handle)
     {
     }
@@ -180,7 +180,7 @@ public abstract class ReactiveView<TViewModel> : ReactiveView, IViewFor<TViewMod
     /// Initializes a new instance of the <see cref="ReactiveView{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveView(IntPtr handle)
+    protected ReactiveView(in IntPtr handle)
         : base(handle)
     {
     }

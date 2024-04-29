@@ -65,8 +65,10 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
         remove => PropertyChangedHandler -= value;
     }
 
+    [SuppressMessage("Roslynator", "RCS1159:Use EventHandler<T>", Justification = "Long term design.")]
     private event PropertyChangingEventHandler? PropertyChangingHandler;
 
+    [SuppressMessage("Roslynator", "RCS1159:Use EventHandler<T>", Justification = "Long term design.")]
     private event PropertyChangedEventHandler? PropertyChangedHandler;
 
     /// <inheritdoc />

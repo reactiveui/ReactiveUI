@@ -16,14 +16,12 @@ namespace ReactiveUI;
 /// Initializes a new instance of the <see cref="HandlerScheduler"/> class.
 /// </remarks>
 /// <param name="handler">The handler.</param>
-/// <param name="threadIdAssociatedWithHandler">The thread identifier associated with handler.</param>
-public class HandlerScheduler(Handler handler, long? threadIdAssociatedWithHandler) : IScheduler, IEnableLogger
+public class HandlerScheduler(Handler handler) : IScheduler, IEnableLogger
 {
     private readonly Handler _handler = handler;
-    private readonly long _looperId = threadIdAssociatedWithHandler ?? -1;
 
     static HandlerScheduler() =>
-        MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper!), Looper.MainLooper?.Thread?.Id);
+        MainThreadScheduler = new HandlerScheduler(new(Looper.MainLooper!));
 
     /// <summary>
     /// Gets a common instance to avoid allocations to the MainThread for the HandlerScheduler.

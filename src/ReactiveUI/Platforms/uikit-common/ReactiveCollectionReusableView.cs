@@ -44,7 +44,7 @@ public abstract class ReactiveCollectionReusableView : UICollectionReusableView,
     /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveCollectionReusableView(IntPtr handle)
+    protected ReactiveCollectionReusableView(in IntPtr handle)
         : base(handle)
     {
     }
@@ -167,7 +167,7 @@ public abstract class ReactiveCollectionReusableView<TViewModel> : ReactiveColle
     /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveCollectionReusableView(IntPtr handle)
+    protected ReactiveCollectionReusableView(in IntPtr handle)
         : base(handle)
     {
     }

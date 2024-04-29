@@ -16,7 +16,6 @@ namespace ReactiveUI;
 [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
 public sealed class LocalizableAttribute(bool isLocalizable) : Attribute
 {
-
     /// <summary>
     /// Gets a value indicating whether the target is localizable.
     /// </summary>

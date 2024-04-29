@@ -51,7 +51,7 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
     /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveViewController(IntPtr handle)
+    protected ReactiveViewController(in IntPtr handle)
         : base(handle)
     {
     }
@@ -189,7 +189,7 @@ public abstract class ReactiveViewController<TViewModel> : ReactiveViewControlle
     /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveViewController(IntPtr handle)
+    protected ReactiveViewController(in IntPtr handle)
         : base(handle)
     {
     }

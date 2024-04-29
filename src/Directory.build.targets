@@ -13,9 +13,6 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <DefineConstants>$(DefineConstants);NET_461;XAML</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;IOS</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-ios'))">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;IOS</DefineConstants>
   </PropertyGroup>
@@ -34,9 +31,6 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0-maccatalyst'))">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;IOS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac'))">
-    <DefineConstants>$(DefineConstants);MONO;COCOA;MAC</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-macos'))">
     <DefineConstants>$(DefineConstants);MONO;COCOA;MAC</DefineConstants>
   </PropertyGroup>
@@ -45,9 +39,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0-macos'))">
     <DefineConstants>$(DefineConstants);MONO;COCOA;MAC</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.TVOS'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;TVOS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-tvos'))">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;TVOS</DefineConstants>
@@ -58,13 +49,6 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0-tvos'))">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;TVOS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.WatchOS'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;WATCHOS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('MonoAndroid'))">
-    <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
-    <DesignTimeBuild>false</DesignTimeBuild>
-  </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-android'))">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
   </PropertyGroup>
@@ -73,9 +57,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0-android'))">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('tizen'))">
-    <DefineConstants>$(DefineConstants);TIZEN</DefineConstants>
   </PropertyGroup>
 
   <Target Name="ValidateNugetProperties" Condition="!$(IsTestProject) or $(IsTestProject) == ''" BeforeTargets="Compile">

@@ -38,10 +38,7 @@ public static class ViewForMixins
     /// </param>
     public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         item.Activator.AddActivationBlock(block);
     }
@@ -59,10 +56,7 @@ public static class ViewForMixins
     /// </param>
     public static void WhenActivated(this IActivatableViewModel item, Action<Action<IDisposable>> block)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         item.Activator.AddActivationBlock(() =>
         {
@@ -84,10 +78,7 @@ public static class ViewForMixins
     /// </param>
     public static void WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block) // TODO: Create Test
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         item.Activator.AddActivationBlock(() =>
         {
@@ -110,10 +101,7 @@ public static class ViewForMixins
     /// <returns>A Disposable that deactivates this registration.</returns>
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         return item.WhenActivated(block, null);
     }
@@ -136,10 +124,7 @@ public static class ViewForMixins
     /// <returns>A Disposable that deactivates this registration.</returns>
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view) // TODO: Create Test
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         var activationFetcher = _activationFetcherCache.Get(item.GetType());
         if (activationFetcher is null)

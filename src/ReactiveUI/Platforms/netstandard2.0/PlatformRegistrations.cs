@@ -14,10 +14,7 @@ public class PlatformRegistrations : IWantsToRegisterStuff
     /// <inheritdoc/>
     public void Register(Action<Func<object>, Type> registerFunction)
     {
-        if (registerFunction is null)
-        {
-            throw new ArgumentNullException(nameof(registerFunction));
-        }
+        registerFunction.ArgumentNullExceptionThrowIfNull(nameof(registerFunction));
 
         if (!ModeDetector.InUnitTestRunner())
         {

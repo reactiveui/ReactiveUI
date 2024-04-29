@@ -38,7 +38,7 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
     /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveSplitViewController(IntPtr handle)
+    protected ReactiveSplitViewController(in IntPtr handle)
         : base(handle)
     {
     }
@@ -180,7 +180,7 @@ public abstract class ReactiveSplitViewController<TViewModel> : ReactiveSplitVie
     /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveSplitViewController(IntPtr handle)
+    protected ReactiveSplitViewController(in IntPtr handle)
         : base(handle)
     {
     }

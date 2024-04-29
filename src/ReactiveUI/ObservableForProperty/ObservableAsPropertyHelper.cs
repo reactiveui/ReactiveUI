@@ -128,15 +128,8 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         bool deferSubscription = false,
         IScheduler? scheduler = null)
     {
-        if (observable is null)
-        {
-            throw new ArgumentNullException(nameof(observable));
-        }
-
-        if (onChanged is null)
-        {
-            throw new ArgumentNullException(nameof(onChanged));
-        }
+        observable.ArgumentNullExceptionThrowIfNull(nameof(observable));
+        onChanged.ArgumentNullExceptionThrowIfNull(nameof(onChanged));
 
         scheduler ??= CurrentThreadScheduler.Instance;
         onChanging ??= _ => { };
@@ -154,7 +147,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
                            ex => _thrownExceptions.Value.OnNext(ex))
                 .DisposeWith(_disposable);
 
-        _getInitialValue = getInitialValue ??= () => default(T?);
+        _getInitialValue = getInitialValue ??= () => default;
 
         if (deferSubscription)
         {

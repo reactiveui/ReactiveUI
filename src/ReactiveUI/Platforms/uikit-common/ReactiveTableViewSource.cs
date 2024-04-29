@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
-using System.ComponentModel;
 
 using Foundation;
 
@@ -44,10 +43,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <param name="sectionInformation">A read only list of table section information.</param>
     [Obsolete("Please bind your view model to the Data property.")]
     public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation<TSource>> sectionInformation)
-        : this(tableView)
-    {
-        Data = sectionInformation;
-    }
+        : this(tableView) => Data = sectionInformation;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
@@ -159,10 +155,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
     {
-        if (indexPath is null)
-        {
-            throw new ArgumentNullException(nameof(indexPath));
-        }
+        ArgumentNullException.ThrowIfNull(indexPath);
 
         return _commonSource.GetCell(indexPath);
     }
@@ -171,7 +164,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     public override nint NumberOfSections(UITableView tableView) => _commonSource.NumberOfSections();
 
     /// <inheritdoc/>
-    public override nint RowsInSection(UITableView tableview, nint section)
+    public override nint RowsInSection(UITableView tableView, nint section)
     {
         // iOS may call this method even when we have no sections, but only if we've overriden
         // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
@@ -192,10 +185,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
     {
-        if (indexPath is null)
-        {
-            throw new ArgumentNullException(nameof(indexPath));
-        }
+        ArgumentNullException.ThrowIfNull(indexPath);
 
         _elementSelected.OnNext(_commonSource.ItemAt(indexPath));
     }
@@ -203,10 +193,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
     {
-        if (indexPath is null)
-        {
-            throw new ArgumentNullException(nameof(indexPath));
-        }
+        ArgumentNullException.ThrowIfNull(indexPath);
 
         return _commonSource.SectionInfo[indexPath.Section].SizeHint;
     }
@@ -280,10 +267,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <returns>The item.</returns>
     public object? ItemAt(NSIndexPath indexPath)
     {
-        if (indexPath is null)
-        {
-            throw new ArgumentNullException(nameof(indexPath));
-        }
+        ArgumentNullException.ThrowIfNull(indexPath);
 
         return _commonSource.ItemAt(indexPath);
     }

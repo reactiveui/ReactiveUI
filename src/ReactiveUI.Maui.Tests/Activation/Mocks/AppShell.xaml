@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rxui:ReactiveShell
+    x:Class="ReactiveUI.Maui.Tests.Activation.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:rxui="clr-namespace:ReactiveUI.Maui;assembly=ReactiveUI.Maui"
+    xmlns:vm="clr-namespace:ReactiveUI.Maui.Tests.Activation"
+    Title="Shell.Maui.Test"
+    x:TypeArguments="vm:AppShellViewModel">
+
+    <!--
+        The overall app visual hierarchy is defined here, along with navigation.
+        
+        https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/
+    -->
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style x:Key="BaseStyle" TargetType="Element">
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="Shell.ForegroundColor" Value="White" />
+                <Setter Property="Shell.TitleColor" Value="White" />
+                <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
+                <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource Primary}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="White" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarTitleColor" Value="White" />
+            </Style>
+            <Style BasedOn="{StaticResource BaseStyle}" TargetType="TabBar" />
+            <Style BasedOn="{StaticResource BaseStyle}" TargetType="FlyoutItem" />
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <rxui:ReactiveShellContent Title="Shell" x:TypeArguments="vm:ShellViewModel" />
+    <rxui:ReactiveShellContent Title="Content" x:TypeArguments="vm:ContentPageViewModel" />
+    <rxui:ReactiveShellContent Title="Tabbed" x:TypeArguments="vm:TabbedPageViewModel" />
+    <rxui:ReactiveShellContent Title="Carousel" x:TypeArguments="vm:CarouselPageViewModel" />
+    <rxui:ReactiveShellContent Title="FlyOut" x:TypeArguments="vm:FlyOutPageViewModel" />
+</rxui:ReactiveShell>

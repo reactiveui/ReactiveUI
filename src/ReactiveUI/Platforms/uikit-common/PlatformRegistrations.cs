@@ -14,10 +14,7 @@ public class PlatformRegistrations : IWantsToRegisterStuff
     /// <inheritdoc/>
     public void Register(Action<Func<object>, Type> registerFunction)
     {
-        if (registerFunction is null)
-        {
-            throw new ArgumentNullException(nameof(registerFunction));
-        }
+        ArgumentNullException.ThrowIfNull(registerFunction);
 
         registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
         registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));

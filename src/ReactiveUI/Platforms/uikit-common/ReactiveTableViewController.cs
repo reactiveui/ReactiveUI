@@ -46,7 +46,7 @@ public abstract class ReactiveTableViewController : NSTableViewController, IReac
     /// Initializes a new instance of the <see cref="ReactiveTableViewController"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveTableViewController(IntPtr handle)
+    protected ReactiveTableViewController(in IntPtr handle)
         : base(handle)
     {
     }
@@ -176,7 +176,7 @@ public abstract class ReactiveTableViewController<TViewModel> : ReactiveTableVie
     /// Initializes a new instance of the <see cref="ReactiveTableViewController{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveTableViewController(IntPtr handle)
+    protected ReactiveTableViewController(in IntPtr handle)
         : base(handle)
     {
     }

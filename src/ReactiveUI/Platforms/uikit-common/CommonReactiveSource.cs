@@ -33,12 +33,12 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter)
     {
         _adapter = adapter;
-        _mainThreadId = Thread.CurrentThread.ManagedThreadId;
+        _mainThreadId = Environment.CurrentManagedThreadId;
         _mainDisposables = [];
         _sectionInfoDisposable = new SerialDisposable();
         _mainDisposables.Add(_sectionInfoDisposable);
-        _pendingChanges = new List<(int section, PendingChange pendingChange)>();
-        _sectionInfo = Array.Empty<TSectionInfo>();
+        _pendingChanges = [];
+        _sectionInfo = [];
 
         _mainDisposables.Add(
                              this
@@ -68,7 +68,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
     public int NumberOfSections()
     {
-        Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
+        Debug.Assert(Environment.CurrentManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 
         var count = SectionInfo.Count;
         this.Log().Debug(CultureInfo.InvariantCulture, "Reporting number of sections = {0}", count);
@@ -78,7 +78,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
     public int RowsInSection(int section)
     {
-        Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
+        Debug.Assert(Environment.CurrentManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 
         var list = (IList)SectionInfo[section].Collection!;
         var count = list.Count;
@@ -89,7 +89,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
     public object? ItemAt(NSIndexPath path)
     {
-        Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
+        Debug.Assert(Environment.CurrentManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 
         var list = (IList)SectionInfo[path.Section].Collection!;
         this.Log().Debug(CultureInfo.InvariantCulture, "Returning item at {0}-{1}", path.Section, path.Row);
@@ -99,7 +99,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
     public TUIViewCell GetCell(NSIndexPath indexPath)
     {
-        Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
+        Debug.Assert(Environment.CurrentManagedThreadId == _mainThreadId, "The thread is not the main thread.");
 
         this.Log().Debug(CultureInfo.InvariantCulture, "Getting cell for index path {0}-{1}", indexPath.Section, indexPath.Row);
         var section = SectionInfo[indexPath.Section];
@@ -313,7 +313,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
     private void ApplyPendingChanges(int sectionInfoId)
     {
-        Debug.Assert(Thread.CurrentThread.ManagedThreadId == _mainThreadId, "The thread is not the main thread.");
+        Debug.Assert(Environment.CurrentManagedThreadId == _mainThreadId, "The thread is not the main thread.");
         Debug.Assert(_isCollectingChanges, "Currently there are no changes to collect");
         this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Applying pending changes", sectionInfoId);
 
@@ -385,11 +385,11 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                                                 switch (normalizedUpdate?.Type)
                                                 {
                                                     case UpdateType.Add:
-                                                        DoUpdate(_adapter.InsertItems, new[] { normalizedUpdate.Index }, section);
+                                                        DoUpdate(_adapter.InsertItems, [normalizedUpdate.Index], section);
                                                         break;
 
                                                     case UpdateType.Delete:
-                                                        DoUpdate(_adapter.DeleteItems, new[] { normalizedUpdate.Index }, section);
+                                                        DoUpdate(_adapter.DeleteItems, [normalizedUpdate.Index], section);
                                                         break;
 
                                                     default:
@@ -426,7 +426,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
     private void VerifyOnMainThread()
     {
-        if (Thread.CurrentThread.ManagedThreadId != _mainThreadId)
+        if (Environment.CurrentManagedThreadId != _mainThreadId)
         {
             throw new InvalidOperationException("An operation has occurred off the main thread that must be performed on it. Be sure to schedule changes to the underlying data correctly.");
         }

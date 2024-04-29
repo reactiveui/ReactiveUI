@@ -1,5 +1,0 @@
-﻿{
-    "diagnosticMessages": true,
-    "longRunningTestSeconds": 30,
-    "methodDisplay": "classAndMethod"
-}

@@ -12,6 +12,4 @@ namespace ReactiveUI;
 /// times in the Visual Tree.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public sealed class SingleInstanceViewAttribute : Attribute
-{
-}
+public sealed class SingleInstanceViewAttribute : Attribute;

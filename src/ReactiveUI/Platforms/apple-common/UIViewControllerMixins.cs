@@ -16,10 +16,7 @@ internal static class UIViewControllerMixins
 {
     internal static void ActivateSubviews(this NSViewController controller, bool activate)
     {
-        if (controller is null)
-        {
-            throw new ArgumentNullException(nameof(controller));
-        }
+        ArgumentNullException.ThrowIfNull(controller);
 
         if (controller.View is null)
         {
@@ -31,10 +28,7 @@ internal static class UIViewControllerMixins
 
     private static void ActivateSubviews(this NSView masterView, bool activate)
     {
-        if (masterView is null)
-        {
-            throw new ArgumentNullException(nameof(masterView));
-        }
+        ArgumentNullException.ThrowIfNull(masterView);
 
         foreach (var view in masterView.Subviews)
         {

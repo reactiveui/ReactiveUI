@@ -36,7 +36,7 @@ public abstract class ReactiveTabBarController : UITabBarController, IReactiveNo
     /// Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveTabBarController(IntPtr handle)
+    protected ReactiveTabBarController(in IntPtr handle)
         : base(handle)
     {
     }
@@ -157,7 +157,7 @@ public abstract class ReactiveTabBarController<TViewModel> : ReactiveTabBarContr
     /// Initializes a new instance of the <see cref="ReactiveTabBarController{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveTabBarController(IntPtr handle)
+    protected ReactiveTabBarController(in IntPtr handle)
         : base(handle)
     {
     }

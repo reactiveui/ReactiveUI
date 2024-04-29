@@ -89,12 +89,9 @@ public sealed class DefaultViewLocator : IViewLocator
     /// </returns>
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
-        if (viewModel is null)
-        {
-            throw new ArgumentNullException(nameof(viewModel));
-        }
+        viewModel.ArgumentNullExceptionThrowIfNull(nameof(viewModel));
 
-        var view = AttemptViewResolutionFor(viewModel.GetType(), contract);
+        var view = AttemptViewResolutionFor(viewModel!.GetType(), contract);
 
         if (view is not null)
         {
@@ -137,7 +134,11 @@ public sealed class DefaultViewLocator : IViewLocator
 
         if (viewModelType.GetTypeInfo().IsInterface)
         {
+#if NET6_0_OR_GREATER
+            if (viewModelType.Name.StartsWith('I'))
+#else
             if (viewModelType.Name.StartsWith("I", StringComparison.InvariantCulture))
+#endif
             {
                 var toggledTypeName = DeinterfaceifyTypeName(viewModelTypeName);
                 return Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
@@ -154,15 +155,19 @@ public sealed class DefaultViewLocator : IViewLocator
 
     private static string DeinterfaceifyTypeName(string typeName)
     {
-        var idxComma = typeName.IndexOf(",", 0, StringComparison.InvariantCulture);
+        var idxComma = typeName.IndexOf(',', 0);
         var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
+#if NET6_0_OR_GREATER
+        return string.Concat(typeName.AsSpan(0, idxPeriod + 1), typeName.AsSpan(idxPeriod + 2));
+#else
         return typeName.Substring(0, idxPeriod + 1) + typeName.Substring(idxPeriod + 2);
+#endif
     }
 
     private static string InterfaceifyTypeName(string typeName)
     {
-        var idxComma = typeName.IndexOf(",", 0, StringComparison.InvariantCulture);
-        var idxPeriod = typeName.LastIndexOf(".", idxComma - 1, StringComparison.InvariantCulture);
+        var idxComma = typeName.IndexOf(',', 0);
+        var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
         return typeName.Insert(idxPeriod + 1, "I");
     }
 
@@ -189,9 +194,7 @@ public sealed class DefaultViewLocator : IViewLocator
         }
 
         proposedViewTypeName = typeof(IViewFor<>).MakeGenericType(viewModelType).AssemblyQualifiedName;
-        view = AttemptViewResolution(proposedViewTypeName, contract);
-
-        return view;
+        return AttemptViewResolution(proposedViewTypeName, contract);
     }
 
     private IViewFor? AttemptViewResolution(string? viewTypeName, string? contract)

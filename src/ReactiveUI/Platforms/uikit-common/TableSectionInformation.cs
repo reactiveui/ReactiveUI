@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
 
 using Foundation;
 
@@ -13,8 +12,8 @@ using UIKit;
 namespace ReactiveUI;
 
 /// <summary>
-/// Class used to extract a common API between <see cref="UIKit.UITableView"/>
-/// and <see cref="UIKit.UITableViewCell"/>.
+/// Class used to extract a common API between <see cref="UITableView"/>
+/// and <see cref="UITableViewCell"/>.
 /// </summary>
 /// <typeparam name="TSource">The type of the source.</typeparam>
 public class TableSectionInformation<TSource> : ISectionInformation<UITableViewCell>

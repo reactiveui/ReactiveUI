@@ -26,10 +26,7 @@ public class IROObservableForProperty : ICreatesObservableForProperty
     /// <inheritdoc/>
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
+        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
 
         if (sender is not IReactiveObject iro)
         {

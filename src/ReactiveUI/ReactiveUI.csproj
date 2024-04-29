@@ -1,7 +1,7 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;Xamarin.iOS10;Xamarin.Mac20;Xamarin.TVOS10;MonoAndroid13.0;tizen40;net6.0;net7.0;net8.0;net7.0-android;net7.0-ios;net7.0-tvos;net7.0-macos;net7.0-maccatalyst;net8.0-android;net8.0-ios;net8.0-tvos;net8.0-macos;net8.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472;net6.0-windows10.0.17763.0;net7.0-windows10.0.17763.0;net8.0-windows10.0.17763.0;net6.0-windows10.0.19041.0;net7.0-windows10.0.19041.0;net8.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks>$(BaseTargetFrameworks);$(MobileTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);$(WindowsTargetFrameworks)</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
@@ -22,13 +22,6 @@
     <EmbeddedResource Remove="Resources\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <!-- Hack to get around invalid version of Java.Interop -->
-    <Reference Include="Java.Interop">
-      <!-- Path to a VS 2019 Java.Interop.dll -->
-      <HintPath>..\Java.Interop.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <Compile Include="Platforms\netstandard2.0\**\*.cs" />
     <Compile Include="Platforms\shared\**\*.cs" />
@@ -38,79 +31,30 @@
     <PackageReference Include="System.Dynamic.Runtime" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" />
   </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-ios')) or $(TargetFramework.EndsWith('-maccatalyst'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
     <Compile Include="Platforms\uikit-common\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-    <Reference Include="System.Runtime.Serialization" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-ios'))">
-    <Compile Include="Platforms\apple-common\**\*.cs" />
-    <Compile Include="Platforms\ios\**\*.cs" />
-    <Compile Include="Platforms\uikit-common\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Compile Include="Platforms\apple-common\**\*.cs" />
-    <Compile Include="Platforms\mac\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="netstandard" />
+    <Compile Include="Platforms\mobile-common\**\*.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('-macos'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\mac\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-maccatalyst'))">
-    <Compile Include="Platforms\apple-common\**\*.cs" />
-    <Compile Include="Platforms\ios\**\*.cs" />
-    <Compile Include="Platforms\uikit-common\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
-    <Compile Include="Platforms\apple-common\**\*.cs" />
-    <Compile Include="Platforms\tvos\**\*.cs" />
-    <Compile Include="Platforms\uikit-common\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-    <Reference Include="System.Runtime.Serialization" />
+    <Compile Include="Platforms\mobile-common\**\*.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('-tvos'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\tvos\**\*.cs" />
     <Compile Include="Platforms\uikit-common\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <Compile Include="Platforms\android\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-    <Reference Include="System.Runtime.Serialization" />
+    <Compile Include="Platforms\mobile-common\**\*.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('-android'))">
     <Compile Include="Platforms\android\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+    <Compile Include="Platforms\mobile-common\**\*.cs" />
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
     <Compile Include="Platforms\net\**\*.cs" />
     <PackageReference Include="System.ComponentModel.Annotations" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
-    <Compile Include="Platforms\uap\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
-    <Compile Include="Platforms\tizen\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-    <PackageReference Include="System.Collections" />
-    <PackageReference Include="System.Diagnostics.Debug" />
-    <PackageReference Include="System.Diagnostics.Tracing" />
-    <PackageReference Include="System.IO.FileSystem" />
-    <PackageReference Include="System.IO.FileSystem.Primitives" />
-    <PackageReference Include="System.Net.Primitives" />
-    <PackageReference Include="System.Runtime.InteropServices" />
-    <PackageReference Include="System.Text.Encoding.Extensions" />
-    <PackageReference Include="System.Threading" />
-    <PackageReference Include="Microsoft.Win32.Primitives" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Splat" />
@@ -120,8 +64,5 @@
   <ItemGroup>
     <None Update="VariadicTemplates.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="VariadicTemplates.cs" />
     <Compile Update="VariadicTemplates.cs" DesignTime="True" AutoGen="true" DependentUpon="VariadicTemplates.tt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 </Project>

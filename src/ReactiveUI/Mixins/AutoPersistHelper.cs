@@ -286,20 +286,9 @@ public static class AutoPersistHelper
         where TItem : IReactiveObject
         where TCollection : INotifyCollectionChanged, IEnumerable<TItem>
     {
-        if (onAdd is null)
-        {
-            throw new ArgumentNullException(nameof(onAdd));
-        }
-
-        if (onRemove is null)
-        {
-            throw new ArgumentNullException(nameof(onRemove));
-        }
-
-        if (collection is null)
-        {
-            throw new ArgumentNullException(nameof(collection));
-        }
+        onAdd.ArgumentNullExceptionThrowIfNull(nameof(onAdd));
+        onRemove.ArgumentNullExceptionThrowIfNull(nameof(onRemove));
+        collection.ArgumentNullExceptionThrowIfNull(nameof(collection));
 
         foreach (var v in collection)
         {

@@ -38,7 +38,7 @@ public abstract class ReactiveCollectionView : UICollectionView, IReactiveNotify
     /// Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveCollectionView(IntPtr handle)
+    protected ReactiveCollectionView(in IntPtr handle)
         : base(handle)
     {
     }
@@ -145,7 +145,7 @@ public abstract class ReactiveCollectionView<TViewModel> : ReactiveCollectionVie
     /// Initializes a new instance of the <see cref="ReactiveCollectionView{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveCollectionView(IntPtr handle)
+    protected ReactiveCollectionView(in IntPtr handle)
         : base(handle)
     {
     }

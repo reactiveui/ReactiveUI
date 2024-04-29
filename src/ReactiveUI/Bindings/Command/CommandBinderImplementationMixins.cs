@@ -36,10 +36,7 @@ internal static class CommandBinderImplementationMixins
         where TViewModel : class
         where TProp : ICommand
     {
-        if (withParameter is null)
-        {
-            throw new ArgumentNullException(nameof(withParameter));
-        }
+        withParameter.ArgumentNullExceptionThrowIfNull(nameof(withParameter));
 
         var paramExpression = Reflection.Rewrite(withParameter.Body);
         var param = Reflection.ViewModelWhenAnyValue(viewModel, view, paramExpression);

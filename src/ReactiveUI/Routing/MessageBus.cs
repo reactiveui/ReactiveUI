@@ -110,10 +110,7 @@ public class MessageBus : IMessageBus
         IObservable<T> source,
         string? contract = null)
     {
-        if (source is null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        source.ArgumentNullExceptionThrowIfNull(nameof(source));
 
         return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
     }
@@ -159,7 +156,7 @@ public class MessageBus : IMessageBus
         {
             var item = (type, contract);
             block(_messageBus, item);
-            if (_messageBus.ContainsKey(item) && !_messageBus[item].IsAlive)
+            if (_messageBus.TryGetValue(item, out var value) && !value.IsAlive)
             {
                 _messageBus.Remove(item);
             }

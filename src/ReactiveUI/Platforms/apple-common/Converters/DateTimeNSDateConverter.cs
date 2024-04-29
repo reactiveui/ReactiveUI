@@ -20,19 +20,19 @@ public class DateTimeNSDateConverter : IBindingTypeConverter
         (toType == typeof(DateTime) && fromType == typeof(NSDate)) ? 4 : -1;
 
     /// <inheritdoc/>
-    public bool TryConvert(object? val, Type toType, object? conversionHint, out object? result)
+    public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
     {
         result = null;
 
-        if (val?.GetType() == typeof(DateTime) && toType == typeof(NSDate))
+        if (from?.GetType() == typeof(DateTime) && toType == typeof(NSDate))
         {
-            var dt = (DateTime)val;
+            var dt = (DateTime)from;
             result = (NSDate)dt;
             return true;
         }
-        else if (val?.GetType() == typeof(NSDate) && toType == typeof(DateTime))
+        else if (from?.GetType() == typeof(NSDate) && toType == typeof(DateTime))
         {
-            var dt = (NSDate)val;
+            var dt = (NSDate)from;
             result = (DateTime)dt;
             return true;
         }
