@@ -36,7 +36,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         }
 
         var match = _config.Keys
-                           .Where(x => x.IsAssignableFrom(type) && _config[x].Keys.Contains(propertyName))
+                           .Where(x => x.IsAssignableFrom(type) && _config[x].ContainsKey(propertyName))
                            .Select(x => _config[x][propertyName])
                            .OrderByDescending(x => x.Affinity)
                            .FirstOrDefault();
@@ -53,10 +53,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        if (sender is null)
-        {
-            throw new ArgumentNullException(nameof(sender));
-        }
+        ArgumentNullException.ThrowIfNull(sender);
 
         if (beforeChanged)
         {
@@ -66,17 +63,14 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         var type = sender.GetType();
 
         var match = _config.Keys
-                           .Where(x => x.IsAssignableFrom(type) && _config[x].Keys.Contains(propertyName))
+                           .Where(x => x.IsAssignableFrom(type) && _config[x].ContainsKey(propertyName))
                            .Select(x => _config[x][propertyName])
                            .OrderByDescending(x => x.Affinity)
                            .FirstOrDefault();
 
-        if (match is null)
-        {
-            throw new NotSupportedException($"Notifications for {type.Name}.{propertyName} are not supported");
-        }
-
-        return match.CreateObservable.Invoke((NSObject)sender, expression);
+        return match is null
+            ? throw new NotSupportedException($"Notifications for {type.Name}.{propertyName} are not supported")
+            : match.CreateObservable.Invoke((NSObject)sender, expression);
     }
 
 #if UIKIT
@@ -92,11 +86,11 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         {
             var control = (UIControl)sender;
 
-            EventHandler handler = (s, e) => subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
+            void Handler(object? s, EventArgs e) => subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
 
-            control.AddTarget(handler, evt);
+            control.AddTarget(Handler, evt);
 
-            return Disposable.Create(() => control.RemoveTarget(handler, evt));
+            return Disposable.Create(() => control.RemoveTarget(Handler, evt));
         });
 #endif
 

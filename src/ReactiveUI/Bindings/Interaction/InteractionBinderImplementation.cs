@@ -19,15 +19,8 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
             where TViewModel : class
             where TView : class, IViewFor
     {
-        if (propertyName is null)
-        {
-            throw new ArgumentNullException(nameof(propertyName));
-        }
-
-        if (handler is null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        propertyName.ArgumentNullExceptionThrowIfNull(nameof(propertyName));
+        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 
@@ -51,15 +44,8 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
             where TViewModel : class
             where TView : class, IViewFor
     {
-        if (propertyName is null)
-        {
-            throw new ArgumentNullException(nameof(propertyName));
-        }
-
-        if (handler is null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        propertyName.ArgumentNullExceptionThrowIfNull(nameof(propertyName));
+        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 

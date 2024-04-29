@@ -28,6 +28,7 @@ public class EqualityTypeConverter : IBindingTypeConverter
     /// <exception cref="InvalidCastException">If we cannot cast the object.</exception>
     public static object? DoReferenceCast(object? from, Type targetType)
     {
+        targetType.ArgumentNullExceptionThrowIfNull(nameof(targetType));
         var backingNullableType = Nullable.GetUnderlyingType(targetType);
 
         if (backingNullableType is null)
@@ -96,10 +97,7 @@ public class EqualityTypeConverter : IBindingTypeConverter
     /// <inheritdoc/>
     public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
     {
-        if (toType is null)
-        {
-            throw new ArgumentNullException(nameof(toType));
-        }
+        toType.ArgumentNullExceptionThrowIfNull(nameof(toType));
 
         var mi = _referenceCastCache.Get(toType);
 
@@ -119,20 +117,8 @@ public class EqualityTypeConverter : IBindingTypeConverter
 
     private static bool IsInstanceOfType(object from, Type targetType)
     {
-        if (from is null)
-        {
-            throw new ArgumentNullException(nameof(from));
-        }
-
-        if (targetType is null)
-        {
-            throw new ArgumentNullException(nameof(targetType));
-        }
-
-#if NETFX_CORE || PORTABLE
-        return targetType.GetTypeInfo().IsAssignableFrom(from.GetType().GetTypeInfo());
-#else
+        from.ArgumentNullExceptionThrowIfNull(nameof(from));
+        targetType.ArgumentNullExceptionThrowIfNull(nameof(targetType));
         return targetType.IsInstanceOfType(from);
-#endif
     }
 }

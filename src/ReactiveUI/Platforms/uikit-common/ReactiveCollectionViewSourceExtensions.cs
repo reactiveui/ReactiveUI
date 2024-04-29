@@ -37,15 +37,9 @@ public static class ReactiveCollectionViewSourceExtensions
         Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
         where TCell : UICollectionViewCell
     {
-        if (sectionsObservable is null)
-        {
-            throw new ArgumentNullException(nameof(sectionsObservable));
-        }
+        ArgumentNullException.ThrowIfNull(sectionsObservable);
 
-        if (collectionView is null)
-        {
-            throw new ArgumentNullException(nameof(collectionView));
-        }
+        ArgumentNullException.ThrowIfNull(collectionView);
 
         var source = new ReactiveCollectionViewSource<TSource>(collectionView);
         initSource?.Invoke(source);
@@ -107,10 +101,7 @@ public static class ReactiveCollectionViewSourceExtensions
         Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
         where TCell : UICollectionViewCell
     {
-        if (collectionView is null)
-        {
-            throw new ArgumentNullException(nameof(collectionView));
-        }
+        ArgumentNullException.ThrowIfNull(collectionView);
 
         var type = typeof(TCell);
         var cellKey = new NSString(type.ToString());

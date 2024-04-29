@@ -31,12 +31,9 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <param name="hostApplication">The host application.</param>
     public AutoSuspendHelper(Application hostApplication) // TODO: Create Test
     {
-        if (hostApplication is null)
-        {
-            throw new ArgumentNullException(nameof(hostApplication));
-        }
+        ArgumentNullException.ThrowIfNull(nameof(hostApplication));
 
-        hostApplication.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
+        hostApplication?.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
 
         _onCreate.Merge(_onSaveInstanceState).Subscribe(x => LatestBundle = x);
 

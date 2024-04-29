@@ -88,10 +88,7 @@ public static class ExpressionMixins
     /// <returns>The member info from the expression.</returns>
     public static MemberInfo? GetMemberInfo(this Expression expression)
     {
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
+        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
 
         MemberInfo? info;
         switch (expression.NodeType)
@@ -118,10 +115,7 @@ public static class ExpressionMixins
     /// <returns>The parent expression.</returns>
     public static Expression? GetParent(this Expression expression) // TODO: Create Test
     {
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
+        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
 
         return expression.NodeType switch
         {
@@ -140,10 +134,7 @@ public static class ExpressionMixins
     /// <returns>An array of arguments.</returns>
     public static object?[]? GetArgumentsArray(this Expression expression) // TODO: Create Test
     {
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
+        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
 
         if (expression.NodeType == ExpressionType.Index)
         {

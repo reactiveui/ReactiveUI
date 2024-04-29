@@ -54,10 +54,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// <inheritdoc/>
     public IDisposable RegisterHandler(Action<IInteractionContext<TInput, TOutput>> handler)
     {
-        if (handler is null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
 
         return RegisterHandler(interaction =>
         {
@@ -69,10 +66,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// <inheritdoc />
     public IDisposable RegisterHandler(Func<IInteractionContext<TInput, TOutput>, Task> handler)
     {
-        if (handler is null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
 
         return RegisterHandler(interaction => handler(interaction).ToObservable());
     }
@@ -80,10 +74,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// <inheritdoc />
     public IDisposable RegisterHandler<TDontCare>(Func<IInteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
     {
-        if (handler is null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
 
         IObservable<Unit> ContentHandler(IInteractionContext<TInput, TOutput> context) => handler(context).Select(_ => Unit.Default);
 

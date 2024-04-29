@@ -47,12 +47,9 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        target.ArgumentNullExceptionThrowIfNull(nameof(target));
 
-        var type = target.GetType();
+        var type = target!.GetType();
         var eventInfo = _defaultEventsToBind
             .Select(x => new { EventInfo = type.GetRuntimeEvent(x.name), Args = x.type })
             .FirstOrDefault(x => x.EventInfo is not null) ?? throw new Exception(

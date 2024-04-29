@@ -124,10 +124,6 @@ public class KVOObservableForProperty : ICreatesObservableForProperty
             propertyName = "Is" + propertyName;
         }
 
-#if XAMARINIOS || XAMARINMAC || XAMARINTVOS
-        return char.ToLowerInvariant(propertyName[0]).ToString(CultureInfo.InvariantCulture) + propertyName.Substring(1);
-#else
         return string.Concat(char.ToLowerInvariant(propertyName[0]).ToString(CultureInfo.InvariantCulture), propertyName.AsSpan(1));
-#endif
     }
 }

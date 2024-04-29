@@ -29,15 +29,8 @@ public static class ReactivePropertyMixins
     /// </exception>
     public static ReactiveProperty<T> AddValidation<T>(this ReactiveProperty<T> self, Expression<Func<ReactiveProperty<T>?>> selfSelector)
     {
-        if (selfSelector == null)
-        {
-            throw new ArgumentNullException(nameof(selfSelector));
-        }
-
-        if (self == null)
-        {
-            throw new ArgumentNullException(nameof(self));
-        }
+        selfSelector.ArgumentNullExceptionThrowIfNull(nameof(selfSelector));
+        self.ArgumentNullExceptionThrowIfNull(nameof(self));
 
         var memberExpression = (MemberExpression)selfSelector.Body;
         var propertyInfo = (PropertyInfo)memberExpression.Member;
@@ -75,10 +68,7 @@ public static class ReactivePropertyMixins
     /// <returns>A IObservable of string.</returns>
     public static IObservable<string?> ObserveValidationErrors<T>(this ReactiveProperty<T> self)
     {
-        if (self == null)
-        {
-            throw new ArgumentNullException(nameof(self));
-        }
+        self.ArgumentNullExceptionThrowIfNull(nameof(self));
 
         return self.ObserveErrorChanged
             .Select(x => x?.OfType<string>()?.FirstOrDefault());

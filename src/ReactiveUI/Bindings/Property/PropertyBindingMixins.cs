@@ -10,7 +10,7 @@ namespace ReactiveUI;
 /// </summary>
 public static class PropertyBindingMixins
 {
-    private static readonly IPropertyBinderImplementation _binderImplementation;
+    private static readonly PropertyBinderImplementation _binderImplementation;
 
     static PropertyBindingMixins()
     {

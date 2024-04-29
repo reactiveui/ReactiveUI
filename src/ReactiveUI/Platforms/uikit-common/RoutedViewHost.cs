@@ -37,7 +37,7 @@ public class RoutedViewHost : ReactiveNavigationController
                                {
                                    d(this
                                      .WhenAnyValue(x => x.Router)
-                                     .Where(x => x is not null && x.NavigationStack.Count > 0 && ViewControllers is not null && ViewControllers.Length == 0)
+                                     .Where(x => x?.NavigationStack.Count > 0 && ViewControllers?.Length == 0)
                                      .Subscribe(x =>
                                      {
                                          _routerInstigated = true;
@@ -150,10 +150,7 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <inheritdoc/>
     public override void PushViewController(NSViewController? viewController, bool animated)
     {
-        if (viewController is null)
-        {
-            throw new ArgumentNullException(nameof(viewController));
-        }
+        ArgumentNullException.ThrowIfNull(viewController);
 
         base.PushViewController(viewController, animated);
 
@@ -201,13 +198,7 @@ public class RoutedViewHost : ReactiveNavigationController
         }
 
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = viewLocator.ResolveView(viewModel, contract);
-
-        if (view is null)
-        {
-            throw new Exception($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
-        }
-
+        var view = viewLocator.ResolveView(viewModel, contract) ?? throw new Exception($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
         view.ViewModel = viewModel;
 
         return view is not NSViewController viewController

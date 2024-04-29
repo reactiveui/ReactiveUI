@@ -9,6 +9,4 @@ namespace ReactiveUI;
 /// Attribute that marks a resource to be ignored.
 /// </summary>
 [AttributeUsage(AttributeTargets.All)]
-public sealed class IgnoreResourceAttribute : Attribute
-{
-}
+public sealed class IgnoreResourceAttribute : Attribute;

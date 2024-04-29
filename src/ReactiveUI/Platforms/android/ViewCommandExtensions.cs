@@ -22,15 +22,8 @@ public static class ViewCommandExtensions
     /// <returns>A disposable.</returns>
     public static IDisposable BindToTarget(this ICommand command, View control) // TODO: Create Test
     {
-        if (command is null)
-        {
-            throw new ArgumentNullException(nameof(command));
-        }
-
-        if (control is null)
-        {
-            throw new ArgumentNullException(nameof(control));
-        }
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(control);
 
         var ev = new EventHandler((o, e) =>
         {

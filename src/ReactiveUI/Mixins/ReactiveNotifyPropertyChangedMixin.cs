@@ -47,10 +47,7 @@ public static class ReactiveNotifyPropertyChangedMixin
         bool beforeChange = false,
         bool skipInitial = true)
     {
-        if (property is null)
-        {
-            throw new ArgumentNullException(nameof(property));
-        }
+        property.ArgumentNullExceptionThrowIfNull(nameof(property));
 
         /* x => x.Foo.Bar.Baz;
          *
@@ -99,10 +96,8 @@ public static class ReactiveNotifyPropertyChangedMixin
         bool beforeChange = false) // TODO: Create Test
         where TSender : class
     {
-        if (selector is null)
-        {
-            throw new ArgumentNullException(nameof(property));
-        }
+        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        selector.ArgumentNullExceptionThrowIfNull(nameof(selector));
 
         return item.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
     }
@@ -177,10 +172,7 @@ public static class ReactiveNotifyPropertyChangedMixin
 
     private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
     {
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
+        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
 
         var memberInfo = expression.GetMemberInfo() ?? throw new ArgumentException("The expression does not have valid member info", nameof(expression));
         var propertyName = memberInfo.Name;

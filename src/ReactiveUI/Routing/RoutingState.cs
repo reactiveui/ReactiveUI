@@ -5,7 +5,6 @@
 
 using DynamicData;
 using DynamicData.Binding;
-#pragma warning disable 8618
 
 namespace ReactiveUI;
 
@@ -29,7 +28,9 @@ public class RoutingState : ReactiveObject
     /// Initializes a new instance of the <see cref="RoutingState"/> class.
     /// </summary>
     /// <param name="scheduler">A scheduler for where to send navigation changes to.</param>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public RoutingState(IScheduler? scheduler = null)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         _scheduler = scheduler ?? RxApp.MainThreadScheduler;
         NavigationStack = [];
@@ -84,7 +85,11 @@ public class RoutingState : ReactiveObject
     public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; } // TODO: Create Test
 
     [OnDeserialized]
+#if NET6_0_OR_GREATER
+    private void SetupRx(in StreamingContext sc) => SetupRx();
+#else
     private void SetupRx(StreamingContext sc) => SetupRx();
+#endif
 
     private void SetupRx()
     {

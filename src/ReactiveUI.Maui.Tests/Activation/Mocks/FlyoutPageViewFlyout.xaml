@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="ReactiveUI.Maui.Tests.Activation.Mocks.FlyoutPageViewFlyout"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Flyout">
+    <StackLayout>
+        <ListView
+            x:Name="MenuItemsListView"
+            HasUnevenRows="true"
+            ItemsSource="{Binding MenuItems}"
+            SeparatorVisibility="None">
+            <ListView.Header>
+                <Grid BackgroundColor="#03A9F4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="10" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="80" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                    </Grid.RowDefinitions>
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Style="{DynamicResource SubtitleStyle}"
+                        Text="AppName" />
+                </Grid>
+            </ListView.Header>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Padding="15,10" HorizontalOptions="FillAndExpand">
+                            <Label
+                                FontSize="24"
+                                Text="{Binding Title}"
+                                VerticalOptions="FillAndExpand"
+                                VerticalTextAlignment="Center" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>

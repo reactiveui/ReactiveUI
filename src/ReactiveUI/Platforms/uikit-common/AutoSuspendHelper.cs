@@ -34,11 +34,11 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     public AutoSuspendHelper(UIApplicationDelegate appDelegate)
     {
         Reflection.ThrowIfMethodsNotOverloaded(
-                                               "AutoSuspendHelper",
+                                               nameof(AutoSuspendHelper),
                                                appDelegate,
-                                               "FinishedLaunching",
-                                               "OnActivated",
-                                               "DidEnterBackground");
+                                               nameof(FinishedLaunching),
+                                               nameof(OnActivated),
+                                               nameof(DidEnterBackground));
 
         RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
         RxApp.SuspensionHost.IsResuming = _finishedLaunching.Select(_ => Unit.Default);

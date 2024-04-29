@@ -47,23 +47,14 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        ArgumentNullException.ThrowIfNull(target);
 
         var type = target.GetType();
 
         var match = _config.Keys
                            .Where(x => x.IsAssignableFrom(type))
                            .OrderByDescending(x => _config[x].Affinity)
-                           .FirstOrDefault();
-
-        if (match is null)
-        {
-            throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
-        }
-
+                           .FirstOrDefault() ?? throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
         var typeProperties = _config[match];
 
         return typeProperties?.CreateBinding?.Invoke(command, target, commandParameter) ?? Disposable.Empty;
@@ -84,10 +75,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="enabledProperty">Enabled Property.</param>
     protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
     {
-        if (command is null)
-        {
-            throw new ArgumentNullException(nameof(command));
-        }
+        ArgumentNullException.ThrowIfNull(command);
 
         commandParameter ??= Observable.Return(target);
 
@@ -135,10 +123,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <returns>Returns a disposable.</returns>
     protected static IDisposable ForTargetAction(ICommand? command, object? target, IObservable<object?> commandParameter, PropertyInfo enabledProperty)
     {
-        if (command is null)
-        {
-            throw new ArgumentNullException(nameof(command));
-        }
+        ArgumentNullException.ThrowIfNull(command);
 
         commandParameter ??= Observable.Return(target);
 

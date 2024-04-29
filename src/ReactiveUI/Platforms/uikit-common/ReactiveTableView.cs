@@ -72,7 +72,7 @@ public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyCh
     /// Initializes a new instance of the <see cref="ReactiveTableView"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveTableView(IntPtr handle)
+    protected ReactiveTableView(in IntPtr handle)
         : base(handle)
     {
     }
@@ -192,7 +192,7 @@ public abstract class ReactiveTableView<TViewModel> : ReactiveTableView, IViewFo
     /// Initializes a new instance of the <see cref="ReactiveTableView{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactiveTableView(IntPtr handle)
+    protected ReactiveTableView(in IntPtr handle)
         : base(handle)
     {
     }

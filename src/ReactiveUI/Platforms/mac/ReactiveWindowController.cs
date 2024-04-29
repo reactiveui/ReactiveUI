@@ -68,7 +68,7 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
     /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
     /// </summary>
     /// <param name="handle">The handle.</param>
-    protected ReactiveWindowController(IntPtr handle)
+    protected ReactiveWindowController(in IntPtr handle)
         : base(handle)
     {
     }

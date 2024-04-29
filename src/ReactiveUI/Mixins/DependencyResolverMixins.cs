@@ -22,15 +22,8 @@ public static class DependencyResolverMixins
     /// <param name="registrationNamespaces">Which platforms to use.</param>
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
-        if (resolver is null)
-        {
-            throw new ArgumentNullException(nameof(resolver));
-        }
-
-        if (registrationNamespaces is null)
-        {
-            throw new ArgumentNullException(nameof(registrationNamespaces));
-        }
+        resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
+        registrationNamespaces.ArgumentNullExceptionThrowIfNull(nameof(registrationNamespaces));
 
         var possibleNamespaces = new Dictionary<RegistrationNamespace, string>
         {
@@ -80,15 +73,8 @@ public static class DependencyResolverMixins
     /// <param name="assembly">The assembly to search using reflection for IViewFor classes.</param>
     public static void RegisterViewsForViewModels(this IMutableDependencyResolver resolver, Assembly assembly)
     {
-        if (resolver is null)
-        {
-            throw new ArgumentNullException(nameof(resolver));
-        }
-
-        if (assembly is null)
-        {
-            throw new ArgumentNullException(nameof(assembly));
-        }
+        resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
+        assembly.ArgumentNullExceptionThrowIfNull(nameof(assembly));
 
         // for each type that implements IViewFor
         foreach (var ti in assembly.DefinedTypes

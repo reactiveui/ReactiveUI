@@ -10,6 +10,4 @@ namespace System.Runtime.CompilerServices;
 /// This class should not be used by developers in source code.
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-internal static class IsExternalInit
-{
-}
+internal static class IsExternalInit;

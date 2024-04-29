@@ -22,12 +22,8 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
 {
     private static readonly Dictionary<(Type viewType, string? propertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> _dispatchTable;
 
-#if NET7_0_OR_GREATER
     [ObsoletedOSPlatform("android23.0")]
     [SupportedOSPlatform("android23.0")]
-#else
-    [Obsolete("This method was deprecated in API level 23.", false)]
-#endif
     static AndroidObservableForWidgets() =>
         _dispatchTable = new[]
         {
@@ -56,21 +52,14 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// <inheritdoc/>
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-#if NET7_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(sender);
-#else
-        if (sender is null)
-        {
-            throw new ArgumentNullException(nameof(sender));
-        }
-#endif
+        ArgumentNullException.ThrowIfNull(nameof(sender));
 
-        var type = sender.GetType();
+        var type = sender?.GetType();
         var tableItem = _dispatchTable.Keys.First(x => x.viewType?.IsAssignableFrom(type) == true && x.propertyName?.Equals(propertyName) == true);
 
         return !_dispatchTable.TryGetValue(tableItem, out var dispatchItem) ?
                    Observable.Never<IObservedChange<object, object?>>() :
-                   dispatchItem.Invoke(sender, expression);
+                   dispatchItem.Invoke(sender!, expression);
     }
 
     private static DispatchItem CreateFromAdapterView()
@@ -118,12 +107,8 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
                                 });
     }
 
-#if NET7_0_OR_GREATER
     [ObsoletedOSPlatform("android23.0")]
     [SupportedOSPlatform("android23.0")]
-#else
-    [Obsolete("This method was deprecated in API level 23.", false)]
-#endif
     private static DispatchItem CreateTimePickerHourFromWidget()
     {
         if ((int)Build.VERSION.SdkInt >= 23)
@@ -134,12 +119,8 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
         return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentHour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
     }
 
-#if NET7_0_OR_GREATER
     [ObsoletedOSPlatform("android23.0")]
     [SupportedOSPlatform("android23.0")]
-#else
-    [Obsolete("This method was deprecated in API level 23.", false)]
-#endif
     private static DispatchItem CreateTimePickerMinuteFromWidget()
     {
         if ((int)Build.VERSION.SdkInt >= 23)

@@ -64,7 +64,7 @@ public class BundleSuspensionDriver : ISuspensionDriver
     {
         try
         {
-            AutoSuspendHelper.LatestBundle?.PutByteArray("__state", Array.Empty<byte>());
+            AutoSuspendHelper.LatestBundle?.PutByteArray("__state", []);
             return Observables.Unit;
         }
         catch (Exception ex)

@@ -15,12 +15,9 @@ internal class ExpressionRewriter : ExpressionVisitor
 {
     public override Expression Visit(Expression? node)
     {
-        if (node is null)
-        {
-            throw new ArgumentNullException(nameof(node));
-        }
+        node.ArgumentNullExceptionThrowIfNull(nameof(node));
 
-        switch (node.NodeType)
+        switch (node!.NodeType)
         {
             case ExpressionType.ArrayIndex:
                 return VisitBinary((BinaryExpression)node);
@@ -65,7 +62,7 @@ internal class ExpressionRewriter : ExpressionVisitor
         var right = Visit(node.Right);
 
         // Translate arrayindex into normal index expression
-        return Expression.MakeIndex(left, left.Type.GetRuntimeProperty("Item"), new[] { right });
+        return Expression.MakeIndex(left, left.Type.GetRuntimeProperty("Item"), [right]);
     }
 
     protected override Expression VisitUnary(UnaryExpression node)

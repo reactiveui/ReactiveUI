@@ -47,25 +47,28 @@ internal class LinkerOverrides
         ctl.Enabled = ctl.Enabled;
         ctl.Selected = ctl.Selected;
 
-        EventHandler eh = (s, e) => { };
-        ctl.TouchUpInside += eh;
-        ctl.TouchUpInside -= eh;
+        static void Eh(object? s, EventArgs e)
+        {
+        }
+
+        ctl.TouchUpInside += Eh;
+        ctl.TouchUpInside -= Eh;
 
         // UIRefreshControl
         var rc = new UIRefreshControl();
-        rc.ValueChanged += eh;
-        rc.ValueChanged -= eh;
+        rc.ValueChanged += Eh;
+        rc.ValueChanged -= Eh;
 
         // UIBarButtonItem
         var bbi = new UIBarButtonItem();
-        bbi.Clicked += eh;
-        bbi.Clicked -= eh;
+        bbi.Clicked += Eh;
+        bbi.Clicked -= Eh;
 
         // UISwitch
         var sw = new UISwitch();
-        sw.ValueChanged += eh;
+        sw.ValueChanged += Eh;
         sw.On = true;
 
-        eh.Invoke(null, EventArgs.Empty);
+        Eh(null, EventArgs.Empty);
     }
 }

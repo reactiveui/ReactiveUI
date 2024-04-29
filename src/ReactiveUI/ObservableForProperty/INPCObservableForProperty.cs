@@ -22,10 +22,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
     /// <inheritdoc/>
     public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
+        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
 
         if (beforeChanged && sender is INotifyPropertyChanging before)
         {

@@ -103,10 +103,7 @@ public class ViewModelViewHost : ReactiveViewController
 
     private static void Adopt(NSViewController parent, NSViewController? child)
     {
-        if (parent is null)
-        {
-            throw new ArgumentNullException(nameof(parent));
-        }
+        ArgumentNullException.ThrowIfNull(parent);
 
         if (parent.View is null)
         {
@@ -200,12 +197,11 @@ public class ViewModelViewHost : ReactiveViewController
                         throw new Exception(message);
                     }
 
-                    var viewController = view as NSViewController;
-                    if (viewController is null)
+                    if (view is not NSViewController viewController)
                     {
-                        //// TODO: As viewController = NULL at this point this execution will never show the FullName, find fixed text to replace this with.
+                        //// TODO: As viewController may be NULL at this point this execution will never show the FullName, find fixed text to replace this with.
 
-                        throw new Exception($"Resolved view type '{viewController?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
+                        throw new Exception($"Resolved view type '{view?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                     }
 
                     view.ViewModel = x.ViewModel;

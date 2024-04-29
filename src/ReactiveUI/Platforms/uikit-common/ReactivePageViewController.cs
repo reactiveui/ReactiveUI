@@ -80,7 +80,7 @@ public abstract class ReactivePageViewController : UIPageViewController, IReacti
     /// Initializes a new instance of the <see cref="ReactivePageViewController"/> class.
     /// </summary>
     /// <param name="handle">The handle.</param>
-    protected ReactivePageViewController(IntPtr handle)
+    protected ReactivePageViewController(in IntPtr handle)
         : base(handle)
     {
     }
@@ -245,7 +245,7 @@ public abstract class ReactivePageViewController<TViewModel> : ReactivePageViewC
     /// Initializes a new instance of the <see cref="ReactivePageViewController{TViewModel}"/> class.
     /// </summary>
     /// <param name="handle">The pointer.</param>
-    protected ReactivePageViewController(IntPtr handle)
+    protected ReactivePageViewController(in IntPtr handle)
         : base(handle)
     {
     }

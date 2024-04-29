@@ -28,10 +28,7 @@ public static class ObservableFuncMixins
         bool beforeChange = false,
         bool skipInitial = false) // TODO: Create Test
     {
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
+        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
 
         var sParam = Reflection.Rewrite(expression.Body);
         return source.SubscribeToExpressionChain<TSource, TResult?>(sParam, beforeChange, skipInitial, RxApp.SuppressViewCommandBindingMessage)

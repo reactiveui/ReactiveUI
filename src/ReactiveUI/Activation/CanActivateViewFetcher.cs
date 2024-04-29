@@ -21,21 +21,16 @@ public class CanActivateViewFetcher : IActivationForViewFetcher
     /// A positive integer if <see cref="GetActivationForView(IActivatableView)"/> is supported,
     /// zero otherwise.
     /// </returns>
-    public int GetAffinityForView(Type view) => typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ?
-                                                    10 : 0;
+    public int GetAffinityForView(Type view) =>
+        typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
 
     /// <summary>
     /// Get an observable defining whether the view is active.
     /// </summary>
     /// <param name="view">The view to observe.</param>
     /// <returns>An observable tracking whether the view is active.</returns>
-    public IObservable<bool> GetActivationForView(IActivatableView view)
-    {
-        if (view is not ICanActivate canActivate)
-        {
-            return Observable.Return(false);
-        }
-
-        return canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
-    }
+    public IObservable<bool> GetActivationForView(IActivatableView view) =>
+        view is not ICanActivate canActivate
+            ? Observable.Return(false)
+            : canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
 }

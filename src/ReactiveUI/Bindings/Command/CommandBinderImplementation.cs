@@ -49,15 +49,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         where TViewModel : class
         where TProp : ICommand
     {
-        if (vmProperty is null)
-        {
-            throw new ArgumentNullException(nameof(vmProperty));
-        }
+        vmProperty.ArgumentNullExceptionThrowIfNull(nameof(vmProperty));
 
-        if (controlProperty is null)
-        {
-            throw new ArgumentNullException(nameof(controlProperty));
-        }
+        controlProperty.ArgumentNullExceptionThrowIfNull(nameof(controlProperty));
 
         var vmExpression = Reflection.Rewrite(vmProperty.Body);
         var controlExpression = Reflection.Rewrite(controlProperty.Body);
@@ -106,15 +100,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         where TViewModel : class
         where TProp : ICommand
     {
-        if (vmProperty is null)
-        {
-            throw new ArgumentNullException(nameof(vmProperty));
-        }
+        vmProperty.ArgumentNullExceptionThrowIfNull(nameof(vmProperty));
 
-        if (controlProperty is null)
-        {
-            throw new ArgumentNullException(nameof(controlProperty));
-        }
+        controlProperty.ArgumentNullExceptionThrowIfNull(nameof(controlProperty));
 
         var vmExpression = Reflection.Rewrite(vmProperty.Body);
         var controlExpression = Reflection.Rewrite(controlProperty.Body);

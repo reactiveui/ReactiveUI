@@ -49,10 +49,7 @@ public static partial class ControlFetcherMixin
     /// <param name="resolveMembers">The resolve members.</param>
     public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
-        if (layoutHost is null)
-        {
-            throw new ArgumentNullException(nameof(layoutHost));
-        }
+        ArgumentNullException.ThrowIfNull(layoutHost);
 
         var members = layoutHost.GetWireUpMembers(resolveMembers).ToList();
         foreach (var member in members)
@@ -77,10 +74,7 @@ public static partial class ControlFetcherMixin
     /// <param name="resolveMembers">The resolve members.</param>
     public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
-        if (view is null)
-        {
-            throw new ArgumentNullException(nameof(view));
-        }
+        ArgumentNullException.ThrowIfNull(view);
 
         var members = view.GetWireUpMembers(resolveMembers);
 
@@ -109,13 +103,9 @@ public static partial class ControlFetcherMixin
     /// <param name="fragment">The fragment.</param>
     /// <param name="inflatedView">The inflated view.</param>
     /// <param name="resolveMembers">The resolve members.</param>
-    [Obsolete("This class is obsoleted in this android platform")]
     public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
-        if (fragment is null)
-        {
-            throw new ArgumentNullException(nameof(fragment));
-        }
+        ArgumentNullException.ThrowIfNull(fragment);
 
         var members = fragment.GetWireUpMembers(resolveMembers);
 
@@ -144,10 +134,7 @@ public static partial class ControlFetcherMixin
     /// <param name="resolveMembers">The resolve members.</param>
     public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
-        if (activity is null)
-        {
-            throw new ArgumentNullException(nameof(activity));
-        }
+        ArgumentNullException.ThrowIfNull(activity);
 
         var members = activity.GetWireUpMembers(resolveMembers);
 
@@ -193,15 +180,9 @@ public static partial class ControlFetcherMixin
 
     private static View? GetCachedControl(string? propertyName, object rootView, Func<View?> fetchControlFromView)
     {
-        if (propertyName is null)
-        {
-            throw new ArgumentNullException(nameof(propertyName));
-        }
+        ArgumentNullException.ThrowIfNull(propertyName);
 
-        if (fetchControlFromView is null)
-        {
-            throw new ArgumentNullException(nameof(fetchControlFromView));
-        }
+        ArgumentNullException.ThrowIfNull(fetchControlFromView);
 
         var ourViewCache = _viewCache.GetOrCreateValue(rootView);
 
@@ -218,10 +199,7 @@ public static partial class ControlFetcherMixin
 
     private static int GetControlIdByName(Assembly assembly, string? name)
     {
-        if (name is null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
+        ArgumentNullException.ThrowIfNull(name);
 
         var ids = _controlIds.GetOrAdd(
                                        assembly,

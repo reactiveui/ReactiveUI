@@ -3,11 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 using Android.Content;
 using Android.Views;
 
@@ -108,9 +104,9 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     [OnDeserialized]
-    private void SetupRxObj(StreamingContext sc) => SetupRxObj();
+    private void SetupRxObj(in StreamingContext sc) => SetupRxObj();
 
     private void SetupRxObj() =>
         allPublicProperties = new Lazy<PropertyInfo[]>(() =>
-                                                           GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
+                                                           [.. GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)]);
 }

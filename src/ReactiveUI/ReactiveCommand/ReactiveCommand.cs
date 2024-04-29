@@ -76,10 +76,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return new ReactiveCommand<Unit, Unit>(
                 _ => Observable.Create<Unit>(
@@ -111,10 +108,7 @@ public static class ReactiveCommand
         IScheduler? backgroundScheduler = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservable(() => Observable.Start(execute, backgroundScheduler ?? RxApp.TaskpoolScheduler), canExecute, outputScheduler);
     }
@@ -136,10 +130,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return new ReactiveCommand<Unit, TResult>(
                 _ => Observable.Create<TResult>(
@@ -172,10 +163,7 @@ public static class ReactiveCommand
         IScheduler? backgroundScheduler = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservable(() => Observable.Start(execute, backgroundScheduler ?? RxApp.TaskpoolScheduler), canExecute, outputScheduler);
     }
@@ -196,10 +184,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return new ReactiveCommand<TParam, Unit>(
                 param => Observable.Create<Unit>(
@@ -232,10 +217,7 @@ public static class ReactiveCommand
         IScheduler? backgroundScheduler = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservable<TParam, Unit>(p => Observable.Start(() => execute(p), backgroundScheduler ?? RxApp.TaskpoolScheduler), canExecute, outputScheduler);
     }
@@ -258,10 +240,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return new ReactiveCommand<TParam, TResult>(
                 param => Observable.Create<TResult>(
@@ -295,10 +274,7 @@ public static class ReactiveCommand
         IScheduler? backgroundScheduler = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservable<TParam, TResult>(p => Observable.Start(() => execute(p), backgroundScheduler ?? RxApp.TaskpoolScheduler), canExecute, outputScheduler);
     }
@@ -330,10 +306,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (childCommands is null)
-        {
-            throw new ArgumentNullException(nameof(childCommands));
-        }
+        childCommands.ArgumentNullExceptionThrowIfNull(nameof(childCommands));
 
         return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute, outputScheduler);
     }
@@ -361,10 +334,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return new ReactiveCommand<Unit, TResult>(
                                                   _ => execute(),
@@ -398,10 +368,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return new ReactiveCommand<TParam, TResult>(
                                                     execute,
@@ -432,10 +399,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservable(() => execute().ToObservable(), canExecute, outputScheduler);
     }
@@ -463,10 +427,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservableCancellable<Unit, TResult>(() => ObservableMixins.FromAsyncWithAllNotifications(execute), canExecute, outputScheduler);
     }
@@ -491,10 +452,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservable(() => execute().ToObservable(), canExecute, outputScheduler);
     }
@@ -519,10 +477,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservableCancellable<Unit, Unit>(() => ObservableMixins.FromAsyncWithAllNotifications(execute), canExecute, outputScheduler);
     }
@@ -553,10 +508,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservable<TParam, TResult>(
                                                      param => execute(param).ToObservable(),
@@ -590,10 +542,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservableCancellable<TParam, TResult>(
                                                      param => ObservableMixins.FromAsyncWithAllNotifications(ct => execute(param, ct)),
@@ -624,10 +573,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservable<TParam, Unit>(
                                                   param => execute(param).ToObservable(),
@@ -658,10 +604,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return CreateFromObservableCancellable<TParam, Unit>(
                                                   param => ObservableMixins.FromAsyncWithAllNotifications(ct => execute(param, ct)),
@@ -686,10 +629,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return new ReactiveCommand<TParam, TResult>(
             _ => execute(),
@@ -723,10 +663,7 @@ public static class ReactiveCommand
         IObservable<bool>? canExecute = null,
         IScheduler? outputScheduler = null)
     {
-        if (execute is null)
-        {
-            throw new ArgumentNullException(nameof(execute));
-        }
+        execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
         return new ReactiveCommand<TParam, TResult>(
             execute,

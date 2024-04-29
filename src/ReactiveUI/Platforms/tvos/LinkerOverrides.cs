@@ -13,7 +13,7 @@ namespace ReactiveUI.Cocoa;
 [Preserve(AllMembers = true)]
 internal class LinkerOverrides
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Needed for linking.")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Needed for linking.")]
     public void KeepMe()
     {
         // UIButon
@@ -43,15 +43,18 @@ internal class LinkerOverrides
         ctl.Enabled = ctl.Enabled;
         ctl.Selected = ctl.Selected;
 
-        EventHandler eh = (s, e) => { };
-        ctl.TouchUpInside += eh;
-        ctl.TouchUpInside -= eh;
+        static void Eh(object? s, EventArgs e)
+        {
+        }
+
+        ctl.TouchUpInside += Eh;
+        ctl.TouchUpInside -= Eh;
 
         // UIBarButtonItem
         var bbi = new UIBarButtonItem();
-        bbi.Clicked += eh;
-        bbi.Clicked -= eh;
+        bbi.Clicked += Eh;
+        bbi.Clicked -= Eh;
 
-        eh.Invoke(null, EventArgs.Empty);
+        Eh(null, EventArgs.Empty);
     }
 }

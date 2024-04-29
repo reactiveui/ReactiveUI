@@ -16,28 +16,28 @@ public static class Reflection
     private static readonly ExpressionRewriter _expressionRewriter = new();
 
     private static readonly MemoizingMRUCache<string, Type?> _typeCache = new(
-                                                                              (type, _) => Type.GetType(
-                                                                               type,
-                                                                               assemblyName =>
-                                                                               {
-                                                                                   var assembly = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), z => z.FullName == assemblyName.FullName);
-                                                                                   if (assembly is not null)
-                                                                                   {
-                                                                                       return assembly;
-                                                                                   }
+        (type, _) => Type.GetType(
+        type,
+        assemblyName =>
+        {
+            var assembly = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), z => z.FullName == assemblyName.FullName);
+            if (assembly is not null)
+            {
+                return assembly;
+            }
 
-                                                                                   try
-                                                                                   {
-                                                                                       return Assembly.Load(assemblyName);
-                                                                                   }
-                                                                                   catch
-                                                                                   {
-                                                                                       return null;
-                                                                                   }
-                                                                               },
-                                                                               null,
-                                                                               false),
-                                                                              20);
+            try
+            {
+                return Assembly.Load(assemblyName);
+            }
+            catch
+            {
+                return null;
+            }
+        },
+        null,
+        false),
+        20);
 
     /// <summary>
     /// Uses the expression re-writer to simplify the Expression down to it's simplest Expression.
@@ -56,18 +56,10 @@ public static class Reflection
     /// <returns>A string form for the property the expression is pointing to.</returns>
     public static string ExpressionToPropertyNames(Expression? expression) // TODO: Create Test
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(expression);
-#else
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
-#endif
-
+        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
         var sb = new StringBuilder();
 
-        foreach (var exp in expression.GetExpressionChain())
+        foreach (var exp in expression!.GetExpressionChain())
         {
             if (exp.NodeType != ExpressionType.Parameter)
             {
@@ -108,14 +100,7 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
     public static Func<object?, object?[]?, object?>? GetValueFetcherForProperty(MemberInfo? member) // TODO: Create Test
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(member);
-#else
-        if (member is null)
-        {
-            throw new ArgumentNullException(nameof(member));
-        }
-#endif
+        member.ArgumentNullExceptionThrowIfNull(nameof(member));
 
         var field = member as FieldInfo;
         if (field is not null)
@@ -137,18 +122,11 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and returns the value.</returns>
     public static Func<object?, object?[]?, object?> GetValueFetcherOrThrow(MemberInfo? member) // TODO: Create Test
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(member);
-#else
-        if (member is null)
-        {
-            throw new ArgumentNullException(nameof(member));
-        }
-#endif
+        member.ArgumentNullExceptionThrowIfNull(nameof(member));
 
         var ret = GetValueFetcherForProperty(member);
 
-        return ret ?? throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
+        return ret ?? throw new ArgumentException($"Type '{member!.DeclaringType}' must have a property '{member.Name}'");
     }
 
     /// <summary>
@@ -161,14 +139,7 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
     public static Action<object?, object?, object?[]?> GetValueSetterForProperty(MemberInfo? member) // TODO: Create Test
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(member);
-#else
-        if (member is null)
-        {
-            throw new ArgumentNullException(nameof(member));
-        }
-#endif
+        member.ArgumentNullExceptionThrowIfNull(nameof(member));
 
         var field = member as FieldInfo;
         if (field is not null)
@@ -190,18 +161,11 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
     public static Action<object?, object?, object?[]?>? GetValueSetterOrThrow(MemberInfo? member) // TODO: Create Test
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(member);
-#else
-        if (member is null)
-        {
-            throw new ArgumentNullException(nameof(member));
-        }
-#endif
+        member.ArgumentNullExceptionThrowIfNull(nameof(member));
 
         var ret = GetValueSetterForProperty(member);
 
-        return ret ?? throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
+        return ret ?? throw new ArgumentException($"Type '{member!.DeclaringType}' must have a property '{member.Name}'");
     }
 
     /// <summary>
@@ -234,8 +198,13 @@ public static class Reflection
             changeValue = default!;
             return false;
         }
-
+#if NET6_0_OR_GREATER
+        var lastExpression = expressions[^1];
+#else
+#pragma warning disable RCS1246 // Use element access
         var lastExpression = expressions.Last();
+#pragma warning restore RCS1246 // Use element access
+#endif
         changeValue = (TValue)GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray())!;
         return true;
     }
@@ -277,7 +246,13 @@ public static class Reflection
             return false;
         }
 
+#if NET6_0_OR_GREATER
+        var lastExpression = expressions[^1];
+#else
+#pragma warning disable RCS1246 // Use element access
         var lastExpression = expressions.Last();
+#pragma warning restore RCS1246 // Use element access
+#endif
         changeValues[currentIndex] = new ObservedChange<object, object?>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray()));
         return true;
     }
@@ -315,7 +290,13 @@ public static class Reflection
             return false;
         }
 
+#if NET6_0_OR_GREATER
+        var lastExpression = expressions[^1];
+#else
+#pragma warning disable RCS1246 // Use element access
         var lastExpression = expressions.Last();
+#pragma warning restore RCS1246 // Use element access
+#endif
         var setter = shouldThrow ?
                          GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
                          GetValueSetterForProperty(lastExpression.GetMemberInfo());
@@ -352,14 +333,7 @@ public static class Reflection
     /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
     public static Type GetEventArgsTypeForEvent(Type type, string? eventName) // TODO: Create Test
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(type);
-#else
-        if (type is null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
-#endif
+        type.ArgumentNullExceptionThrowIfNull(nameof(type));
 
         var ti = type;
         var ei = ti.GetRuntimeEvent(eventName!);
@@ -403,14 +377,7 @@ public static class Reflection
     /// <returns>If the property is static or not.</returns>
     public static bool IsStatic(this PropertyInfo item) // TODO: Create Test
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(item);
-#else
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-#endif
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         var method = (item.GetMethod ?? item.SetMethod)!;
         return method.IsStatic;

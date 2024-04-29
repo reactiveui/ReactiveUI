@@ -60,20 +60,8 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <inheritdoc/>
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(command);
-        ArgumentNullException.ThrowIfNull(target);
-#else
-        if (command is null)
-        {
-            throw new ArgumentNullException(nameof(command));
-        }
-
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
-#endif
+        command.ArgumentNullExceptionThrowIfNull(nameof(command));
+        target.ArgumentNullExceptionThrowIfNull(nameof(target));
 
         commandParameter ??= Observable.Return(target);
 
@@ -81,17 +69,17 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         var ctlDelegate = new ControlDelegate(
             _ =>
             {
-                if (command.CanExecute(latestParam))
+                if (command!.CanExecute(latestParam))
                 {
                     command.Execute(latestParam);
                 }
             })
-        { IsEnabled = command.CanExecute(latestParam) };
+        { IsEnabled = command!.CanExecute(latestParam) };
 
         var sel = new Selector("theAction:");
 
         // TODO how does this work? Is there an Action property?
-        Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Action"))?.Invoke(target, sel, null);
+        Reflection.GetValueSetterOrThrow(target!.GetType().GetRuntimeProperty("Action"))?.Invoke(target, sel, null);
 
         var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType().GetRuntimeProperty("Target"));
         targetSetter?.Invoke(target, ctlDelegate, null);

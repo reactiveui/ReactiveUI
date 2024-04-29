@@ -116,14 +116,7 @@ public static class CommandBinder
         where TViewModel : class
         where TProp : ICommand
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(view);
-#else
-        if (view is null)
-        {
-            throw new ArgumentNullException(nameof(view));
-        }
-#endif
+        view.ArgumentNullExceptionThrowIfNull(nameof(view));
 
         return _binderImplementation.BindCommand(
                                                  viewModel,

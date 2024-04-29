@@ -12,11 +12,9 @@ public class PlatformOperations : IPlatformOperations
 {
     /// <inheritdoc/>
     public string? GetOrientation()
-    {
 #if UIKIT && !TVOS
-            return UIKit.UIDevice.CurrentDevice.Orientation.ToString();
+        => UIKit.UIDevice.CurrentDevice.Orientation.ToString();
 #else
-        return null;
+        => null;
 #endif
-    }
 }
