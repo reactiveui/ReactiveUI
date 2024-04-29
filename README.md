@@ -145,37 +145,37 @@ See [Contribution Guidelines](https://www.reactiveui.net/contribute/) for furthe
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top">
+      <td align="center" valign="top" width="105">
         <img width="100" height="100" src="https://github.com/glennawatson.png?s=150">
         <br>
         <a href="https://github.com/glennawatson">Glenn Watson</a>
         <p>Melbourne, Australia</p>
       </td>
-      <td align="center" valign="top">
+      <td align="center" valign="top" width="105">
+        <img width="100" height="100" src="https://github.com/chrispulman.png?s=150">
+        <br>
+        <a href="https://github.com/chrispulman">Chris Pulman</a>
+        <p>United Kingdom</p>
+      </td>
+      <td align="center" valign="top" width="105">
         <img width="100" height="100" src="https://github.com/rlittlesii.png?s=150">
         <br>
         <a href="https://github.com/rlittlesii">Rodney Littles II</a>
         <p>Texas, USA</p>
       </td>
-      <td align="center" valign="top">
-        <img width="100" height="100" src="https://github.com/worldbeater.png?s=150">
-        <br>
-        <a href="https://github.com/worldbeater">Artyom Gorchakov</a>
-        <p>Moscow, Russia</p>
-      </td>
     </tr>
     <tr>
-      <td align="center" valign="top">
+      <td align="center" valign="top" width="105">
         <img width="100" height="100" src="https://github.com/cabauman.png?s=150">
         <br>
         <a href="https://github.com/cabauman">Colt Bauman</a>
         <p>South Korea</p>
       </td>
-      <td align="center" valign="top">
-        <img width="100" height="100" src="https://github.com/chrispulman.png?s=150">
+      <td align="center" valign="top" width="105">
+        <img width="100" height="100" src="https://github.com/worldbeater.png?s=150">
         <br>
-        <a href="https://github.com/chrispulman">Chris Pulman</a>
-        <p>United Kingdom</p>
+        <a href="https://github.com/worldbeater">Artyom Gorchakov</a>
+        <p>Moscow, Russia</p>
       </td>
     </tr>
   </tbody>
