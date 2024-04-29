@@ -18,7 +18,7 @@ namespace ReactiveUI.Maui;
 /// To get these registrations after the main ReactiveUI Initialization use the
 /// DependencyResolverMixins.InitializeReactiveUI() extension method.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>

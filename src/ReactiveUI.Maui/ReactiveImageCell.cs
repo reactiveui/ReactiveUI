@@ -12,7 +12,7 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="ImageCell" />
-/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+/// <seealso cref="IViewFor{TViewModel}" />
 public class ReactiveImageCell<TViewModel> : ImageCell, IViewFor<TViewModel>
     where TViewModel : class
 {

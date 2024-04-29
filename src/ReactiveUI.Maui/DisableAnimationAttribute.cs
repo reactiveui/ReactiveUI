@@ -8,7 +8,7 @@ namespace ReactiveUI.Maui;
 /// <summary>
 /// Attribute that disables animation for a view.
 /// </summary>
-/// <seealso cref="System.Attribute" />
+/// <seealso cref="Attribute" />
 [AttributeUsage(AttributeTargets.All)]
 public sealed class DisableAnimationAttribute : Attribute
 {

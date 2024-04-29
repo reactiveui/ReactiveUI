@@ -27,22 +27,26 @@ public class MockBindListView : UserControl, IViewFor<MockBindListViewModel>
     {
         ItemList = new();
 
-        var ms = new MemoryStream(Encoding.UTF8.GetBytes(@"
-            <DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-                          xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                <StackPanel Orientation=""Horizontal"">
+        var ms = new MemoryStream(Encoding.UTF8.GetBytes("""
+
+            <DataTemplate xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        VerticalAlignment=""Stretch""
-                        Text=""{Binding Name}""
-                        TextAlignment=""Center"" />
+                        VerticalAlignment="Stretch"
+                        Text="{Binding Name}"
+                        TextAlignment="Center" />
                 </StackPanel>
-            </DataTemplate> "));
+            </DataTemplate> 
+"""));
         ItemList.ItemTemplate = (DataTemplate)XamlReader.Load(ms);
-        var ms1 = new MemoryStream(Encoding.UTF8.GetBytes(@"
-            <ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-                                 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                <StackPanel Orientation=""Horizontal"" />
-             </ItemsPanelTemplate> "));
+        var ms1 = new MemoryStream(Encoding.UTF8.GetBytes("""
+
+            <ItemsPanelTemplate xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                <StackPanel Orientation="Horizontal" />
+             </ItemsPanelTemplate> 
+"""));
         ItemList.ItemsPanel = (ItemsPanelTemplate)XamlReader.Load(ms1);
 
         ViewModel = new();

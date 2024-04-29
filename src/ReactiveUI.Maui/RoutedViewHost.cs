@@ -13,8 +13,8 @@ namespace ReactiveUI.Maui;
 /// <summary>
 /// This is a <see cref="NavigationPage"/> that serves as a router.
 /// </summary>
-/// <seealso cref="Microsoft.Maui.Controls.NavigationPage" />
-/// <seealso cref="ReactiveUI.IActivatableView" />
+/// <seealso cref="NavigationPage" />
+/// <seealso cref="IActivatableView" />
 public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 {
     /// <summary>
@@ -217,10 +217,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
     protected virtual Page PageForViewModel(IRoutableViewModel vm)
     {
-        if (vm is null)
-        {
-            throw new ArgumentNullException(nameof(vm));
-        }
+        ArgumentNullException.ThrowIfNull(vm);
 
         var ret = ViewLocator.Current.ResolveView(vm);
         if (ret is null)

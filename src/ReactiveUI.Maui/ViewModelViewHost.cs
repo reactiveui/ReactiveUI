@@ -69,15 +69,15 @@ public class ViewModelViewHost : ContentView, IViewFor
                                                                               this.WhenAnyObservable(x => x.ViewContractObservable),
                                                                               (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-        this.WhenActivated(() => new[]
-            {
+        this.WhenActivated(() =>
+            [
                 vmAndContract.Subscribe(x =>
                 {
                     _viewContract = x.Contract;
 
                     ResolveViewForViewModel(x.ViewModel, x.Contract);
                 })
-            });
+            ]);
     }
 
     /// <summary>

@@ -13,7 +13,7 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TPage">The type of the page.</typeparam>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="MultiPage{T}" />
-/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+/// <seealso cref="IViewFor{TViewModel}" />
 public abstract class ReactiveMultiPage<TPage, TViewModel> : MultiPage<TPage>, IViewFor<TViewModel>
     where TPage : Page
     where TViewModel : class

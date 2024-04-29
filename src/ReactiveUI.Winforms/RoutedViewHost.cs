@@ -42,7 +42,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
                                this.WhenAnyObservable(x => x.ViewContractObservable!),
                                (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-        Control? viewLastAdded = null!;
+        Control? viewLastAdded = null;
         _disposables.Add(vmAndContract.Subscribe(
                                                  x =>
                                                  {
@@ -50,10 +50,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
                                                      SuspendLayout();
                                                      Controls.Clear();
 
-                                                     if (viewLastAdded is not null)
-                                                     {
-                                                         viewLastAdded.Dispose();
-                                                     }
+                                                     viewLastAdded?.Dispose();
 
                                                      if (x.ViewModel is null)
                                                      {

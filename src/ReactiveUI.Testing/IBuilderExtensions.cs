@@ -50,7 +50,7 @@ public static class IBuilderExtensions
     {
         if (field is null)
         {
-            throw new System.ArgumentNullException(nameof(field));
+            throw new ArgumentNullException(nameof(field));
         }
 
         field.AddRange(values);
@@ -72,7 +72,7 @@ public static class IBuilderExtensions
     {
         if (field is null)
         {
-            throw new System.ArgumentNullException(nameof(field));
+            throw new ArgumentNullException(nameof(field));
         }
 
         field.Add(value);
@@ -98,7 +98,7 @@ public static class IBuilderExtensions
     {
         if (dictionary is null)
         {
-            throw new System.ArgumentNullException(nameof(dictionary));
+            throw new ArgumentNullException(nameof(dictionary));
         }
 
         dictionary.Add(keyValuePair.Key, keyValuePair.Value);
@@ -126,7 +126,7 @@ public static class IBuilderExtensions
     {
         if (dictionary is null)
         {
-            throw new System.ArgumentNullException(nameof(dictionary));
+            throw new ArgumentNullException(nameof(dictionary));
         }
 
         dictionary.Add(key, value);
@@ -151,7 +151,7 @@ public static class IBuilderExtensions
     {
         if (dictionary is null)
         {
-            throw new System.ArgumentNullException(nameof(dictionary));
+            throw new ArgumentNullException(nameof(dictionary));
         }
 
         dictionary = (Dictionary<TKey, TField>)keyValuePair;
