@@ -32,7 +32,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
 | MAUI              | [ReactiveUI.Maui][MauiDoc]          | [![MauiBadge]][Maui] |
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
-| Xamarin.Forms     | [ReactiveUI.Maui][XamDoc]       | [![XamBadge]][Xam]     |
+| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]     |
 | Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core]   |
 | AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX]   |
 | Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]     |
@@ -78,9 +78,9 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
 [WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
 
-[Xam]: https://www.nuget.org/packages/ReactiveUI.Maui/
-[XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.Maui/
-[XamBadge]: https://img.shields.io/nuget/v/ReactiveUI.Maui.svg
+[Xam]: https://www.nuget.org/packages/ReactiveUI.XamForms/
+[XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.XamForms/
+[XamBadge]: https://img.shields.io/nuget/v/ReactiveUI.XamForms.svg
 [XamDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-forms
 [Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
 [DroBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidSupport.svg
