@@ -13,7 +13,7 @@
             "documentPrivateFields": false,
             "documentationCulture": "en-US",
             "companyName": ".NET Foundation and Contributors",
-            "copyrightText": "Copyright (c) 2023 {companyName}. All rights reserved.\nLicensed to the .NET Foundation under one or more agreements.\nThe .NET Foundation licenses this file to you under the {licenseName} license.\nSee the {licenseFile} file in the project root for full license information.",
+            "copyrightText": "Copyright (c) 2024 {companyName}. All rights reserved.\nLicensed to the .NET Foundation under one or more agreements.\nThe .NET Foundation licenses this file to you under the {licenseName} license.\nSee the {licenseFile} file in the project root for full license information.",
             "variables": {
                 "licenseName": "MIT",
                 "licenseFile": "LICENSE"
