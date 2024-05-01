@@ -5,9 +5,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <FodyVersion>6.8.0</FodyVersion>
-    <SplatVersion>14.8.12</SplatVersion>
+    <SplatVersion>15.0.1</SplatVersion>
     <XamarinAndroidSupportVersion>28.0.0.3</XamarinAndroidSupportVersion>
     <XUnitVersion>2.6.6</XUnitVersion>
+    <VerifyXUnitVersion>23.2.0</VerifyXUnitVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
@@ -39,7 +40,7 @@
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
-    <PackageVersion Include="Verify.Xunit" Version="23.2.0" />
+    <PackageVersion Include="Verify.Xunit" Version="$(VerifyXUnitVersion)" />
     <PackageVersion Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="$(XamarinAndroidSupportVersion)" />
     <PackageVersion Include="Xamarin.Android.Support.v4" Version="$(XamarinAndroidSupportVersion)" />
     <PackageVersion Include="Xamarin.Android.Support.v7.AppCompat" Version="$(XamarinAndroidSupportVersion)" />
