@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-using System.Windows.Controls;
 using DynamicData;
 using ReactiveUI.Testing;
 
@@ -21,7 +20,6 @@ namespace ReactiveUI.Tests.Wpf;
 /// <param name="fixture">The fixture.</param>
 public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixture<WpfActiveContentFixture>
 {
-
     /// <summary>
     /// Gets the fixture.
     /// </summary>

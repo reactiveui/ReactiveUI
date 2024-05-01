@@ -10,7 +10,7 @@ namespace ReactiveUI.Winforms;
 /// <summary>
 /// .NET Framework platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>

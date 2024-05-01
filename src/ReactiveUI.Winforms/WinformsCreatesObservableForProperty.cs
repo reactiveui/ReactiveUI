@@ -11,7 +11,7 @@ namespace ReactiveUI.Winforms;
 /// WinForm view objects are not Generally Observable™, so hard-code some
 /// particularly useful types.
 /// </summary>
-/// <seealso cref="ReactiveUI.ICreatesObservableForProperty" />
+/// <seealso cref="ICreatesObservableForProperty" />
 public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
 {
     private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> EventInfoCache = new(

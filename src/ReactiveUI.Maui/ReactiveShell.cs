@@ -11,8 +11,8 @@ namespace ReactiveUI.Maui;
 /// ReactiveShell.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-/// <seealso cref="Microsoft.Maui.Controls.Shell" />
-/// <seealso cref="ReactiveUI.IViewFor&lt;TViewModel&gt;" />
+/// <seealso cref="Shell" />
+/// <seealso cref="IViewFor&lt;TViewModel&gt;" />
 public class ReactiveShell<TViewModel> : Shell, IViewFor<TViewModel>
     where TViewModel : class
 {

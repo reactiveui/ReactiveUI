@@ -11,8 +11,8 @@ namespace ReactiveUI.Maui;
 /// This is an <see cref="ViewCell"/> that is also an <see cref="IViewFor{T}"/>.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-/// <seealso cref="Microsoft.Maui.Controls.ViewCell" />
-/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+/// <seealso cref="ViewCell" />
+/// <seealso cref="IViewFor{TViewModel}" />
 public class ReactiveViewCell<TViewModel> : ViewCell, IViewFor<TViewModel>
     where TViewModel : class
 {

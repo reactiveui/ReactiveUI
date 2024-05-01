@@ -27,11 +27,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     {
         InitializeComponent();
         _cacheViews = DefaultCacheViewsEnabled;
-
-        foreach (var subscription in SetupBindings())
-        {
-            _disposables.Add(subscription);
-        }
+        SetupBindings().ForEach(_disposables.Add);
     }
 
     /// <inheritdoc/>

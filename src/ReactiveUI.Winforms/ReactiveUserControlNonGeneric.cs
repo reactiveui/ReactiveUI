@@ -11,8 +11,8 @@ namespace ReactiveUI.Winforms;
 /// This is an  UserControl that is both and UserControl and has a ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-/// <seealso cref="System.Windows.Forms.UserControl" />
-/// <seealso cref="ReactiveUI.IViewFor" />
+/// <seealso cref="UserControl" />
+/// <seealso cref="IViewFor" />
 public partial class ReactiveUserControlNonGeneric : UserControl, IViewFor
 {
     /// <summary>
