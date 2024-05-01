@@ -3,10 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-global using global::System;
-global using global::System.Collections.Generic;
-global using global::System.Reactive;
-global using global::System.Reactive.Concurrency;
-global using global::System.Reactive.Disposables;
-global using global::System.Threading;
-global using global::System.Threading.Tasks;
+global using System;
+global using System.Collections.Generic;
+global using System.Reactive;
+global using System.Reactive.Concurrency;
+global using System.Reactive.Disposables;
+global using System.Threading;
+global using System.Threading.Tasks;

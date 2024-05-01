@@ -11,7 +11,7 @@ namespace ReactiveUI.Maui;
 /// This is an <see cref="NavigationPage"/> that is also an <see cref="IViewFor{T}"/>.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+/// <seealso cref="IViewFor{TViewModel}" />
 public class ReactiveNavigationPage<TViewModel> : NavigationPage, IViewFor<TViewModel>
     where TViewModel : class
 {

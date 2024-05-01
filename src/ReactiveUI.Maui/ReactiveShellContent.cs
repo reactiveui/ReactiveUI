@@ -11,8 +11,8 @@ namespace ReactiveUI.Maui;
 /// ReactiveShellContent.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-/// <seealso cref="Microsoft.Maui.Controls.ShellContent" />
-/// <seealso cref="ReactiveUI.IActivatableView" />
+/// <seealso cref="ShellContent" />
+/// <seealso cref="IActivatableView" />
 public class ReactiveShellContent<TViewModel> : ShellContent, IActivatableView
     where TViewModel : class
 {

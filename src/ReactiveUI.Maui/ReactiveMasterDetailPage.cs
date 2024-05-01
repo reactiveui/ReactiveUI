@@ -12,7 +12,7 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="Microsoft.Maui.Controls" />
-/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+/// <seealso cref="IViewFor{TViewModel}" />
 public class ReactiveMasterDetailPage<TViewModel> : FlyoutPage, IViewFor<TViewModel>
     where TViewModel : class
 {

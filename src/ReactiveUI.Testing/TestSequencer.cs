@@ -8,7 +8,7 @@ namespace ReactiveUI.Testing;
 /// <summary>
 /// Test Sequencer.
 /// </summary>
-/// <seealso cref="System.IDisposable" />
+/// <seealso cref="IDisposable" />
 public class TestSequencer : IDisposable
 {
     private readonly Barrier _phaseSync;

@@ -12,8 +12,8 @@ namespace ReactiveUI.Winforms;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-/// <seealso cref="System.Windows.Forms.UserControl" />
-/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+/// <seealso cref="UserControl" />
+/// <seealso cref="IViewFor{TViewModel}" />
 public partial class ReactiveUserControl<TViewModel> : UserControl, IViewFor<TViewModel>
     where TViewModel : class
 {

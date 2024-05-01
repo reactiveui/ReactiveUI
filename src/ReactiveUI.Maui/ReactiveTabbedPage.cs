@@ -11,8 +11,8 @@ namespace ReactiveUI.Maui;
 /// This is a <see cref="TabbedPage"/> that is also an <see cref="IViewFor{T}"/>.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-/// <seealso cref="Microsoft.Maui.Controls.TabbedPage" />
-/// <seealso cref="ReactiveUI.IViewFor{TViewModel}" />
+/// <seealso cref="TabbedPage" />
+/// <seealso cref="IViewFor{TViewModel}" />
 public class ReactiveTabbedPage<TViewModel> : TabbedPage, IViewFor<TViewModel>
     where TViewModel : class
 {
