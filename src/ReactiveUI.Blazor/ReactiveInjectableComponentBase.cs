@@ -70,6 +70,12 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
     protected override void OnInitialized()
     {
         _initSubject.OnNext(Unit.Default);
+        if (ViewModel is IActivatableViewModel avm)
+        {
+            Activated.Subscribe(_ => avm.Activator.Activate()).DisposeWith(_compositeDisposable);
+            Deactivated.Subscribe(_ => avm.Activator.Deactivate());
+        }
+
         base.OnInitialized();
     }
 
