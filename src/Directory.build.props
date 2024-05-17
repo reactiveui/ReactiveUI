@@ -12,12 +12,12 @@
     <PackageProjectUrl>https://reactiveui.net</PackageProjectUrl>
     <DefaultPackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, Xamarin.TVOS, Tizen, WPF, Windows Forms, Universal Windows Platform (UWP) and the Uno Platform.</DefaultPackageDescription>
     <PackageDescription>$(DefaultPackageDescription)</PackageDescription>
-    <Owners>xanaisbettsx;ghuntley</Owners>
+    <Owners>anaisbetts;ghuntley</Owners>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net462;winui;maui;tizen;unoplatform</PackageTags>
     <PackageReleaseNotes>https://github.com/reactiveui/ReactiveUI/releases</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <NoWarn>$(NoWarn);SA1010;RCS1198;RCS1158;RCS1163;RCS1256;IDE0060;IDE1006;VSSpell001</NoWarn>
+    <NoWarn>$(NoWarn);IDE0060;IDE1006;VSSpell001</NoWarn>
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Embed source files that are not tracked by the source control manager in the PDB -->
@@ -32,16 +32,9 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <WindowsTargetFrameworks>net462;net472;net6.0-windows10.0.17763.0;net7.0-windows10.0.17763.0;net8.0-windows10.0.17763.0;net6.0-windows10.0.19041.0;net7.0-windows10.0.19041.0;net8.0-windows10.0.19041.0</WindowsTargetFrameworks>
-    <MobileTargetFrameworks>net7.0-android;net7.0-ios;net7.0-tvos;net7.0-macos;net7.0-maccatalyst;net8.0-android;net8.0-ios;net8.0-tvos;net8.0-macos;net8.0-maccatalyst</MobileTargetFrameworks>
-    <BaseTargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</BaseTargetFrameworks>
-  </PropertyGroup>
-  <!--<PropertyGroup Condition="$(IsTestProject) != 'true'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>-->
-  <!-- MonoAndroid doesn't seem to want to allow debugging for maintainers -->
-  <PropertyGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <DebugType>portable</DebugType>
+    <WindowsTargetFrameworks>net462;net472;net6.0-windows10.0.17763.0;net8.0-windows10.0.17763.0;net6.0-windows10.0.19041.0;net8.0-windows10.0.19041.0</WindowsTargetFrameworks>
+    <MobileTargetFrameworks>net8.0-android;net8.0-ios;net8.0-tvos;net8.0-macos;net8.0-maccatalyst</MobileTargetFrameworks>
+    <BaseTargetFrameworks>netstandard2.0;net6.0;net8.0</BaseTargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>

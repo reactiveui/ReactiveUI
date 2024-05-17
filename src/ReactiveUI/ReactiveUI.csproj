@@ -22,7 +22,7 @@
     <EmbeddedResource Remove="Resources\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <Compile Include="Platforms\netstandard2.0\**\*.cs" />
     <Compile Include="Platforms\shared\**\*.cs" />
     <PackageReference Include="System.ComponentModel" />
@@ -56,10 +56,12 @@
     <Compile Include="Platforms\net\**\*.cs" />
     <PackageReference Include="System.ComponentModel.Annotations" />
   </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4')) or $(TargetFramework.StartsWith('net6'))">
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Splat" />
     <PackageReference Include="DynamicData" />
-    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
     <None Update="VariadicTemplates.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="VariadicTemplates.cs" />
