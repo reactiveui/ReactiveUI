@@ -58,6 +58,10 @@
     <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator3.cs" />
     <None Remove="Platforms\wpf\WpfGeneralFixture.cs" />
     <None Remove="Platforms\wpf\WpfGeneralFixtureApp.cs" />
+    <None Remove="xunit.runner.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Platforms\Winforms\Mocks\TestForm.Designer.cs">
