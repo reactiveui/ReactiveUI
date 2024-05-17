@@ -7,8 +7,8 @@
     <FodyVersion>6.8.0</FodyVersion>
     <SplatVersion>15.1.1</SplatVersion>
     <XamarinAndroidSupportVersion>28.0.0.3</XamarinAndroidSupportVersion>
-    <XUnitVersion>2.6.6</XUnitVersion>
-    <VerifyXUnitVersion>23.2.0</VerifyXUnitVersion>
+    <XUnitVersion>2.8.0</XUnitVersion>
+    <VerifyXUnitVersion>24.2.0</VerifyXUnitVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
