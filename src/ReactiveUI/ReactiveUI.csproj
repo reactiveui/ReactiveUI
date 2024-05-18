@@ -25,11 +25,6 @@
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <Compile Include="Platforms\netstandard2.0\**\*.cs" />
     <Compile Include="Platforms\shared\**\*.cs" />
-    <PackageReference Include="System.ComponentModel" />
-    <PackageReference Include="System.ComponentModel.Annotations" />
-    <PackageReference Include="System.Diagnostics.Contracts" />
-    <PackageReference Include="System.Dynamic.Runtime" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('-ios')) or $(TargetFramework.EndsWith('-maccatalyst'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
@@ -54,7 +49,6 @@
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
     <Compile Include="Platforms\net\**\*.cs" />
-    <PackageReference Include="System.ComponentModel.Annotations" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4')) or $(TargetFramework.StartsWith('net6'))">
     <PackageReference Include="System.Text.Json" />
