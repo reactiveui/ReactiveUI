@@ -4,19 +4,12 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <FodyVersion>6.8.0</FodyVersion>
-    <SplatVersion>15.0.1</SplatVersion>
-    <XamarinAndroidSupportVersion>28.0.0.3</XamarinAndroidSupportVersion>
-    <XUnitVersion>2.8.0</XUnitVersion>
-    <VerifyXUnitVersion>24.2.0</VerifyXUnitVersion>
+    <SplatVersion>15.1.1</SplatVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
     <PackageVersion Include="DynamicData" Version="8.4.1" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
-    <PackageVersion Include="Fody" Version="$(FodyVersion)" />
-    <PackageVersion Include="FodyHelpers" Version="$(FodyVersion)" />
-    <PackageVersion Include="FodyPackaging" Version="$(FodyVersion)" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.9.2" />
@@ -40,22 +33,9 @@
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
-    <PackageVersion Include="Verify.Xunit" Version="$(VerifyXUnitVersion)" />
-    <PackageVersion Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="$(XamarinAndroidSupportVersion)" />
-    <PackageVersion Include="Xamarin.Android.Support.v4" Version="$(XamarinAndroidSupportVersion)" />
-    <PackageVersion Include="Xamarin.Android.Support.v7.AppCompat" Version="$(XamarinAndroidSupportVersion)" />
-    <PackageVersion Include="Xamarin.Android.Support.v7.Preference" Version="$(XamarinAndroidSupportVersion)" />
-    <PackageVersion Include="Xamarin.Android.Support.v7.RecyclerView" Version="$(XamarinAndroidSupportVersion)" />
-    <PackageVersion Include="Xamarin.Android.Support.Vector.Drawable" Version="$(XamarinAndroidSupportVersion)" />
-    <PackageVersion Include="Xamarin.AndroidX.Core" Version="1.13.0" />
-    <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.24" />
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.7.0.1" />
-    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.4" />
-    <PackageVersion Include="Xamarin.Forms" Version="5.0.0.2662" />
-    <PackageVersion Include="Xamarin.Forms.Mocks" Version="4.7.0.1" />
-    <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.10.0.3" />
-    <PackageVersion Include="xunit" Version="$(XUnitVersion)" />
-    <PackageVersion Include="xunit.runner.console" Version="$(XUnitVersion)" />
+    <PackageVersion Include="Verify.Xunit" Version="24.2.0" />
+    <PackageVersion Include="xunit" Version="2.8.0" />
+    <PackageVersion Include="xunit.runner.console" Version="2.8.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.0" />
     <PackageVersion Include="Xunit.StaFact" Version="1.1.11" />
   </ItemGroup>
@@ -65,17 +45,14 @@
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <PackageVersion Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0'))">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0'))">
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net6'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="6.0.29" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net7'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="7.0.18" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="6.0.30" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net8'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.5" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
   </ItemGroup>

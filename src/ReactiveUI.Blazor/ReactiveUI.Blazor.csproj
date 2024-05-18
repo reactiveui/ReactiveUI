@@ -7,8 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Reactive.Wasm" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" />
   </ItemGroup>
   <ItemGroup>
