@@ -22,7 +22,7 @@
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.6.133" />
     <PackageVersion Include="PublicApiGenerator" Version="11.1.0" />
     <PackageVersion Include="Reactive.Wasm" Version="2.1.2" />
-    <PackageVersion Include="Roslynator.Analyzers" Version="4.12.2" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.12.3" />
     <PackageVersion Include="Splat" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)" />
