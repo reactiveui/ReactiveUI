@@ -19,7 +19,7 @@
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
     <PackageVersion Include="Mocks.Maui" Version="1.1.8" />
-    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.6.133" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.6.139" />
     <PackageVersion Include="PublicApiGenerator" Version="11.1.0" />
     <PackageVersion Include="Reactive.Wasm" Version="2.1.2" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.12.4" />
