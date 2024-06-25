@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.7.0.2" />
+    <PackageReference Include="Xamarin.AndroidX.Media" Version="1.7.0.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj">
