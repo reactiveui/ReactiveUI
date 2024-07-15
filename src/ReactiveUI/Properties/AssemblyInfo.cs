@@ -14,3 +14,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Uno.WinUI")]
 [assembly: InternalsVisibleTo("ReactiveUI.Drawing")]
 [assembly: InternalsVisibleTo("ReactiveUI.WinUI")]
+[assembly: InternalsVisibleTo("ReactiveUI.SourceGenerators")]

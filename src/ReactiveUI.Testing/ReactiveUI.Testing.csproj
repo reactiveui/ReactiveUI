@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Reactive.Testing" />
+    <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 </Project>

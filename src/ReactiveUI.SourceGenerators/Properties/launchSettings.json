@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReactiveUi_SG": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\ReactiveUI.SourceGenerators.Execute\\ReactiveUI.SourceGenerators.Execute.csproj"
+    }
+  }
+}
