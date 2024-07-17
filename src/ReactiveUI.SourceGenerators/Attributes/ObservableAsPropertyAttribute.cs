@@ -12,4 +12,4 @@ namespace ReactiveUI.SourceGenerators;
 /// </summary>
 /// <seealso cref="System.Attribute" />
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-public sealed class ReactivePropertyAttribute : Attribute;
+public sealed class ObservableAsPropertyAttribute : Attribute;

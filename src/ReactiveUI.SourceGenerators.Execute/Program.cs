@@ -3,15 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#pragma warning disable SA1402 // File may only contain a single type
-#pragma warning disable SA1649 // File name should match first type name
-#pragma warning disable CA1822 // Mark members as static
+using System;
 using System.Drawing;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
 
 namespace ReactiveUI.SourceGenerators.Test;
+
+#pragma warning disable SA1402 // File may only contain a single type
+#pragma warning disable SA1649 // File name should match first type name
+#pragma warning disable CA1822 // Mark members as static
 
 /// <summary>
 /// EntryPoint.
@@ -31,6 +32,8 @@ public partial class TestClass : ReactiveObject
 {
     [Reactive]
     private int _test1Property;
+    [ObservableAsProperty]
+    private double _test2Property;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestClass"/> class.
@@ -54,7 +57,12 @@ public partial class TestClass : ReactiveObject
         Test5StringToIntCommand?.Execute("100").Subscribe(i => Console.Out.WriteLine(i));
         Test6ArgOnlyCommand?.Execute("Hello World").Subscribe();
         Test7ObservableCommand?.Execute().Subscribe();
+
+        _test2PropertyHelper = Test8ObservableCommand!.ToProperty(this, x => x.Test2Property);
+
         Test8ObservableCommand?.Execute(100).Subscribe(i => Console.Out.WriteLine(i));
+        Console.Out.WriteLine($"Test2Property Value: {Test2Property}");
+        Console.Out.WriteLine($"Test2Property underlying Value: {_test2Property}");
     }
 
     /// <summary>
