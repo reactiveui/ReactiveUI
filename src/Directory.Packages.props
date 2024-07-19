@@ -40,7 +40,7 @@
     <PackageVersion Include="Xunit.StaFact" Version="1.1.11" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseMaui)' != 'true'">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.5.240607001" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.5.240627000" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <PackageVersion Include="System.ValueTuple" Version="4.5.0" />
