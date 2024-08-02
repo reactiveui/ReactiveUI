@@ -69,6 +69,12 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     /// <inheritdoc />
     protected override void OnInitialized()
     {
+        if (ViewModel is IActivatableViewModel avm)
+        {
+            Activated.Subscribe(_ => avm.Activator.Activate()).DisposeWith(_compositeDisposable);
+            Deactivated.Subscribe(_ => avm.Activator.Deactivate());
+        }
+
         _initSubject.OnNext(Unit.Default);
         base.OnInitialized();
     }
