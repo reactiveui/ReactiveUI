@@ -86,7 +86,8 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
             this.WhenAnyValue(x => x.ViewModel)
                 .Skip(1)
                 .WhereNotNull()
-                .Subscribe(_ => InvokeAsync(StateHasChanged));
+                .Subscribe(_ => InvokeAsync(StateHasChanged))
+                .DisposeWith(_compositeDisposable);
         }
 
         this.WhenAnyValue(x => x.ViewModel)
@@ -101,7 +102,8 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
                      eh => x.PropertyChanged -= eh))
             .Switch()
             .Do(_ => InvokeAsync(StateHasChanged))
-            .Subscribe();
+            .Subscribe()
+            .DisposeWith(_compositeDisposable);
     }
 
     /// <summary>
