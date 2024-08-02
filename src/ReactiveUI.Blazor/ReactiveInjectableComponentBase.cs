@@ -74,6 +74,7 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
             Activated.Subscribe(_ => avm.Activator.Activate()).DisposeWith(_compositeDisposable);
             Deactivated.Subscribe(_ => avm.Activator.Deactivate());
         }
+
         _initSubject.OnNext(Unit.Default);
 
         base.OnInitialized();
