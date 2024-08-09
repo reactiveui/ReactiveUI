@@ -114,6 +114,13 @@ namespace ReactiveUI
             Bounce = 4,
         }
     }
+    public static class ValidationBindingMixins
+    {
+        public static ReactiveUI.IReactiveBinding<TView, TType> Bind<TViewModel, TView, TVProp, TType>(this TView view, TViewModel viewModel, System.Func<TViewModel, ReactiveUI.IReactiveProperty<TType>> viewModelPropertySelector, System.Func<TView, TVProp> frameworkElementSelector, System.Func<TVProp, string> propertySelector)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor
+            where TVProp : System.Windows.FrameworkElement { }
+    }
     public class ViewModelViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, Splat.IEnableLogger
     {
         public static readonly System.Windows.DependencyProperty ContractFallbackByPassProperty;
