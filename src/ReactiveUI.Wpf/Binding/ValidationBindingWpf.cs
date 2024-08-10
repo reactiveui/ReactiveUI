@@ -4,10 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup.Primitives;
 using System.Windows.Media;
+using DynamicData;
 
 namespace ReactiveUI.Wpf.Binding;
 
@@ -15,6 +17,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     where TView : class, IViewFor
     where TViewModel : class
 {
+    private const string DotValue = ".";
     private readonly FrameworkElement _control;
     private readonly DependencyProperty? _dpPropertyName;
     private readonly TViewModel _viewModel;
@@ -30,14 +33,29 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         // Get the ViewModel details
         _viewModel = viewModel;
         ViewModelExpression = Reflection.Rewrite(vmProperty.Body);
-        _vmPropertyName = vmProperty.Body.GetMemberInfo()?.Name;
+        var vmet = ViewModelExpression.GetExpressionChain();
+        var vmFullName = vmet.Select(x => x.GetMemberInfo()?.Name).Aggregate(new StringBuilder(), (sb, x) => sb.Append(x).Append('.')).ToString();
+        if (vmFullName.EndsWith(DotValue))
+        {
+            vmFullName = vmFullName.Substring(0, vmFullName.Length - 1);
+        }
+
+        _vmPropertyName = vmFullName;
 
         // Get the View details
         View = view;
         ViewExpression = Reflection.Rewrite(viewProperty.Body);
-        var controlName = viewProperty.Body.GetParent()?.GetMemberInfo()?.Name;
+        var vet = ViewExpression.GetExpressionChain().ToArray();
+        var controlName = string.Empty;
+        var index = vet.IndexOf(vet.Last()!);
+        if (vet != null && index > 0)
+        {
+            controlName = vet[vet.IndexOf(vet.Last()!) - 1]!.GetMemberInfo()?.Name
+                ?? throw new ArgumentException($"Control name not found on {typeof(TView).Name}");
+        }
+
         _control = FindControlsByName(view as DependencyObject, controlName).FirstOrDefault()!;
-        var controlDpPropertyName = viewProperty.Body.GetMemberInfo()?.Name;
+        var controlDpPropertyName = vet?.Last().GetMemberInfo()?.Name;
         _dpPropertyName = GetDependencyProperty(_control, controlDpPropertyName) ?? throw new ArgumentException($"Dependency property not found on {typeof(TVProp).Name}");
 
         var somethingChanged = Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression).Select(tvm => (TVMProp?)tvm).Merge(
