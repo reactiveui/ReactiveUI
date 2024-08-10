@@ -125,6 +125,6 @@ public class RoutingState : ReactiveObject
              return Navigate.Execute(vm);
          });
 
-        CurrentViewModel = Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault()!)).Concat(NavigationChanged.Select(_ => NavigationStack.LastOrDefault()!));
+        CurrentViewModel = NavigationChanged.Select(_ => NavigationStack.LastOrDefault()!);
     }
 }
