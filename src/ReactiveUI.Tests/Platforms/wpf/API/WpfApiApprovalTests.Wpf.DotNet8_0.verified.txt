@@ -118,10 +118,9 @@ namespace ReactiveUI
     }
     public static class ValidationBindingMixins
     {
-        public static ReactiveUI.IReactiveBinding<TView, TType> Bind<TViewModel, TView, TVProp, TType>(this TView view, TViewModel viewModel, System.Func<TViewModel, ReactiveUI.IReactiveProperty<TType>> viewModelPropertySelector, System.Func<TView, TVProp> frameworkElementSelector, System.Func<TVProp, string> propertySelector)
+        public static ReactiveUI.IReactiveBinding<TView, TType> BindWithValidation<TViewModel, TView, TVProp, TType>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TType?>> viewModelPropertySelector, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> frameworkElementSelector)
             where TViewModel :  class
-            where TView :  class, ReactiveUI.IViewFor
-            where TVProp : System.Windows.FrameworkElement { }
+            where TView :  class, ReactiveUI.IViewFor { }
     }
     public class ViewModelViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, Splat.IEnableLogger
     {
@@ -145,5 +144,17 @@ namespace ReactiveUI.Wpf
     {
         public Registrations() { }
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
+    }
+}
+namespace XamlGeneratedNamespace
+{
+    public sealed class GeneratedInternalTypeHelper : System.Windows.Markup.InternalTypeHelper
+    {
+        public GeneratedInternalTypeHelper() { }
+        protected override void AddEventHandler(System.Reflection.EventInfo eventInfo, object target, System.Delegate handler) { }
+        protected override System.Delegate CreateDelegate(System.Type delegateType, object target, string handler) { }
+        protected override object CreateInstance(System.Type type, System.Globalization.CultureInfo culture) { }
+        protected override object GetPropertyValue(System.Reflection.PropertyInfo propertyInfo, object target, System.Globalization.CultureInfo culture) { }
+        protected override void SetPropertyValue(System.Reflection.PropertyInfo propertyInfo, object target, object value, System.Globalization.CultureInfo culture) { }
     }
 }

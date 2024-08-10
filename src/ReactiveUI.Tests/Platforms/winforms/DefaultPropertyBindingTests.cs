@@ -134,14 +134,14 @@ public class DefaultPropertyBindingTests
         var vm = new FakeWinformViewModel();
         var view = new FakeWinformsView { ViewModel = vm };
 
-        var disp = new CompositeDisposable(new[]
-        {
+        var disp = new CompositeDisposable(
+        [
             view.Bind(vm, x => x.Property1, x => x.Property1.Text),
             view.Bind(vm, x => x.Property2, x => x.Property2.Text),
             view.Bind(vm, x => x.Property3, x => x.Property3.Text),
             view.Bind(vm, x => x.Property4, x => x.Property4.Text),
             view.Bind(vm, x => x.BooleanProperty, x => x.BooleanProperty.Checked),
-        });
+        ]);
 
         vm.Property1 = "FOOO";
         Assert.Equal(vm.Property1, view.Property1.Text);
