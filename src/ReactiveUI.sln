@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
+# 17
 VisualStudioVersion = 17.0.31825.309
 MinimumVisualStudioVersion = 16.0.31613.86
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD9762CF-E104-481C-96A6-26E624B86283}"
@@ -46,6 +46,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Maui", "ReactiveUI.Maui\ReactiveUI.Maui.csproj", "{3C552CA0-C364-4E51-8825-35D082C1D5BA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.WinUI", "ReactiveUI.WinUI\ReactiveUI.WinUI.csproj", "{4FF9F04B-928E-47B6-836F-546B584F597C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.AndroidX", "ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj", "{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -261,6 +263,22 @@ Global
 		{4FF9F04B-928E-47B6-836F-546B584F597C}.Release|x64.Build.0 = Release|Any CPU
 		{4FF9F04B-928E-47B6-836F-546B584F597C}.Release|x86.ActiveCfg = Release|Any CPU
 		{4FF9F04B-928E-47B6-836F-546B584F597C}.Release|x86.Build.0 = Release|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Debug|arm64.Build.0 = Debug|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Debug|x64.Build.0 = Debug|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Debug|x86.Build.0 = Debug|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Release|arm64.ActiveCfg = Release|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Release|arm64.Build.0 = Release|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Release|x64.ActiveCfg = Release|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Release|x64.Build.0 = Release|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Release|x86.ActiveCfg = Release|Any CPU
+		{3F642A3D-CBA6-4E17-903C-672FDBE9D9E8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
