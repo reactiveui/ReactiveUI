@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
     <PackageVersion Include="DynamicData" Version="9.0.4" />
-    <PackageVersion Include="FluentAssertions" Version="6.12.0" />
+    <PackageVersion Include="FluentAssertions" Version="6.12.1" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.10.0" />
