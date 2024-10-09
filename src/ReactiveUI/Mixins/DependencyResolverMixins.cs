@@ -45,9 +45,9 @@ public static class DependencyResolverMixins
         }
 
         var extraNs =
-            possibleNamespaces
-                .Where(kvp => registrationNamespaces.Contains(kvp.Key))
-                .Select(kvp => kvp.Value)
+            registrationNamespaces
+                .Where(ns => possibleNamespaces.ContainsKey(ns))
+                .Select(ns => possibleNamespaces[ns])
                 .ToArray();
 
         // Set up the built-in registration
