@@ -32,14 +32,14 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string? GetOrientation() { }
     }
-    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ReactiveUserControl_TViewModel_WinRTTypeDetails))]
+    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ReactiveUserControlNonGenericWinRTTypeDetails))]
     [WinRT.WinRTRuntimeClassName("Windows.Foundation.IClosable")]
     public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
     {
         public ReactiveUserControlNonGeneric() { }
         protected override void Dispose(bool disposing) { }
     }
-    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ReactiveUserControl_TViewModel_WinRTTypeDetails?))]
+    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ReactiveUserControlNonGenericWinRTTypeDetails?))]
     [WinRT.WinRTRuntimeClassName("Windows.Foundation.IClosable")]
     public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
