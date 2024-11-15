@@ -19,5 +19,6 @@ public class NeverUsedView : ReactiveUI.Winforms.ReactiveUserControl<NeverUsedVi
     /// <summary>
     /// Gets the instances.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public static int Instances { get; private set; }
 }

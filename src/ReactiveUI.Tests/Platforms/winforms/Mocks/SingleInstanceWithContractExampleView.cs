@@ -11,5 +11,6 @@ public class SingleInstanceWithContractExampleView : ReactiveUI.Winforms.Reactiv
 {
     public SingleInstanceWithContractExampleView() => Instances++;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public static int Instances { get; private set; }
 }
