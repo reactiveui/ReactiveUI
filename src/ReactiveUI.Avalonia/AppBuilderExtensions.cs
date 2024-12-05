@@ -39,6 +39,7 @@ namespace ReactiveUI.Avalonia
                 RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
                 Locator.CurrentMutable.RegisterConstant(new AvaloniaActivationForViewFetcher(), typeof(IActivationForViewFetcher));
                 Locator.CurrentMutable.RegisterConstant(new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+                Locator.CurrentMutable.RegisterConstant(new AvaloniaObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             }));
         }
     }
