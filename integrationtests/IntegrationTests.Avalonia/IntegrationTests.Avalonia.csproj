@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>net8.0</TargetFrameworks>        
+    <Description>Avalonia specific example of IntegrationTests</Description>
+    <PackageId>IntegrationTests.Avalonia</PackageId>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.2" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
+    <ProjectReference Include="..\..\src\ReactiveUI.Avalonia\ReactiveUI.Avalonia.csproj" />
+    <ProjectReference Include="..\IntegrationTests.Shared\IntegrationTests.Shared.csproj" />
+  </ItemGroup>
+</Project>
