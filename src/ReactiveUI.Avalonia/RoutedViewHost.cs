@@ -80,9 +80,9 @@ namespace ReactiveUI.Avalonia
             this.WhenActivated(disposables =>
             {
                 var routerRemoved = this
-                    .WhenAnyValue(x => x.Router)
-                    .Where(router => router == null)!
-                    .Cast<object?>();
+                                    .WhenAnyValue(x => x.Router)
+                                    .Where(router => router == null)!
+                                    .Cast<object?>();
 
                 var viewContract = this.WhenAnyValue(x => x.ViewContract);
 
@@ -128,8 +128,9 @@ namespace ReactiveUI.Avalonia
         /// </summary>
         public IViewLocator? ViewLocator { get; set; }
 
+        /// <inheritdoc/>
         protected override Type StyleKeyOverride => typeof(TransitioningContentControl);
-        
+
         /// <summary>
         /// Invoked when ReactiveUI router navigates to a view model.
         /// </summary>
@@ -157,11 +158,13 @@ namespace ReactiveUI.Avalonia
             {
                 if (contract == null)
                 {
-                    this.Log().Warn($"Couldn't find view for '{viewModel}'. Is it registered? Falling back to default content.");
+                    this.Log()
+                        .Warn($"Couldn't find view for '{viewModel}'. Is it registered? Falling back to default content.");
                 }
                 else
                 {
-                    this.Log().Warn($"Couldn't find view with contract '{contract}' for '{viewModel}'. Is it registered? Falling back to default content.");
+                    this.Log()
+                        .Warn($"Couldn't find view with contract '{contract}' for '{viewModel}'. Is it registered? Falling back to default content.");
                 }
 
                 Content = DefaultContent;
@@ -179,7 +182,10 @@ namespace ReactiveUI.Avalonia
 
             viewInstance.ViewModel = viewModel;
             if (viewInstance is IDataContextProvider provider)
+            {
                 provider.DataContext = viewModel;
+            }
+
             Content = viewInstance;
         }
     }

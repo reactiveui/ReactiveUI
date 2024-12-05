@@ -16,64 +16,65 @@ namespace ReactiveUI.Avalonia
     /// </summary>
     public class AvaloniaActivationForViewFetcher : IActivationForViewFetcher
     {
-        /// <summary>
-        /// Returns affinity for view.
-        /// </summary>
-        public int GetAffinityForView(Type view)
-        {
-            return typeof(Visual).IsAssignableFrom(view) ? 10 : 0;
-        }
+        /// <inheritdoc/>
+        public int GetAffinityForView(Type view) => typeof(Visual).IsAssignableFrom(view) ? 10 : 0;
 
-        /// <summary>
-        /// Returns activation observable for activatable Avalonia view.
-        /// </summary>
+        /// <inheritdoc/>
         public IObservable<bool> GetActivationForView(IActivatableView view)
         {
-            if (!(view is Visual visual)) return Observable.Return(false);
-            if (view is Control control) return GetActivationForControl(control);
+            if (view is not Visual visual)
+            {
+                return Observable.Return(false);
+            }
+
+            if (view is Control control)
+            {
+                return GetActivationForControl(control);
+            }
+
             return GetActivationForVisual(visual);
         }
 
         /// <summary>
-        /// Listens to Loaded and Unloaded 
+        /// Listens to Loaded and Unloaded
         /// events for Avalonia Control.
         /// </summary>
-        private IObservable<bool> GetActivationForControl(Control control) 
+        private static IObservable<bool> GetActivationForControl(Control control)
         {
             var controlLoaded = Observable
-                .FromEventPattern<RoutedEventArgs>(
-                    x => control.Loaded += x,
-                    x => control.Loaded -= x)
-                .Select(args => true);
+                                .FromEventPattern<RoutedEventArgs>(
+                                                                   x => control.Loaded += x,
+                                                                   x => control.Loaded -= x)
+                                .Select(args => true);
             var controlUnloaded = Observable
-                .FromEventPattern<RoutedEventArgs>(
-                    x => control.Unloaded += x,
-                    x => control.Unloaded -= x)
-                .Select(args => false);
+                                  .FromEventPattern<RoutedEventArgs>(
+                                                                     x => control.Unloaded += x,
+                                                                     x => control.Unloaded -= x)
+                                  .Select(args => false);
             return controlLoaded
-                .Merge(controlUnloaded)
-                .DistinctUntilChanged();
+                   .Merge(controlUnloaded)
+                   .DistinctUntilChanged();
         }
 
         /// <summary>
-        /// Listens to AttachedToVisualTree and DetachedFromVisualTree 
+        /// Listens to AttachedToVisualTree and DetachedFromVisualTree
         /// events for Avalonia IVisuals.
         /// </summary>
-        private IObservable<bool> GetActivationForVisual(Visual visual) 
+        private static IObservable<bool> GetActivationForVisual(Visual visual)
         {
             var visualLoaded = Observable
-                .FromEventPattern<VisualTreeAttachmentEventArgs>(
-                    x => visual.AttachedToVisualTree += x,
-                    x => visual.AttachedToVisualTree -= x)
-                .Select(args => true);
+                               .FromEventPattern<VisualTreeAttachmentEventArgs>(
+                                                                                x => visual.AttachedToVisualTree += x,
+                                                                                x => visual.AttachedToVisualTree -= x)
+                               .Select(args => true);
             var visualUnloaded = Observable
-                .FromEventPattern<VisualTreeAttachmentEventArgs>(
-                    x => visual.DetachedFromVisualTree += x,
-                    x => visual.DetachedFromVisualTree -= x)
-                .Select(args => false);
+                                 .FromEventPattern<VisualTreeAttachmentEventArgs>(
+                                      x => visual.DetachedFromVisualTree += x,
+                                      x => visual.DetachedFromVisualTree -= x)
+                                 .Select(args => false);
             return visualLoaded
-                .Merge(visualUnloaded)
-                .DistinctUntilChanged();
+                   .Merge(visualUnloaded)
+                   .DistinctUntilChanged();
         }
     }
 }

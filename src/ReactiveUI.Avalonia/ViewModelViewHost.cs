@@ -81,6 +81,7 @@ namespace ReactiveUI.Avalonia
         /// </summary>
         public IViewLocator? ViewLocator { get; set; }
 
+        /// <inheritdoc/>
         protected override Type StyleKeyOverride => typeof(TransitioningContentControl);
 
         /// <summary>
@@ -103,11 +104,13 @@ namespace ReactiveUI.Avalonia
             {
                 if (contract == null)
                 {
-                    this.Log().Warn($"Couldn't find view for '{viewModel}'. Is it registered? Falling back to default content.");
+                    this.Log()
+                        .Warn($"Couldn't find view for '{viewModel}'. Is it registered? Falling back to default content.");
                 }
                 else
                 {
-                    this.Log().Warn($"Couldn't find view with contract '{contract}' for '{viewModel}'. Is it registered? Falling back to default content.");
+                    this.Log()
+                        .Warn($"Couldn't find view with contract '{contract}' for '{viewModel}'. Is it registered? Falling back to default content.");
                 }
 
                 Content = DefaultContent;
@@ -125,7 +128,10 @@ namespace ReactiveUI.Avalonia
 
             viewInstance.ViewModel = viewModel;
             if (viewInstance is StyledElement styled)
+            {
                 styled.DataContext = viewModel;
+            }
+
             Content = viewInstance;
         }
     }

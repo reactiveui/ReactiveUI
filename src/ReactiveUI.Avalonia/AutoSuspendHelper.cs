@@ -24,7 +24,7 @@ namespace ReactiveUI.Avalonia
     {
         private readonly Subject<IDisposable> _shouldPersistState = new Subject<IDisposable>();
         private readonly Subject<Unit> _isLaunchingNew = new Subject<Unit>();
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
         /// </summary>
@@ -54,11 +54,11 @@ namespace ReactiveUI.Avalonia
             else
             {
                 var message = "ApplicationLifetime is null. "
-                            + "Ensure you are initializing AutoSuspendHelper "
-                            + "after Avalonia application initialization is completed.";
+                              + "Ensure you are initializing AutoSuspendHelper "
+                              + "after Avalonia application initialization is completed.";
                 throw new ArgumentNullException(message);
             }
-            
+
             var errored = new Subject<Unit>();
             AppDomain.CurrentDomain.UnhandledException += (o, e) => errored.OnNext(Unit.Default);
             RxApp.SuspensionHost.ShouldInvalidateState = errored;
@@ -83,7 +83,7 @@ namespace ReactiveUI.Avalonia
             this.Log().Debug("Received IControlledApplicationLifetime exit event.");
             var manual = new ManualResetEvent(false);
             _shouldPersistState.OnNext(Disposable.Create(() => manual.Set()));
-                    
+
             manual.WaitOne();
             this.Log().Debug("Completed actions on IControlledApplicationLifetime exit event.");
         }

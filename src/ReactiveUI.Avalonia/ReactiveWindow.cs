@@ -15,8 +15,12 @@ namespace ReactiveUI.Avalonia
     /// and vice versa.
     /// </summary>
     /// <typeparam name="TViewModel">ViewModel type.</typeparam>
-    public class ReactiveWindow<TViewModel> : Window, IViewFor<TViewModel> where TViewModel : class
+    public class ReactiveWindow<TViewModel> : Window, IViewFor<TViewModel>
+        where TViewModel : class
     {
+        /// <summary>
+        /// The <see cref="ViewModel"/> dependency property.
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("AvaloniaProperty", "AVP1002", Justification = "Generic avalonia property is expected here.")]
         public static readonly StyledProperty<TViewModel?> ViewModelProperty = AvaloniaProperty
             .Register<ReactiveWindow<TViewModel>, TViewModel?>(nameof(ViewModel));
@@ -30,27 +34,29 @@ namespace ReactiveUI.Avalonia
             // block if the ViewModel implements IActivatableViewModel.
             this.WhenActivated(disposables => { });
         }
-            
-        /// <summary>
-        /// The ViewModel.
-        /// </summary>
+
+        /// <inheritdoc cref="IViewFor{TViewModel}.ViewModel"/>
         public TViewModel? ViewModel
         {
             get => GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 
+        /// <inheritdoc cref="IViewFor{TViewModel}.ViewModel"/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (TViewModel?)value;
         }
 
+        /// <inheritdoc/>
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
             base.OnPropertyChanged(change);
 
+#pragma warning disable CA1062
             if (change.Property == DataContextProperty)
+#pragma warning restore CA1062
             {
                 if (ReferenceEquals(change.OldValue, ViewModel)
                     && change.NewValue is null or TViewModel)

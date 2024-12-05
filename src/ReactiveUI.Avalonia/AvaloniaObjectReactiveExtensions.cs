@@ -10,6 +10,9 @@ using Avalonia.Data;
 
 namespace ReactiveUI.Avalonia;
 
+/// <summary>
+/// Avalonia reactive extensions.
+/// </summary>
 public static class AvaloniaObjectReactiveExtensions
 {
     /// <summary>
@@ -21,7 +24,7 @@ public static class AvaloniaObjectReactiveExtensions
     /// The priority with which binding values are written to the object.
     /// </param>
     /// <returns>
-    /// An <see cref="ISubject{T}"/> which can be used for two-way binding to/from the 
+    /// An <see cref="ISubject{T}"/> which can be used for two-way binding to/from the
     /// property.
     /// </returns>
     public static ISubject<object?> GetSubject(
@@ -30,8 +33,8 @@ public static class AvaloniaObjectReactiveExtensions
         BindingPriority priority = BindingPriority.LocalValue)
     {
         return Subject.Create<object?>(
-            Observer.Create<object?>(x => o.SetValue(property, x, priority)),
-            o.GetObservable(property));
+                                       Observer.Create<object?>(x => o.SetValue(property, x, priority)),
+                                       o.GetObservable(property));
     }
 
     /// <summary>
@@ -44,18 +47,15 @@ public static class AvaloniaObjectReactiveExtensions
     /// The priority with which binding values are written to the object.
     /// </param>
     /// <returns>
-    /// An <see cref="ISubject{T}"/> which can be used for two-way binding to/from the 
-    /// property.
+    /// An <see cref="ISubject{T}"/> which can be used for two-way binding to/from the property.
     /// </returns>
     public static ISubject<T> GetSubject<T>(
         this AvaloniaObject o,
         AvaloniaProperty<T> property,
-        BindingPriority priority = BindingPriority.LocalValue)
-    {
-        return Subject.Create<T>(
-            Observer.Create<T>(x => o.SetValue(property, x, priority)),
-            o.GetObservable(property));
-    }
+        BindingPriority priority = BindingPriority.LocalValue) =>
+        Subject.Create<T>(
+                          Observer.Create<T>(x => o.SetValue(property, x, priority)),
+                          o.GetObservable(property));
 
     /// <summary>
     /// Gets a subject for a <see cref="AvaloniaProperty"/>.
@@ -66,24 +66,22 @@ public static class AvaloniaObjectReactiveExtensions
     /// The priority with which binding values are written to the object.
     /// </param>
     /// <returns>
-    /// An <see cref="ISubject{Object}"/> which can be used for two-way binding to/from the 
+    /// An <see cref="ISubject{Object}"/> which can be used for two-way binding to/from the
     /// property.
     /// </returns>
     public static ISubject<BindingValue<object?>> GetBindingSubject(
         this AvaloniaObject o,
         AvaloniaProperty property,
-        BindingPriority priority = BindingPriority.LocalValue)
-    {
-        return Subject.Create<BindingValue<object?>>(
-            Observer.Create<BindingValue<object?>>(x =>
-            {
-                if (x.HasValue)
-                {
-                    o.SetValue(property, x.Value, priority);
-                }
-            }),
-            o.GetBindingObservable(property));
-    }
+        BindingPriority priority = BindingPriority.LocalValue) =>
+        Subject.Create<BindingValue<object?>>(
+                                              Observer.Create<BindingValue<object?>>(x =>
+                                              {
+                                                  if (x.HasValue)
+                                                  {
+                                                      o.SetValue(property, x.Value, priority);
+                                                  }
+                                              }),
+                                              o.GetBindingObservable(property));
 
     /// <summary>
     /// Gets a subject for a <see cref="AvaloniaProperty"/>.
@@ -95,22 +93,20 @@ public static class AvaloniaObjectReactiveExtensions
     /// The priority with which binding values are written to the object.
     /// </param>
     /// <returns>
-    /// An <see cref="ISubject{T}"/> which can be used for two-way binding to/from the 
+    /// An <see cref="ISubject{T}"/> which can be used for two-way binding to/from the
     /// property.
     /// </returns>
     public static ISubject<BindingValue<T>> GetBindingSubject<T>(
         this AvaloniaObject o,
         AvaloniaProperty<T> property,
-        BindingPriority priority = BindingPriority.LocalValue)
-    {
-        return Subject.Create<BindingValue<T>>(
-            Observer.Create<BindingValue<T>>(x =>
-            {
-                if (x.HasValue)
-                {
-                    o.SetValue(property, x.Value, priority);
-                }
-            }),
-            o.GetBindingObservable(property));
-    }
+        BindingPriority priority = BindingPriority.LocalValue) =>
+        Subject.Create<BindingValue<T>>(
+                                        Observer.Create<BindingValue<T>>(x =>
+                                        {
+                                            if (x.HasValue)
+                                            {
+                                                o.SetValue(property, x.Value, priority);
+                                            }
+                                        }),
+                                        o.GetBindingObservable(property));
 }
