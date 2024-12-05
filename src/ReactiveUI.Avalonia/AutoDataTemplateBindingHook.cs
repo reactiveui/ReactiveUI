@@ -1,11 +1,14 @@
+// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
 using System;
 using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
-using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Templates;
-using ReactiveUI;
 
 namespace ReactiveUI.Avalonia
 {

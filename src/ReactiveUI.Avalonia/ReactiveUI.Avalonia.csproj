@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(AvsCurrentTargetFramework);$(AvsLegacyTargetFrameworks);netstandard2.0</TargetFrameworks>
-    <SignAssembly>false</SignAssembly>
+    <TargetFrameworks>$(BaseTargetFrameworks)</TargetFrameworks>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Avalonia</PackageDescription>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;avalonia;net;netcore</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\packages\Avalonia\Avalonia.csproj" />
+    <PackageReference Include="Avalonia" />
   </ItemGroup>
-  <Import Project="..\..\build\Rx.props" />
-  <Import Project="..\..\build\ReactiveUI.props" />
-  <Import Project="..\..\build\NullableEnable.props" />
-  <Import Project="..\..\build\TrimmingEnable.props" />
-  <Import Project="..\..\build\DevAnalyzers.props" />
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
 </Project>

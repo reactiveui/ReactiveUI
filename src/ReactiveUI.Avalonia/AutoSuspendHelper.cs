@@ -1,13 +1,15 @@
-using Avalonia;
-using Avalonia.VisualTree;
-using Avalonia.Controls;
-using System.Threading;
+// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using System.Reactive.Linq;
-using ReactiveUI;
-using System;
+using System.Reactive.Subjects;
+using System.Threading;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Splat;
 
@@ -32,7 +34,7 @@ namespace ReactiveUI.Avalonia
             RxApp.SuspensionHost.IsResuming = Observable.Never<Unit>();
             RxApp.SuspensionHost.IsLaunchingNew = _isLaunchingNew;
 
-            if (Avalonia.Controls.Design.IsDesignMode)
+            if (Design.IsDesignMode)
             {
                 this.Log().Debug("Design mode detected. AutoSuspendHelper won't persist app state.");
                 RxApp.SuspensionHost.ShouldPersistState = Observable.Never<IDisposable>();
