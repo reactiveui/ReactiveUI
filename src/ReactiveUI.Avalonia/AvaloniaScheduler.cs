@@ -8,96 +8,95 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using Avalonia.Threading;
 
-namespace ReactiveUI.Avalonia
+namespace ReactiveUI.Avalonia;
+
+/// <summary>
+/// A reactive scheduler that uses Avalonia's <see cref="Dispatcher"/>.
+/// </summary>
+public class AvaloniaScheduler : LocalScheduler
 {
     /// <summary>
-    /// A reactive scheduler that uses Avalonia's <see cref="Dispatcher"/>.
+    /// The instance of the <see cref="AvaloniaScheduler"/>.
     /// </summary>
-    public class AvaloniaScheduler : LocalScheduler
+    public static readonly AvaloniaScheduler Instance = new();
+
+    /// <summary>
+    /// Users can schedule actions on the dispatcher thread while being on the correct thread already.
+    /// We are optimizing this case by invoking user callback immediately which can lead to stack overflows in certain cases.
+    /// To prevent this we are limiting amount of reentrant calls to <see cref="Schedule{TState}"/> before we will
+    /// schedule on a dispatcher anyway.
+    /// </summary>
+    private const int MaxReentrantSchedules = 32;
+
+    private int _reentrancyGuard;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvaloniaScheduler"/> class.
+    /// </summary>
+    private AvaloniaScheduler()
     {
-        /// <summary>
-        /// The instance of the <see cref="AvaloniaScheduler"/>.
-        /// </summary>
-        public static readonly AvaloniaScheduler Instance = new();
+    }
 
-        /// <summary>
-        /// Users can schedule actions on the dispatcher thread while being on the correct thread already.
-        /// We are optimizing this case by invoking user callback immediately which can lead to stack overflows in certain cases.
-        /// To prevent this we are limiting amount of reentrant calls to <see cref="Schedule{TState}"/> before we will
-        /// schedule on a dispatcher anyway.
-        /// </summary>
-        private const int MaxReentrantSchedules = 32;
-
-        private int _reentrancyGuard;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AvaloniaScheduler"/> class.
-        /// </summary>
-        private AvaloniaScheduler()
+    /// <inheritdoc/>
+    public override IDisposable Schedule<TState>(
+        TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+    {
+        if (action is null)
         {
+            throw new ArgumentNullException(nameof(action));
         }
 
-        /// <inheritdoc/>
-        public override IDisposable Schedule<TState>(
-            TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+        IDisposable PostOnDispatcher()
         {
-            if (action is null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+            var composite = new CompositeDisposable(2);
 
-            IDisposable PostOnDispatcher()
-            {
-                var composite = new CompositeDisposable(2);
+            var cancellation = new CancellationDisposable();
 
-                var cancellation = new CancellationDisposable();
-
-                Dispatcher.UIThread.Post(
-                                         () =>
+            Dispatcher.UIThread.Post(
+                                     () =>
+                                     {
+                                         if (!cancellation.Token.IsCancellationRequested)
                                          {
-                                             if (!cancellation.Token.IsCancellationRequested)
-                                             {
-                                                 composite.Add(action(this, state));
-                                             }
-                                         },
-                                         DispatcherPriority.Background);
+                                             composite.Add(action(this, state));
+                                         }
+                                     },
+                                     DispatcherPriority.Background);
 
-                composite.Add(cancellation);
+            composite.Add(cancellation);
 
-                return composite;
-            }
+            return composite;
+        }
 
-            if (dueTime == TimeSpan.Zero)
+        if (dueTime == TimeSpan.Zero)
+        {
+            if (!Dispatcher.UIThread.CheckAccess())
             {
-                if (!Dispatcher.UIThread.CheckAccess())
-                {
-                    return PostOnDispatcher();
-                }
-
-                if (_reentrancyGuard >= MaxReentrantSchedules)
-                {
-                    return PostOnDispatcher();
-                }
-
-                try
-                {
-                    _reentrancyGuard++;
-
-                    return action(this, state);
-                }
-                finally
-                {
-                    _reentrancyGuard--;
-                }
+                return PostOnDispatcher();
             }
 
+            if (_reentrancyGuard >= MaxReentrantSchedules)
             {
-                var composite = new CompositeDisposable(2);
-
-                composite.Add(DispatcherTimer.RunOnce(() => composite.Add(action(this, state)), dueTime));
-
-                return composite;
+                return PostOnDispatcher();
             }
+
+            try
+            {
+                _reentrancyGuard++;
+
+                return action(this, state);
+            }
+            finally
+            {
+                _reentrancyGuard--;
+            }
+        }
+
+        {
+            var composite = new CompositeDisposable(2);
+
+            composite.Add(DispatcherTimer.RunOnce(() => composite.Add(action(this, state)), dueTime));
+
+            return composite;
         }
     }
 }

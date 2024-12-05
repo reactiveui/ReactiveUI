@@ -7,40 +7,39 @@ using System;
 using Avalonia;
 using Splat;
 
-namespace ReactiveUI.Avalonia
+namespace ReactiveUI.Avalonia;
+
+/// <summary>
+/// Avalonia AppBuilder setup extensions.
+/// </summary>
+public static class AppBuilderExtensions
 {
     /// <summary>
-    /// Avalonia AppBuilder setup extensions.
+    /// Initializes ReactiveUI framework to use with Avalonia. Registers Avalonia scheduler,
+    /// an activation for view fetcher, a template binding hook.
+    /// Remember to call this method if you are using ReactiveUI in your application.
     /// </summary>
-    public static class AppBuilderExtensions
+    /// <param name="builder">This builder.</param>
+    /// <returns>The builder.</returns>
+    public static AppBuilder UseReactiveUI(this AppBuilder builder)
     {
-        /// <summary>
-        /// Initializes ReactiveUI framework to use with Avalonia. Registers Avalonia scheduler,
-        /// an activation for view fetcher, a template binding hook.
-        /// Remember to call this method if you are using ReactiveUI in your application.
-        /// </summary>
-        /// <param name="builder">This builder.</param>
-        /// <returns>The builder.</returns>
-        public static AppBuilder UseReactiveUI(this AppBuilder builder)
+        if (builder is null)
         {
-            if (builder is null)
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        return builder.AfterPlatformServicesSetup(_ => Locator.RegisterResolverCallbackChanged(() =>
+        {
+            if (Locator.CurrentMutable is null)
             {
-                throw new ArgumentNullException(nameof(builder));
+                return;
             }
 
-            return builder.AfterPlatformServicesSetup(_ => Locator.RegisterResolverCallbackChanged(() =>
-            {
-                if (Locator.CurrentMutable is null)
-                {
-                    return;
-                }
-
-                PlatformRegistrationManager.SetRegistrationNamespaces(RegistrationNamespace.Avalonia);
-                RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
-                Locator.CurrentMutable.RegisterConstant(new AvaloniaActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-                Locator.CurrentMutable.RegisterConstant(new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-                Locator.CurrentMutable.RegisterConstant(new AvaloniaObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-            }));
-        }
+            PlatformRegistrationManager.SetRegistrationNamespaces(RegistrationNamespace.Avalonia);
+            RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
+            Locator.CurrentMutable.RegisterConstant(new AvaloniaActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+            Locator.CurrentMutable.RegisterConstant(new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+            Locator.CurrentMutable.RegisterConstant(new AvaloniaObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+        }));
     }
 }
