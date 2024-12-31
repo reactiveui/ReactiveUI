@@ -52,8 +52,6 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// <inheritdoc/>
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        ArgumentNullException.ThrowIfNull(nameof(sender));
-
         var type = sender?.GetType();
         var tableItem = _dispatchTable.Keys.First(x => x.viewType?.IsAssignableFrom(type) == true && x.propertyName?.Equals(propertyName) == true);
 

@@ -12,6 +12,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
     <NoWarn>$(NoWarn);IDE1006;</NoWarn>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

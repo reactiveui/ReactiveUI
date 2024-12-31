@@ -19,5 +19,6 @@ public class SingleInstanceExampleView : ReactiveUI.Winforms.ReactiveUserControl
     /// <summary>
     /// Gets the instances.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public static int Instances { get; private set; }
 }
