@@ -58,7 +58,7 @@ namespace ReactiveUI.Winforms
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
-    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_RoutedControlHostWinRTTypeDetails?))]
+    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ViewModelControlHostWinRTTypeDetails?))]
     [WinRT.WinRTRuntimeClassName("Windows.Foundation.IClosable")]
     public class RoutedControlHost : System.Windows.Forms.UserControl, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
@@ -88,7 +88,7 @@ namespace ReactiveUI.Winforms
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
-    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_RoutedControlHostWinRTTypeDetails?))]
+    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ViewModelControlHostWinRTTypeDetails?))]
     [WinRT.WinRTRuntimeClassName("Windows.Foundation.IClosable")]
     public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
