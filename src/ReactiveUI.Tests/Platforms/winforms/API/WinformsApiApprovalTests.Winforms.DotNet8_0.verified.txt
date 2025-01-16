@@ -32,15 +32,11 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string? GetOrientation() { }
     }
-    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ReactiveUserControlNonGenericWinRTTypeDetails))]
-    [WinRT.WinRTRuntimeClassName("Windows.Foundation.IClosable")]
     public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
     {
         public ReactiveUserControlNonGeneric() { }
         protected override void Dispose(bool disposing) { }
     }
-    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ReactiveUserControlNonGenericWinRTTypeDetails?))]
-    [WinRT.WinRTRuntimeClassName("Windows.Foundation.IClosable")]
     public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
@@ -58,8 +54,6 @@ namespace ReactiveUI.Winforms
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
-    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ViewModelControlHostWinRTTypeDetails?))]
-    [WinRT.WinRTRuntimeClassName("Windows.Foundation.IClosable")]
     public class RoutedControlHost : System.Windows.Forms.UserControl, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         public RoutedControlHost() { }
@@ -88,8 +82,6 @@ namespace ReactiveUI.Winforms
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
-    [WinRT.WinRTExposedType(typeof(WinRT.ReactiveUI_WinformsVtableClasses.ReactiveUI_Winforms_ViewModelControlHostWinRTTypeDetails?))]
-    [WinRT.WinRTRuntimeClassName("Windows.Foundation.IClosable")]
     public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         public ViewModelControlHost() { }
