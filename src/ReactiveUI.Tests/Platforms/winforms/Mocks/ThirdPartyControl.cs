@@ -13,6 +13,7 @@ public class ThirdPartyControl : Control
 
     public event EventHandler? ValueChanged;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? Value
     {
         get => _value;

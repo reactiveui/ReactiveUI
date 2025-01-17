@@ -52,16 +52,14 @@
     <Compile Include="Platforms\android\**\*.cs" />
     <Compile Include="Platforms\mobile-common\**\*.cs" />
   </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
     <Compile Include="Platforms\net\**\*.cs" />
     <PackageReference Include="System.ComponentModel.Annotations" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4')) or $(TargetFramework.StartsWith('net6'))">
-    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Splat" />
     <PackageReference Include="DynamicData" />
+    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
     <None Update="VariadicTemplates.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="VariadicTemplates.cs" />

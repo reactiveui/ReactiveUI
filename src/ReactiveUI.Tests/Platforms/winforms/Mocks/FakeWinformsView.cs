@@ -33,6 +33,7 @@ public class FakeWinformsView : Control, IViewFor<FakeWinformViewModel>
     }
 
     /// <inheritdoc/>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public FakeWinformViewModel? ViewModel { get; set; }
 
     /// <summary>
