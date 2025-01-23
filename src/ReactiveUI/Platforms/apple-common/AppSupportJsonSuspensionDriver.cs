@@ -4,8 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-
+using System.Text.Json;
 using Foundation;
 
 namespace ReactiveUI;
@@ -16,17 +15,20 @@ namespace ReactiveUI;
 public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
-    public IObservable<object> LoadState()
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls Deserialize<object>()")]
+    [RequiresDynamicCode("Calls Deserialize<object>()")]
+#endif
+    public IObservable<object?> LoadState()
     {
         try
         {
-            var serializer = new BinaryFormatter();
             var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.dat");
 
             var result = default(object);
             using (var st = File.OpenRead(target))
             {
-                result = serializer.Deserialize(st);
+                result = JsonSerializer.Deserialize<object>(st);
             }
 
             return Observable.Return(result);
@@ -38,16 +40,19 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls Serialize<object>()")]
+    [RequiresDynamicCode("Calls Serialize<object>()")]
+#endif
     public IObservable<Unit> SaveState(object state)
     {
         try
         {
-            var serializer = new BinaryFormatter();
             var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.dat");
 
             using (var st = File.Open(target, FileMode.Create))
             {
-                serializer.Serialize(st, state);
+                JsonSerializer.Serialize(st, state);
             }
 
             return Observables.Unit;

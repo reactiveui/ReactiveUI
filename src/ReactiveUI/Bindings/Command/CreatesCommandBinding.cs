@@ -40,6 +40,10 @@ internal class CreatesCommandBinding
         return ret;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+#endif
     public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter, string? eventName)
     {
         var type = target!.GetType();

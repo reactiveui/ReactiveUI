@@ -11,7 +11,11 @@ namespace ReactiveUI;
 public static class PlatformRegistrationManager
 {
     internal static RegistrationNamespace[] DefaultRegistrationNamespaces { get; } =
+#if NET6_0_OR_GREATER
+        Enum.GetValues<RegistrationNamespace>();
+#else
         (RegistrationNamespace[])Enum.GetValues(typeof(RegistrationNamespace));
+#endif
 
     internal static RegistrationNamespace[] NamespacesToRegister { get; set; } = DefaultRegistrationNamespaces;
 
