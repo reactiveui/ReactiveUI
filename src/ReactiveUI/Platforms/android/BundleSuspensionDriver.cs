@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 
 namespace ReactiveUI;
 
@@ -14,7 +14,11 @@ namespace ReactiveUI;
 public class BundleSuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
-    public IObservable<object> LoadState() // TODO: Create Test
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls Deserialize<object>()")]
+    [RequiresDynamicCode("Calls Deserialize<object>()")]
+#endif
+    public IObservable<object?> LoadState() // TODO: Create Test
     {
         try
         {
@@ -24,7 +28,6 @@ public class BundleSuspensionDriver : ISuspensionDriver
                 return Observable.Throw<object>(new Exception("New bundle, start from scratch"));
             }
 
-            var serializer = new BinaryFormatter();
             var buffer = AutoSuspendHelper.LatestBundle.GetByteArray("__state");
 
             if (buffer is null)
@@ -34,7 +37,7 @@ public class BundleSuspensionDriver : ISuspensionDriver
 
             var st = new MemoryStream(buffer);
 
-            return Observable.Return(serializer.Deserialize(st));
+            return Observable.Return(JsonSerializer.Deserialize<object>(st));
         }
         catch (Exception ex)
         {
@@ -43,13 +46,16 @@ public class BundleSuspensionDriver : ISuspensionDriver
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls Serialize<object>()")]
+    [RequiresDynamicCode("Calls Serialize<object>()")]
+#endif
     public IObservable<Unit> SaveState(object state) // TODO: Create Test
     {
         try
         {
-            var serializer = new BinaryFormatter();
             var st = new MemoryStream();
-
+            JsonSerializer.Serialize(st, state);
             AutoSuspendHelper.LatestBundle?.PutByteArray("__state", st.ToArray());
             return Observables.Unit;
         }

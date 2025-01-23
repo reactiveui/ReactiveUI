@@ -367,7 +367,7 @@ namespace ReactiveUI
     public interface ISuspensionDriver
     {
         System.IObservable<System.Reactive.Unit> InvalidateState();
-        System.IObservable<object> LoadState();
+        System.IObservable<object?> LoadState();
         System.IObservable<System.Reactive.Unit> SaveState(object state);
     }
     public interface ISuspensionHost : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging

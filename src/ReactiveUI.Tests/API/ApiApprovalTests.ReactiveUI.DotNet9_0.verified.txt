@@ -117,15 +117,25 @@ namespace ReactiveUI
     public class CreatesCommandBindingViaCommandParameter : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesCommandBindingViaCommandParameter() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls GetRuntimeProperty(string name)")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls GetRuntimeProperty(string name)")]
         public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
         public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls GetRuntimeProperty(string name)")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls GetRuntimeProperty(string name)")]
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
     public class CreatesCommandBindingViaEvent : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesCommandBindingViaEvent() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
         public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
         public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
     }
     public class DecimalToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
@@ -137,6 +147,8 @@ namespace ReactiveUI
     public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
     {
         public System.Func<string, string> ViewModelToViewFunc { get; set; }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method is used to resolve views for view models.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
         public ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null) { }
     }
     public static class DependencyResolverMixins
@@ -369,7 +381,7 @@ namespace ReactiveUI
     public interface ISuspensionDriver
     {
         System.IObservable<System.Reactive.Unit> InvalidateState();
-        System.IObservable<object> LoadState();
+        System.IObservable<object?> LoadState();
         System.IObservable<System.Reactive.Unit> SaveState(object state);
     }
     public interface ISuspensionHost : ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
@@ -813,6 +825,8 @@ namespace ReactiveUI
     public static class Reflection
     {
         public static string ExpressionToPropertyNames(System.Linq.Expressions.Expression? expression) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls GetRuntimeMethods()")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls GetRuntimeMethods()")]
         public static System.Type GetEventArgsTypeForEvent(System.Type type, string? eventName) { }
         public static System.Func<object?, object?[]?, object?>? GetValueFetcherForProperty(System.Reflection.MemberInfo? member) { }
         public static System.Func<object?, object?[]?, object?> GetValueFetcherOrThrow(System.Reflection.MemberInfo? member) { }
@@ -821,6 +835,8 @@ namespace ReactiveUI
         public static bool IsStatic(this System.Reflection.PropertyInfo item) { }
         public static System.Type? ReallyFindType(string? type, bool throwOnFailure) { }
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression? expression) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls GetTypeInfo()")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls GetTypeInfo()")]
         public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) { }
         public static bool TryGetAllValuesForPropertyChain(out ReactiveUI.IObservedChange<object, object?>[] changeValues, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }
         public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object? current, System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression> expressionChain) { }

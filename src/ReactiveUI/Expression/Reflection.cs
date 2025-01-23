@@ -331,6 +331,10 @@ public static class Reflection
     /// <param name="eventName">The name of the event.</param>
     /// <returns>The Type of the EventArgs to use.</returns>
     /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls GetRuntimeMethods()")]
+    [RequiresDynamicCode("Calls GetRuntimeMethods()")]
+#endif
     public static Type GetEventArgsTypeForEvent(Type type, string? eventName) // TODO: Create Test
     {
         type.ArgumentNullExceptionThrowIfNull(nameof(type));
@@ -354,6 +358,10 @@ public static class Reflection
     /// <param name="targetObject">The object to check.</param>
     /// <param name="methodsToCheck">The name of the methods to check.</param>
     /// <exception cref="Exception">Thrown if the methods aren't overriden on the target object.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls GetTypeInfo()")]
+    [RequiresDynamicCode("Calls GetTypeInfo()")]
+#endif
     public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) // TODO: Create Test
     {
         var (methodName, methodImplementation) = methodsToCheck

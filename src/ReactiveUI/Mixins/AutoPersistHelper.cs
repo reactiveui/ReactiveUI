@@ -17,7 +17,7 @@ namespace ReactiveUI;
 public static class AutoPersistHelper
 {
     private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> _persistablePropertiesCache = new(
-     (type, _) => type.GetTypeInfo().DeclaredProperties
+     static (type, _) => type.GetTypeInfo().DeclaredProperties
                       .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
                       .ToDictionary(k => k.Name, _ => true),
      RxApp.SmallCacheLimit);

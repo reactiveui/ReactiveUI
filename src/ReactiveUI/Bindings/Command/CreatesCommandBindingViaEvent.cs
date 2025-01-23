@@ -30,6 +30,10 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     ];
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+#endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -45,6 +49,10 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+#endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
         target.ArgumentNullExceptionThrowIfNull(nameof(target));
@@ -61,6 +69,10 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+#endif
     public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
         where TEventArgs : EventArgs
