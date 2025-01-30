@@ -156,6 +156,10 @@ public static partial class ControlFetcherMixin
         }
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     internal static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
     {
         var members = @this.GetType().GetRuntimeProperties();
@@ -197,6 +201,10 @@ public static partial class ControlFetcherMixin
         return ret;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     private static int GetControlIdByName(Assembly assembly, string? name)
     {
         ArgumentNullException.ThrowIfNull(name);

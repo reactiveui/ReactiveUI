@@ -4,12 +4,14 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <SplatVersion>15.2.22</SplatVersion>
+    <SplatVersion>15.3.1</SplatVersion>
+    <XamarinAndroidXCoreVersion>1.13.1.4</XamarinAndroidXCoreVersion>
+    <XamarinAndroidXLifecycleLiveDataVersion>2.8.4.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.3" />
-    <PackageVersion Include="DynamicData" Version="9.0.4" />
-    <PackageVersion Include="FluentAssertions" Version="8.0.0" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
+    <PackageVersion Include="DynamicData" Version="9.1.1" />
+    <PackageVersion Include="FluentAssertions" Version="8.0.1" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.12.0" />
@@ -20,12 +22,12 @@
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageVersion Include="Mocks.Maui" Version="1.1.8" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.7.115" />
-    <PackageVersion Include="PublicApiGenerator" Version="11.3.0" />
+    <PackageVersion Include="PublicApiGenerator" Version="11.4.1" />
     <PackageVersion Include="Reactive.Wasm" Version="2.1.2" />
-    <PackageVersion Include="Roslynator.Analyzers" Version="4.12.10" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.12.11" />
     <PackageVersion Include="Splat" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)" />
-    <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)" />
+    <PackageVersion Include="Splat.Drawing" Version="15.2.22" />
     <PackageVersion Include="Splat.DryIoc" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Ninject" Version="$(SplatVersion)" />
     <PackageVersion Include="stylecop.analyzers" Version="1.2.0-beta.556" />
@@ -38,11 +40,11 @@
     <PackageVersion Include="xunit.runner.console" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.1" />
     <PackageVersion Include="Xunit.StaFact" Version="1.2.69" />
-    <PackageVersion Include="Xamarin.AndroidX.Core" Version="1.15.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Core" Version="$(XamarinAndroidXCoreVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.9" />
     <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.29" />
     <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.11.0.2" />
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.8.7.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseMaui)' != 'true'">
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
@@ -55,8 +57,8 @@
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net9'))">
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="9.0.1" />
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+    <PackageVersion Include="Microsoft.Maui.Controls" Version="9.0.30" />
+    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.30" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net8'))">
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.12" />

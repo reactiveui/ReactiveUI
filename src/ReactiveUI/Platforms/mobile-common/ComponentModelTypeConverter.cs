@@ -8,6 +8,10 @@ namespace ReactiveUI;
 /// <summary>
 /// The component model binding type converter.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class ComponentModelTypeConverter : IBindingTypeConverter
 {
     private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache = new(

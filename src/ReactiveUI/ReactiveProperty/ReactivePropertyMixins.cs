@@ -27,6 +27,10 @@ public static class ReactivePropertyMixins
     /// or
     /// self.
     /// </exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveProperty<T> AddValidation<T>(this ReactiveProperty<T> self, Expression<Func<ReactiveProperty<T>?>> selfSelector)
     {
         selfSelector.ArgumentNullExceptionThrowIfNull(nameof(selfSelector));

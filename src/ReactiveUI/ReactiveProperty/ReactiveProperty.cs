@@ -26,8 +26,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     private readonly Lazy<List<Func<IObservable<T?>, IObservable<IEnumerable?>>>> _validatorStore = new(() => []);
     private readonly int _skipCurrentValue;
     private readonly bool _isDistinctUntilChanged;
+    private IObservable<T?>? _observable;
     private T? _value;
     private IEnumerable? _currentErrors;
+    private bool _hasSubscribed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class.
@@ -70,9 +72,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     {
         _skipCurrentValue = skipCurrentValueOnSubscribe ? 1 : 0;
         _isDistinctUntilChanged = !allowDuplicateValues;
-        Value = initialValue;
+        _value = initialValue;
         _scheduler = scheduler ?? RxApp.TaskpoolScheduler;
         _errorChanged = new Lazy<BehaviorSubject<IEnumerable?>>(() => new BehaviorSubject<IEnumerable?>(GetErrors(null)));
+        GetSubscription();
     }
 
     /// <inheritdoc/>
@@ -290,13 +293,28 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// A reference to an interface that allows observers to stop receiving notifications before
     /// the provider has finished sending them.
     /// </returns>
-    public IDisposable Subscribe(IObserver<T?> observer) =>
-        this.WhenAnyValue(vm => vm.Value)
-        .Merge(_valueRefereshed)
-        .Skip(_skipCurrentValue)
-        .ObserveOn(_scheduler)
-        .Subscribe(observer)
-        .DisposeWith(_disposables);
+    public IDisposable Subscribe(IObserver<T?> observer)
+    {
+        if (observer == null)
+        {
+            return Disposable.Empty;
+        }
+
+        if (IsDisposed)
+        {
+            observer.OnCompleted();
+            return Disposable.Empty;
+        }
+
+        if (_hasSubscribed)
+        {
+            observer.OnNext(_value);
+        }
+
+        _hasSubscribed = true;
+
+        return _observable!.Subscribe(observer).DisposeWith(_disposables);
+    }
 
     /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
@@ -325,5 +343,21 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         {
             _checkValidation.OnNext(value);
         }
+    }
+
+    private void GetSubscription()
+    {
+        _observable = this.WhenAnyValue(vm => vm.Value)
+            .Skip(_skipCurrentValue);
+
+        if (_isDistinctUntilChanged)
+        {
+            _observable = _observable.DistinctUntilChanged();
+        }
+
+        _observable = _observable.Merge(_valueRefereshed)
+            .Publish()
+            .RefCount()
+            .ObserveOn(_scheduler);
     }
 }
