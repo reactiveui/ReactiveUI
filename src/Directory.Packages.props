@@ -7,7 +7,7 @@
     <SplatVersion>15.2.22</SplatVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.3" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
     <PackageVersion Include="DynamicData" Version="9.0.4" />
     <PackageVersion Include="FluentAssertions" Version="8.0.0" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
