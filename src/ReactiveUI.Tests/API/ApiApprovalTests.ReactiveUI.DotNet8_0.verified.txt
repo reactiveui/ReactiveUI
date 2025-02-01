@@ -92,10 +92,14 @@ namespace ReactiveUI
     public class CommandBinderImplementation : Splat.IEnableLogger
     {
         public CommandBinderImplementation() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam?> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
@@ -108,6 +112,8 @@ namespace ReactiveUI
         public static System.Collections.Generic.IComparer<T> ThenByDescending<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue> selector) { }
         public static System.Collections.Generic.IComparer<T> ThenByDescending<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
     }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
     public class ComponentModelTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {
         public ComponentModelTypeConverter() { }
@@ -154,6 +160,8 @@ namespace ReactiveUI
     public static class DependencyResolverMixins
     {
         public static void InitializeReactiveUI(this Splat.IMutableDependencyResolver resolver, params ReactiveUI.RegistrationNamespace[] registrationNamespaces) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static void RegisterViewsForViewModels(this Splat.IMutableDependencyResolver resolver, System.Reflection.Assembly assembly) { }
     }
     public class DoubleToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
@@ -766,6 +774,8 @@ namespace ReactiveUI
     }
     public static class ReactivePropertyMixins
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveProperty<T> AddValidation<T>(this ReactiveUI.ReactiveProperty<T> self, System.Linq.Expressions.Expression<System.Func<ReactiveUI.ReactiveProperty<T>?>> selfSelector) { }
         public static System.IObservable<string?> ObserveValidationErrors<T>(this ReactiveUI.ReactiveProperty<T> self) { }
     }
@@ -874,19 +884,19 @@ namespace ReactiveUI
         public RoutingState(System.Reactive.Concurrency.IScheduler? scheduler = null) { }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
-        public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; set; }
+        public System.IObservable<ReactiveUI.IRoutableViewModel> CurrentViewModel { get; protected set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
-        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> Navigate { get; set; }
+        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> Navigate { get; protected set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
-        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> NavigateAndReset { get; set; }
+        public ReactiveUI.ReactiveCommand<ReactiveUI.IRoutableViewModel, ReactiveUI.IRoutableViewModel> NavigateAndReset { get; protected set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
-        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel> NavigateBack { get; set; }
+        public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel> NavigateBack { get; protected set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
-        public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; set; }
+        public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; protected set; }
         [System.Runtime.Serialization.DataMember]
         [System.Text.Json.Serialization.JsonRequired]
         public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; set; }

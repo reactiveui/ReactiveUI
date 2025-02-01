@@ -92,7 +92,7 @@ namespace ReactiveUI.Winforms
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The Current View")]
         [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public object? Content { get; set; }
+        public object? Content { get; protected set; }
         public System.Windows.Forms.Control? CurrentView { get; }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The default control when no viewmodel is specified")]

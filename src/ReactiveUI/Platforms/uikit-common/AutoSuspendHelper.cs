@@ -31,6 +31,10 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
     /// </summary>
     /// <param name="appDelegate">The uiappdelegate.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public AutoSuspendHelper(UIApplicationDelegate appDelegate)
     {
         Reflection.ThrowIfMethodsNotOverloaded(
