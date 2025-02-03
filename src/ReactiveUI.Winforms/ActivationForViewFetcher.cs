@@ -5,7 +5,6 @@
 
 using System.Globalization;
 using System.Reflection;
-using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms;
 
@@ -87,12 +86,8 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         return Observable<bool>.Empty;
     }
 
-    private static bool GetIsDesignMode(Control control)
-    {
-        var isDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime || control.Site?.DesignMode == true || control.Parent?.Site?.DesignMode == true;
-
-        return isDesignMode;
-    }
+    private static bool GetIsDesignMode(Control control) =>
+        LicenseManager.UsageMode == LicenseUsageMode.Designtime || control.Site?.DesignMode == true || control.Parent?.Site?.DesignMode == true;
 
     private bool GetCachedIsDesignMode(Control control)
     {

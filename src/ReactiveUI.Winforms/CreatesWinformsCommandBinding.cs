@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
-using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace ReactiveUI.Winforms;

@@ -12,4 +12,5 @@ global using System.Reactive.Concurrency;
 global using System.Reactive.Disposables;
 global using System.Reactive.Linq;
 global using System.Threading;
+global using System.Windows.Forms;
 global using Splat;
