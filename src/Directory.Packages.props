@@ -27,7 +27,7 @@
     <PackageVersion Include="Roslynator.Analyzers" Version="4.12.11" />
     <PackageVersion Include="Splat" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)" />
-    <PackageVersion Include="Splat.Drawing" Version="15.2.22" />
+    <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.DryIoc" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Ninject" Version="$(SplatVersion)" />
     <PackageVersion Include="stylecop.analyzers" Version="1.2.0-beta.556" />

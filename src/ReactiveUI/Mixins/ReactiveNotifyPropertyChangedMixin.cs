@@ -34,18 +34,22 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <typeparam name="TValue">The value type.</typeparam>
     /// <param name="item">The source object to observe properties of.</param>
     /// <param name="property">An Expression representing the property (i.e.
-    /// 'x => x.SomeProperty.SomeOtherProperty'.</param>
+    /// 'x =&gt; x.SomeProperty.SomeOtherProperty'.</param>
     /// <param name="beforeChange">If True, the Observable will notify
     /// immediately before a property is going to change.</param>
     /// <param name="skipInitial">If true, the Observable will not notify
     /// with the initial value.</param>
-    /// <returns>An Observable representing the property change
-    /// notifications for the given property.</returns>
+    /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+    /// <returns>
+    /// An Observable representing the property change
+    /// notifications for the given property.
+    /// </returns>
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
         bool beforeChange = false,
-        bool skipInitial = true)
+        bool skipInitial = true,
+        bool isDistinct = true)
     {
         property.ArgumentNullExceptionThrowIfNull(nameof(property));
 
@@ -68,7 +72,8 @@ public static class ReactiveNotifyPropertyChangedMixin
                                                            item,
                                                            property.Body,
                                                            beforeChange,
-                                                           skipInitial);
+                                                           skipInitial,
+                                                           isDistinct);
     }
 
     /// <summary>
@@ -104,24 +109,28 @@ public static class ReactiveNotifyPropertyChangedMixin
 
     /// <summary>
     /// Creates a observable which will subscribe to the each property and sub property
-    /// specified in the Expression. eg It will subscribe to x => x.Property1.Property2.Property3
+    /// specified in the Expression. eg It will subscribe to x =&gt; x.Property1.Property2.Property3
     /// each property in the lambda expression. It will then provide updates to the last value in the chain.
     /// </summary>
+    /// <typeparam name="TSender">The type of the origin of the expression chain.</typeparam>
+    /// <typeparam name="TValue">The end value we want to subscribe to.</typeparam>
     /// <param name="source">The object where we start the chain.</param>
     /// <param name="expression">A expression which will point towards the property.</param>
     /// <param name="beforeChange">If we are interested in notifications before the property value is changed.</param>
     /// <param name="skipInitial">If we don't want to get a notification about the default value of the property.</param>
     /// <param name="suppressWarnings">If true, no warnings should be logged.</param>
-    /// <typeparam name="TSender">The type of the origin of the expression chain.</typeparam>
-    /// <typeparam name="TValue">The end value we want to subscribe to.</typeparam>
-    /// <returns>A observable which notifies about observed changes.</returns>
+    /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+    /// <returns>
+    /// A observable which notifies about observed changes.
+    /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
         bool beforeChange = false,
         bool skipInitial = true,
-        bool suppressWarnings = false) // TODO: Create Test
+        bool suppressWarnings = false,
+        bool isDistinct = true) // TODO: Create Test
     {
         IObservable<IObservedChange<object?, object?>> notifier =
             Observable.Return(new ObservedChange<object?, object?>(null, null, source));
@@ -150,7 +159,12 @@ public static class ReactiveNotifyPropertyChangedMixin
             return new ObservedChange<TSender, TValue>(source!, expression, (TValue)val!);
         });
 
-        return r.DistinctUntilChanged(x => x.Value);
+        if (isDistinct)
+        {
+            return r.DistinctUntilChanged(x => x.Value);
+        }
+
+        return r;
     }
 
     private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
