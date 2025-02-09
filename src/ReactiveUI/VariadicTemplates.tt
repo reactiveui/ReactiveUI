@@ -44,11 +44,13 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
             this TSender? sender,
-            Expression<Func<TSender, TRet>> property1)
+            Expression<Func<TSender, TRet>> property1,
+            bool isDistinct = true)
         {
-            return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
+            return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value, isDistinct);
         }
 
         <# for(int length=1; length <= maxFuncLength; length++) { #>
@@ -69,6 +71,7 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         <# for(int i=1; i <= length; i++) { #>
 /// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
         <# } #>public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
@@ -76,11 +79,13 @@ namespace ReactiveUI
             <# for(int i=1; i <= length; i++) { #>
             Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
 
-            <# } #>)
+            <# } #>,
+            bool isDistinct = true)
         {
             return sender!.WhenAny(<#= valuePropertyParams #>,
                                 (<#= valueSelectorParams #>) =>
-                                    (<#= valueSelectorArgs #>));
+                                    (<#= valueSelectorArgs #>),
+                                    isDistinct);
         }
         <# } #>
 
@@ -95,16 +100,19 @@ namespace ReactiveUI
         <# for(int i=1; i <= length; i++) { #>
 /// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
         <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
             this TSender? sender,
             <# for(int i=1; i <= length; i++) { #>
             Expression<Func<TSender, T<#=i#>>> property<#=i#>,
             <# } #>
-            Func<<#= String.Join(",", templParams) #>, TRet> selector)
+            Func<<#= String.Join(",", templParams) #>, TRet> selector,
+                        bool isDistinct = true)
         {
             return sender!.WhenAny(<#= valuePropertyParams #>,
                                 (<#= valueSelectorParams #>) =>
-                                    selector(<#= valueSelectorArgs #>));
+                                    selector(<#= valueSelectorArgs #>),
+                                    isDistinct);
         }
 
         /// <summary>
@@ -115,6 +123,7 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         <# for(int i=1; i <= length; i++) { #>
 /// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
         <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
@@ -123,14 +132,15 @@ namespace ReactiveUI
             <# for(int i=1; i <= length; i++) { #>
                 Expression<Func<TSender, T<#=i#>>> property<#=i#>,
             <# } #>
-                Func<<#= selectorTypeParams #>, TRet> selector)
+                Func<<#= selectorTypeParams #>, TRet> selector,
+                            bool isDistinct = true)
         {
             <# if (length == 1){ #>
-                return sender!.ObservableForProperty(property<#=1#>, false, false).Select(selector);
+                return sender!.ObservableForProperty(property<#=1#>, false, false, isDistinct).Select(selector);
             <# }else{ #>
             return Observable.CombineLatest(
                 <# for(int i=1; i <= length; i++) { #>
-                    sender!.ObservableForProperty(property<#=i#>, false, false),
+                    sender!.ObservableForProperty(property<#=i#>, false, false, isDistinct),
                 <# } #>
                 selector
             );
@@ -149,21 +159,23 @@ namespace ReactiveUI
         <# for(int i=1; i <= length; i++) { #>
 /// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
         <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
             <# for(int i=1; i <= length; i++) { #>
                 Expression? property<#=i#>,
             <# } #>
-                Func<<#= dynamicSelectorTypeParams #>, TRet> selector)
+                Func<<#= dynamicSelectorTypeParams #>, TRet> selector,
+                bool isDistinct = true)
         {
             <# if (length == 1){ #>
                 return ReactiveNotifyPropertyChangedMixin
-                    .SubscribeToExpressionChain<TSender,object?>(sender, property<#=1#>, false, false).Select(selector);
+                    .SubscribeToExpressionChain<TSender,object?>(sender, property<#=1#>, false, false, isDistinct: isDistinct).Select(selector);
             <# }else{ #>
             return Observable.CombineLatest(
                 <# for(int i=1; i <= length; i++) { #>
                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object?>(sender, property<#=i#>, false, false),
+                        .SubscribeToExpressionChain<TSender,object?>(sender, property<#=i#>, false, false, isDistinct: isDistinct),
                 <# } #>
                 selector
             );
