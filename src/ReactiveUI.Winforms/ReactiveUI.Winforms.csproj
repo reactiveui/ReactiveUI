@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\ReactiveUI.Wpf\Rx\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Wpf\Rx\**\Dispatcher*.cs;..\ReactiveUI.Wpf\Rx\Internal\*.cs;..\ReactiveUI.Wpf\Rx\Concurrency\*.cs" />
+    <Compile Include="..\ReactiveUI.Wpf\Rx\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Wpf\Rx\**\Dispatcher*.cs;..\ReactiveUI.Wpf\Rx\Internal\*.cs;..\ReactiveUI.Wpf\Rx\Concurrency\*.cs;..\ReactiveUI.Wpf\Rx\Linq\ControlObservable.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework) == 'net462' or $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
