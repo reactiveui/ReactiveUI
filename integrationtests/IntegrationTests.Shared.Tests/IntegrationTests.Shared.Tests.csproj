@@ -18,8 +18,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Xunit.StaFact" Version="1.1.11" />
-    <PackageReference Include="FluentAssertions" Version="8.0.0" />
+    <PackageReference Include="Xunit.StaFact" Version="1.2.69" />
+    <PackageReference Include="FluentAssertions" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

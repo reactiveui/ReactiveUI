@@ -70,6 +70,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="commandParameter">Command parameter.</param>
     /// <param name="eventName">Event name.</param>
     /// <param name="enabledProperty">Enabled property name.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
     {
         ArgumentNullException.ThrowIfNull(command);

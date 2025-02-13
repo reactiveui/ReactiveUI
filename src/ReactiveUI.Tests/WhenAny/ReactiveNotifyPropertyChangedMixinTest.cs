@@ -197,7 +197,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
             {
                 IsOnlyOneWord = "Pre"
             };
-            fixture.ObservableForProperty(x => x.IsOnlyOneWord, skipInitial: false)
+            fixture.ObservableForProperty(x => x.IsOnlyOneWord, false, false)
                    .ToObservableChangeSet(ImmediateScheduler.Instance)
                    .Bind(out var changes)
                    .Subscribe();

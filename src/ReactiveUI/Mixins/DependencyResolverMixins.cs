@@ -71,6 +71,10 @@ public static class DependencyResolverMixins
     /// </summary>
     /// <param name="resolver">The dependency injection resolver to register the Views with.</param>
     /// <param name="assembly">The assembly to search using reflection for IViewFor classes.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static void RegisterViewsForViewModels(this IMutableDependencyResolver resolver, Assembly assembly)
     {
         resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
@@ -108,6 +112,10 @@ public static class DependencyResolverMixins
         }
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     private static Func<object> TypeFactory(TypeInfo typeInfo)
     {
         var parameterlessConstructor = typeInfo.DeclaredConstructors.FirstOrDefault(ci => ci.IsPublic && ci.GetParameters().Length == 0);
@@ -116,6 +124,10 @@ public static class DependencyResolverMixins
             : Expression.Lambda<Func<object>>(Expression.New(parameterlessConstructor)).Compile();
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)
     {
         var targetType = namespaceName + ".Registrations";
