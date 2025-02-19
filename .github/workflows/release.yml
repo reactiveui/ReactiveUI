@@ -17,7 +17,6 @@ jobs:
       productNamespacePrefix: "ReactiveUI"
       dotNetBuild: true
       useVisualStudioPreview: false
-      useMauiCheckDotNetTool: false
       solutionFile: "reactiveui.sln"
     secrets:
       SIGN_CLIENT_USER_ID: ${{ secrets.SIGN_CLIENT_USER_ID }}
