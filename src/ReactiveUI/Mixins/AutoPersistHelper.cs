@@ -14,6 +14,11 @@ namespace ReactiveUI;
 /// <summary>
 /// Helper extension method class associated with the AutoPersist related functionality.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[Preserve]
+#endif
 public static class AutoPersistHelper
 {
     private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> _persistablePropertiesCache = new(

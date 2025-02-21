@@ -17,6 +17,11 @@ namespace ReactiveUI;
 /// Fragments via property names, similar to Butter Knife, as well as allows
 /// you to fetch controls manually.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[Preserve]
+#endif
 public static partial class ControlFetcherMixin
 {
     private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds = new();
@@ -29,6 +34,11 @@ public static partial class ControlFetcherMixin
     /// <param name="activity">The activity.</param>
     /// <param name="propertyName">The property name.</param>
     /// <returns>The return view.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null) // TODO: Create Test
         => GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)));
 

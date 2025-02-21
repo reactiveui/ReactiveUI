@@ -9,9 +9,19 @@ namespace ReactiveUI;
 /// UIKit platform registrations.
 /// </summary>
 /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[Preserve]
+#endif
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         ArgumentNullException.ThrowIfNull(registerFunction);

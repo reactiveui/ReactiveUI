@@ -11,6 +11,11 @@ namespace ReactiveUI;
 /// <summary>
 /// Helper class for handling Reflection amd Expression tree related items.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[Preserve]
+#endif
 public static class Reflection
 {
     private static readonly ExpressionRewriter _expressionRewriter = new();

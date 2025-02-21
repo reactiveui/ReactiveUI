@@ -11,12 +11,16 @@ namespace ReactiveUI;
 /// <summary>
 /// Class that registers Command Binding and Command Parameter Binding.
 /// </summary>
+#if NET6_0_OR_GREATER
+[Preserve]
+#endif
 public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
     [RequiresUnreferencedCode("Calls GetRuntimeProperty(string name)")]
     [RequiresDynamicCode("Calls GetRuntimeProperty(string name)")]
+    [Preserve]
 #endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
@@ -42,6 +46,7 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 #if NET6_0_OR_GREATER
     [RequiresUnreferencedCode("Calls GetRuntimeProperty(string name)")]
     [RequiresDynamicCode("Calls GetRuntimeProperty(string name)")]
+    [Preserve]
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {

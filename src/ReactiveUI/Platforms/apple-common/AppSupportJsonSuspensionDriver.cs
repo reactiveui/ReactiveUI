@@ -12,12 +12,18 @@ namespace ReactiveUI;
 /// <summary>
 /// Loads and saves state to persistent storage.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[Preserve]
+#endif
 public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls Deserialize<object>()")]
-    [RequiresDynamicCode("Calls Deserialize<object>()")]
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
 #endif
     public IObservable<object?> LoadState()
     {
@@ -41,8 +47,9 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls Serialize<object>()")]
-    [RequiresDynamicCode("Calls Serialize<object>()")]
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
 #endif
     public IObservable<Unit> SaveState(object state)
     {

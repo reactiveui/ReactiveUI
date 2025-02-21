@@ -16,6 +16,11 @@ public interface ISuspensionDriver
     /// Loads the application state from persistent storage.
     /// </summary>
     /// <returns>An object observable.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     IObservable<object?> LoadState();
 
     /// <summary>
@@ -23,6 +28,11 @@ public interface ISuspensionDriver
     /// </summary>
     /// <param name="state">The application state.</param>
     /// <returns>A completed observable.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     IObservable<Unit> SaveState(object state);
 
     /// <summary>

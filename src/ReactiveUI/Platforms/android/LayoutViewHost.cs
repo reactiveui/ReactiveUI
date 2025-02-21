@@ -12,6 +12,11 @@ namespace ReactiveUI;
 /// A class that implements the Android ViewHolder pattern. Use it along
 /// with GetViewHost.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[Preserve]
+#endif
 public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
 {
     private View? _view;
@@ -31,6 +36,11 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
     /// <param name="parent">The parent.</param>
     /// <param name="attachToRoot">if set to <c>true</c> [attach to root].</param>
     /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wire-up].</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     protected LayoutViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
     {
         var inflater = LayoutInflater.FromContext(ctx);

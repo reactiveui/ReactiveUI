@@ -13,11 +13,21 @@ namespace ReactiveUI;
 /// Android implementation that provides binding to an ICommand in the ViewModel to a Control
 /// in the View.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[Preserve]
+#endif
 public class AndroidCommandBinders : FlexibleCommandBinder
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AndroidCommandBinders"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     public AndroidCommandBinders() // TODO: Create Test
     {
         var view = typeof(View);

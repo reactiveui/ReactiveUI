@@ -15,6 +15,9 @@ namespace ReactiveUI;
 /// <summary>
 /// This binder is the default binder for connecting to arbitrary events.
 /// </summary>
+#if NET6_0_OR_GREATER
+[Preserve]
+#endif
 public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 {
     // NB: These are in priority order
@@ -33,6 +36,7 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 #if NET6_0_OR_GREATER
     [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
     [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [Preserve]
 #endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
@@ -52,6 +56,7 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 #if NET6_0_OR_GREATER
     [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
     [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [Preserve]
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
@@ -72,6 +77,7 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 #if NET6_0_OR_GREATER
     [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
     [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [Preserve]
 #endif
     public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO

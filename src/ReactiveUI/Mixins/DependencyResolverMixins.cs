@@ -20,6 +20,11 @@ public static class DependencyResolverMixins
     /// </summary>
     /// <param name="resolver">The resolver to initialize.</param>
     /// <param name="registrationNamespaces">Which platforms to use.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
         resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
@@ -99,6 +104,11 @@ public static class DependencyResolverMixins
         }
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     private static void RegisterType(IMutableDependencyResolver resolver, TypeInfo ti, Type serviceType, string contract)
     {
         var factory = TypeFactory(ti);

@@ -26,6 +26,11 @@ public interface ICreatesCommandBinding
     /// event target.</param>
     /// <returns>A positive integer if BCTO is supported, zero or a negative
     /// value otherwise.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     int GetAffinityForObject(Type type, bool hasEventTarget);
 
     /// <summary>
@@ -44,6 +49,11 @@ public interface ICreatesCommandBinding
     ///     Observable.Empty.</param>
     /// <returns>An IDisposable which will disconnect the binding when
     /// disposed.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter);
 
     /// <summary>
@@ -61,6 +71,11 @@ public interface ICreatesCommandBinding
     /// Observable.Empty.</param>
     /// <param name="eventName">The event to bind to.</param>
     /// <returns>An IDisposable which will disconnect the binding when disposed.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
+#endif
     IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
         where TEventArgs : EventArgs

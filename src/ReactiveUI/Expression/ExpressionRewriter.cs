@@ -11,6 +11,11 @@ namespace ReactiveUI;
 /// <summary>
 /// Class for simplifying and validating expressions.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[Preserve]
+#endif
 internal class ExpressionRewriter : ExpressionVisitor
 {
     public override Expression Visit(Expression? node)
@@ -54,6 +59,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
 #endif
     protected override Expression VisitBinary(BinaryExpression node)
     {
@@ -72,6 +78,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
 #endif
     protected override Expression VisitUnary(UnaryExpression node)
     {
@@ -104,6 +111,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [Preserve]
 #endif
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
