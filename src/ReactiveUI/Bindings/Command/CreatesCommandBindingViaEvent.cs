@@ -15,9 +15,6 @@ namespace ReactiveUI;
 /// <summary>
 /// This binder is the default binder for connecting to arbitrary events.
 /// </summary>
-#if NET6_0_OR_GREATER
-[Preserve]
-#endif
 public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 {
     // NB: These are in priority order

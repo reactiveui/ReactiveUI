@@ -10,9 +10,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Used by the CommandBinder extension methods to handle binding View controls and ViewModel commands.
 /// </summary>
-#if NET6_0_OR_GREATER
-[Preserve]
-#endif
 public class CommandBinderImplementation : ICommandBinderImplementation
 {
     /// <summary>
