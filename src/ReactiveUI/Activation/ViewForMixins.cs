@@ -10,6 +10,10 @@ namespace ReactiveUI;
 /// <summary>
 /// A set of extension methods to help wire up View and ViewModel activation.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public static class ViewForMixins
 {
     private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =

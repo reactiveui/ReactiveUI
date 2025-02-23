@@ -17,6 +17,10 @@ namespace ReactiveUI;
 /// <para><c>Locator.Current.GetService.{ISuspensionHost}().SetupDefaultSuspendResume();</c>.</para>
 /// <para>This will fetch your SuspensionHost.</para>
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     private readonly Subject<IDisposable> _shouldPersistState = new();

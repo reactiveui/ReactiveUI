@@ -14,6 +14,10 @@ namespace ReactiveUI;
 /// <seealso cref="ReactiveObject" />
 /// <seealso cref="IReactiveProperty&lt;T&gt;" />
 [DataContract]
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 {
     private readonly IScheduler _scheduler;

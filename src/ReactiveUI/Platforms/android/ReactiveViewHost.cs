@@ -14,6 +14,10 @@ namespace ReactiveUI;
 /// ViewModel. Use it along with GetViewHost.
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveViewHost<TViewModel>>, IReactiveObject
     where TViewModel : class, IReactiveObject
 {

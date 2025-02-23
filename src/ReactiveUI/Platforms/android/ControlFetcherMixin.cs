@@ -20,7 +20,6 @@ namespace ReactiveUI;
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
 [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-[Preserve]
 #endif
 public static partial class ControlFetcherMixin
 {
@@ -37,7 +36,6 @@ public static partial class ControlFetcherMixin
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null) // TODO: Create Test
         => GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)));

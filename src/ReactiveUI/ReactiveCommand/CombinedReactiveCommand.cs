@@ -30,6 +30,10 @@ namespace ReactiveUI;
 /// <typeparam name="TResult">
 /// The type of the values that are the result of command execution.
 /// </typeparam>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, IList<TResult>>
 {
     private readonly ReactiveCommand<TParam, IList<TResult>> _innerCommand;

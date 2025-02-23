@@ -22,6 +22,10 @@ using System.Linq.Expressions;
 namespace ReactiveUI
 {
     /// <summary>Extension methods associated with the WhenAny/WhenAnyValue classes.</summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static class WhenAnyMixin
     {
         /// <summary>
@@ -3175,6 +3179,10 @@ namespace ReactiveUI
         }
 
     /// <summary>A mixin which provides support for subscribing to observable properties.</summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static class WhenAnyObservableMixin
     {
         /// <summary>Observe a observable which is set to a property, and automatically subscribe to the most recent emitted value.</summary>

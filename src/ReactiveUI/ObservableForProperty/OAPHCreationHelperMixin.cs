@@ -8,6 +8,10 @@ namespace ReactiveUI;
 /// <summary>
 /// A collection of helpers to aid working with observable properties.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public static class OAPHCreationHelperMixin
 {
     /// <summary>

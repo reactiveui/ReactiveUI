@@ -11,6 +11,10 @@ namespace ReactiveUI;
 /// <summary>
 /// Helps manage android application lifecycle events.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     private readonly Subject<Bundle?> _onCreate = new();

@@ -21,7 +21,6 @@ public interface IViewLocator : IEnableLogger
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
 }

@@ -8,6 +8,10 @@ namespace ReactiveUI;
 /// <summary>
 /// Provides methods to bind <see cref="Interaction{TInput, TOutput}"/>s to handlers.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class InteractionBinderImplementation : IInteractionBinderImplementation
 {
     /// <inheritdoc />

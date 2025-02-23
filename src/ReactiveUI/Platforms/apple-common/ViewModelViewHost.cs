@@ -16,6 +16,10 @@ namespace ReactiveUI;
 /// A control which will use Splat dependency injection to determine the View
 /// to show. It uses.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class ViewModelViewHost : ReactiveViewController
 {
     private readonly SerialDisposable _currentView;

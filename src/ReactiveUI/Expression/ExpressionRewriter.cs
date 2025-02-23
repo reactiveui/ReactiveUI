@@ -14,7 +14,6 @@ namespace ReactiveUI;
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
 [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-[Preserve]
 #endif
 internal class ExpressionRewriter : ExpressionVisitor
 {
@@ -56,11 +55,6 @@ internal class ExpressionRewriter : ExpressionVisitor
         }
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
-#endif
     protected override Expression VisitBinary(BinaryExpression node)
     {
         if (node.Right is not ConstantExpression)
@@ -75,11 +69,6 @@ internal class ExpressionRewriter : ExpressionVisitor
         return Expression.MakeIndex(left, left.Type.GetRuntimeProperty("Item"), [right]);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
-#endif
     protected override Expression VisitUnary(UnaryExpression node)
     {
         if (node.NodeType == ExpressionType.ArrayLength && node.Operand is not null)
@@ -108,11 +97,6 @@ internal class ExpressionRewriter : ExpressionVisitor
         }
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
-#endif
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
         // Rewrite a method call to an indexer as an index expression

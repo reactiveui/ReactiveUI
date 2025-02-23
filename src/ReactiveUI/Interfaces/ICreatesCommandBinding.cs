@@ -29,7 +29,6 @@ public interface ICreatesCommandBinding
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     int GetAffinityForObject(Type type, bool hasEventTarget);
 
@@ -52,7 +51,6 @@ public interface ICreatesCommandBinding
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter);
 
@@ -74,7 +72,6 @@ public interface ICreatesCommandBinding
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO

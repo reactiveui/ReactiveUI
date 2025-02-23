@@ -14,7 +14,6 @@ namespace ReactiveUI;
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
 [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-[Preserve]
 #endif
 public class BundleSuspensionDriver : ISuspensionDriver
 {
@@ -22,7 +21,6 @@ public class BundleSuspensionDriver : ISuspensionDriver
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     public IObservable<object?> LoadState() // TODO: Create Test
     {
@@ -55,7 +53,6 @@ public class BundleSuspensionDriver : ISuspensionDriver
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
 
     public IObservable<Unit> SaveState(object state) // TODO: Create Test

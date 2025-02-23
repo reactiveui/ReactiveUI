@@ -59,6 +59,10 @@ namespace ReactiveUI;
 /// </code>
 /// </para>
 /// </remarks>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public static class ReactiveCommand
 {
     /// <summary>
@@ -692,6 +696,10 @@ public static class ReactiveCommand
                     "StyleCop.CSharp.MaintainabilityRules",
                     "SA1402:FileMayOnlyContainASingleType",
                     Justification = "Same class just generic.")]
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
 {
     private readonly IObservable<bool> _canExecute;

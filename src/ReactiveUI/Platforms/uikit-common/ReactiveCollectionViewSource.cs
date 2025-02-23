@@ -19,6 +19,10 @@ namespace ReactiveUI;
 /// View items are animated in and out as items are added.
 /// </summary>
 /// <typeparam name="TSource">The source type.</typeparam>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
 {
     private readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> _commonSource;

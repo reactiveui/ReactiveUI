@@ -11,6 +11,10 @@ namespace ReactiveUI;
 /// <summary>
 /// Command binder for android controls.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 {
     /// <summary>

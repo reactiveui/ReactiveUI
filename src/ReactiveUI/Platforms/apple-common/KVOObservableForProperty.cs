@@ -18,6 +18,10 @@ namespace ReactiveUI;
 /// tell whether a given property on an object is Key-Value Observable, we
 /// only have to hope for the best :-/.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class KVOObservableForProperty : ICreatesObservableForProperty
 {
     private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> _declaredInNSObject;

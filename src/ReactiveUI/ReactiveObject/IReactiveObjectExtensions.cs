@@ -10,7 +10,11 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods associated with the IReactiveObject interface.
 /// </summary>
-[Preserve(AllMembers = true)]
+[ReactiveUI.Preserve(AllMembers = true)]
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public static class IReactiveObjectExtensions
 {
 #if NETSTANDARD || NETFRAMEWORK
@@ -255,6 +259,10 @@ public static class IReactiveObjectExtensions
         return s.DelayChangeNotifications();
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     private class ExtensionState<TSender> : IExtensionState<TSender>
         where TSender : IReactiveObject
     {

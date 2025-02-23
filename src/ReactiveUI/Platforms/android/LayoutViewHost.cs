@@ -15,7 +15,6 @@ namespace ReactiveUI;
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
 [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-[Preserve]
 #endif
 public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
 {
@@ -39,7 +38,6 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     protected LayoutViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
     {

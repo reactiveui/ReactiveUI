@@ -8,6 +8,10 @@ namespace ReactiveUI;
 /// <summary>
 /// This class provides extension methods for the ReactiveUI view binding mechanism.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public static class InteractionBindingMixins
 {
     private static readonly InteractionBinderImplementation _binderImplementation = new();

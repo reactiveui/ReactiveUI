@@ -10,6 +10,10 @@ namespace ReactiveUI;
 /// <summary>
 /// Provides methods to bind properties to observables.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class PropertyBinderImplementation : IPropertyBinderImplementation
 {
     private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new(

@@ -22,6 +22,10 @@ namespace ReactiveUI;
 /// that are effectively command sources (i.e. Buttons, Menus, etc),
 /// participate in this framework.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class TargetActionCommandBinder : ICreatesCommandBinding
 {
     private readonly Type[] _validTypes;

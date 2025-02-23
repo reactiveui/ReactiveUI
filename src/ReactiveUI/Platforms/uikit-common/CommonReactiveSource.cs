@@ -15,6 +15,10 @@ using Foundation;
 
 namespace ReactiveUI;
 
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable
     where TSectionInfo : ISectionInformation<TUIViewCell>
 {

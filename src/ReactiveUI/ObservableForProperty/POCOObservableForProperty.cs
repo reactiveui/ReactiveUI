@@ -12,6 +12,10 @@ namespace ReactiveUI;
 /// return the value of the type at the time it was created. It will also
 /// warn the user that this is probably not what they want to do.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class POCOObservableForProperty : ICreatesObservableForProperty
 {
     private static readonly ConcurrentDictionary<(Type, string), bool> _hasWarned = new();

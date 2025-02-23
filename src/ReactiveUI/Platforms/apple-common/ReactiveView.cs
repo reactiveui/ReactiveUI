@@ -18,6 +18,10 @@ namespace ReactiveUI;
 /// This is a View that is both a NSView and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     private readonly Subject<Unit> _activated = new();
@@ -146,6 +150,10 @@ public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public abstract class ReactiveView<TViewModel> : ReactiveView, IViewFor<TViewModel>
     where TViewModel : class
 {

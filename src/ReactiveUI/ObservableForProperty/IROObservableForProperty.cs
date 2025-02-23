@@ -10,6 +10,10 @@ namespace ReactiveUI;
 /// <summary>
 /// Generates Observables based on observing Reactive objects.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class IROObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>

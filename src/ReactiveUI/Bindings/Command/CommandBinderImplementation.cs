@@ -44,7 +44,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,
@@ -100,7 +99,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,
@@ -135,7 +133,6 @@ public class CommandBinderImplementation : ICommandBinderImplementation
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-    [Preserve]
 #endif
     private static IDisposable BindCommandInternal<TView, TProp, TParam>(
         IObservable<TProp> source,
