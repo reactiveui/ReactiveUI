@@ -21,4 +21,3 @@ jobs:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
       solutionFile: "reactiveui.sln"
-      useVisualStudioPreview: true
