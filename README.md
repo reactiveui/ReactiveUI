@@ -1,7 +1,7 @@
 ![Build](https://github.com/reactiveui/ReactiveUI/workflows/Build/badge.svg) 
 [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI)
 [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
-[![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack)
+[![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactivex.slack.com/join/shared_invite/zt-lt48skpz-G5WDYOAuzA80_MByZrLT0g)
 
 <br>
 <a href="https://github.com/reactiveui/reactiveui">
@@ -13,7 +13,7 @@
 
 [ReactiveUI](https://reactiveui.net/) is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming, which is a paradigm that allows you to [abstract mutable state away from your user interfaces and express the idea around a feature in one readable place](https://www.youtube.com/watch?v=3HwEytvngXk) and improve the testability of your application.
 
-[🔨 Get Started](https://reactiveui.net/docs/getting-started/) [🛍 Install Packages](https://reactiveui.net/docs/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/docs/resources/videos) [🎓 View Samples](https://reactiveui.net/docs/resources/samples/) [🎤 Discuss ReactiveUI](https://reactiveui.net/slack)
+[🔨 Get Started](https://reactiveui.net/docs/getting-started/) [🛍 Install Packages](https://reactiveui.net/docs/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/docs/resources/videos) [🎓 View Samples](https://reactiveui.net/docs/resources/samples/) [🎤 Discuss ReactiveUI](https://reactivex.slack.com/join/shared_invite/zt-lt48skpz-G5WDYOAuzA80_MByZrLT0g)
 
 ## Book
 There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveui/) written by our Alumni maintainer Kent Boogart.
@@ -128,7 +128,7 @@ This is how we use the donations:
 
 If you have a question, please see if any discussions in our [GitHub issues](https://github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
 
-If you want to discuss something or just need help, here is our [Slack room](https://reactiveui.net/slack), where there are always individuals looking to help out!
+If you want to discuss something or just need help, here is our [Slack room](https://reactivex.slack.com/join/shared_invite/zt-lt48skpz-G5WDYOAuzA80_MByZrLT0g), where there are always individuals looking to help out!
 
 Please do not open GitHub issues for support requests.
 
