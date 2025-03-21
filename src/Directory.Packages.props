@@ -47,7 +47,7 @@
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseMaui)' != 'true'">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.6.250205002" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.6.250228001" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <PackageVersion Include="System.ValueTuple" Version="4.5.0" />
