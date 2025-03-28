@@ -35,7 +35,7 @@
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.3" />
-    <PackageVersion Include="Verify.Xunit" Version="28.15.0" />
+    <PackageVersion Include="Verify.Xunit" Version="28.16.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.console" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
