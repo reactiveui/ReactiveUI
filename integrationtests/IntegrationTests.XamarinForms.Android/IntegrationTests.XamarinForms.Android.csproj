@@ -50,7 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Acr.UserDialogs" Version="9.1.0" />
+    <PackageReference Include="Acr.UserDialogs" Version="9.2.1" />
     <PackageReference Include="Xamarin.AndroidX.Core">
       <Version>1.15.0.1</Version>
     </PackageReference>
