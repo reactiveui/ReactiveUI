@@ -292,7 +292,7 @@ public static class PropertyBindingMixins
     public static IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, TProp?>> vmProperty,
+        Expression<Func<TViewModel, TProp>> vmProperty,
         Expression<Func<TView, TOut>> viewProperty,
         Func<TProp, TOut> selector)
         where TViewModel : class
