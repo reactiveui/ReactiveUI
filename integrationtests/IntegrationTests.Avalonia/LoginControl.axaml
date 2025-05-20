@@ -1,0 +1,45 @@
+﻿<rxui:ReactiveUserControl xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:rxui="http://reactiveui.net"
+                          x:TypeArguments="vms:LoginViewModel"
+                          x:Class="IntegrationTests.Avalonia.LoginControl"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:vms="using:IntegrationTests.Shared"
+                          mc:Ignorable="d">
+
+    <Grid>
+
+        <TextBox x:Name="Username"
+                 Text="Username"
+                 HorizontalAlignment="Left"
+                 Height="23" Margin="10,70,0,0"
+                 TextWrapping="Wrap"
+                 VerticalAlignment="Top"
+                 Width="175"/>
+
+        <TextBox x:Name="Password"
+                 PasswordChar="*"
+                 HorizontalAlignment="Left"
+                 Height="23"
+                 Margin="10,110,0,0"
+                 VerticalAlignment="Top"
+                 Width="175"/>
+
+        <Button x:Name="Login"
+                Content="Login" 
+                HorizontalAlignment="Left"
+                Margin="10,156,0,0"
+                VerticalAlignment="Top"
+                Width="78"/>
+
+        <Button x:Name="Cancel"
+                Content="Cancel"
+                HorizontalAlignment="Left"
+                Margin="108,156,0,0"
+                VerticalAlignment="Top"
+                Width="77"/>
+
+    </Grid>
+    
+</rxui:ReactiveUserControl>
