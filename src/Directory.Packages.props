@@ -43,7 +43,7 @@
     <PackageVersion Include="Xamarin.AndroidX.Core" Version="$(XamarinAndroidXCoreVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.9" />
     <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.29" />
-    <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.11.0.2" />
+    <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.12.0.3" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseMaui)' != 'true'">
