@@ -13,7 +13,7 @@
     <PackageVersion Include="DynamicData" Version="9.2.2" />
     <PackageVersion Include="FluentAssertions" Version="8.2.0" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.0.1" />
@@ -31,7 +31,7 @@
     <PackageVersion Include="Splat.DryIoc" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Ninject" Version="$(SplatVersion)" />
     <PackageVersion Include="stylecop.analyzers" Version="1.2.0-beta.556" />
-    <PackageVersion Include="System.Collections.Immutable" Version="8.0.0" />
+    <PackageVersion Include="System.Collections.Immutable" Version="9.0.5" />
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.5" />
@@ -61,12 +61,12 @@
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.70" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net8'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.16" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="9.0.5" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="3.1.32" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="9.0.5" />
     <PackageVersion Include="System.ComponentModel" Version="4.3.0" />
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0" />
