@@ -101,7 +101,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 
 [Blaz]: https://www.nuget.org/packages/ReactiveUI.Blazor/
 [BlazBadge]: https://img.shields.io/nuget/v/ReactiveUI.Blazor.svg
-[BlazDoc]: https://www.reactiveui.net/blog/2020/07/article-blazor-compelling-example
+[BlazDoc]: https://www.reactiveui.net/docs/getting-started/installation/blazor
 
 [Ava]: https://www.nuget.org/packages/Avalonia.ReactiveUI/
 [AvaBadge]: https://img.shields.io/nuget/v/Avalonia.ReactiveUI.svg

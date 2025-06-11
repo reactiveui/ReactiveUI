@@ -1,4 +1,4 @@
-// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -17,6 +17,10 @@ namespace ReactiveUI;
 /// <para><c>Locator.Current.GetService.{ISuspensionHost}().SetupDefaultSuspendResume();</c>.</para>
 /// <para>This will fetch your SuspensionHost.</para>
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     private readonly Subject<IDisposable> _shouldPersistState = new();
@@ -29,6 +33,10 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
     /// </summary>
     /// <param name="appDelegate">The application delegate.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public AutoSuspendHelper(NSApplicationDelegate appDelegate)
     {
         Reflection.ThrowIfMethodsNotOverloaded(

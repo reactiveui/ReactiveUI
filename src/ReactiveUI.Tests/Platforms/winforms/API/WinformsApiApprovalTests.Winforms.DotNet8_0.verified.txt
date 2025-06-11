@@ -59,13 +59,17 @@ namespace ReactiveUI.Winforms
         public RoutedControlHost() { }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The default control when no viewmodel is specified")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public System.Windows.Forms.Control? DefaultContent { get; set; }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The router.")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public ReactiveUI.RoutingState? Router { get; set; }
         [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public System.IObservable<string>? ViewContractObservable { get; set; }
         [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public ReactiveUI.IViewLocator? ViewLocator { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
@@ -89,19 +93,25 @@ namespace ReactiveUI.Winforms
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The Current View")]
-        public object? Content { get; set; }
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public object? Content { get; protected set; }
         public System.Windows.Forms.Control? CurrentView { get; }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The default control when no viewmodel is specified")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public System.Windows.Forms.Control? DefaultContent { get; set; }
         [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public System.IObservable<string>? ViewContractObservable { get; set; }
         [System.ComponentModel.Browsable(false)]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public ReactiveUI.IViewLocator? ViewLocator { get; set; }
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The viewmodel to host.")]
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public object? ViewModel { get; set; }
+        [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Content)]
         public static bool DefaultCacheViewsEnabled { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;

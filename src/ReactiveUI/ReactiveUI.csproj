@@ -6,8 +6,6 @@
     <RootNamespace>ReactiveUI</RootNamespace>
     <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
     <PackageId>ReactiveUI</PackageId>
-    <!-- Disable "BinaryFormatter is obsolete" warnings for entire project -->
-    <NoWarn>$(NoWarn);SYSLIB0011;IDE1006</NoWarn>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -15,6 +13,10 @@
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0'))">
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <Compile Remove="Resources\**" />
@@ -52,11 +54,11 @@
     <Compile Include="Platforms\android\**\*.cs" />
     <Compile Include="Platforms\mobile-common\**\*.cs" />
   </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
     <Compile Include="Platforms\net\**\*.cs" />
     <PackageReference Include="System.ComponentModel.Annotations" />
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4')) or $(TargetFramework.StartsWith('net6'))">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4'))">
     <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
@@ -66,5 +68,8 @@
   <ItemGroup>
     <None Update="VariadicTemplates.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="VariadicTemplates.cs" />
     <Compile Update="VariadicTemplates.cs" DesignTime="True" AutoGen="true" DependentUpon="VariadicTemplates.tt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 </Project>

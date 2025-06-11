@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -12,6 +12,10 @@ namespace ReactiveUI;
 /// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
 /// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public sealed class DefaultViewLocator : IViewLocator
 {
     /// <summary>
@@ -87,6 +91,10 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <returns>
     /// The view associated with the given view model.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
         viewModel.ArgumentNullExceptionThrowIfNull(nameof(viewModel));
@@ -171,6 +179,9 @@ public sealed class DefaultViewLocator : IViewLocator
         return typeName.Insert(idxPeriod + 1, "I");
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method is used to resolve views for view models.")]
+#endif
     private IViewFor? AttemptViewResolutionFor(Type? viewModelType, string? contract)
     {
         if (viewModelType is null)

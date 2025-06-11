@@ -33,6 +33,10 @@ int maxFuncLength = 12;
 namespace ReactiveUI
 {
     /// <summary>Extension methods associated with the WhenAny/WhenAnyValue classes.</summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static class WhenAnyMixin
     {
         /// <summary>
@@ -49,6 +53,24 @@ namespace ReactiveUI
             Expression<Func<TSender, TRet>> property1)
         {
             return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
+        }
+
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of a
+        /// property on an object has changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
+            this TSender? sender,
+            Expression<Func<TSender, TRet>> property1,
+            bool isDistinct)
+        {
+            return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value, isDistinct);
         }
 
         <# for(int length=1; length <= maxFuncLength; length++) { #>
@@ -84,6 +106,32 @@ namespace ReactiveUI
         }
         <# } #>
 
+        <# if (length != 1 && length <= 7) { #>/// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+        <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+        <# } #>public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
+            this TSender? sender,
+            <# for(int i=1; i <= length; i++) { #>
+            Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
+
+            <# } #>,
+            bool isDistinct)
+        {
+            return sender!.WhenAny(<#= valuePropertyParams #>,
+                                (<#= valueSelectorParams #>) =>
+                                    (<#= valueSelectorArgs #>),
+                                    isDistinct);
+        }
+        <# } #>
+
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -105,6 +153,32 @@ namespace ReactiveUI
             return sender!.WhenAny(<#= valuePropertyParams #>,
                                 (<#= valueSelectorParams #>) =>
                                     selector(<#= valueSelectorArgs #>));
+        }
+
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        /// <param name="sender">The object where the property chain starts.</param>
+        <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+            this TSender? sender,
+            <# for(int i=1; i <= length; i++) { #>
+            Expression<Func<TSender, T<#=i#>>> property<#=i#>,
+            <# } #>
+            Func<<#= String.Join(",", templParams) #>, TRet> selector,
+                        bool isDistinct)
+        {
+            return sender!.WhenAny(<#= valuePropertyParams #>,
+                                (<#= valueSelectorParams #>) =>
+                                    selector(<#= valueSelectorArgs #>),
+                                    isDistinct);
         }
 
         /// <summary>
@@ -137,6 +211,37 @@ namespace ReactiveUI
             <# } #>
         }
 
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+        <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+        public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+                this TSender? sender,
+            <# for(int i=1; i <= length; i++) { #>
+                Expression<Func<TSender, T<#=i#>>> property<#=i#>,
+            <# } #>
+                Func<<#= selectorTypeParams #>, TRet> selector,
+                            bool isDistinct)
+        {
+            <# if (length == 1){ #>
+                return sender!.ObservableForProperty(property<#=1#>, false, false, isDistinct).Select(selector);
+            <# }else{ #>
+            return Observable.CombineLatest(
+                <# for(int i=1; i <= length; i++) { #>
+                    sender!.ObservableForProperty(property<#=i#>, false, false, isDistinct),
+                <# } #>
+                selector
+            );
+            <# } #>
+        }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -169,10 +274,48 @@ namespace ReactiveUI
             );
             <# } #>
         }
+
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        /// <param name="sender">The object where the property chain starts.</param>
+        <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
+                this TSender? sender,
+            <# for(int i=1; i <= length; i++) { #>
+                Expression? property<#=i#>,
+            <# } #>
+                Func<<#= dynamicSelectorTypeParams #>, TRet> selector,
+                bool isDistinct)
+        {
+            <# if (length == 1){ #>
+                return ReactiveNotifyPropertyChangedMixin
+                    .SubscribeToExpressionChain<TSender,object?>(sender, property<#=1#>, false, false, isDistinct).Select(selector);
+            <# }else{ #>
+            return Observable.CombineLatest(
+                <# for(int i=1; i <= length; i++) { #>
+                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object?>(sender, property<#=i#>, false, false, isDistinct),
+                <# } #>
+                selector
+            );
+            <# } #>
+        }
     <# } #>
     }
 
     /// <summary>A mixin which provides support for subscribing to observable properties.</summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static class WhenAnyObservableMixin
     {
         /// <summary>Observe a observable which is set to a property, and automatically subscribe to the most recent emitted value.</summary>

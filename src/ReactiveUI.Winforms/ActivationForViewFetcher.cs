@@ -1,11 +1,10 @@
-﻿// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Globalization;
 using System.Reflection;
-using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms;
 
@@ -87,12 +86,8 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         return Observable<bool>.Empty;
     }
 
-    private static bool GetIsDesignMode(Control control)
-    {
-        var isDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime || control.Site?.DesignMode == true || control.Parent?.Site?.DesignMode == true;
-
-        return isDesignMode;
-    }
+    private static bool GetIsDesignMode(Control control) =>
+        LicenseManager.UsageMode == LicenseUsageMode.Designtime || control.Site?.DesignMode == true || control.Parent?.Site?.DesignMode == true;
 
     private bool GetCachedIsDesignMode(Control control)
     {

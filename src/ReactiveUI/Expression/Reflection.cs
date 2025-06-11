@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,6 +11,10 @@ namespace ReactiveUI;
 /// <summary>
 /// Helper class for handling Reflection amd Expression tree related items.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
 public static class Reflection
 {
     private static readonly ExpressionRewriter _expressionRewriter = new();
@@ -331,6 +335,10 @@ public static class Reflection
     /// <param name="eventName">The name of the event.</param>
     /// <returns>The Type of the EventArgs to use.</returns>
     /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls GetRuntimeMethods()")]
+    [RequiresDynamicCode("Calls GetRuntimeMethods()")]
+#endif
     public static Type GetEventArgsTypeForEvent(Type type, string? eventName) // TODO: Create Test
     {
         type.ArgumentNullExceptionThrowIfNull(nameof(type));
@@ -354,6 +362,10 @@ public static class Reflection
     /// <param name="targetObject">The object to check.</param>
     /// <param name="methodsToCheck">The name of the methods to check.</param>
     /// <exception cref="Exception">Thrown if the methods aren't overriden on the target object.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Calls GetTypeInfo()")]
+    [RequiresDynamicCode("Calls GetTypeInfo()")]
+#endif
     public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) // TODO: Create Test
     {
         var (methodName, methodImplementation) = methodsToCheck

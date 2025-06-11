@@ -1,4 +1,4 @@
-// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -52,8 +52,6 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// <inheritdoc/>
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        ArgumentNullException.ThrowIfNull(nameof(sender));
-
         var type = sender?.GetType();
         var tableItem = _dispatchTable.Keys.First(x => x.viewType?.IsAssignableFrom(type) == true && x.propertyName?.Equals(propertyName) == true);
 

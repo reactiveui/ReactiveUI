@@ -1,9 +1,7 @@
-﻿// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
-using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms;
 
@@ -14,9 +12,11 @@ namespace ReactiveUI.Winforms;
 public partial class RoutedControlHost : UserControl, IReactiveObject
 {
     private readonly CompositeDisposable _disposables = [];
+#pragma warning disable IDE0032 // Use auto property
     private RoutingState? _router;
     private Control? _defaultContent;
     private IObservable<string>? _viewContractObservable;
+#pragma warning restore IDE0032 // Use auto property
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
@@ -97,6 +97,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// </value>
     [Category("ReactiveUI")]
     [Description("The default control when no viewmodel is specified")]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public Control? DefaultContent
     {
         get => _defaultContent;
@@ -108,6 +109,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// </summary>
     [Category("ReactiveUI")]
     [Description("The router.")]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public RoutingState? Router
     {
         get => _router;
@@ -118,6 +120,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// Gets or sets the view contract observable.
     /// </summary>
     [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public IObservable<string>? ViewContractObservable
     {
         get => _viewContractObservable;
@@ -128,6 +131,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// Gets or sets the view locator.
     /// </summary>
     [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public IViewLocator? ViewLocator { get; set; }
 
     /// <inheritdoc/>

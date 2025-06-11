@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-android</TargetFrameworks>
+    <PackageDescription>Provides ReactiveUI extensions for the AndroidX Library</PackageDescription>
+    <PackageId>ReactiveUI.AndroidX</PackageId>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;androidx;forms;xamarin.androidx;net;</PackageTags>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Xamarin.AndroidX.Core" />
+    <PackageReference Include="Xamarin.AndroidX.Preference" />
+    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.Core.UI" />
+    <PackageReference Include="Xamarin.Google.Android.Material" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+</Project>

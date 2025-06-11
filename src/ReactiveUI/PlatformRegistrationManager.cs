@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,7 +11,11 @@ namespace ReactiveUI;
 public static class PlatformRegistrationManager
 {
     internal static RegistrationNamespace[] DefaultRegistrationNamespaces { get; } =
+#if NET6_0_OR_GREATER
+        Enum.GetValues<RegistrationNamespace>();
+#else
         (RegistrationNamespace[])Enum.GetValues(typeof(RegistrationNamespace));
+#endif
 
     internal static RegistrationNamespace[] NamespacesToRegister { get; set; } = DefaultRegistrationNamespaces;
 
