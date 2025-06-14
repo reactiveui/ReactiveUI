@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
-    <PackageVersion Include="DynamicData" Version="9.3.2" />
+    <PackageVersion Include="DynamicData" Version="9.4.1" />
     <PackageVersion Include="FluentAssertions" Version="8.3.0" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
