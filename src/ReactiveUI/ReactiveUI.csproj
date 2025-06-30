@@ -58,10 +58,12 @@
     <Compile Include="Platforms\net\**\*.cs" />
     <PackageReference Include="System.ComponentModel.Annotations" />
   </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4'))">
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Splat" />
     <PackageReference Include="DynamicData" />
-    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
     <None Update="VariadicTemplates.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="VariadicTemplates.cs" />

@@ -151,7 +151,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     public IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
         TViewModel? viewModel,
         TView view,
-        Expression<Func<TViewModel, TProp?>> vmProperty,
+        Expression<Func<TViewModel, TProp>> vmProperty,
         Expression<Func<TView, TOut>> viewProperty,
         Func<TProp, TOut> selector)
         where TViewModel : class

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Acr.UserDialogs" Version="9.1.0" />
+    <PackageReference Include="Acr.UserDialogs" Version="9.2.2" />
   </ItemGroup>
 
   <ItemGroup>
