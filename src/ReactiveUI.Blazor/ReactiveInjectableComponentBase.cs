@@ -98,15 +98,15 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
 
             viewModelChanged
                 .Select(x =>
-                            Observable
-                                .FromEvent<PropertyChangedEventHandler, Unit>(
-                                                                              eventHandler =>
-                                                                              {
-                                                                                  void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
-                                                                                  return Handler;
-                                                                              },
-                                                                              eh => x.PropertyChanged += eh,
-                                                                              eh => x.PropertyChanged -= eh))
+                    Observable
+                        .FromEvent<PropertyChangedEventHandler, Unit>(
+                            eventHandler =>
+                            {
+                                void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                                return Handler;
+                            },
+                            eh => x.PropertyChanged += eh,
+                            eh => x.PropertyChanged -= eh))
                 .Switch()
                 .Subscribe(_ => InvokeAsync(StateHasChanged))
                 .DisposeWith(_compositeDisposable);
