@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using System.Globalization;
+using System.Reflection;
 
 namespace ReactiveUI;
 
@@ -223,8 +225,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         Expression viewExpression)
         where TTarget : class
     {
-        var defaultSetter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
-        var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
+        var memberInfo = viewExpression.GetMemberInfo();
+
+        var defaultSetter = Reflection.GetValueSetterOrThrow(memberInfo);
+        var defaultGetter = Reflection.GetValueFetcherOrThrow(memberInfo);
 
         object? SetThenGet(object? paramTarget, object? paramValue, object?[]? paramParams)
         {
@@ -265,7 +269,17 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                             })!;
         }
 
-        return (setObservable.Subscribe(_ => { }, ex => this.Log().Error(ex, $"{viewExpression} Binding received an Exception!")), setObservable);
+        return (setObservable.Subscribe(_ => { }, ex =>
+        {
+            this.Log().Error(ex, $"{viewExpression} Binding received an Exception!");
+            if (ex.InnerException is null)
+            {
+                return;
+            }
+
+            // If the exception is not null, we throw it wrapped in a TargetInvocationException.
+            throw new TargetInvocationException($"{viewExpression} Binding received an Exception!", ex.InnerException);
+        }), setObservable);
     }
 
     private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
@@ -275,15 +289,15 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         view.ArgumentNullExceptionThrowIfNull(nameof(view));
 
         Func<IObservedChange<object, object?>[]> vmFetcher = vmExpression is not null
-                                                                 ? (() =>
-                                                                       {
-                                                                           Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
-                                                                           return fetchedValues;
-                                                                       })
-                                                                 : (() => new IObservedChange<object, object?>[]
-                                                                       {
-                                                                           new ObservedChange<object, object?>(null!, null, viewModel)
-                                                                       });
+            ? (() =>
+                {
+                    Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
+                    return fetchedValues;
+                })
+            : (() => new IObservedChange<object, object?>[]
+                {
+                    new ObservedChange<object, object?>(null!, null, viewModel)
+                });
 
         var vFetcher = new Func<IObservedChange<object, object?>[]>(() =>
         {
