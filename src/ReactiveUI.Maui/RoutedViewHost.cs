@@ -15,7 +15,7 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <seealso cref="NavigationPage" />
 /// <seealso cref="IActivatableView" />
-public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
+public partial class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 {
     /// <summary>
     /// The router bindable property.
@@ -76,7 +76,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
             Router?
                 .Navigate
-                .Where(_ => Navigation.NavigationStack.Count != Router.NavigationStack.Count)
+                .Where(_ => StacksAreDifferent())
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .SelectMany(_ => PagesForViewModel(Router.GetCurrentViewModel()))
                 .SelectMany(async page =>
