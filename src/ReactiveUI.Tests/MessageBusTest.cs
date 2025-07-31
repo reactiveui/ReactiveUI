@@ -153,4 +153,91 @@ public class MessageBusTest
         Assert.NotEqual(listenedThreadId!.Value, thisThreadId);
         Assert.Equal(listenedThreadId.Value, otherThreadId!.Value);
     }
+
+    /// <summary>
+    /// Tests MessageBus.RegisterScheduler method for complete coverage.
+    /// </summary>
+    [Fact]
+    public void MessageBus_RegisterScheduler_ShouldWork()
+    {
+        // Arrange
+        var messageBus = new MessageBus();
+        var receivedMessages = new List<int>();
+
+        // Act - Register scheduler without contract first
+        messageBus.RegisterScheduler<int>(CurrentThreadScheduler.Instance);
+        messageBus.Listen<int>().Subscribe(x => receivedMessages.Add(x));
+        messageBus.SendMessage(42);
+
+        // Assert
+        Assert.Single(receivedMessages);
+        Assert.Equal(42, receivedMessages[0]);
+    }
+
+    /// <summary>
+    /// Tests MessageBus.ListenIncludeLatest method for complete coverage.
+    /// </summary>
+    [Fact]
+    public void MessageBus_ListenIncludeLatest_ShouldIncludeLastMessage()
+    {
+        // Arrange
+        var messageBus = new MessageBus();
+        var receivedMessages = new List<int>();
+
+        // Send a message first
+        messageBus.SendMessage(42);
+
+        // Act - Listen including latest should get the previously sent message
+        messageBus.ListenIncludeLatest<int>().Subscribe(x => receivedMessages.Add(x));
+
+        // Assert
+        Assert.Single(receivedMessages);
+        Assert.Equal(42, receivedMessages[0]);
+    }
+
+    /// <summary>
+    /// Tests MessageBus.Current static property for complete coverage.
+    /// </summary>
+    [Fact]
+    public void MessageBus_Current_ShouldBeAccessible()
+    {
+        // Act
+        var current = MessageBus.Current;
+
+        // Assert
+        Assert.NotNull(current);
+        Assert.IsAssignableFrom<IMessageBus>(current);
+    }
+
+    /// <summary>
+    /// Tests MessageBus with contracts to ensure message isolation.
+    /// </summary>
+    [Fact]
+    public void MessageBus_WithContracts_ShouldIsolateMessages()
+    {
+        // Arrange
+        var messageBus = new MessageBus();
+        var contract1Messages = new List<int>();
+        var contract2Messages = new List<int>();
+        var noContractMessages = new List<int>();
+
+        // Act
+        messageBus.Listen<int>("Contract1").Subscribe(x => contract1Messages.Add(x));
+        messageBus.Listen<int>("Contract2").Subscribe(x => contract2Messages.Add(x));
+        messageBus.Listen<int>().Subscribe(x => noContractMessages.Add(x));
+
+        messageBus.SendMessage(1, "Contract1");
+        messageBus.SendMessage(2, "Contract2");
+        messageBus.SendMessage(3);
+
+        // Assert
+        Assert.Single(contract1Messages);
+        Assert.Equal(1, contract1Messages[0]);
+
+        Assert.Single(contract2Messages);
+        Assert.Equal(2, contract2Messages[0]);
+
+        Assert.Single(noContractMessages);
+        Assert.Equal(3, noContractMessages[0]);
+    }
 }
