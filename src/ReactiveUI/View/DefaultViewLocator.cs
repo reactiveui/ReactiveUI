@@ -12,10 +12,6 @@ namespace ReactiveUI;
 /// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
 /// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public sealed class DefaultViewLocator : IViewLocator
 {
     /// <summary>
@@ -131,6 +127,10 @@ public sealed class DefaultViewLocator : IViewLocator
         return null;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     private static Type? ToggleViewModelType(Type viewModelType)
     {
         var viewModelTypeName = viewModelType.AssemblyQualifiedName;
@@ -180,7 +180,8 @@ public sealed class DefaultViewLocator : IViewLocator
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method is used to resolve views for view models.")]
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
 #endif
     private IViewFor? AttemptViewResolutionFor(Type? viewModelType, string? contract)
     {
@@ -208,6 +209,10 @@ public sealed class DefaultViewLocator : IViewLocator
         return AttemptViewResolution(proposedViewTypeName, contract);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     private IViewFor? AttemptViewResolution(string? viewTypeName, string? contract)
     {
         try
