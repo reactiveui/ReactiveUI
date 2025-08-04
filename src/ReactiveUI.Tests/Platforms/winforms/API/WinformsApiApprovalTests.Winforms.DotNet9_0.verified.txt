@@ -32,6 +32,10 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string? GetOrientation() { }
     }
+    public static class ReactiveUIBuilderWinFormsExtensions
+    {
+        public static ReactiveUI.Builder.ReactiveUIBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+    }
     public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
     {
         public ReactiveUserControlNonGeneric() { }
