@@ -26,16 +26,28 @@ namespace ReactiveUI
         public static System.IDisposable ActOnEveryObject<TItem, TCollection>(this TCollection collection, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
             where TItem : ReactiveUI.IReactiveObject
             where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<TItem> { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static System.IDisposable AutoPersist<T>(this T @this, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.TimeSpan? interval = default)
             where T : ReactiveUI.IReactiveObject { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static System.IDisposable AutoPersist<T, TDontCare>(this T @this, System.Func<T, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.TimeSpan? interval = default)
             where T : ReactiveUI.IReactiveObject { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static System.IDisposable AutoPersistCollection<TItem>(this System.Collections.ObjectModel.ObservableCollection<TItem> @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.TimeSpan? interval = default)
             where TItem : ReactiveUI.IReactiveObject { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static System.IDisposable AutoPersistCollection<TItem, TDontCare>(this System.Collections.ObjectModel.ObservableCollection<TItem> @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.TimeSpan? interval = default)
             where TItem : ReactiveUI.IReactiveObject { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static System.IDisposable AutoPersistCollection<TItem, TDontCare>(this System.Collections.ObjectModel.ReadOnlyObservableCollection<TItem> @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.TimeSpan? interval = default)
             where TItem : ReactiveUI.IReactiveObject { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static System.IDisposable AutoPersistCollection<TItem, TCollection, TDontCare>(this TCollection @this, System.Func<TItem, System.IObservable<System.Reactive.Unit>> doPersist, System.IObservable<TDontCare> manualSaveSignal, System.TimeSpan? interval = default)
             where TItem : ReactiveUI.IReactiveObject
             where TCollection : System.Collections.Specialized.INotifyCollectionChanged, System.Collections.Generic.IEnumerable<TItem> { }
@@ -160,8 +172,6 @@ namespace ReactiveUI
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
     public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
     {
         public System.Func<string, string> ViewModelToViewFunc { get; set; }
@@ -414,6 +424,8 @@ namespace ReactiveUI
     }
     public interface ISuspensionDriver
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         System.IObservable<System.Reactive.Unit> InvalidateState();
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -652,8 +664,6 @@ namespace ReactiveUI
     {
         public static void SetRegistrationNamespaces(params ReactiveUI.RegistrationNamespace[] namespaces) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
     public class PlatformRegistrations
     {
         public PlatformRegistrations() { }
@@ -724,28 +734,64 @@ namespace ReactiveUI
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
     public static class ReactiveCommand
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> Create(System.Action execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> Create<TParam>(System.Action<TParam> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> Create<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, TResult> Create<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(System.Collections.Generic.IEnumerable<ReactiveUI.ReactiveCommandBase<TParam, TResult>> childCommands, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromObservable<TResult>(System.Func<System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateFromTask(System.Func<System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateFromTask(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromTask<TResult>(System.Func<System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateFromTask<TResult>(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateFromTask<TParam>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(System.Func<TParam, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> CreateRunInBackground(System.Action execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, System.Reactive.Unit> CreateRunInBackground<TParam>(System.Action<TParam> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<System.Reactive.Unit, TResult> CreateRunInBackground<TResult>(System.Func<TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public static ReactiveUI.ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(System.Func<TParam, TResult> execute, System.IObservable<bool>? canExecute = null, System.Reactive.Concurrency.IScheduler? backgroundScheduler = null, System.Reactive.Concurrency.IScheduler? outputScheduler = null) { }
     }
     public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveCommand, ReactiveUI.IReactiveCommand<TParam, TResult>, System.IDisposable, System.IObservable<TResult>, System.Windows.Input.ICommand
@@ -774,13 +820,15 @@ namespace ReactiveUI
         public static System.IDisposable InvokeCommand<T, TResult, TTarget>(this System.IObservable<T> item, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, ReactiveUI.ReactiveCommandBase<T, TResult>?>> commandProperty)
             where TTarget :  class { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
     public class ReactiveCommand<TParam, TResult> : ReactiveUI.ReactiveCommandBase<TParam, TResult>
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         protected ReactiveCommand([System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "Result",
                 "Cancel"})] System.Func<TParam, System.IObservable<System.ValueTuple<System.IObservable<TResult>, System.Action>>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         protected ReactiveCommand(System.Func<TParam, System.IObservable<TResult>> execute, System.IObservable<bool>? canExecute, System.Reactive.Concurrency.IScheduler? outputScheduler) { }
         public override System.IObservable<bool> CanExecute { get; }
         public override System.IObservable<bool> IsExecuting { get; }
@@ -946,8 +994,6 @@ namespace ReactiveUI
         Uwp = 10,
         WinUI = 11,
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
     public class Registrations
     {
         public Registrations() { }

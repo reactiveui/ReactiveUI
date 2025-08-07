@@ -17,10 +17,6 @@ namespace ReactiveUI;
 /// Fragments via property names, similar to Butter Knife, as well as allows
 /// you to fetch controls manually.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static partial class ControlFetcherMixin
 {
     private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds = new();
@@ -47,6 +43,10 @@ public static partial class ControlFetcherMixin
     /// <param name="assembly">The assembly containing the user-defined view.</param>
     /// <param name="propertyName">The property.</param>
     /// <returns>The return view.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static View? GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null) // TODO: Create Test
         => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(assembly, propertyName)));
 
@@ -55,6 +55,10 @@ public static partial class ControlFetcherMixin
     /// </summary>
     /// <param name="layoutHost">The layout view host.</param>
     /// <param name="resolveMembers">The resolve members.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
         ArgumentNullException.ThrowIfNull(layoutHost);
@@ -80,6 +84,10 @@ public static partial class ControlFetcherMixin
     /// </summary>
     /// <param name="view">The view.</param>
     /// <param name="resolveMembers">The resolve members.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
         ArgumentNullException.ThrowIfNull(view);
@@ -111,6 +119,10 @@ public static partial class ControlFetcherMixin
     /// <param name="fragment">The fragment.</param>
     /// <param name="inflatedView">The inflated view.</param>
     /// <param name="resolveMembers">The resolve members.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
         ArgumentNullException.ThrowIfNull(fragment);
@@ -140,6 +152,10 @@ public static partial class ControlFetcherMixin
     /// </summary>
     /// <param name="activity">The Activity.</param>
     /// <param name="resolveMembers">The resolve members.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
         ArgumentNullException.ThrowIfNull(activity);
