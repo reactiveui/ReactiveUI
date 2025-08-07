@@ -239,6 +239,9 @@ public static class RxApp
         set => _unitTestMainThreadScheduler = value;
     }
 
+    /// <summary>
+    /// Set up default initializations.
+    /// </summary>
     [MethodImpl(MethodImplOptions.NoOptimization)]
     internal static void EnsureInitialized()
     {
