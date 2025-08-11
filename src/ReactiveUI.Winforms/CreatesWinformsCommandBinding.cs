@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Windows.Input;
 
@@ -21,6 +22,10 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     ];
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+#endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
         var isWinformControl = typeof(Control).IsAssignableFrom(type);
@@ -43,6 +48,10 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+#endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
 #if NET6_0_OR_GREATER
@@ -79,6 +88,10 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+#endif
     public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
     {
 #if NET6_0_OR_GREATER

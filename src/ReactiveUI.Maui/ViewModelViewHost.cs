@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 
 namespace ReactiveUI.Maui;
@@ -54,6 +55,10 @@ public partial class ViewModelViewHost : ContentView, IViewFor
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ViewModelViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ViewModelViewHost uses methods that may require unreferenced code")]
+#endif
     public ViewModelViewHost()
     {
         // NB: InUnitTestRunner also returns true in Design Mode
@@ -138,6 +143,10 @@ public partial class ViewModelViewHost : ContentView, IViewFor
     /// </summary>
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">contract used by ViewLocator.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ResolveViewForViewModel uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ResolveViewForViewModel uses methods that may require unreferenced code")]
+#endif
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)

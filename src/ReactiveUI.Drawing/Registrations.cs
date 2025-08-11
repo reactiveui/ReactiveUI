@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Drawing;
 
 /// <summary>
@@ -12,6 +14,10 @@ namespace ReactiveUI.Drawing;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Register uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
+#endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         if (registerFunction is null)

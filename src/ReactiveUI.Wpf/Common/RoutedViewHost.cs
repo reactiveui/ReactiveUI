@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI;
 
 #if HAS_WINUI
@@ -59,6 +60,10 @@ public
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
+#endif
     public RoutedViewHost()
     {
 #if NETFX_CORE
@@ -156,6 +161,10 @@ public
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
+#endif
     private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
     {
         if (x.viewModel is null)
