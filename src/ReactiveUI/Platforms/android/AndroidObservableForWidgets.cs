@@ -107,6 +107,10 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
 
     [ObsoletedOSPlatform("android23.0")]
     [SupportedOSPlatform("android23.0")]
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("CreateFromWidget uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("CreateFromWidget may reference members that could be trimmed")]
+#endif
     private static DispatchItem CreateTimePickerHourFromWidget()
     {
         if ((int)Build.VERSION.SdkInt >= 23)
@@ -119,6 +123,10 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
 
     [ObsoletedOSPlatform("android23.0")]
     [SupportedOSPlatform("android23.0")]
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("CreateFromWidget uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("CreateFromWidget may reference members that could be trimmed")]
+#endif
     private static DispatchItem CreateTimePickerMinuteFromWidget()
     {
         if ((int)Build.VERSION.SdkInt >= 23)
@@ -129,6 +137,10 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
         return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentMinute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("CreateFromWidget uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("CreateFromWidget may reference members that could be trimmed")]
+#endif
     private static DispatchItem CreateFromWidget<TView, TEventArgs>(Expression<Func<TView, object?>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)
         where TView : View
         where TEventArgs : EventArgs

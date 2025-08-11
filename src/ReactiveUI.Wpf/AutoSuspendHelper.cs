@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
 namespace ReactiveUI;
@@ -12,6 +13,10 @@ namespace ReactiveUI;
 /// Auto Suspender helpers will assist with saving out the application state
 /// when the application closes or activates.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost and TaskpoolScheduler which require dynamic code generation")]
+[RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost and TaskpoolScheduler which may require unreferenced code")]
+#endif
 public class AutoSuspendHelper : IEnableLogger
 {
     /// <summary>

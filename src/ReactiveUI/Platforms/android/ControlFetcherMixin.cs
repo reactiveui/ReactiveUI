@@ -30,8 +30,8 @@ public static partial class ControlFetcherMixin
     /// <param name="propertyName">The property name.</param>
     /// <returns>The return view.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("GetControl uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("GetControl may reference properties that could be trimmed")]
 #endif
     public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null) // TODO: Create Test
         => GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)));
@@ -44,8 +44,8 @@ public static partial class ControlFetcherMixin
     /// <param name="propertyName">The property.</param>
     /// <returns>The return view.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("GetControl uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("GetControl may reference properties that could be trimmed")]
 #endif
     public static View? GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null) // TODO: Create Test
         => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(assembly, propertyName)));
@@ -56,8 +56,8 @@ public static partial class ControlFetcherMixin
     /// <param name="layoutHost">The layout view host.</param>
     /// <param name="resolveMembers">The resolve members.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("WireUpControls uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("WireUpControls may reference properties that could be trimmed")]
 #endif
     public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
@@ -85,8 +85,8 @@ public static partial class ControlFetcherMixin
     /// <param name="view">The view.</param>
     /// <param name="resolveMembers">The resolve members.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("WireUpControls uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("WireUpControls may reference properties that could be trimmed")]
 #endif
     public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
@@ -120,8 +120,8 @@ public static partial class ControlFetcherMixin
     /// <param name="inflatedView">The inflated view.</param>
     /// <param name="resolveMembers">The resolve members.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("WireUpControls uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("WireUpControls may reference properties that could be trimmed")]
 #endif
     public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
@@ -153,8 +153,8 @@ public static partial class ControlFetcherMixin
     /// <param name="activity">The Activity.</param>
     /// <param name="resolveMembers">The resolve members.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("WireUpControls uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("WireUpControls may reference properties that could be trimmed")]
 #endif
     public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
@@ -181,8 +181,8 @@ public static partial class ControlFetcherMixin
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("GetWireUpMembers uses reflection to analyze properties")]
+    [RequiresUnreferencedCode("GetWireUpMembers may reference properties that could be trimmed")]
 #endif
     internal static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
     {
@@ -226,8 +226,8 @@ public static partial class ControlFetcherMixin
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("GetControlIdByName uses assembly reflection and type discovery")]
+    [RequiresUnreferencedCode("GetControlIdByName may reference types that could be trimmed")]
 #endif
     private static int GetControlIdByName(Assembly assembly, string? name)
     {

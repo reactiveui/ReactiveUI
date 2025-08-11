@@ -14,10 +14,6 @@ namespace ReactiveUI;
 /// ViewModel. Use it along with GetViewHost.
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveViewHost<TViewModel>>, IReactiveObject
     where TViewModel : class, IReactiveObject
 {
@@ -40,8 +36,6 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     /// <param name="parent">The parent.</param>
     /// <param name="attachToRoot">if set to <c>true</c> [attach to root].</param>
     /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wire-up].</param>
-    [RequiresUnreferencedCode("Calls ReactiveUI.ReactiveViewHost<TViewModel>.SetupRxObj()")]
-    [RequiresDynamicCode("Calls ReactiveUI.ReactiveViewHost<TViewModel>.SetupRxObj()")]
     protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
         : base(ctx, layoutId, parent, attachToRoot, performAutoWireup) =>
         SetupRxObj();
@@ -49,8 +43,6 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.
     /// </summary>
-    [RequiresUnreferencedCode("Calls ReactiveUI.ReactiveViewHost<TViewModel>.SetupRxObj()")]
-    [RequiresDynamicCode("Calls ReactiveUI.ReactiveViewHost<TViewModel>.SetupRxObj()")]
     protected ReactiveViewHost() => SetupRxObj();
 
     /// <inheritdoc/>
@@ -112,12 +104,8 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     [OnDeserialized]
-    [RequiresUnreferencedCode("Calls ReactiveUI.ReactiveViewHost<TViewModel>.SetupRxObj()")]
-    [RequiresDynamicCode("Calls ReactiveUI.ReactiveViewHost<TViewModel>.SetupRxObj()")]
     private void SetupRxObj(in StreamingContext sc) => SetupRxObj();
 
-    [RequiresUnreferencedCode("Calls GetProperties(BindingFlags bindingAttr)")]
-    [RequiresDynamicCode("Calls GetProperties(BindingFlags bindingAttr)")]
     private void SetupRxObj() =>
         allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                                                            [.. GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)]);

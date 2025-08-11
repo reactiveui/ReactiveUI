@@ -13,10 +13,6 @@ namespace ReactiveUI;
 /// via the <see cref="OAPHCreationHelperMixin" /> extension methods.
 /// </summary>
 /// <typeparam name="T">The type.</typeparam>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
 {
     private readonly Lazy<ISubject<Exception>> _thrownExceptions;

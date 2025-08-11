@@ -10,10 +10,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Internal implementation details which performs Binding ICommand's to controls.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 internal static class CommandBinderImplementationMixins
 {
     public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
@@ -28,6 +24,10 @@ internal static class CommandBinderImplementationMixins
         where TProp : ICommand =>
         @this.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be trimmed")]
+#endif
     public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         this ICommandBinderImplementation @this,
         TViewModel? viewModel,

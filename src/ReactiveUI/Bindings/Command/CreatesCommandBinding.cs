@@ -10,8 +10,8 @@ namespace ReactiveUI;
 #pragma warning disable RCS1102 // Make class static. Used as base class.
 
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("CreatesCommandBinding uses reflection and generic method instantiation")]
+[RequiresUnreferencedCode("CreatesCommandBinding may reference members that could be trimmed")]
 #endif
 internal class CreatesCommandBinding
 #pragma warning restore RCS1102 // Make class static. Used as base class.
@@ -36,6 +36,10 @@ internal class CreatesCommandBinding
                              }).binding,
             RxApp.SmallCacheLimit);
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses reflection and generic method instantiation")]
+    [RequiresUnreferencedCode("BindCommandToObject may reference members that could be trimmed")]
+#endif
     public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
         var type = target!.GetType();
@@ -45,8 +49,8 @@ internal class CreatesCommandBinding
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
-    [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [RequiresDynamicCode("BindCommandToObject uses reflection and generic method instantiation")]
+    [RequiresUnreferencedCode("BindCommandToObject may reference members that could be trimmed")]
 #endif
     public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter, string? eventName)
     {

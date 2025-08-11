@@ -10,10 +10,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods associated with the ReactiveCommand class.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class ReactiveCommandMixins
 {
     /// <summary>
@@ -75,6 +71,10 @@ public static class ReactiveCommandMixins
     /// <param name="commandProperty">The expression to reference the Command.</param>
     /// <returns>An object that when disposes, disconnects the Observable
     /// from the command.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("InvokeCommand uses WhenAnyValue which requires dynamic code generation for expression tree analysis.")]
+    [RequiresUnreferencedCode("InvokeCommand uses WhenAnyValue which may reference members that could be trimmed.")]
+#endif
     public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ICommand?>> commandProperty)
         where TTarget : class
     {
@@ -108,6 +108,10 @@ public static class ReactiveCommandMixins
     /// <param name="commandProperty">The expression to reference the Command.</param>
     /// <returns>An object that when disposes, disconnects the Observable
     /// from the command.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("InvokeCommand uses WhenAnyValue which requires dynamic code generation for expression tree analysis.")]
+    [RequiresUnreferencedCode("InvokeCommand uses WhenAnyValue which may reference members that could be trimmed.")]
+#endif
     public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>?>> commandProperty)
         where TTarget : class
     {

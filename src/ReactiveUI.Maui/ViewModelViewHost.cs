@@ -12,7 +12,7 @@ namespace ReactiveUI.Maui;
 /// to be displayed should be assigned to the <see cref="ViewModel"/> property. Optionally, the chosen view can be
 /// customized by specifying a contract via <see cref="ViewContractObservable"/> or <see cref="ViewContract"/>.
 /// </summary>
-public class ViewModelViewHost : ContentView, IViewFor
+public partial class ViewModelViewHost : ContentView, IViewFor
 {
     /// <summary>
     /// Identifies the <see cref="ViewModel"/> property.

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 #if HAS_WINUI
 
 using Microsoft.UI.Xaml;
@@ -33,6 +35,10 @@ namespace ReactiveUI;
 /// the ViewModel property and display it. This control is very useful
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp which require dynamic code generation")]
+[RequiresUnreferencedCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp which may require unreferenced code")]
+#endif
 public
 #if HAS_UNO
     partial

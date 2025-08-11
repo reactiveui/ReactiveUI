@@ -9,8 +9,8 @@ namespace ReactiveUI;
 /// The component model binding type converter.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("Component model type conversion uses reflection and dynamic code generation")]
+[RequiresUnreferencedCode("Component model type conversion may reference types that could be trimmed")]
 #endif
 public class ComponentModelTypeConverter : IBindingTypeConverter
 {

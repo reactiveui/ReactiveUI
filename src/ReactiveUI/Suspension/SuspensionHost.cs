@@ -10,8 +10,8 @@ namespace ReactiveUI;
 /// The user does not implement themselves but is often setup via the AutoSuspendHelper class.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("SuspensionHost uses ReactiveObject which requires dynamic code generation")]
+[RequiresUnreferencedCode("SuspensionHost uses ReactiveObject which may require unreferenced code")]
 #endif
 internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
 {

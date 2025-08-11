@@ -12,8 +12,8 @@ namespace ReactiveUI;
 /// Class for simplifying and validating expressions.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ExpressionRewriter uses reflection to access type properties which requires dynamic code generation")]
+[RequiresUnreferencedCode("ExpressionRewriter uses reflection to access type properties which may require unreferenced code")]
 #endif
 internal class ExpressionRewriter : ExpressionVisitor
 {
@@ -66,7 +66,7 @@ internal class ExpressionRewriter : ExpressionVisitor
         var right = Visit(node.Right);
 
         // Translate arrayindex into normal index expression
-        return Expression.MakeIndex(left, left.Type.GetRuntimeProperty("Item"), [right]);
+        return Expression.MakeIndex(left, GetItemProperty(left.Type), [right]);
     }
 
     protected override Expression VisitUnary(UnaryExpression node)
@@ -75,7 +75,7 @@ internal class ExpressionRewriter : ExpressionVisitor
         {
             var expression = Visit(node.Operand);
 
-            var memberInfo = expression.Type.GetRuntimeProperty("Length");
+            var memberInfo = GetLengthProperty(expression.Type);
 
             return memberInfo switch
             {
@@ -114,7 +114,7 @@ internal class ExpressionRewriter : ExpressionVisitor
         IEnumerable<Expression> arguments = Visit(node.Arguments);
 
         // Translate call to get_Item into normal index expression
-        return Expression.MakeIndex(instance, instance.Type.GetRuntimeProperty("Item"), arguments);
+        return Expression.MakeIndex(instance, GetItemProperty(instance.Type), arguments);
     }
 
     protected override Expression VisitIndex(IndexExpression node)
@@ -125,5 +125,23 @@ internal class ExpressionRewriter : ExpressionVisitor
         }
 
         return base.VisitIndex(node);
+    }
+
+#if NET6_0_OR_GREATER
+    private static PropertyInfo? GetItemProperty([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
+#else
+    private static PropertyInfo? GetItemProperty(Type type)
+#endif
+    {
+        return type.GetRuntimeProperty("Item");
+    }
+
+#if NET6_0_OR_GREATER
+    private static PropertyInfo? GetLengthProperty([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
+#else
+    private static PropertyInfo? GetLengthProperty(Type type)
+#endif
+    {
+        return type.GetRuntimeProperty("Length");
     }
 }

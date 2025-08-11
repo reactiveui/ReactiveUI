@@ -3,14 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI;
 
 /// <summary>
 /// This class provides extension methods for the ReactiveUI view binding mechanism.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("InteractionBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
+[RequiresUnreferencedCode("InteractionBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
 #endif
 public static class InteractionBindingMixins
 {
@@ -30,6 +32,10 @@ public static class InteractionBindingMixins
     /// <typeparam name="TInput">The interaction's input type.</typeparam>
     /// <typeparam name="TOutput">The interaction's output type.</typeparam>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindInteraction uses expression binding which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindInteraction uses expression binding which may require unreferenced code")]
+#endif
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         this TView view,
         TViewModel? viewModel,
@@ -56,6 +62,10 @@ public static class InteractionBindingMixins
     /// <typeparam name="TOutput">The interaction's output type.</typeparam>
     /// <typeparam name="TDontCare">The interaction's signal type.</typeparam>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindInteraction uses expression binding which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindInteraction uses expression binding which may require unreferenced code")]
+#endif
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         this TView view,
         TViewModel? viewModel,

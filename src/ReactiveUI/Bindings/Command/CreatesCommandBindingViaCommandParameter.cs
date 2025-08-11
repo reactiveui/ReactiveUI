@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Windows.Input;
 
@@ -11,16 +12,12 @@ namespace ReactiveUI;
 /// <summary>
 /// Class that registers Command Binding and Command Parameter Binding.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls GetRuntimeProperty(string name)")]
-    [RequiresDynamicCode("Calls GetRuntimeProperty(string name)")]
+    [RequiresDynamicCode("Property access requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property access may reference members that could be trimmed")]
 #endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
@@ -44,8 +41,8 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls GetRuntimeProperty(string name)")]
-    [RequiresDynamicCode("Calls GetRuntimeProperty(string name)")]
+    [RequiresDynamicCode("Property access requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property access may reference members that could be trimmed")]
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {

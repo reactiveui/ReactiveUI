@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -19,8 +20,8 @@ namespace ReactiveUI;
 /// only have to hope for the best :-/.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("KVOObservableForProperty uses reflection to analyze properties and may access members that require dynamic code")]
+[RequiresUnreferencedCode("KVOObservableForProperty uses reflection to analyze properties that may be trimmed")]
 #endif
 public class KVOObservableForProperty : ICreatesObservableForProperty
 {

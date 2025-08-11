@@ -17,15 +17,12 @@ using System;
 using System.Reactive.Linq;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace ReactiveUI
 {
     /// <summary>Extension methods associated with the WhenAny/WhenAnyValue classes.</summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static class WhenAnyMixin
     {
         /// <summary>
@@ -37,6 +34,10 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
             this TSender? sender,
             Expression<Func<TSender, TRet>> property1)
@@ -54,6 +55,10 @@ namespace ReactiveUI
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
             this TSender? sender,
             Expression<Func<TSender, TRet>> property1,
@@ -75,6 +80,10 @@ namespace ReactiveUI
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -96,6 +105,10 @@ namespace ReactiveUI
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -118,6 +131,10 @@ namespace ReactiveUI
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -137,6 +154,10 @@ namespace ReactiveUI
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -156,6 +177,10 @@ namespace ReactiveUI
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -176,6 +201,10 @@ namespace ReactiveUI
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -196,6 +225,10 @@ namespace ReactiveUI
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2)> WhenAnyValue<TSender, T1,T2>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -218,6 +251,10 @@ namespace ReactiveUI
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2)> WhenAnyValue<TSender, T1,T2>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -242,6 +279,10 @@ namespace ReactiveUI
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -265,6 +306,10 @@ namespace ReactiveUI
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -289,6 +334,10 @@ namespace ReactiveUI
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -314,6 +363,10 @@ namespace ReactiveUI
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -339,6 +392,10 @@ namespace ReactiveUI
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -366,6 +423,10 @@ namespace ReactiveUI
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -393,6 +454,10 @@ namespace ReactiveUI
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3)> WhenAnyValue<TSender, T1,T2,T3>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -417,6 +482,10 @@ namespace ReactiveUI
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3)> WhenAnyValue<TSender, T1,T2,T3>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -443,6 +512,10 @@ namespace ReactiveUI
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -468,6 +541,10 @@ namespace ReactiveUI
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -494,6 +571,10 @@ namespace ReactiveUI
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -522,6 +603,10 @@ namespace ReactiveUI
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -550,6 +635,10 @@ namespace ReactiveUI
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -581,6 +670,10 @@ namespace ReactiveUI
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -612,6 +705,10 @@ namespace ReactiveUI
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4)> WhenAnyValue<TSender, T1,T2,T3,T4>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -638,6 +735,10 @@ namespace ReactiveUI
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4)> WhenAnyValue<TSender, T1,T2,T3,T4>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -666,6 +767,10 @@ namespace ReactiveUI
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -693,6 +798,10 @@ namespace ReactiveUI
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -721,6 +830,10 @@ namespace ReactiveUI
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -752,6 +865,10 @@ namespace ReactiveUI
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -783,6 +900,10 @@ namespace ReactiveUI
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -818,6 +939,10 @@ namespace ReactiveUI
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -853,6 +978,10 @@ namespace ReactiveUI
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5)> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -881,6 +1010,10 @@ namespace ReactiveUI
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5)> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -911,6 +1044,10 @@ namespace ReactiveUI
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -940,6 +1077,10 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -970,6 +1111,10 @@ namespace ReactiveUI
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -1004,6 +1149,10 @@ namespace ReactiveUI
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -1038,6 +1187,10 @@ namespace ReactiveUI
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -1077,6 +1230,10 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -1116,6 +1273,10 @@ namespace ReactiveUI
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5,T6)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1146,6 +1307,10 @@ namespace ReactiveUI
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5,T6)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1178,6 +1343,10 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1209,6 +1378,10 @@ namespace ReactiveUI
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1241,6 +1414,10 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -1278,6 +1455,10 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -1315,6 +1496,10 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -1358,6 +1543,10 @@ namespace ReactiveUI
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -1401,6 +1590,10 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5,T6,T7)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1433,6 +1626,10 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5,T6,T7)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1467,6 +1664,10 @@ namespace ReactiveUI
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1500,6 +1701,10 @@ namespace ReactiveUI
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1534,6 +1739,10 @@ namespace ReactiveUI
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -1574,6 +1783,10 @@ namespace ReactiveUI
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -1614,6 +1827,10 @@ namespace ReactiveUI
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -1661,6 +1878,10 @@ namespace ReactiveUI
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -1711,6 +1932,10 @@ namespace ReactiveUI
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1746,6 +1971,10 @@ namespace ReactiveUI
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -1782,6 +2011,10 @@ namespace ReactiveUI
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -1825,6 +2058,10 @@ namespace ReactiveUI
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -1868,6 +2105,10 @@ namespace ReactiveUI
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -1919,6 +2160,10 @@ namespace ReactiveUI
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -1973,6 +2218,10 @@ namespace ReactiveUI
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -2010,6 +2259,10 @@ namespace ReactiveUI
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -2048,6 +2301,10 @@ namespace ReactiveUI
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -2094,6 +2351,10 @@ namespace ReactiveUI
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -2140,6 +2401,10 @@ namespace ReactiveUI
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -2195,6 +2460,10 @@ namespace ReactiveUI
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -2253,6 +2522,10 @@ namespace ReactiveUI
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -2292,6 +2565,10 @@ namespace ReactiveUI
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -2332,6 +2609,10 @@ namespace ReactiveUI
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -2381,6 +2662,10 @@ namespace ReactiveUI
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -2430,6 +2715,10 @@ namespace ReactiveUI
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -2489,6 +2778,10 @@ namespace ReactiveUI
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -2551,6 +2844,10 @@ namespace ReactiveUI
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -2592,6 +2889,10 @@ namespace ReactiveUI
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -2634,6 +2935,10 @@ namespace ReactiveUI
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -2686,6 +2991,10 @@ namespace ReactiveUI
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -2738,6 +3047,10 @@ namespace ReactiveUI
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -2801,6 +3114,10 @@ namespace ReactiveUI
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -2867,6 +3184,10 @@ namespace ReactiveUI
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property12">The 12 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -2910,6 +3231,10 @@ namespace ReactiveUI
         /// <param name="property12">The 12 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
             this TSender? sender,
                         Expression<Func<TSender, T1>> property1,
@@ -2954,6 +3279,10 @@ namespace ReactiveUI
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property12">The 12 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -3009,6 +3338,10 @@ namespace ReactiveUI
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property12">The 12 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
                 this TSender? sender,
                             Expression<Func<TSender, T1>> property1,
@@ -3064,6 +3397,10 @@ namespace ReactiveUI
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property12">The 12 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -3131,6 +3468,10 @@ namespace ReactiveUI
         /// <param name="property12">The 12 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
         /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
                 this TSender? sender,
                             Expression? property1,
@@ -3179,15 +3520,15 @@ namespace ReactiveUI
         }
 
     /// <summary>A mixin which provides support for subscribing to observable properties.</summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static class WhenAnyObservableMixin
     {
         /// <summary>Observe a observable which is set to a property, and automatically subscribe to the most recent emitted value.</summary>
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="obs1">The first observable to observe.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1)
             where TSender : class
         {
@@ -3198,7 +3539,11 @@ namespace ReactiveUI
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="obs1">The 1 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs2">The 2 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, (o1, o2) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull()})
@@ -3209,7 +3554,11 @@ namespace ReactiveUI
         /// <param name="obs1">The 1 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs2">The 2 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs3">The 3 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, (o1, o2, o3) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull()})
@@ -3221,7 +3570,11 @@ namespace ReactiveUI
         /// <param name="obs2">The 2 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs3">The 3 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs4">The 4 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, (o1, o2, o3, o4) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull()})
@@ -3234,7 +3587,11 @@ namespace ReactiveUI
         /// <param name="obs3">The 3 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs4">The 4 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs5">The 5 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, obs5, (o1, o2, o3, o4, o5) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull(), o5.Value!.EmptyIfNull()})
@@ -3248,7 +3605,11 @@ namespace ReactiveUI
         /// <param name="obs4">The 4 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs5">The 5 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs6">The 6 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, (o1, o2, o3, o4, o5, o6) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull(), o5.Value!.EmptyIfNull(), o6.Value!.EmptyIfNull()})
@@ -3263,7 +3624,11 @@ namespace ReactiveUI
         /// <param name="obs5">The 5 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs6">The 6 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs7">The 7 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, (o1, o2, o3, o4, o5, o6, o7) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull(), o5.Value!.EmptyIfNull(), o6.Value!.EmptyIfNull(), o7.Value!.EmptyIfNull()})
@@ -3279,7 +3644,11 @@ namespace ReactiveUI
         /// <param name="obs6">The 6 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs7">The 7 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs8">The 8 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, (o1, o2, o3, o4, o5, o6, o7, o8) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull(), o5.Value!.EmptyIfNull(), o6.Value!.EmptyIfNull(), o7.Value!.EmptyIfNull(), o8.Value!.EmptyIfNull()})
@@ -3296,7 +3665,11 @@ namespace ReactiveUI
         /// <param name="obs7">The 7 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs8">The 8 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs9">The 9 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8, Expression<Func<TSender, IObservable<TRet>?>> obs9)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8, Expression<Func<TSender, IObservable<TRet>?>> obs9)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, (o1, o2, o3, o4, o5, o6, o7, o8, o9) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull(), o5.Value!.EmptyIfNull(), o6.Value!.EmptyIfNull(), o7.Value!.EmptyIfNull(), o8.Value!.EmptyIfNull(), o9.Value!.EmptyIfNull()})
@@ -3314,7 +3687,11 @@ namespace ReactiveUI
         /// <param name="obs8">The 8 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs9">The 9 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs10">The 10 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8, Expression<Func<TSender, IObservable<TRet>?>> obs9, Expression<Func<TSender, IObservable<TRet>?>> obs10)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8, Expression<Func<TSender, IObservable<TRet>?>> obs9, Expression<Func<TSender, IObservable<TRet>?>> obs10)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull(), o5.Value!.EmptyIfNull(), o6.Value!.EmptyIfNull(), o7.Value!.EmptyIfNull(), o8.Value!.EmptyIfNull(), o9.Value!.EmptyIfNull(), o10.Value!.EmptyIfNull()})
@@ -3333,7 +3710,11 @@ namespace ReactiveUI
         /// <param name="obs9">The 9 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs10">The 10 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs11">The 11 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8, Expression<Func<TSender, IObservable<TRet>?>> obs9, Expression<Func<TSender, IObservable<TRet>?>> obs10, Expression<Func<TSender, IObservable<TRet>?>> obs11)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8, Expression<Func<TSender, IObservable<TRet>?>> obs9, Expression<Func<TSender, IObservable<TRet>?>> obs10, Expression<Func<TSender, IObservable<TRet>?>> obs11)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull(), o5.Value!.EmptyIfNull(), o6.Value!.EmptyIfNull(), o7.Value!.EmptyIfNull(), o8.Value!.EmptyIfNull(), o9.Value!.EmptyIfNull(), o10.Value!.EmptyIfNull(), o11.Value!.EmptyIfNull()})
@@ -3353,7 +3734,11 @@ namespace ReactiveUI
         /// <param name="obs10">The 10 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs11">The 11 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
         /// <param name="obs12">The 12 property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-                public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8, Expression<Func<TSender, IObservable<TRet>?>> obs9, Expression<Func<TSender, IObservable<TRet>?>> obs10, Expression<Func<TSender, IObservable<TRet>?>> obs11, Expression<Func<TSender, IObservable<TRet>?>> obs12)
+        #if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1, Expression<Func<TSender, IObservable<TRet>?>> obs2, Expression<Func<TSender, IObservable<TRet>?>> obs3, Expression<Func<TSender, IObservable<TRet>?>> obs4, Expression<Func<TSender, IObservable<TRet>?>> obs5, Expression<Func<TSender, IObservable<TRet>?>> obs6, Expression<Func<TSender, IObservable<TRet>?>> obs7, Expression<Func<TSender, IObservable<TRet>?>> obs8, Expression<Func<TSender, IObservable<TRet>?>> obs9, Expression<Func<TSender, IObservable<TRet>?>> obs10, Expression<Func<TSender, IObservable<TRet>?>> obs11, Expression<Func<TSender, IObservable<TRet>?>> obs12)
             where TSender : class
         {
             return sender.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, obs12, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) => new[] {o1.Value!.EmptyIfNull(), o2.Value!.EmptyIfNull(), o3.Value!.EmptyIfNull(), o4.Value!.EmptyIfNull(), o5.Value!.EmptyIfNull(), o6.Value!.EmptyIfNull(), o7.Value!.EmptyIfNull(), o8.Value!.EmptyIfNull(), o9.Value!.EmptyIfNull(), o10.Value!.EmptyIfNull(), o11.Value!.EmptyIfNull(), o12.Value!.EmptyIfNull()})
@@ -3365,6 +3750,10 @@ namespace ReactiveUI
         /// <param name="obs1">The 1 property chain to reference.</param>
         /// <param name="obs2">The 2 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3380,6 +3769,10 @@ namespace ReactiveUI
         /// <param name="obs2">The 2 property chain to reference.</param>
         /// <param name="obs3">The 3 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3397,6 +3790,10 @@ namespace ReactiveUI
         /// <param name="obs3">The 3 property chain to reference.</param>
         /// <param name="obs4">The 4 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3416,6 +3813,10 @@ namespace ReactiveUI
         /// <param name="obs4">The 4 property chain to reference.</param>
         /// <param name="obs5">The 5 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3437,6 +3838,10 @@ namespace ReactiveUI
         /// <param name="obs5">The 5 property chain to reference.</param>
         /// <param name="obs6">The 6 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3460,6 +3865,10 @@ namespace ReactiveUI
         /// <param name="obs6">The 6 property chain to reference.</param>
         /// <param name="obs7">The 7 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3485,6 +3894,10 @@ namespace ReactiveUI
         /// <param name="obs7">The 7 property chain to reference.</param>
         /// <param name="obs8">The 8 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3512,6 +3925,10 @@ namespace ReactiveUI
         /// <param name="obs8">The 8 property chain to reference.</param>
         /// <param name="obs9">The 9 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3541,6 +3958,10 @@ namespace ReactiveUI
         /// <param name="obs9">The 9 property chain to reference.</param>
         /// <param name="obs10">The 10 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3572,6 +3993,10 @@ namespace ReactiveUI
         /// <param name="obs10">The 10 property chain to reference.</param>
         /// <param name="obs11">The 11 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,
@@ -3605,6 +4030,10 @@ namespace ReactiveUI
         /// <param name="obs11">The 11 property chain to reference.</param>
         /// <param name="obs12">The 12 property chain to reference.</param>
         /// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(this TSender? sender,
                             Expression<Func<TSender, IObservable<T1>?>> obs1,
                             Expression<Func<TSender, IObservable<T2>?>> obs2,

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
@@ -13,8 +14,8 @@ namespace ReactiveUI;
 /// warn the user that this is probably not what they want to do.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("POCO property observation uses reflection and type analysis")]
+[RequiresUnreferencedCode("POCO property observation may reference members that could be trimmed")]
 #endif
 public class POCOObservableForProperty : ICreatesObservableForProperty
 {

@@ -10,8 +10,8 @@ namespace ReactiveUI;
 /// Reactive Notify Property Changed based events.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ReactiveNotifyPropertyChangedMixin uses RxApp which requires dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveNotifyPropertyChangedMixin uses RxApp which may require unreferenced code")]
 #endif
 public static class ReactiveNotifyPropertyChangedMixin
 {
@@ -43,6 +43,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// An Observable representing the property change
     /// notifications for the given property.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property) => ObservableForProperty(item, property, false, true, true);
@@ -65,6 +69,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// An Observable representing the property change
     /// notifications for the given property.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -90,6 +98,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// An Observable representing the property change
     /// notifications for the given property.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -117,6 +129,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// An Observable representing the property change
     /// notifications for the given property.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -165,6 +181,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// item.</param>
     /// <returns>An Observable representing the property change
     /// notifications for the given property.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -195,6 +215,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// immediately before a property is going to change.</param>
     /// <returns>An Observable representing the property change
     /// notifications for the given property.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -221,6 +245,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression) // TODO: Create Test
@@ -240,6 +268,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
@@ -261,6 +293,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
@@ -284,6 +320,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SubscribeToExpressionChain uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("SubscribeToExpressionChain may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
@@ -309,6 +349,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SubscribeToExpressionChain uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("SubscribeToExpressionChain may reference properties that could be trimmed")]
+#endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
@@ -352,6 +396,10 @@ public static class ReactiveNotifyPropertyChangedMixin
         return r;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
     {
         // Make sure a change at a root node propagates events down
@@ -369,6 +417,10 @@ public static class ReactiveNotifyPropertyChangedMixin
                .Select(x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
+    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+#endif
     private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
     {
         expression.ArgumentNullExceptionThrowIfNull(nameof(expression));

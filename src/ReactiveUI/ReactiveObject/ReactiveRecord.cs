@@ -11,10 +11,6 @@ namespace ReactiveUI;
 /// Changing and Changed Observables to monitor object changes.
 /// </summary>
 [DataContract]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
 {
     private readonly Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> _changing;
@@ -26,6 +22,10 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveRecord"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveRecord constructor uses extension methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveRecord constructor uses extension methods that may require unreferenced code")]
+#endif
     public ReactiveRecord()
     {
         _changing = new Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>>(() => ((IReactiveObject)this).GetChangingObservable(), LazyThreadSafetyMode.PublicationOnly);
@@ -111,6 +111,10 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SuppressChangeNotifications uses extension methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SuppressChangeNotifications uses extension methods that may require unreferenced code")]
+#endif
     public IDisposable SuppressChangeNotifications() => // TODO: Create Test
         IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
@@ -118,13 +122,21 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     /// Determines if change notifications are enabled or not.
     /// </summary>
     /// <returns>A value indicating whether change notifications are enabled.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("AreChangeNotificationsEnabled uses extension methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("AreChangeNotificationsEnabled uses extension methods that may require unreferenced code")]
+#endif
     public bool AreChangeNotificationsEnabled() => // TODO: Create Test
-        IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
+            IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
     /// <summary>
     /// Delays notifications until the return IDisposable is disposed.
     /// </summary>
     /// <returns>A disposable which when disposed will send delayed notifications.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("DelayChangeNotifications uses extension methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("DelayChangeNotifications uses extension methods that may require unreferenced code")]
+#endif
     public IDisposable DelayChangeNotifications() => // TODO: Create Test
-        IReactiveObjectExtensions.DelayChangeNotifications(this);
+            IReactiveObjectExtensions.DelayChangeNotifications(this);
 }

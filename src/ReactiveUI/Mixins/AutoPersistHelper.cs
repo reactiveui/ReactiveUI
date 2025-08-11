@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using DynamicData;
@@ -49,10 +50,6 @@ public static class AutoPersistHelper
     /// it is possible that it will never be saved.
     /// </param>
     /// <returns>A Disposable to disable automatic persistence.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IDisposable AutoPersist<T>(this T @this, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
         where T : IReactiveObject =>
         @this.AutoPersist(doPersist, Observable<Unit>.Never, interval);
@@ -80,10 +77,6 @@ public static class AutoPersistHelper
     /// it is possible that it will never be saved.
     /// </param>
     /// <returns>A Disposable to disable automatic persistence.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IDisposable AutoPersist<T, TDontCare>(this T @this, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
         where T : IReactiveObject
     {
@@ -135,10 +128,6 @@ public static class AutoPersistHelper
     /// it is possible that it will never be saved.
     /// </param>
     /// <returns>A Disposable to disable automatic persistence.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IDisposable AutoPersistCollection<TItem>(this ObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, TimeSpan? interval = null) // TODO: Create Test
         where TItem : IReactiveObject =>
         AutoPersistCollection(@this, doPersist, Observable<Unit>.Never, interval);
@@ -163,10 +152,6 @@ public static class AutoPersistHelper
     /// it is possible that it will never be saved.
     /// </param>
     /// <returns>A Disposable to disable automatic persistence.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IDisposable AutoPersistCollection<TItem, TDontCare>(this ObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
         where TItem : IReactiveObject =>
         AutoPersistCollection<TItem, ObservableCollection<TItem>, TDontCare>(@this, doPersist, manualSaveSignal, interval);
@@ -191,10 +176,6 @@ public static class AutoPersistHelper
     /// it is possible that it will never be saved.
     /// </param>
     /// <returns>A Disposable to disable automatic persistence.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IDisposable AutoPersistCollection<TItem, TDontCare>(this ReadOnlyObservableCollection<TItem> @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null) // TODO: Create Test
         where TItem : IReactiveObject =>
         AutoPersistCollection<TItem, ReadOnlyObservableCollection<TItem>, TDontCare>(@this, doPersist, manualSaveSignal, interval);
@@ -220,10 +201,6 @@ public static class AutoPersistHelper
     /// it is possible that it will never be saved.
     /// </param>
     /// <returns>A Disposable to disable automatic persistence.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IDisposable AutoPersistCollection<TItem, TCollection, TDontCare>(this TCollection @this, Func<TItem, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null) // TODO: Create Test
         where TItem : IReactiveObject
         where TCollection : INotifyCollectionChanged, IEnumerable<TItem>
