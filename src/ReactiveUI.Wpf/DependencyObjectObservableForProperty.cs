@@ -14,6 +14,10 @@ namespace ReactiveUI;
 public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
@@ -25,6 +29,10 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
 #if NET6_0_OR_GREATER
@@ -62,6 +70,10 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         });
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetDependencyProperty uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetDependencyProperty uses methods that may require unreferenced code")]
+#endif
     private static DependencyProperty? GetDependencyProperty(Type type, string propertyName)
     {
         var fi = Array.Find(type.GetTypeInfo().GetFields(BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public), x => x.Name == propertyName + "Property" && x.IsStatic);

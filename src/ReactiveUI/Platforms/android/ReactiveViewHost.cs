@@ -14,6 +14,10 @@ namespace ReactiveUI;
 /// ViewModel. Use it along with GetViewHost.
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveViewHost uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveViewHost uses methods that may require unreferenced code")]
+#endif
 public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveViewHost<TViewModel>>, IReactiveObject
     where TViewModel : class, IReactiveObject
 {
@@ -36,6 +40,10 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     /// <param name="parent">The parent.</param>
     /// <param name="attachToRoot">if set to <c>true</c> [attach to root].</param>
     /// <param name="performAutoWireup">if set to <c>true</c> [perform automatic wire-up].</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveViewHost uses methods that may require unreferenced code")]
+#endif
     protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
         : base(ctx, layoutId, parent, attachToRoot, performAutoWireup) =>
         SetupRxObj();
@@ -43,6 +51,10 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveViewHost uses methods that may require unreferenced code")]
+#endif
     protected ReactiveViewHost() => SetupRxObj();
 
     /// <inheritdoc/>
@@ -89,12 +101,20 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SuppressChangeNotifications uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SuppressChangeNotifications uses methods that may require unreferenced code")]
+#endif
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this); // TODO: Create Test
 
     /// <summary>
     /// Gets a value indicating if change notifications are enabled.
     /// </summary>
     /// <returns>A value indicating if change notifications are on or off.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("AreChangeNotificationsEnabled uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("AreChangeNotificationsEnabled uses methods that may require unreferenced code")]
+#endif
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this); // TODO: Create Test
 
     /// <inheritdoc/>
@@ -104,8 +124,16 @@ public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TV
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     [OnDeserialized]
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SetupRxObj uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SetupRxObj uses methods that may require unreferenced code")]
+#endif
     private void SetupRxObj(in StreamingContext sc) => SetupRxObj();
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SetupRxObj uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SetupRxObj uses methods that may require unreferenced code")]
+#endif
     private void SetupRxObj() =>
         allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                                                            [.. GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)]);

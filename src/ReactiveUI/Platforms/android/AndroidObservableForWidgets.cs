@@ -18,6 +18,10 @@ namespace ReactiveUI;
 /// Android view objects are not Generally Observable™, so hard-code some
 /// particularly useful types.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("AndroidObservableForWidgets uses reflection for property access and type checking which require dynamic code generation")]
+[RequiresUnreferencedCode("AndroidObservableForWidgets uses reflection for property access and type checking which may require unreferenced code")]
+#endif
 public class AndroidObservableForWidgets : ICreatesObservableForProperty
 {
     private static readonly Dictionary<(Type viewType, string? propertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> _dispatchTable;

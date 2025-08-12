@@ -5,6 +5,7 @@
 
 #if WINUI_TARGET
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
@@ -32,6 +33,10 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     });
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExecuteHook uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ExecuteHook uses methods that may require unreferenced code")]
+#endif
     public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
     {
         ArgumentNullException.ThrowIfNull(getCurrentViewProperties);
@@ -49,7 +54,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
             return true;
         }
 
-        if (viewProperties.Last().GetPropertyName() != "ItemsSource")
+        if (viewProperties[^1].GetPropertyName() != "ItemsSource")
         {
             return true;
         }

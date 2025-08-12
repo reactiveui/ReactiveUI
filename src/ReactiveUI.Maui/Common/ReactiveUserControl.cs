@@ -76,8 +76,7 @@ namespace ReactiveUI;
 /// <typeparam name="TViewModel">
 /// The type of the view model backing the view.
 /// </typeparam>
-public
-class ReactiveUserControl<TViewModel> :
+public partial class ReactiveUserControl<TViewModel> :
         UserControl, IViewFor<TViewModel>
         where TViewModel : class
 {

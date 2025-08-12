@@ -13,7 +13,11 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="Microsoft.Maui.Controls" />
 /// <seealso cref="IViewFor{TViewModel}" />
-public class ReactiveMasterDetailPage<TViewModel> : FlyoutPage, IViewFor<TViewModel>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveMasterDetailPage uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveMasterDetailPage uses methods that may require unreferenced code")]
+#endif
+public partial class ReactiveMasterDetailPage<TViewModel> : FlyoutPage, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>

@@ -10,6 +10,4 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <seealso cref="Attribute" />
 [AttributeUsage(AttributeTargets.All)]
-public sealed class DisableAnimationAttribute : Attribute
-{
-}
+public sealed class DisableAnimationAttribute : Attribute;

@@ -12,6 +12,10 @@ namespace ReactiveUI.Winforms;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Register uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
+#endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
 #if NET6_0_OR_GREATER

@@ -7,6 +7,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Xaml.Behaviors;
@@ -19,6 +20,10 @@ namespace ReactiveUI.Blend;
 /// <summary>
 /// Behavior that tracks the state of an observable.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("OnStateObservableChanged uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("OnStateObservableChanged uses methods that may require unreferenced code")]
+#endif
 #if NETFX_CORE
 public class FollowObservableStateBehavior : Behavior<Control>
 #else
@@ -84,6 +89,10 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("OnStateObservableChanged uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("OnStateObservableChanged uses methods that may require unreferenced code")]
+#endif
     protected static void OnStateObservableChanged(DependencyObject? sender, DependencyPropertyChangedEventArgs e)
     {
         if (sender is not FollowObservableStateBehavior item)

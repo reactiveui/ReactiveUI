@@ -9,6 +9,10 @@ namespace ReactiveUI.AndroidX;
 /// This is a Fragment that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveDialogFragment uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveDialogFragment uses methods that may require unreferenced code")]
+#endif
 public class ReactiveDialogFragment : global::AndroidX.Fragment.App.DialogFragment, IReactiveNotifyPropertyChanged<ReactiveDialogFragment>, IReactiveObject, IHandleObservableErrors
 {
     private readonly Subject<Unit> _activated = new();
@@ -53,6 +57,10 @@ public class ReactiveDialogFragment : global::AndroidX.Fragment.App.DialogFragme
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SuppressChangeNotifications uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SuppressChangeNotifications uses methods that may require unreferenced code")]
+#endif
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>

@@ -12,6 +12,10 @@ namespace ReactiveUI;
 /// </summary>
 internal static class CommandBinderImplementationMixins
 {
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be trimmed")]
+#endif
     public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
         this ICommandBinderImplementation @this,
         TViewModel? viewModel,

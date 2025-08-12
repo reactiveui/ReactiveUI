@@ -12,6 +12,10 @@ namespace ReactiveUI.AndroidX;
 /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("SuppressChangeNotifications uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("SuppressChangeNotifications uses methods that may require unreferenced code")]
+#endif
 public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat, IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
 {
     private readonly Subject<Unit> _activated = new();
@@ -60,6 +64,10 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat, IRe
     public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SuppressChangeNotifications uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SuppressChangeNotifications uses methods that may require unreferenced code")]
+#endif
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>

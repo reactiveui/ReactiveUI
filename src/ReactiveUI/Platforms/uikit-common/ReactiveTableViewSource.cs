@@ -18,6 +18,10 @@ namespace ReactiveUI;
 /// items are animated in and out as items are added.
 /// </summary>
 /// <typeparam name="TSource">The source type.</typeparam>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveTableViewSource uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveTableViewSource uses methods that may require unreferenced code")]
+#endif
 public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
 {
     private readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> _commonSource;
@@ -32,6 +36,10 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <param name="cellKey">The cell key.</param>
     /// <param name="sizeHint">The size hint.</param>
     /// <param name="initializeCellAction">The initialize cell action.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveTableViewSource uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveTableViewSource uses methods that may require unreferenced code")]
+#endif
     public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell>? initializeCellAction = null)
         : this(tableView) =>
         Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction) };
@@ -40,15 +48,10 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
     /// </summary>
     /// <param name="tableView">The table view.</param>
-    /// <param name="sectionInformation">A read only list of table section information.</param>
-    [Obsolete("Please bind your view model to the Data property.")]
-    public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation<TSource>> sectionInformation)
-        : this(tableView) => Data = sectionInformation;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
-    /// </summary>
-    /// <param name="tableView">The table view.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveTableViewSource uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveTableViewSource uses methods that may require unreferenced code")]
+#endif
     public ReactiveTableViewSource(UITableView tableView)
     {
         _adapter = new UITableViewAdapter(tableView);
@@ -279,6 +282,10 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// </summary>
     /// <returns>An object that, when disposed, re-enables change
     /// notifications.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SuppressChangeNotifications uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SuppressChangeNotifications uses methods that may require unreferenced code")]
+#endif
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>

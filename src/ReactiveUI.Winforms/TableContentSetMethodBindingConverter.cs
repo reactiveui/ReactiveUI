@@ -11,6 +11,10 @@ namespace ReactiveUI.Winforms;
 public class TableContentSetMethodBindingConverter : ISetMethodBindingConverter
 {
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObjects uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObjects uses methods that may require unreferenced code")]
+#endif
     public int GetAffinityForObjects(Type? fromType, Type? toType) =>
         toType != typeof(TableLayoutControlCollection)
             ? 0

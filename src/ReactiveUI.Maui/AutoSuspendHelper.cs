@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.Maui;
 
 /// <summary>
@@ -45,7 +43,7 @@ namespace ReactiveUI.Maui;
 [RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost which requires dynamic code generation")]
 [RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost which may require unreferenced code")]
 #endif
-public class AutoSuspendHelper : IEnableLogger, IDisposable
+public partial class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     private readonly Subject<IDisposable> _onSleep = new();
     private readonly Subject<Unit> _onLaunchingNew = new();

@@ -14,6 +14,10 @@ namespace ReactiveUI;
 /// <seealso cref="ReactiveObject" />
 /// <seealso cref="IReactiveProperty&lt;T&gt;" />
 [DataContract]
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveProperty initialization uses ReactiveObject and RxApp which require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveProperty initialization uses ReactiveObject and RxApp which may require unreferenced code")]
+#endif
 public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 {
     private readonly IScheduler _scheduler;

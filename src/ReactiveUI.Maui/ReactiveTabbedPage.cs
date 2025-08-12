@@ -13,7 +13,11 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="TabbedPage" />
 /// <seealso cref="IViewFor{TViewModel}" />
-public class ReactiveTabbedPage<TViewModel> : TabbedPage, IViewFor<TViewModel>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveTabbedPage uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveTabbedPage uses methods that may require unreferenced code")]
+#endif
+public partial class ReactiveTabbedPage<TViewModel> : TabbedPage, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>

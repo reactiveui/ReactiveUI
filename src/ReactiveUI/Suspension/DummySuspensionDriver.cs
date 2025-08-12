@@ -13,10 +13,18 @@ namespace ReactiveUI;
 public class DummySuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("LoadState uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("LoadState uses methods that may require unreferenced code")]
+#endif
     public IObservable<object> LoadState() => // TODO: Create Test
         Observable<object>.Default;
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SaveState uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SaveState uses methods that may require unreferenced code")]
+#endif
     public IObservable<Unit> SaveState(object state) => // TODO: Create Test
         Observables.Unit;
 

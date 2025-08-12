@@ -80,6 +80,12 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("OnAfterRender uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("OnAfterRender uses methods that may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "ComponentBase is an external reference")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "ComponentBase is an external reference")]
+#endif
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)

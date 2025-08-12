@@ -69,6 +69,10 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
+#endif
     public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
         where TEventArgs : EventArgs
