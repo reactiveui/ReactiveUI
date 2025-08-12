@@ -181,6 +181,8 @@ public class ComprehensiveAOTTests
     /// Tests demonstrating view model activation patterns in AOT.
     /// </summary>
     [Fact]
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     public void ViewModelActivation_PatternWorks_InAOT()
     {
         var viewModel = new TestActivatableViewModel();
