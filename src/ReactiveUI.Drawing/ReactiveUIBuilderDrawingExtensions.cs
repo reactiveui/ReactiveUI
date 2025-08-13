@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Drawing;
 
 /// <summary>
@@ -15,6 +17,10 @@ public static class ReactiveUIBuilderDrawingExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WithDrawing uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("WithDrawing uses methods that may require unreferenced code")]
+#endif
     public static Builder.ReactiveUIBuilder WithDrawing(this Builder.ReactiveUIBuilder builder)
     {
         if (builder is null)

@@ -26,6 +26,12 @@ public static class DependencyResolverMixins
 #endif
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
+        if (RxApp.HasBeenBuiltUsingBuilder)
+        {
+            // If the builder has been used, we don't need to register the default services again.
+            return;
+        }
+
         resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
         registrationNamespaces.ArgumentNullExceptionThrowIfNull(nameof(registrationNamespaces));
 

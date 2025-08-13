@@ -15,6 +15,10 @@ public static class ReactiveUIBuilderWinUIExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WithWinUI uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("WithWinUI uses methods that may require unreferenced code")]
+#endif
     public static Builder.ReactiveUIBuilder WithWinUI(this Builder.ReactiveUIBuilder builder)
     {
         if (builder is null)

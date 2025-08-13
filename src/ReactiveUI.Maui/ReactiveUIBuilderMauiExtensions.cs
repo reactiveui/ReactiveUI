@@ -15,6 +15,10 @@ public static class ReactiveUIBuilderMauiExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WithMaui uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("WithMaui uses methods that may require unreferenced code")]
+#endif
     public static Builder.ReactiveUIBuilder WithMaui(this Builder.ReactiveUIBuilder builder)
     {
         if (builder is null)

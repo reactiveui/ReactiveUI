@@ -10,8 +10,5 @@ namespace ReactiveUI.Tests.Wpf;
 /// </summary>
 public partial class TCMockWindow
 {
-    public TCMockWindow()
-    {
-        InitializeComponent();
-    }
+    public TCMockWindow() => InitializeComponent();
 }

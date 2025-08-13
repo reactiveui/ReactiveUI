@@ -5,6 +5,4 @@
 
 namespace ReactiveUI.Tests.Suspension;
 
-public class DummyAppState
-{
-}
+public class DummyAppState;

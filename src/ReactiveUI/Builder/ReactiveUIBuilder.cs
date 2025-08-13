@@ -126,6 +126,9 @@ public sealed class ReactiveUIBuilder
 #endif
     public void Build()
     {
+        // Mark RxApp as initialized using the builder so reflection-based initialization is disabled.
+        RxApp.HasBeenBuiltUsingBuilder = true;
+
         // Ensure core services are always registered
         if (!_coreRegistered)
         {

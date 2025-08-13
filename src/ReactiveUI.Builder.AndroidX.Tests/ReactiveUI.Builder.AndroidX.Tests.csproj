@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-android</TargetFrameworks>
+    <NoWarn>$(NoWarn);CS1591;SA1600</NoWarn>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="Splat" />
+  </ItemGroup>
+</Project>

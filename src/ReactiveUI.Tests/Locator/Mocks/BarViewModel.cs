@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A mock view.
 /// </summary>
-public class BarViewModel : ReactiveObject, IBarViewModel
-{
-}
+public class BarViewModel : ReactiveObject, IBarViewModel;

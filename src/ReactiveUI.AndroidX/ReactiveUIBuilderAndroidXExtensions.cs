@@ -3,23 +3,23 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Wpf;
+namespace ReactiveUI.AndroidX;
 
 /// <summary>
-/// WPF-specific extensions for ReactiveUIBuilder.
+/// AndroidX-specific extensions for ReactiveUIBuilder.
 /// </summary>
-public static class ReactiveUIBuilderWpfExtensions
+public static class ReactiveUIBuilderAndroidXExtensions
 {
     /// <summary>
-    /// Registers WPF-specific services.
+    /// Registers AndroidX-specific services.
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for method chaining.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WithWpf uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("WithWpf uses methods that may require unreferenced code")]
+    [RequiresDynamicCode("WithAndroidX uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("WithAndroidX uses methods that may require unreferenced code")]
 #endif
-    public static Builder.ReactiveUIBuilder WithWpf(this Builder.ReactiveUIBuilder builder)
+    public static Builder.ReactiveUIBuilder WithAndroidX(this Builder.ReactiveUIBuilder builder)
     {
         if (builder is null)
         {

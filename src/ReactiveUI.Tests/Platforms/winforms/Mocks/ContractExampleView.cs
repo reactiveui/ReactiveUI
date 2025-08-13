@@ -9,6 +9,4 @@ namespace ReactiveUI.Tests.Winforms;
 /// A view model that is contracted.
 /// </summary>
 [ViewContract("contract")]
-public class ContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>
-{
-}
+public class ContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>;

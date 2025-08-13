@@ -5,6 +5,4 @@
 
 namespace ReactiveUI.Tests.Wpf;
 
-public class TCMockWindowViewModel : ReactiveObject
-{
-}
+public class TCMockWindowViewModel : ReactiveObject;
