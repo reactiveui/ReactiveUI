@@ -10,13 +10,13 @@ namespace ReactiveUI;
 /// <summary>
 /// Generates Observables based on observing Reactive objects.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class IROObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         // NB: Since every IReactiveObject is also an INPC, we need to bind more
@@ -28,6 +28,10 @@ public class IROObservableForProperty : ICreatesObservableForProperty
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         expression.ArgumentNullExceptionThrowIfNull(nameof(expression));

@@ -28,8 +28,8 @@ namespace ReactiveUI;
 /// logging and error handling.
 /// </remarks>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("RxApp initialization uses reflection-based registration which requires dynamic code generation.")]
+[RequiresUnreferencedCode("RxApp initialization uses reflection-based registration which may require unreferenced code.")]
 #endif
 public static class RxApp
 {
@@ -239,6 +239,9 @@ public static class RxApp
         set => _unitTestMainThreadScheduler = value;
     }
 
+    /// <summary>
+    /// Set up default initializations.
+    /// </summary>
     [MethodImpl(MethodImplOptions.NoOptimization)]
     internal static void EnsureInitialized()
     {

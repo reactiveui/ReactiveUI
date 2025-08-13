@@ -39,7 +39,11 @@ namespace ReactiveUI.Maui;
 /// </code>
 /// </para>
 /// </remarks>
-public class AutoSuspendHelper : IEnableLogger, IDisposable
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost which requires dynamic code generation")]
+[RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost which may require unreferenced code")]
+#endif
+public partial class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     private readonly Subject<IDisposable> _onSleep = new();
     private readonly Subject<Unit> _onLaunchingNew = new();

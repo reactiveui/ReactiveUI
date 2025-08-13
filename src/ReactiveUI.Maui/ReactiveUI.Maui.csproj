@@ -14,10 +14,14 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
+    <WindowsSdkPackageVersion>10.0.19041.48</WindowsSdkPackageVersion>
     <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
+    <PackageReference Include="Microsoft.Windows.CsWinRT" />    
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" />

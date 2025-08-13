@@ -9,16 +9,12 @@ namespace ReactiveUI;
 /// UIKit platform registrations.
 /// </summary>
 /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("Platform registration uses ComponentModelTypeConverter and RxApp which require dynamic code generation")]
+    [RequiresUnreferencedCode("Platform registration uses ComponentModelTypeConverter and RxApp which may require unreferenced code")]
 #endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {

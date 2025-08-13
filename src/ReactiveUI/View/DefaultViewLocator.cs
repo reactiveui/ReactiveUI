@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 
@@ -12,10 +13,6 @@ namespace ReactiveUI;
 /// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
 /// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public sealed class DefaultViewLocator : IViewLocator
 {
     /// <summary>
@@ -92,8 +89,8 @@ public sealed class DefaultViewLocator : IViewLocator
     /// The view associated with the given view model.
     /// </returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("View resolution uses reflection and type discovery")]
+    [RequiresUnreferencedCode("View resolution may reference types that could be trimmed")]
 #endif
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
@@ -131,6 +128,10 @@ public sealed class DefaultViewLocator : IViewLocator
         return null;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Type resolution requires dynamic code generation")]
+    [RequiresUnreferencedCode("Type resolution may reference types that could be trimmed")]
+#endif
     private static Type? ToggleViewModelType(Type viewModelType)
     {
         var viewModelTypeName = viewModelType.AssemblyQualifiedName;
@@ -180,7 +181,8 @@ public sealed class DefaultViewLocator : IViewLocator
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method is used to resolve views for view models.")]
+    [RequiresDynamicCode("View resolution uses reflection and type discovery")]
+    [RequiresUnreferencedCode("View resolution may reference types that could be trimmed")]
 #endif
     private IViewFor? AttemptViewResolutionFor(Type? viewModelType, string? contract)
     {
@@ -208,6 +210,10 @@ public sealed class DefaultViewLocator : IViewLocator
         return AttemptViewResolution(proposedViewTypeName, contract);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("View resolution uses reflection and type discovery")]
+    [RequiresUnreferencedCode("View resolution may reference types that could be trimmed")]
+#endif
     private IViewFor? AttemptViewResolution(string? viewTypeName, string? contract)
     {
         try

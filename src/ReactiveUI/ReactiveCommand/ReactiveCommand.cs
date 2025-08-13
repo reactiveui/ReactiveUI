@@ -59,10 +59,6 @@ namespace ReactiveUI;
 /// </code>
 /// </para>
 /// </remarks>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class ReactiveCommand
 {
     /// <summary>
@@ -75,6 +71,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, Unit> Create(
         Action execute,
         IObservable<bool>? canExecute = null,
@@ -106,6 +106,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, Unit> CreateRunInBackground(
         Action execute,
         IObservable<bool>? canExecute = null,
@@ -129,6 +133,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, TResult> Create<TResult>(
         Func<TResult> execute,
         IObservable<bool>? canExecute = null,
@@ -161,6 +169,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, TResult> CreateRunInBackground<TResult>(
         Func<TResult> execute,
         IObservable<bool>? canExecute = null,
@@ -183,6 +195,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, Unit> Create<TParam>(
         Action<TParam> execute,
         IObservable<bool>? canExecute = null,
@@ -215,6 +231,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, Unit> CreateRunInBackground<TParam>(
         Action<TParam> execute,
         IObservable<bool>? canExecute = null,
@@ -239,6 +259,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
         Func<TParam, TResult> execute,
         IObservable<bool>? canExecute = null,
@@ -272,6 +296,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, TResult> CreateRunInBackground<TParam, TResult>(
         Func<TParam, TResult> execute,
         IObservable<bool>? canExecute = null,
@@ -305,6 +333,10 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">
     /// The type of the command's result.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("CreateCombined uses CombinedReactiveCommand which requires dynamic code generation.")]
+    [RequiresUnreferencedCode("CreateCombined uses CombinedReactiveCommand which may require unreferenced code.")]
+#endif
     public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
         IObservable<bool>? canExecute = null,
@@ -333,6 +365,10 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">
     /// The type of the command's result.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, TResult> CreateFromObservable<TResult>(
         Func<IObservable<TResult>> execute,
         IObservable<bool>? canExecute = null,
@@ -367,6 +403,10 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">
     /// The type of the command's result.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
         Func<TParam, IObservable<TResult>> execute,
         IObservable<bool>? canExecute = null,
@@ -398,6 +438,10 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">
     /// The type of the command's result.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
         Func<Task<TResult>> execute,
         IObservable<bool>? canExecute = null,
@@ -426,6 +470,10 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">
     /// The type of the command's result.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
         Func<CancellationToken, Task<TResult>> execute,
         IObservable<bool>? canExecute = null,
@@ -451,6 +499,10 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, Unit> CreateFromTask(
         Func<Task> execute,
         IObservable<bool>? canExecute = null,
@@ -476,6 +528,10 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<Unit, Unit> CreateFromTask(
         Func<CancellationToken, Task> execute,
         IObservable<bool>? canExecute = null,
@@ -507,6 +563,10 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">
     /// The type of the command's result.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, Task<TResult>> execute,
         IObservable<bool>? canExecute = null,
@@ -541,6 +601,10 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">
     /// The type of the command's result.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
         Func<TParam, CancellationToken, Task<TResult>> execute,
         IObservable<bool>? canExecute = null,
@@ -572,6 +636,10 @@ public static class ReactiveCommand
     /// <typeparam name="TParam">
     /// The type of the parameter passed through to command execution.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
         Func<TParam, Task> execute,
         IObservable<bool>? canExecute = null,
@@ -603,6 +671,10 @@ public static class ReactiveCommand
     /// <typeparam name="TParam">
     /// The type of the parameter passed through to command execution.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
         Func<TParam, CancellationToken, Task> execute,
         IObservable<bool>? canExecute = null,
@@ -628,6 +700,10 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="System.ArgumentNullException">execute.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     internal static ReactiveCommand<TParam, TResult> CreateFromObservableCancellable<TParam, TResult>(
         Func<IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
         IObservable<bool>? canExecute = null,
@@ -662,6 +738,10 @@ public static class ReactiveCommand
     /// <typeparam name="TResult">
     /// The type of the command's result.
     /// </typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     internal static ReactiveCommand<TParam, TResult> CreateFromObservableCancellable<TParam, TResult>(
         Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
         IObservable<bool>? canExecute = null,
@@ -696,10 +776,6 @@ public static class ReactiveCommand
                     "StyleCop.CSharp.MaintainabilityRules",
                     "SA1402:FileMayOnlyContainASingleType",
                     Justification = "Same class just generic.")]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
 {
     private readonly IObservable<bool> _canExecute;
@@ -726,6 +802,10 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// execute.
     /// </exception>
     /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     protected internal ReactiveCommand(
         Func<TParam, IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
         IObservable<bool>? canExecute,
@@ -780,6 +860,10 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// execute.
     /// </exception>
     /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     protected internal ReactiveCommand(
         Func<TParam, IObservable<TResult>> execute,
         IObservable<bool>? canExecute,

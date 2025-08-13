@@ -17,8 +17,8 @@ namespace ReactiveUI;
 /// to show. It uses.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp properties which require dynamic code generation")]
+[RequiresUnreferencedCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp properties which may require unreferenced code")]
 #endif
 public class ViewModelViewHost : ReactiveViewController
 {

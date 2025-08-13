@@ -12,6 +12,10 @@ namespace ReactiveUI.AndroidX;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactivePreferenceFragment uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactivePreferenceFragment uses methods that may require unreferenced code")]
+#endif
 public abstract class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment, IViewFor<TViewModel>, ICanActivate
     where TViewModel : class
 {
@@ -29,6 +33,10 @@ public abstract class ReactivePreferenceFragment<TViewModel> : ReactivePreferenc
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactivePreferenceFragment uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactivePreferenceFragment uses methods that may require unreferenced code")]
+#endif
     protected ReactivePreferenceFragment(in IntPtr handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {

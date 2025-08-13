@@ -13,16 +13,12 @@ namespace ReactiveUI;
 /// To get these registrations after the main ReactiveUI Initialization use the
 /// DependencyResolverMixins.InitializeReactiveUI() extension method.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("Registration includes POCOObservableForProperty which uses reflection and dynamic code generation.")]
+    [RequiresUnreferencedCode("Registration includes POCOObservableForProperty which may reference members that could be trimmed.")]
 #endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {

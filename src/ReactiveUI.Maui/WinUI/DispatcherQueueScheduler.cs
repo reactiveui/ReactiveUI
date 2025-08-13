@@ -14,7 +14,7 @@ namespace System.Reactive.Concurrency;
 /// <summary>
 /// Represents an object that schedules units of work on a <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/>.
 /// </summary>
-public class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriodic
+public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriodic
 {
     /// <summary>
     /// Gets the scheduler that schedules work on the <see cref="Microsoft.UI.Dispatching.DispatcherQueue"/> for the current thread.

@@ -39,8 +39,8 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// or
     /// nameof(vmProperty).</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be trimmed")]
 #endif
     public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,
@@ -94,8 +94,8 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// NOTE: If this parameter is used inside WhenActivated, it's
     /// important to dispose the binding when the view is deactivated.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be trimmed")]
 #endif
     public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,
@@ -128,8 +128,8 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be trimmed")]
 #endif
     private static IDisposable BindCommandInternal<TView, TProp, TParam>(
         IObservable<TProp> source,

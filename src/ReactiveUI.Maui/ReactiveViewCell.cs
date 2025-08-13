@@ -13,7 +13,11 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="ViewCell" />
 /// <seealso cref="IViewFor{TViewModel}" />
-public class ReactiveViewCell<TViewModel> : ViewCell, IViewFor<TViewModel>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveViewCell uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveViewCell uses methods that may require unreferenced code")]
+#endif
+public partial class ReactiveViewCell<TViewModel> : ViewCell, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>

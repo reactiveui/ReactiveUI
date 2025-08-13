@@ -37,6 +37,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             ? 10 : 0;
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetActivationForView uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetActivationForView uses methods that may require unreferenced code")]
+#endif
     public IObservable<bool> GetActivationForView(IActivatableView view)
     {
         var activation =
@@ -138,6 +142,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         return appearing.Merge(disappearing);
     }
 #else
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetActivationFor uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetActivationFor uses methods that may require unreferenced code")]
+#endif
     private static IObservable<bool>? GetActivationFor(FrameworkElement? view)
     {
         if (view is null)

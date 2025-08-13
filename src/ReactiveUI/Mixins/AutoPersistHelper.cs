@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using DynamicData;
@@ -22,8 +23,8 @@ public static class AutoPersistHelper
 {
     private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> _persistablePropertiesCache = new(
      static (type, _) => type.GetTypeInfo().DeclaredProperties
-                      .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
-                      .ToDictionary(k => k.Name, _ => true),
+                               .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
+                               .ToDictionary(k => k.Name, _ => true),
      RxApp.SmallCacheLimit);
 
     private static readonly MemoizingMRUCache<Type, bool> _dataContractCheckCache = new(

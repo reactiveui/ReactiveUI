@@ -3,14 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI;
 
 /// <summary>
 /// This class provides extension methods for the ReactiveUI view binding mechanism.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
+[RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
 #endif
 public static class PropertyBindingMixins
 {

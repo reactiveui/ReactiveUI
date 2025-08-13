@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 
@@ -13,8 +14,8 @@ namespace ReactiveUI;
 /// Provides methods to bind properties to observables.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("Property binding uses reflection and dynamic type conversion")]
+[RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
 #endif
 public class PropertyBinderImplementation : IPropertyBinderImplementation
 {
@@ -208,6 +209,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     internal static IBindingTypeConverter? GetConverterForTypes(Type lhs, Type rhs) =>
         _typeConverterCache.Get((lhs, rhs));
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Type conversion requires dynamic code generation")]
+    [RequiresUnreferencedCode("Type conversion may reference types that could be trimmed")]
+#endif
     private static Func<object?, object?, object?[]?, object?>? GetSetConverter(Type? fromType, Type? targetType)
     {
         if (fromType is null)
@@ -219,6 +224,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         return setter is null ? null : setter.PerformSet;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Property binding requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
+#endif
     private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
         IObservable<TObs> changeObservable,
         TTarget target,
@@ -282,6 +291,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         }), setObservable);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Property binding requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
+#endif
     private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
         where TViewModel : class
     {
@@ -318,6 +331,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         return shouldBind;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Property binding requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
+#endif
     private ReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,

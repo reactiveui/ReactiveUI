@@ -11,10 +11,6 @@ using UIKit;
 
 namespace ReactiveUI;
 
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewCell>, IDisposable
 {
     private readonly UITableView _view;
@@ -42,6 +38,10 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
 
     public UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReloadData uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReloadData uses methods that may require unreferenced code")]
+#endif
     public void ReloadData()
     {
         ++_inFlightReloads;

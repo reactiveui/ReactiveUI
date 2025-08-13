@@ -8,10 +8,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Observable Func Mixins.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class ObservableFuncMixins
 {
     /// <summary>
@@ -26,6 +22,10 @@ public static class ObservableFuncMixins
     /// <returns>
     /// An observable Result.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ToObservable uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ToObservable uses methods that may require unreferenced code")]
+#endif
     public static IObservable<TResult?> ToObservable<TSource, TResult>(
         this Expression<Func<TSource, TResult?>> expression,
         TSource? source,

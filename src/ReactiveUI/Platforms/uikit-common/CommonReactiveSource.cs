@@ -16,8 +16,8 @@ using Foundation;
 namespace ReactiveUI;
 
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("CommonReactiveSource uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("CommonReactiveSource uses methods that may require unreferenced code")]
 #endif
 internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable
     where TSectionInfo : ISectionInformation<TUIViewCell>
@@ -34,6 +34,10 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// Initializes a new instance of the <see cref="CommonReactiveSource{TSource, TUIView, TUIViewCell, TSectionInfo}"/> class.
     /// </summary>
     /// <param name="adapter">The adapter to use which we want to display information for.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("CommonReactiveSource uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("CommonReactiveSource uses methods that may require unreferenced code")]
+#endif
     public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter)
     {
         _adapter = adapter;
@@ -202,6 +206,10 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         SubscribeToSectionInfoChanges(sectionInfoId, sectionInfo, sectionChanged, disposables);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SubscribeToSectionInfoChanges uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SubscribeToSectionInfoChanges uses methods that may require unreferenced code")]
+#endif
     private void SubscribeToSectionInfoChanges(int sectionInfoId, IReadOnlyList<TSectionInfo> sectionInfo, IObservable<Unit> sectionChanged, CompositeDisposable disposables)
     {
         // holds a single disposable representing the monitoring of sectionInfo.

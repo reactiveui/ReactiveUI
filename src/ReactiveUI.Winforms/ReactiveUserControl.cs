@@ -12,6 +12,10 @@ namespace ReactiveUI.Winforms;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="UserControl" />
 /// <seealso cref="IViewFor{TViewModel}" />
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveUserControl<TViewModel> provides base functionality for ReactiveUI which may require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveUserControl<TViewModel> provides base functionality for ReactiveUI which may require unreferenced code")]
+#endif
 public partial class ReactiveUserControl<TViewModel> : UserControl, IViewFor<TViewModel>
     where TViewModel : class
 {

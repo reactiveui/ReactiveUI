@@ -12,10 +12,6 @@ namespace ReactiveUI;
 /// A class that implements the Android ViewHolder pattern. Use it along
 /// with GetViewHost.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
 {
     private View? _view;

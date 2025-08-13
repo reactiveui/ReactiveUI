@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <SplatVersion>15.3.1</SplatVersion>
+    <SplatVersion>15.4.1</SplatVersion>
     <XamarinAndroidXCoreVersion>1.13.1.4</XamarinAndroidXCoreVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.8.4.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
@@ -24,7 +24,7 @@
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.7.115" />
     <PackageVersion Include="PublicApiGenerator" Version="11.4.6" />
     <PackageVersion Include="Reactive.Wasm" Version="2.1.2" />
-    <PackageVersion Include="Roslynator.Analyzers" Version="4.13.1" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Splat" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)" />
@@ -34,7 +34,7 @@
     <PackageVersion Include="System.Collections.Immutable" Version="8.0.0" />
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageVersion Include="System.Text.Json" Version="9.0.7" />
+    <PackageVersion Include="System.Text.Json" Version="9.0.8" />
     <PackageVersion Include="Verify.Xunit" Version="30.5.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.console" Version="2.9.3" />
@@ -45,6 +45,7 @@
     <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.29" />
     <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.11.0.2" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseMaui)' != 'true'">
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
@@ -56,7 +57,7 @@
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net9'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="9.0.8" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="9.0.90" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.90" />
   </ItemGroup>
