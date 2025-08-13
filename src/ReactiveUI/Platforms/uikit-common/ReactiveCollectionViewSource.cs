@@ -20,8 +20,8 @@ namespace ReactiveUI;
 /// </summary>
 /// <typeparam name="TSource">The source type.</typeparam>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ReactiveCollectionViewSource uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveCollectionViewSource uses methods that may require unreferenced code")]
 #endif
 public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
 {
@@ -35,6 +35,10 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     /// <param name="collection">The notify collection changed.</param>
     /// <param name="cellKey">The cell key.</param>
     /// <param name="initializeCellAction">The cell initialization action.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveCollectionViewSource uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveCollectionViewSource uses methods that may require unreferenced code")]
+#endif
     public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell>? initializeCellAction = null)
         : this(collectionView) =>
         Data = new[] { new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction) };
@@ -43,16 +47,10 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
     /// </summary>
     /// <param name="collectionView">The ui collection view.</param>
-    /// <param name="sectionInformation">The section information.</param>
-    [Obsolete("Please bind your view model to the Data property.")]
-    public ReactiveCollectionViewSource(UICollectionView collectionView, IReadOnlyList<CollectionViewSectionInformation<TSource>> sectionInformation)
-        : this(collectionView) =>
-        Data = sectionInformation;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
-    /// </summary>
-    /// <param name="collectionView">The ui collection view.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveCollectionViewSource uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveCollectionViewSource uses methods that may require unreferenced code")]
+#endif
     public ReactiveCollectionViewSource(UICollectionView collectionView)
     {
         var adapter = new UICollectionViewAdapter(collectionView);
@@ -155,6 +153,10 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     /// </summary>
     /// <returns>An object that, when disposed, re-enables change
     /// notifications.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SuppressChangeNotifications uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SuppressChangeNotifications uses methods that may require unreferenced code")]
+#endif
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <inheritdoc/>

@@ -20,6 +20,10 @@ public interface IPropertyBindingHook
     /// <param name="getCurrentViewModelProperties">Get current view model properties.</param>
     /// <param name="getCurrentViewProperties">Get current view properties.</param>
     /// <param name="direction">The Binding direction.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExecuteHook uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ExecuteHook uses methods that may require unreferenced code")]
+#endif
     bool ExecuteHook(
         object? source,
         object target,

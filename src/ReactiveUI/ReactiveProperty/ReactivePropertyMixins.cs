@@ -28,8 +28,8 @@ public static class ReactivePropertyMixins
     /// self.
     /// </exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses DataAnnotations validation which requires dynamic code generation.")]
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses DataAnnotations validation which may require unreferenced code.")]
 #endif
     public static ReactiveProperty<T> AddValidation<T>(this ReactiveProperty<T> self, Expression<Func<ReactiveProperty<T>?>> selfSelector)
     {

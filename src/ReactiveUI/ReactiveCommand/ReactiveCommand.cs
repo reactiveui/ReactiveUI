@@ -334,8 +334,8 @@ public static class ReactiveCommand
     /// The type of the command's result.
     /// </typeparam>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("CreateCombined uses CombinedReactiveCommand which requires dynamic code generation.")]
+    [RequiresUnreferencedCode("CreateCombined uses CombinedReactiveCommand which may require unreferenced code.")]
 #endif
     public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,

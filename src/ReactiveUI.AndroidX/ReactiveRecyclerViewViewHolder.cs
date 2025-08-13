@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
@@ -15,6 +16,10 @@ namespace ReactiveUI.AndroidX;
 /// A <see cref="RecyclerView.ViewHolder"/> implementation that binds to a reactive view model.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveRecyclerViewViewHolder inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveRecyclerViewViewHolder inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
+#endif
 public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolder, ILayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveRecyclerViewViewHolder<TViewModel>>, IReactiveObject, ICanActivate
     where TViewModel : class, IReactiveObject
 {

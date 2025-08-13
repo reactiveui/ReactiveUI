@@ -17,8 +17,8 @@ namespace ReactiveUI;
 /// </summary>
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
 #endif
 public class RoutedViewHost : ReactiveNavigationController
 {
@@ -30,6 +30,10 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
+#endif
     public RoutedViewHost()
     {
         ViewContractObservable = Observable.Return<string?>(null);
@@ -193,6 +197,10 @@ public class RoutedViewHost : ReactiveNavigationController
         base.Dispose(disposing);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
+#endif
     private NSViewController? ResolveView(IRoutableViewModel? viewModel, string? contract)
     {
         if (viewModel is null)

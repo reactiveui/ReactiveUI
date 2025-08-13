@@ -21,6 +21,10 @@ public interface ISetMethodBindingConverter : IEnableLogger
     /// <param name="toType">The target type to convert to.</param>
     /// <returns>A positive integer if PerformSet is supported,
     /// zero or a negative value otherwise.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObjects uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObjects uses methods that may require unreferenced code")]
+#endif
     int GetAffinityForObjects(Type? fromType, Type? toType);
 
     /// <summary>

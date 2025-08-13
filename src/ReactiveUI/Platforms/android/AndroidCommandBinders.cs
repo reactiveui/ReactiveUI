@@ -14,8 +14,8 @@ namespace ReactiveUI;
 /// in the View.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("AndroidCommandBinders uses reflection for property access and type checking which require dynamic code generation")]
+[RequiresUnreferencedCode("AndroidCommandBinders uses reflection for property access and type checking which may require unreferenced code")]
 #endif
 public class AndroidCommandBinders : FlexibleCommandBinder
 {
@@ -23,8 +23,8 @@ public class AndroidCommandBinders : FlexibleCommandBinder
     /// Initializes a new instance of the <see cref="AndroidCommandBinders"/> class.
     /// </summary>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("ObservableAsPropertyHelper uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ObservableAsPropertyHelper uses methods that may require unreferenced code")]
 #endif
     public AndroidCommandBinders() // TODO: Create Test
     {

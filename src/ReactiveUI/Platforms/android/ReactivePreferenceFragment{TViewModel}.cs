@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
 
 using Android.Preferences;
@@ -16,8 +17,8 @@ namespace ReactiveUI;
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ReactivePreferenceFragment<TViewModel> inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactivePreferenceFragment<TViewModel> inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
 #endif
 public class ReactivePreferenceFragment<TViewModel> : ReactivePreferenceFragment, IViewFor<TViewModel>, ICanActivate
     where TViewModel : class

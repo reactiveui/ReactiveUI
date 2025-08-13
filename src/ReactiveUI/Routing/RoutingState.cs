@@ -14,8 +14,8 @@ namespace ReactiveUI;
 /// </summary>
 [DataContract]
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("RoutingState uses RxApp and ReactiveCommand which require dynamic code generation")]
+[RequiresUnreferencedCode("RoutingState uses RxApp and ReactiveCommand which may require unreferenced code")]
 #endif
 public class RoutingState : ReactiveObject
 {
@@ -25,7 +25,7 @@ public class RoutingState : ReactiveObject
 
     /// <summary>
     /// Initializes static members of the <see cref="RoutingState"/> class.
-    /// </summary>R
+    /// </summary>
     static RoutingState() => RxApp.EnsureInitialized();
 
     /// <summary>
@@ -33,6 +33,10 @@ public class RoutingState : ReactiveObject
     /// </summary>
     /// <param name="scheduler">A scheduler for where to send navigation changes to.</param>
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutingState uses ReactiveCommand which requires dynamic code generation.")]
+    [RequiresUnreferencedCode("RoutingState uses ReactiveCommand which may require unreferenced code.")]
+#endif
     public RoutingState(IScheduler? scheduler = null)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
@@ -90,11 +94,17 @@ public class RoutingState : ReactiveObject
 
     [OnDeserialized]
 #if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutingState uses ReactiveCommand which requires dynamic code generation.")]
+    [RequiresUnreferencedCode("RoutingState uses ReactiveCommand which may require unreferenced code.")]
     private void SetupRx(in StreamingContext sc) => SetupRx();
 #else
     private void SetupRx(StreamingContext sc) => SetupRx();
 #endif
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutingState uses ReactiveCommand which requires dynamic code generation.")]
+    [RequiresUnreferencedCode("RoutingState uses ReactiveCommand which may require unreferenced code.")]
+#endif
     private void SetupRx()
     {
         var navigateScheduler = _scheduler;

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
 
@@ -11,12 +12,16 @@ namespace ReactiveUI;
 /// <summary>
 /// Loads and saves state to persistent storage.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("BundleSuspensionDriver uses JsonSerializer which requires dynamic code generation")]
+[RequiresUnreferencedCode("BundleSuspensionDriver uses JsonSerializer which may require unreferenced code")]
+#endif
 public class BundleSuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("LoadState uses JsonSerializer.Deserialize which requires dynamic code generation")]
+    [RequiresUnreferencedCode("LoadState uses JsonSerializer.Deserialize which may require unreferenced code")]
 #endif
     public IObservable<object?> LoadState() // TODO: Create Test
     {
@@ -47,10 +52,9 @@ public class BundleSuspensionDriver : ISuspensionDriver
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("SaveState uses JsonSerializer.Serialize which requires dynamic code generation")]
+    [RequiresUnreferencedCode("SaveState uses JsonSerializer.Serialize which may require unreferenced code")]
 #endif
-
     public IObservable<Unit> SaveState(object state) // TODO: Create Test
     {
         try
@@ -67,10 +71,6 @@ public class BundleSuspensionDriver : ISuspensionDriver
     }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public IObservable<Unit> InvalidateState() // TODO: Create Test
     {
         try

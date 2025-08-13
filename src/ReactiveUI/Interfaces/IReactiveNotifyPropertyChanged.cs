@@ -33,5 +33,9 @@ public interface IReactiveNotifyPropertyChanged<out TSender>
     /// </summary>
     /// <returns>An object that, when disposed, reenables change
     /// notifications.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SuppressChangeNotifications uses extension methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SuppressChangeNotifications uses extension methods that may require unreferenced code")]
+#endif
     IDisposable SuppressChangeNotifications();
 }

@@ -12,7 +12,7 @@ namespace ReactiveUI.Maui;
 /// to be displayed should be assigned to the <see cref="ViewModel"/> property. Optionally, the chosen view can be
 /// customized by specifying a contract via <see cref="ViewContractObservable"/> or <see cref="ViewContract"/>.
 /// </summary>
-public class ViewModelViewHost : ContentView, IViewFor
+public partial class ViewModelViewHost : ContentView, IViewFor
 {
     /// <summary>
     /// Identifies the <see cref="ViewModel"/> property.
@@ -54,6 +54,10 @@ public class ViewModelViewHost : ContentView, IViewFor
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ViewModelViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ViewModelViewHost uses methods that may require unreferenced code")]
+#endif
     public ViewModelViewHost()
     {
         // NB: InUnitTestRunner also returns true in Design Mode
@@ -138,6 +142,10 @@ public class ViewModelViewHost : ContentView, IViewFor
     /// </summary>
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">contract used by ViewLocator.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ResolveViewForViewModel uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ResolveViewForViewModel uses methods that may require unreferenced code")]
+#endif
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)

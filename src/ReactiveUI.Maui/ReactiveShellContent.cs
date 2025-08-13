@@ -13,7 +13,11 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="ShellContent" />
 /// <seealso cref="IActivatableView" />
-public class ReactiveShellContent<TViewModel> : ShellContent, IActivatableView
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveShellContent uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveShellContent uses methods that may require unreferenced code")]
+#endif
+public partial class ReactiveShellContent<TViewModel> : ShellContent, IActivatableView
     where TViewModel : class
 {
     /// <summary>

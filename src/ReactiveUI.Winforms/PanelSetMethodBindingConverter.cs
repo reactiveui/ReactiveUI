@@ -11,6 +11,10 @@ namespace ReactiveUI.Winforms;
 public class PanelSetMethodBindingConverter : ISetMethodBindingConverter
 {
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObjects uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObjects uses methods that may require unreferenced code")]
+#endif
     public int GetAffinityForObjects(Type? fromType, Type? toType)
     {
         if (toType != typeof(Control.ControlCollection))

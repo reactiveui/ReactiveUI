@@ -13,7 +13,11 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="ContentView" />
 /// <seealso cref="IViewFor{TViewModel}" />
-public class ReactiveContentView<TViewModel> : ContentView, IViewFor<TViewModel>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveContentView uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveContentView uses methods that may require unreferenced code")]
+#endif
+public partial class ReactiveContentView<TViewModel> : ContentView, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Windows.Input;
 
@@ -31,8 +32,8 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
-    [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [RequiresDynamicCode("Event binding requires dynamic code generation")]
+    [RequiresUnreferencedCode("Event binding may reference members that could be trimmed")]
 #endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
@@ -50,8 +51,8 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
-    [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [RequiresDynamicCode("Event binding requires dynamic code generation and reflection")]
+    [RequiresUnreferencedCode("Event binding may reference members that could be trimmed")]
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
@@ -70,8 +71,8 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
-    [RequiresDynamicCode("Calls System.Reflection.MethodInfo.MakeGenericMethod(params Type[])")]
+    [RequiresDynamicCode("Event binding requires dynamic code generation")]
+    [RequiresUnreferencedCode("Event binding may reference members that could be trimmed")]
 #endif
     public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO

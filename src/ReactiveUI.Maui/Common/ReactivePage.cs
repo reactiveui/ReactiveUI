@@ -79,8 +79,11 @@ namespace ReactiveUI;
 /// <typeparam name="TViewModel">
 /// The type of the view model backing the view.
 /// </typeparam>
-public
-    class ReactivePage<TViewModel> :
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactivePage uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactivePage uses methods that may require unreferenced code")]
+#endif
+public partial class ReactivePage<TViewModel> :
         Page, IViewFor<TViewModel>
         where TViewModel : class
 {

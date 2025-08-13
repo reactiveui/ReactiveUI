@@ -35,6 +35,9 @@
     <WindowsTargetFrameworks>net462;net472;net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0;net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</WindowsTargetFrameworks>
     <MobileTargetFrameworks>net8.0-android;net8.0-ios;net8.0-tvos;net8.0-macos;net8.0-maccatalyst;net9.0-android;net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst</MobileTargetFrameworks>
     <BaseTargetFrameworks>netstandard2.0;net8.0;net9.0</BaseTargetFrameworks>
+  </PropertyGroup>  
+  <PropertyGroup Condition="'$(IsTestProject)' != 'true' and ($(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')))">
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>

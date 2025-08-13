@@ -9,6 +9,10 @@ namespace ReactiveUI.Winforms;
 /// A view model control host which will find and host the View for a ViewModel.
 /// </summary>
 [DefaultProperty("ViewModel")]
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ViewModelControlHost uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ViewModelControlHost uses methods that may require unreferenced code")]
+#endif
 public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
 {
     private readonly CompositeDisposable _disposables = [];
@@ -23,6 +27,10 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelControlHost"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ViewModelControlHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ViewModelControlHost uses methods that may require unreferenced code")]
+#endif
     public ViewModelControlHost()
     {
         InitializeComponent();
@@ -138,6 +146,10 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         base.Dispose(disposing);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SetupBindings uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SetupBindings uses methods that may require unreferenced code")]
+#endif
     private IEnumerable<IDisposable> SetupBindings()
     {
         var viewChanges =

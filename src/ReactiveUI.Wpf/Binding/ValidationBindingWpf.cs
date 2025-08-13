@@ -24,6 +24,10 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     private readonly string? _vmPropertyName;
     private IDisposable? _inner;
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ValidationBindingWpf uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ValidationBindingWpf uses methods that may require unreferenced code")]
+#endif
     public ValidationBindingWpf(
         TView view,
         TViewModel viewModel,

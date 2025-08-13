@@ -15,8 +15,7 @@ namespace ReactiveUI;
 /// the View and wire up the ViewModel whenever a new ViewModel is
 /// navigated to. Put this control as the only control in your Window.
 /// </summary>
-public
-    class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
+public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
 {
     /// <summary>
     /// The router dependency property.
@@ -41,6 +40,10 @@ public
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
+#endif
     public RoutedViewHost()
     {
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -137,6 +140,10 @@ public
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ResolveViewForViewModel uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ResolveViewForViewModel uses methods that may require unreferenced code")]
+#endif
     private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
     {
         if (x.viewModel is null)

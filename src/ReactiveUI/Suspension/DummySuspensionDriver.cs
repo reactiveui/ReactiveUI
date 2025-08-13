@@ -10,17 +10,21 @@ namespace ReactiveUI;
 /// Useful potentially for unit testing or for platforms
 /// where you don't want to use a Suspension Driver.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class DummySuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("LoadState uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("LoadState uses methods that may require unreferenced code")]
+#endif
     public IObservable<object> LoadState() => // TODO: Create Test
         Observable<object>.Default;
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SaveState uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SaveState uses methods that may require unreferenced code")]
+#endif
     public IObservable<Unit> SaveState(object state) => // TODO: Create Test
         Observables.Unit;
 

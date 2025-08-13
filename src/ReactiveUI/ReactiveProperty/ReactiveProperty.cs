@@ -15,8 +15,8 @@ namespace ReactiveUI;
 /// <seealso cref="IReactiveProperty&lt;T&gt;" />
 [DataContract]
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ReactiveProperty initialization uses ReactiveObject and RxApp which require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveProperty initialization uses ReactiveObject and RxApp which may require unreferenced code")]
 #endif
 public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 {
@@ -39,6 +39,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class.
     /// The Value will be default(T). DistinctUntilChanged is true. Current Value is published on subscribe.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveProperty initialization uses RxApp which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveProperty initialization uses RxApp which may require unreferenced code")]
+#endif
     public ReactiveProperty()
         : this(default, RxApp.TaskpoolScheduler, false, false)
     {
@@ -49,6 +53,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// The Value will be initialValue. DistinctUntilChanged is true. Current Value is published on subscribe.
     /// </summary>
     /// <param name="initialValue">The initial value.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveProperty initialization uses RxApp which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveProperty initialization uses RxApp which may require unreferenced code")]
+#endif
     public ReactiveProperty(T? initialValue)
         : this(initialValue, RxApp.TaskpoolScheduler, false, false)
     {
@@ -60,6 +68,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="initialValue">The initial value.</param>
     /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
     /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveProperty initialization uses RxApp which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveProperty initialization uses RxApp which may require unreferenced code")]
+#endif
     public ReactiveProperty(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
         : this(initialValue, RxApp.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues)
     {
@@ -72,6 +84,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="scheduler">The scheduler.</param>
     /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
     /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReactiveProperty initialization uses ReactiveObject and RxApp which require dynamic code generation")]
+    [RequiresUnreferencedCode("ReactiveProperty initialization uses ReactiveObject and RxApp which may require unreferenced code")]
+#endif
     public ReactiveProperty(T? initialValue, IScheduler? scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
     {
         _skipCurrentValue = skipCurrentValueOnSubscribe ? 1 : 0;
@@ -150,6 +166,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
+    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
+#endif
     public ReactiveProperty<T> AddValidationError(Func<IObservable<T?>, IObservable<IEnumerable?>> validator, bool ignoreInitialError = false)
     {
         _validatorStore.Value.Add(validator);
@@ -204,6 +224,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
+    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
+#endif
     public ReactiveProperty<T> AddValidationError(Func<IObservable<T?>, IObservable<string?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => validator(xs).Select(x => (IEnumerable?)x), ignoreInitialError);
 
@@ -215,6 +239,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
+    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
+#endif
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<IEnumerable?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.SelectMany(x => validator(x)), ignoreInitialError);
 
@@ -226,6 +254,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
+    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
+#endif
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.SelectMany(x => validator(x)), ignoreInitialError);
 
@@ -237,6 +269,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
+    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
+#endif
     public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.Select(x => validator(x)), ignoreInitialError);
 
@@ -248,6 +284,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
+    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
+#endif
     public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.Select(x => validator(x)), ignoreInitialError);
 
@@ -268,6 +308,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <summary>
     /// Invoke OnNext.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Refresh uses RaisePropertyChanged which requires dynamic code generation")]
+    [RequiresUnreferencedCode("Refresh uses RaisePropertyChanged which may require unreferenced code")]
+#endif
     public void Refresh()
     {
         SetValue(_value);
@@ -349,6 +393,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         }
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetSubscription uses WhenAnyValue which requires dynamic code generation in AOT scenarios.")]
+    [RequiresUnreferencedCode("GetSubscription uses WhenAnyValue which may reference members that could be trimmed in AOT scenarios.")]
+#endif
     private void GetSubscription()
     {
         _observable = this.WhenAnyValue(vm => vm.Value)

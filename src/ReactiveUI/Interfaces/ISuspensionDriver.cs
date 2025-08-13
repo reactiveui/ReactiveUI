@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -17,8 +19,8 @@ public interface ISuspensionDriver
     /// </summary>
     /// <returns>An object observable.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
 #endif
     IObservable<object?> LoadState();
 
@@ -28,8 +30,8 @@ public interface ISuspensionDriver
     /// <param name="state">The application state.</param>
     /// <returns>A completed observable.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("SaveState implementations may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("SaveState implementations may use serialization which may require unreferenced code")]
 #endif
     IObservable<Unit> SaveState(object state);
 
@@ -37,9 +39,5 @@ public interface ISuspensionDriver
     /// Invalidates the application state (i.e. deletes it from disk).
     /// </summary>
     /// <returns>A completed observable.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     IObservable<Unit> InvalidateState();
 }

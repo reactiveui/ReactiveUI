@@ -13,15 +13,15 @@ namespace ReactiveUI;
 /// UI Kit command binder platform registrations.
 /// </summary>
 /// <seealso cref="ReactiveUI.ICreatesCommandBinding" />
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class UIKitCommandBinders : FlexibleCommandBinder
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("UIKitCommandBinders uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("UIKitCommandBinders uses methods that may require unreferenced code")]
+#endif
     public UIKitCommandBinders()
     {
         Register(typeof(UIControl), 9, (cmd, t, cp) => ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty("Enabled") ?? throw new InvalidOperationException("There is no Enabled property on the UIControl which is needed for binding.")));

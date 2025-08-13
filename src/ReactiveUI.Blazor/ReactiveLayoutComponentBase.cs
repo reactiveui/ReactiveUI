@@ -79,6 +79,12 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
 
     /// <inheritdoc />
 #pragma warning disable RCS1168 // Parameter name differs from base name.
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("OnAfterRender uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("OnAfterRender uses methods that may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "LayoutComponentBase is an external reference")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "LayoutComponentBase is an external reference")]
+#endif
     protected override void OnAfterRender(bool isFirstRender)
 #pragma warning restore RCS1168 // Parameter name differs from base name.
     {
