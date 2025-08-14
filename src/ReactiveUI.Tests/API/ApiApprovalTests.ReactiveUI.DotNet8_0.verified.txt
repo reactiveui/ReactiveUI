@@ -1,5 +1,6 @@
 ﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidX")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Builder.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Drawing")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
@@ -1173,6 +1174,10 @@ namespace ReactiveUI
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("SuppressChangeNotifications uses extension methods that may require unreferenced " +
             "code")]
         public System.IDisposable SuppressChangeNotifications() { }
+    }
+    public static class ReactiveUIBuilderExtensions
+    {
+        public static ReactiveUI.Builder.ReactiveUIBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
     }
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting requires dynamic code generation")]
     [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting may reference members that could be trimmed")]

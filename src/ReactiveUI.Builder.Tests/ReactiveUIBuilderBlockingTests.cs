@@ -20,16 +20,11 @@ public class ReactiveUIBuilderBlockingTests
         var builder = locator.CreateBuilder();
         builder.WithCoreServices().Build();
 
-        Assert.True(GetHasBeenBuiltUsingBuilder());
+        Assert.True(RxApp.HasBeenBuiltUsingBuilder);
 
         locator.InitializeReactiveUI();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         Assert.NotNull(observableProperty);
-    }
-
-    private static bool GetHasBeenBuiltUsingBuilder()
-    {
-        return typeof(RxApp).GetField("HasBeenBuiltUsingBuilder", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static) is { } field && (bool)field.GetValue(null)!;
     }
 }

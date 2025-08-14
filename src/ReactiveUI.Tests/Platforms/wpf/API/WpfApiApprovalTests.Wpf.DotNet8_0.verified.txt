@@ -162,6 +162,8 @@ namespace ReactiveUI.Wpf
 {
     public static class ReactiveUIBuilderWpfExtensions
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithWpf uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithWpf uses methods that may require unreferenced code")]
         public static ReactiveUI.Builder.ReactiveUIBuilder WithWpf(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
     }
     public class Registrations
