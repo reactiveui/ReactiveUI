@@ -26,9 +26,10 @@ public static class DependencyResolverMixins
 #endif
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
-        if (RxApp.HasBeenBuiltUsingBuilder)
+        if (RxApp.HasBeenBuiltUsingBuilder && !ModeDetector.InUnitTestRunner() && ReferenceEquals(resolver, Locator.CurrentMutable))
         {
-            // If the builder has been used, we don't need to register the default services again.
+            // If the builder has been used for the default resolver in a non-test environment,
+            // do not re-register defaults via reflection for Locator.CurrentMutable.
             return;
         }
 
@@ -144,17 +145,39 @@ public static class DependencyResolverMixins
 #endif
     private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)
     {
-        var targetType = namespaceName + ".Registrations";
-        if (assemblyName.Name is not null)
-        {
-            var fullName = targetType + ", " + assemblyName.FullName.Replace(assemblyName.Name, namespaceName);
+        var targetTypeName = namespaceName + ".Registrations";
 
-            var registerTypeClass = Reflection.ReallyFindType(fullName, false);
-            if (registerTypeClass is not null)
+        // Preferred path: find the target assembly by simple name among loaded assemblies
+        var asm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == namespaceName);
+        Type? registerTypeClass = null;
+        if (asm is null)
+        {
+            try
             {
-                var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass)!;
-                registerer?.Register((f, t) => resolver.RegisterConstant(f(), t));
+                asm = Assembly.Load(new AssemblyName(namespaceName));
             }
+            catch
+            {
+                asm = null;
+            }
+        }
+
+        if (asm is not null)
+        {
+            registerTypeClass = asm.GetType(targetTypeName, throwOnError: false, ignoreCase: false);
+        }
+
+        // Fallback to legacy lookup using full name synthesis
+        if (registerTypeClass is null && assemblyName.Name is not null)
+        {
+            var fullName = targetTypeName + ", " + assemblyName.FullName.Replace(assemblyName.Name, namespaceName);
+            registerTypeClass = Reflection.ReallyFindType(fullName, false);
+        }
+
+        if (registerTypeClass is not null)
+        {
+            var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass)!;
+            registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
         }
     }
 }
