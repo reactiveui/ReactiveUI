@@ -2,8 +2,16 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0-android</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591;SA1600</NoWarn>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
+  <!-- In CI environments (e.g. GitHub Actions), the Microsoft.Android runtime may not be available.
+       Mark this project as non-test so 'dotnet test' will skip running it. -->
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
