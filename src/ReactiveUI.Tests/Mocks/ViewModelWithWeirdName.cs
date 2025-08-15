@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A view model with a weird name.
 /// </summary>
-public class ViewModelWithWeirdName : ReactiveObject
-{
-}
+public class ViewModelWithWeirdName : ReactiveObject;

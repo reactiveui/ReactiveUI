@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A mock view model.
 /// </summary>
-public class FooViewModelWithWeirdName : ReactiveObject, IFooViewModel
-{
-}
+public class FooViewModelWithWeirdName : ReactiveObject, IFooViewModel;

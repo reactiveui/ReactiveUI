@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests.Winforms;
 /// <summary>
 /// An example view.
 /// </summary>
-public class ExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>
-{
-}
+public class ExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>;

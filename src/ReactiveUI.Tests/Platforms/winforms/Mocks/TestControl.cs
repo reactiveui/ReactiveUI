@@ -7,6 +7,4 @@ using System.Windows.Forms;
 
 namespace ReactiveUI.Tests.Winforms;
 
-public class TestControl : Control, IActivatableView
-{
-}
+public class TestControl : Control, IActivatableView;

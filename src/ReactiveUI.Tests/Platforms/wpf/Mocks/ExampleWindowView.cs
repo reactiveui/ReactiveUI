@@ -5,6 +5,4 @@
 
 namespace ReactiveUI.Tests.Wpf;
 
-public class ExampleWindowView : ReactiveWindow<ExampleWindowViewModel>
-{
-}
+public class ExampleWindowView : ReactiveWindow<ExampleWindowViewModel>;

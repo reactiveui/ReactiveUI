@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">;net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0</TargetFrameworks>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);SA1600</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.StartsWith('net47')) ">
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
+    <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="Splat" />
+  </ItemGroup>
+
+</Project>
