@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using Splat.Builder;
 
 namespace ReactiveUI.Drawing;
 
@@ -21,7 +22,7 @@ public static class ReactiveUIBuilderDrawingExtensions
     [RequiresDynamicCode("WithDrawing uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("WithDrawing uses methods that may require unreferenced code")]
 #endif
-    public static Builder.ReactiveUIBuilder WithDrawing(this Builder.ReactiveUIBuilder builder)
+    public static AppBuilder WithDrawing(this Builder.ReactiveUIBuilder builder)
     {
         if (builder is null)
         {
@@ -29,5 +30,29 @@ public static class ReactiveUIBuilderDrawingExtensions
         }
 
         return builder.WithPlatformModule<Registrations>();
+    }
+
+    /// <summary>
+    /// Registers Drawing-specific services.
+    /// </summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WithDrawing uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("WithDrawing uses methods that may require unreferenced code")]
+#endif
+    public static AppBuilder WithDrawing(this AppBuilder builder)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        if (builder is not Builder.ReactiveUIBuilder reactiveUIBuilder)
+        {
+            throw new ArgumentException("The builder must be of type ReactiveUIBuilder.", nameof(builder));
+        }
+
+        return reactiveUIBuilder.WithPlatformModule<Registrations>();
     }
 }

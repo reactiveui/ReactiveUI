@@ -780,12 +780,14 @@ namespace ReactiveUI
         public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector) { }
         public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("POCO property observation uses reflection and type analysis")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("POCO property observation may reference members that could be trimmed")]
     public class POCOObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
         public POCOObservableForProperty() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObject uses reflection and type analysis")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject may reference members that could be trimmed")]
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetNotificationForProperty uses reflection and type analysis")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty may reference members that could be trimmed")]
         public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
     public static class PlatformRegistrationManager
@@ -1177,7 +1179,13 @@ namespace ReactiveUI
     }
     public static class ReactiveUIBuilderExtensions
     {
-        public static ReactiveUI.Builder.ReactiveUIBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        public static Splat.Builder.AppBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
+        public static Splat.Builder.AppBuilder WithPlatformServices(this Splat.Builder.AppBuilder builder) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithViewsFromAssembly uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithViewsFromAssembly uses methods that may require unreferenced code")]
+        public static Splat.Builder.AppBuilder WithViewsFromAssembly(this Splat.Builder.AppBuilder builder, System.Reflection.Assembly assembly) { }
     }
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting requires dynamic code generation")]
     [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting may reference members that could be trimmed")]
@@ -1239,10 +1247,6 @@ namespace ReactiveUI
     public class Registrations
     {
         public Registrations() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Registration includes POCOObservableForProperty which uses reflection and dynamic" +
-            " code generation.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Registration includes POCOObservableForProperty which may reference members that " +
-            "could be trimmed.")]
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
     public static class RoutableViewModelMixin
@@ -1894,26 +1898,17 @@ namespace ReactiveUI
 }
 namespace ReactiveUI.Builder
 {
-    public interface IReactiveUIModule
-    {
-        void Configure(Splat.IMutableDependencyResolver resolver);
-    }
-    public sealed class ReactiveUIBuilder
+    public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
     {
         public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithCoreServices may use reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithCoreServices may use reflection and will not work in AOT environments.")]
+        public override Splat.Builder.AppBuilder WithCoreServices() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
+        public Splat.Builder.AppBuilder WithPlatformServices() { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-        public void Build() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-        public ReactiveUI.Builder.ReactiveUIBuilder WithCoreServices() { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithCustomRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithModule(ReactiveUI.Builder.IReactiveUIModule registrationModule) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformServices() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-        public ReactiveUI.Builder.ReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
+        public Splat.Builder.AppBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
     }
 }

@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <SplatVersion>15.4.1</SplatVersion>
+    <SplatVersion>15.5.1</SplatVersion>
     <XamarinAndroidXCoreVersion>1.13.1.4</XamarinAndroidXCoreVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.8.4.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>

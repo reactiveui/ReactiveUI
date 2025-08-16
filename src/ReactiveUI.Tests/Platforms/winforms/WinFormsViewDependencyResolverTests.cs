@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reflection;
+using Splat.Builder;
 using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Winforms;
@@ -13,6 +15,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
 
     public WinFormsViewDependencyResolverTests()
     {
+        ResetAppBuilderState();
         _resolver = new ModernDependencyResolver();
         _resolver.InitializeSplat();
         _resolver.InitializeReactiveUI();
@@ -93,5 +96,18 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         {
             Assert.Equal(0, NeverUsedView.Instances);
         }
+    }
+
+    private static void ResetAppBuilderState()
+    {
+        // Reset the static state of the AppBuilder.HasBeenBuilt property
+        // This is necessary to ensure that tests can run independently
+        var prop = typeof(AppBuilder).GetProperty("HasBeenBuilt", BindingFlags.Static | BindingFlags.Public);
+
+        // Get the non-public setter method
+        var setter = prop?.GetSetMethod(true); // 'true' includes non-public methods
+
+        // Invoke the setter to set the value to false
+        setter?.Invoke(null, new object[] { false });
     }
 }

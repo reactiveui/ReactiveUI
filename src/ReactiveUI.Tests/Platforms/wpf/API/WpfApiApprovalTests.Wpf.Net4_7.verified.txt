@@ -140,7 +140,8 @@ namespace ReactiveUI.Wpf
 {
     public static class ReactiveUIBuilderWpfExtensions
     {
-        public static ReactiveUI.Builder.ReactiveUIBuilder WithWpf(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        public static Splat.Builder.AppBuilder WithWpf(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        public static Splat.Builder.AppBuilder WithWpf(this Splat.Builder.AppBuilder builder) { }
     }
     public class Registrations
     {

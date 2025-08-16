@@ -32,7 +32,8 @@ namespace ReactiveUI.Winforms
     }
     public static class ReactiveUIBuilderWinFormsExtensions
     {
-        public static ReactiveUI.Builder.ReactiveUIBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        public static Splat.Builder.AppBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        public static Splat.Builder.AppBuilder WithWinForms(this Splat.Builder.AppBuilder builder) { }
     }
     public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
     {

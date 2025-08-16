@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Splat.Builder;
+
 namespace ReactiveUI.Blazor;
 
 /// <summary>
@@ -19,7 +21,7 @@ public static class ReactiveUIBuilderBlazorExtensions
     [RequiresDynamicCode("WithBlazor uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("WithBlazor uses methods that may require unreferenced code")]
 #endif
-    public static Builder.ReactiveUIBuilder WithBlazor(this Builder.ReactiveUIBuilder builder)
+    public static AppBuilder WithBlazor(this Builder.ReactiveUIBuilder builder)
     {
         if (builder is null)
         {
@@ -27,5 +29,29 @@ public static class ReactiveUIBuilderBlazorExtensions
         }
 
         return builder.WithPlatformModule<Registrations>();
+    }
+
+    /// <summary>
+    /// Registers Blazor-specific services.
+    /// </summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WithBlazor uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("WithBlazor uses methods that may require unreferenced code")]
+#endif
+    public static AppBuilder WithBlazor(this AppBuilder builder)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        if (builder is not Builder.ReactiveUIBuilder reactiveUIBuilder)
+        {
+            throw new ArgumentException("The builder must be of type ReactiveUIBuilder.", nameof(builder));
+        }
+
+        return reactiveUIBuilder.WithPlatformModule<Registrations>();
     }
 }

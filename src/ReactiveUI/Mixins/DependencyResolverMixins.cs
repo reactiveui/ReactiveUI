@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using Splat.Builder;
 
 namespace ReactiveUI;
 
@@ -26,7 +27,7 @@ public static class DependencyResolverMixins
 #endif
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
-        if (RxApp.HasBeenBuiltUsingBuilder && !ModeDetector.InUnitTestRunner() && ReferenceEquals(resolver, Locator.CurrentMutable))
+        if (AppBuilder.HasBeenBuilt && !ModeDetector.InUnitTestRunner() && ReferenceEquals(resolver, Locator.CurrentMutable))
         {
             // If the builder has been used for the default resolver in a non-test environment,
             // do not re-register defaults via reflection for Locator.CurrentMutable.

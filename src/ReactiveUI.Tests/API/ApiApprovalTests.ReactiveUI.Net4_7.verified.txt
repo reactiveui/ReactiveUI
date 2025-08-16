@@ -820,7 +820,9 @@ namespace ReactiveUI
     }
     public static class ReactiveUIBuilderExtensions
     {
-        public static ReactiveUI.Builder.ReactiveUIBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        public static Splat.Builder.AppBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        public static Splat.Builder.AppBuilder WithPlatformServices(this Splat.Builder.AppBuilder builder) { }
+        public static Splat.Builder.AppBuilder WithViewsFromAssembly(this Splat.Builder.AppBuilder builder, System.Reflection.Assembly assembly) { }
     }
     public static class Reflection
     {
@@ -1155,18 +1157,11 @@ namespace ReactiveUI
 }
 namespace ReactiveUI.Builder
 {
-    public interface IReactiveUIModule
-    {
-        void Configure(Splat.IMutableDependencyResolver resolver);
-    }
-    public sealed class ReactiveUIBuilder
+    public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
     {
         public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
-        public void Build() { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithCoreServices() { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithCustomRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithModule(ReactiveUI.Builder.IReactiveUIModule registrationModule) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformServices() { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
+        public override Splat.Builder.AppBuilder WithCoreServices() { }
+        public Splat.Builder.AppBuilder WithPlatformServices() { }
+        public Splat.Builder.AppBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
     }
 }

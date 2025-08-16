@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reflection;
 using ReactiveUI.Winforms;
+using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests.Platforms.WinForms;
 
@@ -12,6 +14,7 @@ public class ReactiveUIBuilderWinFormsTests
     [Fact]
     public void WithWinForms_Should_Register_WinForms_Services()
     {
+        ResetAppBuilderState();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
 
@@ -27,6 +30,7 @@ public class ReactiveUIBuilderWinFormsTests
     [Fact]
     public void WithCoreServices_AndWinForms_Should_Register_All_Services()
     {
+        ResetAppBuilderState();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
 
@@ -37,5 +41,18 @@ public class ReactiveUIBuilderWinFormsTests
 
         var platformOperations = locator.GetService<IPlatformOperations>();
         Assert.NotNull(platformOperations);
+    }
+
+    private static void ResetAppBuilderState()
+    {
+        // Reset the static state of the AppBuilder.HasBeenBuilt property
+        // This is necessary to ensure that tests can run independently
+        var prop = typeof(AppBuilder).GetProperty("HasBeenBuilt", BindingFlags.Static | BindingFlags.Public);
+
+        // Get the non-public setter method
+        var setter = prop?.GetSetMethod(true); // 'true' includes non-public methods
+
+        // Invoke the setter to set the value to false
+        setter?.Invoke(null, new object[] { false });
     }
 }

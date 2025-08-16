@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Splat.Builder;
 
 namespace ReactiveUI;
 
@@ -84,7 +85,7 @@ public static class RxApp
         _taskpoolScheduler = TaskPoolScheduler.Default;
 #endif
 
-        if (!HasBeenBuiltUsingBuilder)
+        if (!AppBuilder.HasBeenBuilt)
         {
             Locator.RegisterResolverCallbackChanged(() =>
             {
@@ -234,8 +235,6 @@ public static class RxApp
             }
         }
     }
-
-    internal static bool HasBeenBuiltUsingBuilder { get; set; }
 
     private static IScheduler UnitTestMainThreadScheduler
     {
