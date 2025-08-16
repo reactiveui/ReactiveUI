@@ -18,6 +18,10 @@ namespace ReactiveUI.Builder;
 /// <param name="resolver">The dependency resolver to configure.</param>
 public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : AppBuilder(resolver)
 {
+    // Ensure we always register against the resolver provided to the builder,
+    // not Locator.Current, so tests that read from the local resolver see the services.
+    private readonly IMutableDependencyResolver _resolver = resolver;
+
     private bool _coreRegistered;
     private bool _platformRegistered;
 
@@ -33,19 +37,18 @@ public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : App
     {
         if (_coreRegistered)
         {
-            return base.WithCoreServices();
+            base.WithCoreServices();
+            return this;
         }
 
-        WithCustomRegistration(resolver =>
-        {
-            // Register the core ReactiveUI services.
-            var registrations = new Registrations();
-            registrations?.Register((f, t) => resolver.RegisterConstant(f(), t));
-        });
+        // Immediately register the core ReactiveUI services into the provided resolver.
+        var registrations = new Registrations();
+        registrations.Register((f, t) => _resolver.RegisterConstant(f(), t));
 
         _coreRegistered = true;
 
-        return base.WithCoreServices();
+        base.WithCoreServices();
+        return this;
     }
 
     /// <summary>
@@ -63,11 +66,9 @@ public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : App
             return this;
         }
 
-        WithCustomRegistration(resolver =>
-        {
-            var platformRegistrations = new PlatformRegistrations();
-            platformRegistrations.Register((f, t) => resolver.RegisterConstant(f(), t));
-        });
+        // Immediately register the platform ReactiveUI services into the provided resolver.
+        var platformRegistrations = new PlatformRegistrations();
+        platformRegistrations.Register((f, t) => _resolver.RegisterConstant(f(), t));
 
         _platformRegistered = true;
         return this;
@@ -86,7 +87,8 @@ public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : App
     {
         assembly.ArgumentNullExceptionThrowIfNull(nameof(assembly));
 
-        WithCustomRegistration(resolver => resolver.RegisterViewsForViewModels(assembly));
+        // Register views immediately against the builder's resolver
+        _resolver.RegisterViewsForViewModels(assembly);
         return this;
     }
 
@@ -102,11 +104,8 @@ public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : App
     internal AppBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new()
     {
-        WithCustomRegistration(resolver =>
-        {
-            var registration = new T();
-            registration.Register((f, t) => resolver.RegisterConstant(f(), t));
-        });
+        var registration = new T();
+        registration.Register((f, t) => _resolver.RegisterConstant(f(), t));
         return this;
     }
 }

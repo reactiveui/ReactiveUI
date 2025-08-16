@@ -22,7 +22,11 @@ public static class ReactiveUIBuilderExtensions
     public static AppBuilder CreateBuilder(this IMutableDependencyResolver resolver)
     {
         resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
-        return new Builder.ReactiveUIBuilder(resolver);
+        var builder = new Builder.ReactiveUIBuilder(resolver);
+
+        // Queue core registrations by default so Build() always provides the basics
+        builder.WithCoreServices();
+        return builder;
     }
 
     /// <summary>
