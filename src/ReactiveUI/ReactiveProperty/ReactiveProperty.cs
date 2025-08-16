@@ -33,7 +33,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     private IObservable<T?>? _observable;
     private T? _value;
     private IEnumerable? _currentErrors;
-    private bool _hasSubscribed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class.
@@ -354,13 +353,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             return Disposable.Empty;
         }
 
-        if (_hasSubscribed)
-        {
-            observer.OnNext(_value);
-        }
-
-        _hasSubscribed = true;
-
         return _observable!.Subscribe(observer).DisposeWith(_disposables);
     }
 
@@ -407,8 +399,9 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             _observable = _observable.DistinctUntilChanged();
         }
 
-        _observable = _observable.Merge(_valueRefereshed)
-            .Publish()
+        _observable = _observable
+            .Merge(_valueRefereshed)
+            .Replay(1)
             .RefCount()
             .ObserveOn(_scheduler);
     }
