@@ -16,6 +16,12 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     public WinFormsViewDependencyResolverTests()
     {
         ResetAppBuilderState();
+
+        // Reset static counters to avoid cross-test interference when running entire suite
+        SingleInstanceExampleView.ResetInstances();
+        SingleInstanceWithContractExampleView.ResetInstances();
+        NeverUsedView.ResetInstances();
+
         _resolver = new ModernDependencyResolver();
         _resolver.InitializeSplat();
         _resolver.InitializeReactiveUI();

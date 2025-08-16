@@ -8,6 +8,7 @@ namespace ReactiveUI.Tests.Wpf;
 /// <summary>
 /// Interaction logic for MockWindow.xaml.
 /// </summary>
+[ExcludeFromViewRegistration]
 public partial class MockWindow
 {
     public MockWindow()

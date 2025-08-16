@@ -96,6 +96,12 @@ public static class DependencyResolverMixins
         foreach (var ti in assembly.DefinedTypes
                                    .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)) && !ti.IsAbstract))
         {
+            // Skip types explicitly marked to be excluded from auto view registration
+            if (ti.GetCustomAttribute<ExcludeFromViewRegistrationAttribute>() is not null)
+            {
+                continue;
+            }
+
             // grab the first _implemented_ interface that also implements IViewFor, this should be the expected IViewFor<>`
             var ivf = ti.ImplementedInterfaces.FirstOrDefault(t => t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));
 

@@ -163,6 +163,11 @@ namespace ReactiveUI
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object? result) { }
         public static object? DoReferenceCast(object? from, System.Type targetType) { }
     }
+    [System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple=false, Inherited=false)]
+    public sealed class ExcludeFromViewRegistrationAttribute : System.Attribute
+    {
+        public ExcludeFromViewRegistrationAttribute() { }
+    }
     public static class ExpressionMixins
     {
         public static object?[]? GetArgumentsArray(this System.Linq.Expressions.Expression expression) { }

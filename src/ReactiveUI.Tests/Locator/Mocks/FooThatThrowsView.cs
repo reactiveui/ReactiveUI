@@ -8,6 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A mock view which throws.
 /// </summary>
+[ExcludeFromViewRegistration]
 public class FooThatThrowsView : IFooView
 {
     /// <summary>
