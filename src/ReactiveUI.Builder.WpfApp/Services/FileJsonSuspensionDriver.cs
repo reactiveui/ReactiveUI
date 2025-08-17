@@ -7,6 +7,7 @@ using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
+using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.Services;
 
@@ -49,11 +50,11 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     {
         if (!File.Exists(path))
         {
-            return new ViewModels.ChatState();
+            return new ChatState();
         }
 
         var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<ViewModels.ChatState>(json) ?? new ViewModels.ChatState();
+        return JsonSerializer.Deserialize<ChatState>(json) ?? new ChatState();
     },
     RxApp.TaskpoolScheduler);
 

@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reactive.Linq;
 using System.Windows;
+using ReactiveUI.Builder.WpfApp.Models;
 using ReactiveUI.Wpf;
 using Splat;
 
@@ -56,7 +57,7 @@ public partial class App : Application
             .Build();
 
         // Setup Suspension
-        RxApp.SuspensionHost.CreateNewAppState = () => new ViewModels.ChatState();
+        RxApp.SuspensionHost.CreateNewAppState = () => new ChatState();
 
         var statePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -67,7 +68,7 @@ public partial class App : Application
         _driver = new Services.FileJsonSuspensionDriver(statePath);
 
         // Set an initial state instantly to avoid blocking UI
-        RxApp.SuspensionHost.AppState = new ViewModels.ChatState();
+        RxApp.SuspensionHost.AppState = new ChatState();
 
         // Load persisted state asynchronously and update UI when ready
         _ = _driver
@@ -77,7 +78,7 @@ public partial class App : Application
                 stateObj =>
                 {
                     RxApp.SuspensionHost.AppState = stateObj;
-                    MessageBus.Current.SendMessage(new ViewModels.ChatStateChanged());
+                    MessageBus.Current.SendMessage(new ChatStateChanged());
                     Trace.WriteLine("[App] State loaded");
                 },
                 ex => Trace.WriteLine($"[App] State load failed: {ex.Message}"));

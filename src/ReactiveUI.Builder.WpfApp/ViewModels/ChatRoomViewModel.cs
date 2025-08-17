@@ -6,6 +6,7 @@
 using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
+using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;
 
@@ -36,7 +37,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         SendMessage = ReactiveCommand.Create(SendMessageImpl, canSend);
 
         // Observe new incoming messages via MessageBus using the room name as the contract across instances
-        MessageBus.Current.Listen<Services.ChatNetworkMessage>(contract: room.Name)
+        MessageBus.Current.Listen<ChatNetworkMessage>(contract: room.Name)
             .Where(msg => msg.InstanceId != Services.AppInstance.Id)
             .Throttle(TimeSpan.FromMilliseconds(33))
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -81,7 +82,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     {
         var msg = new ChatMessage { Sender = _user, Text = MessageText, Timestamp = DateTimeOffset.Now };
         _room.Messages.Add(msg);
-        var networkMessage = new Services.ChatNetworkMessage(_room.Id, _room.Name, msg.Sender, msg.Text, msg.Timestamp)
+        var networkMessage = new ChatNetworkMessage(_room.Id, _room.Name, msg.Sender, msg.Text, msg.Timestamp)
         {
             InstanceId = Services.AppInstance.Id
         };

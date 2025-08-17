@@ -5,7 +5,7 @@
 
 using System.Collections.ObjectModel;
 
-namespace ReactiveUI.Builder.WpfApp.ViewModels;
+namespace ReactiveUI.Builder.WpfApp.Models;
 
 /// <summary>
 /// Represents a chat room with messages and members.
@@ -25,7 +25,7 @@ public class ChatRoom
     /// <summary>
     /// Gets or sets the messages in the room.
     /// </summary>
-    public ObservableCollection<ChatMessage> Messages { get; set; } = new();
+    public ObservableCollection<ChatMessage> Messages { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the members in the room.
