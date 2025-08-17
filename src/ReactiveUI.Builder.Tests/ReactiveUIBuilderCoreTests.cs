@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reflection;
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests;
@@ -16,7 +15,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void CreateBuilder_Should_Return_Builder_Instance()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
         Assert.NotNull(builder);
@@ -26,7 +25,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithCoreServices_Should_Register_Core_Services()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
         builder.WithCoreServices().Build();
@@ -41,7 +40,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithPlatformServices_Should_Register_Platform_Services()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
         builder.WithPlatformServices().Build();
@@ -54,7 +53,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithCustomRegistration_Should_Execute_Custom_Action()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
         var customServiceRegistered = false;
@@ -73,7 +72,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void Build_Should_Always_Register_Core_Services()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
 
@@ -86,7 +85,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithCustomRegistration_With_Null_Action_Should_Throw()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
         Assert.Throws<ArgumentNullException>(() => builder.WithCustomRegistration(null!));
@@ -95,7 +94,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithViewsFromAssembly_Should_Register_Views()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
         var assembly = typeof(ReactiveUIBuilderCoreTests).Assembly;
@@ -107,7 +106,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithViewsFromAssembly_With_Null_Assembly_Should_Throw()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
         Assert.Throws<ArgumentNullException>(() => builder.WithViewsFromAssembly(null!));
@@ -116,7 +115,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithCoreServices_Called_Multiple_Times_Should_Not_Register_Twice()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
 
@@ -130,7 +129,7 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void Builder_Should_Support_Fluent_Chaining()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var customServiceRegistered = false;
 
@@ -150,18 +149,5 @@ public class ReactiveUIBuilderCoreTests
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         Assert.NotNull(observableProperty);
-    }
-
-    private static void ResetAppBuilderState()
-    {
-        // Reset the static state of the AppBuilder.HasBeenBuilt property
-        // This is necessary to ensure that tests can run independently
-        var prop = typeof(AppBuilder).GetProperty("HasBeenBuilt", BindingFlags.Static | BindingFlags.Public);
-
-        // Get the non-public setter method
-        var setter = prop?.GetSetMethod(true); // 'true' includes non-public methods
-
-        // Invoke the setter to set the value to false
-        setter?.Invoke(null, new object[] { false });
     }
 }

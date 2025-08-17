@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reflection;
 using Splat.Builder;
 
 namespace ReactiveUI.Tests;
@@ -19,7 +18,7 @@ public class ActivatingViewTests
     [Fact]
     public void ActivatingViewSmokeTest()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -51,7 +50,7 @@ public class ActivatingViewTests
     [Fact]
     public void NullingViewModelDeactivateIt()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -82,7 +81,7 @@ public class ActivatingViewTests
     [Fact]
     public void SwitchingViewModelDeactivatesIt()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -117,7 +116,7 @@ public class ActivatingViewTests
     [Fact]
     public void SettingViewModelAfterLoadedLoadsIt()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -150,7 +149,7 @@ public class ActivatingViewTests
     [Fact]
     public void CanUnloadAndLoadViewAgain()
     {
-        ResetAppBuilderState();
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -178,18 +177,5 @@ public class ActivatingViewTests
             Assert.Equal(1, vm.IsActiveCount);
             Assert.Equal(1, fixture.IsActiveCount);
         }
-    }
-
-    private static void ResetAppBuilderState()
-    {
-        // Reset the static state of the AppBuilder.HasBeenBuilt property
-        // This is necessary to ensure that tests can run independently
-        var prop = typeof(AppBuilder).GetProperty("HasBeenBuilt", BindingFlags.Static | BindingFlags.Public);
-
-        // Get the non-public setter method
-        var setter = prop?.GetSetMethod(true); // 'true' includes non-public methods
-
-        // Invoke the setter to set the value to false
-        setter?.Invoke(null, new object[] { false });
     }
 }

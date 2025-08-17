@@ -27,7 +27,7 @@ public static class DependencyResolverMixins
 #endif
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
-        if (AppBuilder.HasBeenBuilt && !ModeDetector.InUnitTestRunner() && ReferenceEquals(resolver, Locator.CurrentMutable))
+        if (AppBuilder.UsingBuilder && !ModeDetector.InUnitTestRunner() && ReferenceEquals(resolver, Locator.CurrentMutable))
         {
             // If the builder has been used for the default resolver in a non-test environment,
             // do not re-register defaults via reflection for Locator.CurrentMutable.

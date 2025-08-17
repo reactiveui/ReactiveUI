@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
-using ReactiveUI;
 
 namespace ReactiveUI.AOTTests;
 

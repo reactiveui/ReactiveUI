@@ -4,13 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using ReactiveUI;
 using Splat;
-using Xunit;
 
 namespace ReactiveUI.AOTTests;
 

@@ -85,7 +85,7 @@ public static class RxApp
         _taskpoolScheduler = TaskPoolScheduler.Default;
 #endif
 
-        if (!AppBuilder.HasBeenBuilt)
+        if (!AppBuilder.UsingBuilder)
         {
             Locator.RegisterResolverCallbackChanged(() =>
             {
