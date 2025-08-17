@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reactive.Linq;
@@ -21,6 +22,7 @@ public partial class App : Application
     private Services.WpfAutoSuspendHelper? _autoSuspend;
     private Services.FileJsonSuspensionDriver? _driver;
     private Services.ChatNetworkService? _networkService;
+    private Services.AppLifetimeCoordinator? _lifetime;
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Application.Startup" /> event.
@@ -30,23 +32,27 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        // Initialize ReactiveUI via the Builder
-        var locator = Locator.CurrentMutable;
-        var builder = locator.CreateBuilder();
-        builder
+        // Initialize ReactiveUI via the Builder only
+        Locator.CurrentMutable.CreateBuilder()
             .WithCoreServices()
             .WithWpf()
             .WithViewsFromAssembly(typeof(App).Assembly)
             .WithCustomRegistration(r =>
             {
-                // Register IScreen implementation as a factory so creation happens after state is loaded
-                r.Register<IScreen>(() => new ViewModels.AppBootstrapper());
+                // Register IScreen as a singleton so all resolutions share the same Router
+                r.RegisterLazySingleton<IScreen>(() => new ViewModels.AppBootstrapper());
 
                 // Register MessageBus as a singleton if not already
                 if (Locator.Current.GetService<IMessageBus>() is null)
                 {
                     r.RegisterConstant<IMessageBus>(MessageBus.Current);
                 }
+
+                // Cross-process instance lifetime coordination
+                r.RegisterLazySingleton(() => new Services.AppLifetimeCoordinator());
+
+                // Network service used to broadcast/receive messages across instances
+                r.RegisterLazySingleton(() => new Services.ChatNetworkService());
             })
             .Build();
 
@@ -63,16 +69,48 @@ public partial class App : Application
         _autoSuspend = new Services.WpfAutoSuspendHelper(this, _driver);
         _autoSuspend.OnStartup();
 
-        // Load state from disk (or create new)
-        var loaded = _driver.LoadState().Wait();
-        RxApp.SuspensionHost.AppState = loaded;
+        // Set an initial state instantly to avoid blocking UI
+        RxApp.SuspensionHost.AppState = new ViewModels.ChatState();
 
-        // Start network service
-        _networkService = new Services.ChatNetworkService();
-        _networkService.Start();
+        // Load persisted state asynchronously and update UI when ready
+        _ = _driver
+            .LoadState()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(
+                stateObj =>
+                {
+                    RxApp.SuspensionHost.AppState = stateObj;
+                    MessageBus.Current.SendMessage(new ViewModels.ChatStateChanged());
+                    Trace.WriteLine("[App] State loaded");
+                },
+                ex =>
+                {
+                    Trace.WriteLine($"[App] State load failed: {ex.Message}");
+                });
+
+        // Resolve coordinator + network service
+        _lifetime = Locator.Current.GetService<Services.AppLifetimeCoordinator>();
+        var count = _lifetime?.Increment() ?? 1;
+        Trace.WriteLine($"[App] Instance started. Count={count} Id={Services.AppInstance.Id}");
+
+        _networkService = Locator.Current.GetService<Services.ChatNetworkService>();
+        _networkService?.Start(); // starts background receive loop, no UI blocking
+
+        // Resolve AppBootstrapper once and use it for both ViewModel and Router
+        var appBoot = (ViewModels.AppBootstrapper)Locator.Current.GetService<IScreen>()!;
 
         // Create and show the shell
-        var mainWindow = new MainWindow();
+        var mainWindow = new MainWindow
+        {
+            ViewModel = appBoot,
+        };
+
+        // Replace RoutedViewHost router to ensure it uses the same singleton instance
+        if (mainWindow.Content is RoutedViewHost host)
+        {
+            host.Router = appBoot.Router;
+        }
+
         MainWindow = mainWindow;
         mainWindow.Show();
     }
@@ -83,13 +121,22 @@ public partial class App : Application
     /// <param name="e">An <see cref="T:System.Windows.ExitEventArgs" /> that contains the event data.</param>
     protected override void OnExit(ExitEventArgs e)
     {
-        _networkService?.Dispose();
-        if (_driver is not null && RxApp.SuspensionHost.AppState is not null)
+        try
         {
-            _driver.SaveState(RxApp.SuspensionHost.AppState).Wait();
-        }
+            var remaining = _lifetime?.Decrement() ?? 0;
+            Trace.WriteLine($"[App] Instance exiting. Remaining={remaining} Id={Services.AppInstance.Id}");
 
-        _autoSuspend?.OnExit();
-        base.OnExit(e);
+            // Only the last instance persists the final state to the central store
+            if (remaining == 0 && _driver is not null && RxApp.SuspensionHost.AppState is not null)
+            {
+                _driver.SaveState(RxApp.SuspensionHost.AppState).Wait();
+            }
+        }
+        finally
+        {
+            _networkService?.Dispose();
+            _autoSuspend?.OnExit();
+            base.OnExit(e);
+        }
     }
 }

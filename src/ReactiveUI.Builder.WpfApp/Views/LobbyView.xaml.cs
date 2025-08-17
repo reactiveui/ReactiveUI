@@ -35,26 +35,28 @@ public partial class LobbyView : UserControl, IViewFor<ViewModels.LobbyViewModel
             this.BindCommand(ViewModel, vm => vm.CreateRoom, v => v.CreateRoomButton).DisposeWith(d);
 
             // Double-click to join room
-            MouseButtonEventHandler dbl = (s, e) =>
+            void Dbl(object s, MouseButtonEventArgs e)
             {
                 if (RoomsList.SelectedItem is ViewModels.ChatRoom room)
                 {
                     ViewModel?.JoinRoom.Execute(room).Subscribe();
                 }
-            };
-            RoomsList.MouseDoubleClick += dbl;
-            Disposable.Create(() => RoomsList.MouseDoubleClick -= dbl).DisposeWith(d);
+            }
+
+            RoomsList.MouseDoubleClick += Dbl;
+            Disposable.Create(() => RoomsList.MouseDoubleClick -= Dbl).DisposeWith(d);
 
             // Enter key to join
-            KeyEventHandler enter = (s, e) =>
+            void Enter(object s, KeyEventArgs e)
             {
                 if (e.Key == Key.Enter && RoomsList.SelectedItem is ViewModels.ChatRoom room)
                 {
                     ViewModel?.JoinRoom.Execute(room).Subscribe();
                 }
-            };
-            RoomsList.KeyDown += enter;
-            Disposable.Create(() => RoomsList.KeyDown -= enter).DisposeWith(d);
+            }
+
+            RoomsList.KeyDown += Enter;
+            Disposable.Create(() => RoomsList.KeyDown -= Enter).DisposeWith(d);
 
             // Delete selected room via Delete button only
             var selectedRoomStream = this.WhenAnyValue(x => x.RoomsList.SelectedItem)

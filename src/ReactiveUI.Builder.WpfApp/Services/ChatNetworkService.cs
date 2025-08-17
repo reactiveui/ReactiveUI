@@ -3,9 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Reactive.Linq;
 using System.Text.Json;
+using ReactiveUI;
 
 namespace ReactiveUI.Builder.WpfApp.Services;
 
@@ -43,19 +46,29 @@ public sealed class ChatNetworkService : IDisposable
             // ignore
         }
 
-        // Outgoing chat messages (default contract)
+        // Outgoing chat messages (default contract) - only send messages originating from this instance
         MessageBus.Current.Listen<ChatNetworkMessage>()
+            .Where(m => m.InstanceId == AppInstance.Id)
+            .ObserveOn(RxApp.TaskpoolScheduler)
             .Subscribe(Send);
 
-        // Outgoing room events
+        // Outgoing room events - only send messages originating from this instance
         MessageBus.Current.Listen<RoomEventMessage>(contract: RoomsContract)
+            .Where(m => m.InstanceId == AppInstance.Id)
+            .ObserveOn(RxApp.TaskpoolScheduler)
             .Subscribe(Send);
+
+        Trace.WriteLine("[Net] ChatNetworkService initialized.");
     }
 
     /// <summary>
     /// Starts the background receive loop.
     /// </summary>
-    public void Start() => Task.Run(ReceiveLoop, _cts.Token);
+    public void Start()
+    {
+        Trace.WriteLine("[Net] Starting receive loop...");
+        Task.Run(ReceiveLoop, _cts.Token);
+    }
 
     /// <inheritdoc />
     public void Dispose()
@@ -63,6 +76,7 @@ public sealed class ChatNetworkService : IDisposable
         _cts.Cancel();
         _udp.Dispose();
         _cts.Dispose();
+        Trace.WriteLine("[Net] Disposed.");
     }
 
     private async Task ReceiveLoop()
@@ -77,9 +91,11 @@ public sealed class ChatNetworkService : IDisposable
 
             // Join multicast group on default interface
             listener.JoinMulticastGroup(MulticastAddress);
+            Trace.WriteLine($"[Net] Listening on {MulticastAddress}:{Port}");
         }
-        catch
+        catch (Exception ex)
         {
+            Trace.WriteLine($"[Net] Failed to start listener: {ex.Message}");
             return;
         }
 
@@ -90,7 +106,6 @@ public sealed class ChatNetworkService : IDisposable
                 var result = await listener.ReceiveAsync(_cts.Token).ConfigureAwait(false);
                 var buffer = result.Buffer;
 
-                // Inspect JSON for known properties to determine message type
                 using var doc = JsonDocument.Parse(buffer);
                 var root = doc.RootElement;
                 var isRoomEvent = root.TryGetProperty("Kind", out _) || root.TryGetProperty("Snapshot", out _);
@@ -100,16 +115,29 @@ public sealed class ChatNetworkService : IDisposable
                     var evt = JsonSerializer.Deserialize<RoomEventMessage>(buffer);
                     if (evt is not null)
                     {
+                        if (evt.InstanceId == AppInstance.Id)
+                        {
+                            // Ignore our own looped-back packet
+                            continue;
+                        }
+
+                        Trace.WriteLine($"[Net] RX RoomEvent {evt.Kind} name='{evt.RoomName}' from={evt.InstanceId}");
                         MessageBus.Current.SendMessage(evt, contract: RoomsContract);
                     }
 
                     continue;
                 }
 
-                // Otherwise treat as chat message
                 var chat = JsonSerializer.Deserialize<ChatNetworkMessage>(buffer);
                 if (chat is not null)
                 {
+                    if (chat.InstanceId == AppInstance.Id)
+                    {
+                        // Ignore our own looped-back packet
+                        continue;
+                    }
+
+                    Trace.WriteLine($"[Net] RX Chat '{chat.Text}' in '{chat.RoomName}' from={chat.Sender}/{chat.InstanceId}");
                     MessageBus.Current.SendMessage(chat, contract: chat.RoomName);
                 }
             }
@@ -117,9 +145,9 @@ public sealed class ChatNetworkService : IDisposable
             {
                 break;
             }
-            catch
+            catch (Exception ex)
             {
-                // ignore malformed input
+                Trace.WriteLine($"[Net] RX error: {ex.Message}");
             }
         }
     }
@@ -130,10 +158,19 @@ public sealed class ChatNetworkService : IDisposable
         {
             var bytes = JsonSerializer.SerializeToUtf8Bytes(message, message.GetType());
             _udp.Send(bytes, bytes.Length, _sendEndpoint);
+            switch (message)
+            {
+                case ChatNetworkMessage c:
+                    Trace.WriteLine($"[Net] TX Chat '{c.Text}' in '{c.RoomName}' from={c.Sender}/{c.InstanceId}");
+                    break;
+                case RoomEventMessage r:
+                    Trace.WriteLine($"[Net] TX RoomEvent {r.Kind} name='{r.RoomName}' from={r.InstanceId}");
+                    break;
+            }
         }
-        catch
+        catch (Exception ex)
         {
-            // ignore
+            Trace.WriteLine($"[Net] TX error: {ex.Message}");
         }
     }
 }

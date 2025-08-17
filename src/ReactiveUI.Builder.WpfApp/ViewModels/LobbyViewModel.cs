@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -43,12 +44,13 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         // Local changes
         var localRoomsChanged = MessageBus.Current.Listen<ChatStateChanged>().Select(_ => Unit.Default);
 
-        // Remote changes and sync
+        // Remote changes and sync (ignore own events)
         var remoteRoomsChanged = MessageBus.Current
             .Listen<Services.RoomEventMessage>(contract: "__rooms__")
             .Where(m => m.InstanceId != Services.AppInstance.Id)
             .Do(evt =>
             {
+                Trace.WriteLine($"[Lobby] Room evt {evt.Kind} name='{evt.RoomName}' from={evt.InstanceId}");
                 switch (evt.Kind)
                 {
                     case Services.RoomEventKind.SyncRequest:
@@ -68,7 +70,8 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
             })
             .Select(_ => Unit.Default);
 
-        RoomsChanged = localRoomsChanged.Merge(remoteRoomsChanged);
+        RoomsChanged = localRoomsChanged.Merge(remoteRoomsChanged)
+            .Throttle(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler);
 
         this.WhenAnyObservable(x => x.RoomsChanged)
             .StartWith(Unit.Default)
@@ -80,6 +83,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         RxApp.MainThreadScheduler.Schedule(Unit.Default, TimeSpan.FromMilliseconds(500), (s, __) =>
         {
             var req = new Services.RoomEventMessage(Services.RoomEventKind.SyncRequest, string.Empty) { InstanceId = Services.AppInstance.Id };
+            Trace.WriteLine("[Lobby] Broadcasting SyncRequest");
             MessageBus.Current.SendMessage(req, contract: "__rooms__");
             return Disposable.Empty;
         });
@@ -182,6 +186,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
             // Broadcast room add to peers
             var evt = new Services.RoomEventMessage(Services.RoomEventKind.Add, room.Name) { InstanceId = Services.AppInstance.Id };
             MessageBus.Current.SendMessage(evt, contract: "__rooms__");
+            Trace.WriteLine($"[Lobby] Created room '{room.Name}'");
         }
 
         MessageBus.Current.SendMessage(new ChatStateChanged());
@@ -196,6 +201,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
             var evt = new Services.RoomEventMessage(Services.RoomEventKind.Remove, room.Name) { InstanceId = Services.AppInstance.Id };
             MessageBus.Current.SendMessage(evt, contract: "__rooms__");
             MessageBus.Current.SendMessage(new ChatStateChanged());
+            Trace.WriteLine($"[Lobby] Deleted room '{room.Name}'");
         }
     }
 }

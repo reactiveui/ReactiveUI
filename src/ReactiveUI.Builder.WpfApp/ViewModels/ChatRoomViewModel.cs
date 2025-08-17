@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
 
@@ -39,10 +40,12 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         // Observe new incoming messages via MessageBus using the room name as the contract across instances
         MessageBus.Current.Listen<Services.ChatNetworkMessage>(contract: room.Name)
             .Where(msg => msg.InstanceId != Services.AppInstance.Id)
+            .Throttle(TimeSpan.FromMilliseconds(33))
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(msg =>
             {
                 _room.Messages.Add(new ChatMessage { Sender = msg.Sender, Text = msg.Text, Timestamp = msg.Timestamp });
+                Trace.WriteLine($"[Room:{room.Name}] RX '{msg.Text}' from {msg.Sender}/{msg.InstanceId}");
             });
     }
 
@@ -87,6 +90,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
 
         // Post on null contract so the network service can broadcast to other instances.
         MessageBus.Current.SendMessage(networkMessage);
+        Trace.WriteLine($"[Room:{_room.Name}] TX '{msg.Text}' from {_user}/{Services.AppInstance.Id}");
 
         MessageText = string.Empty;
     }
