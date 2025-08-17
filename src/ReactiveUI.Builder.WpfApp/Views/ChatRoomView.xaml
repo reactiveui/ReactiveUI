@@ -1,9 +1,12 @@
-<UserControl x:Class="ReactiveUI.Builder.WpfApp.Views.ChatRoomView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d">
+<UserControl
+    x:Class="ReactiveUI.Builder.WpfApp.Views.ChatRoomView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:ReactiveUI.Builder.WpfApp.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:ChatRoomViewModel}"
+    mc:Ignorable="d">
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -11,26 +14,37 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0">
-            <Button x:Name="BackButton" Content="Back" Margin="0,0,8,0" />
-            <TextBlock Text="{Binding RoomName}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" />
+            <Button
+                x:Name="BackButton"
+                Margin="0,0,8,0"
+                Content="Back" />
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="18"
+                FontWeight="Bold"
+                Text="{Binding RoomName}" />
         </DockPanel>
-        <ListBox Grid.Row="1" x:Name="MessagesList">
+        <ListBox x:Name="MessagesList" Grid.Row="1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="["/>
-                        <TextBlock Text="{Binding Timestamp}"/>
-                        <TextBlock Text="] "/>
-                        <TextBlock Text="{Binding Sender}" FontWeight="Bold"/>
-                        <TextBlock Text=": "/>
-                        <TextBlock Text="{Binding Text}"/>
+                        <TextBlock Text="[" />
+                        <TextBlock Text="{Binding Timestamp}" />
+                        <TextBlock Text="] " />
+                        <TextBlock FontWeight="Bold" Text="{Binding Sender}" />
+                        <TextBlock Text=": " />
+                        <TextBlock Text="{Binding Text}" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <TextBox Width="600" x:Name="MessageBox" />
-            <Button Content="Send" x:Name="SendButton" Margin="8,0,0,0" />
+            <TextBox x:Name="MessageBox" Width="600" />
+            <Button
+                x:Name="SendButton"
+                Margin="8,0,0,0"
+                Content="Send"
+                IsDefault="True" />
         </StackPanel>
     </Grid>
 </UserControl>

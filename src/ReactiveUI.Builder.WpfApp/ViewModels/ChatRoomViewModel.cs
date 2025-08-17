@@ -14,7 +14,6 @@ namespace ReactiveUI.Builder.WpfApp.ViewModels;
 /// </summary>
 public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
 {
-    private readonly IScreen _hostScreen;
     private readonly ChatRoom _room;
     private readonly string _user;
     private string _messageText = string.Empty;
@@ -28,7 +27,6 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     public ChatRoomViewModel(IScreen hostScreen, ChatRoom room, string user)
     {
         ArgumentNullException.ThrowIfNull(room);
-        _hostScreen = hostScreen;
         HostScreen = hostScreen;
         UrlPathSegment = $"room/{room.Name}";
         _room = room;

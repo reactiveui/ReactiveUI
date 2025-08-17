@@ -6,7 +6,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ReactiveUI.Builder.WpfApp.Views;
@@ -14,7 +13,7 @@ namespace ReactiveUI.Builder.WpfApp.Views;
 /// <summary>
 /// Lobby (rooms listing) view.
 /// </summary>
-public partial class LobbyView : UserControl, IViewFor<ViewModels.LobbyViewModel>, IActivatableView
+public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
 {
     /// <summary>
     /// The view model dependency property.
@@ -34,29 +33,13 @@ public partial class LobbyView : UserControl, IViewFor<ViewModels.LobbyViewModel
             this.Bind(ViewModel, vm => vm.RoomName, v => v.RoomNameBox.Text).DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.CreateRoom, v => v.CreateRoomButton).DisposeWith(d);
 
-            // Double-click to join room
-            void Dbl(object s, MouseButtonEventArgs e)
-            {
-                if (RoomsList.SelectedItem is ViewModels.ChatRoom room)
-                {
-                    ViewModel?.JoinRoom.Execute(room).Subscribe();
-                }
-            }
-
             RoomsList.MouseDoubleClick += Dbl;
-            Disposable.Create(() => RoomsList.MouseDoubleClick -= Dbl).DisposeWith(d);
-
-            // Enter key to join
-            void Enter(object s, KeyEventArgs e)
-            {
-                if (e.Key == Key.Enter && RoomsList.SelectedItem is ViewModels.ChatRoom room)
-                {
-                    ViewModel?.JoinRoom.Execute(room).Subscribe();
-                }
-            }
-
             RoomsList.KeyDown += Enter;
-            Disposable.Create(() => RoomsList.KeyDown -= Enter).DisposeWith(d);
+            Disposable.Create(() =>
+            {
+                RoomsList.MouseDoubleClick -= Dbl;
+                RoomsList.KeyDown -= Enter;
+            }).DisposeWith(d);
 
             // Delete selected room via Delete button only
             var selectedRoomStream = this.WhenAnyValue(x => x.RoomsList.SelectedItem)
@@ -67,6 +50,24 @@ public partial class LobbyView : UserControl, IViewFor<ViewModels.LobbyViewModel
 
             this.OneWayBind(ViewModel, vm => vm.Rooms, v => v.RoomsList.ItemsSource).DisposeWith(d);
         });
+
+        // Enter key to join
+        void Enter(object s, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && RoomsList.SelectedItem is ViewModels.ChatRoom room)
+            {
+                ViewModel?.JoinRoom.Execute(room).Subscribe();
+            }
+        }
+
+        // Double-click to join room
+        void Dbl(object s, MouseButtonEventArgs e)
+        {
+            if (RoomsList.SelectedItem is ViewModels.ChatRoom room)
+            {
+                ViewModel?.JoinRoom.Execute(room).Subscribe();
+            }
+        }
     }
 
     /// <summary>

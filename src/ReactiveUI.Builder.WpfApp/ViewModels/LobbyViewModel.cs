@@ -16,7 +16,6 @@ namespace ReactiveUI.Builder.WpfApp.ViewModels;
 public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 {
     private readonly ObservableAsPropertyHelper<IReadOnlyList<ChatRoom>> _rooms;
-    private readonly IScreen _hostScreen;
     private string _roomName = string.Empty;
     private string _displayName = Environment.MachineName;
 
@@ -26,7 +25,6 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     /// <param name="hostScreen">The host screen.</param>
     public LobbyViewModel(IScreen hostScreen)
     {
-        _hostScreen = hostScreen;
         HostScreen = hostScreen;
         UrlPathSegment = "lobby";
 

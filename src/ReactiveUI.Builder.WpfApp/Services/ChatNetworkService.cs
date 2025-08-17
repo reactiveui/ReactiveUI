@@ -8,7 +8,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Text.Json;
-using ReactiveUI;
 
 namespace ReactiveUI.Builder.WpfApp.Services;
 

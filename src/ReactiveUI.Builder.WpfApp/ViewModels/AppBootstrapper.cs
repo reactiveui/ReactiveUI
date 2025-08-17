@@ -8,8 +8,8 @@ namespace ReactiveUI.Builder.WpfApp.ViewModels;
 /// <summary>
 /// AppBootstrapper.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
-/// <seealso cref="ReactiveUI.IScreen" />
+/// <seealso cref="ReactiveObject" />
+/// <seealso cref="IScreen" />
 public class AppBootstrapper : ReactiveObject, IScreen
 {
     /// <summary>

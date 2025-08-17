@@ -13,7 +13,7 @@ public class ChatState
     /// <summary>
     /// Gets or sets the available rooms.
     /// </summary>
-    public List<ChatRoom> Rooms { get; set; } = new();
+    public List<ChatRoom> Rooms { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the local user's display name.

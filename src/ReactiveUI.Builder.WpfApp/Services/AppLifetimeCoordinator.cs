@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.IO.MemoryMappedFiles;
-using System.Threading;
 
 namespace ReactiveUI.Builder.WpfApp.Services;
 
@@ -43,19 +42,13 @@ public sealed class AppLifetimeCoordinator : IDisposable
     /// Increments the instance count.
     /// </summary>
     /// <returns>The new count after incrementing.</returns>
-    public int Increment()
-    {
-        return UpdateCount(static c => c + 1);
-    }
+    public int Increment() => UpdateCount(static c => c + 1);
 
     /// <summary>
     /// Decrements the instance count.
     /// </summary>
     /// <returns>The new count after decrementing (0 means last instance is closing).</returns>
-    public int Decrement()
-    {
-        return UpdateCount(static c => Math.Max(0, c - 1));
-    }
+    public int Decrement() => UpdateCount(static c => Math.Max(0, c - 1));
 
     /// <inheritdoc />
     public void Dispose()
@@ -80,8 +73,7 @@ public sealed class AppLifetimeCoordinator : IDisposable
             }
 
             using var view = _mmf.CreateViewAccessor(0, 4, MemoryMappedFileAccess.ReadWrite);
-            var current = 0;
-            view.Read(0, out current);
+            view.Read(0, out int current);
             var updated = updater(current);
             view.Write(0, updated);
             view.Flush();

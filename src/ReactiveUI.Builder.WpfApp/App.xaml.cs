@@ -19,7 +19,6 @@ namespace ReactiveUI.Builder.WpfApp;
 [SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "Disposed on application exit in OnExit")]
 public partial class App : Application
 {
-    private Services.WpfAutoSuspendHelper? _autoSuspend;
     private Services.FileJsonSuspensionDriver? _driver;
     private Services.ChatNetworkService? _networkService;
     private Services.AppLifetimeCoordinator? _lifetime;
@@ -45,7 +44,7 @@ public partial class App : Application
                 // Register MessageBus as a singleton if not already
                 if (Locator.Current.GetService<IMessageBus>() is null)
                 {
-                    r.RegisterConstant<IMessageBus>(MessageBus.Current);
+                    r.RegisterConstant(MessageBus.Current);
                 }
 
                 // Cross-process instance lifetime coordination
@@ -66,8 +65,6 @@ public partial class App : Application
         Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
 
         _driver = new Services.FileJsonSuspensionDriver(statePath);
-        _autoSuspend = new Services.WpfAutoSuspendHelper(this, _driver);
-        _autoSuspend.OnStartup();
 
         // Set an initial state instantly to avoid blocking UI
         RxApp.SuspensionHost.AppState = new ViewModels.ChatState();
@@ -83,10 +80,7 @@ public partial class App : Application
                     MessageBus.Current.SendMessage(new ViewModels.ChatStateChanged());
                     Trace.WriteLine("[App] State loaded");
                 },
-                ex =>
-                {
-                    Trace.WriteLine($"[App] State load failed: {ex.Message}");
-                });
+                ex => Trace.WriteLine($"[App] State load failed: {ex.Message}"));
 
         // Resolve coordinator + network service
         _lifetime = Locator.Current.GetService<Services.AppLifetimeCoordinator>();
@@ -135,7 +129,6 @@ public partial class App : Application
         finally
         {
             _networkService?.Dispose();
-            _autoSuspend?.OnExit();
             base.OnExit(e);
         }
     }

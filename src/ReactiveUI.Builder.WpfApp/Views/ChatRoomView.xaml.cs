@@ -5,15 +5,13 @@
 
 using System.Reactive.Disposables;
 using System.Windows;
-using System.Windows.Controls;
-using Splat;
 
 namespace ReactiveUI.Builder.WpfApp.Views;
 
 /// <summary>
 /// Chat room view.
 /// </summary>
-public partial class ChatRoomView : UserControl, IViewFor<ViewModels.ChatRoomViewModel>, IActivatableView
+public partial class ChatRoomView : IViewFor<ViewModels.ChatRoomViewModel>
 {
     /// <summary>
     /// The view model dependency property.

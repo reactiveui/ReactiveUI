@@ -13,7 +13,7 @@ namespace ReactiveUI.Builder.WpfApp.Services;
 /// <summary>
 /// FileJsonSuspensionDriver.
 /// </summary>
-/// <seealso cref="ReactiveUI.ISuspensionDriver" />
+/// <seealso cref="ISuspensionDriver" />
 /// <remarks>
 /// Initializes a new instance of the <see cref="FileJsonSuspensionDriver"/> class.
 /// </remarks>
