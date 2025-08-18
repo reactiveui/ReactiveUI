@@ -37,5 +37,9 @@ public interface ISuspensionDriver
     /// Invalidates the application state (i.e. deletes it from disk).
     /// </summary>
     /// <returns>A completed observable.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("InvalidateState uses JsonSerializer which requires dynamic code generation")]
+    [RequiresUnreferencedCode("InvalidateState uses JsonSerializer which may require unreferenced code")]
+#endif
     IObservable<Unit> InvalidateState();
 }

@@ -43,6 +43,10 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
         }.ToDictionary(k => (viewType: k.Type, propertyName: k.Property), v => v.Func);
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses reflection for property access and type checking which require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses reflection for property access and type checking which may require unreferenced code")]
+#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         if (beforeChanged)
@@ -54,6 +58,10 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetNotificationForProperty uses reflection for property access and type checking which require dynamic code generation")]
+    [RequiresUnreferencedCode("GetNotificationForProperty uses reflection for property access and type checking which may require unreferenced code")]
+#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         var type = sender?.GetType();

@@ -16,6 +16,8 @@ namespace ReactiveUI;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         registerFunction.ArgumentNullExceptionThrowIfNull(nameof(registerFunction));

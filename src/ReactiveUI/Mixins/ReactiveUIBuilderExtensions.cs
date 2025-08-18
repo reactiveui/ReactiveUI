@@ -19,6 +19,10 @@ public static class ReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="resolver">The dependency resolver to configure.</param>
     /// <returns>A ReactiveUIBuilder instance for fluent configuration.</returns>
+ #if NET6_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Does not use reflection")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:Members annotated with 'RequiresDynamicCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Does not use reflection")]
+#endif
     public static AppBuilder CreateBuilder(this IMutableDependencyResolver resolver)
     {
         resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
@@ -77,5 +81,47 @@ public static class ReactiveUIBuilderExtensions
         }
 
         return reactiveUIBuilder.WithPlatformServices();
+    }
+
+    /// <summary>
+    /// Registers a view for a view model via generics without reflection.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <param name="builder">The builder.</param>
+    /// <param name="contract">An optional contract.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static AppBuilder RegisterViewForViewModel<TView, TViewModel>(this AppBuilder builder, string? contract = null)
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class
+    {
+        builder.ArgumentNullExceptionThrowIfNull(nameof(builder));
+        if (builder is not Builder.ReactiveUIBuilder reactiveUIBuilder)
+        {
+            throw new ArgumentException("The builder must be of type ReactiveUIBuilder.", nameof(builder));
+        }
+
+        return reactiveUIBuilder.RegisterViewForViewModel<TView, TViewModel>(contract);
+    }
+
+    /// <summary>
+    /// Registers a singleton view for a view model via generics without reflection.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <param name="builder">The builder.</param>
+    /// <param name="contract">An optional contract.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(this AppBuilder builder, string? contract = null)
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class
+    {
+        builder.ArgumentNullExceptionThrowIfNull(nameof(builder));
+        if (builder is not Builder.ReactiveUIBuilder reactiveUIBuilder)
+        {
+            throw new ArgumentException("The builder must be of type ReactiveUIBuilder.", nameof(builder));
+        }
+
+        return reactiveUIBuilder.RegisterSingletonViewForViewModel<TView, TViewModel>(contract);
     }
 }

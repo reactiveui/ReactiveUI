@@ -484,6 +484,8 @@ namespace ReactiveUI
     }
     public interface ISuspensionDriver
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("InvalidateState uses JsonSerializer which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("InvalidateState uses JsonSerializer which may require unreferenced code")]
         System.IObservable<System.Reactive.Unit> InvalidateState();
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code gener" +
             "ation")]
@@ -1184,7 +1186,17 @@ namespace ReactiveUI
     }
     public static class ReactiveUIBuilderExtensions
     {
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050:Members annotated with \'RequiresDynamicCodeAttribute\' require dynamic acce" +
+            "ss otherwise can break functionality when trimming application code", Justification="Does not use reflection")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic" +
+            " access otherwise can break functionality when trimming application code", Justification="Does not use reflection")]
         public static Splat.Builder.AppBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        public static Splat.Builder.AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(this Splat.Builder.AppBuilder builder, string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
+        public static Splat.Builder.AppBuilder RegisterViewForViewModel<TView, TViewModel>(this Splat.Builder.AppBuilder builder, string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
         public static Splat.Builder.AppBuilder WithPlatformServices(this Splat.Builder.AppBuilder builder) { }
@@ -1906,8 +1918,16 @@ namespace ReactiveUI.Builder
     public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
     {
         public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithCoreServices may use reflection and will not work in AOT environments.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithCoreServices may use reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050", Justification="Generic registration does not use dynamic code")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026", Justification="Generic registration does not use reflection")]
+        public Splat.Builder.AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050", Justification="Generic registration does not use dynamic code")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026", Justification="Generic registration does not use reflection")]
+        public Splat.Builder.AppBuilder RegisterViewForViewModel<TView, TViewModel>(string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
         public override Splat.Builder.AppBuilder WithCoreServices() { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithPlatformServices may use reflection and will not work in AOT environments.")]

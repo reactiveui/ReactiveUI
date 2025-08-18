@@ -826,6 +826,12 @@ namespace ReactiveUI
     public static class ReactiveUIBuilderExtensions
     {
         public static Splat.Builder.AppBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        public static Splat.Builder.AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(this Splat.Builder.AppBuilder builder, string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
+        public static Splat.Builder.AppBuilder RegisterViewForViewModel<TView, TViewModel>(this Splat.Builder.AppBuilder builder, string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
         public static Splat.Builder.AppBuilder WithPlatformServices(this Splat.Builder.AppBuilder builder) { }
         public static Splat.Builder.AppBuilder WithViewsFromAssembly(this Splat.Builder.AppBuilder builder, System.Reflection.Assembly assembly) { }
     }
@@ -1165,6 +1171,12 @@ namespace ReactiveUI.Builder
     public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
     {
         public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
+        public Splat.Builder.AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
+        public Splat.Builder.AppBuilder RegisterViewForViewModel<TView, TViewModel>(string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
         public override Splat.Builder.AppBuilder WithCoreServices() { }
         public Splat.Builder.AppBuilder WithPlatformServices() { }
         public Splat.Builder.AppBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }

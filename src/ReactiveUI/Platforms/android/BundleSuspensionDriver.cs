@@ -11,10 +11,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Loads and saves state to persistent storage.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("BundleSuspensionDriver uses JsonSerializer which requires dynamic code generation")]
-[RequiresUnreferencedCode("BundleSuspensionDriver uses JsonSerializer which may require unreferenced code")]
-#endif
 public class BundleSuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
@@ -70,6 +66,10 @@ public class BundleSuspensionDriver : ISuspensionDriver
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("InvalidateState uses JsonSerializer which requires dynamic code generation")]
+    [RequiresUnreferencedCode("InvalidateState uses JsonSerializer which may require unreferenced code")]
+#endif
     public IObservable<Unit> InvalidateState() // TODO: Create Test
     {
         try
