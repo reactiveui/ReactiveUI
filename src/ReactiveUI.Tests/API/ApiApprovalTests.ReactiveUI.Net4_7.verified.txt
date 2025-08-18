@@ -136,7 +136,12 @@ namespace ReactiveUI
     public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
     {
         public System.Func<string, string> ViewModelToViewFunc { get; set; }
+        public ReactiveUI.DefaultViewLocator Map<TViewModel, TView>(System.Func<TView> factory, string? contract = null)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor<TViewModel> { }
         public ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null) { }
+        public ReactiveUI.DefaultViewLocator Unmap<TViewModel>()
+            where TViewModel :  class { }
     }
     public static class DependencyResolverMixins
     {
@@ -457,6 +462,15 @@ namespace ReactiveUI
         public System.IDisposable RegisterMessageSource<T>(System.IObservable<T> source, string? contract = null) { }
         public void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string? contract = null) { }
         public void SendMessage<T>(T message, string? contract = null) { }
+    }
+    public static class MutableDependencyResolverExtensions
+    {
+        public static Splat.IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>(this Splat.IMutableDependencyResolver resolver, string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
+        public static Splat.IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>(this Splat.IMutableDependencyResolver resolver, string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
     }
     public class NullableByteToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {

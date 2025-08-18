@@ -135,15 +135,15 @@ public static class DependencyResolverMixins
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and may not work when members are trimmed.")]
 #endif
     private static Func<object> TypeFactory(TypeInfo typeInfo)
     {
         var parameterlessConstructor = typeInfo.DeclaredConstructors.FirstOrDefault(ci => ci.IsPublic && ci.GetParameters().Length == 0);
         return parameterlessConstructor is null
             ? throw new Exception($"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.")
-            : Expression.Lambda<Func<object>>(Expression.New(parameterlessConstructor)).Compile();
+            : () => Activator.CreateInstance(typeInfo.AsType())
+                   ?? throw new Exception($"Failed to instantiate type {typeInfo.FullName} - ensure it has a public parameterless constructor.");
     }
 
 #if NET6_0_OR_GREATER

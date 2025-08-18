@@ -12,7 +12,7 @@ namespace ReactiveUI;
 /// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
 /// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
 /// </summary>
-public sealed class DefaultViewLocator : IViewLocator
+public sealed partial class DefaultViewLocator : IViewLocator
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
@@ -94,6 +94,13 @@ public sealed class DefaultViewLocator : IViewLocator
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
         viewModel.ArgumentNullExceptionThrowIfNull(nameof(viewModel));
+
+        // First try AOT mapping path (no reflection)
+        var mapped = TryResolveAOTMapping(viewModel!.GetType());
+        if (mapped is not null)
+        {
+            return mapped;
+        }
 
         var view = AttemptViewResolutionFor(viewModel!.GetType(), contract);
 

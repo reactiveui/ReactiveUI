@@ -168,9 +168,16 @@ namespace ReactiveUI
     public sealed class DefaultViewLocator : ReactiveUI.IViewLocator, Splat.IEnableLogger
     {
         public System.Func<string, string> ViewModelToViewFunc { get; set; }
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050", Justification="Mapping does not use dynamic code")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026", Justification="Mapping does not use reflection")]
+        public ReactiveUI.DefaultViewLocator Map<TViewModel, TView>(System.Func<TView> factory, string? contract = null)
+            where TViewModel :  class
+            where TView :  class, ReactiveUI.IViewFor<TViewModel> { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("View resolution uses reflection and type discovery")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("View resolution may reference types that could be trimmed")]
         public ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null) { }
+        public ReactiveUI.DefaultViewLocator Unmap<TViewModel>()
+            where TViewModel :  class { }
     }
     public static class DependencyResolverMixins
     {
@@ -595,6 +602,19 @@ namespace ReactiveUI
         public System.IDisposable RegisterMessageSource<T>(System.IObservable<T> source, string? contract = null) { }
         public void RegisterScheduler<T>(System.Reactive.Concurrency.IScheduler scheduler, string? contract = null) { }
         public void SendMessage<T>(T message, string? contract = null) { }
+    }
+    public static class MutableDependencyResolverExtensions
+    {
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050", Justification="Generic registration does not use dynamic code")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026", Justification="Generic registration does not use reflection")]
+        public static Splat.IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>(this Splat.IMutableDependencyResolver resolver, string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050", Justification="Generic registration does not use dynamic code")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026", Justification="Generic registration does not use reflection")]
+        public static Splat.IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>(this Splat.IMutableDependencyResolver resolver, string? contract = null)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class { }
     }
     public class NullableByteToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {

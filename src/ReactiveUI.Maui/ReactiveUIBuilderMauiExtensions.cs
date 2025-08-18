@@ -32,6 +32,25 @@ public static class ReactiveUIBuilderMauiExtensions
     }
 
     /// <summary>
+    /// Registers MAUI-specific services (AOT-friendly shortcut for non-builder code).
+    /// </summary>
+    /// <param name="resolver">Resolver to register into.</param>
+    /// <returns>The resolver for chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WithMaui uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("WithMaui uses methods that may require unreferenced code")]
+#endif
+    public static IMutableDependencyResolver WithMaui(this IMutableDependencyResolver resolver)
+    {
+        resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
+
+        // Use the same module the builder uses to avoid duplication.
+        var reg = new Registrations();
+        reg.Register((f, t) => resolver.RegisterConstant(f(), t));
+        return resolver;
+    }
+
+    /// <summary>
     /// Registers MAUI-specific services.
     /// </summary>
     /// <param name="builder">The builder instance.</param>
