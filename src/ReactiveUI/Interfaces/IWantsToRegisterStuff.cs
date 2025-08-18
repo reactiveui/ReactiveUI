@@ -17,8 +17,8 @@ internal interface IWantsToRegisterStuff
     /// </summary>
     /// <param name="registerFunction">A method the deriving class will class to register the type.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Platform registration uses ComponentModelTypeConverter and RxApp which require dynamic code generation")]
-    [RequiresUnreferencedCode("Platform registration uses ComponentModelTypeConverter and RxApp which may require unreferenced code")]
+    [RequiresDynamicCode("Register uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
 #endif
     void Register(Action<Func<object>, Type> registerFunction);
 }

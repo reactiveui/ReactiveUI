@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Splat.Builder;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
@@ -16,6 +18,7 @@ public class ActivatingViewTests
     [Fact]
     public void ActivatingViewSmokeTest()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -47,6 +50,7 @@ public class ActivatingViewTests
     [Fact]
     public void NullingViewModelDeactivateIt()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -77,6 +81,7 @@ public class ActivatingViewTests
     [Fact]
     public void SwitchingViewModelDeactivatesIt()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -111,6 +116,7 @@ public class ActivatingViewTests
     [Fact]
     public void SettingViewModelAfterLoadedLoadsIt()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
@@ -143,6 +149,7 @@ public class ActivatingViewTests
     [Fact]
     public void CanUnloadAndLoadViewAgain()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();

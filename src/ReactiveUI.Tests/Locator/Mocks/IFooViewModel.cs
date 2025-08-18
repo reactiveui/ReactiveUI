@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A interface view model.
 /// </summary>
-public interface IFooViewModel
-{
-}
+public interface IFooViewModel;

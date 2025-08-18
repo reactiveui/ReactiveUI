@@ -8,6 +8,7 @@ namespace ReactiveUI.Tests.Wpf;
 /// <summary>
 /// Interaction logic for CommandBindingView.xaml.
 /// </summary>
+[ExcludeFromViewRegistration]
 public partial class CanExecuteExecutingView
 {
     public CanExecuteExecutingView()

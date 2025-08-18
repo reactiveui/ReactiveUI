@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using Splat.Builder;
 
 namespace ReactiveUI;
 
@@ -26,6 +27,13 @@ public static class DependencyResolverMixins
 #endif
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
+        if (AppBuilder.UsingBuilder && !ModeDetector.InUnitTestRunner() && ReferenceEquals(resolver, Locator.CurrentMutable))
+        {
+            // If the builder has been used for the default resolver in a non-test environment,
+            // do not re-register defaults via reflection for Locator.CurrentMutable.
+            return;
+        }
+
         resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
         registrationNamespaces.ArgumentNullExceptionThrowIfNull(nameof(registrationNamespaces));
 
@@ -88,6 +96,12 @@ public static class DependencyResolverMixins
         foreach (var ti in assembly.DefinedTypes
                                    .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)) && !ti.IsAbstract))
         {
+            // Skip types explicitly marked to be excluded from auto view registration
+            if (ti.GetCustomAttribute<ExcludeFromViewRegistrationAttribute>() is not null)
+            {
+                continue;
+            }
+
             // grab the first _implemented_ interface that also implements IViewFor, this should be the expected IViewFor<>`
             var ivf = ti.ImplementedInterfaces.FirstOrDefault(t => t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));
 
@@ -138,17 +152,39 @@ public static class DependencyResolverMixins
 #endif
     private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)
     {
-        var targetType = namespaceName + ".Registrations";
-        if (assemblyName.Name is not null)
-        {
-            var fullName = targetType + ", " + assemblyName.FullName.Replace(assemblyName.Name, namespaceName);
+        var targetTypeName = namespaceName + ".Registrations";
 
-            var registerTypeClass = Reflection.ReallyFindType(fullName, false);
-            if (registerTypeClass is not null)
+        // Preferred path: find the target assembly by simple name among loaded assemblies
+        var asm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == namespaceName);
+        Type? registerTypeClass = null;
+        if (asm is null)
+        {
+            try
             {
-                var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass)!;
-                registerer?.Register((f, t) => resolver.RegisterConstant(f(), t));
+                asm = Assembly.Load(new AssemblyName(namespaceName));
             }
+            catch
+            {
+                asm = null;
+            }
+        }
+
+        if (asm is not null)
+        {
+            registerTypeClass = asm.GetType(targetTypeName, throwOnError: false, ignoreCase: false);
+        }
+
+        // Fallback to legacy lookup using full name synthesis
+        if (registerTypeClass is null && assemblyName.Name is not null)
+        {
+            var fullName = targetTypeName + ", " + assemblyName.FullName.Replace(assemblyName.Name, namespaceName);
+            registerTypeClass = Reflection.ReallyFindType(fullName, false);
+        }
+
+        if (registerTypeClass is not null)
+        {
+            var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass)!;
+            registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
         }
     }
 }

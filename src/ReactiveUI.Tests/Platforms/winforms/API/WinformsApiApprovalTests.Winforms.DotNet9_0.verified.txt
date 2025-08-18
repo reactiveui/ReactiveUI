@@ -44,6 +44,15 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string? GetOrientation() { }
     }
+    public static class ReactiveUIBuilderWinFormsExtensions
+    {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithWinForms uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithWinForms uses methods that may require unreferenced code")]
+        public static Splat.Builder.AppBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithWinForms uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithWinForms uses methods that may require unreferenced code")]
+        public static Splat.Builder.AppBuilder WithWinForms(this Splat.Builder.AppBuilder builder) { }
+    }
     public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
     {
         public ReactiveUserControlNonGeneric() { }

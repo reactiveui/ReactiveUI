@@ -8,10 +8,8 @@ namespace ReactiveUI.Tests.Wpf;
 /// <summary>
 /// Interaction logic for MainWindow.xaml.
 /// </summary>
+[ExcludeFromViewRegistration]
 public partial class TCMockWindow
 {
-    public TCMockWindow()
-    {
-        InitializeComponent();
-    }
+    public TCMockWindow() => InitializeComponent();
 }

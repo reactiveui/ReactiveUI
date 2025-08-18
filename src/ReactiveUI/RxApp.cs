@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Splat.Builder;
 
 namespace ReactiveUI;
 
@@ -84,15 +85,18 @@ public static class RxApp
         _taskpoolScheduler = TaskPoolScheduler.Default;
 #endif
 
-        Locator.RegisterResolverCallbackChanged(() =>
+        if (!AppBuilder.UsingBuilder)
         {
-            if (Locator.CurrentMutable is null)
+            Locator.RegisterResolverCallbackChanged(() =>
             {
-                return;
-            }
+                if (Locator.CurrentMutable is null)
+                {
+                    return;
+                }
 
-            Locator.CurrentMutable.InitializeReactiveUI(PlatformRegistrationManager.NamespacesToRegister);
-        });
+                Locator.CurrentMutable.InitializeReactiveUI(PlatformRegistrationManager.NamespacesToRegister);
+            });
+        }
 
         DefaultExceptionHandler = Observer.Create<Exception>(ex =>
         {

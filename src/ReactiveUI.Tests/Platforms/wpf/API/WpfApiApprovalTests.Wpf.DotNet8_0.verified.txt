@@ -160,6 +160,15 @@ namespace ReactiveUI
 }
 namespace ReactiveUI.Wpf
 {
+    public static class ReactiveUIBuilderWpfExtensions
+    {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithWpf uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithWpf uses methods that may require unreferenced code")]
+        public static Splat.Builder.AppBuilder WithWpf(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithWpf uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithWpf uses methods that may require unreferenced code")]
+        public static Splat.Builder.AppBuilder WithWpf(this Splat.Builder.AppBuilder builder) { }
+    }
     public class Registrations
     {
         public Registrations() { }

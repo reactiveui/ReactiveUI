@@ -16,10 +16,6 @@ namespace ReactiveUI;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Registration includes POCOObservableForProperty which uses reflection and dynamic code generation.")]
-    [RequiresUnreferencedCode("Registration includes POCOObservableForProperty which may reference members that could be trimmed.")]
-#endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         registerFunction.ArgumentNullExceptionThrowIfNull(nameof(registerFunction));

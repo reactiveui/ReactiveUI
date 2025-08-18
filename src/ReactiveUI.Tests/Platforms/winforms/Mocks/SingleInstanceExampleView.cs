@@ -21,4 +21,9 @@ public class SingleInstanceExampleView : ReactiveUI.Winforms.ReactiveUserControl
     /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public static int Instances { get; private set; }
+
+    /// <summary>
+    /// Reset the static counter (for test isolation only).
+    /// </summary>
+    internal static void ResetInstances() => Instances = 0;
 }

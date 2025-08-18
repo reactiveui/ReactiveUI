@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A strange interface.
 /// </summary>
-public interface IStrangeInterfaceNotFollowingConvention
-{
-}
+public interface IStrangeInterfaceNotFollowingConvention;

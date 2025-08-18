@@ -1,5 +1,6 @@
 ﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidX")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Builder.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Drawing")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
@@ -203,6 +204,11 @@ namespace ReactiveUI
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object? result) { }
         public static object? DoReferenceCast(object? from, System.Type targetType) { }
+    }
+    [System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple=false, Inherited=false)]
+    public sealed class ExcludeFromViewRegistrationAttribute : System.Attribute
+    {
+        public ExcludeFromViewRegistrationAttribute() { }
     }
     public static class ExpressionMixins
     {
@@ -779,12 +785,14 @@ namespace ReactiveUI
         public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector) { }
         public static System.Collections.Generic.IComparer<T> OrderByDescending<TValue>(System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("POCO property observation uses reflection and type analysis")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("POCO property observation may reference members that could be trimmed")]
     public class POCOObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
         public POCOObservableForProperty() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObject uses reflection and type analysis")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject may reference members that could be trimmed")]
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetNotificationForProperty uses reflection and type analysis")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty may reference members that could be trimmed")]
         public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
     public static class PlatformRegistrationManager
@@ -1174,6 +1182,16 @@ namespace ReactiveUI
             "code")]
         public System.IDisposable SuppressChangeNotifications() { }
     }
+    public static class ReactiveUIBuilderExtensions
+    {
+        public static Splat.Builder.AppBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
+        public static Splat.Builder.AppBuilder WithPlatformServices(this Splat.Builder.AppBuilder builder) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithViewsFromAssembly uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithViewsFromAssembly uses methods that may require unreferenced code")]
+        public static Splat.Builder.AppBuilder WithViewsFromAssembly(this Splat.Builder.AppBuilder builder, System.Reflection.Assembly assembly) { }
+    }
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting requires dynamic code generation")]
     [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting may reference members that could be trimmed")]
     public static class Reflection
@@ -1234,10 +1252,6 @@ namespace ReactiveUI
     public class Registrations
     {
         public Registrations() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Registration includes POCOObservableForProperty which uses reflection and dynamic" +
-            " code generation.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Registration includes POCOObservableForProperty which may reference members that " +
-            "could be trimmed.")]
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
     public static class RoutableViewModelMixin
@@ -1885,5 +1899,21 @@ namespace ReactiveUI
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
         public static System.IObservable<TRet> WhenAnyObservable<TSender, TRet, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this TSender? sender, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T1>?>> obs1, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T2>?>> obs2, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T3>?>> obs3, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T4>?>> obs4, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T5>?>> obs5, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T6>?>> obs6, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T7>?>> obs7, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T8>?>> obs8, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T9>?>> obs9, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T10>?>> obs10, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T11>?>> obs11, System.Linq.Expressions.Expression<System.Func<TSender, System.IObservable<T12>?>> obs12, System.Func<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, TRet> selector)
             where TSender :  class { }
+    }
+}
+namespace ReactiveUI.Builder
+{
+    public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
+    {
+        public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithCoreServices may use reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithCoreServices may use reflection and will not work in AOT environments.")]
+        public override Splat.Builder.AppBuilder WithCoreServices() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
+        public Splat.Builder.AppBuilder WithPlatformServices() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+        public Splat.Builder.AppBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
     }
 }

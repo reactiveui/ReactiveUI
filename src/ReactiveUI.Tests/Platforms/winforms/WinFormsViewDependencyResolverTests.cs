@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Splat.Builder;
 using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Winforms;
@@ -13,6 +14,13 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
 
     public WinFormsViewDependencyResolverTests()
     {
+        AppBuilder.ResetBuilderStateForTests();
+
+        // Reset static counters to avoid cross-test interference when running entire suite
+        SingleInstanceExampleView.ResetInstances();
+        SingleInstanceWithContractExampleView.ResetInstances();
+        NeverUsedView.ResetInstances();
+
         _resolver = new ModernDependencyResolver();
         _resolver.InitializeSplat();
         _resolver.InitializeReactiveUI();

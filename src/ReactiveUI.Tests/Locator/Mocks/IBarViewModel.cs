@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A mock interface view model.
 /// </summary>
-public interface IBarViewModel
-{
-}
+public interface IBarViewModel;

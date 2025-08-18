@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A view which simulates a activation.
 /// </summary>
-public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>, IDisposable
+public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>, ICanActivate, IDisposable
 {
     private ActivatingViewModel? _viewModel;
 
@@ -31,6 +31,16 @@ public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewMode
     /// Gets the unloaded.
     /// </summary>
     public Subject<Unit> Unloaded { get; } = new();
+
+    /// <summary>
+    /// Gets an observable that signals when the view is activated.
+    /// </summary>
+    public IObservable<Unit> Activated => Loaded;
+
+    /// <summary>
+    /// Gets an observable that signals when the view is deactivated.
+    /// </summary>
+    public IObservable<Unit> Deactivated => Unloaded;
 
     /// <summary>
     /// Gets or sets the view model.

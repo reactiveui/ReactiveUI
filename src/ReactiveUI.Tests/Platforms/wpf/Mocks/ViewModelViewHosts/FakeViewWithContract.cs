@@ -13,9 +13,7 @@ public static class FakeViewWithContract
     internal const string ContractA = "ContractA";
     internal const string ContractB = "ContractB";
 
-    public class MyViewModel : ReactiveObject
-    {
-    }
+    public class MyViewModel : ReactiveObject;
 
     /// <summary>
     /// Used as the default view with no contracted.

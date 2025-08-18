@@ -30,6 +30,11 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string? GetOrientation() { }
     }
+    public static class ReactiveUIBuilderWinFormsExtensions
+    {
+        public static Splat.Builder.AppBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        public static Splat.Builder.AppBuilder WithWinForms(this Splat.Builder.AppBuilder builder) { }
+    }
     public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
     {
         public ReactiveUserControlNonGeneric() { }
