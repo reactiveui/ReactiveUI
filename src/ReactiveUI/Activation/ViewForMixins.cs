@@ -103,10 +103,6 @@ public static class ViewForMixins
     /// cleaned up when the View is deactivated.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WhenActivated uses WhenAnyValue which requires dynamic code generation for expression trees")]
-    [RequiresUnreferencedCode("WhenActivated uses WhenAnyValue which may reference members that could be trimmed")]
-#endif
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
     {
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
@@ -130,10 +126,6 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WhenActivated uses WhenAnyValue which requires dynamic code generation for expression trees")]
-    [RequiresUnreferencedCode("WhenActivated uses WhenAnyValue which may reference members that could be trimmed")]
-#endif
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view) // TODO: Create Test
     {
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
@@ -169,10 +161,6 @@ public static class ViewForMixins
     /// deactivated (i.e. "d(someObservable.Subscribe());").
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WhenActivated uses WhenAnyValue which requires dynamic code generation for expression trees")]
-    [RequiresUnreferencedCode("WhenActivated uses WhenAnyValue which may reference members that could be trimmed")]
-#endif
     public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block) => item.WhenActivated(block, null!);
 
     /// <summary>
@@ -192,10 +180,6 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WhenActivated uses WhenAnyValue which requires dynamic code generation for expression trees")]
-    [RequiresUnreferencedCode("WhenActivated uses WhenAnyValue which may reference members that could be trimmed")]
-#endif
     public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view) => // TODO: Create Test
         item.WhenActivated(
                            () =>
@@ -222,19 +206,15 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WhenActivated uses WhenAnyValue which requires dynamic code generation for expression trees")]
-    [RequiresUnreferencedCode("WhenActivated uses WhenAnyValue which may reference members that could be trimmed")]
-#endif
-    public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) => // TODO: Create Test
-        item.WhenActivated(
-                           () =>
-                           {
-                               var d = new CompositeDisposable();
-                               block(d);
-                               return new[] { d };
-                           },
-                           view);
+    public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) =>
+            item.WhenActivated(
+                               () =>
+                               {
+                                   var d = new CompositeDisposable();
+                                   block(d);
+                                   return [d];
+                               },
+                               view);
 
     private static CompositeDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
     {
@@ -254,10 +234,6 @@ public static class ViewForMixins
                                        viewDisposable);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WhenActivated uses WhenAnyValue which requires dynamic code generation for expression trees")]
-    [RequiresUnreferencedCode("WhenActivated uses WhenAnyValue which may reference members that could be trimmed")]
-#endif
     private static CompositeDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation)
     {
         var vmDisposable = new SerialDisposable();
@@ -268,7 +244,7 @@ public static class ViewForMixins
                                        {
                                            if (activated)
                                            {
-                                               viewVmDisposable.Disposable = view.WhenAnyValue(x => x.ViewModel)
+                                               viewVmDisposable.Disposable = view.WhenAnyValue<IViewFor, object?>(nameof(view.ViewModel))
                                                    .Select(x => x as IActivatableViewModel)
                                                    .Subscribe(x =>
                                                    {

@@ -60,7 +60,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         _mainDisposables.Add(
                              this
-                                 .WhenAnyValue(x => x.SectionInfo)
+                                 .WhenAnyValue<CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo>, IReadOnlyList<TSectionInfo>>(nameof(SectionInfo))
                                  .Subscribe(
                                             SectionInfoChanged,
                                             ex => this.Log().Error(ex, "Error occurred when SectionInfo changed.")));

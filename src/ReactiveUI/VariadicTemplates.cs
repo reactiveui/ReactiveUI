@@ -51,6 +51,10 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
         /// <param name="propertyName">The property name to observe.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
             this TSender? sender,
             string propertyName)
@@ -84,6 +88,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly overload that avoids expression trees by using a property name and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
             this TSender? sender,
             string propertyName,
@@ -125,6 +133,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(
             this TSender? sender,
                         string property1Name,
@@ -164,6 +176,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(
             this TSender? sender,
                         string property1Name,
@@ -199,6 +215,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(
                 this TSender? sender,
                             string property1Name,
@@ -235,6 +255,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(
                 this TSender? sender,
                             string property1Name,
@@ -321,6 +345,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names instead of expressions.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2)> WhenAnyValue<TSender, T1,T2>(
             this TSender? sender,
                         string property1Name,                        string property2Name            )
@@ -366,6 +394,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names with distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2)> WhenAnyValue<TSender, T1,T2>(
             this TSender? sender,
                         string property1Name,                        string property2Name            ,
@@ -410,6 +442,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2>(
             this TSender? sender,
                         string property1Name,
@@ -456,6 +492,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2>(
             this TSender? sender,
                         string property1Name,
@@ -502,6 +542,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(
                 this TSender? sender,
                             string property1Name,
@@ -548,6 +592,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(
                 this TSender? sender,
                             string property1Name,
@@ -654,6 +702,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names instead of expressions.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3)> WhenAnyValue<TSender, T1,T2,T3>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name            )
@@ -703,6 +755,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names with distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3)> WhenAnyValue<TSender, T1,T2,T3>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name            ,
@@ -751,6 +807,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3>(
             this TSender? sender,
                         string property1Name,
@@ -802,6 +862,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3>(
             this TSender? sender,
                         string property1Name,
@@ -854,6 +918,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(
                 this TSender? sender,
                             string property1Name,
@@ -905,6 +973,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(
                 this TSender? sender,
                             string property1Name,
@@ -1023,6 +1095,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names instead of expressions.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4)> WhenAnyValue<TSender, T1,T2,T3,T4>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name,                        string property4Name            )
@@ -1076,6 +1152,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names with distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4)> WhenAnyValue<TSender, T1,T2,T3,T4>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name,                        string property4Name            ,
@@ -1128,6 +1208,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4>(
             this TSender? sender,
                         string property1Name,
@@ -1184,6 +1268,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4>(
             this TSender? sender,
                         string property1Name,
@@ -1242,6 +1330,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(
                 this TSender? sender,
                             string property1Name,
@@ -1298,6 +1390,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(
                 this TSender? sender,
                             string property1Name,
@@ -1428,6 +1524,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names instead of expressions.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5)> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name            )
@@ -1485,6 +1585,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names with distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5)> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name            ,
@@ -1541,6 +1645,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5>(
             this TSender? sender,
                         string property1Name,
@@ -1602,6 +1710,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5>(
             this TSender? sender,
                         string property1Name,
@@ -1666,6 +1778,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5>(
                 this TSender? sender,
                             string property1Name,
@@ -1727,6 +1843,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5>(
                 this TSender? sender,
                             string property1Name,
@@ -1869,6 +1989,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names instead of expressions.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5,T6)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name,                        string property6Name            )
@@ -1930,6 +2054,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names with distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5,T6)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name,                        string property6Name            ,
@@ -1990,6 +2118,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6>(
             this TSender? sender,
                         string property1Name,
@@ -2056,6 +2188,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6>(
             this TSender? sender,
                         string property1Name,
@@ -2126,6 +2262,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6>(
                 this TSender? sender,
                             string property1Name,
@@ -2192,6 +2332,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6>(
                 this TSender? sender,
                             string property1Name,
@@ -2346,6 +2490,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names instead of expressions.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5,T6,T7)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name,                        string property6Name,                        string property7Name            )
@@ -2411,6 +2559,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly tuple overloads using property names with distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<(T1,T2,T3,T4,T5,T6,T7)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(
             this TSender? sender,
                         string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name,                        string property6Name,                        string property7Name            ,
@@ -2475,6 +2627,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
             this TSender? sender,
                         string property1Name,
@@ -2546,6 +2702,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
             this TSender? sender,
                         string property1Name,
@@ -2622,6 +2782,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
                 this TSender? sender,
                             string property1Name,
@@ -2693,6 +2857,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
                 this TSender? sender,
                             string property1Name,
@@ -2864,6 +3032,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
             this TSender? sender,
                         string property1Name,
@@ -2940,6 +3112,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
             this TSender? sender,
                         string property1Name,
@@ -3022,6 +3198,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
                 this TSender? sender,
                             string property1Name,
@@ -3098,6 +3278,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
                 this TSender? sender,
                             string property1Name,
@@ -3281,6 +3465,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
             this TSender? sender,
                         string property1Name,
@@ -3362,6 +3550,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
             this TSender? sender,
                         string property1Name,
@@ -3450,6 +3642,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
                 this TSender? sender,
                             string property1Name,
@@ -3531,6 +3727,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
                 this TSender? sender,
                             string property1Name,
@@ -3726,6 +3926,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
             this TSender? sender,
                         string property1Name,
@@ -3812,6 +4016,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
             this TSender? sender,
                         string property1Name,
@@ -3906,6 +4114,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
                 this TSender? sender,
                             string property1Name,
@@ -3992,6 +4204,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
                 this TSender? sender,
                             string property1Name,
@@ -4199,6 +4415,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
             this TSender? sender,
                         string property1Name,
@@ -4290,6 +4510,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
             this TSender? sender,
                         string property1Name,
@@ -4390,6 +4614,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
                 this TSender? sender,
                             string property1Name,
@@ -4481,6 +4709,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
                 this TSender? sender,
                             string property1Name,
@@ -4700,6 +4932,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
             this TSender? sender,
                         string property1Name,
@@ -4796,6 +5032,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly selector overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
             this TSender? sender,
                         string property1Name,
@@ -4902,6 +5142,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
                 this TSender? sender,
                             string property1Name,
@@ -4998,6 +5242,10 @@ namespace ReactiveUI
         /// <summary>
         /// AOT-friendly WhenAny overload using property names and distinct option.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
                 this TSender? sender,
                             string property1Name,

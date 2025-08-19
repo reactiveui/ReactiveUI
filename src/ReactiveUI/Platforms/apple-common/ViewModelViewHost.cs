@@ -167,15 +167,15 @@ public class ViewModelViewHost : ReactiveViewController
 
     private void Initialize()
     {
-        var viewChange = this.WhenAnyValue(x => x.ViewModel)
+        var viewChange = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel))
             .CombineLatest(
                 this.WhenAnyObservable(x => x.ViewContractObservable).StartWith((string?)null),
                 (vm, contract) => new { ViewModel = vm, Contract = contract })
             .Where(x => x.ViewModel is not null);
 
-        var defaultViewChange = this.WhenAnyValue(x => x.ViewModel)
+        var defaultViewChange = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel))
             .CombineLatest(
-                this.WhenAnyValue(x => x.DefaultContent),
+                this.WhenAnyValue<ViewModelViewHost, NSViewController?>(nameof(DefaultContent)),
                 (vm, defaultContent) => new { ViewModel = vm, DefaultContent = defaultContent })
             .Where(x => x.ViewModel is null && x.DefaultContent is not null)
             .Select(x => x.DefaultContent);

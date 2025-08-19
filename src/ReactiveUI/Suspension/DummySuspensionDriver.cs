@@ -29,6 +29,10 @@ public class DummySuspensionDriver : ISuspensionDriver
         Observables.Unit;
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("InvalidateState uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("InvalidateState uses methods that may require unreferenced code")]
+#endif
     public IObservable<Unit> InvalidateState() => // TODO: Create Test
         Observables.Unit;
 }

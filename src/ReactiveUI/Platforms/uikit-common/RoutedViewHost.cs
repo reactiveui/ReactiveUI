@@ -43,7 +43,7 @@ public class RoutedViewHost : ReactiveNavigationController
                                d =>
                                {
                                    d(this
-                                     .WhenAnyValue(x => x.Router)
+                                     .WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
                                      .Where(x => x?.NavigationStack.Count > 0 && ViewControllers?.Length == 0)
                                      .Subscribe(x =>
                                      {
@@ -68,7 +68,7 @@ public class RoutedViewHost : ReactiveNavigationController
                                                  _titleUpdater.Disposable = Router
                                                                             .WhenAnyValue(y => y.GetCurrentViewModel())
                                                                             .WhereNotNull()
-                                                                            .Select(vm => vm.WhenAnyValue(x => x.UrlPathSegment))
+                                                                            .Select(vm => vm.WhenAnyValue<IRoutableViewModel, string?>(nameof(vm.UrlPathSegment)))
                                                                             .Switch()
                                                                             .Subscribe(y => view.NavigationItem.Title = y);
                                              }
@@ -77,7 +77,7 @@ public class RoutedViewHost : ReactiveNavigationController
                                          _routerInstigated = false;
                                      }));
 
-                                   var navigationStackChanged = this.WhenAnyValue(x => x.Router)
+                                   var navigationStackChanged = this.WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
                                                                     .Where(x => x is not null)
                                                                     .Select(x => x!.NavigationStack.ObserveCollectionChanges())
                                                                     .Switch();
@@ -97,7 +97,7 @@ public class RoutedViewHost : ReactiveNavigationController
                                              _titleUpdater.Disposable = Router
                                                                         .WhenAnyValue(y => y.GetCurrentViewModel())
                                                                         .WhereNotNull()
-                                                                        .Select(vm => vm.WhenAnyValue(x => x.UrlPathSegment))
+                                                                        .Select(vm => vm.WhenAnyValue<IRoutableViewModel, string?>(nameof(vm.UrlPathSegment)))
                                                                         .Switch()
                                                                         .Subscribe(y => x.View.NavigationItem.Title = y);
                                          }
