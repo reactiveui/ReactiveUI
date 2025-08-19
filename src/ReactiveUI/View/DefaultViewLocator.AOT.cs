@@ -13,7 +13,8 @@ namespace ReactiveUI;
 /// </summary>
 public sealed partial class DefaultViewLocator
 {
-    private readonly ConcurrentDictionary<Type, Func<object?>> _aotMappings = new();
+    // Keyed by (ViewModelType, Contract). Empty string represents default contract.
+    private readonly ConcurrentDictionary<(Type vmType, string contract), Func<IViewFor>> _aotMappings = new();
 
     /// <summary>
     /// Registers a direct mapping from a view model type to a view factory.
@@ -22,7 +23,7 @@ public sealed partial class DefaultViewLocator
     /// <typeparam name="TViewModel">View model type.</typeparam>
     /// <typeparam name="TView">View type.</typeparam>
     /// <param name="factory">Factory that builds the view.</param>
-    /// <param name="contract">Optional contract (unused here; included for future parity with Splat locator).</param>
+    /// <param name="contract">Optional contract used to disambiguate views.</param>
     /// <returns>The locator for chaining.</returns>
 #if NET6_0_OR_GREATER
     [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Mapping does not use reflection")]
@@ -33,28 +34,35 @@ public sealed partial class DefaultViewLocator
         where TView : class, IViewFor<TViewModel>
     {
         factory.ArgumentNullExceptionThrowIfNull(nameof(factory));
-        _aotMappings[typeof(TViewModel)] = () => factory();
+        _aotMappings[(typeof(TViewModel), contract ?? string.Empty)] = () => factory();
         return this;
     }
 
     /// <summary>
-    /// Clears a previously registered mapping.
+    /// Clears a previously registered mapping for an optional contract.
     /// </summary>
     /// <typeparam name="TViewModel">View model type.</typeparam>
+    /// <param name="contract">Optional contract to unmap.</param>
     /// <returns>The locator for chaining.</returns>
-    public DefaultViewLocator Unmap<TViewModel>()
+    public DefaultViewLocator Unmap<TViewModel>(string? contract = null)
         where TViewModel : class
     {
-        _aotMappings.TryRemove(typeof(TViewModel), out _);
+        _ = _aotMappings.TryRemove((typeof(TViewModel), contract ?? string.Empty), out _);
         return this;
     }
 
-    private IViewFor? TryResolveAOTMapping(Type viewModelType)
+    private IViewFor? TryResolveAOTMapping(Type viewModelType, string? contract)
     {
-        if (_aotMappings.TryGetValue(viewModelType, out var f))
+        // Try exact contract
+        if (_aotMappings.TryGetValue((viewModelType, contract ?? string.Empty), out var f))
         {
-            var v = f();
-            return v as IViewFor;
+            return f();
+        }
+
+        // Fallback to default contract if a specific contract was requested
+        if (!string.IsNullOrEmpty(contract) && _aotMappings.TryGetValue((viewModelType, string.Empty), out var fDefault))
+        {
+            return fDefault();
         }
 
         return null;

@@ -3,37 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 
 namespace ReactiveUI;
 
-/// <summary>
-/// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
-/// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
-/// </summary>
 public sealed partial class DefaultViewLocator : IViewLocator
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
-    /// </summary>
-    /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
     internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) =>
         ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
 
-    /// <summary>
-    /// Gets or sets a function that is used to convert a view model name to a proposed view name.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// If unset, the default behavior is to change "ViewModel" to "View". If a different convention is followed, assign an appropriate function to this
-    /// property.
-    /// </para>
-    /// <para>
-    /// Note that the name returned by the function is a starting point for view resolution. Variants on the name will be resolved according to the rules
-    /// set out by the <see cref="ResolveView{T}"/> method.
-    /// </para>
-    /// </remarks>
     public Func<string, string> ViewModelToViewFunc { get; set; }
 
     /// <summary>
@@ -95,35 +75,16 @@ public sealed partial class DefaultViewLocator : IViewLocator
     {
         viewModel.ArgumentNullExceptionThrowIfNull(nameof(viewModel));
 
-        // First try AOT mapping path (no reflection)
-        var mapped = TryResolveAOTMapping(viewModel!.GetType());
+        var mapped = TryResolveAOTMapping(viewModel!.GetType(), contract);
         if (mapped is not null)
         {
             return mapped;
         }
 
-        var view = AttemptViewResolutionFor(viewModel!.GetType(), contract);
-
-        if (view is not null)
-        {
-            return view;
-        }
-
-        view = AttemptViewResolutionFor(typeof(T), contract);
-
-        if (view is not null)
-        {
-            return view;
-        }
-
-        view = AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract);
-
-        if (view is not null)
-        {
-            return view;
-        }
-
-        view = AttemptViewResolutionFor(ToggleViewModelType(typeof(T)), contract);
+        var view = AttemptViewResolutionFor(viewModel!.GetType(), contract)
+                   ?? AttemptViewResolutionFor(typeof(T), contract)
+                   ?? AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract)
+                   ?? AttemptViewResolutionFor(ToggleViewModelType(typeof(T)), contract);
 
         if (view is not null)
         {

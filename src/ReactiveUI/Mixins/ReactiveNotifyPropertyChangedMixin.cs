@@ -29,6 +29,115 @@ public static class ReactiveNotifyPropertyChangedMixin
 
     /// <summary>
     /// ObservableForProperty returns an Observable representing the
+    /// property change notifications for a specific property name on a
+    /// ReactiveObject (or compatible type). This overload avoids expression tree
+    /// analysis to be more AOT-friendly. The returned IObservedChange instances
+    /// will always have the Value property populated via reflection.
+    /// </summary>
+    /// <typeparam name="TSender">The sender type.</typeparam>
+    /// <typeparam name="TValue">The value type.</typeparam>
+    /// <param name="item">The source object to observe properties of.</param>
+    /// <param name="propertyName">The property name to observe.</param>
+    /// <param name="beforeChange">If true, the Observable will notify immediately before a property is going to change.</param>
+    /// <param name="skipInitial">If true, the Observable will not notify with the initial value.</param>
+    /// <param name="isDistinct">If set to <c>true</c>, values are filtered with DistinctUntilChanged.</param>
+    /// <returns>An Observable representing the property change notifications for the given property name.</returns>
+    public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
+        this TSender? item,
+        string propertyName,
+        bool beforeChange,
+        bool skipInitial,
+        bool isDistinct)
+    {
+        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        propertyName.ArgumentNullExceptionThrowIfNull(nameof(propertyName));
+
+        // Create a minimal expression to attach to ObservedChange for compatibility.
+        var parameter = Expression.Parameter(typeof(TSender), "x");
+        Expression expr;
+        try
+        {
+            expr = Expression.Property(parameter, propertyName);
+        }
+        catch
+        {
+            // Fall back to a simple member access-less expression if property is not found at compile time.
+            expr = parameter;
+        }
+
+        var factory = _notifyFactoryCache.Get((item!.GetType(), propertyName, beforeChange))
+                      ?? throw new Exception($"Could not find a ICreatesObservableForProperty for {item!.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+
+        // Helper to get current property value without expression analysis.
+        static TValue GetCurrentValue(object sender, string name)
+        {
+            var t = sender.GetType();
+#if NETSTANDARD || NETFRAMEWORK
+            var prop = t.GetProperty(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
+#else
+            var prop = t.GetProperty(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
+#endif
+            if (prop is null)
+            {
+                return default!;
+            }
+
+            var val = prop.GetValue(sender);
+            if (val is null)
+            {
+                return default!;
+            }
+
+            return val is TValue tv ? tv : (TValue)val;
+        }
+
+        var core = Observable.Create<IObservedChange<TSender, TValue>>(obs =>
+        {
+            // Emit initial value if requested.
+            if (!skipInitial)
+            {
+                try
+                {
+                    var initial = GetCurrentValue(item!, propertyName);
+                    obs.OnNext(new ObservedChange<TSender, TValue>(item!, expr, initial));
+                }
+                catch (Exception ex)
+                {
+                    obs.OnError(ex);
+                }
+            }
+
+            var subscription = factory
+                .GetNotificationForProperty(item!, expr, propertyName, beforeChange, suppressWarnings: false)
+                .Subscribe(
+                    _ =>
+                    {
+                        try
+                        {
+                            var current = GetCurrentValue(item!, propertyName);
+                            obs.OnNext(new ObservedChange<TSender, TValue>(item!, expr, current));
+                        }
+                        catch (Exception ex)
+                        {
+                            obs.OnError(ex);
+                        }
+                    },
+                    obs.OnError,
+                    obs.OnCompleted);
+
+            return subscription;
+        });
+
+        if (isDistinct)
+        {
+            return core.DistinctUntilChanged(x => x.Value);
+        }
+
+        return core;
+    }
+
+    /// <summary>
+    /// ObservableForProperty returns an Observable representing the
     /// property change notifications for a specific property on a
     /// ReactiveObject. This method (unlike other Observables that return
     /// IObservedChange) guarantees that the Value property of
