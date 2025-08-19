@@ -9,11 +9,21 @@ using System.Reflection;
 
 namespace ReactiveUI;
 
+/// <summary>
+/// DefaultViewLocator.
+/// </summary>
+/// <seealso cref="ReactiveUI.IViewLocator" />
 public sealed partial class DefaultViewLocator : IViewLocator
 {
     internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) =>
         ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
 
+    /// <summary>
+    /// Gets or sets the view model to view function.
+    /// </summary>
+    /// <value>
+    /// The view model to view function.
+    /// </value>
     public Func<string, string> ViewModelToViewFunc { get; set; }
 
     /// <summary>
