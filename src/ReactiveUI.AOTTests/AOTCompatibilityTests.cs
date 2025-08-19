@@ -91,7 +91,7 @@ public class AOTCompatibilityTests
         string? observedValue = null;
 
         // Using string property names should work in AOT
-        obj.WhenAnyValue(x => x.TestProperty)
+        obj.WhenAnyValue<TestReactiveObject, string>(nameof(TestReactiveObject.TestProperty))
            .Subscribe(value => observedValue = value);
 
         obj.TestProperty = "test value";

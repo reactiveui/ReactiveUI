@@ -137,6 +137,51 @@ public static class ReactiveNotifyPropertyChangedMixin
     }
 
     /// <summary>
+    /// ObservableForProperty overload that avoids expression trees by using only a property name.
+    /// </summary>
+    /// <typeparam name="TSender">The sender type.</typeparam>
+    /// <typeparam name="TValue">The value type.</typeparam>
+    /// <param name="item">The source object to observe properties of.</param>
+    /// <param name="propertyName">The property name to observe.</param>
+    /// <returns>An observable sequence of observed changes for the given property name.</returns>
+    public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
+        this TSender? item,
+        string propertyName)
+        => ObservableForProperty<TSender, TValue>(item, propertyName, beforeChange: false, skipInitial: true, isDistinct: true);
+
+    /// <summary>
+    /// ObservableForProperty overload that avoids expression trees by using a property name and beforeChange option.
+    /// </summary>
+    /// <typeparam name="TSender">The sender type.</typeparam>
+    /// <typeparam name="TValue">The value type.</typeparam>
+    /// <param name="item">The source object to observe properties of.</param>
+    /// <param name="propertyName">The property name to observe.</param>
+    /// <param name="beforeChange">If true, the observable will notify immediately before a property is going to change.</param>
+    /// <returns>An observable sequence of observed changes for the given property name.</returns>
+    public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
+        this TSender? item,
+        string propertyName,
+        bool beforeChange)
+        => ObservableForProperty<TSender, TValue>(item, propertyName, beforeChange: beforeChange, skipInitial: true, isDistinct: true);
+
+    /// <summary>
+    /// ObservableForProperty overload that avoids expression trees by using a property name with options to control initial emission and beforeChange.
+    /// </summary>
+    /// <typeparam name="TSender">The sender type.</typeparam>
+    /// <typeparam name="TValue">The value type.</typeparam>
+    /// <param name="item">The source object to observe properties of.</param>
+    /// <param name="propertyName">The property name to observe.</param>
+    /// <param name="beforeChange">If true, the observable will notify immediately before a property is going to change.</param>
+    /// <param name="skipInitial">If true, the observable will not notify with the initial value.</param>
+    /// <returns>An observable sequence of observed changes for the given property name.</returns>
+    public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
+        this TSender? item,
+        string propertyName,
+        bool beforeChange,
+        bool skipInitial)
+        => ObservableForProperty<TSender, TValue>(item, propertyName, beforeChange: beforeChange, skipInitial: skipInitial, isDistinct: true);
+
+    /// <summary>
     /// ObservableForProperty returns an Observable representing the
     /// property change notifications for a specific property on a
     /// ReactiveObject. This method (unlike other Observables that return
