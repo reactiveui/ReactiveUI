@@ -385,13 +385,9 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         }
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetSubscription uses WhenAnyValue which requires dynamic code generation in AOT scenarios.")]
-    [RequiresUnreferencedCode("GetSubscription uses WhenAnyValue which may reference members that could be trimmed in AOT scenarios.")]
-#endif
     private void GetSubscription()
     {
-        _observable = this.WhenAnyValue(vm => vm.Value)
+        _observable = this.WhenAnyValue<ReactiveProperty<T>, T>(nameof(Value))
             .Skip(_skipCurrentValue);
 
         if (_isDistinctUntilChanged)

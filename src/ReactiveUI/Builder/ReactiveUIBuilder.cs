@@ -29,25 +29,23 @@ public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : App
     /// Registers the core ReactiveUI services.
     /// </summary>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WithCoreServices may use reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("WithCoreServices may use reflection and will not work in AOT environments.")]
-#endif
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
     public override AppBuilder WithCoreServices()
     {
         if (_coreRegistered)
         {
-            base.WithCoreServices();
             return this;
         }
 
         // Immediately register the core ReactiveUI services into the provided resolver.
         var registrations = new Registrations();
+#pragma warning disable IL2067 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The parameter of method does not have matching annotations.
         registrations.Register((f, t) => _resolver.RegisterConstant(f(), t));
+#pragma warning restore IL2067 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The parameter of method does not have matching annotations.
 
         _coreRegistered = true;
 
-        base.WithCoreServices();
         return this;
     }
 
@@ -68,7 +66,11 @@ public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : App
 
         // Immediately register the platform ReactiveUI services into the provided resolver.
         var platformRegistrations = new PlatformRegistrations();
+#if NET6_0_OR_GREATER
+        platformRegistrations.Register((f, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] t) => _resolver.RegisterConstant(f(), t));
+#else
         platformRegistrations.Register((f, t) => _resolver.RegisterConstant(f(), t));
+#endif
 
         _platformRegistered = true;
         return this;
@@ -93,19 +95,60 @@ public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : App
     }
 
     /// <summary>
+    /// Registers a view type for a specific view model using generics and a parameterless constructor.
+    /// This avoids reflection and is AOT-friendly.
+    /// </summary>
+    /// <typeparam name="TView">The concrete view type.</typeparam>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <param name="contract">Optional contract.</param>
+    /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Generic registration does not use reflection")]
+    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Generic registration does not use dynamic code")]
+#endif
+    public AppBuilder RegisterViewForViewModel<TView, TViewModel>(string? contract = null)
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class
+    {
+        _resolver.Register(() => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a view type as a lazy singleton for a specific view model using generics.
+    /// This avoids reflection and is AOT-friendly.
+    /// </summary>
+    /// <typeparam name="TView">The concrete view type.</typeparam>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <param name="contract">Optional contract.</param>
+    /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Generic registration does not use reflection")]
+    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Generic registration does not use dynamic code")]
+#endif
+    public AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(string? contract = null)
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class
+    {
+        _resolver.RegisterLazySingleton(() => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
+        return this;
+    }
+
+    /// <summary>
     /// Registers a platform-specific registration module by type.
     /// </summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+    [SuppressMessage("Trimming", "IL2111:Method with parameters or return value with `DynamicallyAccessedMembersAttribute` is accessed via reflection. Trimmer can't guarantee availability of the requirements of the method.", Justification = "Does not use reflection")]
     internal AppBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new()
     {
         var registration = new T();
+#if NET6_0_OR_GREATER
+        registration.Register((f, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] t) => _resolver.RegisterConstant(f(), t));
+#else
         registration.Register((f, t) => _resolver.RegisterConstant(f(), t));
+#endif
         return this;
     }
 }

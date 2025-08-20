@@ -8,7 +8,7 @@ namespace ReactiveUI;
 /// <summary>
 /// Android platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>

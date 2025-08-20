@@ -1,6 +1,7 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+// See the LICENSE file in the project root for full license information.
 
 #nullable enable
 
@@ -46,6 +47,23 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly overload that avoids expression trees by using a property name.
+        /// </summary>
+        /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="propertyName">The property name to observe.</param>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
+            this TSender? sender,
+            string propertyName)
+        {
+            return sender!.ObservableForProperty<TSender, TRet>(propertyName, beforeChange: false, skipInitial: false, isDistinct: true)
+                          .Select(x => x.Value);
+        }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of a
         /// property on an object has changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -67,7 +85,25 @@ namespace ReactiveUI
             return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value, isDistinct);
         }
 
+        /// <summary>
+        /// AOT-friendly overload that avoids expression trees by using a property name and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
+            this TSender? sender,
+            string propertyName,
+            bool isDistinct)
+        {
+            return sender!.ObservableForProperty<TSender, TRet>(propertyName, beforeChange: false, skipInitial: false, isDistinct: isDistinct)
+                          .Select(x => x.Value);
+        }
+
                                                                         
+        
+        
         
         
         /// <summary>
@@ -95,6 +131,22 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(
+            this TSender? sender,
+                        string property1Name,
+                        Func<T1, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return o1.Select(selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -102,9 +154,9 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -120,6 +172,23 @@ namespace ReactiveUI
                                     selector(c1.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(
+            this TSender? sender,
+                        string property1Name,
+                        Func<T1, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return o1.Select(selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -144,6 +213,22 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1>(
+                this TSender? sender,
+                            string property1Name,
+                            Func<IObservedChange<TSender, T1>, TRet> selector)
+        {
+                            return sender!.ObservableForProperty<TSender, T1>(property1Name, false, false)
+                              .Select(c1 => selector(c1));
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -165,6 +250,23 @@ namespace ReactiveUI
                             bool isDistinct)
         {
                             return sender!.ObservableForProperty(property1, false, false, isDistinct).Select(selector);
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1>(
+                this TSender? sender,
+                            string property1Name,
+                            Func<IObservedChange<TSender, T1>, TRet> selector,
+                            bool isDistinct)
+        {
+                            return sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct)
+                              .Select(c1 => selector(c1));
                     }
 
         /// <summary>
@@ -241,6 +343,27 @@ namespace ReactiveUI
         }
         
         /// <summary>
+        /// AOT-friendly tuple overloads using property names instead of expressions.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2)> WhenAnyValue<TSender, T1,T2>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name            )
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value)
+                            , (v1,v2) =>
+                (v1,v2)
+            );
+        }
+        
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -266,6 +389,28 @@ namespace ReactiveUI
                                 (c1, c2) =>
                                     (c1.Value, c2.Value),
                                     isDistinct);
+        }
+        
+        /// <summary>
+        /// AOT-friendly tuple overloads using property names with distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2)> WhenAnyValue<TSender, T1,T2>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name            ,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value)
+                            , (v1,v2) =>
+                (v1,v2)
+            );
         }
         
         /// <summary>
@@ -295,6 +440,27 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        Func<T1,T2, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -302,10 +468,10 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -322,6 +488,28 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        Func<T1,T2, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -352,6 +540,26 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -377,6 +585,27 @@ namespace ReactiveUI
                         return Observable.CombineLatest(
                                     sender!.ObservableForProperty(property1, false, false, isDistinct),
                                     sender!.ObservableForProperty(property2, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -471,6 +700,29 @@ namespace ReactiveUI
         }
         
         /// <summary>
+        /// AOT-friendly tuple overloads using property names instead of expressions.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3)> WhenAnyValue<TSender, T1,T2,T3>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name            )
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value)
+                            , (v1,v2,v3) =>
+                (v1,v2,v3)
+            );
+        }
+        
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -498,6 +750,30 @@ namespace ReactiveUI
                                 (c1, c2, c3) =>
                                     (c1.Value, c2.Value, c3.Value),
                                     isDistinct);
+        }
+        
+        /// <summary>
+        /// AOT-friendly tuple overloads using property names with distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3)> WhenAnyValue<TSender, T1,T2,T3>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name            ,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value)
+                            , (v1,v2,v3) =>
+                (v1,v2,v3)
+            );
         }
         
         /// <summary>
@@ -529,6 +805,30 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        Func<T1,T2,T3, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -536,11 +836,11 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -558,6 +858,31 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        Func<T1,T2,T3, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -591,6 +916,28 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -619,6 +966,29 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property1, false, false, isDistinct),
                                     sender!.ObservableForProperty(property2, false, false, isDistinct),
                                     sender!.ObservableForProperty(property3, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -723,6 +1093,31 @@ namespace ReactiveUI
         }
         
         /// <summary>
+        /// AOT-friendly tuple overloads using property names instead of expressions.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3,T4)> WhenAnyValue<TSender, T1,T2,T3,T4>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name,                        string property4Name            )
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value),
+                                o4.Select(x => x.Value)
+                            , (v1,v2,v3,v4) =>
+                (v1,v2,v3,v4)
+            );
+        }
+        
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -752,6 +1147,32 @@ namespace ReactiveUI
                                 (c1, c2, c3, c4) =>
                                     (c1.Value, c2.Value, c3.Value, c4.Value),
                                     isDistinct);
+        }
+        
+        /// <summary>
+        /// AOT-friendly tuple overloads using property names with distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3,T4)> WhenAnyValue<TSender, T1,T2,T3,T4>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name,                        string property4Name            ,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value),
+                                o4.Select(x => x.Value)
+                            , (v1,v2,v3,v4) =>
+                (v1,v2,v3,v4)
+            );
         }
         
         /// <summary>
@@ -785,6 +1206,33 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        Func<T1,T2,T3,T4, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -792,12 +1240,12 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -816,6 +1264,34 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        Func<T1,T2,T3,T4, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -852,6 +1328,30 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -883,6 +1383,31 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property2, false, false, isDistinct),
                                     sender!.ObservableForProperty(property3, false, false, isDistinct),
                                     sender!.ObservableForProperty(property4, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -997,6 +1522,33 @@ namespace ReactiveUI
         }
         
         /// <summary>
+        /// AOT-friendly tuple overloads using property names instead of expressions.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3,T4,T5)> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name            )
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value),
+                                o4.Select(x => x.Value),
+                                o5.Select(x => x.Value)
+                            , (v1,v2,v3,v4,v5) =>
+                (v1,v2,v3,v4,v5)
+            );
+        }
+        
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -1028,6 +1580,34 @@ namespace ReactiveUI
                                 (c1, c2, c3, c4, c5) =>
                                     (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value),
                                     isDistinct);
+        }
+        
+        /// <summary>
+        /// AOT-friendly tuple overloads using property names with distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3,T4,T5)> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name            ,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value),
+                                o4.Select(x => x.Value),
+                                o5.Select(x => x.Value)
+                            , (v1,v2,v3,v4,v5) =>
+                (v1,v2,v3,v4,v5)
+            );
         }
         
         /// <summary>
@@ -1063,6 +1643,36 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        Func<T1,T2,T3,T4,T5, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -1070,13 +1680,13 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property4">The 4 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -1096,6 +1706,37 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        Func<T1,T2,T3,T4,T5, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -1135,6 +1776,32 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -1169,6 +1836,33 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property3, false, false, isDistinct),
                                     sender!.ObservableForProperty(property4, false, false, isDistinct),
                                     sender!.ObservableForProperty(property5, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -1293,6 +1987,35 @@ namespace ReactiveUI
         }
         
         /// <summary>
+        /// AOT-friendly tuple overloads using property names instead of expressions.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3,T4,T5,T6)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name,                        string property6Name            )
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value),
+                                o4.Select(x => x.Value),
+                                o5.Select(x => x.Value),
+                                o6.Select(x => x.Value)
+                            , (v1,v2,v3,v4,v5,v6) =>
+                (v1,v2,v3,v4,v5,v6)
+            );
+        }
+        
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -1326,6 +2049,36 @@ namespace ReactiveUI
                                 (c1, c2, c3, c4, c5, c6) =>
                                     (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value),
                                     isDistinct);
+        }
+        
+        /// <summary>
+        /// AOT-friendly tuple overloads using property names with distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3,T4,T5,T6)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name,                        string property6Name            ,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value),
+                                o4.Select(x => x.Value),
+                                o5.Select(x => x.Value),
+                                o6.Select(x => x.Value)
+                            , (v1,v2,v3,v4,v5,v6) =>
+                (v1,v2,v3,v4,v5,v6)
+            );
         }
         
         /// <summary>
@@ -1363,6 +2116,39 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        Func<T1,T2,T3,T4,T5,T6, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -1370,6 +2156,7 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
@@ -1377,7 +2164,6 @@ namespace ReactiveUI
         /// <param name="property5">The 5 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -1398,6 +2184,40 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        Func<T1,T2,T3,T4,T5,T6, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -1440,6 +2260,34 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -1477,6 +2325,35 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property4, false, false, isDistinct),
                                     sender!.ObservableForProperty(property5, false, false, isDistinct),
                                     sender!.ObservableForProperty(property6, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -1611,6 +2488,37 @@ namespace ReactiveUI
         }
         
         /// <summary>
+        /// AOT-friendly tuple overloads using property names instead of expressions.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3,T4,T5,T6,T7)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name,                        string property6Name,                        string property7Name            )
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: true);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value),
+                                o4.Select(x => x.Value),
+                                o5.Select(x => x.Value),
+                                o6.Select(x => x.Value),
+                                o7.Select(x => x.Value)
+                            , (v1,v2,v3,v4,v5,v6,v7) =>
+                (v1,v2,v3,v4,v5,v6,v7)
+            );
+        }
+        
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -1646,6 +2554,38 @@ namespace ReactiveUI
                                 (c1, c2, c3, c4, c5, c6, c7) =>
                                     (c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value),
                                     isDistinct);
+        }
+        
+        /// <summary>
+        /// AOT-friendly tuple overloads using property names with distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<(T1,T2,T3,T4,T5,T6,T7)> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(
+            this TSender? sender,
+                        string property1Name,                        string property2Name,                        string property3Name,                        string property4Name,                        string property5Name,                        string property6Name,                        string property7Name            ,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+                        return Observable.CombineLatest(
+                                o1.Select(x => x.Value),
+                                o2.Select(x => x.Value),
+                                o3.Select(x => x.Value),
+                                o4.Select(x => x.Value),
+                                o5.Select(x => x.Value),
+                                o6.Select(x => x.Value),
+                                o7.Select(x => x.Value)
+                            , (v1,v2,v3,v4,v5,v6,v7) =>
+                (v1,v2,v3,v4,v5,v6,v7)
+            );
         }
         
         /// <summary>
@@ -1685,6 +2625,42 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -1692,6 +2668,7 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
@@ -1700,7 +2677,6 @@ namespace ReactiveUI
         /// <param name="property6">The 6 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -1722,6 +2698,43 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -1767,6 +2780,36 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -1807,6 +2850,37 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property5, false, false, isDistinct),
                                     sender!.ObservableForProperty(property6, false, false, isDistinct),
                                     sender!.ObservableForProperty(property7, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -1915,6 +2989,8 @@ namespace ReactiveUI
                                                                     
         
         
+        
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -1954,6 +3030,45 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -1961,6 +3076,7 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
@@ -1970,7 +3086,6 @@ namespace ReactiveUI
         /// <param name="property7">The 7 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -1993,6 +3108,46 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -2041,6 +3196,38 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -2084,6 +3271,39 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property6, false, false, isDistinct),
                                     sender!.ObservableForProperty(property7, false, false, isDistinct),
                                     sender!.ObservableForProperty(property8, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -2200,6 +3420,8 @@ namespace ReactiveUI
                                                                     
         
         
+        
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -2241,6 +3463,48 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        string property9Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8,T9, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o9 = sender!.ObservableForProperty<TSender, T9>(property9Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8,
+                                o9
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -2248,6 +3512,7 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
@@ -2258,7 +3523,6 @@ namespace ReactiveUI
         /// <param name="property8">The 8 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -2282,6 +3546,49 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        string property9Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8,T9, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o9 = sender!.ObservableForProperty<TSender, T9>(property9Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8,
+                                o9
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -2333,6 +3640,40 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            string property9Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T9>(property9Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -2379,6 +3720,41 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property7, false, false, isDistinct),
                                     sender!.ObservableForProperty(property8, false, false, isDistinct),
                                     sender!.ObservableForProperty(property9, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            string property9Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T9>(property9Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -2503,6 +3879,8 @@ namespace ReactiveUI
                                                                     
         
         
+        
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -2546,6 +3924,51 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        string property9Name,
+                        string property10Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o9 = sender!.ObservableForProperty<TSender, T9>(property9Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o10 = sender!.ObservableForProperty<TSender, T10>(property10Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8,
+                                o9,
+                                o10
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -2553,6 +3976,7 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
@@ -2564,7 +3988,6 @@ namespace ReactiveUI
         /// <param name="property9">The 9 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -2589,6 +4012,52 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        string property9Name,
+                        string property10Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o9 = sender!.ObservableForProperty<TSender, T9>(property9Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o10 = sender!.ObservableForProperty<TSender, T10>(property10Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8,
+                                o9,
+                                o10
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -2643,6 +4112,42 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            string property9Name,
+                            string property10Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T9>(property9Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T10>(property10Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -2692,6 +4197,43 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property8, false, false, isDistinct),
                                     sender!.ObservableForProperty(property9, false, false, isDistinct),
                                     sender!.ObservableForProperty(property10, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            string property9Name,
+                            string property10Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T9>(property9Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T10>(property10Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -2824,6 +4366,8 @@ namespace ReactiveUI
                                                                     
         
         
+        
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -2869,6 +4413,54 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        string property9Name,
+                        string property10Name,
+                        string property11Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o9 = sender!.ObservableForProperty<TSender, T9>(property9Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o10 = sender!.ObservableForProperty<TSender, T10>(property10Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o11 = sender!.ObservableForProperty<TSender, T11>(property11Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8,
+                                o9,
+                                o10,
+                                o11
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -2876,6 +4468,7 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
@@ -2888,7 +4481,6 @@ namespace ReactiveUI
         /// <param name="property10">The 10 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -2914,6 +4506,55 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value, c11.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        string property9Name,
+                        string property10Name,
+                        string property11Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o9 = sender!.ObservableForProperty<TSender, T9>(property9Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o10 = sender!.ObservableForProperty<TSender, T10>(property10Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o11 = sender!.ObservableForProperty<TSender, T11>(property11Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8,
+                                o9,
+                                o10,
+                                o11
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -2971,6 +4612,44 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            string property9Name,
+                            string property10Name,
+                            string property11Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, IObservedChange<TSender, T11>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T9>(property9Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T10>(property10Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T11>(property11Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -3023,6 +4702,45 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property9, false, false, isDistinct),
                                     sender!.ObservableForProperty(property10, false, false, isDistinct),
                                     sender!.ObservableForProperty(property11, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            string property9Name,
+                            string property10Name,
+                            string property11Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, IObservedChange<TSender, T11>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T9>(property9Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T10>(property10Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T11>(property11Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -3163,6 +4881,8 @@ namespace ReactiveUI
                                                                     
         
         
+        
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -3210,6 +4930,57 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// AOT-friendly selector overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        string property9Name,
+                        string property10Name,
+                        string property11Name,
+                        string property12Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12, TRet> selector)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o9 = sender!.ObservableForProperty<TSender, T9>(property9Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o10 = sender!.ObservableForProperty<TSender, T10>(property10Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o11 = sender!.ObservableForProperty<TSender, T11>(property11Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                        var o12 = sender!.ObservableForProperty<TSender, T12>(property12Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8,
+                                o9,
+                                o10,
+                                o11,
+                                o12
+                            , selector);
+                    }
+
+        /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
         /// the Observable is set up, unlike ObservableForProperty(). Use this
@@ -3217,6 +4988,7 @@ namespace ReactiveUI
         /// need an initial setup.
         /// </summary>
         /// <param name="sender">The object where the property chain starts.</param>
+        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
         /// <param name="property1">The 1 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property2">The 2 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property3">The 3 property chain to reference. This will be a expression pointing to a end property or field.</param>
@@ -3230,7 +5002,6 @@ namespace ReactiveUI
         /// <param name="property11">The 11 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="property12">The 12 property chain to reference. This will be a expression pointing to a end property or field.</param>
         /// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
 #if NET6_0_OR_GREATER
         [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
         [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
@@ -3257,6 +5028,58 @@ namespace ReactiveUI
                                     selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value, c11.Value, c12.Value),
                                     isDistinct);
         }
+
+        /// <summary>
+        /// AOT-friendly selector overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
+            this TSender? sender,
+                        string property1Name,
+                        string property2Name,
+                        string property3Name,
+                        string property4Name,
+                        string property5Name,
+                        string property6Name,
+                        string property7Name,
+                        string property8Name,
+                        string property9Name,
+                        string property10Name,
+                        string property11Name,
+                        string property12Name,
+                        Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12, TRet> selector,
+            bool isDistinct)
+        {
+                        var o1 = sender!.ObservableForProperty<TSender, T1>(property1Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o2 = sender!.ObservableForProperty<TSender, T2>(property2Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o3 = sender!.ObservableForProperty<TSender, T3>(property3Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o4 = sender!.ObservableForProperty<TSender, T4>(property4Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o5 = sender!.ObservableForProperty<TSender, T5>(property5Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o6 = sender!.ObservableForProperty<TSender, T6>(property6Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o7 = sender!.ObservableForProperty<TSender, T7>(property7Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o8 = sender!.ObservableForProperty<TSender, T8>(property8Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o9 = sender!.ObservableForProperty<TSender, T9>(property9Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o10 = sender!.ObservableForProperty<TSender, T10>(property10Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o11 = sender!.ObservableForProperty<TSender, T11>(property11Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                        var o12 = sender!.ObservableForProperty<TSender, T12>(property12Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+                                    return Observable.CombineLatest(
+                                o1,
+                                o2,
+                                o3,
+                                o4,
+                                o5,
+                                o6,
+                                o7,
+                                o8,
+                                o9,
+                                o10,
+                                o11,
+                                o12
+                            , selector);
+                    }
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -3317,6 +5140,46 @@ namespace ReactiveUI
                     }
 
         /// <summary>
+        /// AOT-friendly WhenAny overload using property names.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            string property9Name,
+                            string property10Name,
+                            string property11Name,
+                            string property12Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, IObservedChange<TSender, T11>, IObservedChange<TSender, T12>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T9>(property9Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T10>(property10Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T11>(property11Name, false, false),
+                                    sender!.ObservableForProperty<TSender, T12>(property12Name, false, false),
+                                selector
+            );
+                    }
+
+        /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
         /// is set up, unlike ObservableForProperty(). Use this method in
@@ -3372,6 +5235,47 @@ namespace ReactiveUI
                                     sender!.ObservableForProperty(property10, false, false, isDistinct),
                                     sender!.ObservableForProperty(property11, false, false, isDistinct),
                                     sender!.ObservableForProperty(property12, false, false, isDistinct),
+                                selector
+            );
+                    }
+
+        /// <summary>
+        /// AOT-friendly WhenAny overload using property names and distinct option.
+        /// </summary>
+#if NET6_0_OR_GREATER
+        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
+        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
+#endif
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(
+                this TSender? sender,
+                            string property1Name,
+                            string property2Name,
+                            string property3Name,
+                            string property4Name,
+                            string property5Name,
+                            string property6Name,
+                            string property7Name,
+                            string property8Name,
+                            string property9Name,
+                            string property10Name,
+                            string property11Name,
+                            string property12Name,
+                            Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, IObservedChange<TSender, T11>, IObservedChange<TSender, T12>, TRet> selector,
+                            bool isDistinct)
+        {
+                        return Observable.CombineLatest(
+                                    sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T2>(property2Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T3>(property3Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T4>(property4Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T5>(property5Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T6>(property6Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T7>(property7Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T8>(property8Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T9>(property9Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T10>(property10Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T11>(property11Name, false, false, isDistinct),
+                                    sender!.ObservableForProperty<TSender, T12>(property12Name, false, false, isDistinct),
                                 selector
             );
                     }
@@ -4059,7 +5963,7 @@ namespace ReactiveUI
     {
         public static IObservable<T> EmptyIfNull<T>(this IObservable<T> @this)
         {
-            return @this ?? Observable<T>.Empty;
+            return @this ?? Observable.Empty<T>();
         }
     }
 }

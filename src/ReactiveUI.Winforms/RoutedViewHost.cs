@@ -33,14 +33,15 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     {
         InitializeComponent();
 
-        _disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
-        {
-            if (x is not null && Controls.Count == 0)
+        _disposables.Add(this.WhenAnyValue<RoutedControlHost, Control?>(nameof(DefaultContent))
+            .Subscribe(x =>
             {
-                Controls.Add(InitView(x));
-                components?.Add(DefaultContent);
-            }
-        }));
+                if (x is not null && Controls.Count == 0)
+                {
+                    Controls.Add(InitView(x));
+                    components?.Add(DefaultContent);
+                }
+            }));
 
         ViewContractObservable = Observable<string>.Default;
 

@@ -13,10 +13,6 @@ namespace ReactiveUI;
 /// Android implementation that provides binding to an ICommand in the ViewModel to a Control
 /// in the View.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("AndroidCommandBinders uses reflection for property access and type checking which require dynamic code generation")]
-[RequiresUnreferencedCode("AndroidCommandBinders uses reflection for property access and type checking which may require unreferenced code")]
-#endif
 public class AndroidCommandBinders : FlexibleCommandBinder
 {
     /// <summary>
@@ -26,14 +22,9 @@ public class AndroidCommandBinders : FlexibleCommandBinder
     [RequiresDynamicCode("ObservableAsPropertyHelper uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("ObservableAsPropertyHelper uses methods that may require unreferenced code")]
 #endif
-    public AndroidCommandBinders() // TODO: Create Test
+    public AndroidCommandBinders()
     {
         var view = typeof(View);
         Register(view, 9, (cmd, t, cp) => ForEvent(cmd, t, cp, "Click", view.GetRuntimeProperty("Enabled") ?? throw new InvalidOperationException("Could not find property 'Enabled' on type View, which is needed for binding")));
     }
-
-    /// <summary>
-    /// Gets the static instance of <see cref="AndroidCommandBinders"/>.
-    /// </summary>
-    public static Lazy<AndroidCommandBinders> Instance { get; } = new(); // TODO: Create Test
 }

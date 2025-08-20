@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Splat.Builder;
 
@@ -84,8 +85,8 @@ public static class DependencyResolverMixins
     /// <param name="resolver">The dependency injection resolver to register the Views with.</param>
     /// <param name="assembly">The assembly to search using reflection for IViewFor classes.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("RegisterViewsForViewModels scans the provided assembly and creates instances via reflection; this is not compatible with AOT.")]
+    [RequiresUnreferencedCode("RegisterViewsForViewModels uses reflection over types and members which may be trimmed.")]
 #endif
     public static void RegisterViewsForViewModels(this IMutableDependencyResolver resolver, Assembly assembly)
     {
@@ -118,8 +119,8 @@ public static class DependencyResolverMixins
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("RegisterType creates instances via Activator.CreateInstance which requires dynamic code generation in AOT.")]
+    [RequiresUnreferencedCode("RegisterType uses reflection to locate parameterless constructors which may be trimmed.")]
 #endif
     private static void RegisterType(IMutableDependencyResolver resolver, TypeInfo ti, Type serviceType, string contract)
     {
@@ -135,15 +136,19 @@ public static class DependencyResolverMixins
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("TypeFactory uses reflection to invoke parameterless constructors which may be trimmed.")]
 #endif
-    private static Func<object> TypeFactory(TypeInfo typeInfo)
+    private static Func<object> TypeFactory(
+#if NET6_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+        TypeInfo typeInfo)
     {
         var parameterlessConstructor = typeInfo.DeclaredConstructors.FirstOrDefault(ci => ci.IsPublic && ci.GetParameters().Length == 0);
         return parameterlessConstructor is null
             ? throw new Exception($"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.")
-            : Expression.Lambda<Func<object>>(Expression.New(parameterlessConstructor)).Compile();
+            : () => Activator.CreateInstance(typeInfo.AsType())
+                   ?? throw new Exception($"Failed to instantiate type {typeInfo.FullName} - ensure it has a public parameterless constructor.");
     }
 
 #if NET6_0_OR_GREATER

@@ -11,10 +11,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Command binder for android controls.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("FlexibleCommandBinder uses reflection for property access and type checking which require dynamic code generation")]
-[RequiresUnreferencedCode("FlexibleCommandBinder uses reflection for property access and type checking which may require unreferenced code")]
-#endif
 public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 {
     /// <summary>
@@ -23,6 +19,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     private readonly Dictionary<Type, CommandBindingInfo> _config = [];
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+#endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -45,6 +45,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+#endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
         ArgumentNullException.ThrowIfNull(target);
@@ -61,6 +65,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+#endif
     public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
         where TEventArgs : EventArgs
         => throw new NotImplementedException();
