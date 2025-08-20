@@ -106,7 +106,7 @@ public
               .DistinctUntilChanged();
 
         var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract);
-        var viewModelChanged = this.WhenAnyValue(x => x.ViewModel).StartWith(ViewModel);
+        var viewModelChanged = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)).StartWith(ViewModel);
         var vmAndContract = contractChanged
             .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
 

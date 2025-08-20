@@ -29,7 +29,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         HostScreen = hostScreen;
         UrlPathSegment = "lobby";
 
-        var canCreate = this.WhenAnyValue(x => x.RoomName, rn => !string.IsNullOrWhiteSpace(rn));
+        var canCreate = this.WhenAnyValue<LobbyViewModel, bool, string>(nameof(RoomName), rn => !string.IsNullOrWhiteSpace(rn));
         CreateRoom = ReactiveCommand.Create(CreateRoomImpl, canCreate);
 
         DeleteRoom = ReactiveCommand.Create<ChatRoom>(DeleteRoomImpl);

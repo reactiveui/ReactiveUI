@@ -5,6 +5,7 @@
 
 using System.Reactive.Disposables;
 using System.Windows;
+using ReactiveUI.Builder.WpfApp.ViewModels;
 
 namespace ReactiveUI.Builder.WpfApp.Views;
 
@@ -28,7 +29,7 @@ public partial class ChatRoomView : IViewFor<ViewModels.ChatRoomViewModel>
         this.WhenActivated(d =>
         {
             // Map ViewModel to DataContext for XAML bindings like {Binding RoomName}
-            this.WhenAnyValue(v => v.ViewModel).BindTo(this, v => v.DataContext).DisposeWith(d);
+            this.WhenAnyValue<ChatRoomView, ChatRoomViewModel>(nameof(ViewModel)).BindTo(this, v => v.DataContext).DisposeWith(d);
 
             this.Bind(ViewModel, vm => vm.MessageText, v => v.MessageBox.Text).DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.SendMessage, v => v.SendButton).DisposeWith(d);

@@ -91,7 +91,7 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
         if (isFirstRender)
         {
             var viewModelChanged =
-                this.WhenAnyValue(x => x.ViewModel)
+                this.WhenAnyValue<ReactiveLayoutComponentBase<T>, T?>(nameof(ViewModel))
                     .WhereNotNull()
                     .Publish()
                     .RefCount(2);

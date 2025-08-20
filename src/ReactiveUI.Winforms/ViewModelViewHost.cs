@@ -153,7 +153,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     private IEnumerable<IDisposable> SetupBindings()
     {
         var viewChanges =
-            this.WhenAnyValue(x => x!.Content)
+            this.WhenAnyValue<ViewModelControlHost, object?>(nameof(Content))
                 .WhereNotNull()
                 .OfType<Control>()
                 .Subscribe(x =>
@@ -175,7 +175,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
 
         yield return viewChanges!;
 
-        yield return this.WhenAnyValue(x => x.DefaultContent).Subscribe(x =>
+        yield return this.WhenAnyValue<ViewModelControlHost, Control?>(nameof(DefaultContent)).Subscribe(x =>
         {
             if (x is not null)
             {
@@ -186,7 +186,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         ViewContractObservable = Observable.Return(string.Empty);
 
         var vmAndContract =
-            this.WhenAnyValue(x => x.ViewModel)
+            this.WhenAnyValue<ViewModelControlHost, object?>(nameof(ViewModel))
                 .CombineLatest(
                                this.WhenAnyObservable(x => x.ViewContractObservable!),
                                (vm, contract) => new { ViewModel = vm, Contract = contract });
