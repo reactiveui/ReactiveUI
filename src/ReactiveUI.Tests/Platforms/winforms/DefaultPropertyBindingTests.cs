@@ -18,6 +18,14 @@ namespace ReactiveUI.Tests.Winforms;
 public class DefaultPropertyBindingTests
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultPropertyBindingTests"/> class.
+    /// </summary>
+    public DefaultPropertyBindingTests()
+    {
+        RxApp.EnsureInitialized();
+    }
+
+    /// <summary>
     /// Tests Winforms creates observable for property works for textboxes.
     /// </summary>
     [Fact]

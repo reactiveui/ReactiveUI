@@ -84,6 +84,7 @@ public static class RxApp
 #if !PORTABLE
         _taskpoolScheduler = TaskPoolScheduler.Default;
 #endif
+        Locator.CurrentMutable.InitializeSplat();
 
         if (!AppBuilder.UsingBuilder)
         {
@@ -94,6 +95,7 @@ public static class RxApp
                     return;
                 }
 
+                Locator.CurrentMutable.InitializeSplat();
                 Locator.CurrentMutable.InitializeReactiveUI(PlatformRegistrationManager.NamespacesToRegister);
             });
         }

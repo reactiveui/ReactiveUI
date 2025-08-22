@@ -14,6 +14,14 @@ namespace ReactiveUI.Tests.Platforms.Wpf;
 public class ReactiveUIBuilderWpfTests
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="ReactiveUIBuilderWpfTests"/> class.
+    /// </summary>
+    public ReactiveUIBuilderWpfTests()
+    {
+        RxApp.EnsureInitialized();
+    }
+
+    /// <summary>
     /// Test that WPF services can be registered using the builder.
     /// </summary>
     [Fact]

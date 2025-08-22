@@ -38,6 +38,8 @@ public sealed class ReactiveUIBuilder(IMutableDependencyResolver resolver) : App
             return this;
         }
 
+        _resolver.InitializeSplat();
+
         // Immediately register the core ReactiveUI services into the provided resolver.
         var registrations = new Registrations();
 #pragma warning disable IL2067 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The parameter of method does not have matching annotations.

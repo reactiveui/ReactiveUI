@@ -31,7 +31,6 @@ public class ReactiveUIBuilderMauiTests
         using var locator = new ModernDependencyResolver();
 
         locator.CreateBuilder()
-               .WithCoreServices()
                .WithMaui()
                .Build();
 
