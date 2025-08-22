@@ -43,7 +43,7 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
             }).DisposeWith(d);
 
             // Delete selected room via Delete button only
-            var selectedRoomStream = this.WhenAnyValue(x => x.RoomsList.SelectedItem)
+            var selectedRoomStream = this.WhenAnyValue<LobbyView, object>(nameof(RoomsList.SelectedItem))
                 .Select(x => x as ChatRoom)
                 .WhereNotNull();
             this.BindCommand(ViewModel, vm => vm.DeleteRoom, v => v.DeleteRoomButton, selectedRoomStream)

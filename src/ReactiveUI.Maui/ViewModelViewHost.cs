@@ -69,7 +69,7 @@ public partial class ViewModelViewHost : ContentView, IViewFor
 
         ViewContractObservable = Observable<string>.Default;
 
-        var vmAndContract = this.WhenAnyValue(x => x.ViewModel).CombineLatest(
+        var vmAndContract = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)).CombineLatest(
                                                                               this.WhenAnyObservable(x => x.ViewContractObservable),
                                                                               (vm, contract) => new { ViewModel = vm, Contract = contract, });
 

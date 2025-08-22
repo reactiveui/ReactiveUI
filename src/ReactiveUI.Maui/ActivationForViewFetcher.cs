@@ -177,7 +177,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         return viewLoaded
                .Merge(viewUnloaded)
-               .Select(b => b ? view.WhenAnyValue(x => x.IsHitTestVisible).SkipWhile(x => !x) : Observables.False)
+               .Select(b => b ? view.WhenAnyValue<FrameworkElement, bool>(nameof(view.IsHitTestVisible)).SkipWhile(x => !x) : Observables.False)
                .Switch()
                .DistinctUntilChanged();
     }
