@@ -33,7 +33,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         _room = room;
         _user = user;
 
-        var canSend = this.WhenAnyValue(x => x.MessageText, txt => !string.IsNullOrWhiteSpace(txt));
+        var canSend = this.WhenAnyValue<ChatRoomViewModel, bool, string>(nameof(MessageText), txt => !string.IsNullOrWhiteSpace(txt));
         SendMessage = ReactiveCommand.Create(SendMessageImpl, canSend);
 
         // Observe new incoming messages via MessageBus using the room name as the contract across instances

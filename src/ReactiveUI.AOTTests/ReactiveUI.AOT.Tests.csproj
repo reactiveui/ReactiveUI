@@ -9,6 +9,7 @@
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
     <TrimMode>full</TrimMode>
+    <NoWarn>$(NoWarn);IL2026;IL3050;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
