@@ -13,6 +13,14 @@ namespace ReactiveUI.AOTTests;
 public class ViewLocatorAOTMappingTests
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="ViewLocatorAOTMappingTests"/> class.
+    /// </summary>
+    public ViewLocatorAOTMappingTests()
+    {
+        RxApp.EnsureInitialized();
+    }
+
+    /// <summary>
     /// Map/Resolve with contract and default fallback works.
     /// </summary>
     [Fact]

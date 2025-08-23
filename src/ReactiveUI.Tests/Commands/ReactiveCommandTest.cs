@@ -18,6 +18,11 @@ namespace ReactiveUI.Tests;
 /// </summary>
 public class ReactiveCommandTest
 {
+    public ReactiveCommandTest()
+    {
+        RxApp.EnsureInitialized();
+    }
+
     /// <summary>
     /// A test that determines whether this instance [can execute changed is available via ICommand].
     /// </summary>
