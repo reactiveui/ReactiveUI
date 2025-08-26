@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Splat.Builder;
-
 namespace ReactiveUI.Builder.Tests;
 
 /// <summary>
@@ -15,11 +13,11 @@ public class ReactiveUIBuilderBlockingTests
     [Fact]
     public void Build_SetsFlag_AndBlocks_InitializeReactiveUI()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
 
-        var builder = locator.CreateBuilder();
-        builder.WithCoreServices().Build();
+        var builder = locator.CreateReactiveUIBuilder();
+        builder.Build();
 
         locator.InitializeReactiveUI();
 

@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Splat.Builder;
-
 namespace ReactiveUI.Builder.Tests;
 
 /// <summary>
@@ -15,9 +13,9 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void CreateBuilder_Should_Return_Builder_Instance()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         Assert.NotNull(builder);
         Assert.IsType<ReactiveUIBuilder>(builder);
     }
@@ -25,10 +23,10 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithCoreServices_Should_Register_Core_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
-        builder.WithCoreServices().Build();
+        var builder = locator.CreateReactiveUIBuilder();
+        builder.Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         Assert.NotNull(observableProperty);
@@ -40,10 +38,10 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithPlatformServices_Should_Register_Platform_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
-        builder.WithPlatformServices().Build();
+        var builder = locator.CreateReactiveUIBuilder();
+        builder.Build();
 
         var services = locator.GetServices<IBindingTypeConverter>();
         Assert.NotNull(services);
@@ -53,9 +51,9 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithCustomRegistration_Should_Execute_Custom_Action()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         var customServiceRegistered = false;
 
         builder.WithCustomRegistration(r =>
@@ -72,9 +70,9 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void Build_Should_Always_Register_Core_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.Build();
 
@@ -85,18 +83,18 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithCustomRegistration_With_Null_Action_Should_Throw()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         Assert.Throws<ArgumentNullException>(() => builder.WithCustomRegistration(null!));
     }
 
     [Fact]
     public void WithViewsFromAssembly_Should_Register_Views()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         var assembly = typeof(ReactiveUIBuilderCoreTests).Assembly;
 
         builder.WithViewsFromAssembly(assembly).Build();
@@ -106,18 +104,18 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void WithViewsFromAssembly_With_Null_Assembly_Should_Throw()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         Assert.Throws<ArgumentNullException>(() => builder.WithViewsFromAssembly(null!));
     }
 
     [Fact]
     public void WithCoreServices_Called_Multiple_Times_Should_Not_Register_Twice()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.WithCoreServices().WithCoreServices().Build();
 
@@ -129,14 +127,12 @@ public class ReactiveUIBuilderCoreTests
     [Fact]
     public void Builder_Should_Support_Fluent_Chaining()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var customServiceRegistered = false;
 
-        locator.CreateBuilder()
-               .WithCoreServices()
-               .WithPlatformServices()
-               .WithCustomRegistration(r =>
+        locator.CreateReactiveUIBuilder()
+               .WithRegistration(r =>
                {
                    r.RegisterConstant("Test", typeof(string));
                    customServiceRegistered = true;

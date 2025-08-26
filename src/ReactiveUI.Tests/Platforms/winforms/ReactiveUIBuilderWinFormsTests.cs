@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
 using ReactiveUI.Winforms;
 using Splat.Builder;
 
@@ -23,7 +24,7 @@ public class ReactiveUIBuilderWinFormsTests
 
         // Arrange
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         // Act
         builder.WithWinForms().Build();
@@ -46,10 +47,10 @@ public class ReactiveUIBuilderWinFormsTests
 
         // Arrange
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         // Act
-        builder.WithCoreServices().WithWinForms().Build();
+        builder.WithWinForms().Build();
 
         // Assert
         // Core services

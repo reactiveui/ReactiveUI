@@ -9,7 +9,6 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Windows;
 using ReactiveUI.Builder.WpfApp.Models;
-using ReactiveUI.Wpf;
 using Splat;
 
 namespace ReactiveUI.Builder.WpfApp;
@@ -33,11 +32,13 @@ public partial class App : Application
         base.OnStartup(e);
 
         // Initialize ReactiveUI via the Builder only
-        Locator.CurrentMutable.CreateBuilder()
-            .WithCoreServices()
+        RxAppBuilder.CreateReactiveUIBuilder()
             .WithWpf()
-            .WithViewsFromAssembly(typeof(App).Assembly)
-            .WithCustomRegistration(r =>
+            .WithViewsFromAssembly(typeof(App).Assembly) // auto-register all IViewFor in this assembly
+            ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
+            ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
+            ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
+            .WithRegistration(r =>
             {
                 // Register IScreen as a singleton so all resolutions share the same Router
                 r.RegisterLazySingleton<IScreen>(() => new ViewModels.AppBootstrapper());

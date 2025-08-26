@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Maui;
-using Splat.Builder;
-
 namespace ReactiveUI.Builder.Maui.Tests;
 
 public class ReactiveUIBuilderMauiTests
@@ -13,10 +10,10 @@ public class ReactiveUIBuilderMauiTests
     [Fact]
     public void WithMaui_Should_Register_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
 
-        locator.CreateBuilder()
+        locator.CreateReactiveUIBuilder()
                .WithMaui()
                .Build();
 
@@ -27,10 +24,10 @@ public class ReactiveUIBuilderMauiTests
     [Fact]
     public void WithCoreServices_AndMaui_Should_Register_All_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
 
-        locator.CreateBuilder()
+        locator.CreateReactiveUIBuilder()
                .WithMaui()
                .Build();
 

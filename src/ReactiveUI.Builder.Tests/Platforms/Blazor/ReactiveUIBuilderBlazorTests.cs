@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Blazor;
-using Splat.Builder;
-
 namespace ReactiveUI.Builder.Tests.Platforms.Blazor;
 
 public class ReactiveUIBuilderBlazorTests
@@ -13,9 +10,9 @@ public class ReactiveUIBuilderBlazorTests
     [Fact]
     public void WithBlazor_Should_Register_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.WithBlazor().Build();
 
@@ -29,11 +26,11 @@ public class ReactiveUIBuilderBlazorTests
     [Fact]
     public void WithCoreServices_AndBlazor_Should_Register_All_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
-        builder.WithCoreServices().WithBlazor().Build();
+        builder.WithBlazor().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         Assert.NotNull(observableProperty);

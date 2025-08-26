@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Drawing;
-using Splat.Builder;
-
 namespace ReactiveUI.Builder.Tests.Platforms.Drawing;
 
 public class ReactiveUIBuilderDrawingTests
@@ -13,14 +10,14 @@ public class ReactiveUIBuilderDrawingTests
     [Fact]
     public void WithDrawing_Should_Register_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.WithDrawing().Build();
 
         // Drawing registers bitmap loader in non-NETSTANDARD contexts; we can still assert no exception and core services with chaining
-        locator.CreateBuilder().WithCoreServices().WithDrawing().Build();
+        locator.CreateReactiveUIBuilder().WithDrawing().Build();
         var bindingConverters = locator.GetServices<IBindingTypeConverter>();
         Assert.NotNull(bindingConverters);
     }
