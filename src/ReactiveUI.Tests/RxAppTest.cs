@@ -18,6 +18,7 @@ public class RxAppTest
     [Fact]
     public void SchedulerShouldBeCurrentThreadInTestRunner()
     {
+        RxApp.MainThreadScheduler = CurrentThreadScheduler.Instance;
         Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
         Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
