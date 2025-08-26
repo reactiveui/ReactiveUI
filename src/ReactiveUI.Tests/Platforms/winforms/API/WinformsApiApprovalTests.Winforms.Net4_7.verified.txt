@@ -1,4 +1,13 @@
 ﻿[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.7.2", FrameworkDisplayName=".NET Framework 4.7.2")]
+namespace ReactiveUI.Builder
+{
+    public static class WinFormsReactiveUIBuilderExtensions
+    {
+        public static System.Reactive.Concurrency.IScheduler WinFormsMainThreadScheduler { get; }
+        public static ReactiveUI.Builder.ReactiveUIBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder WithWinFormsScheduler(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+    }
+}
 namespace ReactiveUI.Winforms
 {
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher, Splat.IEnableLogger
@@ -30,11 +39,6 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string? GetOrientation() { }
     }
-    public static class ReactiveUIBuilderWinFormsExtensions
-    {
-        public static Splat.Builder.AppBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
-        public static Splat.Builder.AppBuilder WithWinForms(this Splat.Builder.AppBuilder builder) { }
-    }
     public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
     {
         public ReactiveUserControlNonGeneric() { }
@@ -51,7 +55,7 @@ namespace ReactiveUI.Winforms
         public TViewModel ViewModel { get; set; }
         protected override void Dispose(bool disposing) { }
     }
-    public class Registrations
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
         public Registrations() { }
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }

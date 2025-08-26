@@ -6,6 +6,7 @@
 using System.Windows.Forms;
 using ReactiveUI.Testing;
 using ReactiveUI.Winforms;
+using Splat.Builder;
 
 namespace ReactiveUI.Tests.Winforms;
 
@@ -21,6 +22,7 @@ public class CommandBindingTests
     [Fact]
     public async Task CommandBinderBindsToButtonAsync()
     {
+        AppBuilder.ResetBuilderStateForTests();
         using var testSequencer = new TestSequencer();
         var fixture = new CreatesWinformsCommandBinding();
         var cmd = ReactiveCommand.CreateRunInBackground<int>(_ => { });
@@ -52,6 +54,7 @@ public class CommandBindingTests
     [Fact]
     public void CommandBinderBindsToCustomControl()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var fixture = new CreatesWinformsCommandBinding();
         var cmd = ReactiveCommand.Create<int>(_ => { });
         var input = new CustomClickableControl();
@@ -81,6 +84,7 @@ public class CommandBindingTests
     [Fact]
     public void CommandBinderBindsToCustomComponent()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var fixture = new CreatesWinformsCommandBinding();
         var cmd = ReactiveCommand.Create<int>(_ => { });
         var input = new CustomClickableComponent();
@@ -110,6 +114,7 @@ public class CommandBindingTests
     [Fact]
     public void CommandBinderAffectsEnabledState()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var fixture = new CreatesWinformsCommandBinding();
         var canExecute = new Subject<bool>();
         canExecute.OnNext(true);
@@ -133,6 +138,7 @@ public class CommandBindingTests
     [Fact]
     public void CommandBinderAffectsEnabledStateForComponents()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var fixture = new CreatesWinformsCommandBinding();
         var canExecute = new Subject<bool>();
         canExecute.OnNext(true);

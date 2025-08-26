@@ -1,5 +1,6 @@
 ﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AOT.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidX")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Avalonia")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Builder.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Drawing")]
@@ -405,6 +406,10 @@ namespace ReactiveUI
     {
         ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
     }
+    public interface IWantsToRegisterStuff
+    {
+        void Register(System.Action<System.Func<object>, System.Type> registerFunction);
+    }
     public class IntegerToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {
         public IntegerToStringTypeConverter() { }
@@ -605,7 +610,7 @@ namespace ReactiveUI
     {
         public static void SetRegistrationNamespaces(params ReactiveUI.RegistrationNamespace[] namespaces) { }
     }
-    public class PlatformRegistrations
+    public class PlatformRegistrations : ReactiveUI.IWantsToRegisterStuff
     {
         public PlatformRegistrations() { }
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
@@ -842,18 +847,6 @@ namespace ReactiveUI
         public System.IDisposable DelayChangeNotifications() { }
         public System.IDisposable SuppressChangeNotifications() { }
     }
-    public static class ReactiveUIBuilderExtensions
-    {
-        public static Splat.Builder.AppBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
-        public static Splat.Builder.AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(this Splat.Builder.AppBuilder builder, string? contract = null)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class { }
-        public static Splat.Builder.AppBuilder RegisterViewForViewModel<TView, TViewModel>(this Splat.Builder.AppBuilder builder, string? contract = null)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class { }
-        public static Splat.Builder.AppBuilder WithPlatformServices(this Splat.Builder.AppBuilder builder) { }
-        public static Splat.Builder.AppBuilder WithViewsFromAssembly(this Splat.Builder.AppBuilder builder, System.Reflection.Assembly assembly) { }
-    }
     public static class Reflection
     {
         public static string ExpressionToPropertyNames(System.Linq.Expressions.Expression? expression) { }
@@ -885,7 +878,7 @@ namespace ReactiveUI
         Uwp = 10,
         WinUI = 11,
     }
-    public class Registrations
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
         public Registrations() { }
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
@@ -1249,17 +1242,40 @@ namespace ReactiveUI
 }
 namespace ReactiveUI.Builder
 {
+    public static class MultiPlatformReactiveUIBuilderExtensions
+    {
+        public static ReactiveUI.Builder.ReactiveUIBuilder ForCustomPlatform(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder ForPlatforms(this ReactiveUI.Builder.ReactiveUIBuilder builder, params System.Action<ReactiveUI.Builder.ReactiveUIBuilder>[] platformConfigurations) { }
+    }
     public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
     {
         public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
-        public Splat.Builder.AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(string? contract = null)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class { }
-        public Splat.Builder.AppBuilder RegisterViewForViewModel<TView, TViewModel>(string? contract = null)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class { }
         public override Splat.Builder.AppBuilder WithCoreServices() { }
-        public Splat.Builder.AppBuilder WithPlatformServices() { }
-        public Splat.Builder.AppBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformModule<T>()
+            where T : ReactiveUI.IWantsToRegisterStuff, new () { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformServices() { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
+    }
+    public static class RxAppBuilder
+    {
+        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureMessageBus(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.MessageBus> configure) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureSuspensionDriver(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.ISuspensionDriver> configure) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureViewLocator(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.DefaultViewLocator> configure) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder CreateReactiveUIBuilder() { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder CreateReactiveUIBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterSingletonView<TView, TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterSingletonViewModel<TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterView<TView, TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterViewModel<TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
     }
 }

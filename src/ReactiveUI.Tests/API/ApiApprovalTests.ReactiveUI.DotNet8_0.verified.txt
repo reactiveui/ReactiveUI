@@ -1,5 +1,6 @@
 ﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AOT.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.AndroidX")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Avalonia")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Blazor")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Builder.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Drawing")]
@@ -537,6 +538,10 @@ namespace ReactiveUI
             "e")]
         ReactiveUI.IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
     }
+    public interface IWantsToRegisterStuff
+    {
+        void Register(System.Action<System.Func<object>, System.Type> registerFunction);
+    }
     public class IntegerToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {
         public IntegerToStringTypeConverter() { }
@@ -826,7 +831,7 @@ namespace ReactiveUI
     {
         public static void SetRegistrationNamespaces(params ReactiveUI.RegistrationNamespace[] namespaces) { }
     }
-    public class PlatformRegistrations
+    public class PlatformRegistrations : ReactiveUI.IWantsToRegisterStuff
     {
         public PlatformRegistrations() { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Platform registration uses ComponentModelTypeConverter and RxApp which require dy" +
@@ -1228,30 +1233,6 @@ namespace ReactiveUI
             "code")]
         public System.IDisposable SuppressChangeNotifications() { }
     }
-    public static class ReactiveUIBuilderExtensions
-    {
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050:Members annotated with \'RequiresDynamicCodeAttribute\' require dynamic acce" +
-            "ss otherwise can break functionality when trimming application code", Justification="Does not use dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with \'RequiresUnreferencedCodeAttribute\' require dynamic" +
-            " access otherwise can break functionality when trimming application code", Justification="Does not access unreferenced members or use reflection")]
-        public static Splat.Builder.AppBuilder CreateBuilder(this Splat.IMutableDependencyResolver resolver) { }
-        public static Splat.Builder.AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(this Splat.Builder.AppBuilder builder, string? contract = null)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class { }
-        public static Splat.Builder.AppBuilder RegisterViewForViewModel<TView, TViewModel>(this Splat.Builder.AppBuilder builder, string? contract = null)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithPlatformServices performs platform-specific service registration via reflecti" +
-            "on and type discovery which requires dynamic code in AOT.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithPlatformServices uses reflection-based type discovery during registration; re" +
-            "ferenced platform types may be trimmed.")]
-        public static Splat.Builder.AppBuilder WithPlatformServices(this Splat.Builder.AppBuilder builder) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithViewsFromAssembly scans the provided assembly for IViewFor<> implementations " +
-            "via reflection and type discovery, which requires dynamic code in AOT.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithViewsFromAssembly uses reflection-based type discovery; referenced view types" +
-            " may be trimmed.")]
-        public static Splat.Builder.AppBuilder WithViewsFromAssembly(this Splat.Builder.AppBuilder builder, System.Reflection.Assembly assembly) { }
-    }
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting requires dynamic code generation")]
     [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting may reference members that could be trimmed")]
     public static class Reflection
@@ -1309,7 +1290,7 @@ namespace ReactiveUI
         Uwp = 10,
         WinUI = 11,
     }
-    public class Registrations
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
         public Registrations() { }
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
@@ -2196,25 +2177,48 @@ namespace ReactiveUI
 }
 namespace ReactiveUI.Builder
 {
+    public static class MultiPlatformReactiveUIBuilderExtensions
+    {
+        public static ReactiveUI.Builder.ReactiveUIBuilder ForCustomPlatform(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder ForPlatforms(this ReactiveUI.Builder.ReactiveUIBuilder builder, params System.Action<ReactiveUI.Builder.ReactiveUIBuilder>[] platformConfigurations) { }
+    }
     public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
     {
         public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050", Justification="Generic registration does not use dynamic code")]
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026", Justification="Generic registration does not use reflection")]
-        public Splat.Builder.AppBuilder RegisterSingletonViewForViewModel<TView, TViewModel>(string? contract = null)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class { }
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AOT", "IL3050", Justification="Generic registration does not use dynamic code")]
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026", Justification="Generic registration does not use reflection")]
-        public Splat.Builder.AppBuilder RegisterViewForViewModel<TView, TViewModel>(string? contract = null)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ReactiveUI uses reflection to register some services. Ensure that the necessary t" +
+            "ypes are preserved.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ReactiveUI uses reflection to register some services. Ensure that the necessary t" +
+            "ypes are preserved.")]
         public override Splat.Builder.AppBuilder WithCoreServices() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithPlatformServices may use reflection and will not work in AOT environments.")]
-        public Splat.Builder.AppBuilder WithPlatformServices() { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformModule<T>()
+            where T : ReactiveUI.IWantsToRegisterStuff, new () { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformServices() { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-        public Splat.Builder.AppBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
+        public ReactiveUI.Builder.ReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
+    }
+    public static class RxAppBuilder
+    {
+        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureMessageBus(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.MessageBus> configure) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureSuspensionDriver(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.ISuspensionDriver> configure) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureViewLocator(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.DefaultViewLocator> configure) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder CreateReactiveUIBuilder() { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder CreateReactiveUIBuilder(this Splat.IMutableDependencyResolver resolver) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterSingletonView<TView, TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses \'new()\' constraint which may require dynamic code generation.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses \'new()\' constraint which may require dynamic code generation.")]
+        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterSingletonViewModel<TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterView<TView, TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterViewModel<TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
     }
 }
