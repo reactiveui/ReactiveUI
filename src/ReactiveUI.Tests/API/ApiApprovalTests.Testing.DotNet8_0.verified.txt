@@ -33,7 +33,7 @@ namespace ReactiveUI.Testing
     }
     public static class RxTest
     {
-        public static System.Threading.Tasks.Task AppBuilderTestAsync(System.Func<System.Threading.Tasks.Task> testBody, int maxWaitMs = 5000) { }
+        public static System.Threading.Tasks.Task AppBuilderTestAsync(System.Func<System.Threading.Tasks.Task> testBody, int maxWaitMs = 30000) { }
     }
     public static class SchedulerExtensions
     {

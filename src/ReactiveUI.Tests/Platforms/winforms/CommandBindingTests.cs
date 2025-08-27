@@ -5,7 +5,6 @@
 
 using System.Windows.Forms;
 using ReactiveUI.Winforms;
-using Splat.Builder;
 
 namespace ReactiveUI.Tests.Winforms;
 

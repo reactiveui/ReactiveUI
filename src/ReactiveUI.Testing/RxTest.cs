@@ -18,17 +18,22 @@ public static class RxTest
     /// Applications the builder test asynchronous.
     /// </summary>
     /// <param name="testBody">The test body.</param>
-    /// <param name="maxWaitMs">The maximum wait ms.</param>
+    /// <param name="maxWaitMs">The maximum wait in milliseconds for both acquiring the test gate and running the test body.</param>
     /// <exception cref="System.ArgumentNullException">testBody.</exception>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public static async Task AppBuilderTestAsync(Func<Task> testBody, int maxWaitMs = 5000)
+    public static async Task AppBuilderTestAsync(Func<Task> testBody, int maxWaitMs = 60000)
     {
         if (testBody is null)
         {
             throw new ArgumentNullException(nameof(testBody));
         }
 
-        await TestGate.WaitAsync().ConfigureAwait(false);
+        // Try to acquire the global test gate with timeout to avoid deadlocks in CI.
+        if (!await TestGate.WaitAsync(maxWaitMs).ConfigureAwait(false))
+        {
+            throw new TimeoutException($"Timed out waiting for AppBuilder test gate after {maxWaitMs}ms.");
+        }
+
         try
         {
             // Force-reset any previous builder state to avoid waiting deadlocks.
@@ -36,8 +41,17 @@ public static class RxTest
 
             try
             {
-                // Execute actual test
-                await testBody().ConfigureAwait(false);
+                // Execute actual test with timeout so it doesn't hang forever on CI.
+                var testTask = testBody();
+                var timeoutTask = Task.Delay(maxWaitMs);
+                var completed = await Task.WhenAny(testTask, timeoutTask).ConfigureAwait(false);
+                if (completed == timeoutTask)
+                {
+                    throw new TimeoutException($"Test execution exceeded {maxWaitMs}ms.");
+                }
+
+                // Propagate exceptions from the test body.
+                await testTask.ConfigureAwait(false);
             }
             finally
             {

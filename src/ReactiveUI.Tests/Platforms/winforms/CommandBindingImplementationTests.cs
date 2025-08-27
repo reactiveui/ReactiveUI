@@ -47,31 +47,32 @@ public class CommandBindingImplementationTests : AppBuilderTestBase
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Fact]
-    public async Task CommandBindToExplicitEventWireupAsync()
-    {
-        using var testSequencer = new TestSequencer();
-        var vm = new WinformCommandBindViewModel();
-        var view = new WinformCommandBindView { ViewModel = vm };
-        var fixture = new CommandBinderImplementation();
-
-        var invokeCount = 0;
-        vm.Command2.Subscribe(async _ =>
+    public async Task CommandBindToExplicitEventWireupAsync() =>
+        await RunAppBuilderTestAsync(async () =>
         {
-            ++invokeCount;
+            using var testSequencer = new TestSequencer();
+            var vm = new WinformCommandBindViewModel();
+            var view = new WinformCommandBindView { ViewModel = vm };
+            var fixture = new CommandBinderImplementation();
+
+            var invokeCount = 0;
+            vm.Command2.Subscribe(async _ =>
+            {
+                ++invokeCount;
+                await testSequencer.AdvancePhaseAsync();
+            });
+
+            var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
+
+            view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+
+            disp.Dispose();
+
+            view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+
             await testSequencer.AdvancePhaseAsync();
+            Assert.Equal(1, invokeCount);
         });
-
-        var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
-
-        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-
-        disp.Dispose();
-
-        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-
-        await testSequencer.AdvancePhaseAsync();
-        Assert.Equal(1, invokeCount);
-    }
 
     [Fact]
     public async Task CommandBindByNameWireupWithParameter() =>
