@@ -12,7 +12,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the reactive object.
 /// </summary>
-public class ReactiveObjectTests
+public class ReactiveObjectTests : AppBuilderTestBase
 {
     /// <summary>
     /// Test that changing values should always arrive before changed.

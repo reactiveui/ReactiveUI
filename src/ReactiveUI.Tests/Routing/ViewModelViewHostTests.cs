@@ -11,7 +11,7 @@ using ReactiveUI.Tests.Wpf;
 
 namespace ReactiveUI.Tests;
 
-public class ViewModelViewHostTests
+public class ViewModelViewHostTests : AppBuilderTestBase
 {
     [StaFact]
     public void ViewModelViewHostDefaultContentNotNull()

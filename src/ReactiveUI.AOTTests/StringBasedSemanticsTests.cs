@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Linq;
+using ReactiveUI.AOT.Tests.Mocks;
 
 namespace ReactiveUI.AOTTests;
 

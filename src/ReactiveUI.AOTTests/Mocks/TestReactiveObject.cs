@@ -6,7 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 
-namespace ReactiveUI.AOTTests;
+namespace ReactiveUI.AOT.Tests.Mocks;
 
 /// <summary>
 /// Test ReactiveObject for AOT compatibility testing.

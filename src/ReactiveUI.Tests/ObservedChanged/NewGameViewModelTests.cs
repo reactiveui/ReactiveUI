@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for a sample game.
 /// </summary>
-public class NewGameViewModelTests
+public class NewGameViewModelTests : AppBuilderTestBase
 {
     private readonly NewGameViewModel _viewmodel;
 

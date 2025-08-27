@@ -10,7 +10,7 @@ namespace ReactiveUI.Tests.Platforms.Wpf;
 /// <summary>
 /// Tests for WPF-specific ReactiveUIBuilder functionality.
 /// </summary>
-public class ReactiveUIBuilderWpfTests
+public class ReactiveUIBuilderWpfTests : AppBuilderTestBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUIBuilderWpfTests"/> class.
@@ -23,48 +23,48 @@ public class ReactiveUIBuilderWpfTests
     /// <summary>
     /// Test that WPF services can be registered using the builder.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void WithWpf_Should_Register_Wpf_Services()
-    {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
+    public async Task WithWpf_Should_Register_Wpf_Services() =>
+        await RunAppBuilderTestAsync(() =>
+        {
+            // Arrange
+            using var locator = new ModernDependencyResolver();
+            var builder = locator.CreateReactiveUIBuilder();
 
-        // Arrange
-        using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateReactiveUIBuilder();
+            // Act
+            builder.WithWpf().Build();
 
-        // Act
-        builder.WithWpf().Build();
+            // Assert
+            var platformOperations = locator.GetService<IPlatformOperations>();
+            Assert.NotNull(platformOperations);
 
-        // Assert
-        var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.NotNull(platformOperations);
-
-        var activationFetcher = locator.GetService<IActivationForViewFetcher>();
-        Assert.NotNull(activationFetcher);
-    }
+            var activationFetcher = locator.GetService<IActivationForViewFetcher>();
+            Assert.NotNull(activationFetcher);
+        });
 
     /// <summary>
     /// Test that the builder can chain WPF registration with core services.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void WithCoreServices_AndWpf_Should_Register_All_Services()
-    {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
+    public async Task WithCoreServices_AndWpf_Should_Register_All_Services() =>
+        await RunAppBuilderTestAsync(() =>
+        {
+            // Arrange
+            using var locator = new ModernDependencyResolver();
+            var builder = locator.CreateReactiveUIBuilder();
 
-        // Arrange
-        using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateReactiveUIBuilder();
+            // Act
+            builder.WithWpf().Build();
 
-        // Act
-        builder.WithWpf().Build();
+            // Assert
+            // Core services
+            var observableProperty = locator.GetService<ICreatesObservableForProperty>();
+            Assert.NotNull(observableProperty);
 
-        // Assert
-        // Core services
-        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
-
-        // WPF-specific services
-        var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.NotNull(platformOperations);
-    }
+            // WPF-specific services
+            var platformOperations = locator.GetService<IPlatformOperations>();
+            Assert.NotNull(platformOperations);
+        });
 }

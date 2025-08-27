@@ -7,14 +7,12 @@ using DynamicData;
 
 using Microsoft.Reactive.Testing;
 
-using ReactiveUI.Testing;
-
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests the reactive notify property changed.
 /// </summary>
-public class ReactiveNotifyPropertyChangedMixinTest
+public class ReactiveNotifyPropertyChangedMixinTest : AppBuilderTestBase
 {
     /// <summary>
     /// Gets or sets the dummy.

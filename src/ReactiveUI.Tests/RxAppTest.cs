@@ -10,17 +10,18 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests the RxApp class.
 /// </summary>
-public class RxAppTest
+public class RxAppTest : AppBuilderTestBase
 {
     /// <summary>
     /// Tests that schedulers should be current thread in test runner.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void SchedulerShouldBeCurrentThreadInTestRunner()
-    {
-        RxApp.MainThreadScheduler = CurrentThreadScheduler.Instance;
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
-        Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
-        Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
-    }
+    public async Task SchedulerShouldBeCurrentThreadInTestRunner() =>
+        await RunAppBuilderTestAsync(() =>
+        {
+            RxApp.MainThreadScheduler = CurrentThreadScheduler.Instance;
+            Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
+            Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
+        });
 }

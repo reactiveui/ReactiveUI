@@ -16,7 +16,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests associated with UI and the <see cref="IDependencyResolver"/>.
 /// </summary>
-public sealed class XamlViewDependencyResolverTests : IDisposable
+public sealed class XamlViewDependencyResolverTests : AppBuilderTestBase, IDisposable
 {
     private readonly IDependencyResolver _resolver;
 
@@ -34,29 +34,33 @@ public sealed class XamlViewDependencyResolverTests : IDisposable
     /// <summary>
     /// Test that register views for view model should register all views.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void RegisterViewsForViewModelShouldRegisterAllViews()
-    {
-        using (_resolver.WithResolver())
+    public async Task RegisterViewsForViewModelShouldRegisterAllViews() =>
+        await RunAppBuilderTestAsync(() =>
         {
-            Assert.Single(_resolver.GetServices<IViewFor<ExampleViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<AnotherViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>());
-        }
-    }
+            using (_resolver.WithResolver())
+            {
+                Assert.Single(_resolver.GetServices<IViewFor<ExampleViewModel>>());
+                Assert.Single(_resolver.GetServices<IViewFor<AnotherViewModel>>());
+                Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
+                Assert.Single(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>());
+            }
+        });
 
     /// <summary>
     /// Test that register views for view model should include contracts.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void RegisterViewsForViewModelShouldIncludeContracts()
-    {
-        using (_resolver.WithResolver())
+    public async Task RegisterViewsForViewModelShouldIncludeContracts() =>
+        await RunAppBuilderTestAsync(() =>
         {
-            Assert.Single(_resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract"));
-        }
-    }
+            using (_resolver.WithResolver())
+            {
+                Assert.Single(_resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract"));
+            }
+        });
 
     /// <inheritdoc/>
     public void Dispose() => _resolver?.Dispose();

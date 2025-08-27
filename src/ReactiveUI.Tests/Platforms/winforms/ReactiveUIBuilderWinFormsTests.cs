@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Builder;
-using ReactiveUI.Winforms;
 using Splat.Builder;
 
 namespace ReactiveUI.Tests.Platforms.Winforms;
@@ -12,53 +11,53 @@ namespace ReactiveUI.Tests.Platforms.Winforms;
 /// <summary>
 /// Tests for WinForms-specific ReactiveUIBuilder functionality.
 /// </summary>
-public class ReactiveUIBuilderWinFormsTests
+public class ReactiveUIBuilderWinFormsTests : AppBuilderTestBase
 {
     /// <summary>
     /// Test that WinForms services can be registered using the builder.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void WithWinForms_Should_Register_WinForms_Services()
-    {
-        AppBuilder.ResetBuilderStateForTests();
+    public async Task WithWinForms_Should_Register_WinForms_Services() =>
+        await RunAppBuilderTestAsync(() =>
+        {
+            // Arrange
+            using var locator = new ModernDependencyResolver();
+            var builder = locator.CreateReactiveUIBuilder();
 
-        // Arrange
-        using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateReactiveUIBuilder();
+            // Act
+            builder.WithWinForms().Build();
 
-        // Act
-        builder.WithWinForms().Build();
+            // Assert
+            var platformOperations = locator.GetService<IPlatformOperations>();
+            Assert.NotNull(platformOperations);
 
-        // Assert
-        var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.NotNull(platformOperations);
-
-        var activationFetcher = locator.GetService<IActivationForViewFetcher>();
-        Assert.NotNull(activationFetcher);
-    }
+            var activationFetcher = locator.GetService<IActivationForViewFetcher>();
+            Assert.NotNull(activationFetcher);
+        });
 
     /// <summary>
     /// Test that the builder can chain WinForms registration with core services.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void WithCoreServices_AndWinForms_Should_Register_All_Services()
-    {
-        AppBuilder.ResetBuilderStateForTests();
+    public async Task WithCoreServices_AndWinForms_Should_Register_All_Services() =>
+        await RunAppBuilderTestAsync(() =>
+        {
+            // Arrange
+            using var locator = new ModernDependencyResolver();
+            var builder = locator.CreateReactiveUIBuilder();
 
-        // Arrange
-        using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateReactiveUIBuilder();
+            // Act
+            builder.WithWinForms().Build();
 
-        // Act
-        builder.WithWinForms().Build();
+            // Assert
+            // Core services
+            var observableProperty = locator.GetService<ICreatesObservableForProperty>();
+            Assert.NotNull(observableProperty);
 
-        // Assert
-        // Core services
-        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
-
-        // WinForms-specific services
-        var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.NotNull(platformOperations);
-    }
+            // WinForms-specific services
+            var platformOperations = locator.GetService<IPlatformOperations>();
+            Assert.NotNull(platformOperations);
+        });
 }

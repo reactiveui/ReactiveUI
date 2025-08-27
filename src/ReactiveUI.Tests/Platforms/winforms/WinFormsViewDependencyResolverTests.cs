@@ -14,8 +14,6 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
 
     public WinFormsViewDependencyResolverTests()
     {
-        AppBuilder.ResetBuilderStateForTests();
-
         // Reset static counters to avoid cross-test interference when running entire suite
         SingleInstanceExampleView.ResetInstances();
         SingleInstanceWithContractExampleView.ResetInstances();

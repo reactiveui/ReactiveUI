@@ -7,14 +7,12 @@ using DynamicData;
 
 using Microsoft.Reactive.Testing;
 
-using ReactiveUI.Testing;
-
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests interactions.
 /// </summary>
-public class InteractionsTest
+public class InteractionsTest : AppBuilderTestBase
 {
     /// <summary>
     /// Tests that registers null handler should cause exception.

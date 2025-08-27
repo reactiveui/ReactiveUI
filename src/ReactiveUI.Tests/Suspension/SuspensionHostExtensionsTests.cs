@@ -7,7 +7,7 @@ using FluentAssertions;
 
 namespace ReactiveUI.Tests.Suspension;
 
-public class SuspensionHostExtensionsTests
+public class SuspensionHostExtensionsTests : AppBuilderTestBase
 {
     [Fact]
     public void GetAppStateReturns()

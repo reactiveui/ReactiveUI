@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Maui\ReactiveUI.Maui.csproj" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />

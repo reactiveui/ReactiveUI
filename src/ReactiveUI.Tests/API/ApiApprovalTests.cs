@@ -9,7 +9,7 @@ namespace ReactiveUI.Tests.API;
 /// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class ApiApprovalTests
+public class ApiApprovalTests : AppBuilderTestBase
 {
     /// <summary>
     /// Generates public API for the ReactiveUI.Testing API.

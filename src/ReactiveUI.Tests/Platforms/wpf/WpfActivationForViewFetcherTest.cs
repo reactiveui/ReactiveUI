@@ -11,132 +11,152 @@ using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Wpf;
 
-public class WpfActivationForViewFetcherTest
+public class WpfActivationForViewFetcherTest : AppBuilderTestBase
 {
+    /// <summary>
+    /// Ensures FrameworkElement is activated and then deactivated.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void FrameworkElementIsActivatedAndDeactivated()
-    {
-        var uc = new WpfTestUserControl();
-        var activation = new ActivationForViewFetcher();
-
-        var obs = activation.GetActivationForView(uc);
-        obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
-
-        var loaded = new RoutedEventArgs
+    public async Task FrameworkElementIsActivatedAndDeactivated() =>
+        await RunAppBuilderTestAsync(() =>
         {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+            var uc = new WpfTestUserControl();
+            var activation = new ActivationForViewFetcher();
 
-        uc.RaiseEvent(loaded);
+            var obs = activation.GetActivationForView(uc);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-        new[] { true }.AssertAreEqual(activated);
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
 
-        var unloaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.UnloadedEvent
-        };
+            uc.RaiseEvent(loaded);
 
-        uc.RaiseEvent(unloaded);
+            new[] { true }.AssertAreEqual(activated);
 
-        new[] { true, false }.AssertAreEqual(activated);
-    }
+            var unloaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.UnloadedEvent
+            };
 
+            uc.RaiseEvent(unloaded);
+
+            new[] { true, false }.AssertAreEqual(activated);
+        });
+
+    /// <summary>
+    /// Ensures IsHitTestVisible activates FrameworkElement correctly.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void IsHitTestVisibleActivatesFrameworkElement()
-    {
-        var uc = new WpfTestUserControl
+    public async Task IsHitTestVisibleActivatesFrameworkElement() =>
+        await RunAppBuilderTestAsync(() =>
         {
-            IsHitTestVisible = false
-        };
-        var activation = new ActivationForViewFetcher();
+            var uc = new WpfTestUserControl
+            {
+                IsHitTestVisible = false
+            };
+            var activation = new ActivationForViewFetcher();
 
-        var obs = activation.GetActivationForView(uc);
-        obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
+            var obs = activation.GetActivationForView(uc);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
 
-        uc.RaiseEvent(loaded);
+            uc.RaiseEvent(loaded);
 
-        // Loaded has happened.
-        new[] { true }.AssertAreEqual(activated);
+            // Loaded has happened.
+            new[] { true }.AssertAreEqual(activated);
 
-        uc.IsHitTestVisible = true;
+            uc.IsHitTestVisible = true;
 
-        // IsHitTestVisible true, we don't want the event to repeat unnecessarily.
-        new[] { true }.AssertAreEqual(activated);
+            // IsHitTestVisible true, we don't want the event to repeat unnecessarily.
+            new[] { true }.AssertAreEqual(activated);
 
-        var unloaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.UnloadedEvent
-        };
+            var unloaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.UnloadedEvent
+            };
 
-        uc.RaiseEvent(unloaded);
+            uc.RaiseEvent(unloaded);
 
-        // We had both a loaded/hit test visible change/unloaded happen.
-        new[] { true, false }.AssertAreEqual(activated);
-    }
+            // We had both a loaded/hit test visible change/unloaded happen.
+            new[] { true, false }.AssertAreEqual(activated);
+        });
 
+    /// <summary>
+    /// Ensures IsHitTestVisible deactivates FrameworkElement correctly.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void IsHitTestVisibleDeactivatesFrameworkElement()
-    {
-        var uc = new WpfTestUserControl();
-        var activation = new ActivationForViewFetcher();
-
-        var obs = activation.GetActivationForView(uc);
-        obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
-
-        var loaded = new RoutedEventArgs
+    public async Task IsHitTestVisibleDeactivatesFrameworkElement() =>
+        await RunAppBuilderTestAsync(() =>
         {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+            var uc = new WpfTestUserControl();
+            var activation = new ActivationForViewFetcher();
 
-        uc.RaiseEvent(loaded);
+            var obs = activation.GetActivationForView(uc);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-        new[] { true }.AssertAreEqual(activated);
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
 
-        uc.IsHitTestVisible = false;
+            uc.RaiseEvent(loaded);
 
-        new[] { true, false }.AssertAreEqual(activated);
-    }
+            new[] { true }.AssertAreEqual(activated);
 
+            uc.IsHitTestVisible = false;
+
+            new[] { true, false }.AssertAreEqual(activated);
+        });
+
+    /// <summary>
+    /// Ensures FrameworkElement activation and deactivation with hit test visibility changes.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public void FrameworkElementIsActivatedAndDeactivatedWithHitTest()
-    {
-        var uc = new WpfTestUserControl();
-        var activation = new ActivationForViewFetcher();
-
-        var obs = activation.GetActivationForView(uc);
-        obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
-
-        var loaded = new RoutedEventArgs
+    public async Task FrameworkElementIsActivatedAndDeactivatedWithHitTest() =>
+        await RunAppBuilderTestAsync(() =>
         {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
+            var uc = new WpfTestUserControl();
+            var activation = new ActivationForViewFetcher();
 
-        uc.RaiseEvent(loaded);
+            var obs = activation.GetActivationForView(uc);
+            obs.ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
-        new[] { true }.AssertAreEqual(activated);
+            var loaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            };
 
-        // this should deactivate it
-        uc.IsHitTestVisible = false;
+            uc.RaiseEvent(loaded);
 
-        new[] { true, false }.AssertAreEqual(activated);
+            new[] { true }.AssertAreEqual(activated);
 
-        // this should activate it
-        uc.IsHitTestVisible = true;
+            // this should deactivate it
+            uc.IsHitTestVisible = false;
 
-        new[] { true, false, true }.AssertAreEqual(activated);
+            new[] { true, false }.AssertAreEqual(activated);
 
-        var unloaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.UnloadedEvent
-        };
+            // this should activate it
+            uc.IsHitTestVisible = true;
 
-        uc.RaiseEvent(unloaded);
+            new[] { true, false, true }.AssertAreEqual(activated);
 
-        new[] { true, false, true, false }.AssertAreEqual(activated);
-    }
+            var unloaded = new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.UnloadedEvent
+            };
+
+            uc.RaiseEvent(unloaded);
+
+            new[] { true, false, true, false }.AssertAreEqual(activated);
+        });
 }

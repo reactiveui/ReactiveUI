@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Tests;
 
-public class INPCObservableForPropertyTests
+public class INPCObservableForPropertyTests : AppBuilderTestBase
 {
     [Fact]
     public void CheckGetAffinityForObjectValues()

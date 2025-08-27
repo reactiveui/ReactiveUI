@@ -7,7 +7,7 @@ using FluentAssertions;
 
 namespace ReactiveUI.Tests;
 
-public sealed class DependencyResolverTests
+public sealed class DependencyResolverTests : AppBuilderTestBase
 {
     /// <summary>
     /// Gets RegistrationNamespaces.

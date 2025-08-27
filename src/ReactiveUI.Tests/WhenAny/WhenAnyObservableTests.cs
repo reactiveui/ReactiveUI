@@ -10,7 +10,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests WhenAnyObservable.
 /// </summary>
-public class WhenAnyObservableTests
+public class WhenAnyObservableTests : AppBuilderTestBase
 {
     /// <summary>
     /// Tests that null observables do not cause exceptions.

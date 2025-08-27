@@ -9,14 +9,12 @@ using DynamicData;
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
 
-using ReactiveUI.Testing;
-
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for the ReactiveCommand class.
 /// </summary>
-public class ReactiveCommandTest
+public class ReactiveCommandTest : AppBuilderTestBase
 {
     public ReactiveCommandTest()
     {
@@ -29,7 +27,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CanExecuteChangedIsAvailableViaICommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var canExecuteSubject = new Subject<bool>();
         ICommand? fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
         var canExecuteChanged = new List<bool>();
@@ -49,7 +46,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CanExecuteIsAvailableViaICommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var canExecuteSubject = new Subject<bool>();
         ICommand? fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
 
@@ -68,7 +64,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CanExecuteIsBehavioral()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
@@ -106,7 +101,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CanExecuteIsFalseIfCallerDictatesAsSuch()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
@@ -126,7 +120,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CanExecuteIsUnsubscribedAfterCommandDisposal()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
 
@@ -143,7 +136,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CanExecuteOnlyTicksDistinctValues()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
@@ -166,7 +158,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CanExecuteTicksFailuresThroughThrownExceptions()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
@@ -183,7 +174,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CreateTaskFacilitatesTPLIntegration()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.CreateFromTask(() => Task.FromResult(13), outputScheduler: ImmediateScheduler.Instance);
         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
@@ -199,7 +189,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CreateTaskFacilitatesTPLIntegrationWithParameter()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.CreateFromTask<int, int>(param => Task.FromResult(param + 1), outputScheduler: ImmediateScheduler.Instance);
         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
@@ -217,7 +206,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CreateThrowsIfExecutionParameterIsNull()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
         Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create(null));
@@ -238,7 +226,6 @@ public class ReactiveCommandTest
     [Fact]
     public void CreateRunInBackgroundThrowsIfExecutionParameterIsNull()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
         Assert.Throws<ArgumentNullException>(() => ReactiveCommand.CreateRunInBackground(null));
@@ -302,7 +289,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteCanTickThroughMultipleResults()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.CreateFromObservable(() => new[] { 1, 2, 3 }.ToObservable(), outputScheduler: ImmediateScheduler.Instance);
         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
@@ -357,7 +343,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteIsAvailableViaICommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         ICommand? fixture = ReactiveCommand.Create(
                                                   () =>
@@ -377,7 +362,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecutePassesThroughParameter()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var parameters = new List<int>();
         var fixture = ReactiveCommand.CreateFromObservable<int, Unit>(
                                                                       param =>
@@ -403,7 +387,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteReenablesExecutionEvenAfterFailure()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
@@ -444,7 +427,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteTicksAnyException()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()), outputScheduler: ImmediateScheduler.Instance);
         fixture.ThrownExceptions.Subscribe();
         Exception? exception = null;
@@ -459,7 +441,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteTicksAnyLambdaException()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
         fixture.ThrownExceptions.Subscribe();
         Exception? exception = null;
@@ -474,7 +455,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteTicksErrorsThroughThrownExceptions()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
@@ -490,7 +470,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteTicksLambdaErrorsThroughThrownExceptions()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => throw new InvalidOperationException("oops"), outputScheduler: ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
@@ -507,7 +486,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteTicksThroughTheResult()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var num = 0;
         var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Return(num), outputScheduler: ImmediateScheduler.Instance);
         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
@@ -531,7 +509,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         ICommand? fixture = ReactiveCommand.Create<int>(_ => { }, outputScheduler: ImmediateScheduler.Instance);
         var ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute("foo"));
         Assert.Equal("Command requires parameters of type System.Int32, but received parameter of type System.String.", ex.Message);
@@ -547,7 +524,6 @@ public class ReactiveCommandTest
     [Fact]
     public void ExecuteViaICommandWorksWithNullableTypes()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         int? value = null;
         ICommand? fixture = ReactiveCommand.Create<int?>(param => value = param, outputScheduler: ImmediateScheduler.Instance);
 
@@ -564,7 +540,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandInTargetInvokesTheCommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executionCount = 0;
         var fixture = new ICommandHolder();
         var source = new Subject<Unit>();
@@ -584,7 +559,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandInTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = new ICommandHolder();
         var source = new Subject<int>();
         source.InvokeCommand(fixture, x => x!.TheCommand!);
@@ -602,7 +576,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandInNullableTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = new ICommandHolder();
         var source = new Subject<int>();
         source.InvokeCommand(fixture, x => x.TheCommand);
@@ -620,7 +593,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandInTargetRespectsCanExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         var fixture = new ICommandHolder();
@@ -642,7 +614,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandInNullableTargetRespectsCanExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         var fixture = new ICommandHolder();
@@ -664,7 +635,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandInTargetRespectsCanExecuteWindow()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         var fixture = new ICommandHolder();
@@ -687,7 +657,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandInTargetSwallowsExceptions()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var count = 0;
         var fixture = new ICommandHolder();
         var command = ReactiveCommand.Create(
@@ -714,7 +683,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandInvokesTheCommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executionCount = 0;
         ICommand fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
         var source = new Subject<Unit>();
@@ -733,7 +701,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstNullableICommandInvokesTheCommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executionCount = 0;
         ICommand? fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
         var source = new Subject<Unit>();
@@ -752,7 +719,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = new FakeCommand();
         var source = new Subject<int>();
         source.InvokeCommand(fixture);
@@ -768,7 +734,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandRespectsCanExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         ICommand fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
@@ -789,7 +754,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandRespectsCanExecuteWindow()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         ICommand fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
@@ -811,7 +775,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstICommandSwallowsExceptions()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var count = 0;
         var fixture = ReactiveCommand.Create(
                                              () =>
@@ -836,7 +799,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandInTargetInvokesTheCommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executionCount = 0;
         var fixture = new ReactiveCommandHolder();
         var source = new Subject<int>();
@@ -856,7 +818,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandInTargetPassesTheSpecifiedValueToExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executeReceived = 0;
         var fixture = new ReactiveCommandHolder();
         var source = new Subject<int>();
@@ -873,7 +834,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         var fixture = new ReactiveCommandHolder();
@@ -895,7 +855,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecuteWindow()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         var fixture = new ReactiveCommandHolder();
@@ -918,7 +877,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandInTargetSwallowsExceptions()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var count = 0;
         var fixture = new ReactiveCommandHolder()
         {
@@ -946,7 +904,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandInvokesTheCommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executionCount = 0;
         var fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
         var source = new Subject<Unit>();
@@ -965,7 +922,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandPassesTheSpecifiedValueToExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executeReceived = 0;
         var fixture = ReactiveCommand.Create<int>(x => executeReceived = x, outputScheduler: ImmediateScheduler.Instance);
         var source = new Subject<int>();
@@ -981,7 +937,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandRespectsCanExecute()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         var fixture = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
@@ -1002,7 +957,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandRespectsCanExecuteWindow()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
         var fixture = ReactiveCommand.Create(() => executed = true, canExecute, outputScheduler: ImmediateScheduler.Instance);
@@ -1024,7 +978,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandAgainstReactiveCommandSwallowsExceptions()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var count = 0;
         var fixture = ReactiveCommand.Create(
                                              () =>
@@ -1049,7 +1002,6 @@ public class ReactiveCommandTest
     [Fact]
     public void InvokeCommandWorksEvenIfTheSourceIsCold()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executionCount = 0;
         var fixture = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
         var source = Observable.Return(Unit.Default);
@@ -1064,7 +1016,6 @@ public class ReactiveCommandTest
     [Fact]
     public void IsExecutingIsBehavioral()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
 
@@ -1078,7 +1029,6 @@ public class ReactiveCommandTest
     [Fact]
     public void IsExecutingRemainsTrueAsLongAsExecutionPipelineHasNotCompleted()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var execute = new Subject<Unit>();
         var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: ImmediateScheduler.Instance);
 
@@ -1146,7 +1096,6 @@ public class ReactiveCommandTest
     [Fact]
     public void SynchronousCommandExecuteLazily()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var executionCount = 0;
 #pragma warning disable IDE0053 // Use expression body for lambda expressions
 #pragma warning disable RCS1021 // Convert lambda expression body to expression-body.
@@ -1194,7 +1143,6 @@ public class ReactiveCommandTest
     [Fact]
     public void SynchronousCommandsFailCorrectly()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         var fixture1 = ReactiveCommand.Create(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
         var fixture2 = ReactiveCommand.Create<int>(_ => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
         var fixture3 = ReactiveCommand.Create(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
@@ -1219,7 +1167,6 @@ public class ReactiveCommandTest
     [Fact]
     public async Task ReactiveCommandCreateFromTaskHandlesTaskExceptionAsync()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var testSequencer = new TestSequencer();
         var subj = new Subject<Unit>();
         var isExecuting = false;
@@ -1265,7 +1212,6 @@ public class ReactiveCommandTest
     [Fact]
     public async Task ReactiveCommandCreateFromTaskThenCancelSetsIsExecutingFalseOnlyAfterCancellationCompleteAsync()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var testSequencer = new TestSequencer();
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
@@ -1333,7 +1279,6 @@ public class ReactiveCommandTest
     [Fact]
     public async Task ReactiveCommandExecutesFromInvokeCommand()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var testSequencer = new TestSequencer();
 
         var command = ReactiveCommand.Create(async () => await testSequencer.AdvancePhaseAsync("Phase 1"));
@@ -1378,7 +1323,6 @@ public class ReactiveCommandTest
     [Fact]
     public async Task ReactiveCommandCreateFromTaskHandlesExecuteCancellation()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var testSequencer = new TestSequencer();
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
@@ -1483,7 +1427,6 @@ public class ReactiveCommandTest
     [Fact]
     public async Task ReactiveCommandCreateFromTaskHandlesCancellation()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var testSequencer = new TestSequencer();
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
@@ -1552,7 +1495,6 @@ public class ReactiveCommandTest
     [Fact]
     public async Task ReactiveCommandCreateFromTaskHandlesCompletion()
     {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         using var testSequencer = new TestSequencer();
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;

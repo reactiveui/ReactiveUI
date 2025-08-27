@@ -5,14 +5,12 @@
 
 using Microsoft.Reactive.Testing;
 
-using ReactiveUI.Testing;
-
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for the ObservedChangedMixin.
 /// </summary>
-public class ObservedChangedMixinTest
+public class ObservedChangedMixinTest : AppBuilderTestBase
 {
     /// <summary>
     /// Tests that getting the value should actually return the value.

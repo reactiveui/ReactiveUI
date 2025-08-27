@@ -10,7 +10,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the Interaction bindings.
 /// </summary>
-public class InteractionBinderImplementationTests
+public class InteractionBinderImplementationTests : AppBuilderTestBase
 {
     /// <summary>
     /// Tests that make sure that the we receive output from task handler.

@@ -3,25 +3,27 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Testing;
+
 namespace ReactiveUI.Builder.Tests;
 
 /// <summary>
 /// Tests ensuring the builder blocks reflection-based initialization.
 /// </summary>
-public class ReactiveUIBuilderBlockingTests
+public class ReactiveUIBuilderBlockingTests : AppBuilderTestBase
 {
     [Fact]
-    public void Build_SetsFlag_AndBlocks_InitializeReactiveUI()
-    {
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
-        using var locator = new ModernDependencyResolver();
+    public async Task Build_SetsFlag_AndBlocks_InitializeReactiveUI() =>
+        await RunAppBuilderTestAsync(() =>
+        {
+            using var locator = new ModernDependencyResolver();
 
-        var builder = locator.CreateReactiveUIBuilder();
-        builder.Build();
+            var builder = locator.CreateReactiveUIBuilder();
+            builder.Build();
 
-        locator.InitializeReactiveUI();
+            locator.InitializeReactiveUI();
 
-        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
-    }
+            var observableProperty = locator.GetService<ICreatesObservableForProperty>();
+            Assert.NotNull(observableProperty);
+        });
 }
