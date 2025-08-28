@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests.Wpf;
 /// Tests for the WPF View Resolver.
 /// </summary>
 /// <seealso cref="System.IDisposable" />
-public sealed class WpfViewDependencyResolverTests : AppBuilderTestBase, IDisposable
+public sealed class WpfViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;
 
@@ -29,15 +29,14 @@ public sealed class WpfViewDependencyResolverTests : AppBuilderTestBase, IDispos
     /// <summary>
     /// Tests that  Register views for view model should register all views.
     /// </summary>
-    [FactAttribute]
-    public async Task RegisterViewsForViewModelShouldRegisterAllViews() =>
-        await RunAppBuilderTestAsync(() =>
+    [Fact]
+    public void RegisterViewsForViewModelShouldRegisterAllViews()
+    {
+        using (_resolver.WithResolver())
         {
-            using (_resolver.WithResolver())
-            {
-                Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
-            }
-        });
+            Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
+        }
+    }
 
     /// <inheritdoc/>
     public void Dispose() => _resolver?.Dispose();

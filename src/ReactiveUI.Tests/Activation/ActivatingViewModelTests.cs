@@ -8,59 +8,55 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests associated with activating view models.
 /// </summary>
-public class ActivatingViewModelTests : AppBuilderTestBase
+public class ActivatingViewModelTests
 {
     /// <summary>
     /// Tests for the activation to make sure it activates the appropriate number of times.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task ActivationsGetRefCounted() =>
-        await RunAppBuilderTestAsync(() =>
-        {
-            var fixture = new ActivatingViewModel();
-            Assert.Equal(0, fixture.IsActiveCount);
+    public void ActivationsGetRefCounted()
+    {
+        var fixture = new ActivatingViewModel();
+        Assert.Equal(0, fixture.IsActiveCount);
 
-            fixture.Activator.Activate();
-            Assert.Equal(1, fixture.IsActiveCount);
+        fixture.Activator.Activate();
+        Assert.Equal(1, fixture.IsActiveCount);
 
-            fixture.Activator.Activate();
-            Assert.Equal(1, fixture.IsActiveCount);
+        fixture.Activator.Activate();
+        Assert.Equal(1, fixture.IsActiveCount);
 
-            fixture.Activator.Deactivate();
-            Assert.Equal(1, fixture.IsActiveCount);
+        fixture.Activator.Deactivate();
+        Assert.Equal(1, fixture.IsActiveCount);
 
-            // RefCount drops to zero
-            fixture.Activator.Deactivate();
-            Assert.Equal(0, fixture.IsActiveCount);
-        });
+        // RefCount drops to zero
+        fixture.Activator.Deactivate();
+        Assert.Equal(0, fixture.IsActiveCount);
+    }
 
     /// <summary>
     /// Tests to make sure the activations of derived classes don't get stomped.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task DerivedActivationsDontGetStomped() =>
-        await RunAppBuilderTestAsync(() =>
-        {
-            var fixture = new DerivedActivatingViewModel();
-            Assert.Equal(0, fixture.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCountAlso);
+    public void DerivedActivationsDontGetStomped()
+    {
+        var fixture = new DerivedActivatingViewModel();
+        Assert.Equal(0, fixture.IsActiveCount);
+        Assert.Equal(0, fixture.IsActiveCountAlso);
 
-            fixture.Activator.Activate();
-            Assert.Equal(1, fixture.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCountAlso);
+        fixture.Activator.Activate();
+        Assert.Equal(1, fixture.IsActiveCount);
+        Assert.Equal(1, fixture.IsActiveCountAlso);
 
-            fixture.Activator.Activate();
-            Assert.Equal(1, fixture.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCountAlso);
+        fixture.Activator.Activate();
+        Assert.Equal(1, fixture.IsActiveCount);
+        Assert.Equal(1, fixture.IsActiveCountAlso);
 
-            fixture.Activator.Deactivate();
-            Assert.Equal(1, fixture.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCountAlso);
+        fixture.Activator.Deactivate();
+        Assert.Equal(1, fixture.IsActiveCount);
+        Assert.Equal(1, fixture.IsActiveCountAlso);
 
-            fixture.Activator.Deactivate();
-            Assert.Equal(0, fixture.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCountAlso);
-        });
+        fixture.Activator.Deactivate();
+        Assert.Equal(0, fixture.IsActiveCount);
+        Assert.Equal(0, fixture.IsActiveCountAlso);
+    }
 }

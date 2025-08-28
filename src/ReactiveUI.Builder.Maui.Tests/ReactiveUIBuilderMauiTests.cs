@@ -3,41 +3,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Threading.Tasks;
-using ReactiveUI.Testing;
+using Splat.Builder;
 
 namespace ReactiveUI.Builder.Maui.Tests;
 
-public class ReactiveUIBuilderMauiTests : AppBuilderTestBase
+public class ReactiveUIBuilderMauiTests
 {
     [Fact]
-    public async Task WithMaui_Should_Register_Services() =>
-        await RunAppBuilderTestAsync(() =>
-        {
-            using var locator = new ModernDependencyResolver();
+    public void WithMaui_Should_Register_Services()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        using var locator = new ModernDependencyResolver();
 
-            locator.CreateReactiveUIBuilder()
-                   .WithMaui()
-                   .Build();
+        locator.CreateReactiveUIBuilder()
+               .WithMaui()
+               .Build();
 
-            var typeConverters = locator.GetServices<IBindingTypeConverter>();
-            Assert.NotNull(typeConverters);
-        });
+        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
+        Assert.NotNull(observableProperty);
 
-    [Fact]
-    public async Task WithCoreServices_AndMaui_Should_Register_All_Services() =>
-        await RunAppBuilderTestAsync(() =>
-        {
-            using var locator = new ModernDependencyResolver();
-
-            locator.CreateReactiveUIBuilder()
-                   .WithMaui()
-                   .Build();
-
-            var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-            Assert.NotNull(observableProperty);
-
-            var typeConverters = locator.GetServices<IBindingTypeConverter>();
-            Assert.NotNull(typeConverters);
-        });
+        var typeConverters = locator.GetServices<IBindingTypeConverter>();
+        Assert.NotNull(typeConverters);
+    }
 }

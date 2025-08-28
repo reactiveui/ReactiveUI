@@ -9,12 +9,14 @@ using DynamicData;
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
 
+using ReactiveUI.Testing;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for the ReactiveCommand class.
 /// </summary>
-public class ReactiveCommandTest : AppBuilderTestBase
+public class ReactiveCommandTest
 {
     public ReactiveCommandTest()
     {

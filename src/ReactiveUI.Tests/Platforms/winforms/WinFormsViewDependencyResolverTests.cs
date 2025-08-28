@@ -3,16 +3,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Splat.Builder;
 using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Winforms;
 
-public sealed class WinFormsViewDependencyResolverTests : AppBuilderTestBase, IDisposable
+public sealed class WinFormsViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;
 
     public WinFormsViewDependencyResolverTests()
     {
+        AppBuilder.ResetBuilderStateForTests();
+
         // Reset static counters to avoid cross-test interference when running entire suite
         SingleInstanceExampleView.ResetInstances();
         SingleInstanceWithContractExampleView.ResetInstances();
@@ -24,85 +27,79 @@ public sealed class WinFormsViewDependencyResolverTests : AppBuilderTestBase, ID
         _resolver.RegisterViewsForViewModels(GetType().Assembly);
     }
 
-    [FactAttribute]
-    public async Task RegisterViewsForViewModelShouldRegisterAllViews() =>
-        await RunAppBuilderTestAsync(() =>
+    [Fact]
+    public void RegisterViewsForViewModelShouldRegisterAllViews()
+    {
+        using (_resolver.WithResolver())
         {
-            using (_resolver.WithResolver())
-            {
-                Assert.Single(_resolver.GetServices<IViewFor<ExampleViewModel>>());
-                Assert.Single(_resolver.GetServices<IViewFor<AnotherViewModel>>());
-                Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
-                Assert.Single(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>());
-            }
-        });
+            Assert.Single(_resolver.GetServices<IViewFor<ExampleViewModel>>());
+            Assert.Single(_resolver.GetServices<IViewFor<AnotherViewModel>>());
+            Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
+            Assert.Single(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>());
+        }
+    }
 
-    [FactAttribute]
-    public async Task NonContractRegistrationsShouldResolveCorrectly() =>
-        await RunAppBuilderTestAsync(() =>
+    [Fact]
+    public void NonContractRegistrationsShouldResolveCorrectly()
+    {
+        using (_resolver.WithResolver())
         {
-            using (_resolver.WithResolver())
-            {
-                Assert.IsType<AnotherView>(_resolver.GetService<IViewFor<AnotherViewModel>>());
-            }
-        });
+            Assert.IsType<AnotherView>(_resolver.GetService<IViewFor<AnotherViewModel>>());
+        }
+    }
 
     /// <inheritdoc/>
     public void Dispose() => _resolver?.Dispose();
 
-    [FactAttribute]
-    public async Task ContractRegistrationsShouldResolveCorrectly() =>
-        await RunAppBuilderTestAsync(() =>
+    [Fact]
+    public void ContractRegistrationsShouldResolveCorrectly()
+    {
+        using (_resolver.WithResolver())
         {
-            using (_resolver.WithResolver())
-            {
-                Assert.IsType<ContractExampleView>(_resolver.GetService(typeof(IViewFor<ExampleViewModel>), "contract"));
-            }
-        });
+            Assert.IsType<ContractExampleView>(_resolver.GetService(typeof(IViewFor<ExampleViewModel>), "contract"));
+        }
+    }
 
-    [FactAttribute]
-    public async Task SingleInstanceViewsShouldOnlyBeInstantiatedOnce() =>
-        await RunAppBuilderTestAsync(() =>
+    [Fact]
+    public void SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
+    {
+        using (_resolver.WithResolver())
         {
-            using (_resolver.WithResolver())
-            {
-                Assert.Equal(0, SingleInstanceExampleView.Instances);
+            Assert.Equal(0, SingleInstanceExampleView.Instances);
 
-                var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
-                Assert.Equal(1, SingleInstanceExampleView.Instances);
+            var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
+            Assert.Equal(1, SingleInstanceExampleView.Instances);
 
-                var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
-                Assert.Equal(1, SingleInstanceExampleView.Instances);
+            var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
+            Assert.Equal(1, SingleInstanceExampleView.Instances);
 
-                Assert.Same(instance, instance2);
-            }
-        });
+            Assert.Same(instance, instance2);
+        }
+    }
 
-    [FactAttribute]
-    public async Task SingleInstanceViewsWithContractShouldResolveCorrectly() =>
-        await RunAppBuilderTestAsync(() =>
+    [Fact]
+    public void SingleInstanceViewsWithContractShouldResolveCorrectly()
+    {
+        using (_resolver.WithResolver())
         {
-            using (_resolver.WithResolver())
-            {
-                Assert.Equal(0, SingleInstanceWithContractExampleView.Instances);
+            Assert.Equal(0, SingleInstanceWithContractExampleView.Instances);
 
-                var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
-                Assert.Equal(1, SingleInstanceWithContractExampleView.Instances);
+            var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
+            Assert.Equal(1, SingleInstanceWithContractExampleView.Instances);
 
-                var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
-                Assert.Equal(1, SingleInstanceWithContractExampleView.Instances);
+            var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
+            Assert.Equal(1, SingleInstanceWithContractExampleView.Instances);
 
-                Assert.Same(instance, instance2);
-            }
-        });
+            Assert.Same(instance, instance2);
+        }
+    }
 
-    [FactAttribute]
-    public async Task SingleInstanceViewsShouldOnlyBeInstantiatedWhenRequested() =>
-        await RunAppBuilderTestAsync(() =>
+    [Fact]
+    public void SingleInstanceViewsShouldOnlyBeInstantiatedWhenRequested()
+    {
+        using (_resolver.WithResolver())
         {
-            using (_resolver.WithResolver())
-            {
-                Assert.Equal(0, NeverUsedView.Instances);
-            }
-        });
+            Assert.Equal(0, NeverUsedView.Instances);
+        }
+    }
 }

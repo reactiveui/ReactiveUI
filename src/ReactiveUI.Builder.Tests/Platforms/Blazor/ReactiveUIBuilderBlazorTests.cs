@@ -3,41 +3,42 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Testing;
+using ReactiveUI.Blazor;
+using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Blazor;
 
-public class ReactiveUIBuilderBlazorTests : AppBuilderTestBase
+public class ReactiveUIBuilderBlazorTests
 {
     [Fact]
-    public async Task WithBlazor_Should_Register_Services() =>
-        await RunAppBuilderTestAsync(() =>
-        {
-            using var locator = new ModernDependencyResolver();
-            var builder = locator.CreateReactiveUIBuilder();
+    public void WithBlazor_Should_Register_Services()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        using var locator = new ModernDependencyResolver();
+        var builder = locator.CreateReactiveUIBuilder();
 
-            builder.WithBlazor().Build();
+        builder.WithBlazor().Build();
 
-            var platformOperations = locator.GetService<IPlatformOperations>();
-            Assert.NotNull(platformOperations);
+        var platformOperations = locator.GetService<IPlatformOperations>();
+        Assert.NotNull(platformOperations);
 
-            var typeConverters = locator.GetServices<IBindingTypeConverter>();
-            Assert.NotEmpty(typeConverters);
-        });
+        var typeConverters = locator.GetServices<IBindingTypeConverter>();
+        Assert.NotEmpty(typeConverters);
+    }
 
     [Fact]
-    public async Task WithCoreServices_AndBlazor_Should_Register_All_Services() =>
-        await RunAppBuilderTestAsync(() =>
-        {
-            using var locator = new ModernDependencyResolver();
-            var builder = locator.CreateReactiveUIBuilder();
+    public void WithCoreServices_AndBlazor_Should_Register_All_Services()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        using var locator = new ModernDependencyResolver();
+        var builder = locator.CreateReactiveUIBuilder();
 
-            builder.WithBlazor().Build();
+        builder.WithBlazor().Build();
 
-            var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-            Assert.NotNull(observableProperty);
+        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
+        Assert.NotNull(observableProperty);
 
-            var platformOperations = locator.GetService<IPlatformOperations>();
-            Assert.NotNull(platformOperations);
-        });
+        var platformOperations = locator.GetService<IPlatformOperations>();
+        Assert.NotNull(platformOperations);
+    }
 }

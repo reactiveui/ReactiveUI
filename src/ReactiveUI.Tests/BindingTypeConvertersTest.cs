@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for binding type converters.
 /// </summary>
-public class BindingTypeConvertersTest : AppBuilderTestBase
+public class BindingTypeConvertersTest
 {
     /// <summary>
     /// Tests that equality type converter do reference cast should convert null nullable values.

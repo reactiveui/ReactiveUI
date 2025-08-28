@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests the awaiters.
 /// </summary>
-public class AwaiterTest : AppBuilderTestBase
+public class AwaiterTest
 {
     /// <summary>
     /// A smoke test for Awaiters.

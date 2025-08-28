@@ -8,19 +8,17 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Checks RxApp dependency objects.
 /// </summary>
-public class RxAppDependencyObjectTests : AppBuilderTestBase
+public class RxAppDependencyObjectTests
 {
     /// <summary>
     /// Tests that Dependency Property notifiers should be found.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task DepPropNotifierShouldBeFound() =>
-        await RunAppBuilderTestAsync(() =>
-        {
-            RxApp.EnsureInitialized();
+    public void DepPropNotifierShouldBeFound()
+    {
+        RxApp.EnsureInitialized();
 
-            Assert.True(Locator.Current.GetServices<ICreatesObservableForProperty>()
-                               .Any(x => x is DependencyObjectObservableForProperty));
-        });
+        Assert.True(Locator.Current.GetServices<ICreatesObservableForProperty>()
+                           .Any(x => x is DependencyObjectObservableForProperty));
+    }
 }

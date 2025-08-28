@@ -7,12 +7,14 @@ using DynamicData;
 
 using Microsoft.Reactive.Testing;
 
+using ReactiveUI.Testing;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for the ReactiveCommand Combined functionality.
 /// </summary>
-public class CombinedReactiveCommandTest : AppBuilderTestBase
+public class CombinedReactiveCommandTest
 {
     /// <summary>
     /// Tests that determines whether this instance [can execute is false if any child cannot execute].

@@ -7,9 +7,11 @@ using DynamicData;
 
 using Microsoft.Reactive.Testing;
 
+using ReactiveUI.Testing;
+
 namespace ReactiveUI.Tests;
 
-public class RoutingStateTests : AppBuilderTestBase
+public class RoutingStateTests
 {
     /// <summary>
     /// Navigations the push pop test.

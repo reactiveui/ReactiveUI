@@ -16,7 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
     <ProjectReference Include="..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
-    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0'))">

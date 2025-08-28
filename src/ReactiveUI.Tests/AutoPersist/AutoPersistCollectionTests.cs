@@ -7,12 +7,14 @@ using DynamicData.Binding;
 
 using Microsoft.Reactive.Testing;
 
+using ReactiveUI.Testing;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests to make sure that the auto persist collection works.
 /// </summary>
-public class AutoPersistCollectionTests : AppBuilderTestBase
+public class AutoPersistCollectionTests
 {
     /// <summary>
     /// Test the automatic persist collection smoke test.

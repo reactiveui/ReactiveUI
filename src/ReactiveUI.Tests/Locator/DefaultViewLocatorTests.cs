@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the default view locators.
 /// </summary>
-public class DefaultViewLocatorTests : AppBuilderTestBase
+public class DefaultViewLocatorTests
 {
     /// <summary>
     /// Tests that the default name of the view model is replaced with view when determining the service.

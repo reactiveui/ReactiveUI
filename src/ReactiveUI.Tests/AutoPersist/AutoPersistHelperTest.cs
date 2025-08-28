@@ -5,12 +5,14 @@
 
 using Microsoft.Reactive.Testing;
 
+using ReactiveUI.Testing;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests the AutoPersistHelper.
 /// </summary>
-public class AutoPersistHelperTest : AppBuilderTestBase
+public class AutoPersistHelperTest
 {
     /// <summary>
     /// Test the automatic persist doesnt work on non data contract classes.

@@ -11,7 +11,7 @@ using ReactiveUI.Tests.Wpf;
 
 namespace ReactiveUI.Tests;
 
-public class RoutedViewHostTests : AppBuilderTestBase
+public class RoutedViewHostTests
 {
     [StaFact]
     public void RoutedViewHostDefaultContentNotNull()

@@ -8,31 +8,29 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the CreateCommand binding.
 /// </summary>
-public class CreatesCommandBindingTests : AppBuilderTestBase
+public class CreatesCommandBindingTests
 {
     /// <summary>
     /// Test that makes sure events binder binds to explicit event.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task EventBinderBindsToExplicitEvent() =>
-        await RunAppBuilderTestAsync(() =>
-        {
-            var input = new TestFixture();
-            var fixture = new CreatesCommandBindingViaEvent();
-            var wasCalled = false;
-            var cmd = ReactiveCommand.Create<int>(_ => wasCalled = true);
+    public void EventBinderBindsToExplicitEvent()
+    {
+        var input = new TestFixture();
+        var fixture = new CreatesCommandBindingViaEvent();
+        var wasCalled = false;
+        var cmd = ReactiveCommand.Create<int>(_ => wasCalled = true);
 
-            Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-            Assert.False(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
+        Assert.False(fixture.GetAffinityForObject(input.GetType(), false) > 0);
 
-            var disposable = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
-            input.IsNotNullString = "Foo";
-            Assert.True(wasCalled);
+        var disposable = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
+        input.IsNotNullString = "Foo";
+        Assert.True(wasCalled);
 
-            wasCalled = false;
-            disposable?.Dispose();
-            input.IsNotNullString = "Bar";
-            Assert.False(wasCalled);
-        });
+        wasCalled = false;
+        disposable?.Dispose();
+        input.IsNotNullString = "Bar";
+        Assert.False(wasCalled);
+    }
 }

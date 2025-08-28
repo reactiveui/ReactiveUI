@@ -7,12 +7,14 @@ using DynamicData;
 
 using Microsoft.Reactive.Testing;
 
+using ReactiveUI.Testing;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for the observable as property helper.
 /// </summary>
-public class ObservableAsPropertyHelperTest : AppBuilderTestBase
+public class ObservableAsPropertyHelperTest
 {
     /// <summary>
     /// Tests that Observable As Property Helpers should fire change notifications.

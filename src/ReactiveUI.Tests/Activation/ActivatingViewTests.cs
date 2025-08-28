@@ -3,182 +3,179 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Splat.Builder;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for activating views.
 /// </summary>
-public class ActivatingViewTests : AppBuilderTestBase
+public class ActivatingViewTests
 {
     /// <summary>
     /// Tests to make sure that views generally activate.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task ActivatingViewSmokeTest() =>
-        await RunAppBuilderTestAsync(() =>
+    public void ActivatingViewSmokeTest()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        var locator = new ModernDependencyResolver();
+        locator.InitializeSplat();
+        locator.InitializeReactiveUI();
+        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+        using (locator.WithResolver())
         {
-            var locator = new ModernDependencyResolver();
-            locator.InitializeSplat();
-            locator.InitializeReactiveUI();
-            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
-
-            using (locator.WithResolver())
+            var vm = new ActivatingViewModel();
+            var fixture = new ActivatingView
             {
-                var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView
-                {
-                    ViewModel = vm
-                };
-                Assert.Equal(0, vm.IsActiveCount);
-                Assert.Equal(0, fixture.IsActiveCount);
+                ViewModel = vm
+            };
+            Assert.Equal(0, vm.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCount);
 
-                fixture.Loaded.OnNext(Unit.Default);
-                Assert.Equal(1, vm.IsActiveCount);
-                Assert.Equal(1, fixture.IsActiveCount);
+            fixture.Loaded.OnNext(Unit.Default);
+            Assert.Equal(1, vm.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCount);
 
-                fixture.Unloaded.OnNext(Unit.Default);
-                Assert.Equal(0, vm.IsActiveCount);
-                Assert.Equal(0, fixture.IsActiveCount);
-            }
-        });
+            fixture.Unloaded.OnNext(Unit.Default);
+            Assert.Equal(0, vm.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCount);
+        }
+    }
 
     /// <summary>
     /// Tests for making sure nulling the view model deactivate it.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task NullingViewModelDeactivateIt() =>
-        await RunAppBuilderTestAsync(() =>
+    public void NullingViewModelDeactivateIt()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        var locator = new ModernDependencyResolver();
+        locator.InitializeSplat();
+        locator.InitializeReactiveUI();
+        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+        using (locator.WithResolver())
         {
-            var locator = new ModernDependencyResolver();
-            locator.InitializeSplat();
-            locator.InitializeReactiveUI();
-            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
-
-            using (locator.WithResolver())
+            var vm = new ActivatingViewModel();
+            var fixture = new ActivatingView
             {
-                var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView
-                {
-                    ViewModel = vm
-                };
-                Assert.Equal(0, vm.IsActiveCount);
-                Assert.Equal(0, fixture.IsActiveCount);
+                ViewModel = vm
+            };
+            Assert.Equal(0, vm.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCount);
 
-                fixture.Loaded.OnNext(Unit.Default);
-                Assert.Equal(1, vm.IsActiveCount);
-                Assert.Equal(1, fixture.IsActiveCount);
+            fixture.Loaded.OnNext(Unit.Default);
+            Assert.Equal(1, vm.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCount);
 
-                fixture.ViewModel = null;
-                Assert.Equal(0, vm.IsActiveCount);
-            }
-        });
+            fixture.ViewModel = null;
+            Assert.Equal(0, vm.IsActiveCount);
+        }
+    }
 
     /// <summary>
     /// Tests switching the view model deactivates it.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task SwitchingViewModelDeactivatesIt() =>
-        await RunAppBuilderTestAsync(() =>
+    public void SwitchingViewModelDeactivatesIt()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        var locator = new ModernDependencyResolver();
+        locator.InitializeSplat();
+        locator.InitializeReactiveUI();
+        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+        using (locator.WithResolver())
         {
-            var locator = new ModernDependencyResolver();
-            locator.InitializeSplat();
-            locator.InitializeReactiveUI();
-            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
-
-            using (locator.WithResolver())
+            var vm = new ActivatingViewModel();
+            var fixture = new ActivatingView
             {
-                var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView
-                {
-                    ViewModel = vm
-                };
-                Assert.Equal(0, vm.IsActiveCount);
-                Assert.Equal(0, fixture.IsActiveCount);
+                ViewModel = vm
+            };
+            Assert.Equal(0, vm.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCount);
 
-                fixture.Loaded.OnNext(Unit.Default);
-                Assert.Equal(1, vm.IsActiveCount);
-                Assert.Equal(1, fixture.IsActiveCount);
+            fixture.Loaded.OnNext(Unit.Default);
+            Assert.Equal(1, vm.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCount);
 
-                var newVm = new ActivatingViewModel();
-                Assert.Equal(0, newVm.IsActiveCount);
+            var newVm = new ActivatingViewModel();
+            Assert.Equal(0, newVm.IsActiveCount);
 
-                fixture.ViewModel = newVm;
-                Assert.Equal(0, vm.IsActiveCount);
-                Assert.Equal(1, newVm.IsActiveCount);
-            }
-        });
+            fixture.ViewModel = newVm;
+            Assert.Equal(0, vm.IsActiveCount);
+            Assert.Equal(1, newVm.IsActiveCount);
+        }
+    }
 
     /// <summary>
     /// Tests setting the view model after loaded loads it.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task SettingViewModelAfterLoadedLoadsIt() =>
-        await RunAppBuilderTestAsync(() =>
+    public void SettingViewModelAfterLoadedLoadsIt()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        var locator = new ModernDependencyResolver();
+        locator.InitializeSplat();
+        locator.InitializeReactiveUI();
+        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+        using (locator.WithResolver())
         {
-            var locator = new ModernDependencyResolver();
-            locator.InitializeSplat();
-            locator.InitializeReactiveUI();
-            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+            var vm = new ActivatingViewModel();
+            var fixture = new ActivatingView();
 
-            using (locator.WithResolver())
-            {
-                var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView();
+            Assert.Equal(0, vm.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCount);
 
-                Assert.Equal(0, vm.IsActiveCount);
-                Assert.Equal(0, fixture.IsActiveCount);
+            fixture.Loaded.OnNext(Unit.Default);
+            Assert.Equal(1, fixture.IsActiveCount);
 
-                fixture.Loaded.OnNext(Unit.Default);
-                Assert.Equal(1, fixture.IsActiveCount);
+            fixture.ViewModel = vm;
+            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.Equal(1, vm.IsActiveCount);
 
-                fixture.ViewModel = vm;
-                Assert.Equal(1, fixture.IsActiveCount);
-                Assert.Equal(1, vm.IsActiveCount);
-
-                fixture.Unloaded.OnNext(Unit.Default);
-                Assert.Equal(0, fixture.IsActiveCount);
-                Assert.Equal(0, vm.IsActiveCount);
-            }
-        });
+            fixture.Unloaded.OnNext(Unit.Default);
+            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.Equal(0, vm.IsActiveCount);
+        }
+    }
 
     /// <summary>
     /// Tests the can unload and load view again.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Fact]
-    public async Task CanUnloadAndLoadViewAgain() =>
-        await RunAppBuilderTestAsync(() =>
+    public void CanUnloadAndLoadViewAgain()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        var locator = new ModernDependencyResolver();
+        locator.InitializeSplat();
+        locator.InitializeReactiveUI();
+        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+        using (locator.WithResolver())
         {
-            var locator = new ModernDependencyResolver();
-            locator.InitializeSplat();
-            locator.InitializeReactiveUI();
-            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
-
-            using (locator.WithResolver())
+            var vm = new ActivatingViewModel();
+            var fixture = new ActivatingView
             {
-                var vm = new ActivatingViewModel();
-                var fixture = new ActivatingView
-                {
-                    ViewModel = vm
-                };
-                Assert.Equal(0, vm.IsActiveCount);
-                Assert.Equal(0, fixture.IsActiveCount);
+                ViewModel = vm
+            };
+            Assert.Equal(0, vm.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCount);
 
-                fixture.Loaded.OnNext(Unit.Default);
-                Assert.Equal(1, vm.IsActiveCount);
-                Assert.Equal(1, fixture.IsActiveCount);
+            fixture.Loaded.OnNext(Unit.Default);
+            Assert.Equal(1, vm.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCount);
 
-                fixture.Unloaded.OnNext(Unit.Default);
-                Assert.Equal(0, vm.IsActiveCount);
-                Assert.Equal(0, fixture.IsActiveCount);
+            fixture.Unloaded.OnNext(Unit.Default);
+            Assert.Equal(0, vm.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCount);
 
-                fixture.Loaded.OnNext(Unit.Default);
-                Assert.Equal(1, vm.IsActiveCount);
-                Assert.Equal(1, fixture.IsActiveCount);
-            }
-        });
+            fixture.Loaded.OnNext(Unit.Default);
+            Assert.Equal(1, vm.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCount);
+        }
+    }
 }

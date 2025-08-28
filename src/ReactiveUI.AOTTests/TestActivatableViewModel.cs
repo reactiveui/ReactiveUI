@@ -3,6 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Xunit;
+namespace ReactiveUI.AOTTests;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true, MaxParallelThreads = 1)]
+/// <summary>
+/// Test activatable view model for AOT testing.
+/// </summary>
+internal class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
+{
+    /// <inheritdoc/>
+    public ViewModelActivator Activator { get; } = new();
+}

@@ -6,11 +6,12 @@
 using System.Collections;
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
 using ReactiveUI.Tests.ReactiveProperty.Mocks;
 
 namespace ReactiveUI.Tests.ReactiveProperty;
 
-public class ReactivePropertyTest : AppBuilderTestBase
+public class ReactivePropertyTest : ReactiveTest
 {
     [Fact]
     public void DefaultValueIsRaisedOnSubscribe()

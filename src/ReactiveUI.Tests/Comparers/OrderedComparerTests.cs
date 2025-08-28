@@ -10,7 +10,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the ordered comparer.
 /// </summary>
-public class OrderedComparerTests : AppBuilderTestBase
+public class OrderedComparerTests
 {
     /// <summary>
     /// A general smoke test.

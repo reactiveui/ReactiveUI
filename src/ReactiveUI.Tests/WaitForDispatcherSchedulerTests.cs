@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests the WaitForDispatcherSchedulerClass.
 /// </summary>
-public class WaitForDispatcherSchedulerTests : AppBuilderTestBase
+public class WaitForDispatcherSchedulerTests
 {
     /// <summary>
     /// Tests call scheduler factory on creation.

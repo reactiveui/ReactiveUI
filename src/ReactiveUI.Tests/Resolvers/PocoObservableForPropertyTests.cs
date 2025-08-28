@@ -5,7 +5,7 @@
 
 namespace ReactiveUI.Tests;
 
-public class PocoObservableForPropertyTests : AppBuilderTestBase
+public class PocoObservableForPropertyTests
 {
 #pragma warning disable CA1812 // Class is not instantiated
 

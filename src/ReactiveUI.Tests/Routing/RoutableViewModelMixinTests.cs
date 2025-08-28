@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Routable ViewModel MixinTests.
 /// </summary>
-public class RoutableViewModelMixinTests : AppBuilderTestBase
+public class RoutableViewModelMixinTests
 {
     /// <summary>
     /// Whens the navigated to calls on navigated to when view model is first added.

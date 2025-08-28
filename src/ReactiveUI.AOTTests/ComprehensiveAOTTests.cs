@@ -8,7 +8,6 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using ReactiveUI.AOT.Tests.Mocks;
 using Splat;
 
 namespace ReactiveUI.AOTTests;
@@ -162,6 +161,8 @@ public class ComprehensiveAOTTests
     [Fact]
     public void DependencyInjection_BasicUsage_WorksInAOT()
     {
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
+
         // Basic DI operations that work in AOT
         var resolver = Locator.CurrentMutable;
 
