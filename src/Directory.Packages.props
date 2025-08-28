@@ -38,7 +38,7 @@
     <PackageVersion Include="Verify.Xunit" Version="30.7.3" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.console" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
     <PackageVersion Include="Xunit.StaFact" Version="1.2.69" />
     <PackageVersion Include="Xamarin.AndroidX.Core" Version="$(XamarinAndroidXCoreVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.9" />
