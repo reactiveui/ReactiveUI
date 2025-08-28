@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- Limit vstest to a single CPU to avoid cross-assembly static state bugs -->
+    <MaxCpuCount>1</MaxCpuCount>
+    <!-- Disable legacy app domains for consistency across frameworks -->
+    <DisableAppDomain>true</DisableAppDomain>
+  </RunConfiguration>
+</RunSettings>

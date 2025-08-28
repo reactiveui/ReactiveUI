@@ -18,7 +18,7 @@ public class ReactiveUIBuilderBlockingTests
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
 
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         builder.WithCoreServices().Build();
 
         locator.InitializeReactiveUI();

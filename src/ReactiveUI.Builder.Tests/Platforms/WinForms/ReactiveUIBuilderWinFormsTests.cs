@@ -15,7 +15,7 @@ public class ReactiveUIBuilderWinFormsTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.WithWinForms().Build();
 
@@ -31,9 +31,9 @@ public class ReactiveUIBuilderWinFormsTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
-        builder.WithCoreServices().WithWinForms().Build();
+        builder.WithWinForms().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         Assert.NotNull(observableProperty);

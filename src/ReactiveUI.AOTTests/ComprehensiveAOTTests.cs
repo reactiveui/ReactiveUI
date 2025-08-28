@@ -161,6 +161,8 @@ public class ComprehensiveAOTTests
     [Fact]
     public void DependencyInjection_BasicUsage_WorksInAOT()
     {
+        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
+
         // Basic DI operations that work in AOT
         var resolver = Locator.CurrentMutable;
 

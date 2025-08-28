@@ -17,7 +17,7 @@
     <PackageReleaseNotes>https://github.com/reactiveui/ReactiveUI/releases</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <NoWarn>$(NoWarn);IDE0060;IDE1006;IDE0130;VSSpell001</NoWarn>
+    <NoWarn>$(NoWarn);IDE0060;IDE1006;IDE0130;VSSpell001;CA1510</NoWarn>
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Embed source files that are not tracked by the source control manager in the PDB -->
@@ -35,6 +35,8 @@
     <WindowsTargetFrameworks>net462;net472;net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0;net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</WindowsTargetFrameworks>
     <MobileTargetFrameworks>net8.0-android;net8.0-ios;net8.0-tvos;net8.0-macos;net8.0-maccatalyst;net9.0-android;net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst</MobileTargetFrameworks>
     <BaseTargetFrameworks>netstandard2.0;net8.0;net9.0</BaseTargetFrameworks>
+    <!-- Ensure all test runs use our runsettings to control cross-assembly parallelism -->
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)tests.runsettings</RunSettingsFilePath>
   </PropertyGroup>  
   <PropertyGroup Condition="'$(IsTestProject)' != 'true' and ($(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')))">
     <IsAotCompatible>true</IsAotCompatible>

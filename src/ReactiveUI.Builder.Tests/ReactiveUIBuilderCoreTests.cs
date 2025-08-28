@@ -17,7 +17,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         Assert.NotNull(builder);
         Assert.IsType<ReactiveUIBuilder>(builder);
     }
@@ -27,7 +27,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         builder.WithCoreServices().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
@@ -42,7 +42,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         builder.WithPlatformServices().Build();
 
         var services = locator.GetServices<IBindingTypeConverter>();
@@ -55,7 +55,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         var customServiceRegistered = false;
 
         builder.WithCustomRegistration(r =>
@@ -74,7 +74,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.Build();
 
@@ -87,7 +87,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         Assert.Throws<ArgumentNullException>(() => builder.WithCustomRegistration(null!));
     }
 
@@ -96,7 +96,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         var assembly = typeof(ReactiveUIBuilderCoreTests).Assembly;
 
         builder.WithViewsFromAssembly(assembly).Build();
@@ -108,7 +108,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
         Assert.Throws<ArgumentNullException>(() => builder.WithViewsFromAssembly(null!));
     }
 
@@ -117,7 +117,7 @@ public class ReactiveUIBuilderCoreTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.WithCoreServices().WithCoreServices().Build();
 
@@ -133,9 +133,8 @@ public class ReactiveUIBuilderCoreTests
         using var locator = new ModernDependencyResolver();
         var customServiceRegistered = false;
 
-        locator.CreateBuilder()
+        locator.CreateReactiveUIBuilder()
                .WithCoreServices()
-               .WithPlatformServices()
                .WithCustomRegistration(r =>
                {
                    r.RegisterConstant("Test", typeof(string));

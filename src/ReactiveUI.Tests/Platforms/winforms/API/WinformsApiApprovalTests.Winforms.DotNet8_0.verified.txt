@@ -1,6 +1,15 @@
 ﻿[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.17763.0")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v8.0", FrameworkDisplayName=".NET 8.0")]
 [assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.17763.0")]
+namespace ReactiveUI.Builder
+{
+    public static class WinFormsReactiveUIBuilderExtensions
+    {
+        public static System.Reactive.Concurrency.IScheduler WinFormsMainThreadScheduler { get; }
+        public static ReactiveUI.Builder.ReactiveUIBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        public static ReactiveUI.Builder.ReactiveUIBuilder WithWinFormsScheduler(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+    }
+}
 namespace ReactiveUI.Winforms
 {
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher, Splat.IEnableLogger
@@ -44,15 +53,6 @@ namespace ReactiveUI.Winforms
         public PlatformOperations() { }
         public string? GetOrientation() { }
     }
-    public static class ReactiveUIBuilderWinFormsExtensions
-    {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithWinForms uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithWinForms uses methods that may require unreferenced code")]
-        public static Splat.Builder.AppBuilder WithWinForms(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithWinForms uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithWinForms uses methods that may require unreferenced code")]
-        public static Splat.Builder.AppBuilder WithWinForms(this Splat.Builder.AppBuilder builder) { }
-    }
     public class ReactiveUserControlNonGeneric : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor
     {
         public ReactiveUserControlNonGeneric() { }
@@ -73,7 +73,7 @@ namespace ReactiveUI.Winforms
         public TViewModel ViewModel { get; set; }
         protected override void Dispose(bool disposing) { }
     }
-    public class Registrations
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
         public Registrations() { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Register uses methods that require dynamic code generation")]

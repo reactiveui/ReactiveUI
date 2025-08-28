@@ -10,7 +10,7 @@ namespace ReactiveUI;
 /// inside our own ReactiveUI projects. The implemented methods will
 /// register with Splat their dependencies.
 /// </summary>
-internal interface IWantsToRegisterStuff
+public interface IWantsToRegisterStuff
 {
     /// <summary>
     /// Register platform dependencies inside Splat.

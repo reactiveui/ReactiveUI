@@ -1,6 +1,12 @@
 ﻿[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v8.0", FrameworkDisplayName=".NET 8.0")]
 namespace ReactiveUI.Testing
 {
+    public abstract class AppBuilderTestBase
+    {
+        protected AppBuilderTestBase() { }
+        protected static System.Threading.Tasks.Task RunAppBuilderTestAsync(System.Action testBody) { }
+        protected static System.Threading.Tasks.Task RunAppBuilderTestAsync(System.Func<System.Threading.Tasks.Task> testBody) { }
+    }
     public interface IBuilder { }
     public static class IBuilderExtensions
     {
@@ -24,6 +30,10 @@ namespace ReactiveUI.Testing
         public static void With(this ReactiveUI.IMessageBus messageBus, System.Action block) { }
         public static TRet With<TRet>(this ReactiveUI.IMessageBus messageBus, System.Func<TRet> block) { }
         public static System.IDisposable WithMessageBus(this ReactiveUI.IMessageBus messageBus) { }
+    }
+    public static class RxTest
+    {
+        public static System.Threading.Tasks.Task AppBuilderTestAsync(System.Func<System.Threading.Tasks.Task> testBody, int maxWaitMs = 60000) { }
     }
     public static class SchedulerExtensions
     {

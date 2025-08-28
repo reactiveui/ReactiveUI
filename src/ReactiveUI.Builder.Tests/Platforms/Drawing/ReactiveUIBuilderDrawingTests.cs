@@ -15,12 +15,12 @@ public class ReactiveUIBuilderDrawingTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.WithDrawing().Build();
 
         // Drawing registers bitmap loader in non-NETSTANDARD contexts; we can still assert no exception and core services with chaining
-        locator.CreateBuilder().WithCoreServices().WithDrawing().Build();
+        locator.CreateReactiveUIBuilder().WithDrawing().Build();
         var bindingConverters = locator.GetServices<IBindingTypeConverter>();
         Assert.NotNull(bindingConverters);
     }

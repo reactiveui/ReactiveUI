@@ -15,7 +15,7 @@ public class ReactiveUIBuilderBlazorTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
         builder.WithBlazor().Build();
 
@@ -31,9 +31,9 @@ public class ReactiveUIBuilderBlazorTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateBuilder();
+        var builder = locator.CreateReactiveUIBuilder();
 
-        builder.WithCoreServices().WithBlazor().Build();
+        builder.WithBlazor().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         Assert.NotNull(observableProperty);
