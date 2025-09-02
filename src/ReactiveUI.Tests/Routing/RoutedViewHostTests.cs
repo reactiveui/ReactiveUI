@@ -16,6 +16,8 @@ public class RoutedViewHostTests
     [StaFact]
     public void RoutedViewHostDefaultContentNotNull()
     {
+        Locator.CurrentMutable.InitializeSplat();
+        Locator.CurrentMutable.InitializeReactiveUI();
         var uc = new RoutedViewHost
         {
             DefaultContent = new System.Windows.Controls.Label()
@@ -48,6 +50,8 @@ public class RoutedViewHostTests
     [StaFact]
     public void RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
     {
+        Locator.CurrentMutable.InitializeSplat();
+        Locator.CurrentMutable.InitializeReactiveUI();
         Locator.CurrentMutable.Register<RoutingState>(() => new());
         Locator.CurrentMutable.Register<TestViewModel>(() => new());
         Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
@@ -90,6 +94,8 @@ public class RoutedViewHostTests
     [StaFact]
     public void RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
     {
+        Locator.CurrentMutable.InitializeSplat();
+        Locator.CurrentMutable.InitializeReactiveUI();
         Locator.CurrentMutable.Register<RoutingState>(() => new());
         Locator.CurrentMutable.Register<TestViewModel>(() => new());
         Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());

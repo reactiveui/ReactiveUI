@@ -21,11 +21,12 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('-windows10.0.19041.0'))">
-    <PackageReference Include="Microsoft.Windows.CsWinRT" />    
+    <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Common\RoutedViewHost.cs" />

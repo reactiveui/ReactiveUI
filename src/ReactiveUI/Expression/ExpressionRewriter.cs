@@ -11,10 +11,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Class for simplifying and validating expressions.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ExpressionRewriter uses reflection to access type properties which requires dynamic code generation")]
-[RequiresUnreferencedCode("ExpressionRewriter uses reflection to access type properties which may require unreferenced code")]
-#endif
 internal class ExpressionRewriter : ExpressionVisitor
 {
     public override Expression Visit(Expression? node)
@@ -55,6 +51,12 @@ internal class ExpressionRewriter : ExpressionVisitor
         }
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExpressionRewriter uses reflection to access type properties which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ExpressionRewriter uses reflection to access type properties which may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+#endif
     protected override Expression VisitBinary(BinaryExpression node)
     {
         if (node.Right is not ConstantExpression)
@@ -69,6 +71,12 @@ internal class ExpressionRewriter : ExpressionVisitor
         return Expression.MakeIndex(left, GetItemProperty(left.Type), [right]);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExpressionRewriter uses reflection to access type properties which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ExpressionRewriter uses reflection to access type properties which may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+#endif
     protected override Expression VisitUnary(UnaryExpression node)
     {
         if (node.NodeType == ExpressionType.ArrayLength && node.Operand is not null)
@@ -97,6 +105,12 @@ internal class ExpressionRewriter : ExpressionVisitor
         }
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExpressionRewriter uses reflection to access type properties which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ExpressionRewriter uses reflection to access type properties which may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+#endif
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
         // Rewrite a method call to an indexer as an index expression

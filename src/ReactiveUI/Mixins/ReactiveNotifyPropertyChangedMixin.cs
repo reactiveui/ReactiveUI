@@ -9,12 +9,11 @@ namespace ReactiveUI;
 /// Extension methods associated with the Observable Changes and the
 /// Reactive Notify Property Changed based events.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveNotifyPropertyChangedMixin uses RxApp which requires dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveNotifyPropertyChangedMixin uses RxApp which may require unreferenced code")]
-#endif
+[Preserve(AllMembers = true)]
 public static class ReactiveNotifyPropertyChangedMixin
 {
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
+    [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
     private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> _notifyFactoryCache =
         new(
             (t, _) => Locator.Current.GetServices<ICreatesObservableForProperty>()
@@ -43,8 +42,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <param name="isDistinct">If set to <c>true</c>, values are filtered with DistinctUntilChanged.</param>
     /// <returns>An Observable representing the property change notifications for the given property name.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
@@ -149,8 +148,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <param name="propertyName">The property name to observe.</param>
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
@@ -167,8 +166,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <param name="beforeChange">If true, the observable will notify immediately before a property is going to change.</param>
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
@@ -187,8 +186,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <param name="skipInitial">If true, the observable will not notify with the initial value.</param>
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
@@ -214,8 +213,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// notifications for the given property.
     /// </returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
@@ -240,8 +239,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// notifications for the given property.
     /// </returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
@@ -269,8 +268,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// notifications for the given property.
     /// </returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
@@ -300,8 +299,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// notifications for the given property.
     /// </returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
@@ -352,8 +351,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <returns>An Observable representing the property change
     /// notifications for the given property.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
         this TSender? item,
@@ -386,8 +385,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <returns>An Observable representing the property change
     /// notifications for the given property.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
         this TSender? item,
@@ -416,8 +415,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
@@ -439,8 +438,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
@@ -464,8 +463,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
@@ -491,8 +490,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("SubscribeToExpressionChain uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("SubscribeToExpressionChain may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
@@ -520,8 +519,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("SubscribeToExpressionChain uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("SubscribeToExpressionChain may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
@@ -567,8 +566,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
     {
@@ -588,8 +587,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-    [RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
     {

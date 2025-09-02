@@ -26,7 +26,7 @@ public static class MauiReactiveUIBuilderExtensions
     /// <param name="builder">The builder instance.</param>
     /// <param name="dispatcher">The MAUI dispatcher to use for the main thread scheduler.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithMaui(this ReactiveUIBuilder builder, IDispatcher? dispatcher = null)
+    public static IReactiveUIBuilder WithMaui(this IReactiveUIBuilder builder, IDispatcher? dispatcher = null)
     {
         if (builder is null)
         {
@@ -43,7 +43,7 @@ public static class MauiReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithMauiScheduler(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithMauiScheduler(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {

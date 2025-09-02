@@ -37,7 +37,7 @@ public class BundleSuspensionDriver : ISuspensionDriver
 
             var st = new MemoryStream(buffer);
 
-            return Observable.Return(JsonSerializer.Deserialize<object>(st));
+            return Observable.FromAsync(async () => await JsonSerializer.DeserializeAsync<object>(st));
         }
         catch (Exception ex)
         {

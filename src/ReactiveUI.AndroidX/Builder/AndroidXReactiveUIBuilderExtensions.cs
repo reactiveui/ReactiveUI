@@ -25,7 +25,7 @@ public static class AndroidXReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithAndroidX(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithAndroidX(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {
@@ -42,7 +42,7 @@ public static class AndroidXReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithAndroidXScheduler(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithAndroidXScheduler(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {

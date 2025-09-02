@@ -22,10 +22,6 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveObject"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ReactiveObject uses extension methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ReactiveObject uses extension methods that may require unreferenced code")]
-#endif
     public ReactiveObject()
     {
         _changing = new Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>>(() => ((IReactiveObject)this).GetChangingObservable(), LazyThreadSafetyMode.PublicationOnly);
@@ -112,8 +108,8 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("SuppressChangeNotifications uses extension methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("SuppressChangeNotifications uses extension methods that may require unreferenced code")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public IDisposable SuppressChangeNotifications() => // TODO: Create Test
         IReactiveObjectExtensions.SuppressChangeNotifications(this);
@@ -122,10 +118,6 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     /// Determines if change notifications are enabled or not.
     /// </summary>
     /// <returns>A value indicating whether change notifications are enabled.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("AreChangeNotificationsEnabled uses extension methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("AreChangeNotificationsEnabled uses extension methods that may require unreferenced code")]
-#endif
     public bool AreChangeNotificationsEnabled() => // TODO: Create Test
         IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
@@ -133,12 +125,6 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     /// Delays notifications until the return IDisposable is disposed.
     /// </summary>
     /// <returns>A disposable which when disposed will send delayed notifications.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("DelayChangeNotifications uses extension methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("DelayChangeNotifications uses extension methods that may require unreferenced code")]
-#endif
     public IDisposable DelayChangeNotifications() =>
         IReactiveObjectExtensions.DelayChangeNotifications(this);
 }
-
-// vim: tw=120 ts=4 sw=4 et :

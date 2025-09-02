@@ -23,7 +23,7 @@ public static class WinFormsReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithWinForms(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithWinForms(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {
@@ -40,7 +40,7 @@ public static class WinFormsReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithWinFormsScheduler(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithWinFormsScheduler(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {

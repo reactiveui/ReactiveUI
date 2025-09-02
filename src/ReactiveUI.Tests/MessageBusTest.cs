@@ -50,6 +50,8 @@ public class MessageBusTest
     [Fact]
     public void ExplicitSendMessageShouldWorkEvenAfterRegisteringSource()
     {
+        Locator.CurrentMutable.InitializeSplat();
+        Locator.CurrentMutable.InitializeReactiveUI();
         var fixture = new MessageBus();
         fixture.RegisterMessageSource(Observable<int>.Never);
 
@@ -135,6 +137,8 @@ public class MessageBusTest
     [Fact]
     public void MessageBusThreadingTest()
     {
+        Locator.CurrentMutable.InitializeSplat();
+        Locator.CurrentMutable.InitializeReactiveUI();
         var mb = new MessageBus();
         int? listenedThreadId = null;
         int? otherThreadId = null;

@@ -83,6 +83,7 @@ namespace ReactiveUI;
 [RequiresDynamicCode("ReactivePage uses methods that require dynamic code generation")]
 [RequiresUnreferencedCode("ReactivePage uses methods that may require unreferenced code")]
 #endif
+[SuppressMessage("WinRT", "CsWinRT1029:Types used in signatures should be WinRT types", Justification = "This is a netstandard2.0 library")]
 public partial class ReactivePage<TViewModel> :
         Page, IViewFor<TViewModel>
         where TViewModel : class

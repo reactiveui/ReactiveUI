@@ -85,18 +85,22 @@ namespace ReactiveUI
         public override System.IObservable<System.Collections.Generic.IList<TResult>> Execute(TParam parameter) { }
         public override System.IDisposable Subscribe(System.IObserver<System.Collections.Generic.IList<TResult>> observer) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("CommandBinder uses RxApp initialization which requires dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("CommandBinder uses RxApp initialization which may require unreferenced code")]
     public static class CommandBinder
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.IObservable<TParam?> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> propertyName, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlName, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
@@ -105,16 +109,14 @@ namespace ReactiveUI
     public class CommandBinderImplementation : Splat.IEnableLogger
     {
         public CommandBinderImplementation() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be " +
-            "trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.IObservable<TParam?> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
             where TProp : System.Windows.Input.ICommand { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be " +
-            "trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public ReactiveUI.IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TControl>> controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel, TParam?>> withParameter, string? toEvent = null)
             where TView :  class, ReactiveUI.IViewFor
             where TViewModel :  class
@@ -138,8 +140,8 @@ namespace ReactiveUI
     public class CreatesCommandBindingViaCommandParameter : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesCommandBindingViaCommandParameter() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Property access requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Property access may reference members that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
         public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
@@ -183,8 +185,8 @@ namespace ReactiveUI
     }
     public static class DependencyResolverMixins
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("InitializeReactiveUI uses reflection to locate types which may be trimmed.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("InitializeReactiveUI uses reflection to locate types which may be trimmed.")]
         public static void InitializeReactiveUI(this Splat.IMutableDependencyResolver resolver, params ReactiveUI.RegistrationNamespace[] registrationNamespaces) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RegisterViewsForViewModels scans the provided assembly and creates instances via " +
             "reflection; this is not compatible with AOT.")]
@@ -434,34 +436,14 @@ namespace ReactiveUI
     }
     public static class IReactiveObjectExtensions
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code ge" +
-            "neration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced" +
-            " code")]
         public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj reactiveObject, ref TRet backingField, TRet newValue, [System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
             where TObj : ReactiveUI.IReactiveObject { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code ge" +
-            "neration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced" +
-            " code")]
         public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
             where TSender : ReactiveUI.IReactiveObject { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code ge" +
-            "neration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced" +
-            " code")]
         public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
             where TSender : ReactiveUI.IReactiveObject { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code ge" +
-            "neration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced" +
-            " code")]
         public static void SubscribePropertyChangedEvents<TSender>(this TSender reactiveObject)
             where TSender : ReactiveUI.IReactiveObject { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code ge" +
-            "neration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced" +
-            " code")]
         public static void SubscribePropertyChangingEvents<TSender>(this TSender reactiveObject)
             where TSender : ReactiveUI.IReactiveObject { }
     }
@@ -548,24 +530,20 @@ namespace ReactiveUI
         public int GetAffinityForObjects(System.Type fromType, System.Type toType) { }
         public bool TryConvert(object? from, System.Type toType, object? conversionHint, out object result) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("InteractionBinderImplementation uses reflection and expression evaluation which r" +
-        "equire dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("InteractionBinderImplementation uses reflection and expression evaluation which m" +
-        "ay require unreferenced code")]
     public class InteractionBinderImplementation : ReactiveUI.IInteractionBinderImplementation, Splat.IEnableLogger
     {
         public InteractionBinderImplementation() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
         public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
         public System.IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, ReactiveUI.IInteraction<TInput, TOutput>>> propertyName, System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("InteractionBindingMixins uses RxApp initialization and expression binding which r" +
-        "equire dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("InteractionBindingMixins uses RxApp initialization and expression binding which m" +
-        "ay require unreferenced code")]
     public static class InteractionBindingMixins
     {
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("BindInteraction uses expression binding which requires dynamic code generation")]
@@ -758,8 +736,8 @@ namespace ReactiveUI
     }
     public static class ObservableFuncMixins
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ToObservable uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ToObservable uses methods that may require unreferenced code")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<TResult?> ToObservable<TSource, TResult>(this System.Linq.Expressions.Expression<System.Func<TSource, TResult?>> expression, TSource? source, bool beforeChange = false, bool skipInitial = false) { }
     }
     public static class ObservableLoggingMixin
@@ -840,67 +818,99 @@ namespace ReactiveUI
             "e unreferenced code")]
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Property binding uses reflection and dynamic type conversion")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
     public class PropertyBinderImplementation : ReactiveUI.IPropertyBinderImplementation, Splat.IEnableLogger
     {
         public PropertyBinderImplementation() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
         public ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp?, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp?> viewToVmConverter, ReactiveUI.TriggerUpdate triggerUpdate = 0)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
         [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "view",
                 "isViewModel"})]
         public ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null, ReactiveUI.TriggerUpdate triggerUpdate = 0)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
         public System.IDisposable BindTo<TValue, TTarget, TTValue>(System.IObservable<TValue> observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> propertyExpression, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget :  class { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
         public ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
         public ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(TViewModel? viewModel, TView view, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which requ" +
-        "ire dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may " +
-        "require unreferenced code")]
     public static class PropertyBindingMixins
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which requ" +
+            "ire dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may " +
+            "require unreferenced code")]
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
         public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.Func<TVMProp?, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp?> viewToVmConverter)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which requ" +
+            "ire dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may " +
+            "require unreferenced code")]
         [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "view",
                 "isViewModel"})]
         public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which requ" +
+            "ire dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may " +
+            "require unreferenced code")]
         [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
                 "view",
                 "isViewModel"})]
         public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TVMProp?, TVProp> vmToViewConverter, System.Func<TVProp, TVMProp?> viewToVmConverter, ReactiveUI.TriggerUpdate triggerUpdate = 0)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which requ" +
+            "ire dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may " +
+            "require unreferenced code")]
         [return: System.Runtime.CompilerServices.TupleElementNames(new string?[]?[] {
                 "view",
                 "isViewModel"})]
         public static ReactiveUI.IReactiveBinding<TView, System.ValueTuple<object?, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null, ReactiveUI.IBindingTypeConverter? viewToVMConverterOverride = null, ReactiveUI.TriggerUpdate triggerUpdate = 0)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which requ" +
+            "ire dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may " +
+            "require unreferenced code")]
         public static System.IDisposable BindTo<TValue, TTarget, TTValue>(this System.IObservable<TValue> @this, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, TTValue?>> property, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TTarget :  class { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which requ" +
+            "ire dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may " +
+            "require unreferenced code")]
         public static ReactiveUI.IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TProp>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TOut>> viewProperty, System.Func<TProp, TOut> selector)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which requ" +
+            "ire dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may " +
+            "require unreferenced code")]
         public static ReactiveUI.IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(this TView view, TViewModel? viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TVMProp?>> vmProperty, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> viewProperty, object? conversionHint = null, ReactiveUI.IBindingTypeConverter? vmToViewConverterOverride = null)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
@@ -1016,74 +1026,59 @@ namespace ReactiveUI
         public override System.IObservable<TResult> Execute(TParam parameter) { }
         public override System.IDisposable Subscribe(System.IObserver<TResult> observer) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ReactiveNotifyPropertyChangedMixin uses RxApp which requires dynamic code generat" +
-        "ion")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ReactiveNotifyPropertyChangedMixin uses RxApp which may require unreferenced code")]
     public static class ReactiveNotifyPropertyChangedMixin
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code genera" +
-            "tion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code genera" +
-            "tion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, string propertyName) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code genera" +
-            "tion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, bool beforeChange) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code genera" +
-            "tion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, string propertyName, bool beforeChange) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code genera" +
-            "tion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, bool beforeChange, bool skipInitial) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code genera" +
-            "tion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, string propertyName, bool beforeChange, bool skipInitial) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code genera" +
-            "tion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, bool beforeChange, bool skipInitial, bool isDistinct) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ObservableForProperty uses expression analysis which requires dynamic code genera" +
-            "tion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ObservableForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender? item, string propertyName, bool beforeChange, bool skipInitial, bool isDistinct) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender? item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, System.Func<TValue?, TRet> selector)
             where TSender :  class { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender? item, System.Linq.Expressions.Expression<System.Func<TSender, TValue>> property, System.Func<TValue?, TRet> selector, bool beforeChange)
             where TSender :  class { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender? source, System.Linq.Expressions.Expression? expression) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender? source, System.Linq.Expressions.Expression? expression, bool beforeChange) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("NotifyForProperty uses expression analysis which requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("NotifyForProperty may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender? source, System.Linq.Expressions.Expression? expression, bool beforeChange, bool skipInitial) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("SubscribeToExpressionChain uses expression analysis which requires dynamic code g" +
-            "eneration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("SubscribeToExpressionChain may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender? source, System.Linq.Expressions.Expression? expression, bool beforeChange, bool skipInitial, bool suppressWarnings) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("SubscribeToExpressionChain uses expression analysis which requires dynamic code g" +
-            "eneration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("SubscribeToExpressionChain may reference properties that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public static System.IObservable<ReactiveUI.IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(this TSender? source, System.Linq.Expressions.Expression? expression, bool beforeChange, bool skipInitial, bool suppressWarnings, bool isDistinct) { }
     }
     [System.Runtime.Serialization.DataContract]
     public class ReactiveObject : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ReactiveObject uses extension methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ReactiveObject uses extension methods that may require unreferenced code")]
         public ReactiveObject() { }
         [System.ComponentModel.Browsable(false)]
         [System.ComponentModel.DataAnnotations.Display(AutoGenerateField=false, AutoGenerateFilter=false, Order=-1)]
@@ -1102,20 +1097,10 @@ namespace ReactiveUI
         public System.IObservable<System.Exception> ThrownExceptions { get; }
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("AreChangeNotificationsEnabled uses extension methods that require dynamic code ge" +
-            "neration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("AreChangeNotificationsEnabled uses extension methods that may require unreference" +
-            "d code")]
         public bool AreChangeNotificationsEnabled() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("DelayChangeNotifications uses extension methods that require dynamic code generat" +
-            "ion")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("DelayChangeNotifications uses extension methods that may require unreferenced cod" +
-            "e")]
         public System.IDisposable DelayChangeNotifications() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("SuppressChangeNotifications uses extension methods that require dynamic code gene" +
-            "ration")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("SuppressChangeNotifications uses extension methods that may require unreferenced " +
-            "code")]
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses reflection to access properties by name.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
         public System.IDisposable SuppressChangeNotifications() { }
     }
     public class ReactivePropertyChangedEventArgs<TSender> : System.ComponentModel.PropertyChangedEventArgs, ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
@@ -1233,37 +1218,27 @@ namespace ReactiveUI
             "code")]
         public System.IDisposable SuppressChangeNotifications() { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting requires dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting may reference members that could be trimmed")]
     public static class Reflection
     {
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression tree analysis requires dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression tree analysis may reference members that could be trimmed")]
         public static string ExpressionToPropertyNames(System.Linq.Expressions.Expression? expression) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Event reflection requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Event reflection may reference members that could be trimmed")]
-        public static System.Type GetEventArgsTypeForEvent(System.Type type, string? eventName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Event access may reference members that could be trimmed")]
+        public static System.Type GetEventArgsTypeForEvent([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type type, string? eventName) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Member access requires dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Member access may reference members that could be trimmed")]
         public static System.Func<object?, object?[]?, object?>? GetValueFetcherForProperty(System.Reflection.MemberInfo? member) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Member access requires dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Member access may reference members that could be trimmed")]
         public static System.Func<object?, object?[]?, object?> GetValueFetcherOrThrow(System.Reflection.MemberInfo? member) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Member access requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Member access may reference members that could be trimmed")]
         public static System.Action<object?, object?, object?[]?> GetValueSetterForProperty(System.Reflection.MemberInfo? member) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Member access requires dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Member access may reference members that could be trimmed")]
         public static System.Action<object?, object?, object?[]?>? GetValueSetterOrThrow(System.Reflection.MemberInfo? member) { }
         public static bool IsStatic(this System.Reflection.PropertyInfo item) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Type resolution requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Type resolution may reference types that could be trimmed")]
         public static System.Type? ReallyFindType(string? type, bool throwOnFailure) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression rewriting requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression rewriting may reference members that could be trimmed")]
         public static System.Linq.Expressions.Expression Rewrite(System.Linq.Expressions.Expression? expression) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Method reflection requires dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Method reflection may reference members that could be trimmed")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Method access may reference members that could be trimmed")]
         public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Expression evaluation requires dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Expression evaluation may reference members that could be trimmed")]
@@ -1334,10 +1309,6 @@ namespace ReactiveUI
             where T : ReactiveUI.IRoutableViewModel { }
         public static ReactiveUI.IRoutableViewModel? GetCurrentViewModel(this ReactiveUI.RoutingState item) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RxApp initialization uses reflection-based registration which requires dynamic co" +
-        "de generation.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("RxApp initialization uses reflection-based registration which may require unrefer" +
-        "enced code.")]
     public static class RxApp
     {
         public const int BigCacheLimit = 256;
@@ -1421,17 +1392,25 @@ namespace ReactiveUI
         public ViewContractAttribute(string contract) { }
         public string Contract { get; }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewForMixins uses methods that require dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ViewForMixins uses methods that may require unreferenced code")]
     public static class ViewForMixins
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
         public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Action<System.IDisposable>> block) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
         public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
         public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Action<System.Action<System.IDisposable>> block) { }
         public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Action<System.Reactive.Disposables.CompositeDisposable> block) { }
         public static void WhenActivated(this ReactiveUI.IActivatableViewModel item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
         public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
         public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor? view = null) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
         public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor? view) { }
     }
     public static class ViewLocator
@@ -2177,48 +2156,78 @@ namespace ReactiveUI
 }
 namespace ReactiveUI.Builder
 {
-    public static class MultiPlatformReactiveUIBuilderExtensions
+    public interface IReactiveUIBuilder : Splat.Builder.IAppBuilder
     {
-        public static ReactiveUI.Builder.ReactiveUIBuilder ForCustomPlatform(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder ForPlatforms(this ReactiveUI.Builder.ReactiveUIBuilder builder, params System.Action<ReactiveUI.Builder.ReactiveUIBuilder>[] platformConfigurations) { }
-    }
-    public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
-    {
-        public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ReactiveUI uses reflection to register some services. Ensure that the necessary t" +
-            "ypes are preserved.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ReactiveUI uses reflection to register some services. Ensure that the necessary t" +
-            "ypes are preserved.")]
-        public override Splat.Builder.AppBuilder WithCoreServices() { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformModule<T>()
-            where T : ReactiveUI.IWantsToRegisterStuff, new () { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformServices() { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
+        ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(System.Action<ReactiveUI.MessageBus> configure);
+        ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure);
+        ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure);
+        ReactiveUI.Builder.IReactiveUIBuilder ForCustomPlatform(System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices);
+        ReactiveUI.Builder.IReactiveUIBuilder ForPlatforms(params System.Action<ReactiveUI.Builder.IReactiveUIBuilder>[] platformConfigurations);
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject;
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonViewModel<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)]  TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new ();
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterView<TView, TViewModel>()
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject;
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterViewModel<TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new ();
+        ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
+            where T : Splat.Builder.IModule;
+        ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true);
+        ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
+            where T : ReactiveUI.IWantsToRegisterStuff, new ();
+        ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices();
+        ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction);
+        ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction);
+        ReactiveUI.Builder.IReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true);
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-        public ReactiveUI.Builder.ReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
+        ReactiveUI.Builder.IReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly);
+    }
+    public interface IReactiveUIInstance : Splat.Builder.IAppInstance
+    {
+        System.Reactive.Concurrency.IScheduler? MainThreadScheduler { get; }
+        System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; }
+    }
+    public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder, ReactiveUI.Builder.IReactiveUIBuilder, ReactiveUI.Builder.IReactiveUIInstance, Splat.Builder.IAppBuilder, Splat.Builder.IAppInstance
+    {
+        public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver, Splat.IReadonlyDependencyResolver? current) { }
+        public System.Reactive.Concurrency.IScheduler? MainThreadScheduler { get; }
+        public System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; }
+        public ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(System.Action<ReactiveUI.MessageBus> configure) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder ForCustomPlatform(System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder ForPlatforms(params System.Action<ReactiveUI.Builder.IReactiveUIBuilder>[] platformConfigurations) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonViewModel<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)]  TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterView<TView, TViewModel>()
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterViewModel<TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
+            where T : Splat.Builder.IModule { }
+        public override Splat.Builder.IAppBuilder WithCoreServices() { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
+            where T : ReactiveUI.IWantsToRegisterStuff, new () { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices() { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+        public ReactiveUI.Builder.IReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
     }
     public static class RxAppBuilder
     {
-        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureMessageBus(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.MessageBus> configure) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureSuspensionDriver(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.ISuspensionDriver> configure) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureViewLocator(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.DefaultViewLocator> configure) { }
         public static ReactiveUI.Builder.ReactiveUIBuilder CreateReactiveUIBuilder() { }
         public static ReactiveUI.Builder.ReactiveUIBuilder CreateReactiveUIBuilder(this Splat.IMutableDependencyResolver resolver) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterSingletonView<TView, TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class, ReactiveUI.IReactiveObject { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("This method uses \'new()\' constraint which may require dynamic code generation.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses \'new()\' constraint which may require dynamic code generation.")]
-        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterSingletonViewModel<TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
-            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterView<TView, TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterViewModel<TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
-            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
     }
 }

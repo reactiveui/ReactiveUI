@@ -40,8 +40,8 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Property access requires dynamic code generation")]
-    [RequiresUnreferencedCode("Property access may reference members that could be trimmed")]
+    [RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {

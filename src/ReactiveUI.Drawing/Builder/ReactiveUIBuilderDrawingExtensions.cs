@@ -15,7 +15,7 @@ public static class ReactiveUIBuilderDrawingExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for method chaining.</returns>
-    public static ReactiveUIBuilder WithDrawing(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithDrawing(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {

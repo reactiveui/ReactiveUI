@@ -23,7 +23,7 @@ public static class WinUIReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithWinUI(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithWinUI(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {
@@ -40,7 +40,7 @@ public static class WinUIReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithWinUIScheduler(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithWinUIScheduler(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {

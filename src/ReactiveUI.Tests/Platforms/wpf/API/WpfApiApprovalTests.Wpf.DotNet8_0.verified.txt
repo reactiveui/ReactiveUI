@@ -163,8 +163,8 @@ namespace ReactiveUI.Builder
     public static class WpfReactiveUIBuilderExtensions
     {
         public static System.Reactive.Concurrency.IScheduler WpfMainThreadScheduler { get; }
-        public static ReactiveUI.Builder.ReactiveUIBuilder WithWpf(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder WithWpfScheduler(this ReactiveUI.Builder.ReactiveUIBuilder builder) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithWpf(this ReactiveUI.Builder.IReactiveUIBuilder builder) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithWpfScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder) { }
     }
 }
 namespace ReactiveUI.Wpf

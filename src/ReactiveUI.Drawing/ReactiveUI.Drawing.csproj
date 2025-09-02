@@ -24,5 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Splat.Drawing" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
 </Project>

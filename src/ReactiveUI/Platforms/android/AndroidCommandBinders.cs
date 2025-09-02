@@ -13,15 +13,13 @@ namespace ReactiveUI;
 /// Android implementation that provides binding to an ICommand in the ViewModel to a Control
 /// in the View.
 /// </summary>
+[Preserve(AllMembers = true)]
 public class AndroidCommandBinders : FlexibleCommandBinder
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AndroidCommandBinders"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableAsPropertyHelper uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableAsPropertyHelper uses methods that may require unreferenced code")]
-#endif
+    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Marked as Preserve")]
     public AndroidCommandBinders()
     {
         var view = typeof(View);

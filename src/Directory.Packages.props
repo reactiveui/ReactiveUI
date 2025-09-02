@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <SplatVersion>16.0.1</SplatVersion>
+    <SplatVersion>16.1.1</SplatVersion>
     <XamarinAndroidXCoreVersion>1.13.1.4</XamarinAndroidXCoreVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.8.4.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
@@ -16,7 +16,8 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.0.2" />
+    <PackageVersion Include="System.Reactive" Version="6.0.2" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />

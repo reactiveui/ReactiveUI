@@ -11,10 +11,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Provides methods to bind properties to observables.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("Property binding uses reflection and dynamic type conversion")]
-[RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
-#endif
 public class PropertyBinderImplementation : IPropertyBinderImplementation
 {
     private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new(
@@ -26,6 +22,8 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                           }).currentBinding,
      RxApp.SmallCacheLimit);
 
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
+    [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
     private static readonly MemoizingMRUCache<(Type? fromType, Type? toType), ISetMethodBindingConverter?> _setMethodCache = new(
      (type, _) => Locator.Current.GetServices<ISetMethodBindingConverter>()
                          .Aggregate((currentAffinity: -1, currentBinding: default(ISetMethodBindingConverter)), (acc, x) =>
@@ -40,6 +38,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     private delegate bool OutFunc<in T1, T2>(T1 t1, out T2 t2);
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,
@@ -84,6 +86,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,
@@ -117,6 +123,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
         TViewModel? viewModel,
         TView view,
@@ -149,6 +159,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
         TViewModel? viewModel,
         TView view,
@@ -177,6 +191,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IDisposable BindTo<TValue, TTarget, TTValue>(
         IObservable<TValue> observedChange,
         TTarget? target,

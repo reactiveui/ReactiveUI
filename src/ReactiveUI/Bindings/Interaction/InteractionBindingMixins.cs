@@ -8,10 +8,6 @@ namespace ReactiveUI;
 /// <summary>
 /// This class provides extension methods for the ReactiveUI view binding mechanism.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("InteractionBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
-[RequiresUnreferencedCode("InteractionBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
-#endif
 public static class InteractionBindingMixins
 {
     private static readonly InteractionBinderImplementation _binderImplementation = new();

@@ -12,34 +12,49 @@ namespace ReactiveUI.Builder;
 /// A builder class for configuring ReactiveUI services with AOT compatibility.
 /// Extends the Splat AppBuilder to provide ReactiveUI-specific configuration.
 /// </summary>
-public sealed class ReactiveUIBuilder : AppBuilder
+public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiveUIInstance
 {
-    private readonly IMutableDependencyResolver _resolver;
-    private IScheduler? _mainThreadScheduler;
-    private IScheduler? _taskPoolScheduler;
     private bool _platformRegistered;
     private bool _coreRegistered;
+    private bool _setRxAppMainScheduler;
+    private bool _setRxAppTaskpoolScheduler;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveUIBuilder"/> class.
+    /// Initializes a new instance of the <see cref="ReactiveUIBuilder" /> class.
     /// </summary>
     /// <param name="resolver">The dependency resolver to configure.</param>
-    public ReactiveUIBuilder(IMutableDependencyResolver resolver)
-        : base(resolver)
-    {
-        _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+    /// <param name="current">The configured services.</param>
+    /// <exception cref="System.ArgumentNullException">resolver.</exception>
+    public ReactiveUIBuilder(IMutableDependencyResolver resolver, IReadonlyDependencyResolver? current)
+        : base(resolver, current) => CurrentMutable.InitializeSplat();
 
-        _resolver.InitializeSplat();
-    }
+    /// <summary>
+    /// Gets a scheduler used to schedule work items that
+    /// should be run "on the UI thread". In normal mode, this will be
+    /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
+    /// to simplify writing common unit tests.
+    /// </summary>
+    public IScheduler? MainThreadScheduler { get; private set; }
+
+    /// <summary>
+    /// Gets the a the scheduler used to schedule work items to
+    /// run in a background thread. In both modes, this will run on the TPL
+    /// Task Pool.
+    /// </summary>
+    public IScheduler? TaskpoolScheduler { get; private set; }
 
     /// <summary>
     /// Configures the main thread scheduler for ReactiveUI.
     /// </summary>
     /// <param name="scheduler">The main thread scheduler to use.</param>
-    /// <returns>The builder instance for chaining.</returns>
-    public ReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler)
+    /// <param name="setRxApp">if set to <c>true</c> [set rx application].</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    public IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler, bool setRxApp = true)
     {
-        _mainThreadScheduler = scheduler;
+        _setRxAppMainScheduler = setRxApp;
+        MainThreadScheduler = scheduler;
         return this;
     }
 
@@ -47,10 +62,14 @@ public sealed class ReactiveUIBuilder : AppBuilder
     /// Configures the task pool scheduler for ReactiveUI.
     /// </summary>
     /// <param name="scheduler">The task pool scheduler to use.</param>
-    /// <returns>The builder instance for chaining.</returns>
-    public ReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler)
+    /// <param name="setRxApp">if set to <c>true</c> [set rx application].</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp = true)
     {
-        _taskPoolScheduler = scheduler;
+        _setRxAppTaskpoolScheduler = setRxApp;
+        TaskpoolScheduler = scheduler;
         return this;
     }
 
@@ -59,7 +78,7 @@ public sealed class ReactiveUIBuilder : AppBuilder
     /// </summary>
     /// <param name="configureAction">The configuration action.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public ReactiveUIBuilder WithRegistrationOnBuild(Action<IMutableDependencyResolver> configureAction)
+    public IReactiveUIBuilder WithRegistrationOnBuild(Action<IMutableDependencyResolver> configureAction)
     {
         WithCustomRegistration(configureAction);
         return this;
@@ -70,14 +89,14 @@ public sealed class ReactiveUIBuilder : AppBuilder
     /// </summary>
     /// <param name="configureAction">The configuration action.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public ReactiveUIBuilder WithRegistration(Action<IMutableDependencyResolver> configureAction)
+    public IReactiveUIBuilder WithRegistration(Action<IMutableDependencyResolver> configureAction)
     {
         if (configureAction is null)
         {
             throw new ArgumentNullException(nameof(configureAction));
         }
 
-        configureAction(_resolver);
+        configureAction(CurrentMutable);
         return this;
     }
 
@@ -85,7 +104,7 @@ public sealed class ReactiveUIBuilder : AppBuilder
     /// Registers the platform-specific ReactiveUI services.
     /// </summary>
     /// <returns>The builder instance for method chaining.</returns>
-    public ReactiveUIBuilder WithPlatformServices()
+    public IReactiveUIBuilder WithPlatformServices()
     {
         if (_platformRegistered)
         {
@@ -103,11 +122,7 @@ public sealed class ReactiveUIBuilder : AppBuilder
     /// Registers the core ReactiveUI services in an AOT-compatible manner.
     /// </summary>
     /// <returns>The builder instance for chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("ReactiveUI uses reflection to register some services. Ensure that the necessary types are preserved.")]
-    [RequiresDynamicCode("ReactiveUI uses reflection to register some services. Ensure that the necessary types are preserved.")]
-#endif
-    public override AppBuilder WithCoreServices()
+    public override IAppBuilder WithCoreServices()
     {
         if (!_coreRegistered)
         {
@@ -131,12 +146,12 @@ public sealed class ReactiveUIBuilder : AppBuilder
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
 #endif
-    public ReactiveUIBuilder WithViewsFromAssembly(Assembly assembly)
+    public IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly)
     {
         assembly.ArgumentNullExceptionThrowIfNull(nameof(assembly));
 
         // Register views immediately against the builder's resolver
-        _resolver.RegisterViewsForViewModels(assembly);
+        CurrentMutable.RegisterViewsForViewModels(assembly);
         return this;
     }
 
@@ -146,33 +161,163 @@ public sealed class ReactiveUIBuilder : AppBuilder
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for method chaining.</returns>
     [SuppressMessage("Trimming", "IL2111:Method with parameters or return value with `DynamicallyAccessedMembersAttribute` is accessed via reflection. Trimmer can't guarantee availability of the requirements of the method.", Justification = "Does not use reflection")]
-    public ReactiveUIBuilder WithPlatformModule<T>()
+    public IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new()
     {
         var registration = new T();
 #if NET6_0_OR_GREATER
-        registration.Register((f, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] t) => _resolver.RegisterConstant(f(), t));
+        registration.Register((f, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] t) => CurrentMutable.RegisterConstant(f(), t));
 #else
-        registration.Register((f, t) => _resolver.RegisterConstant(f(), t));
+        registration.Register((f, t) => CurrentMutable.RegisterConstant(f(), t));
 #endif
         return this;
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("ReactiveUI uses reflection to register some services. Ensure that the necessary types are preserved.")]
-    [RequiresDynamicCode("ReactiveUI uses reflection to register some services. Ensure that the necessary types are preserved.")]
-#endif
-    private void ConfigureSchedulers() =>
-        WithCustomRegistration(_ =>
-        {
-            if (_mainThreadScheduler != null)
-            {
-                RxApp.MainThreadScheduler = _mainThreadScheduler;
-            }
+    /// <summary>
+    /// Using the splat module.
+    /// </summary>
+    /// <typeparam name="T">The Splat Module Type.</typeparam>
+    /// <param name="registrationModule">The registration module to add.</param>
+    /// <returns>
+    /// The builder instance for method chaining.
+    /// </returns>
+    public IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
+        where T : IModule
+    {
+        UsingModule(registrationModule);
+        return this;
+    }
 
-            if (_taskPoolScheduler != null)
+    /// <summary>
+    /// Configures a custom platform implementation for ReactiveUI.
+    /// </summary>
+    /// <param name="mainThreadScheduler">The main thread scheduler for the platform.</param>
+    /// <param name="platformServices">The platform-specific service registrations.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder ForCustomPlatform(
+        IScheduler mainThreadScheduler,
+        Action<IMutableDependencyResolver> platformServices) =>
+            WithMainThreadScheduler(mainThreadScheduler)
+            .WithRegistrationOnBuild(platformServices);
+
+    /// <summary>
+    /// Configures ReactiveUI for multiple platforms simultaneously.
+    /// </summary>
+    /// <param name="platformConfigurations">The platform configuration actions.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder ForPlatforms(params Action<IReactiveUIBuilder>[] platformConfigurations)
+    {
+        if (platformConfigurations is null)
+        {
+            throw new ArgumentNullException(nameof(platformConfigurations));
+        }
+
+        foreach (var configurePlatform in platformConfigurations)
+        {
+            configurePlatform(this);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the ReactiveUI message bus.
+    /// </summary>
+    /// <param name="configure">The configuration action.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder ConfigureMessageBus(Action<MessageBus> configure) =>
+        WithRegistrationOnBuild(resolver =>
+            resolver.Register<IMessageBus>(() =>
             {
-                RxApp.TaskpoolScheduler = _taskPoolScheduler;
+                var messageBus = new MessageBus();
+                configure(messageBus);
+                return messageBus;
+            }));
+
+    /// <summary>
+    /// Configures the ReactiveUI view locator.
+    /// </summary>
+    /// <param name="configure">The configuration action.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder ConfigureViewLocator(Action<DefaultViewLocator> configure) =>
+        WithRegistrationOnBuild(resolver =>
+            resolver.Register<IViewLocator>(() =>
+            {
+                var viewLocator = new DefaultViewLocator();
+                configure(viewLocator);
+                return viewLocator;
+            }));
+
+    /// <summary>
+    /// Configures the ReactiveUI suspension driver.
+    /// </summary>
+    /// <param name="configure">The configuration action.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder ConfigureSuspensionDriver(Action<ISuspensionDriver> configure) =>
+        WithRegistrationOnBuild(resolver =>
+        {
+            var currentDriver = Current?.GetService<ISuspensionDriver>();
+            if (currentDriver != null)
+            {
+                configure(currentDriver);
             }
         });
+
+    /// <summary>
+    /// Registers a custom view model with the dependency resolver.
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder RegisterViewModel<TViewModel>()
+        where TViewModel : class, IReactiveObject, new() =>
+            WithRegistration(resolver => resolver.Register<TViewModel>(() => new()));
+
+    /// <summary>
+    /// Registers a custom view model with the dependency resolver.
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <returns>The builder instance for chaining.</returns>
+#if NET6_0_OR_GREATER
+    public IReactiveUIBuilder RegisterSingletonViewModel<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>()
+#else
+    public IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>()
+#endif
+        where TViewModel : class, IReactiveObject, new() =>
+            WithRegistration(resolver => resolver.RegisterLazySingleton<TViewModel>(() => new()));
+
+    /// <summary>
+    /// Registers a custom view for a specific view model.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder RegisterView<TView, TViewModel>()
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class, IReactiveObject =>
+            WithRegistration(resolver => resolver.Register<IViewFor<TViewModel>>(() => new TView()));
+
+    /// <summary>
+    /// Registers a custom view for a specific view model.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <typeparam name="TViewModel">The view model type.</typeparam>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class, IReactiveObject =>
+            WithRegistration(resolver => resolver.RegisterLazySingleton<IViewFor<TViewModel>>(() => new TView()));
+
+    private void ConfigureSchedulers() =>
+            WithCustomRegistration(_ =>
+            {
+                if (MainThreadScheduler != null && _setRxAppMainScheduler)
+                {
+                    RxApp.MainThreadScheduler = MainThreadScheduler;
+                }
+
+                if (TaskpoolScheduler != null && _setRxAppTaskpoolScheduler)
+                {
+                    RxApp.TaskpoolScheduler = TaskpoolScheduler;
+                }
+            });
 }
