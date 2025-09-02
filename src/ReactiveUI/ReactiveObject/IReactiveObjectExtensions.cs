@@ -10,7 +10,7 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods associated with the IReactiveObject interface.
 /// </summary>
-[ReactiveUI.Preserve(AllMembers = true)]
+[Preserve(AllMembers = true)]
 public static class IReactiveObjectExtensions
 {
 #if NETSTANDARD || NETFRAMEWORK
@@ -104,10 +104,6 @@ public static class IReactiveObjectExtensions
     /// <param name="propertyName">The name of the property, usually
     /// automatically provided through the CallerMemberName attribute.</param>
     /// <returns>The newly set value, normally discarded.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     public static TRet RaiseAndSetIfChanged<TObj, TRet>(
         this TObj reactiveObject,
         ref TRet backingField,
@@ -138,10 +134,6 @@ public static class IReactiveObjectExtensions
     /// A string representing the name of the property that has been changed.
     /// Leave <c>null</c> to let the runtime set to caller member name.
     /// </param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
         where TSender : IReactiveObject
     {
@@ -161,10 +153,6 @@ public static class IReactiveObjectExtensions
     /// A string representing the name of the property that has been changed.
     /// Leave <c>null</c> to let the runtime set to caller member name.
     /// </param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
         where TSender : IReactiveObject
     {
@@ -180,10 +168,6 @@ public static class IReactiveObjectExtensions
     /// </summary>
     /// <typeparam name="TSender">The sender type.</typeparam>
     /// <param name="reactiveObject">The instance of IReactiveObject which should propagate property changes.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     public static void SubscribePropertyChangingEvents<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
@@ -198,10 +182,6 @@ public static class IReactiveObjectExtensions
     /// </summary>
     /// <typeparam name="TSender">The sender type.</typeparam>
     /// <param name="reactiveObject">The instance of IReactiveObject which should propagate property changes.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     public static void SubscribePropertyChangedEvents<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
@@ -210,10 +190,6 @@ public static class IReactiveObjectExtensions
         s.SubscribePropertyChangedEvents();
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
@@ -221,10 +197,6 @@ public static class IReactiveObjectExtensions
         return val.Changed.Cast<IReactivePropertyChangedEventArgs<TSender>>();
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangingObservable<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
@@ -232,10 +204,6 @@ public static class IReactiveObjectExtensions
         return val.Changing.Cast<IReactivePropertyChangedEventArgs<TSender>>();
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     internal static IObservable<Exception> GetThrownExceptionsObservable<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
@@ -243,10 +211,6 @@ public static class IReactiveObjectExtensions
         return s.ThrownExceptions;
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     internal static void RaisingPropertyChanging<TSender>(this TSender reactiveObject, string propertyName)
         where TSender : IReactiveObject
     {
@@ -257,10 +221,6 @@ public static class IReactiveObjectExtensions
         s.RaisePropertyChanging(propertyName);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     internal static void RaisingPropertyChanged<TSender>(this TSender reactiveObject, string propertyName)
         where TSender : IReactiveObject
     {
@@ -271,10 +231,6 @@ public static class IReactiveObjectExtensions
         s.RaisePropertyChanged(propertyName);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     internal static IDisposable SuppressChangeNotifications<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
@@ -283,10 +239,6 @@ public static class IReactiveObjectExtensions
         return s.SuppressChangeNotifications();
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     internal static bool AreChangeNotificationsEnabled<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
@@ -295,10 +247,6 @@ public static class IReactiveObjectExtensions
         return s.AreChangeNotificationsEnabled();
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     internal static IDisposable DelayChangeNotifications<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
@@ -307,10 +255,6 @@ public static class IReactiveObjectExtensions
         return s.DelayChangeNotifications();
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
     private class ExtensionState<TSender> : IExtensionState<TSender>
         where TSender : IReactiveObject
     {
@@ -329,10 +273,6 @@ public static class IReactiveObjectExtensions
         /// Initializes a new instance of the <see cref="ExtensionState{TSender}"/> class.
         /// </summary>
         /// <param name="sender">The sender.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("Extension state uses RxApp.DefaultExceptionHandler which requires dynamic code generation")]
-        [RequiresUnreferencedCode("Extension state uses RxApp.DefaultExceptionHandler which may require unreferenced code")]
-#endif
         public ExtensionState(TSender sender)
         {
             _sender = sender;

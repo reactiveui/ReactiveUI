@@ -32,6 +32,7 @@
     <PackageReference Include="System.Diagnostics.Contracts" />
     <PackageReference Include="System.Dynamic.Runtime" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('-ios')) or $(TargetFramework.EndsWith('-maccatalyst'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />

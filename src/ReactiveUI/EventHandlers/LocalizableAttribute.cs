@@ -22,5 +22,3 @@ public sealed class LocalizableAttribute(bool isLocalizable) : Attribute
     public bool IsLocalizable { get; } = isLocalizable;
 }
 #endif
-
-// vim: tw=120 ts=4 sw=4 et :

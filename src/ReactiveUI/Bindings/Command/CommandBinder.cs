@@ -10,10 +10,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Various helpers to bind View controls and ViewModel commands together.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("CommandBinder uses RxApp initialization which requires dynamic code generation")]
-[RequiresUnreferencedCode("CommandBinder uses RxApp initialization which may require unreferenced code")]
-#endif
 public static class CommandBinder
 {
     private static readonly ICommandBinderImplementation _binderImplementation;
@@ -47,6 +43,10 @@ public static class CommandBinder
     /// instead of the default.
     /// NOTE: If this parameter is used inside WhenActivated, it's
     /// important to dispose the binding when the view is deactivated.</param>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
+#endif
     public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         this TView view,
         TViewModel? viewModel,
@@ -77,6 +77,10 @@ public static class CommandBinder
     /// instead of the default.
     /// NOTE: If this parameter is used inside WhenActivated, it's
     /// important to dispose the binding when the view is deactivated.</param>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
+#endif
     public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
         this TView view,
         TViewModel? viewModel,
@@ -109,6 +113,10 @@ public static class CommandBinder
     /// instead of the default.
     /// NOTE: If this parameter is used inside WhenActivated, it's
     /// important to dispose the binding when the view is deactivated.</param>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
+#endif
     public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         this TView view,
         TViewModel? viewModel,

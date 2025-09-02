@@ -12,7 +12,8 @@ namespace ReactiveUI;
 /// <summary>
 /// UI Kit command binder platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.ICreatesCommandBinding" />
+/// <seealso cref="ICreatesCommandBinding" />
+[Preserve(AllMembers = true)]
 public class UIKitCommandBinders : FlexibleCommandBinder
 {
     private const string Enabled = nameof(Enabled);
@@ -20,10 +21,7 @@ public class UIKitCommandBinders : FlexibleCommandBinder
     /// <summary>
     /// Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("UIKitCommandBinders uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("UIKitCommandBinders uses methods that may require unreferenced code")]
-#endif
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
     public UIKitCommandBinders()
     {
         Register(typeof(UIControl), 9, (cmd, t, cp) => ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty(Enabled) ?? throw new InvalidOperationException("There is no Enabled property on the UIControl which is needed for binding.")));

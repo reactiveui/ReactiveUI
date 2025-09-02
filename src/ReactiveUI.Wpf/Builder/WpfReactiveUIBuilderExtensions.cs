@@ -23,7 +23,7 @@ public static class WpfReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithWpf(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithWpf(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {
@@ -41,7 +41,7 @@ public static class WpfReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithWpfScheduler(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithWpfScheduler(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {

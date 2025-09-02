@@ -18,6 +18,7 @@
   <ItemGroup>
     <Compile Include="Platforms\net4\**\*.cs" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />

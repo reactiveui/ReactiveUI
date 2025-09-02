@@ -23,7 +23,7 @@ public static class BlazorReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithBlazor(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithBlazor(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {
@@ -40,7 +40,7 @@ public static class BlazorReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static ReactiveUIBuilder WithBlazorScheduler(this ReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithBlazorScheduler(this IReactiveUIBuilder builder)
     {
         if (builder is null)
         {

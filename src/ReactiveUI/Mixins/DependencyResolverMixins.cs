@@ -11,6 +11,7 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods associated with the IMutableDependencyResolver interface.
 /// </summary>
+[Preserve(AllMembers = true)]
 public static class DependencyResolverMixins
 {
     /// <summary>
@@ -22,8 +23,8 @@ public static class DependencyResolverMixins
     /// <param name="resolver">The resolver to initialize.</param>
     /// <param name="registrationNamespaces">Which platforms to use.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("InitializeReactiveUI uses reflection to locate types which may be trimmed.")]
+    [RequiresUnreferencedCode("InitializeReactiveUI uses reflection to locate types which may be trimmed.")]
 #endif
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
@@ -64,7 +65,11 @@ public static class DependencyResolverMixins
 
         // Set up the built-in registration
         new Registrations().Register((f, t) => resolver.RegisterConstant(f(), t));
+#if NET6_0_OR_GREATER
+        new PlatformRegistrations().Register((f, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] t) => resolver.RegisterConstant(f(), t));
+#else
         new PlatformRegistrations().Register((f, t) => resolver.RegisterConstant(f(), t));
+#endif
 
         var fdr = typeof(DependencyResolverMixins);
 
@@ -151,8 +156,7 @@ public static class DependencyResolverMixins
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("ProcessRegistrationForNamespace uses reflection to locate types which may be trimmed.")]
 #endif
     private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)
     {
@@ -188,7 +192,11 @@ public static class DependencyResolverMixins
         if (registerTypeClass is not null)
         {
             var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass)!;
+#if NET6_0_OR_GREATER
+            registerer.Register((f, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] t) => resolver.RegisterConstant(f(), t));
+#else
             registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
+#endif
         }
     }
 }

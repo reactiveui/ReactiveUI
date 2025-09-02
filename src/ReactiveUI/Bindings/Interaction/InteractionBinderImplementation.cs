@@ -8,13 +8,13 @@ namespace ReactiveUI;
 /// <summary>
 /// Provides methods to bind <see cref="Interaction{TInput, TOutput}"/>s to handlers.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("InteractionBinderImplementation uses reflection and expression evaluation which require dynamic code generation")]
-[RequiresUnreferencedCode("InteractionBinderImplementation uses reflection and expression evaluation which may require unreferenced code")]
-#endif
 public class InteractionBinderImplementation : IInteractionBinderImplementation
 {
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         TViewModel? viewModel,
         TView view,
@@ -40,6 +40,10 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         TViewModel? viewModel,
         TView view,

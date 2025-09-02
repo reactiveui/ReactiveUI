@@ -1242,40 +1242,74 @@ namespace ReactiveUI
 }
 namespace ReactiveUI.Builder
 {
-    public static class MultiPlatformReactiveUIBuilderExtensions
+    public interface IReactiveUIBuilder : Splat.Builder.IAppBuilder
     {
-        public static ReactiveUI.Builder.ReactiveUIBuilder ForCustomPlatform(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder ForPlatforms(this ReactiveUI.Builder.ReactiveUIBuilder builder, params System.Action<ReactiveUI.Builder.ReactiveUIBuilder>[] platformConfigurations) { }
+        ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(System.Action<ReactiveUI.MessageBus> configure);
+        ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure);
+        ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure);
+        ReactiveUI.Builder.IReactiveUIBuilder ForCustomPlatform(System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices);
+        ReactiveUI.Builder.IReactiveUIBuilder ForPlatforms(params System.Action<ReactiveUI.Builder.IReactiveUIBuilder>[] platformConfigurations);
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject;
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new ();
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterView<TView, TViewModel>()
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject;
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterViewModel<TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new ();
+        ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
+            where T : Splat.Builder.IModule;
+        ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true);
+        ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
+            where T : ReactiveUI.IWantsToRegisterStuff, new ();
+        ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices();
+        ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction);
+        ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction);
+        ReactiveUI.Builder.IReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true);
+        ReactiveUI.Builder.IReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly);
     }
-    public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder
+    public interface IReactiveUIInstance : Splat.Builder.IAppInstance
     {
-        public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver) { }
-        public override Splat.Builder.AppBuilder WithCoreServices() { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformModule<T>()
+        System.Reactive.Concurrency.IScheduler? MainThreadScheduler { get; }
+        System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; }
+    }
+    public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder, ReactiveUI.Builder.IReactiveUIBuilder, ReactiveUI.Builder.IReactiveUIInstance, Splat.Builder.IAppBuilder, Splat.Builder.IAppInstance
+    {
+        public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver, Splat.IReadonlyDependencyResolver? current) { }
+        public System.Reactive.Concurrency.IScheduler? MainThreadScheduler { get; }
+        public System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; }
+        public ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(System.Action<ReactiveUI.MessageBus> configure) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder ForCustomPlatform(System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder ForPlatforms(params System.Action<ReactiveUI.Builder.IReactiveUIBuilder>[] platformConfigurations) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterView<TView, TViewModel>()
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterViewModel<TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
+            where T : Splat.Builder.IModule { }
+        public override Splat.Builder.IAppBuilder WithCoreServices() { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
             where T : ReactiveUI.IWantsToRegisterStuff, new () { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithPlatformServices() { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
-        public ReactiveUI.Builder.ReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices() { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) { }
     }
     public static class RxAppBuilder
     {
-        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureMessageBus(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.MessageBus> configure) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureSuspensionDriver(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.ISuspensionDriver> configure) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder ConfigureViewLocator(this ReactiveUI.Builder.ReactiveUIBuilder builder, System.Action<ReactiveUI.DefaultViewLocator> configure) { }
         public static ReactiveUI.Builder.ReactiveUIBuilder CreateReactiveUIBuilder() { }
         public static ReactiveUI.Builder.ReactiveUIBuilder CreateReactiveUIBuilder(this Splat.IMutableDependencyResolver resolver) { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterSingletonView<TView, TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterSingletonViewModel<TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
-            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterView<TView, TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
-            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
-            where TViewModel :  class, ReactiveUI.IReactiveObject { }
-        public static ReactiveUI.Builder.ReactiveUIBuilder RegisterViewModel<TViewModel>(this ReactiveUI.Builder.ReactiveUIBuilder builder)
-            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
     }
 }

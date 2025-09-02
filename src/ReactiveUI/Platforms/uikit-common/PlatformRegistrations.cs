@@ -8,16 +8,12 @@ namespace ReactiveUI;
 /// <summary>
 /// UIKit platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
+[Preserve(AllMembers = true)]
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Platform registration uses ComponentModelTypeConverter and RxApp which require dynamic code generation")]
-    [RequiresUnreferencedCode("Platform registration uses ComponentModelTypeConverter and RxApp which may require unreferenced code")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-#endif
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         ArgumentNullException.ThrowIfNull(registerFunction);

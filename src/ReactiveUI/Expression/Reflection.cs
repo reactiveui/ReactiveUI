@@ -11,14 +11,15 @@ namespace ReactiveUI;
 /// <summary>
 /// Helper class for handling Reflection amd Expression tree related items.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("Expression rewriting requires dynamic code generation")]
-[RequiresUnreferencedCode("Expression rewriting may reference members that could be trimmed")]
-#endif
+[Preserve(AllMembers = true)]
 public static class Reflection
 {
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
+    [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
     private static readonly ExpressionRewriter _expressionRewriter = new();
 
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
+    [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
     private static readonly MemoizingMRUCache<string, Type?> _typeCache = new(
         (type, _) => GetTypeHelper(type),
         20);
@@ -28,10 +29,6 @@ public static class Reflection
     /// </summary>
     /// <param name="expression">The expression to rewrite.</param>
     /// <returns>The rewritten expression.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Expression rewriting requires dynamic code generation")]
-    [RequiresUnreferencedCode("Expression rewriting may reference members that could be trimmed")]
-#endif
     public static Expression Rewrite(Expression? expression) => _expressionRewriter.Visit(expression);
 
     /// <summary>
@@ -137,10 +134,6 @@ public static class Reflection
     /// </summary>
     /// <param name="member">The member info to convert.</param>
     /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Member access requires dynamic code generation")]
-    [RequiresUnreferencedCode("Member access may reference members that could be trimmed")]
-#endif
     public static Action<object?, object?, object?[]?> GetValueSetterForProperty(MemberInfo? member) // TODO: Create Test
     {
         member.ArgumentNullExceptionThrowIfNull(nameof(member));
@@ -338,10 +331,6 @@ public static class Reflection
     /// <param name="throwOnFailure">If we should throw an exception if the type can't be found.</param>
     /// <returns>The type that was found or null.</returns>
     /// <exception cref="TypeLoadException">If we were unable to find the type.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Type resolution requires dynamic code generation")]
-    [RequiresUnreferencedCode("Type resolution may reference types that could be trimmed")]
-#endif
     public static Type? ReallyFindType(string? type, bool throwOnFailure) // TODO: Create Test
     {
         var ret = _typeCache.Get(type ?? string.Empty);
@@ -356,10 +345,14 @@ public static class Reflection
     /// <returns>The Type of the EventArgs to use.</returns>
     /// <exception cref="Exception">If there is no event matching the name on the target type.</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Event reflection requires dynamic code generation")]
-    [RequiresUnreferencedCode("Event reflection may reference members that could be trimmed")]
+    [RequiresUnreferencedCode("Event access may reference members that could be trimmed")]
 #endif
-    public static Type GetEventArgsTypeForEvent(Type type, string? eventName) // TODO: Create Test
+    public static Type GetEventArgsTypeForEvent(
+#if NET6_0_OR_GREATER
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif
+    Type type,
+    string? eventName) // TODO: Create Test
     {
         type.ArgumentNullExceptionThrowIfNull(nameof(type));
 
@@ -383,8 +376,7 @@ public static class Reflection
     /// <param name="methodsToCheck">The name of the methods to check.</param>
     /// <exception cref="Exception">Thrown if the methods aren't overriden on the target object.</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Method reflection requires dynamic code generation")]
-    [RequiresUnreferencedCode("Method reflection may reference members that could be trimmed")]
+    [RequiresUnreferencedCode("Method access may reference members that could be trimmed")]
 #endif
     public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) // TODO: Create Test
     {
@@ -416,8 +408,8 @@ public static class Reflection
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Expression evaluation requires dynamic code generation")]
-    [RequiresUnreferencedCode("Expression evaluation may reference members that could be trimmed")]
+    [RequiresUnreferencedCode("ViewModelWhenAnyValue may reference types that could be trimmed")]
+    [RequiresDynamicCode("ViewModelWhenAnyValue uses reflection which requires dynamic code generation")]
 #endif
     internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel? viewModel, TView view, Expression? expression)
         where TView : class, IViewFor
@@ -427,6 +419,9 @@ public static class Reflection
             .Select(x => ((TViewModel?)x).WhenAnyDynamic(expression, y => y.Value))
             .Switch()!;
 
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Method access may reference members that could be trimmed")]
+#endif
     private static Type? GetTypeHelper(string type) => Type.GetType(
         type,
         assemblyName =>

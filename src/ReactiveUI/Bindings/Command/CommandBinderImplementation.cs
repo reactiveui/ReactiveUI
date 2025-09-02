@@ -39,8 +39,8 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// or
     /// nameof(vmProperty).</exception>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,
@@ -94,8 +94,8 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     /// NOTE: If this parameter is used inside WhenActivated, it's
     /// important to dispose the binding when the view is deactivated.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     public IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,
@@ -128,8 +128,8 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommand uses ViewModelWhenAnyValue which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindCommand uses ViewModelWhenAnyValue which may reference members that could be trimmed")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     private static IDisposable BindCommandInternal<TView, TProp, TParam>(
         IObservable<TProp> source,

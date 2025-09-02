@@ -28,10 +28,6 @@ namespace ReactiveUI;
 /// This class also initializes a whole bunch of other stuff, including the IoC container,
 /// logging and error handling.
 /// </remarks>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("RxApp initialization uses reflection-based registration which requires dynamic code generation.")]
-[RequiresUnreferencedCode("RxApp initialization uses reflection-based registration which may require unreferenced code.")]
-#endif
 public static class RxApp
 {
 #if ANDROID || IOS
@@ -79,24 +75,26 @@ public static class RxApp
     /// Initializes static members of the <see cref="RxApp"/> class.
     /// </summary>
     /// <exception cref="UnhandledErrorException">Default exception when we have unhandled exception in RxUI.</exception>
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Recommend using AppBuilder")]
+    [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming.", Justification = "Recommend using AppBuilder")]
     static RxApp()
     {
 #if !PORTABLE
         _taskpoolScheduler = TaskPoolScheduler.Default;
 #endif
-        Locator.CurrentMutable.InitializeSplat();
+        AppLocator.CurrentMutable.InitializeSplat();
 
         if (!AppBuilder.UsingBuilder)
         {
-            Locator.RegisterResolverCallbackChanged(() =>
+            AppLocator.RegisterResolverCallbackChanged(() =>
             {
-                if (Locator.CurrentMutable is null)
+                if (AppLocator.CurrentMutable is null)
                 {
                     return;
                 }
 
-                Locator.CurrentMutable.InitializeSplat();
-                Locator.CurrentMutable.InitializeReactiveUI(PlatformRegistrationManager.NamespacesToRegister);
+                AppLocator.CurrentMutable.InitializeSplat();
+                AppLocator.CurrentMutable.InitializeReactiveUI(PlatformRegistrationManager.NamespacesToRegister);
             });
         }
 

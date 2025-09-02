@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Reactive.Wasm" />
     <PackageReference Include="Microsoft.AspNetCore.Components" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />

@@ -83,8 +83,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="eventName">Event name.</param>
     /// <param name="enabledProperty">Enabled property name.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ForEvent uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ForEvent uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+    [RequiresUnreferencedCode("This member uses reflection to discover event members and associated delegate types.")]
 #endif
     protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
     {
