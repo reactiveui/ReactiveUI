@@ -131,6 +131,10 @@ public static class RxApp
         LogHost.Default.Info("Initializing to normal mode");
 
         _mainThreadScheduler ??= DefaultScheduler.Instance;
+        
+        // Synchronize initial values with RxSchedulers for consistency
+        RxSchedulers.MainThreadScheduler = _mainThreadScheduler;
+        RxSchedulers.TaskpoolScheduler = _taskpoolScheduler;
     }
 
     /// <summary>
@@ -139,6 +143,9 @@ public static class RxApp
     /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
     /// to simplify writing common unit tests.
     /// </summary>
+    /// <remarks>
+    /// Consider using RxSchedulers.MainThreadScheduler for new code to avoid RequiresUnreferencedCode attributes.
+    /// </remarks>
     public static IScheduler MainThreadScheduler
     {
         get
@@ -176,6 +183,9 @@ public static class RxApp
             {
                 _mainThreadScheduler = value;
             }
+
+            // Also update RxSchedulers to keep them in sync when set via RxApp
+            RxSchedulers.MainThreadScheduler = value;
         }
     }
 
@@ -184,6 +194,9 @@ public static class RxApp
     /// run in a background thread. In both modes, this will run on the TPL
     /// Task Pool.
     /// </summary>
+    /// <remarks>
+    /// Consider using RxSchedulers.TaskpoolScheduler for new code to avoid RequiresUnreferencedCode attributes.
+    /// </remarks>
     public static IScheduler TaskpoolScheduler
     {
         get => _unitTestTaskpoolScheduler ?? _taskpoolScheduler;
@@ -198,6 +211,9 @@ public static class RxApp
             {
                 _taskpoolScheduler = value;
             }
+
+            // Also update RxSchedulers to keep them in sync when set via RxApp
+            RxSchedulers.TaskpoolScheduler = value;
         }
     }
 
