@@ -14,22 +14,32 @@ namespace ReactiveUI.Tests.Wpf;
 /// NOTE: Only one Test can create an AppDomain, all Active content tests must go in this class.
 /// Add to WpfActiveContentApp to add any additional mock windows.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="WpfActiveContentTests"/> class.
-/// </remarks>
-/// <param name="fixture">The fixture.</param>
 [TestFixture]
-public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixture<WpfActiveContentFixture>
+public class WpfActiveContentTests
 {
+    private WpfActiveContentFixture? _fixture;
+
     /// <summary>
     /// Gets the fixture.
     /// </summary>
     /// <value>
     /// The fixture.
     /// </value>
-    public WpfActiveContentFixture Fixture { get; } = fixture;
+    public WpfActiveContentFixture? Fixture => _fixture;
 
-    [StaFact]
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        _fixture = new WpfActiveContentFixture();
+    }
+
+    [OneTimeTearDown]
+    public void OneTimeTearDown()
+    {
+        _fixture?.Dispose();
+    }
+
+    [Test, Apartment(ApartmentState.STA)]
     public void BindListFunctionalTest()
     {
         var window = Fixture?.App?.WpfTestWindowFactory();
@@ -65,7 +75,7 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
         window.Close();
     }
 
-    [StaFact]
+    [Test, Apartment(ApartmentState.STA)]
     public void ViewModelHostViewTestFallback()
     {
         var oldLocator = Locator.GetLocator();
@@ -167,7 +177,7 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
         }
     }
 
-    [StaFact]
+    [Test, Apartment(ApartmentState.STA)]
     public void TransitioningContentControlTest()
     {
         var window = Fixture?.App?.MockWindowFactory();
@@ -249,7 +259,7 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
         dsd.InvalidateState().Select(_ => 3).Subscribe(_ => Assert.That(_, Is.EqualTo(3)));
     }
 
-    [StaFact]
+    [Test, Apartment(ApartmentState.STA)]
     public void TransitioninContentControlDpiTest()
     {
         var window = Fixture?.App?.TCMockWindowFactory();
@@ -295,7 +305,7 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
         window!.ShowDialog();
     }
 
-    [StaFact]
+    [Test, Apartment(ApartmentState.STA)]
     public void ReactiveCommandRunningOnTaskThreadAllowsCanExecuteAndExecutingToFire()
     {
         LiveModeDetector.UseRuntimeThreads();

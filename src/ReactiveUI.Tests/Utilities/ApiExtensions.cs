@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 using PublicApiGenerator;
 
-using VerifyXunit;
+using VerifyNUnit;
 
 namespace ReactiveUI.Tests;
 
