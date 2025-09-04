@@ -56,13 +56,16 @@ ReactiveUI supports Ahead-of-Time (AOT) compilation. Follow these patterns:
        .Select(x => x.Value)
        .Subscribe(HandlePropertyChange);
    
-   // String-based WhenAnyValue with proper AOT suppression
-   [UnconditionalSuppressMessage("AOT", "IL3050")]
-   [UnconditionalSuppressMessage("Trimming", "IL2026")]
-   public void SetupObservation()
+   // Method that needs to access properties via reflection
+#if NET6_0_OR_GREATER
+   private static PropertyInfo? GetPropertyInfo(
+       [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+       Type type, string propertyName)
+#else
+   private static PropertyInfo? GetPropertyInfo(Type type, string propertyName)
+#endif
    {
-       this.WhenAnyValue(nameof(PropertyName))
-           .Subscribe(HandleChange);
+       return type.GetProperty(propertyName);
    }
    ```
 
@@ -88,14 +91,22 @@ ReactiveUI supports Ahead-of-Time (AOT) compilation. Follow these patterns:
    
    public string ComputedValue => _computedValue.Value;
    
-   // In constructor with proper AOT attributes
-   [UnconditionalSuppressMessage("AOT", "IL3050")]
-   [UnconditionalSuppressMessage("Trimming", "IL2026")]
+   // In constructor - when using strongly-typed expressions, no AOT attributes needed
    public ViewModel()
    {
        _computedValue = this.WhenAnyValue(x => x.InputValue)
            .Select(x => $"Computed: {x}")
            .ToProperty(this, nameof(ComputedValue));
+   }
+   
+   // For methods that register view models with dependency injection
+#if NET6_0_OR_GREATER
+   public void RegisterViewModel<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>()
+#else
+   public void RegisterViewModel<TViewModel>()
+#endif
+   {
+       // Registration logic that uses reflection on TViewModel
    }
    ```
 
@@ -112,14 +123,79 @@ ReactiveUI supports Ahead-of-Time (AOT) compilation. Follow these patterns:
 
 ### ⚠️ AOT Considerations
 
-- When using reflection-based APIs (WhenAnyValue, ToProperty, etc.), add appropriate AOT suppression attributes:
-  ```csharp
-  [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Description of why this is safe")]
-  [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Description of why this is safe")]
-  ```
+**Preferred Approach**: Use `DynamicallyAccessedMembersAttribute` to inform the AOT compiler about required members:
 
+```csharp
+// For methods that access type constructors
+private static object CreateInstance(
+#if NET6_0_OR_GREATER
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+    Type type)
+{
+    return Activator.CreateInstance(type);
+}
+
+// For methods that access properties via reflection
+private static PropertyInfo? GetProperty(
+#if NET6_0_OR_GREATER
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+#endif
+    Type type, string propertyName)
+{
+    return type.GetProperty(propertyName);
+}
+
+// For methods that need all members (like view model registration)
+public void RegisterViewModel<
+#if NET6_0_OR_GREATER
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif
+    TViewModel>()
+{
+    // Registration logic
+}
+```
+
+**Fallback Approach**: When `DynamicallyAccessedMembersAttribute` isn't sufficient, use suppression attributes:
+```csharp
+[UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Description of why this is safe")]
+[UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Description of why this is safe")]
+public void SetupObservation()
+{
+    // Reflection-based code that can't be made AOT-safe with DynamicallyAccessedMembersAttribute
+}
+```
+
+**Best Practices**:
+- Prefer `DynamicallyAccessedMembersAttribute` over `UnconditionalSuppressMessage` when possible
+- Use specific `DynamicallyAccessedMemberTypes` values rather than `All` when you know what's needed
 - Prefer strongly-typed expressions over string-based property names when possible
 - Use `nameof()` for compile-time property name checking
+
+**ReactiveUI Codebase Examples**:
+```csharp
+// From ReactiveUIBuilder.cs - View model registration
+public IReactiveUIBuilder RegisterSingletonViewModel<
+#if NET6_0_OR_GREATER
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+#endif
+    TViewModel>()
+
+// From ExpressionRewriter.cs - Property access
+private static PropertyInfo? GetItemProperty(
+#if NET6_0_OR_GREATER
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+#endif
+    Type type)
+
+// From DependencyResolverMixins.cs - Constructor access
+private static Func<object> TypeFactory(
+#if NET6_0_OR_GREATER
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+    TypeInfo typeInfo)
+```
 
 ## 📚 Reference Materials
 
