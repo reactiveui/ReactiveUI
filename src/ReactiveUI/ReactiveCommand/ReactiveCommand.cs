@@ -812,7 +812,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         IScheduler? outputScheduler)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-        _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
+        _outputScheduler = outputScheduler ?? RxSchedulers.MainThreadScheduler;
         _exceptions = new ScheduledSubject<Exception>(_outputScheduler, RxApp.DefaultExceptionHandler);
         _executionInfo = new Subject<ExecutionInfo>();
         _synchronizedExecutionInfo = Subject.Synchronize(_executionInfo, _outputScheduler);
