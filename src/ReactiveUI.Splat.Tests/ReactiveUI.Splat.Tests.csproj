@@ -7,9 +7,6 @@
     <PackageReference Include="Splat.Autofac" />
     <PackageReference Include="Splat.DryIoc" />
     <PackageReference Include="Splat.Ninject" />
-    <PackageReference Include="NUnit" />
-    <PackageReference Include="NUnit3TestAdapter" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />

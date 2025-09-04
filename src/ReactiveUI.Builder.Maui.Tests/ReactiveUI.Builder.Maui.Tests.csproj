@@ -10,12 +10,6 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" />
-    <PackageReference Include="NUnit3TestAdapter" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-  </ItemGroup>
-  <ItemGroup>
-    <Using Include="NUnit.Framework" />
     <Using Include="Splat" />
   </ItemGroup>
 </Project>

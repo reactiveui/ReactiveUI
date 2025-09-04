@@ -14,11 +14,6 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" />
-    <PackageReference Include="NUnit3TestAdapter" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
     <ProjectReference Include="..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
   </ItemGroup>
