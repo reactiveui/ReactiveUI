@@ -7,81 +7,82 @@ using System.Reflection;
 
 namespace ReactiveUI.Tests;
 
+[TestFixture]
 public class RandomTests
 {
-    [Fact]
+    [Test]
     public void StringConverterAffinityTest()
     {
         var fixture = new StringConverter();
         var result = fixture.GetAffinityForObjects(typeof(object), typeof(string));
-        Assert.Equal(result, 2);
+        Assert.That(result, Is.EqualTo(2));
         result = fixture.GetAffinityForObjects(typeof(object), typeof(int));
-        Assert.Equal(result, 0);
+        Assert.That(result, Is.EqualTo(0));
     }
 
-    [Fact]
+    [Test]
     public void StringConverterTryConvertTest()
     {
         var fixture = new StringConverter();
         var expected = fixture.GetType().FullName;
         var result = fixture.TryConvert(fixture, typeof(string), null, out var actualResult);
-        Assert.True(result);
-        Assert.Equal(expected, actualResult);
+        Assert.That(result, Is.True);
+        Assert.That(actualResult, Is.EqualTo(expected));
     }
 
-    [Fact]
+    [Test]
     public void UnhandledErrorExceptionTest()
     {
         var fixture = new UnhandledErrorException();
-        Assert.Equal(fixture.Message, "Exception of type 'ReactiveUI.UnhandledErrorException' was thrown.");
+        Assert.That(fixture.Message, Is.EqualTo("Exception of type 'ReactiveUI.UnhandledErrorException' was thrown."));
     }
 
-    [Fact]
+    [Test]
     public void UnhandledErrorExceptionTestWithMessage()
     {
         var fixture = new UnhandledErrorException("We are terribly sorry but a unhandled error occured.");
-        Assert.Equal(fixture.Message, "We are terribly sorry but a unhandled error occured.");
+        Assert.That(fixture.Message, Is.EqualTo("We are terribly sorry but a unhandled error occured."));
     }
 
-    [Fact]
+    [Test]
     public void UnhandledErrorExceptionTestWithMessageAndInnerException()
     {
         var fixture = new UnhandledErrorException("We are terribly sorry but a unhandled error occured.", new Exception("Inner Exception added."));
-        Assert.Equal(fixture.Message, "We are terribly sorry but a unhandled error occured.");
-        Assert.Equal(fixture.InnerException?.Message, "Inner Exception added.");
+        Assert.That(fixture.Message, Is.EqualTo("We are terribly sorry but a unhandled error occured."));
+        Assert.That(fixture.InnerException?.Message, Is.EqualTo("Inner Exception added."));
     }
 
-    [Fact]
+    [Test]
     public void ViewLocatorNotFoundExceptionTest()
     {
         var fixture = new ViewLocatorNotFoundException();
-        Assert.Equal(fixture.Message, "Exception of type 'ReactiveUI.ViewLocatorNotFoundException' was thrown.");
+        Assert.That(fixture.Message, Is.EqualTo("Exception of type 'ReactiveUI.ViewLocatorNotFoundException' was thrown."));
     }
 
-    [Fact]
+    [Test]
     public void ViewLocatorNotFoundExceptionTestWithMessage()
     {
         var fixture = new ViewLocatorNotFoundException("We are terribly sorry but the View Locator was Not Found.");
-        Assert.Equal(fixture.Message, "We are terribly sorry but the View Locator was Not Found.");
+        Assert.That(fixture.Message, Is.EqualTo("We are terribly sorry but the View Locator was Not Found."));
     }
 
-    [Fact]
+    [Test]
     public void ViewLocatorNotFoundExceptionTestWithMessageAndInnerException()
     {
         var fixture = new ViewLocatorNotFoundException("We are terribly sorry but the View Locator was Not Found.", new Exception("Inner Exception added."));
-        Assert.Equal(fixture.Message, "We are terribly sorry but the View Locator was Not Found.");
-        Assert.Equal(fixture.InnerException?.Message, "Inner Exception added.");
+        Assert.That(fixture.Message, Is.EqualTo("We are terribly sorry but the View Locator was Not Found."));
+        Assert.That(fixture.InnerException?.Message, Is.EqualTo("Inner Exception added."));
     }
 
-    [Fact]
+    [Test]
     public void ViewLocatorCurrentTest()
     {
         RxApp.EnsureInitialized();
         var fixture = ViewLocator.Current;
-        Assert.NotNull(fixture);
+        Assert.That(fixture, Is.Not.Null);
     }
 
-    [Fact]
+    [Test]
     public void ViewLocatorCurrentFailedTest()
     {
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
@@ -92,7 +93,7 @@ public class RandomTests
     /// <summary>
     /// Tests that ViewContractAttribute correctly stores contract value.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewContractAttribute_ShouldStoreContractValue()
     {
         // Arrange
@@ -102,49 +103,49 @@ public class RandomTests
         var attribute = new ViewContractAttribute(expectedContract);
 
         // Assert
-        Assert.Equal(expectedContract, attribute.Contract);
+        Assert.That(attribute.Contract, Is.EqualTo(expectedContract));
     }
 
     /// <summary>
     /// Tests that ViewContractAttribute handles null contract.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewContractAttribute_ShouldHandleNullContract()
     {
         // Act
         var attribute = new ViewContractAttribute(null!);
 
         // Assert
-        Assert.Null(attribute.Contract);
+        Assert.That(attribute.Contract, Is.Null);
     }
 
     /// <summary>
     /// Tests TriggerUpdate enum values.
     /// </summary>
-    [Fact]
+    [Test]
     public void TriggerUpdate_ShouldHaveCorrectValues()
     {
         // Assert
-        Assert.Equal(0, (int)TriggerUpdate.ViewToViewModel);
-        Assert.Equal(1, (int)TriggerUpdate.ViewModelToView);
+        Assert.That((int)TriggerUpdate.ViewToViewModel, Is.EqualTo(0));
+        Assert.That((int)TriggerUpdate.ViewModelToView, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Tests BindingDirection enum values.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindingDirection_ShouldHaveCorrectValues()
     {
         // Assert
-        Assert.Equal(0, (int)BindingDirection.OneWay);
-        Assert.Equal(1, (int)BindingDirection.TwoWay);
-        Assert.Equal(2, (int)BindingDirection.AsyncOneWay);
+        Assert.That((int)BindingDirection.OneWay, Is.EqualTo(0));
+        Assert.That((int)BindingDirection.TwoWay, Is.EqualTo(1));
+        Assert.That((int)BindingDirection.AsyncOneWay, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Tests ObservedChange constructor and properties.
     /// </summary>
-    [Fact]
+    [Test]
     public void ObservedChange_ShouldStoreValues()
     {
         // Arrange
@@ -156,15 +157,15 @@ public class RandomTests
         var observedChange = new ObservedChange<string, int>(sender, expression, value);
 
         // Assert
-        Assert.Equal(sender, observedChange.Sender);
-        Assert.Equal(expression, observedChange.Expression);
-        Assert.Equal(value, observedChange.Value);
+        Assert.That(observedChange.Sender, Is.EqualTo(sender));
+        Assert.That(observedChange.Expression, Is.EqualTo(expression));
+        Assert.That(observedChange.Value, Is.EqualTo(value));
     }
 
     /// <summary>
     /// Tests ReactivePropertyChangedEventArgs constructor and properties.
     /// </summary>
-    [Fact]
+    [Test]
     public void ReactivePropertyChangedEventArgs_ShouldStoreValues()
     {
         // Arrange
@@ -175,14 +176,14 @@ public class RandomTests
         var eventArgs = new ReactivePropertyChangedEventArgs<string>(sender, propertyName);
 
         // Assert
-        Assert.Equal(sender, eventArgs.Sender);
-        Assert.Equal(propertyName, eventArgs.PropertyName);
+        Assert.That(eventArgs.Sender, Is.EqualTo(sender));
+        Assert.That(eventArgs.PropertyName, Is.EqualTo(propertyName));
     }
 
     /// <summary>
     /// Tests EqualityTypeConverter with matching types.
     /// </summary>
-    [Fact]
+    [Test]
     public void EqualityTypeConverter_ShouldConvertMatchingTypes()
     {
         // Arrange
@@ -194,31 +195,31 @@ public class RandomTests
         var result = converter.TryConvert(testValue, typeof(string), null, out var converted);
 
         // Assert
-        Assert.Equal(100, affinity);
-        Assert.True(result);
-        Assert.Equal(testValue, converted);
+        Assert.That(affinity, Is.EqualTo(100));
+        Assert.That(result, Is.True);
+        Assert.That(converted, Is.EqualTo(testValue));
     }
 
     /// <summary>
     /// Tests RxApp cache constants.
     /// </summary>
-    [Fact]
+    [Test]
     public void RxApp_ShouldHaveCacheConstants()
     {
         // Assert
 #if ANDROID || IOS
-        Assert.Equal(32, RxApp.SmallCacheLimit);
-        Assert.Equal(64, RxApp.BigCacheLimit);
+        Assert.That(RxApp.SmallCacheLimit, Is.EqualTo(32));
+        Assert.That(RxApp.BigCacheLimit, Is.EqualTo(64));
 #else
-        Assert.Equal(64, RxApp.SmallCacheLimit);
-        Assert.Equal(256, RxApp.BigCacheLimit);
+        Assert.That(RxApp.SmallCacheLimit, Is.EqualTo(64));
+        Assert.That(RxApp.BigCacheLimit, Is.EqualTo(256));
 #endif
     }
 
     /// <summary>
     /// Tests various type converters affinity.
     /// </summary>
-    [Fact]
+    [Test]
     public void TypeConverters_ShouldHaveCorrectAffinity()
     {
         // Arrange & Act
@@ -226,15 +227,15 @@ public class RandomTests
         var doubleConverter = new DoubleToStringTypeConverter();
 
         // Assert - These converters return 10 for their type conversions
-        Assert.Equal(10, intConverter.GetAffinityForObjects(typeof(int), typeof(string)));
-        Assert.Equal(10, doubleConverter.GetAffinityForObjects(typeof(double), typeof(string)));
-        Assert.Equal(10, intConverter.GetAffinityForObjects(typeof(string), typeof(int)));
+        Assert.That(intConverter.GetAffinityForObjects(typeof(int, Is.EqualTo(10)), typeof(string)));
+        Assert.That(doubleConverter.GetAffinityForObjects(typeof(double, Is.EqualTo(10)), typeof(string)));
+        Assert.That(intConverter.GetAffinityForObjects(typeof(string, Is.EqualTo(10)), typeof(int)));
     }
 
     /// <summary>
     /// Tests DummySuspensionDriver methods.
     /// </summary>
-    [Fact]
+    [Test]
     public void DummySuspensionDriver_ShouldWork()
     {
         // Arrange
@@ -250,21 +251,21 @@ public class RandomTests
     /// <summary>
     /// Tests RegistrationNamespace enum values.
     /// </summary>
-    [Fact]
+    [Test]
     public void RegistrationNamespace_ShouldHaveAllExpectedValues()
     {
         // Assert all enum values exist
-        Assert.Equal(0, (int)RegistrationNamespace.None);
-        Assert.True(Enum.IsDefined(typeof(RegistrationNamespace), RegistrationNamespace.XamForms));
-        Assert.True(Enum.IsDefined(typeof(RegistrationNamespace), RegistrationNamespace.Winforms));
-        Assert.True(Enum.IsDefined(typeof(RegistrationNamespace), RegistrationNamespace.Wpf));
-        Assert.True(Enum.IsDefined(typeof(RegistrationNamespace), RegistrationNamespace.Maui));
+        Assert.That((int, Is.EqualTo(0))RegistrationNamespace.None);
+        Assert.That(Enum.IsDefined(typeof(RegistrationNamespace, Is.True), RegistrationNamespace.XamForms));
+        Assert.That(Enum.IsDefined(typeof(RegistrationNamespace, Is.True), RegistrationNamespace.Winforms));
+        Assert.That(Enum.IsDefined(typeof(RegistrationNamespace, Is.True), RegistrationNamespace.Wpf));
+        Assert.That(Enum.IsDefined(typeof(RegistrationNamespace, Is.True), RegistrationNamespace.Maui));
     }
 
     /// <summary>
     /// Tests type converter conversions with actual values.
     /// </summary>
-    [Fact]
+    [Test]
     public void TypeConverters_ShouldConvertValues()
     {
         // Arrange
@@ -272,20 +273,20 @@ public class RandomTests
         var doubleConverter = new DoubleToStringTypeConverter();
 
         // Act & Assert
-        Assert.True(intConverter.TryConvert(42, typeof(string), null, out var intResult));
-        Assert.Equal("42", intResult);
+        Assert.That(intConverter.TryConvert(42, typeof(string, Is.True), null, out var intResult));
+        Assert.That(intResult, Is.EqualTo("42"));
 
-        Assert.True(intConverter.TryConvert("42", typeof(int), null, out var intBackResult));
-        Assert.Equal(42, intBackResult);
+        Assert.That(intConverter.TryConvert("42", typeof(int, Is.True), null, out var intBackResult));
+        Assert.That(intBackResult, Is.EqualTo(42));
 
-        Assert.True(doubleConverter.TryConvert(42.5, typeof(string), null, out var doubleResult));
-        Assert.Equal("42.5", doubleResult);
+        Assert.That(doubleConverter.TryConvert(42.5, typeof(string, Is.True), null, out var doubleResult));
+        Assert.That(doubleResult, Is.EqualTo("42.5"));
     }
 
     /// <summary>
     /// Tests PreserveAttribute instantiation.
     /// </summary>
-    [Fact]
+    [Test]
     public void PreserveAttribute_ShouldInstantiate()
     {
         // Act
@@ -299,7 +300,7 @@ public class RandomTests
     /// <summary>
     /// Tests MessageBus.Current static property for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBus_Current_ShouldBeAccessible()
     {
         // Act
@@ -313,7 +314,7 @@ public class RandomTests
     /// <summary>
     /// Tests NotAWeakReference functionality for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void NotAWeakReference_ShouldWorkCorrectly()
     {
         // Arrange
@@ -321,49 +322,49 @@ public class RandomTests
         var weakRef = new NotAWeakReference(target);
 
         // Act & Assert
-        Assert.Equal(target, weakRef.Target);
-        Assert.True(weakRef.IsAlive);
+        Assert.That(weakRef.Target, Is.EqualTo(target));
+        Assert.That(weakRef.IsAlive, Is.True);
 
         // NotAWeakReference always holds strong reference
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        Assert.True(weakRef.IsAlive);
-        Assert.Equal(target, weakRef.Target);
+        Assert.That(weakRef.IsAlive, Is.True);
+        Assert.That(weakRef.Target, Is.EqualTo(target));
     }
 
     /// <summary>
     /// Tests SingletonPropertyChangedEventArgs static properties for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void SingletonPropertyChangedEventArgs_StaticProperties_ShouldWork()
     {
         // Act & Assert
         Assert.NotNull(SingletonPropertyChangedEventArgs.Value);
-        Assert.Equal("Value", SingletonPropertyChangedEventArgs.Value.PropertyName);
+        Assert.That(SingletonPropertyChangedEventArgs.Value.PropertyName, Is.EqualTo("Value"));
 
         Assert.NotNull(SingletonPropertyChangedEventArgs.HasErrors);
-        Assert.Equal("HasErrors", SingletonPropertyChangedEventArgs.HasErrors.PropertyName);
+        Assert.That(SingletonPropertyChangedEventArgs.HasErrors.PropertyName, Is.EqualTo("HasErrors"));
 
         Assert.NotNull(SingletonPropertyChangedEventArgs.ErrorMessage);
-        Assert.Equal("ErrorMessage", SingletonPropertyChangedEventArgs.ErrorMessage.PropertyName);
+        Assert.That(SingletonPropertyChangedEventArgs.ErrorMessage.PropertyName, Is.EqualTo("ErrorMessage"));
     }
 
     /// <summary>
     /// Tests SingletonDataErrorsChangedEventArgs static properties for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void SingletonDataErrorsChangedEventArgs_StaticProperties_ShouldWork()
     {
         // Act & Assert
         Assert.NotNull(SingletonDataErrorsChangedEventArgs.Value);
-        Assert.Equal("Value", SingletonDataErrorsChangedEventArgs.Value.PropertyName);
+        Assert.That(SingletonDataErrorsChangedEventArgs.Value.PropertyName, Is.EqualTo("Value"));
     }
 
     /// <summary>
     /// Tests ViewContractAttribute attribute usage for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewContractAttribute_ShouldHaveCorrectAttributeUsage()
     {
         // Arrange
@@ -374,13 +375,13 @@ public class RandomTests
 
         // Assert
         Assert.NotNull(attributeUsage);
-        Assert.Equal(AttributeTargets.Class, attributeUsage.ValidOn);
+        Assert.That(attributeUsage.ValidOn, Is.EqualTo(AttributeTargets.Class));
     }
 
     /// <summary>
     /// Tests SingleInstanceViewAttribute for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void SingleInstanceViewAttribute_ShouldWork()
     {
         // Act
@@ -394,13 +395,13 @@ public class RandomTests
         var attributeType = typeof(SingleInstanceViewAttribute);
         var attributeUsage = attributeType.GetCustomAttribute<AttributeUsageAttribute>();
         Assert.NotNull(attributeUsage);
-        Assert.Equal(AttributeTargets.Class, attributeUsage.ValidOn);
+        Assert.That(attributeUsage.ValidOn, Is.EqualTo(AttributeTargets.Class));
     }
 
     /// <summary>
     /// Tests LocalizableAttribute for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void LocalizableAttribute_ShouldWork()
     {
         // Act
@@ -410,14 +411,14 @@ public class RandomTests
         // Assert
         Assert.NotNull(localizableTrue);
         Assert.NotNull(localizableFalse);
-        Assert.True(localizableTrue.IsLocalizable);
+        Assert.That(localizableTrue.IsLocalizable, Is.True);
         Assert.False(localizableFalse.IsLocalizable);
     }
 
     /// <summary>
     /// Tests WhenAnyMixin functionality for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyMixin_ShouldWork()
     {
         // Arrange
@@ -431,15 +432,15 @@ public class RandomTests
         testObject.IsOnlyOneWord = "Updated";
 
         // Assert
-        Assert.Equal(2, changes.Count); // Initial + Updated
-        Assert.Equal("Initial", changes[0]);
-        Assert.Equal("Updated", changes[1]);
+        Assert.That(changes.Count, Is.EqualTo(2)); // Initial + Updated
+        Assert.That(changes[0], Is.EqualTo("Initial"));
+        Assert.That(changes[1], Is.EqualTo("Updated"));
     }
 
     /// <summary>
     /// Tests ObservableAsPropertyHelper functionality for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void ObservableAsPropertyHelper_ShouldWork()
     {
         // Arrange
@@ -453,14 +454,14 @@ public class RandomTests
         subject.OnNext("John");
 
         // Assert
-        Assert.Equal("John", testObject.FirstName);
-        Assert.True(testObject._firstNameHelper.Value == "John");
+        Assert.That(testObject.FirstName, Is.EqualTo("John"));
+        Assert.That(testObject._firstNameHelper.Value == "John", Is.True);
     }
 
     /// <summary>
     /// Tests ReactiveNotifyPropertyChangedMixin functionality for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void ReactiveNotifyPropertyChangedMixin_ShouldWork()
     {
         // Arrange
@@ -480,7 +481,7 @@ public class RandomTests
     /// <summary>
     /// Tests ExpressionMixins functionality for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExpressionMixins_ShouldWork()
     {
         // Arrange
@@ -490,13 +491,13 @@ public class RandomTests
         var propertyName = expression.Body.GetMemberInfo()?.Name;
 
         // Assert
-        Assert.Equal("IsOnlyOneWord", propertyName);
+        Assert.That(propertyName, Is.EqualTo("IsOnlyOneWord"));
     }
 
     /// <summary>
     /// Tests DisposableMixins functionality for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void DisposableMixins_ShouldWork()
     {
         // Arrange
@@ -509,13 +510,13 @@ public class RandomTests
         disposable2.DisposeWith(compositeDisposable);
 
         // Verify they are added to the composite
-        Assert.Equal(2, compositeDisposable.Count);
+        Assert.That(compositeDisposable.Count, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Tests CompatMixins functionality for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void CompatMixins_ShouldWork()
     {
         // Arrange
@@ -527,14 +528,14 @@ public class RandomTests
         var skippedLast = items.SkipLast(2).ToList();
 
         // Assert
-        Assert.Equal(new[] { 2, 4, 6, 8, 10 }, processedItems);
-        Assert.Equal(new[] { 1, 2, 3 }, skippedLast);
+        Assert.That(4, 6, 8, 10 }, processedItems, Is.EqualTo(new[] { 2));
+        Assert.That(2, 3 }, skippedLast, Is.EqualTo(new[] { 1));
     }
 
     /// <summary>
     /// Tests ViewForMixins functionality for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewForMixins_ShouldWork()
     {
         // Arrange
@@ -542,20 +543,20 @@ public class RandomTests
         var view = new FakeView { ViewModel = viewModel };
 
         // Act - Test that the view correctly exposes the viewmodel
-        Assert.Equal(viewModel, view.ViewModel);
-        Assert.Equal("Test", viewModel.Name);
+        Assert.That(view.ViewModel, Is.EqualTo(viewModel));
+        Assert.That(viewModel.Name, Is.EqualTo("Test"));
 
         // Set property directly since binding setup might be complex in test environment
         view.SomeProperty = viewModel.Name;
 
         // Assert
-        Assert.Equal("Test", view.SomeProperty);
+        Assert.That(view.SomeProperty, Is.EqualTo("Test"));
     }
 
     /// <summary>
     /// Tests Observables static members for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void Observables_StaticMembers_ShouldWork()
     {
         // Act & Assert
@@ -572,15 +573,15 @@ public class RandomTests
         Observables.False.Subscribe(x => falseValue = x);
         Observables.Unit.Subscribe(x => unitValue = x);
 
-        Assert.True(trueValue);
+        Assert.That(trueValue, Is.True);
         Assert.False(falseValue);
-        Assert.Equal(Unit.Default, unitValue);
+        Assert.That(unitValue, Is.EqualTo(Unit.Default));
     }
 
     /// <summary>
     /// Tests additional type converters for 100% coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void AdditionalTypeConverters_ShouldWork()
     {
         // Test all the other type converters
@@ -602,7 +603,7 @@ public class RandomTests
         foreach (var converter in converters)
         {
             var affinity = converter.GetAffinityForObjects(typeof(object), typeof(string));
-            Assert.True(affinity >= 0);
+            Assert.That(affinity >= 0, Is.True);
         }
     }
 

@@ -18,4 +18,4 @@ global using global::System.Reactive.Subjects;
 global using global::System.Reactive.Threading.Tasks;
 global using global::System.Threading;
 global using global::System.Threading.Tasks;
-global using global::Xunit;
+global using global::NUnit.Framework;
