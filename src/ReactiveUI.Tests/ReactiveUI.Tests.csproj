@@ -6,6 +6,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.Primitives" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
