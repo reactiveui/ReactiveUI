@@ -252,6 +252,36 @@ _total = this.WhenAnyValue(
     .ToProperty(this, nameof(Total));
 ```
 
+## 🎨 Code Style & Formatting
+
+ReactiveUI enforces strict code style and formatting guidelines:
+
+### EditorConfig & StyleCop Compliance
+- **EditorConfig**: The repository has a comprehensive `.editorconfig` file with detailed formatting rules
+- **StyleCop Analyzers**: Extensive StyleCop analyzer rules are configured with error-level enforcement
+- **Code Analysis**: Over 200 analyzer rules are configured for code quality and consistency
+
+### Key Style Requirements
+- **Indentation**: 4 spaces (configured in `.editorconfig`)
+- **Braces**: Allman style (opening braces on new lines)
+- **Field naming**: Private fields use `_camelCase` prefix, static fields use `s_` prefix
+- **Var usage**: Prefer `var` when type is apparent
+- **Documentation**: All public APIs require XML documentation
+- **Null checking**: Use modern C# null-conditional operators
+
+### Official Style Guide
+Follow the comprehensive ReactiveUI style guide:
+- **Code Style Guide**: https://www.reactiveui.net/contribute/software-style-guide/code-style.html
+- **Commit Message Convention**: https://reactiveui.net/contribute/software-style-guide/commit-message-convention
+
+### Build with Style Enforcement
+```powershell
+# Build with warnings as errors (includes StyleCop violations)
+dotnet build src/ReactiveUI.sln -c Release -warnaserror
+```
+
+**Important**: Style violations will cause build failures. Use an IDE with EditorConfig support (Visual Studio, VS Code, Rider) to automatically format code according to project standards.
+
 ## 📋 Testing Guidelines
 
 - Always write unit tests for new features or bug fixes
