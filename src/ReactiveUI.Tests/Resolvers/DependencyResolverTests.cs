@@ -3,10 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using FluentAssertions;
 
 namespace ReactiveUI.Tests;
 
+[TestFixture]
 public sealed class DependencyResolverTests
 {
     /// <summary>
@@ -40,7 +40,7 @@ public sealed class DependencyResolverTests
             }
         };
 
-    [Fact]
+    [Test]
     public void AllDefaultServicesShouldBeRegistered()
     {
         var resolver = GenerateResolver();
@@ -49,7 +49,7 @@ public sealed class DependencyResolverTests
             foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(PlatformRegistrationManager.DefaultRegistrationNamespaces))
             {
                 var resolvedServices = resolver.GetServices(shouldRegistered.Key);
-                Assert.Equal(shouldRegistered.Value.Count, resolvedServices.Count());
+                Assert.That(resolvedServices.Count(, Is.EqualTo(shouldRegistered.Value.Count)));
                 foreach (var implementationType in shouldRegistered.Value)
                 {
                     resolvedServices
@@ -60,7 +60,7 @@ public sealed class DependencyResolverTests
         }
     }
 
-    [Theory]
+    [Test]
     [MemberData(nameof(NamespacesToRegister))]
     public void AllDefaultServicesShouldBeRegisteredPerRegistrationNamespace(IEnumerable<RegistrationNamespace> namespacesToRegister)
     {
@@ -87,7 +87,7 @@ public sealed class DependencyResolverTests
         }
     }
 
-    [Theory]
+    [Test]
     [MemberData(nameof(NamespacesToRegister))]
     public void RegisteredNamespacesShouldBeRegistered(IEnumerable<RegistrationNamespace> namespacesToRegister)
     {

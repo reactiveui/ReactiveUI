@@ -9,11 +9,12 @@ using WinFormsViewModelViewHost = ReactiveUI.Winforms.ViewModelControlHost;
 
 namespace ReactiveUI.Tests.Winforms;
 
+[TestFixture]
 public class WinFormsViewModelViewHostTests
 {
     public WinFormsViewModelViewHostTests() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
 
-    [Fact]
+    [Test]
     public void SettingViewModelShouldAddTheViewtoItsControls()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
@@ -24,11 +25,11 @@ public class WinFormsViewModelViewHostTests
             ViewModel = new FakeWinformViewModel()
         };
 
-        Assert.IsType<FakeWinformsView>(target.CurrentView);
-        Assert.Equal(1, target.Controls.OfType<FakeWinformsView>().Count());
+        Assert.That(target.CurrentView, Is.TypeOf<FakeWinformsView>());
+        Assert.That(target.Controls.OfType<FakeWinformsView>(, Is.EqualTo(1)).Count());
     }
 
-    [Fact]
+    [Test]
     public void ShouldDisposePreviousView()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
@@ -47,21 +48,21 @@ public class WinFormsViewModelViewHostTests
         // switch the viewmodel
         target.ViewModel = new FakeWinformViewModel();
 
-        Assert.True(isDisposed);
+        Assert.That(isDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void ShouldSetDefaultContentWhenViewModelIsNull()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
         var defaultContent = new Control();
         var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator };
 
-        Assert.Equal(target.CurrentView, defaultContent);
-        Assert.True(target.Controls.Contains(defaultContent));
+        Assert.That(defaultContent, Is.EqualTo(target.CurrentView));
+        Assert.That(target.Controls.Contains(defaultContent, Is.True));
     }
 
-    [Fact]
+    [Test]
     public void ShouldCacheViewWhenEnabled()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
@@ -75,10 +76,10 @@ public class WinFormsViewModelViewHostTests
         };
         var cachedView = target.Content;
         target.ViewModel = new FakeWinformViewModel();
-        Assert.True(ReferenceEquals(cachedView, target.Content));
+        Assert.That(ReferenceEquals(cachedView, target.Content, Is.True));
     }
 
-    [Fact]
+    [Test]
     public void ShouldNotCacheViewWhenDisabled()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
@@ -92,6 +93,6 @@ public class WinFormsViewModelViewHostTests
         };
         var cachedView = target.CurrentView;
         target.ViewModel = new FakeWinformViewModel();
-        Assert.False(ReferenceEquals(cachedView, target.CurrentView));
+        Assert.That(ReferenceEquals(cachedView, target.CurrentView, Is.False));
     }
 }

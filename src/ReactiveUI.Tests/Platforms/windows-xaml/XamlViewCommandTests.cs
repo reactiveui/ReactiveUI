@@ -14,7 +14,7 @@ using Windows.UI.Xaml.Markup;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
-using FactAttribute = Xunit.WpfFactAttribute;
+using System.Threading;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -22,12 +22,13 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests for XAML and commands.
 /// </summary>
+[TestFixture]
 public class XamlViewCommandTests
 {
     /// <summary>
     /// Test that event binder binds to explicit inherited event.
     /// </summary>
-    [Fact]
+    [Test, Apartment(ApartmentState.STA)]
     public void EventBinderBindsToExplicitInheritedEvent()
     {
         var fixture = new FakeView();
@@ -37,31 +38,31 @@ public class XamlViewCommandTests
     /// <summary>
     /// Test that event binder binds to implicit event.
     /// </summary>
-    [Fact]
+    [Test, Apartment(ApartmentState.STA)]
     public void EventBinderBindsToImplicitEvent()
     {
         var input = new Button();
         var fixture = new CreatesCommandBindingViaEvent();
         var cmd = ReactiveCommand.Create<int>(_ => { });
 
-        Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), false) > 0);
 
         var invokeCount = 0;
         cmd.Subscribe(_ => ++invokeCount);
 
         var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
-        Assert.NotNull(disp);
-        Assert.Equal(0, invokeCount);
+        Assert.That(disp, Is.Not.Null);
+        Assert.That(invokeCount, Is.EqualTo(0));
 
         var automationPeer = new ButtonAutomationPeer(input);
         var invoker = (IInvokeProvider)automationPeer.GetPattern(PatternInterface.Invoke);
 
         invoker.Invoke();
         DispatcherUtilities.DoEvents();
-        Assert.Equal(1, invokeCount);
+        Assert.That(invokeCount, Is.EqualTo(1));
 
         disp?.Dispose();
         invoker.Invoke();
-        Assert.Equal(1, invokeCount);
+        Assert.That(invokeCount, Is.EqualTo(1));
     }
 }

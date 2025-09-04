@@ -21,7 +21,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
     /// </summary>
     public string? Dummy { get; set; }
 
-    [Fact]
+    [Test]
     public void AnyChangeInExpressionListTriggersUpdate()
     {
         var obj = new ObjChain1();
@@ -31,11 +31,11 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         obsUpdated = false;
         obj.Model.Model.Model.SomeOtherParam = 42;
-        Assert.True(obsUpdated);
+        Assert.That(obsUpdated, Is.True);
 
         obsUpdated = false;
         obj.Model.Model.Model = new HostTestFixture();
-        Assert.True(obsUpdated);
+        Assert.That(obsUpdated, Is.True);
 
         obsUpdated = false;
         obj.Model.Model = new ObjChain3
@@ -45,14 +45,14 @@ public class ReactiveNotifyPropertyChangedMixinTest
                 SomeOtherParam = 10
             }
         };
-        Assert.True(obsUpdated);
+        Assert.That(obsUpdated, Is.True);
 
         obsUpdated = false;
         obj.Model = new ObjChain2();
-        Assert.True(obsUpdated);
+        Assert.That(obsUpdated, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void MultiPropertyExpressionsShouldBeProperlyResolved()
     {
         var data = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>
@@ -100,7 +100,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    [Fact]
+    [Test]
     public void OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent() =>
         new TestScheduler().With(scheduler =>
         {
@@ -115,21 +115,21 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             fixture.Child = new TestFixture
             {
                 IsOnlyOneWord = "Bar"
             };
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
         });
 
-    [Fact]
+    [Test]
     public void OFPNamedPropertyTest() =>
         new TestScheduler().With(scheduler =>
         {
@@ -141,26 +141,26 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
-            Assert.True(changes.All(x => x.Sender == fixture));
-            Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+            Assert.That(changes.All(x => x.Sender == fixture, Is.True));
+            Assert.That(changes.All(x => x.GetPropertyName(, Is.True) == "IsOnlyOneWord"));
             changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
         });
 
-    [Fact]
+    [Test]
     public void OFPNamedPropertyTestBeforeChange() =>
         new TestScheduler().With(scheduler =>
         {
@@ -174,22 +174,22 @@ public class ReactiveNotifyPropertyChangedMixinTest
                    .Subscribe();
 
             scheduler.Start();
-            Assert.Equal(0, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(0));
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
-            Assert.True(changes.All(x => x.Sender == fixture));
-            Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+            Assert.That(changes.All(x => x.Sender == fixture, Is.True));
+            Assert.That(changes.All(x => x.GetPropertyName(, Is.True) == "IsOnlyOneWord"));
             changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
         });
 
-    [Fact]
+    [Test]
     public void OFPNamedPropertyTestNoSkipInitial() =>
         new TestScheduler().With(scheduler =>
         {
@@ -203,18 +203,18 @@ public class ReactiveNotifyPropertyChangedMixinTest
                    .Subscribe();
 
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
-            Assert.True(changes.All(x => x.Sender == fixture));
-            Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+            Assert.That(changes.All(x => x.Sender == fixture, Is.True));
+            Assert.That(changes.All(x => x.GetPropertyName(, Is.True) == "IsOnlyOneWord"));
             changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
         });
 
-    [Fact]
+    [Test]
     public void OFPNamedPropertyTestRepeats() =>
         new TestScheduler().With(scheduler =>
         {
@@ -226,26 +226,26 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
-            Assert.True(changes.All(x => x.Sender == fixture));
-            Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+            Assert.That(changes.All(x => x.Sender == fixture, Is.True));
+            Assert.That(changes.All(x => x.GetPropertyName(, Is.True) == "IsOnlyOneWord"));
             changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Foo" });
         });
 
-    [Fact]
+    [Test]
     public void OFPReplacingTheHostShouldResubscribeTheObservable() =>
         new TestScheduler().With(scheduler =>
         {
@@ -260,37 +260,37 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             // Tricky! This is a change too, because from the perspective
             // of the binding, we've went from "Bar" to null
             fixture.Child = new TestFixture();
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
             // Here we've set the value but it shouldn't change
             fixture.Child.IsOnlyOneWord = null!;
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.Equal(4, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(4));
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.Equal(4, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(4));
 
-            Assert.True(changes.All(x => x.Sender == fixture));
-            Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
+            Assert.That(changes.All(x => x.Sender == fixture, Is.True));
+            Assert.That(changes.All(x => x.GetPropertyName(, Is.True) == "Child.IsOnlyOneWord"));
             changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", null, "Baz" });
         });
 
-    [Fact]
+    [Test]
     public void OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable() =>
         new TestScheduler().With(scheduler =>
         {
@@ -308,29 +308,29 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             // Oops, now the child is Null, we may now blow up
             fixture.Child = null!;
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             // Tricky! This is a change too, because from the perspective
             // of the binding, we've went from "Bar" to null
             fixture.Child = new TestFixture();
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
-            Assert.True(changes.All(x => x.Sender == fixture));
-            Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
+            Assert.That(changes.All(x => x.Sender == fixture, Is.True));
+            Assert.That(changes.All(x => x.GetPropertyName(, Is.True) == "Child.IsOnlyOneWord"));
             changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", null });
         });
 
-    [Fact]
+    [Test]
     public void OFPShouldWorkWithINPCObjectsToo() =>
         new TestScheduler().With(scheduler =>
         {
@@ -345,18 +345,18 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.InpcProperty = new TestFixture();
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.InpcProperty.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             fixture.InpcProperty.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
         });
 
-    [Fact]
+    [Test]
     public void OFPSimpleChildPropertyTest() =>
         new TestScheduler().With(scheduler =>
         {
@@ -371,26 +371,26 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
-            Assert.True(changes.All(x => x.Sender == fixture));
-            Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
+            Assert.That(changes.All(x => x.Sender == fixture, Is.True));
+            Assert.That(changes.All(x => x.GetPropertyName(, Is.True) == "Child.IsOnlyOneWord"));
             changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
         });
 
-    [Fact]
+    [Test]
     public void OFPSimplePropertyTest() =>
         new TestScheduler().With(scheduler =>
         {
@@ -402,26 +402,26 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.Equal(1, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.Equal(2, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(2));
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.Equal(3, changes.Count);
+            Assert.That(changes.Count, Is.EqualTo(3));
 
-            Assert.True(changes.All(x => x.Sender == fixture));
-            Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
+            Assert.That(changes.All(x => x.Sender == fixture, Is.True));
+            Assert.That(changes.All(x => x.GetPropertyName(, Is.True) == "IsOnlyOneWord"));
             changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
         });
 
-    [Fact]
+    [Test]
     public void SubscriptionToWhenAnyShouldReturnCurrentValue()
     {
         var obj = new HostTestFixture();
@@ -430,10 +430,10 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         obj.SomeOtherParam = 42;
 
-        Assert.True(observedValue == obj.SomeOtherParam);
+        Assert.That(observedValue == obj.SomeOtherParam, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void WhenAnyShouldRunInContext()
     {
         var tid = Environment.CurrentManagedThreadId;
@@ -458,11 +458,11 @@ public class ReactiveNotifyPropertyChangedMixinTest
                                                Thread.Sleep(250);
                                            }
 
-                                           Assert.Equal(tid, whenAnyTid);
+                                           Assert.That(whenAnyTid, Is.EqualTo(tid));
                                        });
     }
 
-    [Fact]
+    [Test]
     public void WhenAnyShouldWorkEvenWithNormalProperties()
     {
         var fixture = new TestFixture
@@ -482,24 +482,24 @@ public class ReactiveNotifyPropertyChangedMixinTest
         var output4 = new List<int?>();
         fixture.WhenAnyValue(x => x.NullableInt).Subscribe(output4.Add);
 
-        Assert.Equal(1, output.Count);
-        Assert.Equal(fixture, output[0]!.Sender);
-        Assert.Equal("PocoProperty", output[0]!.GetPropertyName());
-        Assert.Equal("Bamf", output[0]!.Value);
+        Assert.That(output.Count, Is.EqualTo(1));
+        Assert.That(output[0]!.Sender, Is.EqualTo(fixture));
+        Assert.That(output[0]!.GetPropertyName(, Is.EqualTo("PocoProperty")));
+        Assert.That(output[0]!.Value, Is.EqualTo("Bamf"));
 
-        Assert.Equal(1, output2.Count);
-        Assert.Equal("Bamf", output2[0]);
+        Assert.That(output2.Count, Is.EqualTo(1));
+        Assert.That(output2[0], Is.EqualTo("Bamf"));
 
-        Assert.Equal(1, output3.Count);
-        Assert.Equal(fixture, output3[0]!.Sender);
-        Assert.Equal("NullableInt", output3[0]!.GetPropertyName());
-        Assert.Equal(null, output3[0]!.Value);
+        Assert.That(output3.Count, Is.EqualTo(1));
+        Assert.That(output3[0]!.Sender, Is.EqualTo(fixture));
+        Assert.That(output3[0]!.GetPropertyName(, Is.EqualTo("NullableInt")));
+        Assert.That(output3[0]!.Value, Is.EqualTo(null));
 
-        Assert.Equal(1, output4.Count);
-        Assert.Equal(null, output4[0]);
+        Assert.That(output4.Count, Is.EqualTo(1));
+        Assert.That(output4[0], Is.EqualTo(null));
     }
 
-    [Fact]
+    [Test]
     public void ChangedShouldHaveValidData()
     {
         var fixture = new TestFixture
@@ -520,18 +520,18 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         fixture.UsesExprRaiseSet = "abc";
 
-        Assert.Equal(fixture, sender);
-        Assert.Equal(nameof(fixture.UsesExprRaiseSet), propertyName);
+        Assert.That(sender, Is.EqualTo(fixture));
+        Assert.That(propertyName, Is.EqualTo(nameof(fixture.UsesExprRaiseSet)));
 
         sender = null!;
         propertyName = null;
         fixture.PocoProperty = "abc";
 
-        Assert.Equal(null!, sender);
-        Assert.Equal(null, propertyName);
+        Assert.That(sender, Is.EqualTo(null!));
+        Assert.That(propertyName, Is.EqualTo(null));
     }
 
-    [Fact]
+    [Test]
     public void ChangingShouldHaveValidData()
     {
         var fixture = new TestFixture
@@ -552,18 +552,18 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         fixture.UsesExprRaiseSet = "abc";
 
-        Assert.Equal(fixture, sender);
-        Assert.Equal(nameof(fixture.UsesExprRaiseSet), propertyName);
+        Assert.That(sender, Is.EqualTo(fixture));
+        Assert.That(propertyName, Is.EqualTo(nameof(fixture.UsesExprRaiseSet)));
 
         sender = null!;
         propertyName = null;
         fixture.PocoProperty = "abc";
 
-        Assert.Equal(null!, sender);
-        Assert.Equal(null, propertyName);
+        Assert.That(sender, Is.EqualTo(null!));
+        Assert.That(propertyName, Is.EqualTo(null));
     }
 
-    [Fact]
+    [Test]
     public void WhenAnySmokeTest() =>
         new TestScheduler().With(
             scheduler =>
@@ -592,33 +592,33 @@ public class ReactiveNotifyPropertyChangedMixinTest
                     });
 
                 scheduler.Start();
-                Assert.Equal(1, output1.Count);
-                Assert.Equal(1, output2.Count);
-                Assert.Equal(fixture, output1[0].Sender);
-                Assert.Equal(fixture, output2[0].Sender);
-                Assert.Equal(5, output1[0].Value);
-                Assert.Equal("Foo", output2[0].Value);
+                Assert.That(output1.Count, Is.EqualTo(1));
+                Assert.That(output2.Count, Is.EqualTo(1));
+                Assert.That(output1[0].Sender, Is.EqualTo(fixture));
+                Assert.That(output2[0].Sender, Is.EqualTo(fixture));
+                Assert.That(output1[0].Value, Is.EqualTo(5));
+                Assert.That(output2[0].Value, Is.EqualTo("Foo"));
 
                 fixture.SomeOtherParam = 10;
                 scheduler.Start();
-                Assert.Equal(2, output1.Count);
-                Assert.Equal(2, output2.Count);
-                Assert.Equal(fixture, output1[1].Sender);
-                Assert.Equal(fixture, output2[1].Sender);
-                Assert.Equal(10, output1[1].Value);
-                Assert.Equal("Foo", output2[1].Value);
+                Assert.That(output1.Count, Is.EqualTo(2));
+                Assert.That(output2.Count, Is.EqualTo(2));
+                Assert.That(output1[1].Sender, Is.EqualTo(fixture));
+                Assert.That(output2[1].Sender, Is.EqualTo(fixture));
+                Assert.That(output1[1].Value, Is.EqualTo(10));
+                Assert.That(output2[1].Value, Is.EqualTo("Foo"));
 
                 fixture.Child.IsNotNullString = "Bar";
                 scheduler.Start();
-                Assert.Equal(3, output1.Count);
-                Assert.Equal(3, output2.Count);
-                Assert.Equal(fixture, output1[2].Sender);
-                Assert.Equal(fixture, output2[2].Sender);
-                Assert.Equal(10, output1[2].Value);
-                Assert.Equal("Bar", output2[2].Value);
+                Assert.That(output1.Count, Is.EqualTo(3));
+                Assert.That(output2.Count, Is.EqualTo(3));
+                Assert.That(output1[2].Sender, Is.EqualTo(fixture));
+                Assert.That(output2[2].Sender, Is.EqualTo(fixture));
+                Assert.That(output1[2].Value, Is.EqualTo(10));
+                Assert.That(output2[2].Value, Is.EqualTo("Bar"));
             });
 
-    [Fact]
+    [Test]
     public void WhenAnyValueShouldWorkEvenWithNormalProperties()
     {
         var fixture = new TestFixture
@@ -633,13 +633,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
         fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output1.Add);
         fixture.WhenAnyValue(x => x.IsOnlyOneWord, x => x?.Length).Subscribe(output2.Add);
 
-        Assert.Equal(1, output1.Count);
-        Assert.Equal("Bamf", output1[0]);
-        Assert.Equal(1, output2.Count);
-        Assert.Equal(3, output2[0]);
+        Assert.That(output1.Count, Is.EqualTo(1));
+        Assert.That(output1[0], Is.EqualTo("Bamf"));
+        Assert.That(output2.Count, Is.EqualTo(1));
+        Assert.That(output2[0], Is.EqualTo(3));
     }
 
-    [Fact]
+    [Test]
     public void WhenAnyValueSmokeTest() =>
         new TestScheduler().With(
             scheduler =>
@@ -668,27 +668,27 @@ public class ReactiveNotifyPropertyChangedMixinTest
                     });
 
                 scheduler.Start();
-                Assert.Equal(1, output1.Count);
-                Assert.Equal(1, output2.Count);
-                Assert.Equal(5, output1[0]);
-                Assert.Equal("Foo", output2[0]);
+                Assert.That(output1.Count, Is.EqualTo(1));
+                Assert.That(output2.Count, Is.EqualTo(1));
+                Assert.That(output1[0], Is.EqualTo(5));
+                Assert.That(output2[0], Is.EqualTo("Foo"));
 
                 fixture.SomeOtherParam = 10;
                 scheduler.Start();
-                Assert.Equal(2, output1.Count);
-                Assert.Equal(2, output2.Count);
-                Assert.Equal(10, output1[1]);
-                Assert.Equal("Foo", output2[1]);
+                Assert.That(output1.Count, Is.EqualTo(2));
+                Assert.That(output2.Count, Is.EqualTo(2));
+                Assert.That(output1[1], Is.EqualTo(10));
+                Assert.That(output2[1], Is.EqualTo("Foo"));
 
                 fixture.Child.IsNotNullString = "Bar";
                 scheduler.Start();
-                Assert.Equal(3, output1.Count);
-                Assert.Equal(3, output2.Count);
-                Assert.Equal(10, output1[2]);
-                Assert.Equal("Bar", output2[2]);
+                Assert.That(output1.Count, Is.EqualTo(3));
+                Assert.That(output2.Count, Is.EqualTo(3));
+                Assert.That(output1[2], Is.EqualTo(10));
+                Assert.That(output2[2], Is.EqualTo("Bar"));
             });
 
-    [Fact]
+    [Test]
     public void ObjectShouldBeGarbageCollectedWhenPropertyValueChanges()
     {
         static (ObjChain1, WeakReference) GetWeakReference1()
@@ -728,32 +728,32 @@ public class ReactiveNotifyPropertyChangedMixinTest
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        Assert.False(weakRef1.IsAlive);
-        Assert.False(weakRef2.IsAlive);
-        Assert.False(weakRef3.IsAlive);
+        Assert.That(weakRef1.IsAlive, Is.False);
+        Assert.That(weakRef2.IsAlive, Is.False);
+        Assert.That(weakRef3.IsAlive, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void WhenAnyValueUnsupportedExpressionType_Equal()
     {
         var fixture = new TestFixture();
         var exception = Assert.Throws<NotSupportedException>(
             () => fixture.WhenAnyValue(x => x.IsNotNullString == x.IsOnlyOneWord).Subscribe());
 
-        Assert.Equal("Unsupported expression of type 'Equal' (x.IsNotNullString == x.IsOnlyOneWord). Did you meant to use expressions 'x.IsNotNullString' and 'x.IsOnlyOneWord'?", exception.Message);
+        Assert.That(exception.Message, Is.EqualTo("Unsupported expression of type 'Equal' (x.IsNotNullString == x.IsOnlyOneWord). Did you meant to use expressions 'x.IsNotNullString' and 'x.IsOnlyOneWord'?"));
     }
 
-    [Fact]
+    [Test]
     public void WhenAnyValueUnsupportedExpressionType_Constant()
     {
         var fixture = new TestFixture();
         var exception = Assert.Throws<NotSupportedException>(
             () => fixture.WhenAnyValue(_ => Dummy).Subscribe());
 
-        Assert.Equal("Unsupported expression of type 'Constant'. Did you miss the member access prefix in the expression?", exception.Message);
+        Assert.That(exception.Message, Is.EqualTo("Unsupported expression of type 'Constant'. Did you miss the member access prefix in the expression?"));
     }
 
-    [Fact]
+    [Test]
     public void NullableTypesTestShouldntNeedDecorators()
     {
         var fixture = new WhenAnyTestFixture();
@@ -763,13 +763,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName)))
                .Subscribe(dict => result = dict);
 
-        Assert.Equal(result!.Count(), 3);
+        Assert.That(3, Is.EqualTo(result!.Count()));
     }
 
     /// <summary>
     /// Nullables the types test shouldnt need decorators2.
     /// </summary>
-    [Fact]
+    [Test]
     public void NullableTypesTestShouldntNeedDecorators2()
     {
         var fixture = new WhenAnyTestFixture();
@@ -785,13 +785,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(dict => result = dict);
 
-        Assert.Equal(result!.Count(), 3);
+        Assert.That(3, Is.EqualTo(result!.Count()));
     }
 
     /// <summary>
     /// Nons the nullable types test shouldnt need decorators.
     /// </summary>
-    [Fact]
+    [Test]
     public void NonNullableTypesTestShouldntNeedDecorators()
     {
         var fixture = new WhenAnyTestFixture();
@@ -801,13 +801,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x.LastName)))
                .Subscribe(dict => result = dict);
 
-        Assert.Equal(result!.Count(), 3);
+        Assert.That(3, Is.EqualTo(result!.Count()));
     }
 
     /// <summary>
     /// Nons the nullable types test shouldnt need decorators2.
     /// </summary>
-    [Fact]
+    [Test]
     public void NonNullableTypesTestShouldntNeedDecorators2()
     {
         var fixture = new WhenAnyTestFixture();
@@ -823,13 +823,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(dict => result = dict);
 
-        Assert.Equal(result!.Count(), 3);
+        Assert.That(3, Is.EqualTo(result!.Count()));
     }
 
     /// <summary>
     /// Whens any value with1 paramerters.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith1Paramerters()
     {
         var fixture = new WhenAnyTestFixture();
@@ -837,10 +837,10 @@ public class ReactiveNotifyPropertyChangedMixinTest
         fixture.WhenAnyValue(
             x => x.Value1).Subscribe(value => result = value);
 
-        Assert.Equal(result, "1");
+        Assert.That("1", Is.EqualTo(result));
     }
 
-    [Fact]
+    [Test]
     public void WhenAnyValueWith1ParamertersSequentialCheck()
     {
         var fixture = new WhenAnyTestFixture();
@@ -849,19 +849,19 @@ public class ReactiveNotifyPropertyChangedMixinTest
         fixture.WhenAnyValue(
             x => x.Value1).Subscribe(value => result = value);
 
-        Assert.Equal(result, null);
+        Assert.That(null, Is.EqualTo(result));
 
         fixture.Value1 = "A";
-        Assert.Equal(result, "A");
+        Assert.That("A", Is.EqualTo(result));
 
         fixture.Value1 = "B";
-        Assert.Equal(result, "B");
+        Assert.That("B", Is.EqualTo(result));
 
         fixture.Value1 = null!;
-        Assert.Equal(result, null);
+        Assert.That(null, Is.EqualTo(result));
     }
 
-    [Fact]
+    [Test]
     public void WhenAnyValueWith1ParamertersSequentialCheckNullable()
     {
         var fixture = new WhenAnyTestFixture();
@@ -869,22 +869,22 @@ public class ReactiveNotifyPropertyChangedMixinTest
         fixture.WhenAnyValue(
             x => x.Value2).Subscribe(value => result = value);
 
-        Assert.Equal(result, null);
+        Assert.That(null, Is.EqualTo(result));
 
         fixture.Value2 = "A";
-        Assert.Equal(result, "A");
+        Assert.That("A", Is.EqualTo(result));
 
         fixture.Value2 = "B";
-        Assert.Equal(result, "B");
+        Assert.That("B", Is.EqualTo(result));
 
         fixture.Value2 = null;
-        Assert.Equal(result, null);
+        Assert.That(null, Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with2 paramerters returns tuple.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith2ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
@@ -899,13 +899,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "1");
+        Assert.That("1", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with2 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith2ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -921,13 +921,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "1");
+        Assert.That("1", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with3 paramerters returns tuple.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith3ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
@@ -943,13 +943,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "13");
+        Assert.That("13", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with3 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith3ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -966,13 +966,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "13");
+        Assert.That("13", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with4 paramerters returns tuple.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith4ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
@@ -989,13 +989,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "13");
+        Assert.That("13", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with4 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith4ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1013,13 +1013,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "13");
+        Assert.That("13", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with5 paramerters returns tuple.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith5ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1037,13 +1037,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "135");
+        Assert.That("135", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with5 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith5ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1062,13 +1062,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "135");
+        Assert.That("135", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with6 paramerters returns tuple.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith6ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1087,13 +1087,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "135");
+        Assert.That("135", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with6 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith6ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1113,13 +1113,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "135");
+        Assert.That("135", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with7 paramerters returns tuple.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith7ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1139,13 +1139,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "1357");
+        Assert.That("1357", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with7 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith7ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1166,13 +1166,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "1357");
+        Assert.That("1357", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with8 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith8ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1194,13 +1194,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "1357");
+        Assert.That("1357", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with8 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith9ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1223,13 +1223,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "13579");
+        Assert.That("13579", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with8 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith10ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1253,13 +1253,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "13579");
+        Assert.That("13579", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with8 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith11ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1284,13 +1284,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "1357911");
+        Assert.That("1357911", Is.EqualTo(result));
     }
 
     /// <summary>
     /// Whens any value with8 paramerters returns values.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValueWith12ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
@@ -1316,34 +1316,34 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.Equal(result, "1357911");
+        Assert.That("1357911", Is.EqualTo(result));
     }
 
-    [Fact]
+    [Test]
     public void WhenAnyValueWithToProperty()
     {
         var fixture = new HostTestFixture();
 
-        Assert.Equal(null, fixture.Owner);
-        Assert.Equal(null, fixture.OwnerName);
+        Assert.That(fixture.Owner, Is.EqualTo(null));
+        Assert.That(fixture.OwnerName, Is.EqualTo(null));
 
         fixture.Owner = new()
         {
             Name = "Fred"
         };
-        Assert.NotNull(fixture.Owner);
-        Assert.Equal("Fred", fixture.OwnerName);
+        Assert.That(fixture.Owner, Is.Not.Null);
+        Assert.That(fixture.OwnerName, Is.EqualTo("Fred"));
 
         fixture.Owner.Name = "Wilma";
-        Assert.Equal("Wilma", fixture.OwnerName);
+        Assert.That(fixture.OwnerName, Is.EqualTo("Wilma"));
 
         fixture.Owner.Name = null;
-        Assert.Equal(null, fixture.OwnerName);
+        Assert.That(fixture.OwnerName, Is.EqualTo(null));
 
         fixture.Owner.Name = "Barney";
-        Assert.Equal("Barney", fixture.OwnerName);
+        Assert.That(fixture.OwnerName, Is.EqualTo("Barney"));
 
         fixture.Owner.Name = "Betty";
-        Assert.Equal("Betty", fixture.OwnerName);
+        Assert.That(fixture.OwnerName, Is.EqualTo("Betty"));
     }
 }

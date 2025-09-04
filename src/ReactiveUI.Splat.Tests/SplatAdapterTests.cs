@@ -7,7 +7,6 @@ using Autofac;
 
 using DryIoc;
 
-using FluentAssertions;
 
 using Ninject;
 
@@ -22,12 +21,13 @@ namespace ReactiveUI.Splat.Tests;
 /// <summary>
 /// Tests for checking the various adapters in splat.
 /// </summary>
+[TestFixture]
 public class SplatAdapterTests
 {
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
-    [Fact]
+    [Test]
     public void DryIocDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -45,7 +45,7 @@ public class SplatAdapterTests
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
-    [Fact]
+    [Test]
     public void DryIocDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -63,7 +63,7 @@ public class SplatAdapterTests
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
-    [Fact]
+    [Test]
     public void AutofacDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -82,7 +82,7 @@ public class SplatAdapterTests
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
-    [Fact]
+    [Test]
     public void AutofacDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -102,7 +102,7 @@ public class SplatAdapterTests
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
-    [Fact]
+    [Test]
     public void NinjectDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -120,7 +120,7 @@ public class SplatAdapterTests
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
-    [Fact]
+    [Test]
     public void NinjectDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.

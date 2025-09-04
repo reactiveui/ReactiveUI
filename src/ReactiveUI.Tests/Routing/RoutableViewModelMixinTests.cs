@@ -8,12 +8,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Routable ViewModel MixinTests.
 /// </summary>
+[TestFixture]
 public class RoutableViewModelMixinTests
 {
     /// <summary>
     /// Whens the navigated to calls on navigated to when view model is first added.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatedToCallsOnNavigatedToWhenViewModelIsFirstAdded()
     {
         var count = 0;
@@ -30,13 +31,13 @@ public class RoutableViewModelMixinTests
 
         screen.Router.Navigate.Execute(vm);
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Whens the navigated to calls on navigated to when view model returns to top of stack.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatedToCallsOnNavigatedToWhenViewModelReturnsToTopOfStack()
     {
         var count = 0;
@@ -56,13 +57,13 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm2);
         screen.Router.Navigate.Execute(vm);
 
-        Assert.Equal(2, count);
+        Assert.That(count, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Whens the navigated to calls dispose when view model loses focus.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatedToCallsDisposeWhenViewModelLosesFocus()
     {
         var count = 0;
@@ -75,17 +76,17 @@ public class RoutableViewModelMixinTests
 
         screen.Router.Navigate.Execute(vm);
 
-        Assert.Equal(0, count);
+        Assert.That(count, Is.EqualTo(0));
 
         screen.Router.Navigate.Execute(vm2);
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Whens the navigated to calls dispose when navigation stack is reset.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatedToCallsDisposeWhenNavigationStackIsReset()
     {
         var count = 0;
@@ -98,17 +99,17 @@ public class RoutableViewModelMixinTests
 
         screen.Router.Navigate.Execute(vm1);
 
-        Assert.Equal(0, count);
+        Assert.That(count, Is.EqualTo(0));
 
         screen.Router.NavigateAndReset.Execute(vm2);
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Whens the navigated to observable fires when view model added to navigation stack.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatedToObservableFiresWhenViewModelAddedToNavigationStack()
     {
         var count = 0;
@@ -120,13 +121,13 @@ public class RoutableViewModelMixinTests
 
         screen.Router.Navigate.Execute(vm);
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Whens the navigated to observable fires when view model returns to navigation stack.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatedToObservableFiresWhenViewModelReturnsToNavigationStack()
     {
         var count = 0;
@@ -141,13 +142,13 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm2);
         screen.Router.Navigate.Execute(vm);
 
-        Assert.Equal(2, count);
+        Assert.That(count, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Whens the navigated to observable completes when view model is removed from navigation stack.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatedToObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
     {
         var count = 0;
@@ -162,13 +163,13 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm);
         screen.Router.NavigateBack.Execute();
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Whens the navigated to observable completes when navigation stack is reset.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatedToObservableCompletesWhenNavigationStackIsReset()
     {
         var count = 0;
@@ -184,13 +185,13 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm1);
         screen.Router.NavigateAndReset.Execute(vm2);
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Whens the navigating from observable fires when view model loses focus.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatingFromObservableFiresWhenViewModelLosesFocus()
     {
         var count = 0;
@@ -203,13 +204,13 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm);
         screen.Router.Navigate.Execute(vm2);
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Whens the navigating from observable completes when view model is removed from navigation stack.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatingFromObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
     {
         var count = 0;
@@ -224,13 +225,13 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm);
         screen.Router.NavigateBack.Execute();
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Whens the navigating from observable completes when navigation stack is reset.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenNavigatingFromObservableCompletesWhenNavigationStackIsReset()
     {
         var count = 0;
@@ -246,7 +247,7 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm1);
         screen.Router.NavigateAndReset.Execute(vm2);
 
-        Assert.Equal(1, count);
+        Assert.That(count, Is.EqualTo(1));
     }
 
     private class TestScreen : IScreen

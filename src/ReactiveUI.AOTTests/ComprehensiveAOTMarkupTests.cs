@@ -16,12 +16,13 @@ namespace ReactiveUI.AOTTests;
 /// Tests that validate the comprehensive AOT markup applied throughout the ReactiveUI solution.
 /// These tests ensure that all newly marked AOT-incompatible areas work correctly with proper suppression.
 /// </summary>
+[TestFixture]
 public class ComprehensiveAOTMarkupTests
 {
     /// <summary>
     /// Tests that ReactiveObject constructor works with AOT suppression.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveObject AOT-incompatible constructor")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveObject AOT-incompatible constructor")]
     public void ReactiveObject_Constructor_WorksWithAOTSuppression()
@@ -32,14 +33,14 @@ public class ComprehensiveAOTMarkupTests
         obj.PropertyChanged += (_, _) => propertyChangedFired = true;
         obj.TestProperty = "test value";
 
-        Assert.True(propertyChangedFired);
-        Assert.Equal("test value", obj.TestProperty);
+        Assert.That(propertyChangedFired, Is.True);
+        Assert.That(obj.TestProperty, Is.EqualTo("test value"));
     }
 
     /// <summary>
     /// Tests that ReactiveProperty Refresh method works with AOT suppression.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty Refresh AOT-incompatible method")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty Refresh AOT-incompatible method")]
     public void ReactiveProperty_Refresh_WorksWithAOTSuppression()
@@ -52,8 +53,8 @@ public class ComprehensiveAOTMarkupTests
 
         property.Refresh(); // This calls RaisePropertyChanged which has AOT attributes
 
-        Assert.Contains("initial", values);
-        Assert.True(values.Count >= 2); // Initial value plus refresh
+        Assert.That(values, Does.Contain("initial"));
+        Assert.That(values.Count >= 2, Is.True); // Initial value plus refresh
 
         property.Dispose();
     }
@@ -62,7 +63,7 @@ public class ComprehensiveAOTMarkupTests
     /// Tests that platform-specific WireUpControls methods are properly marked for AOT.
     /// This validates that Android platform code has proper AOT attributes.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty which requires AOT suppression")]
     public void PlatformSpecific_AOTMarkup_IsProperlyApplied()
@@ -74,7 +75,7 @@ public class ComprehensiveAOTMarkupTests
         var property = new ReactiveProperty<string>("test", testScheduler, false, false);
 
         // Test that basic ReactiveUI functionality works
-        Assert.Equal("test", property.Value);
+        Assert.That(property.Value, Is.EqualTo("test"));
 
         property.Dispose();
     }
@@ -82,7 +83,7 @@ public class ComprehensiveAOTMarkupTests
     /// <summary>
     /// Tests that all reactive property operations work with proper AOT handling.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing comprehensive ReactiveProperty AOT scenarios")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing comprehensive ReactiveProperty AOT scenarios")]
     public void ReactiveProperty_ComprehensiveOperations_WorkWithAOT()
@@ -107,9 +108,9 @@ public class ComprehensiveAOTMarkupTests
         property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
 
-        Assert.Contains("initial", valueChanges);
-        Assert.Contains("changed", valueChanges);
-        Assert.True(hasErrors);
+        Assert.That(valueChanges, Does.Contain("initial"));
+        Assert.That(valueChanges, Does.Contain("changed"));
+        Assert.That(hasErrors, Is.True);
 
         property.Dispose();
     }
@@ -117,7 +118,7 @@ public class ComprehensiveAOTMarkupTests
     /// <summary>
     /// Tests that complex ReactiveUI scenarios work with mixed AOT compatible and incompatible features.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing mixed AOT scenario")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing mixed AOT scenario")]
     public void MixedAOTScenario_ComplexWorkflow_WorksCorrectly()
@@ -147,9 +148,9 @@ public class ComprehensiveAOTMarkupTests
         messageBus.SendMessage("workflow test");
         var result = interaction.Handle("test").Wait();
 
-        Assert.Equal("updated", property.Value);
-        Assert.Contains("workflow test", messages);
-        Assert.True(result);
+        Assert.That(property.Value, Is.EqualTo("updated"));
+        Assert.That(messages, Does.Contain("workflow test"));
+        Assert.That(result, Is.True);
 
         // Cleanup
         source.Dispose();
@@ -159,7 +160,7 @@ public class ComprehensiveAOTMarkupTests
     /// <summary>
     /// Tests that ObservableAsPropertyHelper works correctly in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ToProperty which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ToProperty which requires AOT suppression")]
     public void ObservableAsPropertyHelper_AOTCompatibleUsage_Works()
@@ -173,10 +174,10 @@ public class ComprehensiveAOTMarkupTests
             .ObserveOn(scheduler)
             .ToProperty(obj, nameof(TestReactiveObject.ComputedProperty));
 
-        Assert.Equal("computed", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("computed"));
 
         source.OnNext("updated");
-        Assert.Equal("updated", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("updated"));
 
         source.Dispose();
         helper.Dispose();
@@ -185,7 +186,7 @@ public class ComprehensiveAOTMarkupTests
     /// <summary>
     /// Tests that dependency injection patterns work in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     public void DependencyInjection_AOTCompatiblePatterns_Work()
@@ -208,12 +209,12 @@ public class ComprehensiveAOTMarkupTests
         var constant = Locator.Current.GetService<string>();
         var factory = Locator.Current.GetService<Func<string, ReactiveProperty<string>>>();
 
-        Assert.NotNull(scheduler);
-        Assert.Equal("test service", constant);
-        Assert.NotNull(factory);
+        Assert.That(scheduler, Is.Not.Null);
+        Assert.That(constant, Is.EqualTo("test service"));
+        Assert.That(factory, Is.Not.Null);
 
         var property = factory("factory test");
-        Assert.Equal("factory test", property.Value);
+        Assert.That(property.Value, Is.EqualTo("factory test"));
 
         property.Dispose();
     }
@@ -221,7 +222,7 @@ public class ComprehensiveAOTMarkupTests
     /// <summary>
     /// Tests that activation/deactivation works correctly in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     public void ViewModelActivation_AOTCompatible_WorksCorrectly()
@@ -245,27 +246,27 @@ public class ComprehensiveAOTMarkupTests
 
         // Test activation cycle
         viewModel.Activator.Activate();
-        Assert.Equal(1, activationCount);
-        Assert.Equal(0, deactivationCount);
+        Assert.That(activationCount, Is.EqualTo(1));
+        Assert.That(deactivationCount, Is.EqualTo(0));
 
         viewModel.Activator.Deactivate();
-        Assert.Equal(1, activationCount);
-        Assert.Equal(1, deactivationCount);
+        Assert.That(activationCount, Is.EqualTo(1));
+        Assert.That(deactivationCount, Is.EqualTo(1));
 
         // Test reactivation
         viewModel.Activator.Activate();
-        Assert.Equal(2, activationCount);
-        Assert.Equal(1, deactivationCount);
+        Assert.That(activationCount, Is.EqualTo(2));
+        Assert.That(deactivationCount, Is.EqualTo(1));
 
         viewModel.Activator.Deactivate();
-        Assert.Equal(2, activationCount);
-        Assert.Equal(2, deactivationCount);
+        Assert.That(activationCount, Is.EqualTo(2));
+        Assert.That(deactivationCount, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Tests error handling patterns in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing error handling in AOT scenario")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing error handling in AOT scenario")]
     public void ErrorHandling_AOTScenarios_WorkCorrectly()
@@ -287,12 +288,12 @@ public class ComprehensiveAOTMarkupTests
         property.Value = string.Empty;
 
         // Test that validation works
-        Assert.True(property.HasErrors);
-        Assert.Contains("Value required", validationErrors);
+        Assert.That(property.HasErrors, Is.True);
+        Assert.That(validationErrors, Does.Contain("Value required"));
 
         // Fix the error
         property.Value = "valid value";
-        Assert.False(property.HasErrors);
+        Assert.That(property.HasErrors, Is.False);
 
         property.Dispose();
     }

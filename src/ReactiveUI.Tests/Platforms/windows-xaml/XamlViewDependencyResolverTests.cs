@@ -8,7 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
 #else
-using FactAttribute = Xunit.WpfFactAttribute;
+using System.Threading;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -16,6 +16,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests associated with UI and the <see cref="IDependencyResolver"/>.
 /// </summary>
+[TestFixture]
 public sealed class XamlViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;
@@ -34,27 +35,27 @@ public sealed class XamlViewDependencyResolverTests : IDisposable
     /// <summary>
     /// Test that register views for view model should register all views.
     /// </summary>
-    [Fact]
+    [Test, Apartment(ApartmentState.STA)]
     public void RegisterViewsForViewModelShouldRegisterAllViews()
     {
         using (_resolver.WithResolver())
         {
-            Assert.Single(_resolver.GetServices<IViewFor<ExampleViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<AnotherViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>());
+            Assert.That(_resolver.GetServices<IViewFor<ExampleViewModel>>(, Has.Exactly(1).Items));
+            Assert.That(_resolver.GetServices<IViewFor<AnotherViewModel>>(, Has.Exactly(1).Items));
+            Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>(, Has.Exactly(1).Items));
+            Assert.That(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>(, Has.Exactly(1).Items));
         }
     }
 
     /// <summary>
     /// Test that register views for view model should include contracts.
     /// </summary>
-    [Fact]
+    [Test, Apartment(ApartmentState.STA)]
     public void RegisterViewsForViewModelShouldIncludeContracts()
     {
         using (_resolver.WithResolver())
         {
-            Assert.Single(_resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract"));
+            Assert.That(_resolver.GetServices(typeof(IViewFor<ExampleViewModel>, Has.Exactly(1).Items), "contract"));
         }
     }
 

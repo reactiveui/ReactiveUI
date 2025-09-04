@@ -11,12 +11,13 @@ namespace ReactiveUI.AOTTests;
 /// Verifies the string-based ObservableForProperty and WhenAnyValue semantics.
 /// Ensures initial emission, beforeChange behavior, distinct filtering, and tuple combinations.
 /// </summary>
+[TestFixture]
 public class StringBasedSemanticsTests
 {
     /// <summary>
     /// ObservableForProperty (string) should emit an initial value followed by updates.
     /// </summary>
-    [Fact]
+    [Test]
     public void ObservableForProperty_String_Basic_InitialAndUpdate()
     {
         var obj = new TestReactiveObject();
@@ -29,15 +30,15 @@ public class StringBasedSemanticsTests
         // initial emission is null, then updated value
         obj.TestProperty = "v1";
 
-        Assert.True(seen.Count >= 2);
-        Assert.Null(seen[0]);
-        Assert.Equal("v1", seen[^1]);
+        Assert.That(seen.Count >= 2, Is.True);
+        Assert.That(seen[0], Is.Null);
+        Assert.That(seen[^1], Is.EqualTo("v1"));
     }
 
     /// <summary>
     /// ObservableForProperty (string) with beforeChange should provide the previous value when the property changes.
     /// </summary>
-    [Fact]
+    [Test]
     public void ObservableForProperty_String_BeforeChange_FiresOldValue()
     {
         var obj = new TestReactiveObject { TestProperty = "start" };
@@ -49,13 +50,13 @@ public class StringBasedSemanticsTests
 
         obj.TestProperty = "next";
 
-        Assert.Equal("start", observed);
+        Assert.That(observed, Is.EqualTo("start"));
     }
 
     /// <summary>
     /// WhenAnyValue (string) should apply DistinctUntilChanged by default and include an initial emission.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValue_String_IsDistinct()
     {
         var obj = new TestReactiveObject();
@@ -69,14 +70,14 @@ public class StringBasedSemanticsTests
         obj.TestProperty = "other";
 
         // initial null + "same" + "other" => 3 distinct emissions
-        Assert.True(seen.Count >= 3);
-        Assert.Equal(new[] { null, "same", "other" }, seen.TakeLast(3).ToArray());
+        Assert.That(seen.Count >= 3, Is.True);
+        Assert.That("same", "other" }, seen.TakeLast(3, Is.EqualTo(new[] { null)).ToArray());
     }
 
     /// <summary>
     /// WhenAnyValue (string) tuple overload should combine the latest values from two properties.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValue_String_TupleCombine_Works()
     {
         var obj = new TestReactiveObject();
@@ -87,8 +88,8 @@ public class StringBasedSemanticsTests
 
         obj.TestProperty = "value";
 
-        Assert.True(tuples.Count >= 1);
+        Assert.That(tuples.Count >= 1, Is.True);
         var last = tuples[^1];
-        Assert.Equal("value", last.Item1);
+        Assert.That(last.Item1, Is.EqualTo("value"));
     }
 }

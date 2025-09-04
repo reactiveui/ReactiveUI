@@ -7,23 +7,24 @@ using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Tests;
 
+[TestFixture]
 public class INPCObservableForPropertyTests
 {
-    [Fact]
+    [Test]
     public void CheckGetAffinityForObjectValues()
     {
         var instance = new INPCObservableForProperty();
 
-        Assert.Equal(5, instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false));
-        Assert.Equal(0, instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true));
-        Assert.Equal(0, instance.GetAffinityForObject(typeof(object), string.Empty, false));
+        Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged, Is.EqualTo(5)), string.Empty, false));
+        Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged, Is.EqualTo(0)), string.Empty, true));
+        Assert.That(instance.GetAffinityForObject(typeof(object, Is.EqualTo(0)), string.Empty, false));
 
-        Assert.Equal(5, instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true));
-        Assert.Equal(0, instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false));
-        Assert.Equal(0, instance.GetAffinityForObject(typeof(object), string.Empty, false));
+        Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging, Is.EqualTo(5)), string.Empty, true));
+        Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging, Is.EqualTo(0)), string.Empty, false));
+        Assert.That(instance.GetAffinityForObject(typeof(object, Is.EqualTo(0)), string.Empty, false));
     }
 
-    [Fact]
+    [Test]
     public void NotificationOnPropertyChanged()
     {
         var instance = new INPCObservableForProperty();
@@ -41,13 +42,13 @@ public class INPCObservableForPropertyTests
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        Assert.Equal(2, changes.Count);
+        Assert.That(changes.Count, Is.EqualTo(2));
 
-        Assert.Equal(testClass, changes[0].Sender);
-        Assert.Equal(testClass, changes[1].Sender);
+        Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+        Assert.That(changes[1].Sender, Is.EqualTo(testClass));
     }
 
-    [Fact]
+    [Test]
     public void NotificationOnPropertyChanging()
     {
         var instance = new INPCObservableForProperty();
@@ -65,13 +66,13 @@ public class INPCObservableForPropertyTests
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        Assert.Equal(2, changes.Count);
+        Assert.That(changes.Count, Is.EqualTo(2));
 
-        Assert.Equal(testClass, changes[0].Sender);
-        Assert.Equal(testClass, changes[1].Sender);
+        Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+        Assert.That(changes[1].Sender, Is.EqualTo(testClass));
     }
 
-    [Fact]
+    [Test]
     public void NotificationOnWholeObjectChanged()
     {
         var instance = new INPCObservableForProperty();
@@ -89,13 +90,13 @@ public class INPCObservableForPropertyTests
         testClass.OnPropertyChanged(null);
         testClass.OnPropertyChanged(string.Empty);
 
-        Assert.Equal(2, changes.Count);
+        Assert.That(changes.Count, Is.EqualTo(2));
 
-        Assert.Equal(testClass, changes[0].Sender);
-        Assert.Equal(testClass, changes[1].Sender);
+        Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+        Assert.That(changes[1].Sender, Is.EqualTo(testClass));
     }
 
-    [Fact]
+    [Test]
     public void NotificationOnWholeObjectChanging()
     {
         var instance = new INPCObservableForProperty();
@@ -113,10 +114,10 @@ public class INPCObservableForPropertyTests
         testClass.OnPropertyChanging(null);
         testClass.OnPropertyChanging(string.Empty);
 
-        Assert.Equal(2, changes.Count);
+        Assert.That(changes.Count, Is.EqualTo(2));
 
-        Assert.Equal(testClass, changes[0].Sender);
-        Assert.Equal(testClass, changes[1].Sender);
+        Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+        Assert.That(changes[1].Sender, Is.EqualTo(testClass));
     }
 
     private class TestClassChanged : INotifyPropertyChanged

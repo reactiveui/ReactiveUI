@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests.Wpf;
 
 public class WpfActivationForViewFetcherTest
 {
-    [Fact]
+    [Test]
     public void FrameworkElementIsActivatedAndDeactivated()
     {
         var uc = new WpfTestUserControl();
@@ -41,7 +41,7 @@ public class WpfActivationForViewFetcherTest
         new[] { true, false }.AssertAreEqual(activated);
     }
 
-    [Fact]
+    [Test]
     public void IsHitTestVisibleActivatesFrameworkElement()
     {
         var uc = new WpfTestUserControl
@@ -79,7 +79,7 @@ public class WpfActivationForViewFetcherTest
         new[] { true, false }.AssertAreEqual(activated);
     }
 
-    [Fact]
+    [Test]
     public void IsHitTestVisibleDeactivatesFrameworkElement()
     {
         var uc = new WpfTestUserControl();
@@ -102,7 +102,7 @@ public class WpfActivationForViewFetcherTest
         new[] { true, false }.AssertAreEqual(activated);
     }
 
-    [Fact]
+    [Test]
     public void FrameworkElementIsActivatedAndDeactivatedWithHitTest()
     {
         var uc = new WpfTestUserControl();

@@ -10,12 +10,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the view model activator.
 /// </summary>
+[TestFixture]
 public class ViewModelActivatorTests
 {
     /// <summary>
     /// Tests the activating ticks activated observable.
     /// </summary>
-    [Fact]
+    [Test]
     public void TestActivatingTicksActivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
@@ -23,13 +24,13 @@ public class ViewModelActivatorTests
 
         viewModelActivator.Activate();
 
-        Assert.Equal(1, activated.Count);
+        Assert.That(activated.Count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Tests the deactivating ignoring reference count ticks deactivated observable.
     /// </summary>
-    [Fact]
+    [Test]
     public void TestDeactivatingIgnoringRefCountTicksDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
@@ -37,13 +38,13 @@ public class ViewModelActivatorTests
 
         viewModelActivator.Deactivate(true);
 
-        Assert.Equal(1, deactivated.Count);
+        Assert.That(deactivated.Count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Tests the deactivating count doesnt tick deactivated observable.
     /// </summary>
-    [Fact]
+    [Test]
     public void TestDeactivatingCountDoesntTickDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
@@ -51,13 +52,13 @@ public class ViewModelActivatorTests
 
         viewModelActivator.Deactivate(false);
 
-        Assert.Equal(0, deactivated.Count);
+        Assert.That(deactivated.Count, Is.EqualTo(0));
     }
 
     /// <summary>
     /// Tests the deactivating following activating ticks deactivated observable.
     /// </summary>
-    [Fact]
+    [Test]
     public void TestDeactivatingFollowingActivatingTicksDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
@@ -66,13 +67,13 @@ public class ViewModelActivatorTests
         viewModelActivator.Activate();
         viewModelActivator.Deactivate(false);
 
-        Assert.Equal(1, deactivated.Count);
+        Assert.That(deactivated.Count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Tests the disposing after activation deactivates view model.
     /// </summary>
-    [Fact]
+    [Test]
     public void TestDisposingAfterActivationDeactivatesViewModel()
     {
         var viewModelActivator = new ViewModelActivator();
@@ -81,11 +82,11 @@ public class ViewModelActivatorTests
 
         using (viewModelActivator.Activate())
         {
-            Assert.Equal(1, activated.Count);
-            Assert.Equal(0, deactivated.Count);
+            Assert.That(activated.Count, Is.EqualTo(1));
+            Assert.That(deactivated.Count, Is.EqualTo(0));
         }
 
-        Assert.Equal(1, activated.Count);
-        Assert.Equal(1, deactivated.Count);
+        Assert.That(activated.Count, Is.EqualTo(1));
+        Assert.That(deactivated.Count, Is.EqualTo(1));
     }
 }

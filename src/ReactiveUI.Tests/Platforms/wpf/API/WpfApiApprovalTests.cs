@@ -9,12 +9,13 @@ namespace ReactiveUI.Tests.Wpf;
 /// Checks the WPF API to make sure there aren't any unexpected public API changes.
 /// </summary>
 [ExcludeFromCodeCoverage]
+[TestFixture]
 public class WpfApiApprovalTests
 {
     /// <summary>
     /// Checks the approved vs the received API.
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
-    [Fact]
+    [Test]
     public Task Wpf() => typeof(ReactiveWindow<>).Assembly.CheckApproval(["ReactiveUI"]);
 }

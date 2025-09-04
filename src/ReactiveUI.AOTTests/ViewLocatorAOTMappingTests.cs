@@ -10,6 +10,7 @@ namespace ReactiveUI.AOTTests;
 /// <summary>
 /// Tests for AOT-friendly mapping and ResolveView contract usage.
 /// </summary>
+[TestFixture]
 public class ViewLocatorAOTMappingTests
 {
     /// <summary>
@@ -23,7 +24,7 @@ public class ViewLocatorAOTMappingTests
     /// <summary>
     /// Map/Resolve with contract and default fallback works.
     /// </summary>
-    [Fact]
+    [Test]
     public void Map_ResolveView_UsesAOTMappingWithContract()
     {
         var locator = new DefaultViewLocator();
@@ -35,30 +36,30 @@ public class ViewLocatorAOTMappingTests
         var vm = new VmA();
 
         var viewMobile = locator.ResolveView(vm, "mobile");
-        Assert.IsType<ViewA>(viewMobile);
+        Assert.That(viewMobile, Is.TypeOf<ViewA>());
 
         var viewDefaultFromExplicit = locator.ResolveView(vm, string.Empty);
-        Assert.IsType<ViewADefault>(viewDefaultFromExplicit);
+        Assert.That(viewDefaultFromExplicit, Is.TypeOf<ViewADefault>());
 
         // Unknown contract falls back to default mapping
         var viewFallback = locator.ResolveView(vm, "unknown");
-        Assert.IsType<ViewADefault>(viewFallback);
+        Assert.That(viewFallback, Is.TypeOf<ViewADefault>());
     }
 
     /// <summary>
     /// Unmap removes a mapping for a contract.
     /// </summary>
-    [Fact]
+    [Test]
     public void Unmap_RemovesMapping()
     {
         var locator = new DefaultViewLocator();
         locator.Map<VmB, ViewB>(() => new ViewB(), contract: "c1");
 
         var vm = new VmB();
-        Assert.IsType<ViewB>(locator.ResolveView(vm, "c1"));
+        Assert.That(locator.ResolveView(vm, "c1", Is.TypeOf<ViewB>()));
 
         locator.Unmap<VmB>("c1");
-        Assert.Null(locator.ResolveView(vm, "c1"));
+        Assert.That(locator.ResolveView(vm, "c1", Is.Null));
     }
 
     private sealed class ViewADefault : IViewFor<VmA>

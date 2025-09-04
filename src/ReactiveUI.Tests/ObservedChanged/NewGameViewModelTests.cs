@@ -8,6 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for a sample game.
 /// </summary>
+[TestFixture]
 public class NewGameViewModelTests
 {
     private readonly NewGameViewModel _viewmodel;
@@ -20,14 +21,14 @@ public class NewGameViewModelTests
     /// <summary>
     /// Tests that determines whether this instance [can add up to seven players].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanAddUpToSevenPlayers()
     {
         foreach (var i in Enumerable.Range(1, 7))
         {
             _viewmodel.NewPlayerName = "Player" + i;
             _viewmodel.AddPlayer.Execute().Subscribe();
-            Assert.Equal(i, _viewmodel.Players.Count);
+            Assert.That(_viewmodel.Players.Count, Is.EqualTo(i));
         }
     }
 }

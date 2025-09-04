@@ -18,6 +18,7 @@ namespace ReactiveUI.Tests.Wpf;
 /// Initializes a new instance of the <see cref="WpfActiveContentTests"/> class.
 /// </remarks>
 /// <param name="fixture">The fixture.</param>
+[TestFixture]
 public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixture<WpfActiveContentFixture>
 {
     /// <summary>
@@ -44,22 +45,22 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
         view.RaiseEvent(loaded);
         var test1 = new MockBindListItemViewModel("Test1");
         view.ViewModel?.ActiveListItem.Add(test1);
-        Assert.Equal(1, view.ItemList.Items.Count);
-        Assert.Equal(test1, view.ViewModel!.ActiveItem);
+        Assert.That(view.ItemList.Items.Count, Is.EqualTo(1));
+        Assert.That(view.ViewModel!.ActiveItem, Is.EqualTo(test1));
 
         var test2 = new MockBindListItemViewModel("Test2");
         view.ViewModel?.ActiveListItem.Add(test2);
-        Assert.Equal(2, view.ItemList.Items.Count);
-        Assert.Equal(test2, view.ViewModel!.ActiveItem);
+        Assert.That(view.ItemList.Items.Count, Is.EqualTo(2));
+        Assert.That(view.ViewModel!.ActiveItem, Is.EqualTo(test2));
 
         var test3 = new MockBindListItemViewModel("Test3");
         view.ViewModel?.ActiveListItem.Add(test3);
-        Assert.Equal(3, view.ItemList.Items.Count);
-        Assert.Equal(test3, view.ViewModel!.ActiveItem);
+        Assert.That(view.ItemList.Items.Count, Is.EqualTo(3));
+        Assert.That(view.ViewModel!.ActiveItem, Is.EqualTo(test3));
 
         view.ItemList.SelectedItem = view.ItemList.Items.GetItemAt(0);
-        Assert.Equal(1, view.ItemList.Items.Count);
-        Assert.Equal(test1, view.ViewModel!.ActiveItem);
+        Assert.That(view.ItemList.Items.Count, Is.EqualTo(1));
+        Assert.That(view.ViewModel!.ActiveItem, Is.EqualTo(test1));
 
         window.Close();
     }
@@ -105,7 +106,7 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
             window.RaiseEvent(loaded);
             vmvhost.RaiseEvent(loaded);
 
-            Assert.NotNull(vmvhost.Content);
+            Assert.That(vmvhost.Content, Is.Not.Null);
             Assert.IsType(typeof(FakeViewWithContract.ViewB), vmvhost.Content);
             window.Close();
         }
@@ -133,7 +134,7 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
             window.RaiseEvent(loaded);
             vmvhost.RaiseEvent(loaded);
 
-            Assert.NotNull(vmvhost.Content);
+            Assert.That(vmvhost.Content, Is.Not.Null);
             Assert.IsType(typeof(FakeViewWithContract.View0), vmvhost.Content);
             window.Close();
         }
@@ -161,7 +162,7 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
             window.RaiseEvent(loaded);
             vmvhost.RaiseEvent(loaded);
 
-            Assert.Null(vmvhost.Content);
+            Assert.That(vmvhost.Content, Is.Null);
             window.Close();
         }
     }
@@ -203,33 +204,33 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
             {
                 var view = new View1();
                 window.TransitioningContent.Content = view;
-                Assert.True(transitioning);
+                Assert.That(transitioning, Is.True);
                 while (transitioning)
                 {
                     await Task.Delay(5).ConfigureAwait(true);
                 }
 
-                Assert.Equal(window.TransitioningContent.Content, view);
-                Assert.False(transitioning);
+                Assert.That(view, Is.EqualTo(window.TransitioningContent.Content));
+                Assert.That(transitioning, Is.False);
 
                 var view2 = new View2();
                 window.TransitioningContent.Content = view2;
-                Assert.True(transitioning);
+                Assert.That(transitioning, Is.True);
                 while (transitioning)
                 {
                     await Task.Delay(5).ConfigureAwait(true);
                 }
 
-                Assert.Equal(window.TransitioningContent.Content, view2);
-                Assert.False(transitioning);
+                Assert.That(view2, Is.EqualTo(window.TransitioningContent.Content));
+                Assert.That(transitioning, Is.False);
             }
 
             async Task TestCyle(TransitioningContentControl.TransitionDirection direction, TransitioningContentControl.TransitionType transition)
             {
                 window.TransitioningContent.Direction = direction;
                 window.TransitioningContent.Transition = transition;
-                Assert.Equal(window.TransitioningContent.Direction, direction);
-                Assert.Equal(window.TransitioningContent.Transition, transition);
+                Assert.That(direction, Is.EqualTo(window.TransitioningContent.Direction));
+                Assert.That(transition, Is.EqualTo(window.TransitioningContent.Transition));
                 await TestTransiton().ConfigureAwait(true);
                 await TestTransiton().ConfigureAwait(true);
             }
@@ -239,13 +240,13 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
         window!.ShowDialog();
     }
 
-    [Fact]
+    [Test]
     public void DummySuspensionDriverTest()
     {
         var dsd = new DummySuspensionDriver();
-        dsd.LoadState().Select(_ => 1).Subscribe(_ => Assert.Equal(1, _));
-        dsd.SaveState("Save Me").Select(_ => 2).Subscribe(_ => Assert.Equal(2, _));
-        dsd.InvalidateState().Select(_ => 3).Subscribe(_ => Assert.Equal(3, _));
+        dsd.LoadState().Select(_ => 1).Subscribe(_ => Assert.That(_, Is.EqualTo(1)));
+        dsd.SaveState("Save Me").Select(_ => 2).Subscribe(_ => Assert.That(_, Is.EqualTo(2)));
+        dsd.InvalidateState().Select(_ => 3).Subscribe(_ => Assert.That(_, Is.EqualTo(3)));
     }
 
     [StaFact]
@@ -329,8 +330,8 @@ public class WpfActiveContentTests(WpfActiveContentFixture fixture) : IClassFixt
                 });
                 await view!.ViewModel!.Command3.Execute();
                 await testSequencer.AdvancePhaseAsync();
-                Assert.Equal(100, result);
-                Assert.True(isExecutingExecuted);
+                Assert.That(result, Is.EqualTo(100));
+                Assert.That(isExecutingExecuted, Is.True);
             }
             finally
             {
