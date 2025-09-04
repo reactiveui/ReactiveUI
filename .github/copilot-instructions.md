@@ -328,22 +328,150 @@ _total = this.WhenAnyValue(
     .ToProperty(this, nameof(Total));
 ```
 
-## 🎨 Code Style & Formatting
+## Validation and Quality Assurance
 
-ReactiveUI enforces strict code style and formatting guidelines:
+### Code Style and Analysis Enforcement
+- **EditorConfig Compliance**: Repository uses comprehensive `.editorconfig` with detailed rules for C# formatting, naming conventions, and code analysis
+- **StyleCop Analyzers**: Enforces consistent C# code style with `stylecop.analyzers`
+- **Roslynator Analyzers**: Additional code quality rules with `Roslynator.Analyzers`
+- **Analysis Level**: Set to `latest` with enhanced .NET analyzers enabled
+- **CRITICAL**: All code must comply with **ReactiveUI contribution guidelines**: https://www.reactiveui.net/contribute/index.html
 
-### EditorConfig & StyleCop Compliance
-- **EditorConfig**: The repository has a comprehensive `.editorconfig` file with detailed formatting rules
-- **StyleCop Analyzers**: Extensive StyleCop analyzer rules are configured with error-level enforcement
-- **Code Analysis**: Over 200 analyzer rules are configured for code quality and consistency
+### C# Style Guide
+**General Rule**: Follow "Visual Studio defaults" with the following specific requirements:
 
-### Key Style Requirements
-- **Indentation**: 4 spaces (configured in `.editorconfig`)
-- **Braces**: Allman style (opening braces on new lines)
-- **Field naming**: Private fields use `_camelCase` prefix, static fields use `s_` prefix
-- **Var usage**: Prefer `var` when type is apparent
-- **Documentation**: All public APIs require XML documentation
-- **Null checking**: Use modern C# null-conditional operators
+#### **Brace Style**
+- **Allman style braces**: Each brace begins on a new line
+- **Single line statement blocks**: Can go without braces but must be properly indented on its own line
+- **Exception**: A `using` statement is permitted to be nested within another `using` statement by starting on the following line at the same indentation level
+
+#### **Indentation and Spacing**
+- **Four spaces** of indentation (no tabs)
+- **Avoid spurious free spaces**: For example, avoid `if (someVar == 0)...` where dots mark spurious spaces
+- **Avoid more than one empty line** at any time between members of a type
+- **Labels**: Indent one less than the current indentation (for `goto` statements)
+
+#### **Field and Property Naming**
+- **Internal and private fields**: Use `_camelCase` prefix with `readonly` where possible
+- **Static fields**: `readonly` should come after `static` (e.g., `static readonly` not `readonly static`)
+- **Public fields**: Use PascalCasing with no prefix (use sparingly)
+- **Constants**: Use PascalCasing for all constant local variables and fields (except interop code)
+- **Fields placement**: Specify fields at the top within type declarations
+
+#### **Visibility and Modifiers**
+- **Always specify visibility**: Even if it's the default (e.g., `private string _foo` not `string _foo`)
+- **Visibility first**: Should be the first modifier (e.g., `public abstract` not `abstract public`)
+- **Modifier order**: `public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async`
+
+#### **Namespace and Using Statements**
+- **Namespace imports**: At the top of the file, outside of namespace declarations
+- **Sorting**: System namespaces alphabetically first, then third-party namespaces alphabetically
+- **Placement**: Use `using` directives outside namespace declarations
+
+#### **Type Usage and Variables**
+- **Language keywords**: Use instead of BCL types (`int, string, float` instead of `Int32, String, Single`)
+- **var usage**: Encouraged when it makes sense (large return types, refactoring scenarios)
+- **this. avoidance**: Avoid `this.` unless absolutely necessary
+- **nameof(...)**: Use instead of string literals whenever possible and relevant
+
+#### **Code Patterns and Features**
+- **Method groups**: Use where appropriate
+- **C# 7 pattern matching**: Use when possible
+- **Inline out variables**: Use C# 7 inline variable feature with `out` parameters
+- **Non-ASCII characters**: Use Unicode escape sequences (`\uXXXX`) instead of literal characters
+
+#### **Documentation Requirements**
+- **XML comments**: All publicly exposed methods and properties must have .NET XML comments
+- **Protected methods**: Include XML comments for protected methods of public classes
+- **Documentation culture**: en-US as specified in `src/stylecop.json`
+
+#### **File Style Precedence**
+- **Existing style**: If a file differs from these guidelines, the existing style in that file takes precedence
+- **Consistency**: Maintain consistency within individual files
+
+#### **Example Code Structure**
+```csharp
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using Microsoft.Win32;
+
+namespace System.Collections.Generic
+{
+    /// <summary>
+    /// Observable implementation of LinkedList.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the list.</typeparam>
+    public partial class ObservableLinkedList<T> : INotifyCollectionChanged, INotifyPropertyChanged
+    {
+        private ObservableLinkedListNode<T> _head;
+        private int _count;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObservableLinkedList{T}"/> class.
+        /// </summary>
+        /// <param name="items">The items to initialize the list with.</param>
+        public ObservableLinkedList(IEnumerable<T> items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            foreach (T item in items)
+            {
+                AddLast(item);
+            }
+        }
+
+        /// <summary>
+        /// Occurs when the collection changes.
+        /// </summary>
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        /// <summary>
+        /// Gets the number of elements in the list.
+        /// </summary>
+        public int Count
+        {
+            get { return _count; }
+        }
+
+        /// <summary>
+        /// Adds a new node containing the specified value at the end of the list.
+        /// </summary>
+        /// <param name="value">The value to add.</param>
+        /// <returns>The new node that was added.</returns>
+        public ObservableLinkedListNode AddLast(T value) 
+        {
+            var newNode = new LinkedListNode<T>(this, value);
+            InsertNodeBefore(_head, newNode);
+            return newNode;
+        }
+
+        /// <summary>
+        /// Raises the CollectionChanged event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            NotifyCollectionChangedEventHandler handler = CollectionChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private void InsertNodeBefore(LinkedListNode<T> node, LinkedListNode<T> newNode)
+        {
+            // Implementation details...
+        }
+    }
+}
+```
 
 ### Official Style Guide
 Follow the comprehensive ReactiveUI style guide:
