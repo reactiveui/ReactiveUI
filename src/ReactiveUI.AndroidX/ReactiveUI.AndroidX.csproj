@@ -7,6 +7,14 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Modern .NET 9 Android approach for AndroidX libraries -->
+    <!-- Core AndroidX (AppCompat, RecyclerView, Fragment) available implicitly through .NET Android SDK -->
+    
+    <!-- AndroidX Preferences still requires explicit package reference -->
+    <!-- Note: Using latest compatible Xamarin.AndroidX packages until Microsoft.Android.* equivalents are available -->
+    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.1.11" />
+    
+    <!-- System.Reactive for ReactiveUI functionality -->
     <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
