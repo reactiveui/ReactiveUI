@@ -40,6 +40,7 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
     <PackageVersion Include="Xunit.StaFact" Version="1.2.69" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.11" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseMaui)' != 'true'">
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />

@@ -12,7 +12,7 @@
     
     <!-- AndroidX Preferences still requires explicit package reference -->
     <!-- Note: Using latest compatible Xamarin.AndroidX packages until Microsoft.Android.* equivalents are available -->
-    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.1.11" />
+    <PackageReference Include="Xamarin.AndroidX.Preference" />
     
     <!-- System.Reactive for ReactiveUI functionality -->
     <PackageReference Include="System.Reactive" />
