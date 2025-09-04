@@ -136,7 +136,7 @@ public class AOTCompatibilityTests
         obj.TestProperty = "value2";
 
         Assert.That(changes, Does.Contain(nameof(TestReactiveObject.TestProperty)));
-        Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty, Is.EqualTo(2))));
+        Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty)), Is.EqualTo(2));
     }
 
     /// <summary>

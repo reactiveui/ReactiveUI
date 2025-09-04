@@ -56,10 +56,10 @@ public class ViewLocatorAOTMappingTests
         locator.Map<VmB, ViewB>(() => new ViewB(), contract: "c1");
 
         var vm = new VmB();
-        Assert.That(locator.ResolveView(vm, "c1", Is.TypeOf<ViewB>()));
+        Assert.That(locator.ResolveView(vm, "c1"), Is.TypeOf<ViewB>());
 
         locator.Unmap<VmB>("c1");
-        Assert.That(locator.ResolveView(vm, "c1", Is.Null));
+        Assert.That(locator.ResolveView(vm, "c1"), Is.Null);
     }
 
     private sealed class ViewADefault : IViewFor<VmA>
