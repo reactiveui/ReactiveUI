@@ -37,7 +37,9 @@ public static class RxSchedulers
         get
         {
             if (_mainThreadScheduler is not null)
+            {
                 return _mainThreadScheduler;
+            }
 
             lock (_lock)
             {
@@ -66,12 +68,16 @@ public static class RxSchedulers
         get
         {
             if (_taskpoolScheduler is not null)
+            {
                 return _taskpoolScheduler;
+            }
 
             lock (_lock)
             {
                 if (_taskpoolScheduler is not null)
+                {
                     return _taskpoolScheduler;
+                }
 
 #if !PORTABLE
                 return _taskpoolScheduler ??= TaskPoolScheduler.Default;
