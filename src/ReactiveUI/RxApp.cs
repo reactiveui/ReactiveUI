@@ -131,10 +131,6 @@ public static class RxApp
         LogHost.Default.Info("Initializing to normal mode");
 
         _mainThreadScheduler ??= DefaultScheduler.Instance;
-        
-        // Synchronize initial values with RxSchedulers for consistency
-        RxSchedulers.MainThreadScheduler = _mainThreadScheduler;
-        RxSchedulers.TaskpoolScheduler = _taskpoolScheduler;
     }
 
     /// <summary>

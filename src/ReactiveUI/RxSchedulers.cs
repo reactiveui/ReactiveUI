@@ -19,8 +19,9 @@ namespace ReactiveUI;
 /// </remarks>
 public static class RxSchedulers
 {
-    private static IScheduler? _mainThreadScheduler;
-    private static IScheduler? _taskpoolScheduler;
+    private static readonly object _lock = new();
+    private static volatile IScheduler? _mainThreadScheduler;
+    private static volatile IScheduler? _taskpoolScheduler;
 
     /// <summary>
     /// Gets or sets a scheduler used to schedule work items that
@@ -33,8 +34,23 @@ public static class RxSchedulers
     /// </remarks>
     public static IScheduler MainThreadScheduler
     {
-        get => _mainThreadScheduler ??= DefaultScheduler.Instance;
-        set => _mainThreadScheduler = value;
+        get
+        {
+            if (_mainThreadScheduler is not null)
+                return _mainThreadScheduler;
+
+            lock (_lock)
+            {
+                return _mainThreadScheduler ??= DefaultScheduler.Instance;
+            }
+        }
+        set
+        {
+            lock (_lock)
+            {
+                _mainThreadScheduler = value;
+            }
+        }
     }
 
     /// <summary>
@@ -49,13 +65,28 @@ public static class RxSchedulers
     {
         get
         {
+            if (_taskpoolScheduler is not null)
+                return _taskpoolScheduler;
+
+            lock (_lock)
+            {
+                if (_taskpoolScheduler is not null)
+                    return _taskpoolScheduler;
+
 #if !PORTABLE
-            return _taskpoolScheduler ??= TaskPoolScheduler.Default;
+                return _taskpoolScheduler ??= TaskPoolScheduler.Default;
 #else
-            return _taskpoolScheduler ??= DefaultScheduler.Instance;
+                return _taskpoolScheduler ??= DefaultScheduler.Instance;
 #endif
+            }
         }
-        set => _taskpoolScheduler = value;
+        set
+        {
+            lock (_lock)
+            {
+                _taskpoolScheduler = value;
+            }
+        }
     }
 
     /// <summary>
