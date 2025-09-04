@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using FactAttribute = Xunit.WpfFactAttribute;
+using System.Threading;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -30,7 +30,7 @@ public sealed class WpfViewDependencyResolverTests : IDisposable
     /// <summary>
     /// Tests that  Register views for view model should register all views.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void RegisterViewsForViewModelShouldRegisterAllViews()
     {
         using (_resolver.WithResolver())

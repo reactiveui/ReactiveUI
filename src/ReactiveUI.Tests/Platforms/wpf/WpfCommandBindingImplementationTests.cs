@@ -4,12 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
-
-using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -19,7 +17,7 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Commands the bind to explicit event wireup.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void CommandBindToExplicitEventWireup()
     {
         var vm = new CommandBindingViewModel();
@@ -41,7 +39,7 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Binds the command to object target is null.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void BindCommandToObjectWithEventTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -68,7 +66,7 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Binds the command to object target is null.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void BindCommandToObjectTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -95,7 +93,7 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Binds the command to object target is null.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void BindCommandToObjectEventIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -122,7 +120,7 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Binds the command to object command is null.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void BindCommandToObjectWithEventCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
@@ -150,7 +148,7 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Binds the command to object command is null.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void BindCommandToObjectCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
@@ -178,7 +176,7 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Commands the bind view model to view with observable.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void CommandBindViewModelToViewWithObservable()
     {
         var vm = new CommandBindingViewModel();
@@ -214,7 +212,7 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Commands the bind view model to view with function.
     /// </summary>
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void CommandBindViewModelToViewWithFunc()
     {
         var vm = new CommandBindingViewModel();
@@ -247,7 +245,7 @@ public class WpfCommandBindingImplementationTests
         Assert.That(vm.Value, Is.EqualTo(2));
     }
 
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void BindCommandShouldNotWarnWhenBindingToFieldDeclaredInXaml()
     {
         var testLogger = new TestLogger();
@@ -259,7 +257,7 @@ public class WpfCommandBindingImplementationTests
         testLogger.Messages.Should().NotContain(t => t.message.Contains(nameof(POCOObservableForProperty)) && t.message.Contains(view.NameOfButtonDeclaredInXaml) && t.logLevel == LogLevel.Warn);
     }
 
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void ViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable, WeakReference) GetWeakReference()

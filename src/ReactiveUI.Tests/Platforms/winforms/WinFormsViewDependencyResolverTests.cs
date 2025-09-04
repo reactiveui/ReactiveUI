@@ -3,8 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Threading;
+
 using Splat.Builder;
-using FactAttribute = Xunit.WpfFactAttribute;
 
 namespace ReactiveUI.Tests.Winforms;
 
@@ -28,7 +29,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         _resolver.RegisterViewsForViewModels(GetType().Assembly);
     }
 
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void RegisterViewsForViewModelShouldRegisterAllViews()
     {
         using (_resolver.WithResolver())
@@ -40,7 +41,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         }
     }
 
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void NonContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
@@ -52,7 +53,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     /// <inheritdoc/>
     public void Dispose() => _resolver?.Dispose();
 
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void ContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
@@ -61,7 +62,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         }
     }
 
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
     {
         using (_resolver.WithResolver())
@@ -78,7 +79,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         }
     }
 
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void SingleInstanceViewsWithContractShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
@@ -95,7 +96,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         }
     }
 
-    [Test]
+    [Test, Apartment(ApartmentState.STA)]
     public void SingleInstanceViewsShouldOnlyBeInstantiatedWhenRequested()
     {
         using (_resolver.WithResolver())
