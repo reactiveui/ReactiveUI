@@ -105,8 +105,8 @@ public class FinalAOTValidationTests
         Assert.That(observableResult, Is.EqualTo("observable result"));
 
         // Test command states
-        Assert.That(simpleCommand.CanExecute.FirstAsync(, Is.True).Wait());
-        Assert.That(simpleCommand.IsExecuting.FirstAsync(, Is.False).Wait());
+        Assert.That(simpleCommand.CanExecute.FirstAsync().Wait(), Is.True);
+        Assert.That(simpleCommand.IsExecuting.FirstAsync().Wait(), Is.False);
     }
 
     /// <summary>

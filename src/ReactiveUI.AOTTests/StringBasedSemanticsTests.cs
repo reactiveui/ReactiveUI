@@ -71,7 +71,7 @@ public class StringBasedSemanticsTests
 
         // initial null + "same" + "other" => 3 distinct emissions
         Assert.That(seen.Count >= 3, Is.True);
-        Assert.That("same", "other" }, seen.TakeLast(3, Is.EqualTo(new[] { null)).ToArray());
+        Assert.That(seen.TakeLast(3).ToArray(), Is.EqualTo(new[] { null, "same", "other" }));
     }
 
     /// <summary>
