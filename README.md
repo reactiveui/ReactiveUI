@@ -32,12 +32,7 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
 | MAUI              | [ReactiveUI.Maui][MauiDoc]          | [![MauiBadge]][Maui] |
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
-| Xamarin.Forms     | [ReactiveUI.XamForms][XamDoc]       | [![XamBadge]][Xam]     |
-| Xamarin.Essentials| [ReactiveUI][XamDoc]                | [![CoreBadge]][Core]   |
-| AndroidX (Xamarin)| [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX]   |
-| Xamarin.Android   | [ReactiveUI.AndroidSupport][DroDoc] | [![DroBadge]][Dro]     |
-| Xamarin.iOS       | [ReactiveUI][IosDoc]                | [![CoreBadge]][Core]   |
-| Xamarin.Mac       | [ReactiveUI][MacDoc]                | [![CoreBadge]][Core]   |
+| AndroidX          | [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX]   |
 | Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
 | Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz]   |
 | Platform Uno      | [ReactiveUI.Uno][UnoDoc]            | [![UnoBadge]][Uno]     |
@@ -78,19 +73,11 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
 [WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
 
-[Xam]: https://www.nuget.org/packages/ReactiveUI.XamForms/
-[XamEvents]: https://www.nuget.org/packages/ReactiveUI.Events.XamForms/
-[XamBadge]: https://img.shields.io/nuget/v/ReactiveUI.XamForms.svg
-[XamDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-forms
-[Dro]: https://www.nuget.org/packages/ReactiveUI.AndroidSupport/
-[DroBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidSupport.svg
-[DroDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-android
+
 
 [DroX]: https://www.nuget.org/packages/ReactiveUI.AndroidX/
 [DroXBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidX.svg
-
-[MacDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-mac
-[IosDoc]: https://reactiveui.net/docs/getting-started/installation/xamarin-ios
+[DroDoc]: https://reactiveui.net/docs/getting-started/installation/
 
 [Uno]: https://www.nuget.org/packages/ReactiveUI.Uno/
 [UnoBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.svg
@@ -117,6 +104,26 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 The core team members, ReactiveUI contributors and contributors in the ecosystem do this open-source work in their free time. If you use ReactiveUI, a serious task, and you'd like us to invest more time on it, please donate. This project increases your income/productivity too. It makes development and applications faster and it reduces the required bandwidth.
 
 [Become a sponsor](https://github.com/sponsors/reactivemarbles).
+
+## Migration from Xamarin and .NET 8 MAUI
+
+### Xamarin Users
+As of May 2024, Microsoft ended support for Xamarin per their [support policy](https://docs.microsoft.com/dotnet/maui/what-is-maui#xamarin-retirement). ReactiveUI has removed support for legacy Xamarin platforms in favor of modern .NET MAUI. For Xamarin projects:
+
+- **Xamarin.Forms** → Migrate to **MAUI** and use `ReactiveUI.Maui`
+- **Xamarin.Android** → Migrate to **MAUI Android** or use `ReactiveUI.AndroidX` for native Android
+- **Xamarin.iOS/Mac** → Migrate to **MAUI iOS/Mac Catalyst**
+
+For guidance on migrating from Xamarin to MAUI, see the [official migration documentation](https://docs.microsoft.com/dotnet/maui/migration/).
+
+### MAUI .NET 8 Users  
+ReactiveUI now requires .NET 9 for MAUI platforms. Update your projects to:
+- `net9.0-android` (was `net8.0-android`)
+- `net9.0-ios` (was `net8.0-ios`) 
+- `net9.0-maccatalyst` (was `net8.0-maccatalyst`)
+- `net9.0-windows` (was `net8.0-windows`)
+
+Note: Non-MAUI `net8.0` library targets remain fully supported.
 
 This is how we use the donations:
 
@@ -236,4 +243,4 @@ The following have been core team members in the past.
 
 ## .NET Foundation
 
-ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). Other projects that are associated with the foundation include the Microsoft .NET Compiler Platform ("Roslyn") as well as the Microsoft ASP.NET family of projects, Microsoft .NET Core & Xamarin Forms.
+ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). Other projects that are associated with the foundation include the Microsoft .NET Compiler Platform ("Roslyn") as well as the Microsoft ASP.NET family of projects, and Microsoft .NET Core.
