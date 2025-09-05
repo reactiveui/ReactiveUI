@@ -9,12 +9,13 @@ namespace ReactiveUI.Tests;
 /// Checks the WinForms API to make sure there aren't any unexpected public API changes.
 /// </summary>
 [ExcludeFromCodeCoverage]
+[TestFixture]
 public class WinformsApiApprovalTests
 {
     /// <summary>
     /// Checks the approved vs the received API.
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
-    [Fact]
+    [Test]
     public Task Winforms() => typeof(ReactiveUI.Winforms.WinformsCreatesObservableForProperty).Assembly.CheckApproval(["ReactiveUI"]);
 }

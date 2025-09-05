@@ -10,12 +10,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for activating views.
 /// </summary>
+[TestFixture]
 public class ActivatingViewTests
 {
     /// <summary>
     /// Tests to make sure that views generally activate.
     /// </summary>
-    [Fact]
+    [Test]
     public void ActivatingViewSmokeTest()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -31,23 +32,23 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
         }
     }
 
     /// <summary>
     /// Tests for making sure nulling the view model deactivate it.
     /// </summary>
-    [Fact]
+    [Test]
     public void NullingViewModelDeactivateIt()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -63,22 +64,22 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
 
             fixture.ViewModel = null;
-            Assert.Equal(0, vm.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
         }
     }
 
     /// <summary>
     /// Tests switching the view model deactivates it.
     /// </summary>
-    [Fact]
+    [Test]
     public void SwitchingViewModelDeactivatesIt()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -94,26 +95,26 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
 
             var newVm = new ActivatingViewModel();
-            Assert.Equal(0, newVm.IsActiveCount);
+            Assert.That(newVm.IsActiveCount, Is.EqualTo(0));
 
             fixture.ViewModel = newVm;
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(1, newVm.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(newVm.IsActiveCount, Is.EqualTo(1));
         }
     }
 
     /// <summary>
     /// Tests setting the view model after loaded loads it.
     /// </summary>
-    [Fact]
+    [Test]
     public void SettingViewModelAfterLoadedLoadsIt()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -127,26 +128,26 @@ public class ActivatingViewTests
             var vm = new ActivatingViewModel();
             var fixture = new ActivatingView();
 
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
 
             fixture.ViewModel = vm;
-            Assert.Equal(1, fixture.IsActiveCount);
-            Assert.Equal(1, vm.IsActiveCount);
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.Equal(0, fixture.IsActiveCount);
-            Assert.Equal(0, vm.IsActiveCount);
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
         }
     }
 
     /// <summary>
     /// Tests the can unload and load view again.
     /// </summary>
-    [Fact]
+    [Test]
     public void CanUnloadAndLoadViewAgain()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -162,20 +163,20 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
         }
     }
 }

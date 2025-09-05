@@ -41,14 +41,14 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Makes the sure kvo bindings bind to kvo things.
         /// </summary>
-        [Fact]
+        [Test]
         public void MakeSureKVOBindingsBindToKVOThings()
         {
             var input = new FooController();
             var fixture = new KVOObservableForProperty();
 
-            Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(FooController), "View"));
-            Assert.Equal(0, fixture.GetAffinityForObject(typeof(FooController), "ViewModel"));
+            Assert.That(fixture.GetAffinityForObject(typeof(FooController, Is.Not.EqualTo(0)), "View"));
+            Assert.That(fixture.GetAffinityForObject(typeof(FooController, Is.EqualTo(0)), "ViewModel"));
         }
     }
 }

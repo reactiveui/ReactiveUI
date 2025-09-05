@@ -9,12 +9,13 @@ namespace ReactiveUI.Tests.Xaml;
 /// API approvals for the xaml project.
 /// </summary>
 [ExcludeFromCodeCoverage]
+[TestFixture]
 public class XamlApiApprovalTests
 {
     /// <summary>
     /// Generates the public API for the blend project.
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
-    [Fact]
+    [Test]
     public Task Blend() => typeof(Blend.FollowObservableStateBehavior).Assembly.CheckApproval(["ReactiveUI"]);
 }

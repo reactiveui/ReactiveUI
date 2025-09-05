@@ -11,12 +11,13 @@ namespace ReactiveUI.Tests.Platforms.AndroidX;
 /// Tests for AndroidX-specific ReactiveUIBuilder functionality.
 /// These run on desktop test host and only verify DI registrations, not Android runtime behavior.
 /// </summary>
+[TestFixture]
 public class ReactiveUIBuilderAndroidXTests
 {
     /// <summary>
     /// Test that AndroidX services can be registered using the builder.
     /// </summary>
-    [Fact]
+    [Test]
     public void WithAndroidX_Should_Register_Services()
     {
         using var locator = new ModernDependencyResolver();
@@ -26,16 +27,16 @@ public class ReactiveUIBuilderAndroidXTests
 
         // Core/platform Android registrations ensure these services exist
         var commandBinder = locator.GetService<ICreatesCommandBinding>();
-        Assert.NotNull(commandBinder);
+        Assert.That(commandBinder, Is.Not.Null);
 
         var observableForProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableForProperty);
+        Assert.That(observableForProperty, Is.Not.Null);
     }
 
     /// <summary>
     /// Test fluent chaining with AndroidX.
     /// </summary>
-    [Fact]
+    [Test]
     public void WithCoreServices_AndAndroidX_Should_Register_All_Services()
     {
         using var locator = new ModernDependencyResolver();
@@ -45,9 +46,9 @@ public class ReactiveUIBuilderAndroidXTests
                .Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
+        Assert.That(observableProperty, Is.Not.Null);
 
         var commandBinder = locator.GetService<ICreatesCommandBinding>();
-        Assert.NotNull(commandBinder);
+        Assert.That(commandBinder, Is.Not.Null);
     }
 }

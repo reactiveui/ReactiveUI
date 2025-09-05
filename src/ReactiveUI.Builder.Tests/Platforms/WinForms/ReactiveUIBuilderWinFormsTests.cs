@@ -8,9 +8,10 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests.Platforms.WinForms;
 
+[TestFixture]
 public class ReactiveUIBuilderWinFormsTests
 {
-    [Fact]
+    [Test]
     public void WithWinForms_Should_Register_WinForms_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -20,13 +21,13 @@ public class ReactiveUIBuilderWinFormsTests
         builder.WithWinForms().Build();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.NotNull(platformOperations);
+        Assert.That(platformOperations, Is.Not.Null);
 
         var activationFetcher = locator.GetService<IActivationForViewFetcher>();
-        Assert.NotNull(activationFetcher);
+        Assert.That(activationFetcher, Is.Not.Null);
     }
 
-    [Fact]
+    [Test]
     public void WithCoreServices_AndWinForms_Should_Register_All_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -36,9 +37,9 @@ public class ReactiveUIBuilderWinFormsTests
         builder.WithWinForms().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
+        Assert.That(observableProperty, Is.Not.Null);
 
         var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.NotNull(platformOperations);
+        Assert.That(platformOperations, Is.Not.Null);
     }
 }

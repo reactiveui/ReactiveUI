@@ -10,7 +10,6 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Using Include="Xunit" />
     <Using Include="Splat" />
   </ItemGroup>
 </Project>

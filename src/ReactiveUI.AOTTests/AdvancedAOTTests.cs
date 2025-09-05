@@ -14,12 +14,13 @@ namespace ReactiveUI.AOTTests;
 /// <summary>
 /// Additional AOT compatibility tests for more advanced scenarios.
 /// </summary>
+[TestFixture]
 public class AdvancedAOTTests
 {
     /// <summary>
     /// Tests that routing functionality works in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing AOT-incompatible RoutingState which uses ReactiveCommand")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing AOT-incompatible RoutingState which uses ReactiveCommand")]
     public void RoutingState_Navigation_WorksInAOT()
@@ -30,14 +31,14 @@ public class AdvancedAOTTests
         // Test navigation
         routingState.Navigate.Execute(viewModel).Subscribe();
 
-        Assert.Single(routingState.NavigationStack);
-        Assert.Equal(viewModel, routingState.NavigationStack[0]);
+        Assert.That(routingState.NavigationStack, Has.Exactly(1).Items);
+        Assert.That(routingState.NavigationStack[0], Is.EqualTo(viewModel));
     }
 
     /// <summary>
     /// Tests that property validation works in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     public void PropertyValidation_WorksInAOT()
@@ -51,13 +52,13 @@ public class AdvancedAOTTests
         property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
 
-        Assert.True(hasErrors);
+        Assert.That(hasErrors, Is.True);
     }
 
     /// <summary>
     /// Tests that view model activation works in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     public void ViewModelActivation_WorksInAOT()
@@ -73,16 +74,16 @@ public class AdvancedAOTTests
         });
 
         viewModel.Activator.Activate();
-        Assert.True(activated);
+        Assert.That(activated, Is.True);
 
         viewModel.Activator.Deactivate();
-        Assert.True(deactivated);
+        Assert.That(deactivated, Is.True);
     }
 
     /// <summary>
     /// Tests that observable property helpers work correctly in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ToProperty which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ToProperty which requires AOT suppression")]
     public void ObservableAsPropertyHelper_Lifecycle_WorksInAOT()
@@ -92,10 +93,10 @@ public class AdvancedAOTTests
 
         var helper = source.ToProperty(testObject, nameof(TestReactiveObject.ComputedProperty));
 
-        Assert.Equal("initial", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("initial"));
 
         source.OnNext("updated");
-        Assert.Equal("updated", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("updated"));
 
         source.OnCompleted();
         helper.Dispose();
@@ -104,7 +105,7 @@ public class AdvancedAOTTests
     /// <summary>
     /// Tests that dependency resolution works in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     public void DependencyResolution_BasicOperations_WorkInAOT()
     {
         var resolver = Locator.CurrentMutable;
@@ -113,13 +114,13 @@ public class AdvancedAOTTests
         resolver.RegisterConstant<string>("test value");
         var resolved = Locator.Current.GetService<string>();
 
-        Assert.Equal("test value", resolved);
+        Assert.That(resolved, Is.EqualTo("test value"));
     }
 
     /// <summary>
     /// Tests that message bus functionality works in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBus_Operations_WorkInAOT()
     {
         var messageBus = new MessageBus();
@@ -133,6 +134,6 @@ public class AdvancedAOTTests
 
         messageBus.SendMessage(testMessage);
 
-        Assert.True(received);
+        Assert.That(received, Is.True);
     }
 }

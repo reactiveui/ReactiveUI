@@ -6,7 +6,6 @@
 using System.Windows.Input;
 
 using DynamicData;
-using FluentAssertions;
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
@@ -26,7 +25,7 @@ public class ReactiveCommandTest
     /// <summary>
     /// A test that determines whether this instance [can execute changed is available via ICommand].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteChangedIsAvailableViaICommand()
     {
         var canExecuteSubject = new Subject<bool>();
@@ -37,46 +36,46 @@ public class ReactiveCommandTest
         canExecuteSubject.OnNext(true);
         canExecuteSubject.OnNext(false);
 
-        Assert.Equal(2, canExecuteChanged.Count);
-        Assert.True(canExecuteChanged[0]);
-        Assert.False(canExecuteChanged[1]);
+        Assert.That(canExecuteChanged.Count, Is.EqualTo(2));
+        Assert.That(canExecuteChanged[0], Is.True);
+        Assert.That(canExecuteChanged[1], Is.False);
     }
 
     /// <summary>
     /// A test that determines whether this instance [can execute is available via ICommand].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteIsAvailableViaICommand()
     {
         var canExecuteSubject = new Subject<bool>();
         ICommand? fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
 
-        Assert.False(fixture.CanExecute(null));
+        Assert.That(fixture.CanExecute(null, Is.False));
 
         canExecuteSubject.OnNext(true);
-        Assert.True(fixture.CanExecute(null));
+        Assert.That(fixture.CanExecute(null, Is.True));
 
         canExecuteSubject.OnNext(false);
-        Assert.False(fixture.CanExecute(null));
+        Assert.That(fixture.CanExecute(null, Is.False));
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute is behavioral].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteIsBehavioral()
     {
         var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
-        Assert.Equal(1, canExecute.Count);
-        Assert.True(canExecute[0]);
+        Assert.That(canExecute.Count, Is.EqualTo(1));
+        Assert.That(canExecute[0], Is.True);
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute is false if already executing].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteIsFalseIfAlreadyExecuting() =>
         new TestScheduler().With(
             scheduler =>
@@ -88,19 +87,19 @@ public class ReactiveCommandTest
                 fixture.Execute().Subscribe();
                 scheduler.AdvanceByMs(100);
 
-                Assert.Equal(2, canExecute.Count);
-                Assert.False(canExecute[1]);
+                Assert.That(canExecute.Count, Is.EqualTo(2));
+                Assert.That(canExecute[1], Is.False);
 
                 scheduler.AdvanceByMs(901);
 
-                Assert.Equal(3, canExecute.Count);
-                Assert.True(canExecute[2]);
+                Assert.That(canExecute.Count, Is.EqualTo(3));
+                Assert.That(canExecute[2], Is.True);
             });
 
     /// <summary>
     /// Test that determines whether this instance [can execute is false if caller dictates as such].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteIsFalseIfCallerDictatesAsSuch()
     {
         var canExecuteSubject = new Subject<bool>();
@@ -110,32 +109,32 @@ public class ReactiveCommandTest
         canExecuteSubject.OnNext(true);
         canExecuteSubject.OnNext(false);
 
-        Assert.Equal(3, canExecute.Count);
-        Assert.False(canExecute[0]);
-        Assert.True(canExecute[1]);
-        Assert.False(canExecute[2]);
+        Assert.That(canExecute.Count, Is.EqualTo(3));
+        Assert.That(canExecute[0], Is.False);
+        Assert.That(canExecute[1], Is.True);
+        Assert.That(canExecute[2], Is.False);
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute is unsubscribed after command disposal].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteIsUnsubscribedAfterCommandDisposal()
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
 
-        Assert.True(canExecuteSubject.HasObservers);
+        Assert.That(canExecuteSubject.HasObservers, Is.True);
 
         fixture.Dispose();
 
-        Assert.False(canExecuteSubject.HasObservers);
+        Assert.That(canExecuteSubject.HasObservers, Is.False);
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute only ticks distinct values].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteOnlyTicksDistinctValues()
     {
         var canExecuteSubject = new Subject<bool>();
@@ -149,15 +148,15 @@ public class ReactiveCommandTest
         canExecuteSubject.OnNext(true);
         canExecuteSubject.OnNext(true);
 
-        Assert.Equal(2, canExecute.Count);
-        Assert.False(canExecute[0]);
-        Assert.True(canExecute[1]);
+        Assert.That(canExecute.Count, Is.EqualTo(2));
+        Assert.That(canExecute[0], Is.False);
+        Assert.That(canExecute[1], Is.True);
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute ticks failures through thrown exceptions].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteTicksFailuresThroughThrownExceptions()
     {
         var canExecuteSubject = new Subject<bool>();
@@ -166,14 +165,14 @@ public class ReactiveCommandTest
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
-        Assert.Equal(1, thrownExceptions.Count);
-        Assert.Equal("oops", thrownExceptions[0].Message);
+        Assert.That(thrownExceptions.Count, Is.EqualTo(1));
+        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
     }
 
     /// <summary>
     /// Creates the task facilitates TPL integration.
     /// </summary>
-    [Fact]
+    [Test]
     public void CreateTaskFacilitatesTPLIntegration()
     {
         var fixture = ReactiveCommand.CreateFromTask(() => Task.FromResult(13), outputScheduler: ImmediateScheduler.Instance);
@@ -181,14 +180,14 @@ public class ReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.Equal(1, results.Count);
-        Assert.Equal(13, results[0]);
+        Assert.That(results.Count, Is.EqualTo(1));
+        Assert.That(results[0], Is.EqualTo(13));
     }
 
     /// <summary>
     /// Creates the task facilitates TPL integration with parameter.
     /// </summary>
-    [Fact]
+    [Test]
     public void CreateTaskFacilitatesTPLIntegrationWithParameter()
     {
         var fixture = ReactiveCommand.CreateFromTask<int, int>(param => Task.FromResult(param + 1), outputScheduler: ImmediateScheduler.Instance);
@@ -197,15 +196,15 @@ public class ReactiveCommandTest
         fixture.Execute(3).Subscribe();
         fixture.Execute(41).Subscribe();
 
-        Assert.Equal(2, results.Count);
-        Assert.Equal(4, results[0]);
-        Assert.Equal(42, results[1]);
+        Assert.That(results.Count, Is.EqualTo(2));
+        Assert.That(results[0], Is.EqualTo(4));
+        Assert.That(results[1], Is.EqualTo(42));
     }
 
     /// <summary>
     /// Creates the throws if execution parameter is null.
     /// </summary>
-    [Fact]
+    [Test]
     public void CreateThrowsIfExecutionParameterIsNull()
     {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -225,7 +224,7 @@ public class ReactiveCommandTest
     /// <summary>
     /// Creates the throws if execution parameter is null.
     /// </summary>
-    [Fact]
+    [Test]
     public void CreateRunInBackgroundThrowsIfExecutionParameterIsNull()
     {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -245,7 +244,7 @@ public class ReactiveCommandTest
     /// <summary>
     /// Exceptions the are delivered on output scheduler.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExceptionsAreDeliveredOnOutputScheduler() =>
         new TestScheduler().With(
             scheduler =>
@@ -255,15 +254,15 @@ public class ReactiveCommandTest
                 fixture.ThrownExceptions.Subscribe(ex => exception = ex);
                 fixture.Execute().Subscribe(_ => { }, _ => { });
 
-                Assert.Null(exception);
+                Assert.That(exception, Is.Null);
                 scheduler.Start();
-                Assert.IsType<InvalidOperationException>(exception);
+                Assert.That(exception, Is.TypeOf<InvalidOperationException>());
             });
 
     /// <summary>
     /// Executes the can be cancelled.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteCanBeCancelled() =>
         new TestScheduler().With(
             scheduler =>
@@ -276,19 +275,19 @@ public class ReactiveCommandTest
                 var sub2 = fixture.Execute().Subscribe();
                 scheduler.AdvanceByMs(999);
 
-                Assert.True(fixture.IsExecuting.FirstAsync().Wait());
-                Assert.Empty(executed);
+                Assert.That(fixture.IsExecuting.FirstAsync(, Is.True).Wait());
+                Assert.That(executed, Is.Empty);
                 sub1.Dispose();
 
                 scheduler.AdvanceByMs(2);
-                Assert.Equal(1, executed.Count);
-                Assert.False(fixture.IsExecuting.FirstAsync().Wait());
+                Assert.That(executed.Count, Is.EqualTo(1));
+                Assert.That(fixture.IsExecuting.FirstAsync(, Is.False).Wait());
             });
 
     /// <summary>
     /// Executes the can tick through multiple results.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteCanTickThroughMultipleResults()
     {
         var fixture = ReactiveCommand.CreateFromObservable(() => new[] { 1, 2, 3 }.ToObservable(), outputScheduler: ImmediateScheduler.Instance);
@@ -296,16 +295,16 @@ public class ReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.Equal(3, results.Count);
-        Assert.Equal(1, results[0]);
-        Assert.Equal(2, results[1]);
-        Assert.Equal(3, results[2]);
+        Assert.That(results.Count, Is.EqualTo(3));
+        Assert.That(results[0], Is.EqualTo(1));
+        Assert.That(results[1], Is.EqualTo(2));
+        Assert.That(results[2], Is.EqualTo(3));
     }
 
     /// <summary>
     /// Executes the facilitates any number of in flight executions.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteFacilitatesAnyNumberOfInFlightExecutions() =>
         new TestScheduler().With(
             scheduler =>
@@ -323,26 +322,26 @@ public class ReactiveCommandTest
                 var sub4 = fixture.Execute().Subscribe();
                 scheduler.AdvanceByMs(100);
 
-                Assert.True(fixture.IsExecuting.FirstAsync().Wait());
-                Assert.Empty(executed);
+                Assert.That(fixture.IsExecuting.FirstAsync(, Is.True).Wait());
+                Assert.That(executed, Is.Empty);
 
                 scheduler.AdvanceByMs(101);
-                Assert.Equal(2, executed.Count);
-                Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+                Assert.That(executed.Count, Is.EqualTo(2));
+                Assert.That(fixture.IsExecuting.FirstAsync(, Is.True).Wait());
 
                 scheduler.AdvanceByMs(200);
-                Assert.Equal(3, executed.Count);
-                Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+                Assert.That(executed.Count, Is.EqualTo(3));
+                Assert.That(fixture.IsExecuting.FirstAsync(, Is.True).Wait());
 
                 scheduler.AdvanceByMs(100);
-                Assert.Equal(4, executed.Count);
-                Assert.False(fixture.IsExecuting.FirstAsync().Wait());
+                Assert.That(executed.Count, Is.EqualTo(4));
+                Assert.That(fixture.IsExecuting.FirstAsync(, Is.False).Wait());
             });
 
     /// <summary>
     /// Executes the is available via ICommand.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteIsAvailableViaICommand()
     {
         var executed = false;
@@ -355,13 +354,13 @@ public class ReactiveCommandTest
                                                   outputScheduler: ImmediateScheduler.Instance);
 
         fixture.Execute(null);
-        Assert.True(executed);
+        Assert.That(executed, Is.True);
     }
 
     /// <summary>
     /// Executes the passes through parameter.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecutePassesThroughParameter()
     {
         var parameters = new List<int>();
@@ -377,16 +376,16 @@ public class ReactiveCommandTest
         fixture.Execute(42).Subscribe();
         fixture.Execute(348).Subscribe();
 
-        Assert.Equal(3, parameters.Count);
-        Assert.Equal(1, parameters[0]);
-        Assert.Equal(42, parameters[1]);
-        Assert.Equal(348, parameters[2]);
+        Assert.That(parameters.Count, Is.EqualTo(3));
+        Assert.That(parameters[0], Is.EqualTo(1));
+        Assert.That(parameters[1], Is.EqualTo(42));
+        Assert.That(parameters[2], Is.EqualTo(348));
     }
 
     /// <summary>
     /// Executes the reenables execution even after failure.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteReenablesExecutionEvenAfterFailure()
     {
         var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
@@ -395,19 +394,19 @@ public class ReactiveCommandTest
 
         fixture.Execute().Subscribe(_ => { }, _ => { });
 
-        Assert.Equal(1, thrownExceptions.Count);
-        Assert.Equal("oops", thrownExceptions[0].Message);
+        Assert.That(thrownExceptions.Count, Is.EqualTo(1));
+        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
 
-        Assert.Equal(3, canExecute.Count);
-        Assert.True(canExecute[0]);
-        Assert.False(canExecute[1]);
-        Assert.True(canExecute[2]);
+        Assert.That(canExecute.Count, Is.EqualTo(3));
+        Assert.That(canExecute[0], Is.True);
+        Assert.That(canExecute[1], Is.False);
+        Assert.That(canExecute[2], Is.True);
     }
 
     /// <summary>
     /// Executes the result is delivered on specified scheduler.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteResultIsDeliveredOnSpecifiedScheduler() =>
         new TestScheduler().With(
             scheduler =>
@@ -418,15 +417,15 @@ public class ReactiveCommandTest
 
                 fixture.Execute().ObserveOn(scheduler).Subscribe(_ => executed = true);
 
-                Assert.False(executed);
+                Assert.That(executed, Is.False);
                 scheduler.AdvanceByMs(1);
-                Assert.True(executed);
+                Assert.That(executed, Is.True);
             });
 
     /// <summary>
     /// Executes the ticks any exception.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteTicksAnyException()
     {
         var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()), outputScheduler: ImmediateScheduler.Instance);
@@ -434,13 +433,13 @@ public class ReactiveCommandTest
         Exception? exception = null;
         fixture.Execute().Subscribe(_ => { }, ex => exception = ex, () => { });
 
-        Assert.IsType<InvalidOperationException>(exception);
+        Assert.That(exception, Is.TypeOf<InvalidOperationException>());
     }
 
     /// <summary>
     /// Executes the ticks any lambda exception.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteTicksAnyLambdaException()
     {
         var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
@@ -448,13 +447,13 @@ public class ReactiveCommandTest
         Exception? exception = null;
         fixture.Execute().Subscribe(_ => { }, ex => exception = ex, () => { });
 
-        Assert.IsType<InvalidOperationException>(exception);
+        Assert.That(exception, Is.TypeOf<InvalidOperationException>());
     }
 
     /// <summary>
     /// Executes the ticks errors through thrown exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteTicksErrorsThroughThrownExceptions()
     {
         var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
@@ -462,14 +461,14 @@ public class ReactiveCommandTest
 
         fixture.Execute().Subscribe(_ => { }, _ => { });
 
-        Assert.Equal(1, thrownExceptions.Count);
-        Assert.Equal("oops", thrownExceptions[0].Message);
+        Assert.That(thrownExceptions.Count, Is.EqualTo(1));
+        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
     }
 
     /// <summary>
     /// Executes the ticks lambda errors through thrown exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteTicksLambdaErrorsThroughThrownExceptions()
     {
         var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => throw new InvalidOperationException("oops"), outputScheduler: ImmediateScheduler.Instance);
@@ -477,15 +476,15 @@ public class ReactiveCommandTest
 
         fixture.Execute().Subscribe(_ => { }, _ => { });
 
-        Assert.Equal(1, thrownExceptions.Count);
-        Assert.Equal("oops", thrownExceptions[0].Message);
-        Assert.True(fixture.CanExecute.FirstAsync().Wait());
+        Assert.That(thrownExceptions.Count, Is.EqualTo(1));
+        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
+        Assert.That(fixture.CanExecute.FirstAsync(, Is.True).Wait());
     }
 
     /// <summary>
     /// Executes the ticks through the result.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteTicksThroughTheResult()
     {
         var num = 0;
@@ -499,47 +498,47 @@ public class ReactiveCommandTest
         num = 30;
         fixture.Execute().Subscribe();
 
-        Assert.Equal(3, results.Count);
-        Assert.Equal(1, results[0]);
-        Assert.Equal(10, results[1]);
-        Assert.Equal(30, results[2]);
+        Assert.That(results.Count, Is.EqualTo(3));
+        Assert.That(results[0], Is.EqualTo(1));
+        Assert.That(results[1], Is.EqualTo(10));
+        Assert.That(results[2], Is.EqualTo(30));
     }
 
     /// <summary>
     /// Executes via ICommand throws if parameter type is incorrect.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
     {
         ICommand? fixture = ReactiveCommand.Create<int>(_ => { }, outputScheduler: ImmediateScheduler.Instance);
         var ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute("foo"));
-        Assert.Equal("Command requires parameters of type System.Int32, but received parameter of type System.String.", ex.Message);
+        Assert.That(but received parameter of type System.String.", ex.Message, Is.EqualTo("Command requires parameters of type System.Int32));
 
         fixture = ReactiveCommand.Create<string>(_ => { });
         ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute(13));
-        Assert.Equal("Command requires parameters of type System.String, but received parameter of type System.Int32.", ex.Message);
+        Assert.That(but received parameter of type System.Int32.", ex.Message, Is.EqualTo("Command requires parameters of type System.String));
     }
 
     /// <summary>
     /// Executes via ICommand works with nullable types.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteViaICommandWorksWithNullableTypes()
     {
         int? value = null;
         ICommand? fixture = ReactiveCommand.Create<int?>(param => value = param, outputScheduler: ImmediateScheduler.Instance);
 
         fixture.Execute(42);
-        Assert.Equal(42, value);
+        Assert.That(value, Is.EqualTo(42));
 
         fixture.Execute(null);
-        Assert.Null(value);
+        Assert.That(value, Is.Null);
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand in target invokes the command.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandInTargetInvokesTheCommand()
     {
         var executionCount = 0;
@@ -549,16 +548,16 @@ public class ReactiveCommandTest
         fixture.TheCommand = ReactiveCommand.Create(() => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
 
         source.OnNext(Unit.Default);
-        Assert.Equal(1, executionCount);
+        Assert.That(executionCount, Is.EqualTo(1));
 
         source.OnNext(Unit.Default);
-        Assert.Equal(2, executionCount);
+        Assert.That(executionCount, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand in target passes the specified value to can execute and execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandInTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
         var fixture = new ICommandHolder();
@@ -568,14 +567,14 @@ public class ReactiveCommandTest
         fixture.TheCommand = command;
 
         source.OnNext(42);
-        Assert.Equal(42, command.CanExecuteParameter);
-        Assert.Equal(42, command.ExecuteParameter);
+        Assert.That(command.CanExecuteParameter, Is.EqualTo(42));
+        Assert.That(command.ExecuteParameter, Is.EqualTo(42));
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand in target passes the specified value to can execute and execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandInNullableTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
         var fixture = new ICommandHolder();
@@ -585,14 +584,14 @@ public class ReactiveCommandTest
         fixture.TheCommand = command;
 
         source.OnNext(42);
-        Assert.Equal(42, command.CanExecuteParameter);
-        Assert.Equal(42, command.ExecuteParameter);
+        Assert.That(command.CanExecuteParameter, Is.EqualTo(42));
+        Assert.That(command.ExecuteParameter, Is.EqualTo(42));
     }
 
     /// <summary>
     /// Test that invokes the command against i command in target respects can execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandInTargetRespectsCanExecute()
     {
         var executed = false;
@@ -603,17 +602,17 @@ public class ReactiveCommandTest
         fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
 
         source.OnNext(Unit.Default);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         canExecute.OnNext(true);
         source.OnNext(Unit.Default);
-        Assert.True(executed);
+        Assert.That(executed, Is.True);
     }
 
     /// <summary>
     /// Test that invokes the command against i command in target respects can execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandInNullableTargetRespectsCanExecute()
     {
         var executed = false;
@@ -624,17 +623,17 @@ public class ReactiveCommandTest
         fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
 
         source.OnNext(Unit.Default);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         canExecute.OnNext(true);
         source.OnNext(Unit.Default);
-        Assert.True(executed);
+        Assert.That(executed, Is.True);
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand in target respects can execute window.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandInTargetRespectsCanExecuteWindow()
     {
         var executed = false;
@@ -645,18 +644,18 @@ public class ReactiveCommandTest
         fixture.TheCommand = ReactiveCommand.Create(() => executed = true, canExecute, ImmediateScheduler.Instance);
 
         source.OnNext(Unit.Default);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         // The execution window re-opens, but the above execution request should not be instigated because
         // it occurred when the window was closed. Execution requests do not queue up when the window is closed.
         canExecute.OnNext(true);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand in target swallows exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandInTargetSwallowsExceptions()
     {
         var count = 0;
@@ -676,13 +675,13 @@ public class ReactiveCommandTest
         source.OnNext(Unit.Default);
         source.OnNext(Unit.Default);
 
-        Assert.Equal(2, count);
+        Assert.That(count, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand invokes the command.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandInvokesTheCommand()
     {
         var executionCount = 0;
@@ -691,16 +690,16 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.Equal(1, executionCount);
+        Assert.That(executionCount, Is.EqualTo(1));
 
         source.OnNext(Unit.Default);
-        Assert.Equal(2, executionCount);
+        Assert.That(executionCount, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand invokes the command.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstNullableICommandInvokesTheCommand()
     {
         var executionCount = 0;
@@ -709,16 +708,16 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.Equal(1, executionCount);
+        Assert.That(executionCount, Is.EqualTo(1));
 
         source.OnNext(Unit.Default);
-        Assert.Equal(2, executionCount);
+        Assert.That(executionCount, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand passes the specified value to can execute and execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
         var fixture = new FakeCommand();
@@ -726,14 +725,14 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(42);
-        Assert.Equal(42, fixture.CanExecuteParameter);
-        Assert.Equal(42, fixture.ExecuteParameter);
+        Assert.That(fixture.CanExecuteParameter, Is.EqualTo(42));
+        Assert.That(fixture.ExecuteParameter, Is.EqualTo(42));
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand respects can execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandRespectsCanExecute()
     {
         var executed = false;
@@ -743,17 +742,17 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         canExecute.OnNext(true);
         source.OnNext(Unit.Default);
-        Assert.True(executed);
+        Assert.That(executed, Is.True);
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand respects can execute window.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandRespectsCanExecuteWindow()
     {
         var executed = false;
@@ -763,18 +762,18 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         // The execution window re-opens, but the above execution request should not be instigated because
         // it occurred when the window was closed. Execution requests do not queue up when the window is closed.
         canExecute.OnNext(true);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
     }
 
     /// <summary>
     /// Test that invokes the command against ICommand swallows exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstICommandSwallowsExceptions()
     {
         var count = 0;
@@ -792,13 +791,13 @@ public class ReactiveCommandTest
         source.OnNext(Unit.Default);
         source.OnNext(Unit.Default);
 
-        Assert.Equal(2, count);
+        Assert.That(count, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command in target invokes the command.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandInTargetInvokesTheCommand()
     {
         var executionCount = 0;
@@ -808,16 +807,16 @@ public class ReactiveCommandTest
         fixture.TheCommand = ReactiveCommand.Create<int>(_ => ++executionCount, outputScheduler: ImmediateScheduler.Instance);
 
         source.OnNext(0);
-        Assert.Equal(1, executionCount);
+        Assert.That(executionCount, Is.EqualTo(1));
 
         source.OnNext(0);
-        Assert.Equal(2, executionCount);
+        Assert.That(executionCount, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command in target passes the specified value to execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandInTargetPassesTheSpecifiedValueToExecute()
     {
         var executeReceived = 0;
@@ -827,13 +826,13 @@ public class ReactiveCommandTest
         fixture.TheCommand = ReactiveCommand.Create<int>(x => executeReceived = x, outputScheduler: ImmediateScheduler.Instance);
 
         source.OnNext(42);
-        Assert.Equal(42, executeReceived);
+        Assert.That(executeReceived, Is.EqualTo(42));
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command in target respects can execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecute()
     {
         var executed = false;
@@ -844,17 +843,17 @@ public class ReactiveCommandTest
         fixture.TheCommand = ReactiveCommand.Create<int>(_ => executed = true, canExecute, ImmediateScheduler.Instance);
 
         source.OnNext(0);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         canExecute.OnNext(true);
         source.OnNext(0);
-        Assert.True(executed);
+        Assert.That(executed, Is.True);
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command in target respects can execute window.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecuteWindow()
     {
         var executed = false;
@@ -865,18 +864,18 @@ public class ReactiveCommandTest
         fixture.TheCommand = ReactiveCommand.Create<int>(_ => executed = true, canExecute, ImmediateScheduler.Instance);
 
         source.OnNext(0);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         // The execution window re-opens, but the above execution request should not be instigated because
         // it occurred when the window was closed. Execution requests do not queue up when the window is closed.
         canExecute.OnNext(true);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command in target swallows exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandInTargetSwallowsExceptions()
     {
         var count = 0;
@@ -897,13 +896,13 @@ public class ReactiveCommandTest
         source.OnNext(0);
         source.OnNext(0);
 
-        Assert.Equal(2, count);
+        Assert.That(count, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command invokes the command.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandInvokesTheCommand()
     {
         var executionCount = 0;
@@ -912,16 +911,16 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.Equal(1, executionCount);
+        Assert.That(executionCount, Is.EqualTo(1));
 
         source.OnNext(Unit.Default);
-        Assert.Equal(2, executionCount);
+        Assert.That(executionCount, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command passes the specified value to execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandPassesTheSpecifiedValueToExecute()
     {
         var executeReceived = 0;
@@ -930,13 +929,13 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(42);
-        Assert.Equal(42, executeReceived);
+        Assert.That(executeReceived, Is.EqualTo(42));
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command respects can execute.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandRespectsCanExecute()
     {
         var executed = false;
@@ -946,17 +945,17 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         canExecute.OnNext(true);
         source.OnNext(Unit.Default);
-        Assert.True(executed);
+        Assert.That(executed, Is.True);
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command respects can execute window.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandRespectsCanExecuteWindow()
     {
         var executed = false;
@@ -966,18 +965,18 @@ public class ReactiveCommandTest
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
 
         // The execution window re-opens, but the above execution request should not be instigated because
         // it occurred when the window was closed. Execution requests do not queue up when the window is closed.
         canExecute.OnNext(true);
-        Assert.False(executed);
+        Assert.That(executed, Is.False);
     }
 
     /// <summary>
     /// Test that invokes the command against reactive command swallows exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandAgainstReactiveCommandSwallowsExceptions()
     {
         var count = 0;
@@ -995,13 +994,13 @@ public class ReactiveCommandTest
         source.OnNext(Unit.Default);
         source.OnNext(Unit.Default);
 
-        Assert.Equal(2, count);
+        Assert.That(count, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Test that invokes the command works even if the source is cold.
     /// </summary>
-    [Fact]
+    [Test]
     public void InvokeCommandWorksEvenIfTheSourceIsCold()
     {
         var executionCount = 0;
@@ -1009,26 +1008,26 @@ public class ReactiveCommandTest
         var source = Observable.Return(Unit.Default);
         source.InvokeCommand(fixture);
 
-        Assert.Equal(1, executionCount);
+        Assert.That(executionCount, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Test that determines whether [is executing is behavioral].
     /// </summary>
-    [Fact]
+    [Test]
     public void IsExecutingIsBehavioral()
     {
         var fixture = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
 
-        Assert.Equal(1, isExecuting.Count);
-        Assert.False(isExecuting[0]);
+        Assert.That(isExecuting.Count, Is.EqualTo(1));
+        Assert.That(isExecuting[0], Is.False);
     }
 
     /// <summary>
     /// Test that determines whether [is executing remains true as long as execution pipeline has not completed].
     /// </summary>
-    [Fact]
+    [Test]
     public void IsExecutingRemainsTrueAsLongAsExecutionPipelineHasNotCompleted()
     {
         var execute = new Subject<Unit>();
@@ -1036,22 +1035,22 @@ public class ReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+        Assert.That(fixture.IsExecuting.FirstAsync(, Is.True).Wait());
 
         execute.OnNext(Unit.Default);
-        Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+        Assert.That(fixture.IsExecuting.FirstAsync(, Is.True).Wait());
 
         execute.OnNext(Unit.Default);
-        Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+        Assert.That(fixture.IsExecuting.FirstAsync(, Is.True).Wait());
 
         execute.OnCompleted();
-        Assert.False(fixture.IsExecuting.FirstAsync().Wait());
+        Assert.That(fixture.IsExecuting.FirstAsync(, Is.False).Wait());
     }
 
     /// <summary>
     /// Test that determines whether [is executing ticks as executions progress].
     /// </summary>
-    [Fact]
+    [Test]
     public void IsExecutingTicksAsExecutionsProgress() =>
         new TestScheduler().With(
             scheduler =>
@@ -1063,20 +1062,20 @@ public class ReactiveCommandTest
                 fixture.Execute().Subscribe();
                 scheduler.AdvanceByMs(100);
 
-                Assert.Equal(2, isExecuting.Count);
-                Assert.False(isExecuting[0]);
-                Assert.True(isExecuting[1]);
+                Assert.That(isExecuting.Count, Is.EqualTo(2));
+                Assert.That(isExecuting[0], Is.False);
+                Assert.That(isExecuting[1], Is.True);
 
                 scheduler.AdvanceByMs(901);
 
-                Assert.Equal(3, isExecuting.Count);
-                Assert.False(isExecuting[2]);
+                Assert.That(isExecuting.Count, Is.EqualTo(3));
+                Assert.That(isExecuting[2], Is.False);
             });
 
     /// <summary>
     /// Results the is ticked through specified scheduler.
     /// </summary>
-    [Fact]
+    [Test]
     public void ResultIsTickedThroughSpecifiedScheduler() =>
         new TestScheduler().WithAsync(
             scheduler =>
@@ -1085,17 +1084,17 @@ public class ReactiveCommandTest
                 fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
                 fixture.Execute().Subscribe();
-                Assert.Empty(results);
+                Assert.That(results, Is.Empty);
 
                 scheduler.AdvanceByMs(1);
-                Assert.Equal(1, results.Count);
+                Assert.That(results.Count, Is.EqualTo(1));
                 return Task.CompletedTask;
             });
 
     /// <summary>
     /// Synchronouses the command execute lazily.
     /// </summary>
-    [Fact]
+    [Test]
     public void SynchronousCommandExecuteLazily()
     {
         var executionCount = 0;
@@ -1124,25 +1123,25 @@ public class ReactiveCommandTest
         var execute3 = fixture3.Execute();
         var execute4 = fixture4.Execute();
 
-        Assert.Equal(0, executionCount);
+        Assert.That(executionCount, Is.EqualTo(0));
 
         execute1.Subscribe();
-        Assert.Equal(1, executionCount);
+        Assert.That(executionCount, Is.EqualTo(1));
 
         execute2.Subscribe();
-        Assert.Equal(2, executionCount);
+        Assert.That(executionCount, Is.EqualTo(2));
 
         execute3.Subscribe();
-        Assert.Equal(3, executionCount);
+        Assert.That(executionCount, Is.EqualTo(3));
 
         execute4.Subscribe();
-        Assert.Equal(4, executionCount);
+        Assert.That(executionCount, Is.EqualTo(4));
     }
 
     /// <summary>
     /// Synchronouses the commands fail correctly.
     /// </summary>
-    [Fact]
+    [Test]
     public void SynchronousCommandsFailCorrectly()
     {
         var fixture1 = ReactiveCommand.Create(() => throw new InvalidOperationException(), outputScheduler: ImmediateScheduler.Instance);
@@ -1154,19 +1153,19 @@ public class ReactiveCommandTest
         Observable.Merge(fixture1.ThrownExceptions, fixture2.ThrownExceptions, fixture3.ThrownExceptions, fixture4.ThrownExceptions).Subscribe(_ => ++failureCount);
 
         fixture1.Execute().Subscribe(_ => { }, _ => { });
-        Assert.Equal(1, failureCount);
+        Assert.That(failureCount, Is.EqualTo(1));
 
         fixture2.Execute().Subscribe(_ => { }, _ => { });
-        Assert.Equal(2, failureCount);
+        Assert.That(failureCount, Is.EqualTo(2));
 
         fixture3.Execute().Subscribe(_ => { }, _ => { });
-        Assert.Equal(3, failureCount);
+        Assert.That(failureCount, Is.EqualTo(3));
 
         fixture4.Execute().Subscribe(_ => { }, _ => { });
-        Assert.Equal(4, failureCount);
+        Assert.That(failureCount, Is.EqualTo(4));
     }
 
-    [Fact]
+    [Test]
     public async Task ReactiveCommandCreateFromTaskHandlesTaskExceptionAsync()
     {
         using var testSequencer = new TestSequencer();
@@ -1193,25 +1192,25 @@ public class ReactiveCommandTest
         });
 
         await testSequencer.AdvancePhaseAsync("Executing {false}");
-        Assert.False(isExecuting);
-        Assert.Null(fail);
+        Assert.That(isExecuting, Is.False);
+        Assert.That(fail, Is.Null);
 
         fixture.Execute().Subscribe();
         await testSequencer.AdvancePhaseAsync("Executing {true}");
-        Assert.True(isExecuting);
-        Assert.Null(fail);
+        Assert.That(isExecuting, Is.True);
+        Assert.That(fail, Is.Null);
 
         subj.OnNext(Unit.Default);
 
         // Wait to allow execution to complete
         await testSequencer.AdvancePhaseAsync("Executing {false}");
         await testSequencer.AdvancePhaseAsync("Exception");
-        Assert.False(isExecuting);
-        Assert.Equal("break execution", fail?.Message);
+        Assert.That(isExecuting, Is.False);
+        Assert.That(fail?.Message, Is.EqualTo("break execution"));
         testSequencer.Dispose();
     }
 
-    [Fact]
+    [Test]
     public async Task ReactiveCommandCreateFromTaskThenCancelSetsIsExecutingFalseOnlyAfterCancellationCompleteAsync()
     {
         using var testSequencer = new TestSequencer();
@@ -1278,7 +1277,7 @@ public class ReactiveCommandTest
                            (3, "command executing = False"));
     }
 
-    [Fact]
+    [Test]
     public async Task ReactiveCommandExecutesFromInvokeCommand()
     {
         using var testSequencer = new TestSequencer();
@@ -1293,12 +1292,12 @@ public class ReactiveCommandTest
                   .InvokeCommand(command);
 
         await testSequencer.AdvancePhaseAsync("Phase 1");
-        Assert.Equal(3, result);
+        Assert.That(result, Is.EqualTo(3));
 
         testSequencer.Dispose();
     }
 
-    [Fact]
+    [Test]
     public void ShouldCallAsyncMethodOnSettingReactiveSetpoint() =>
         new TestScheduler().WithAsync(scheduler =>
         {
@@ -1322,7 +1321,7 @@ public class ReactiveCommandTest
             return Task.CompletedTask;
         });
 
-    [Fact]
+    [Test]
     public async Task ReactiveCommandCreateFromTaskHandlesExecuteCancellation()
     {
         using var testSequencer = new TestSequencer();
@@ -1391,7 +1390,7 @@ public class ReactiveCommandTest
         (fail as OperationCanceledException).Should().NotBeNull();
     }
 
-    [Fact]
+    [Test]
     public void ReactiveCommandCreateFromTaskHandlesTaskException() =>
         new TestScheduler().With(
             async scheduler =>
@@ -1426,7 +1425,7 @@ public class ReactiveCommandTest
                 await Task.Delay(0);
             });
 
-    [Fact]
+    [Test]
     public async Task ReactiveCommandCreateFromTaskHandlesCancellation()
     {
         using var testSequencer = new TestSequencer();
@@ -1494,7 +1493,7 @@ public class ReactiveCommandTest
         (fail as OperationCanceledException).Should().NotBeNull();
     }
 
-    [Fact]
+    [Test]
     public async Task ReactiveCommandCreateFromTaskHandlesCompletion()
     {
         using var testSequencer = new TestSequencer();

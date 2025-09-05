@@ -3,13 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using FluentAssertions;
 
 namespace ReactiveUI.Tests.Suspension;
 
+[TestFixture]
 public class SuspensionHostExtensionsTests
 {
-    [Fact]
+    [Test]
     public void GetAppStateReturns()
     {
         var fixture = new SuspensionHost
@@ -22,7 +22,7 @@ public class SuspensionHostExtensionsTests
         result.Should().Be(fixture.AppState);
     }
 
-    [Fact]
+    [Test]
     public void NullSuspensionHostThrowsException()
     {
         Action result = () => ((SuspensionHost)null!).SetupDefaultSuspendResume();
@@ -30,7 +30,7 @@ public class SuspensionHostExtensionsTests
         result.Should().Throw<ArgumentNullException>();
     }
 
-    [Fact]
+    [Test]
     public void NullAppStateDoesNotThrowException()
     {
         var fixture = new SuspensionHost();
@@ -40,7 +40,7 @@ public class SuspensionHostExtensionsTests
         result.Should().BeNull();
     }
 
-    [Fact]
+    [Test]
     public void ObserveAppStateDoesNotThrowException()
     {
         var fixture = new SuspensionHost();
@@ -50,7 +50,7 @@ public class SuspensionHostExtensionsTests
         result.Should().BeNull();
     }
 
-    [Fact]
+    [Test]
     public void ObserveAppStateDoesNotThrowInvalidCastException()
     {
         var fixture = new SuspensionHost();

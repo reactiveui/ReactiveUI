@@ -10,7 +10,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
 using System.Windows.Controls;
-using FactAttribute = Xunit.WpfFactAttribute;
+using System.Threading;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -23,13 +23,13 @@ public class DependencyObjectObservableForPropertyTest
     /// <summary>
     /// Runs a smoke test for dependency object observables for property.
     /// </summary>
-    [Fact]
+    [Test, Apartment(ApartmentState.STA)]
     public void DependencyObjectObservableForPropertySmokeTest()
     {
         var fixture = new DepObjFixture();
         var binder = new DependencyObjectObservableForProperty();
-        Assert.NotEqual(0, binder.GetAffinityForObject(typeof(DepObjFixture), "TestString"));
-        Assert.Equal(0, binder.GetAffinityForObject(typeof(DepObjFixture), "DoesntExist"));
+        Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture, Is.Not.EqualTo(0)), "TestString"));
+        Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture, Is.EqualTo(0)), "DoesntExist"));
 
         var results = new List<IObservedChange<object, object?>>();
         Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
@@ -40,7 +40,7 @@ public class DependencyObjectObservableForPropertyTest
         fixture.TestString = "Foo";
         fixture.TestString = "Bar";
 
-        Assert.Equal(4, results.Count);
+        Assert.That(results.Count, Is.EqualTo(4));
 
         disp1.Dispose();
         disp2.Dispose();
@@ -49,13 +49,13 @@ public class DependencyObjectObservableForPropertyTest
     /// <summary>
     /// Runs a smoke test for derived dependency object observables for property.
     /// </summary>
-    [Fact]
+    [Test, Apartment(ApartmentState.STA)]
     public void DerivedDependencyObjectObservableForPropertySmokeTest()
     {
         var fixture = new DerivedDepObjFixture();
         var binder = new DependencyObjectObservableForProperty();
-        Assert.NotEqual(0, binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "TestString"));
-        Assert.Equal(0, binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "DoesntExist"));
+        Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture, Is.Not.EqualTo(0)), "TestString"));
+        Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture, Is.EqualTo(0)), "DoesntExist"));
 
         var results = new List<IObservedChange<object, object?>>();
         Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
@@ -66,7 +66,7 @@ public class DependencyObjectObservableForPropertyTest
         fixture.TestString = "Foo";
         fixture.TestString = "Bar";
 
-        Assert.Equal(4, results.Count);
+        Assert.That(results.Count, Is.EqualTo(4));
 
         disp1.Dispose();
         disp2.Dispose();
@@ -75,7 +75,7 @@ public class DependencyObjectObservableForPropertyTest
     /// <summary>
     /// Tests WhenAny with dependency object test.
     /// </summary>
-    [Fact]
+    [Test, Apartment(ApartmentState.STA)]
     public void WhenAnyWithDependencyObjectTest()
     {
         var inputs = new[] { "Foo", "Bar", "Baz" };
@@ -84,15 +84,15 @@ public class DependencyObjectObservableForPropertyTest
         fixture.WhenAnyValue(x => x.TestString).ToObservableChangeSet().Bind(out var outputs).Subscribe();
         inputs.ForEach(x => fixture.TestString = x);
 
-        Assert.Null(outputs.First());
-        Assert.Equal(4, outputs.Count);
-        Assert.True(inputs.Zip(outputs.Skip(1), (expected, actual) => expected == actual).All(x => x));
+        Assert.That(outputs.First(, Is.Null));
+        Assert.That(outputs.Count, Is.EqualTo(4));
+        Assert.That(inputs.Zip(outputs.Skip(1, Is.True), (expected, actual) => expected == actual).All(x => x));
     }
 
     /// <summary>
     /// Tests ListBoxes the selected item test.
     /// </summary>
-    [Fact]
+    [Test, Apartment(ApartmentState.STA)]
     public void ListBoxSelectedItemTest()
     {
         var input = new ListBox();
@@ -101,12 +101,12 @@ public class DependencyObjectObservableForPropertyTest
         input.Items.Add("Baz");
 
         input.WhenAnyValue(x => x.SelectedItem).ToObservableChangeSet().Bind(out var output).Subscribe();
-        Assert.Equal(1, output.Count);
+        Assert.That(output.Count, Is.EqualTo(1));
 
         input.SelectedIndex = 1;
-        Assert.Equal(2, output.Count);
+        Assert.That(output.Count, Is.EqualTo(2));
 
         input.SelectedIndex = 2;
-        Assert.Equal(3, output.Count);
+        Assert.That(output.Count, Is.EqualTo(3));
     }
 }

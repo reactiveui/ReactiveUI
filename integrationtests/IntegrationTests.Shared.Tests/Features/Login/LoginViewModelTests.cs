@@ -12,26 +12,25 @@ using System.Threading.Tasks;
 
 using DynamicData;
 
-using FluentAssertions;
-
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI;
 using ReactiveUI.Testing;
 
-using Xunit;
+using NUnit.Framework;
 
 namespace IntegrationTests.Shared.Tests.Features.Login
 {
     /// <summary>
     /// Tests associated with the LoginViewModel class.
     /// </summary>
+    [TestFixture]
     public class LoginViewModelTests
     {
         /// <summary>
         /// Checks to make sure that the cancel command actually cancels a login attempt.
         /// </summary>
-        [Fact]
+        [Test]
         public void CancelButton_Cancels_Login()
         {
             var scheduler = new TestScheduler();
@@ -43,13 +42,13 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).Milliseconds);
 
-            sut.Login.Subscribe(x => x.Should().Be(true));
+            sut.Login.Subscribe(x => Assert.That(x, Is.EqualTo(true)));
 
             Observable
                 .Return(Unit.Default)
                 .InvokeCommand(sut.Login);
 
-            sut.Cancel.CanExecute.Subscribe(x => x.Should().Be(true));
+            sut.Cancel.CanExecute.Subscribe(x => Assert.That(x, Is.EqualTo(true)));
 
             scheduler.AdvanceByMs(1000);
 
@@ -61,7 +60,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
         /// <summary>
         /// Checks to make sure that the cancel button is available within two seconds.
         /// </summary>
-        [Fact]
+        [Test]
         public void CancelButton_IsAvailableUntil_TwoSeconds()
         {
             var actual = false;
@@ -79,40 +78,40 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             Observable.Return(Unit.Default).InvokeCommand(sut.Login);
 
-            actual.Should().Be(false);
+            Assert.That(actual, Is.EqualTo(false));
 
             // 50ms
             scheduler.AdvanceByMs(50);
 
-            actual.Should().Be(true);
+            Assert.That(actual, Is.EqualTo(true));
 
             // 1sec 50ms
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).TotalMilliseconds);
 
-            actual.Should().Be(true);
+            Assert.That(actual, Is.EqualTo(true));
 
             // 2sec 50sms
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(1).TotalMilliseconds);
 
-            actual.Should().Be(false);
+            Assert.That(actual, Is.EqualTo(false));
         }
 
         /// <summary>
         /// Checks to make sure that the login button is disabled when not logging in.
         /// </summary>
         /// <returns>A task to monitor the progress.</returns>
-        [Fact]
+        [Test]
         public async Task CancelButton_IsDisabled_WhenNot_LoggingIn()
         {
             LoginViewModel sut = new LoginViewModelBuilder();
 
-            (await sut.Cancel.CanExecute.FirstAsync()).Should().Be(false);
+            Assert.That((await sut.Cancel.CanExecute.FirstAsync()), Is.EqualTo(false));
         }
 
         /// <summary>
         /// Checks to make sure that the login ticks correctly and the action is performed.
         /// </summary>
-        [Fact]
+        [Test]
         public void CanLogin_TicksCorrectly()
         {
             var scheduler = new TestScheduler();
@@ -127,20 +126,20 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(5).TotalMilliseconds);
 
-            collection.ToList().Should().BeEquivalentTo(new[] { false, true, false });
+            Assert.That(collection.ToList(), Is.EqualTo(new[] { false, true, false }));
         }
 
         /// <summary>
         /// Checks to make sure that the login button is disabled with default values.
         /// </summary>
         /// <returns>A task to monitor the progress.</returns>
-        [Fact]
+        [Test]
         public async Task LoginButton_IsDisabled_ByDefault()
         {
             LoginViewModel sut = new LoginViewModelBuilder();
 
             var result = await sut.Login.CanExecute.FirstAsync();
-            result.Should().Be(false);
+            Assert.That(result, Is.EqualTo(false));
         }
 
         /// <summary>
@@ -162,7 +161,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName(userName)
                 .WithPassword(password);
 
-            (await sut.Login.CanExecute.FirstAsync()).Should().Be(false);
+            Assert.That((await sut.Login.CanExecute.FirstAsync()), Is.EqualTo(false));
         }
 
         /// <summary>
@@ -179,13 +178,13 @@ namespace IntegrationTests.Shared.Tests.Features.Login
                 .WithUserName(userName)
                 .WithPassword(password);
 
-            (await sut.Login.CanExecute.FirstAsync()).Should().Be(true);
+            Assert.That((await sut.Login.CanExecute.FirstAsync()), Is.EqualTo(true));
         }
 
         /// <summary>
         /// Checks to make sure the user can login with a correct password.
         /// </summary>
-        [Fact]
+        [Test]
         public void User_CanLogin_WithCorrect_Password()
         {
             var scheduler = new TestScheduler();
@@ -201,13 +200,13 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
 
-            value.Should().Be(true);
+            Assert.That(value, Is.EqualTo(true));
         }
 
         /// <summary>
         /// Checks to make sure the user cannot login with a incorrect password.
         /// </summary>
-        [Fact]
+        [Test]
         public void User_CannotLogin_WithIncorrect_Password()
         {
             var scheduler = new TestScheduler();
@@ -223,7 +222,7 @@ namespace IntegrationTests.Shared.Tests.Features.Login
 
             scheduler.AdvanceByMs(TimeSpan.FromSeconds(3).TotalMilliseconds);
 
-            value.Should().Be(false);
+            Assert.That(value, Is.EqualTo(false));
         }
     }
 }

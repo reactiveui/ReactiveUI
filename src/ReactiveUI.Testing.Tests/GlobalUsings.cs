@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+global using global::NUnit.Framework;
 global using global::System;
 global using global::System.Collections.Generic;
 global using global::System.Reactive;

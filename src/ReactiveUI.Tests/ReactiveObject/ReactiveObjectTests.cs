@@ -12,12 +12,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the reactive object.
 /// </summary>
+[TestFixture]
 public class ReactiveObjectTests
 {
     /// <summary>
     /// Test that changing values should always arrive before changed.
     /// </summary>
-    [Fact]
+    [Test]
     public void ChangingShouldAlwaysArriveBeforeChanged()
     {
         const string beforeSet = "Foo";
@@ -36,8 +37,8 @@ public class ReactiveObjectTests
                                        // propagated back, it only prevents before_fired from
                                        // being set - we have to enable 1st-chance exceptions
                                        // to see the real error
-                                       Assert.Equal("IsOnlyOneWord", x.PropertyName);
-                                       Assert.Equal(fixture.IsOnlyOneWord, beforeSet);
+                                       Assert.That(x.PropertyName, Is.EqualTo("IsOnlyOneWord"));
+                                       Assert.That(beforeSet, Is.EqualTo(fixture.IsOnlyOneWord));
                                        beforeFired = true;
                                    });
 
@@ -45,21 +46,21 @@ public class ReactiveObjectTests
         fixture.Changed.Subscribe(
                                   x =>
                                   {
-                                      Assert.Equal("IsOnlyOneWord", x.PropertyName);
-                                      Assert.Equal(fixture.IsOnlyOneWord, afterSet);
+                                      Assert.That(x.PropertyName, Is.EqualTo("IsOnlyOneWord"));
+                                      Assert.That(afterSet, Is.EqualTo(fixture.IsOnlyOneWord));
                                       afterFired = true;
                                   });
 
         fixture.IsOnlyOneWord = afterSet;
 
-        Assert.True(beforeFired);
-        Assert.True(afterFired);
+        Assert.That(beforeFired, Is.True);
+        Assert.That(afterFired, Is.True);
     }
 
     /// <summary>
     /// Test that deferring the notifications dont show up until undeferred.
     /// </summary>
-    [Fact]
+    [Test]
     public void DeferredNotificationsDontShowUpUntilUndeferred()
     {
         var fixture = new TestFixture();
@@ -106,16 +107,16 @@ public class ReactiveObjectTests
         AssertCount(3, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
         var expectedEventProperties = new[] { "NullableInt", "NullableInt", "IsNotNullString" };
-        Assert.Equal(expectedEventProperties, changing.Select(e => e.PropertyName));
-        Assert.Equal(expectedEventProperties, changed.Select(e => e.PropertyName));
-        Assert.Equal(expectedEventProperties, propertyChangingEvents.Select(e => e.PropertyName));
-        Assert.Equal(expectedEventProperties, propertyChangedEvents.Select(e => e.PropertyName));
+        Assert.That(changing.Select(e => e.PropertyName, Is.EqualTo(expectedEventProperties)));
+        Assert.That(changed.Select(e => e.PropertyName, Is.EqualTo(expectedEventProperties)));
+        Assert.That(propertyChangingEvents.Select(e => e.PropertyName, Is.EqualTo(expectedEventProperties)));
+        Assert.That(propertyChangedEvents.Select(e => e.PropertyName, Is.EqualTo(expectedEventProperties)));
     }
 
     /// <summary>
     /// Test that exceptions thrown in subscribers should marshal to thrown exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExceptionsThrownInSubscribersShouldMarshalToThrownExceptions()
     {
         var fixture = new TestFixture
@@ -127,13 +128,13 @@ public class ReactiveObjectTests
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList).Subscribe();
 
         fixture.IsOnlyOneWord = "Bar";
-        Assert.Equal(1, exceptionList.Count);
+        Assert.That(exceptionList.Count, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Tests that ObservableForProperty using expression.
     /// </summary>
-    [Fact]
+    [Test]
     public void ObservableForPropertyUsingExpression()
     {
         var fixture = new TestFixture
@@ -152,21 +153,21 @@ public class ReactiveObjectTests
 
         fixture.IsOnlyOneWord = "Bamf";
 
-        Assert.Equal(2, output.Count);
+        Assert.That(output.Count, Is.EqualTo(2));
 
-        Assert.Equal(fixture, output[0].Sender);
-        Assert.Equal("IsNotNullString", output[0].GetPropertyName());
-        Assert.Equal("Bar", output[0].Value);
+        Assert.That(output[0].Sender, Is.EqualTo(fixture));
+        Assert.That(output[0].GetPropertyName(, Is.EqualTo("IsNotNullString")));
+        Assert.That(output[0].Value, Is.EqualTo("Bar"));
 
-        Assert.Equal(fixture, output[1].Sender);
-        Assert.Equal("IsNotNullString", output[1].GetPropertyName());
-        Assert.Equal("Baz", output[1].Value);
+        Assert.That(output[1].Sender, Is.EqualTo(fixture));
+        Assert.That(output[1].GetPropertyName(, Is.EqualTo("IsNotNullString")));
+        Assert.That(output[1].Value, Is.EqualTo("Baz"));
     }
 
     /// <summary>
     /// Test raises and set using expression.
     /// </summary>
-    [Fact]
+    [Test]
     public void RaiseAndSetUsingExpression()
     {
         var fixture = new TestFixture
@@ -183,15 +184,15 @@ public class ReactiveObjectTests
         fixture.UsesExprRaiseSet = "Foo";
         fixture.UsesExprRaiseSet = "Foo"; // This one shouldn't raise a change notification
 
-        Assert.Equal("Foo", fixture.UsesExprRaiseSet);
-        Assert.Equal(1, output.Count);
-        Assert.Equal("UsesExprRaiseSet", output[0]);
+        Assert.That(fixture.UsesExprRaiseSet, Is.EqualTo("Foo"));
+        Assert.That(output.Count, Is.EqualTo(1));
+        Assert.That(output[0], Is.EqualTo("UsesExprRaiseSet"));
     }
 
     /// <summary>
     /// Test that ReactiveObject shouldn't serialize anything extra.
     /// </summary>
-    [Fact]
+    [Test]
     public void ReactiveObjectShouldntSerializeAnythingExtra()
     {
         var fixture = new TestFixture
@@ -203,15 +204,15 @@ public class ReactiveObjectTests
 
         // Should look something like:
         // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
-        Assert.True(json.Count(x => x == ',') == 6);
-        Assert.True(json.Count(x => x == ':') == 7);
-        Assert.True(json.Count(x => x == '"') == 18);
+        Assert.That(json.Count(x => x == ',', Is.True) == 6);
+        Assert.That(json.Count(x => x == ':', Is.True) == 7);
+        Assert.That(json.Count(x => x == '"', Is.True) == 18);
     }
 
     /// <summary>
     /// Performs a ReactiveObject smoke test.
     /// </summary>
-    [Fact]
+    [Test]
     public void ReactiveObjectSmokeTest()
     {
         var outputChanging = new List<string>();
@@ -235,7 +236,7 @@ public class ReactiveObjectTests
 
         var results = new[] { "IsNotNullString", "IsOnlyOneWord", "IsOnlyOneWord", "IsNotNullString" };
 
-        Assert.Equal(results.Length, output.Count);
+        Assert.That(output.Count, Is.EqualTo(results.Length));
 
         output.AssertAreEqual(outputChanging);
         results.AssertAreEqual(output);
@@ -244,7 +245,7 @@ public class ReactiveObjectTests
     /// <summary>
     /// Tests to make sure that ReactiveObject doesn't rethrow exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void ReactiveObjectShouldRethrowException()
     {
         var fixture = new TestFixture();
@@ -254,35 +255,35 @@ public class ReactiveObjectTests
         var result = Record.Exception(() => fixture.IsOnlyOneWord = "Two Words");
     }
 
-    [Fact]
+    [Test]
     public void ReactiveObjectCanSuppressChangeNotifications()
     {
         var fixture = new TestFixture();
         using (fixture.SuppressChangeNotifications())
         {
-            Assert.False(fixture.AreChangeNotificationsEnabled());
+            Assert.That(fixture.AreChangeNotificationsEnabled(, Is.False));
         }
 
-        Assert.True(fixture.AreChangeNotificationsEnabled());
+        Assert.That(fixture.AreChangeNotificationsEnabled(, Is.True));
 
         var ser = JsonSerializer.Serialize(fixture);
-        Assert.True(ser.Length > 0);
+        Assert.That(ser.Length > 0, Is.True);
         var deser = JsonSerializer.Deserialize<TestFixture>(ser);
-        Assert.NotNull(deser);
+        Assert.That(deser, Is.Not.Null);
 
         using (deser.SuppressChangeNotifications())
         {
-            Assert.False(deser.AreChangeNotificationsEnabled());
+            Assert.That(deser.AreChangeNotificationsEnabled(, Is.False));
         }
 
-        Assert.True(deser.AreChangeNotificationsEnabled());
+        Assert.That(deser.AreChangeNotificationsEnabled(, Is.True));
     }
 
     private static void AssertCount(int expected, params ICollection[] collections)
     {
         foreach (var collection in collections)
         {
-            Assert.Equal(expected, collection.Count);
+            Assert.That(collection.Count, Is.EqualTo(expected));
         }
     }
 }

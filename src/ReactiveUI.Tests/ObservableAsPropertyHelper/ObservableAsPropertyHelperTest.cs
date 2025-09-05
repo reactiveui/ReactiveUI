@@ -19,7 +19,7 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// Tests that Observable As Property Helpers should fire change notifications.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHShouldFireChangeNotifications()
     {
         var input = new[] { 1, 2, 3, 3, 4 }.ToObservable();
@@ -35,7 +35,7 @@ public class ObservableAsPropertyHelperTest
 
             scheduler.Start();
 
-            Assert.Equal(input.LastAsync().Wait(), fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(input.LastAsync().Wait()));
 
             // Note: Why doesn't the list match the above one? We're supposed
             // to suppress duplicate notifications, of course :)
@@ -46,7 +46,7 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// Tests that Observable As Property Helpers should skip first value if it matches the initial value.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHShouldSkipFirstValueIfItMatchesTheInitialValue()
     {
         var input = new[] { 1, 2, 3 }.ToObservable();
@@ -62,7 +62,7 @@ public class ObservableAsPropertyHelperTest
 
             scheduler.Start();
 
-            Assert.Equal(input.LastAsync().Wait(), fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(input.LastAsync().Wait()));
 
             new[] { 1, 2, 3 }.AssertAreEqual(output);
         });
@@ -71,7 +71,7 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// Tests that Observable As Property Helpers should provide initial value immediately regardless of scheduler.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHShouldProvideInitialValueImmediatelyRegardlessOfScheduler()
     {
         var output = new List<int>();
@@ -84,14 +84,14 @@ public class ObservableAsPropertyHelperTest
                 32,
                 scheduler: scheduler);
 
-            Assert.Equal(32, fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(32));
         });
     }
 
     /// <summary>
     /// Tests that Observable As Property Helpers should provide latest value.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHShouldProvideLatestValue() =>
         new TestScheduler().With(scheduler =>
         {
@@ -103,21 +103,21 @@ public class ObservableAsPropertyHelperTest
                 -5,
                 scheduler: scheduler);
 
-            Assert.Equal(-5, fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(-5));
             new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
             scheduler.Start();
-            Assert.Equal(4, fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(4));
 
             input.OnCompleted();
             scheduler.Start();
-            Assert.Equal(4, fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(4));
         });
 
     /// <summary>
     /// Tests that Observable As Property Helpers should subscribe immediately to source.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHShouldSubscribeImmediatelyToSource()
     {
         var isSubscribed = false;
@@ -133,14 +133,14 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0);
 
-        Assert.True(isSubscribed);
-        Assert.Equal(42, fixture.Value);
+        Assert.That(isSubscribed, Is.True);
+        Assert.That(fixture.Value, Is.EqualTo(42));
     }
 
     /// <summary>
     /// Tests that Observable As Property Helpers defer subscription parameter defers subscription to source.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHDeferSubscriptionParameterDefersSubscriptionToSource()
     {
         var isSubscribed = false;
@@ -156,15 +156,15 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
 
-        Assert.False(isSubscribed);
-        Assert.Equal(42, fixture.Value);
-        Assert.True(isSubscribed);
+        Assert.That(isSubscribed, Is.False);
+        Assert.That(fixture.Value, Is.EqualTo(42));
+        Assert.That(isSubscribed, Is.True);
     }
 
     /// <summary>
     /// Tests that Observable As Property Helpers defer subscription parameter is subscribed is not true initially.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHDeferSubscriptionParameterIsSubscribedIsNotTrueInitially()
     {
         var observable = Observable.Create<int>(o =>
@@ -177,15 +177,15 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
 
-        Assert.False(fixture.IsSubscribed);
-        Assert.Equal(42, fixture.Value);
-        Assert.True(fixture.IsSubscribed);
+        Assert.That(fixture.IsSubscribed, Is.False);
+        Assert.That(fixture.Value, Is.EqualTo(42));
+        Assert.That(fixture.IsSubscribed, Is.True);
     }
 
     /// <summary>
     /// Tests that Observable As Property Helpers defer subscription should not throw if disposed.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHDeferSubscriptionShouldNotThrowIfDisposed()
     {
         var observable = Observable.Create<int>(o =>
@@ -198,37 +198,37 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
 
-        Assert.False(fixture.IsSubscribed);
+        Assert.That(fixture.IsSubscribed, Is.False);
         fixture.Dispose();
-        var ex = Record.Exception(() => Assert.Equal(0, fixture.Value));
-        Assert.Null(ex);
+        var ex = Record.Exception(() => Assert.That(fixture.Value, Is.EqualTo(0)));
+        Assert.That(ex, Is.Null);
     }
 
     /// <summary>
     /// Tests that Observable As Property Helpers defer subscription with initial value should not emit initial value.
     /// </summary>
     /// <param name="initialValue">The initial value.</param>
-    [Theory]
-    [InlineData(default(int))]
-    [InlineData(42)]
+    [Test]
+    [TestCase(default(int))]
+    [TestCase(42)]
     public void OAPHDeferSubscriptionWithInitialValueShouldNotEmitInitialValue(int initialValue)
     {
         var observable = Observable.Empty<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: true);
 
-        Assert.False(fixture.IsSubscribed);
+        Assert.That(fixture.IsSubscribed, Is.False);
 
         int? emittedValue = null;
         fixture.Source.Subscribe(val => emittedValue = val);
-        Assert.Null(emittedValue);
-        Assert.False(fixture.IsSubscribed);
+        Assert.That(emittedValue, Is.Null);
+        Assert.That(fixture.IsSubscribed, Is.False);
     }
 
     /// <summary>
     /// Tests that Observable As Property Helpers defer subscription with initial function value should not emit initial value nor access function.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHDeferSubscriptionWithInitialFuncValueShouldNotEmitInitialValueNorAccessFunc()
     {
         var observable = Observable.Empty<int>();
@@ -237,38 +237,38 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, getInitialValue: ThrowIfAccessed, deferSubscription: true);
 
-        Assert.False(fixture.IsSubscribed);
+        Assert.That(fixture.IsSubscribed, Is.False);
 
         int? emittedValue = null;
         fixture.Source.Subscribe(val => emittedValue = val);
-        Assert.Null(emittedValue);
-        Assert.False(fixture.IsSubscribed);
+        Assert.That(emittedValue, Is.Null);
+        Assert.That(fixture.IsSubscribed, Is.False);
     }
 
     /// <summary>
     /// Tests that Observable As Property Helpers defer subscription with initial value emit initial value when subscribed.
     /// </summary>
     /// <param name="initialValue">The initial value.</param>
-    [Theory]
-    [InlineData(default(int))]
-    [InlineData(42)]
+    [Test]
+    [TestCase(default(int))]
+    [TestCase(42)]
     public void OAPHDeferSubscriptionWithInitialValueEmitInitialValueWhenSubscribed(int initialValue)
     {
         var observable = Observable.Empty<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: true);
 
-        Assert.False(fixture.IsSubscribed);
+        Assert.That(fixture.IsSubscribed, Is.False);
 
         var result = fixture.Value;
-        Assert.True(fixture.IsSubscribed);
-        Assert.Equal(initialValue, result);
+        Assert.That(fixture.IsSubscribed, Is.True);
+        Assert.That(result, Is.EqualTo(initialValue));
     }
 
     /// <summary>
     /// Test that Observable As Property Helpers defers subscription with initial function value emit initial value when subscribed.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHDeferSubscriptionWithInitialFuncValueEmitInitialValueWhenSubscribed()
     {
         var observable = Observable.Empty<int>();
@@ -281,20 +281,20 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, getInitialValue: GetInitialValue, deferSubscription: true);
 
-        Assert.False(fixture.IsSubscribed);
-        Assert.False(wasAccessed);
+        Assert.That(fixture.IsSubscribed, Is.False);
+        Assert.That(wasAccessed, Is.False);
 
         var result = fixture.Value;
-        Assert.True(fixture.IsSubscribed);
-        Assert.True(wasAccessed);
-        Assert.Equal(42, result);
+        Assert.That(fixture.IsSubscribed, Is.True);
+        Assert.That(wasAccessed, Is.True);
+        Assert.That(result, Is.EqualTo(42));
     }
 
     /// <summary>Test that Observable As Property Helpers defers subscription with initial function value doesn't call on changed when subscribed.</summary>
     /// <param name = "initialValue" >The initial value.</param>
-    [Theory]
-    [InlineData(default(int))]
-    [InlineData(42)]
+    [Test]
+    [TestCase(default(int))]
+    [TestCase(42)]
     public void OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSubscribed(int initialValue)
     {
         var observable = Observable.Empty<int>();
@@ -306,23 +306,23 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, onChanged, onChanging, () => initialValue, true);
 
-        Assert.False(fixture.IsSubscribed);
-        Assert.False(wasOnChangingCalled);
-        Assert.False(wasOnChangedCalled);
+        Assert.That(fixture.IsSubscribed, Is.False);
+        Assert.That(wasOnChangingCalled, Is.False);
+        Assert.That(wasOnChangedCalled, Is.False);
 
         var result = fixture.Value;
 
-        Assert.True(fixture.IsSubscribed);
-        Assert.False(wasOnChangingCalled);
-        Assert.False(wasOnChangedCalled);
-        Assert.Equal(initialValue, result);
+        Assert.That(fixture.IsSubscribed, Is.True);
+        Assert.That(wasOnChangingCalled, Is.False);
+        Assert.That(wasOnChangedCalled, Is.False);
+        Assert.That(result, Is.EqualTo(initialValue));
     }
 
     /// <summary>Test that Observable As Property Helpers defers subscription with initial function value doesn't call on changed when source provides initial value after subscription.</summary>
     /// <param name = "initialValue" >The initial value.</param>
-    [Theory]
-    [InlineData(default(int))]
-    [InlineData(42)]
+    [Test]
+    [TestCase(default(int))]
+    [TestCase(42)]
     public void OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSourceProvidesInitialValue(int initialValue)
     {
         var observable = new Subject<int>();
@@ -336,36 +336,36 @@ public class ObservableAsPropertyHelperTest
 
         var result = fixture.Value;
 
-        Assert.Equal(initialValue, result);
+        Assert.That(result, Is.EqualTo(initialValue));
 
         observable.OnNext(initialValue);
 
-        Assert.False(wasOnChangingCalled);
-        Assert.False(wasOnChangedCalled);
+        Assert.That(wasOnChangingCalled, Is.False);
+        Assert.That(wasOnChangedCalled, Is.False);
     }
 
     /// <summary>Tests that Observable As Property Helpers initial value should emit initial value.</summary>
     /// <param name = "initialValue" >The initial value.</param>
-    [Theory]
-    [InlineData(default(int))]
-    [InlineData(42)]
+    [Test]
+    [TestCase(default(int))]
+    [TestCase(42)]
     public void OAPHInitialValueShouldEmitInitialValue(int initialValue)
     {
         var observable = Observable.Empty<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: false);
 
-        Assert.True(fixture.IsSubscribed);
+        Assert.That(fixture.IsSubscribed, Is.True);
 
         int? emittedValue = null;
         fixture.Source.Subscribe(val => emittedValue = val);
-        Assert.Equal(initialValue, emittedValue);
+        Assert.That(emittedValue, Is.EqualTo(initialValue));
     }
 
     /// <summary>
     /// Tests that Observable As Property Helpers should rethrow errors.
     /// </summary>
-    [Fact]
+    [Test]
     public void OAPHShouldRethrowErrors() =>
         new TestScheduler().With(scheduler =>
         {
@@ -374,34 +374,34 @@ public class ObservableAsPropertyHelperTest
             var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: scheduler);
             var errors = new List<Exception>();
 
-            Assert.Equal(-5, fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(-5));
             new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
             fixture.ThrownExceptions.Subscribe(errors.Add);
 
             scheduler.Start();
 
-            Assert.Equal(4, fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(4));
 
             input.OnError(new Exception("Die!"));
 
             scheduler.Start();
 
-            Assert.Equal(4, fixture.Value);
-            Assert.Equal(1, errors.Count);
+            Assert.That(fixture.Value, Is.EqualTo(4));
+            Assert.That(errors.Count, Is.EqualTo(1));
         });
 
     /// <summary>
     /// Test that no thrown exceptions subscriber equals Observable As Property Helper death.
     /// </summary>
-    [Fact]
+    [Test]
     public void NoThrownExceptionsSubscriberEqualsOAPHDeath() =>
         new TestScheduler().With(scheduler =>
         {
             var input = new Subject<int>();
             var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: ImmediateScheduler.Instance);
 
-            Assert.Equal(-5, fixture.Value);
+            Assert.That(fixture.Value, Is.EqualTo(-5));
             new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
             input.OnError(new Exception("Die!"));
@@ -416,14 +416,14 @@ public class ObservableAsPropertyHelperTest
                 failed = ex?.InnerException?.Message != "Die!";
             }
 
-            Assert.False(failed);
-            Assert.Equal(4, fixture.Value);
+            Assert.That(failed, Is.False);
+            Assert.That(fixture.Value, Is.EqualTo(4));
         });
 
     /// <summary>
     /// Tests that the ToProperty should fire both changing and changed events.
     /// </summary>
-    [Fact]
+    [Test]
     public void ToPropertyShouldFireBothChangingAndChanged()
     {
         var fixture = new OaphTestFixture();
@@ -436,26 +436,26 @@ public class ObservableAsPropertyHelperTest
         fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false)
             .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanged).Subscribe();
 
-        Assert.Empty(resultChanging);
-        Assert.Empty(resultChanged);
+        Assert.That(resultChanging, Is.Empty);
+        Assert.That(resultChanged, Is.Empty);
 
         fixture.IsOnlyOneWord = "FooBar";
-        Assert.Equal(1, resultChanging.Count);
-        Assert.Equal(1, resultChanged.Count);
-        Assert.Equal(string.Empty, resultChanging[0].Value);
-        Assert.Equal("Foo", resultChanged[0].Value);
+        Assert.That(resultChanging.Count, Is.EqualTo(1));
+        Assert.That(resultChanged.Count, Is.EqualTo(1));
+        Assert.That(resultChanging[0].Value, Is.EqualTo(string.Empty));
+        Assert.That(resultChanged[0].Value, Is.EqualTo("Foo"));
 
         fixture.IsOnlyOneWord = "Bazz";
-        Assert.Equal(2, resultChanging.Count);
-        Assert.Equal(2, resultChanged.Count);
-        Assert.Equal("Foo", resultChanging[1].Value);
-        Assert.Equal("Baz", resultChanged[1].Value);
+        Assert.That(resultChanging.Count, Is.EqualTo(2));
+        Assert.That(resultChanged.Count, Is.EqualTo(2));
+        Assert.That(resultChanging[1].Value, Is.EqualTo("Foo"));
+        Assert.That(resultChanged[1].Value, Is.EqualTo("Baz"));
     }
 
     /// <summary>
     /// Tests that the ToProperty nameof override should fire both changing and changed events.
     /// </summary>
-    [Fact]
+    [Test]
     public void ToProperty_NameOf_ShouldFireBothChangingAndChanged()
     {
         var fixture = new OaphNameOfTestFixture();
@@ -466,13 +466,13 @@ public class ObservableAsPropertyHelperTest
         fixture.PropertyChanging += (sender, e) => changing = true;
         fixture.PropertyChanged += (sender, e) => changed = true;
 
-        Assert.False(changing);
-        Assert.False(changed);
+        Assert.That(changing, Is.False);
+        Assert.That(changed, Is.False);
 
         fixture.IsOnlyOneWord = "baz";
 
-        Assert.True(changing);
-        Assert.True(changed);
+        Assert.That(changing, Is.True);
+        Assert.That(changed, Is.True);
     }
 
     /// <summary>
@@ -481,8 +481,8 @@ public class ObservableAsPropertyHelperTest
     /// <param name="testWords">The test words.</param>
     /// <param name="first3Letters">The first3 letters.</param>
     /// <param name="last3Letters">The last3 letters.</param>
-    [Theory]
-    [InlineData(new string[] { "FooBar", "Bazz" }, new string[] { "Foo", "Baz" }, new string[] { "Bar", "azz" })]
+    [Test]
+    [TestCase(new string[] { "FooBar", "Bazz" }, new string[] { "Foo", "Baz" }, new string[] { "Bar", "azz" })]
     public void ToProperty_NameOf_ValidValuesProduced(string[] testWords, string[] first3Letters, string[] last3Letters)
     {
         if (testWords is null)
@@ -514,27 +514,27 @@ public class ObservableAsPropertyHelperTest
 
         var changed = new[] { firstThreeChanged!, lastThreeChanged };
 
-        Assert.True(changed.All(x => x.Count == 0));
-        Assert.True(changing.All(x => x.Count == 0));
+        Assert.That(changed.All(x => x.Count == 0, Is.True));
+        Assert.That(changing.All(x => x.Count == 0, Is.True));
 
         for (var i = 0; i < testWords.Length; ++i)
         {
             fixture.IsOnlyOneWord = testWords[i];
-            Assert.True(changed.All(x => x.Count == i + 1));
-            Assert.True(changing.All(x => x.Count == i + 1));
-            Assert.Equal(first3Letters[i], firstThreeChanged[i].Value);
-            Assert.Equal(last3Letters[i], lastThreeChanged[i].Value);
+            Assert.That(changed.All(x => x.Count == i + 1, Is.True));
+            Assert.That(changing.All(x => x.Count == i + 1, Is.True));
+            Assert.That(firstThreeChanged[i].Value, Is.EqualTo(first3Letters[i]));
+            Assert.That(lastThreeChanged[i].Value, Is.EqualTo(last3Letters[i]));
             var firstChanging = i - 1 < 0 ? string.Empty : first3Letters[i - 1];
             var lastChanging = i - 1 < 0 ? string.Empty : last3Letters[i - i];
-            Assert.Equal(firstChanging, firstThreeChanging[i].Value);
-            Assert.Equal(lastChanging, lastThreeChanging[i].Value);
+            Assert.That(firstThreeChanging[i].Value, Is.EqualTo(firstChanging));
+            Assert.That(lastThreeChanging[i].Value, Is.EqualTo(lastChanging));
         }
     }
 
     /// <summary>
     /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
     /// </summary>
-    [Fact]
+    [Test]
     public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName()
     {
         var fixture = new OAPHIndexerTestFixture(0, ImmediateScheduler.Instance);
@@ -550,13 +550,13 @@ public class ObservableAsPropertyHelperTest
 
         fixture.Text = "awesome";
 
-        Assert.Equal(new[] { "Text", "Item[]" }, propertiesChanged);
+        Assert.That("Item[]" }, propertiesChanged, Is.EqualTo(new[] { "Text"));
     }
 
     /// <summary>
     /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
     /// </summary>
-    [Fact]
+    [Test]
     public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName1() =>
         new TestScheduler().With(scheduler =>
             Assert.Throws<NotSupportedException>(() =>
@@ -578,7 +578,7 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// Tests to make sure that the ToProperty with a indexer notifies the expected property name.
     /// </summary>
-    [Fact]
+    [Test]
     public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName2() =>
         new TestScheduler().With(scheduler =>
             Assert.Throws<ArgumentException>(() =>
@@ -589,7 +589,7 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// Nullables the types test shouldnt need decorators with toproperty.
     /// </summary>
-    [Fact]
+    [Test]
     public void NullableTypesTestShouldntNeedDecorators2_ToProperty()
     {
         var fixture = new WhenAnyTestFixture();
@@ -604,6 +604,6 @@ public class ObservableAsPropertyHelperTest
                })
                .ToProperty(fixture, x => x.AccountsFound, out fixture._accountsFound);
 
-        Assert.Equal(fixture.AccountsFound, 3);
+        Assert.That(3, Is.EqualTo(fixture.AccountsFound));
     }
 }
