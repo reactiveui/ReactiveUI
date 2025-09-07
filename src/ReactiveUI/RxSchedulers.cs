@@ -13,14 +13,18 @@ namespace ReactiveUI;
 /// </summary>
 /// <remarks>
 /// This class provides basic scheduler functionality without the overhead of dependency injection
-/// or unit test detection, allowing consumers to access schedulers without needing 
+/// or unit test detection, allowing consumers to access schedulers without needing
 /// RequiresUnreferencedCode attributes. For full functionality including unit test support,
 /// use RxApp schedulers instead.
 /// </remarks>
 public static class RxSchedulers
 {
     private static readonly object _lock = new();
+
+    [ThreadStatic]
     private static volatile IScheduler? _mainThreadScheduler;
+
+    [ThreadStatic]
     private static volatile IScheduler? _taskpoolScheduler;
 
     /// <summary>
@@ -46,6 +50,7 @@ public static class RxSchedulers
                 return _mainThreadScheduler ??= DefaultScheduler.Instance;
             }
         }
+
         set
         {
             lock (_lock)
@@ -86,6 +91,7 @@ public static class RxSchedulers
 #endif
             }
         }
+
         set
         {
             lock (_lock)

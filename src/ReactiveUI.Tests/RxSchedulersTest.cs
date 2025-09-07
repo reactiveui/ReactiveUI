@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Microsoft.Reactive.Testing;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
@@ -18,10 +20,9 @@ public class RxSchedulersTest
     {
         // This test method itself should not require RequiresUnreferencedCode
         // because it uses RxSchedulers instead of RxApp
-        
         var mainScheduler = RxSchedulers.MainThreadScheduler;
         var taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
-        
+
         Assert.NotNull(mainScheduler);
         Assert.NotNull(taskpoolScheduler);
     }
@@ -33,15 +34,15 @@ public class RxSchedulersTest
     public void SchedulersCanBeSetAndRetrieved()
     {
         var testScheduler = new TestScheduler();
-        
+
         // Set schedulers
         RxSchedulers.MainThreadScheduler = testScheduler;
         RxSchedulers.TaskpoolScheduler = testScheduler;
-        
+
         // Verify they were set
         Assert.Equal(testScheduler, RxSchedulers.MainThreadScheduler);
         Assert.Equal(testScheduler, RxSchedulers.TaskpoolScheduler);
-        
+
         // Reset to defaults
         RxSchedulers.MainThreadScheduler = DefaultScheduler.Instance;
         RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
@@ -55,11 +56,11 @@ public class RxSchedulersTest
     {
         var mainScheduler = RxSchedulers.MainThreadScheduler;
         var taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
-        
+
         // Verify they implement IScheduler
         Assert.IsAssignableFrom<IScheduler>(mainScheduler);
         Assert.IsAssignableFrom<IScheduler>(taskpoolScheduler);
-        
+
         // Verify they have Now property
         Assert.True(mainScheduler.Now > DateTimeOffset.MinValue);
         Assert.True(taskpoolScheduler.Now > DateTimeOffset.MinValue);
