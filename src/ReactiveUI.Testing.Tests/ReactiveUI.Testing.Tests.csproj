@@ -12,8 +12,4 @@
   <ItemGroup>
     <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 </Project>

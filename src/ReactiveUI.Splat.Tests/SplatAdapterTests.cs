@@ -3,31 +3,27 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Linq;
 using Autofac;
-
 using DryIoc;
-
-using FluentAssertions;
-
 using Ninject;
-
+using NUnit.Framework;
 using Splat.Autofac;
 using Splat.DryIoc;
 using Splat.Ninject;
-
-using Xunit;
 
 namespace ReactiveUI.Splat.Tests;
 
 /// <summary>
 /// Tests for checking the various adapters in splat.
 /// </summary>
+[TestFixture]
 public class SplatAdapterTests
 {
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
-    [Fact]
+    [Test]
     public void DryIocDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -37,15 +33,18 @@ public class SplatAdapterTests
 
         var converters = container.Resolve<IEnumerable<IBindingTypeConverter>>().ToList();
 
-        converters.Should().NotBeNull();
-        converters.Should().Contain(x => x.GetType() == typeof(StringConverter));
-        converters.Should().Contain(x => x.GetType() == typeof(EqualityTypeConverter));
+        Assert.That(converters, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(converters.Any(x => x.GetType() == typeof(StringConverter)), Is.True);
+            Assert.That(converters.Any(x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+        }
     }
 
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
-    [Fact]
+    [Test]
     public void DryIocDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -55,15 +54,18 @@ public class SplatAdapterTests
 
         var converters = container.Resolve<IEnumerable<ICreatesCommandBinding>>().ToList();
 
-        converters.Should().NotBeNull();
-        converters.Should().Contain(x => x.GetType() == typeof(CreatesCommandBindingViaEvent));
-        converters.Should().Contain(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter));
+        Assert.That(converters, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
+            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+        }
     }
 
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
-    [Fact]
+    [Test]
     public void AutofacDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -74,15 +76,18 @@ public class SplatAdapterTests
 
         var converters = container.Resolve<IEnumerable<IBindingTypeConverter>>().ToList();
 
-        converters.Should().NotBeNull();
-        converters.Should().Contain(x => x.GetType() == typeof(StringConverter));
-        converters.Should().Contain(x => x.GetType() == typeof(EqualityTypeConverter));
+        Assert.That(converters, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(converters.Any(x => x.GetType() == typeof(StringConverter)), Is.True);
+            Assert.That(converters.Any(x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+        }
     }
 
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
-    [Fact]
+    [Test]
     public void AutofacDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -94,15 +99,18 @@ public class SplatAdapterTests
 
         var converters = container.Resolve<IEnumerable<ICreatesCommandBinding>>().ToList();
 
-        converters.Should().NotBeNull();
-        converters.Should().Contain(x => x.GetType() == typeof(CreatesCommandBindingViaEvent));
-        converters.Should().Contain(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter));
+        Assert.That(converters, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
+            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+        }
     }
 
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
-    [Fact]
+    [Test]
     public void NinjectDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -112,15 +120,18 @@ public class SplatAdapterTests
 
         var converters = container.GetAll<IBindingTypeConverter>().ToList();
 
-        converters.Should().NotBeNull();
-        converters.Should().Contain(x => x.GetType() == typeof(StringConverter));
-        converters.Should().Contain(x => x.GetType() == typeof(EqualityTypeConverter));
+        Assert.That(converters, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(converters.Any(x => x.GetType() == typeof(StringConverter)), Is.True);
+            Assert.That(converters.Any(x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+        }
     }
 
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
-    [Fact]
+    [Test]
     public void NinjectDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
@@ -130,8 +141,11 @@ public class SplatAdapterTests
 
         var converters = container.GetAll<ICreatesCommandBinding>().ToList();
 
-        converters.Should().NotBeNull();
-        converters.Should().Contain(x => x.GetType() == typeof(CreatesCommandBindingViaEvent));
-        converters.Should().Contain(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter));
+        Assert.That(converters, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
+            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+        }
     }
 }

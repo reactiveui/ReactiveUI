@@ -42,7 +42,8 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
 #endif
     public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell>? initializeCellAction = null)
         : this(tableView) =>
-        Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction) };
+        Data = [new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)
+        ];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.

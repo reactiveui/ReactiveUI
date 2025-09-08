@@ -6,8 +6,6 @@
 #if NETFX_CORE
 #else
 
-using FactAttribute = Xunit.WpfFactAttribute;
-
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -15,12 +13,15 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests that WhenAny dependency objects.
 /// </summary>
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class WhenAnyThroughDependencyObjectTests
 {
     /// <summary>
     /// Tests that WhenAny through a view shouldn't give null values.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void WhenAnyThroughAViewShouldntGiveNullValues()
     {
         var vm = new HostTestFixture()
@@ -37,16 +38,19 @@ public class WhenAnyThroughDependencyObjectTests
 
         var output = new List<string?>();
 
-        Assert.Equal(0, output.Count);
-        Assert.Null(fixture.ViewModel);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output, Is.Empty);
+            Assert.That(fixture.ViewModel, Is.Null);
+        }
 
         fixture.WhenAnyValue(x => x.ViewModel!.Child!.IsNotNullString).Subscribe(output.Add);
 
         fixture.ViewModel = vm;
-        Assert.Equal(1, output.Count);
+        Assert.That(output, Has.Count.EqualTo(1));
 
         fixture.ViewModel.Child.IsNotNullString = "Bar";
-        Assert.Equal(2, output.Count);
+        Assert.That(output, Has.Count.EqualTo(2));
         new[] { "Foo", "Bar" }.AssertAreEqual(output);
     }
 }

@@ -8,9 +8,10 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Blazor;
 
+[TestFixture]
 public class ReactiveUIBuilderBlazorTests
 {
-    [Fact]
+    [Test]
     public void WithBlazor_Should_Register_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -20,13 +21,13 @@ public class ReactiveUIBuilderBlazorTests
         builder.WithBlazor().Build();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.NotNull(platformOperations);
+        Assert.That(platformOperations, Is.Not.Null);
 
         var typeConverters = locator.GetServices<IBindingTypeConverter>();
-        Assert.NotEmpty(typeConverters);
+        Assert.That(typeConverters, Is.Not.Empty);
     }
 
-    [Fact]
+    [Test]
     public void WithCoreServices_AndBlazor_Should_Register_All_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -36,9 +37,9 @@ public class ReactiveUIBuilderBlazorTests
         builder.WithBlazor().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
+        Assert.That(observableProperty, Is.Not.Null);
 
         var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.NotNull(platformOperations);
+        Assert.That(platformOperations, Is.Not.Null);
     }
 }

@@ -8,12 +8,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the default view locators.
 /// </summary>
+[TestFixture]
 public class DefaultViewLocatorTests
 {
     /// <summary>
     /// Tests that the default name of the view model is replaced with view when determining the service.
     /// </summary>
-    [Fact]
+    [Test]
     public void ByDefaultViewModelIsReplacedWithViewWhenDeterminingTheServiceName()
     {
         var resolver = new ModernDependencyResolver();
@@ -28,14 +29,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
         }
     }
 
     /// <summary>
     /// Tests that the runtime type of the view model is used to resolve the view.
     /// </summary>
-    [Fact]
+    [Test]
     public void TheRuntimeTypeOfTheViewModelIsUsedToResolveTheView()
     {
         var resolver = new ModernDependencyResolver();
@@ -50,14 +51,14 @@ public class DefaultViewLocatorTests
             object vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
         }
     }
 
     /// <summary>
     /// Tests that the view model to view naming convention can be customized.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewModelToViewNamingConventionCanBeCustomized()
     {
         var resolver = new ModernDependencyResolver();
@@ -76,14 +77,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooWithWeirdConvention>(result);
+            Assert.That(result, Is.TypeOf<FooWithWeirdConvention>());
         }
     }
 
     /// <summary>
     /// Tests that makes sure that this instance [can resolve view from view model class using class registration].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanResolveViewFromViewModelClassUsingClassRegistration()
     {
         var resolver = new ModernDependencyResolver();
@@ -98,14 +99,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
         }
     }
 
     /// <summary>
     /// Tests that make sure this instance [can resolve view from view model class using interface registration].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanResolveViewFromViewModelClassUsingInterfaceRegistration()
     {
         var resolver = new ModernDependencyResolver();
@@ -120,14 +121,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
         }
     }
 
     /// <summary>
     /// Test that makes sure that this instance [can resolve view from view model class using IView for registration].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanResolveViewFromViewModelClassUsingIViewForRegistration()
     {
         var resolver = new ModernDependencyResolver();
@@ -142,14 +143,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
         }
     }
 
     /// <summary>
     /// Tests that this instance [can resolve view from view model interface using class registration].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanResolveViewFromViewModelInterfaceUsingClassRegistration()
     {
         var resolver = new ModernDependencyResolver();
@@ -164,14 +165,14 @@ public class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModelWithWeirdName();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
         }
     }
 
     /// <summary>
     /// Tests that this instance [can resolve view from view model interface using interface registration].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanResolveViewFromViewModelInterfaceUsingInterfaceRegistration()
     {
         var resolver = new ModernDependencyResolver();
@@ -186,14 +187,14 @@ public class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
         }
     }
 
     /// <summary>
     /// Tests that this instance [can resolve view from view model interface using i view for registration].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanResolveViewFromViewModelInterfaceUsingIViewForRegistration()
     {
         var resolver = new ModernDependencyResolver();
@@ -208,14 +209,14 @@ public class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
         }
     }
 
     /// <summary>
     /// Tests that contracts is used when resolving view.
     /// </summary>
-    [Fact]
+    [Test]
     public void ContractIsUsedWhenResolvingView()
     {
         var resolver = new ModernDependencyResolver();
@@ -231,20 +232,20 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
 
             result = fixture.ResolveView(vm, "first");
-            Assert.IsType<FooView>(result);
+            Assert.That(result, Is.TypeOf<FooView>());
 
             result = fixture.ResolveView(vm, "second");
-            Assert.IsType<FooWithWeirdConvention>(result);
+            Assert.That(result, Is.TypeOf<FooWithWeirdConvention>());
         }
     }
 
     /// <summary>
     /// Tests that no errors are raised if a type cannot be found.
     /// </summary>
-    [Fact]
+    [Test]
     public void NoErrorIsRaisedIfATypeCannotBeFound()
     {
         var resolver = new ModernDependencyResolver();
@@ -262,14 +263,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
     }
 
     /// <summary>
     /// Tests that no errors are raised if a service cannot be found.
     /// </summary>
-    [Fact]
+    [Test]
     public void NoErrorIsRaisedIfAServiceCannotBeFound()
     {
         var resolver = new ModernDependencyResolver();
@@ -283,14 +284,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
     }
 
     /// <summary>
     /// Tests that no errors are raised if the service does not implement IViewFor.
     /// </summary>
-    [Fact]
+    [Test]
     public void NoErrorIsRaisedIfTheServiceDoesNotImplementIViewFor()
     {
         var resolver = new ModernDependencyResolver();
@@ -305,14 +306,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
     }
 
     /// <summary>
     /// Tests that no errors are raised if the creation of the view fails.
     /// </summary>
-    [Fact]
+    [Test]
     public void AnErrorIsRaisedIfTheCreationOfTheViewFails()
     {
         var resolver = new ModernDependencyResolver();
@@ -327,14 +328,14 @@ public class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var ex = Assert.Throws<InvalidOperationException>(() => fixture.ResolveView(vm));
-            Assert.Equal("This is a test failure.", ex.Message);
+            Assert.That(ex.Message, Is.EqualTo("This is a test failure."));
         }
     }
 
     /// <summary>
     /// Tests that with odd interface name doesnt throw exception.
     /// </summary>
-    [Fact]
+    [Test]
     public void WithOddInterfaceNameDoesntThrowException()
     {
         var resolver = new ModernDependencyResolver();
@@ -355,7 +356,7 @@ public class DefaultViewLocatorTests
     /// <summary>
     /// Tests that whether this instance [can resolve view from view model with IRoutableViewModel].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanResolveViewFromViewModelWithIRoutableViewModelType()
     {
         var resolver = new ModernDependencyResolver();
@@ -370,14 +371,14 @@ public class DefaultViewLocatorTests
             var vm = new RoutableFooViewModel();
 
             var result = fixture.ResolveView<IRoutableViewModel>(vm);
-            Assert.IsType<RoutableFooView>(result);
+            Assert.That(result, Is.TypeOf<RoutableFooView>());
         }
     }
 
     /// <summary>
     /// Tests that make sure this instance [can override name resolution function].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanOverrideNameResolutionFunc()
     {
         var resolver = new ModernDependencyResolver();
@@ -395,7 +396,7 @@ public class DefaultViewLocatorTests
             var vm = new RoutableFooViewModel();
 
             var result = fixture.ResolveView<IRoutableViewModel>(vm);
-            Assert.IsType<RoutableFooCustomView>(result);
+            Assert.That(result, Is.TypeOf<RoutableFooCustomView>());
         }
     }
 }

@@ -5,27 +5,21 @@
 
 using System.Collections;
 using System.Globalization;
-
 using DynamicData.Binding;
-
-#if NETFX_CORE
-#else
-
-using FactAttribute = Xunit.WpfFactAttribute;
-
-#endif
 
 namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>
 /// Tests property bindings.
 /// </summary>
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class PropertyBindingTest
 {
     /// <summary>
     /// Performs a smoke test with two way binding with func converter.
     /// </summary>
-    [Fact]
+    [Test]
     [UseInvariantCulture]
     public void TwoWayBindWithFuncConvertersSmokeTest()
     {
@@ -34,27 +28,33 @@ public class PropertyBindingTest
         var fixture = new PropertyBinderImplementation();
 
         vm.JustADecimal = 123.45m;
-        Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
         var disp = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, d => d.ToString(), t => decimal.TryParse(t, out var res) ? res : decimal.Zero);
 
-        Assert.Equal(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
-        Assert.Equal(123.45m, vm.JustADecimal);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(view.SomeTextBox.Text, Is.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
+            Assert.That(vm.JustADecimal, Is.EqualTo(123.45m));
+        }
 
         view.SomeTextBox.Text = "567.89";
-        Assert.Equal(567.89m, vm.JustADecimal);
+        Assert.That(vm.JustADecimal, Is.EqualTo(567.89m));
 
         disp?.Dispose();
         vm.JustADecimal = 0;
 
-        Assert.Equal(0, vm.JustADecimal);
-        Assert.Equal("567.89", view.SomeTextBox.Text);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.JustADecimal, Is.Zero);
+            Assert.That(view.SomeTextBox.Text, Is.EqualTo("567.89"));
+        }
     }
 
     /// <summary>
     /// Performs a smoke test with two way binding.
     /// </summary>
-    [Fact]
+    [Test]
     public void TwoWayBindSmokeTest()
     {
         var vm = new PropertyBindViewModel();
@@ -62,27 +62,33 @@ public class PropertyBindingTest
         var fixture = new PropertyBinderImplementation();
 
         vm.Property1 = "Foo";
-        Assert.NotEqual(vm.Property1, view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.Property1));
 
         var disp = fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
-        Assert.Equal(vm.Property1, view.SomeTextBox.Text);
-        Assert.Equal("Foo", vm.Property1);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(view.SomeTextBox.Text, Is.EqualTo(vm.Property1));
+            Assert.That(vm.Property1, Is.EqualTo("Foo"));
+        }
 
         view.SomeTextBox.Text = "Bar";
-        Assert.Equal(vm.Property1, "Bar");
+        Assert.That(vm.Property1, Is.EqualTo("Bar"));
 
         disp.Dispose();
         vm.Property1 = "Baz";
 
-        Assert.Equal("Baz", vm.Property1);
-        Assert.NotEqual(vm.Property1, view.SomeTextBox.Text);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.Property1, Is.EqualTo("Baz"));
+            Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.Property1));
+        }
     }
 
     /// <summary>
     /// Performs a smoke test with two way binding with a type converter.
     /// </summary>
-    [Fact]
+    [Test]
     public void TypeConvertedTwoWayBindSmokeTest()
     {
         var vm = new PropertyBindViewModel();
@@ -90,221 +96,232 @@ public class PropertyBindingTest
         var fixture = new PropertyBinderImplementation();
 
         vm.Property2 = 17;
-        Assert.NotEqual(vm.Property2.ToString(), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.Property2.ToString()));
 
         var disp = fixture.Bind(vm, view, x => x.Property2, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
-        Assert.Equal(vm.Property2.ToString(), view.SomeTextBox.Text);
-        Assert.Equal(17, vm.Property2);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(view.SomeTextBox.Text, Is.EqualTo(vm.Property2.ToString()));
+            Assert.That(vm.Property2, Is.EqualTo(17));
+        }
 
         view.SomeTextBox.Text = "42";
-        Assert.Equal(42, vm.Property2);
+        Assert.That(vm.Property2, Is.EqualTo(42));
 
         // Bad formatting error
         view.SomeTextBox.Text = "--";
-        Assert.Equal(42, vm.Property2);
+        Assert.That(vm.Property2, Is.EqualTo(42));
 
         disp.Dispose();
         vm.Property2 = 0;
 
-        Assert.Equal(0, vm.Property2);
-        Assert.NotEqual("0", view.SomeTextBox.Text);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.Property2, Is.Zero);
+            Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo("0"));
+        }
 
         vm.JustADecimal = 17.2m;
         var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
-        Assert.Equal(vm.JustADecimal.ToString(CultureInfo.CurrentCulture), view.SomeTextBox.Text);
-        Assert.Equal(17.2m, vm.JustADecimal);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(view.SomeTextBox.Text, Is.EqualTo(vm.JustADecimal.ToString(CultureInfo.CurrentCulture)));
+            Assert.That(vm.JustADecimal, Is.EqualTo(17.2m));
+        }
 
         view.SomeTextBox.Text = 42.3m.ToString(CultureInfo.CurrentCulture);
-        Assert.Equal(42.3m, vm.JustADecimal);
+        Assert.That(vm.JustADecimal, Is.EqualTo(42.3m));
 
         // Bad formatting.
         view.SomeTextBox.Text = "--";
-        Assert.Equal(42.3m, vm.JustADecimal);
+        Assert.That(vm.JustADecimal, Is.EqualTo(42.3m));
 
         disp1.Dispose();
 
         vm.JustADecimal = 0;
 
-        Assert.Equal(0, vm.JustADecimal);
-        Assert.NotEqual("0", view.SomeTextBox.Text);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.JustADecimal, Is.Zero);
+            Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo("0"));
+        }
 
         // Empty test
         vm.JustAInt32 = 12;
         var disp2 = fixture.Bind(vm, view, x => x.JustAInt32, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
         view.SomeTextBox.Text = string.Empty;
-        Assert.Equal(12, vm.JustAInt32);
+        Assert.That(vm.JustAInt32, Is.EqualTo(12));
 
         view.SomeTextBox.Text = "1.2";
-
-        Assert.Equal(12, vm.JustAInt32);
+        Assert.That(vm.JustAInt32, Is.EqualTo(12));
 
         view.SomeTextBox.Text = "13";
-        Assert.Equal(13, vm.JustAInt32);
+        Assert.That(vm.JustAInt32, Is.EqualTo(13));
     }
 
     /// <summary>
     /// Tests binding into model objects.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindingIntoModelObjects()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
         view.OneWayBind(view.ViewModel, x => x.Model!.AnotherThing, x => x.SomeTextBox.Text);
-        Assert.Equal("Baz", view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("Baz"));
     }
 
     /// <summary>
     /// Tests the view model nullable to view non nullable.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewModelNullableToViewNonNullable()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
         view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.JustADouble);
-        Assert.Equal(0.0, view.FakeControl.JustADouble);
+        Assert.That(view.FakeControl.JustADouble, Is.Zero);
 
         vm.NullableDouble = 4.0;
-        Assert.Equal(4.0, view.FakeControl.JustADouble);
+        Assert.That(view.FakeControl.JustADouble, Is.EqualTo(4.0));
 
         vm.NullableDouble = null;
-        Assert.Equal(4.0, view.FakeControl.JustADouble);
+        Assert.That(view.FakeControl.JustADouble, Is.EqualTo(4.0));
 
         vm.NullableDouble = 0.0;
-        Assert.Equal(0.0, view.FakeControl.JustADouble);
+        Assert.That(view.FakeControl.JustADouble, Is.Zero);
     }
 
     /// <summary>
     /// Tests the view model non-nullable to view nullable.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewModelNonNullableToViewNullable()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
         view.Bind(view.ViewModel, x => x.JustADouble, x => x.FakeControl.NullableDouble);
-        Assert.Equal(0.0, vm.JustADouble);
+        Assert.That(vm.JustADouble, Is.Zero);
 
         view.FakeControl.NullableDouble = 4.0;
-        Assert.Equal(4.0, vm.JustADouble);
+        Assert.That(vm.JustADouble, Is.EqualTo(4.0));
 
         view.FakeControl.NullableDouble = null;
-        Assert.Equal(4.0, vm.JustADouble);
+        Assert.That(vm.JustADouble, Is.EqualTo(4.0));
 
         view.FakeControl.NullableDouble = 0.0;
-        Assert.Equal(0.0, vm.JustADouble);
+        Assert.That(vm.JustADouble, Is.Zero);
     }
 
     /// <summary>
     /// Tests the view model nullable to view nullable.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewModelNullableToViewNullable()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
         view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.NullableDouble);
-        Assert.Equal(null, vm.NullableDouble);
+        Assert.That(vm.NullableDouble, Is.Null);
 
         view.FakeControl.NullableDouble = 4.0;
-        Assert.Equal(4.0, vm.NullableDouble);
+        Assert.That(vm.NullableDouble, Is.EqualTo(4.0));
 
         view.FakeControl.NullableDouble = null;
-        Assert.Equal(null, vm.NullableDouble);
+        Assert.That(vm.NullableDouble, Is.Null);
 
         view.FakeControl.NullableDouble = 0.0;
-        Assert.Equal(0.0, vm.NullableDouble);
+        Assert.That(vm.NullableDouble, Is.Zero);
     }
 
     /// <summary>
     /// Tests the view model indexer to view.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewModelIndexerToView()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
         view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0], x => x.SomeTextBox.Text);
-        Assert.Equal("Foo", view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("Foo"));
     }
 
     /// <summary>
     /// Tests the view model indexer to view changes.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewModelIndexerToViewChanges()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
         view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0], x => x.SomeTextBox.Text);
-        Assert.Equal("Foo", view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("Foo"));
 
         vm.SomeCollectionOfStrings[0] = "Bar";
 
-        Assert.Equal("Bar", view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("Bar"));
     }
 
     /// <summary>
     /// Tests view model indexer property to view.
     /// </summary>
-    [Fact]
+    [Test]
     public void ViewModelIndexerPropertyToView()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
         view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0].Length, x => x.SomeTextBox.Text);
-        Assert.Equal("3", view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("3"));
     }
 
     /// <summary>
     /// Tests when OneWayBind shouldn't initially be set to null.
     /// </summary>
-    [Fact]
+    [Test]
     public void OneWayBindShouldntInitiallySetToNull()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = null };
 
         view.OneWayBind(vm, x => x.Model!.AnotherThing, x => x.FakeControl.NullHatingString);
-        Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
+        Assert.That(view.FakeControl.NullHatingString, Is.EqualTo(string.Empty));
 
         view.ViewModel = vm;
-        Assert.Equal(vm.Model!.AnotherThing, view.FakeControl.NullHatingString);
+        Assert.That(view.FakeControl.NullHatingString, Is.EqualTo(vm.Model!.AnotherThing));
     }
 
     /// <summary>
     /// Perform a BindTo type conversion smoke test.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindToTypeConversionSmokeTest()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = null };
 
-        Assert.Equal(string.Empty, view.FakeControl.NullHatingString);
+        Assert.That(view.FakeControl.NullHatingString, Is.EqualTo(string.Empty));
 
         view.WhenAnyValue(x => x.ViewModel!.JustADouble)
             .BindTo(view, x => x.FakeControl.NullHatingString);
 
         view.ViewModel = vm;
-        Assert.Equal(vm.JustADouble.ToString(CultureInfo.InvariantCulture), view.FakeControl.NullHatingString);
+        Assert.That(view.FakeControl.NullHatingString, Is.EqualTo(vm.JustADouble.ToString(CultureInfo.InvariantCulture)));
     }
 
     /// <summary>
     /// Tests that BindTo null should throw a helpful error.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindToNullShouldThrowHelpfulError()
     {
         var view = new PropertyBindView { ViewModel = null };
@@ -317,7 +334,7 @@ public class PropertyBindingTest
     /// <summary>
     /// Tests that BindTo two-way selected item of ItemControl.
     /// </summary>
-    [Fact]
+    [Test]
     public void TwoWayBindToSelectedItemOfItemsControl()
     {
         var vm = new PropertyBindViewModel();
@@ -326,61 +343,64 @@ public class PropertyBindingTest
 
         view.Bind(view.ViewModel, x => x.Property1, x => x.FakeItemsControl.SelectedItem);
 
-        Assert.Null(view.FakeItemsControl.SelectedItem);
-        Assert.Null(vm.Property1);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(view.FakeItemsControl.SelectedItem, Is.Null);
+            Assert.That(vm.Property1, Is.Null);
+        }
 
         view.FakeItemsControl.SelectedItem = "aaa";
-        Assert.Equal("aaa", vm.Property1); // fail
+        Assert.That(vm.Property1, Is.EqualTo("aaa")); // fail
 
         vm.Property1 = "bbb";
-        Assert.Equal("bbb", view.FakeItemsControl.SelectedItem);
+        Assert.That(view.FakeItemsControl.SelectedItem, Is.EqualTo("bbb"));
     }
 
     /// <summary>
     /// Tests that ItemControl get a DataTemplate if none is set.
     /// </summary>
-    [Fact]
+    [Test]
     public void ItemsControlShouldGetADataTemplate()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        Assert.Null(view.FakeItemsControl.ItemTemplate);
+        Assert.That(view.FakeItemsControl.ItemTemplate, Is.Null);
         view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
-        Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+        Assert.That(view.FakeItemsControl.ItemTemplate, Is.Not.Null);
     }
 
     /// <summary>
     /// Tests that ItemControl display member path doesn't set a DataTemplate.
     /// </summary>
-    [Fact]
+    [Test]
     public void ItemsControlWithDisplayMemberPathSetShouldNotGetADataTemplate()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         view.FakeItemsControl.DisplayMemberPath = "Bla";
 
-        Assert.Null(view.FakeItemsControl.ItemTemplate);
+        Assert.That(view.FakeItemsControl.ItemTemplate, Is.Null);
         view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
-        Assert.Null(view.FakeItemsControl.ItemTemplate);
+        Assert.That(view.FakeItemsControl.ItemTemplate, Is.Null);
     }
 
     /// <summary>
     /// Tests that ItemControl get a DataTemplate if none is set with BindTo.
     /// </summary>
-    [Fact]
+    [Test]
     public void ItemsControlShouldGetADataTemplateInBindTo()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        Assert.Null(view.FakeItemsControl.ItemTemplate);
+        Assert.That(view.FakeItemsControl.ItemTemplate, Is.Null);
         vm.WhenAnyValue(x => x.SomeCollectionOfStrings)
             .BindTo(view, v => v.FakeItemsControl.ItemsSource);
 
-        Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+        Assert.That(view.FakeItemsControl.ItemTemplate, Is.Not.Null);
 
         view.WhenAnyValue(x => x.FakeItemsControl.SelectedItem)
             .BindTo(vm, x => x.Property1);
@@ -389,7 +409,7 @@ public class PropertyBindingTest
     /// <summary>
     /// Tests that ItemControl OneWayBind.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindingToItemsControl()
     {
         var vm = new PropertyBindViewModel();
@@ -398,26 +418,26 @@ public class PropertyBindingTest
         view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
         var itemsSourceValue = (IList)view.FakeItemsControl.ItemsSource;
-        Assert.True(itemsSourceValue.OfType<string>().Count() > 1);
+        Assert.That(itemsSourceValue.OfType<string>().Count(), Is.GreaterThan(1));
     }
 
     /// <summary>
     /// Tests OneWayBind and a converter.
     /// </summary>
-    [Fact]
+    [Test]
     public void OneWayBindConverter()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
         fixture.OneWayBind(vm, view, x => x.JustABoolean, x => x.SomeTextBox.IsEnabled, s => s);
-        Assert.False(view.SomeTextBox.IsEnabled);
+        Assert.That(view.SomeTextBox.IsEnabled, Is.False);
     }
 
     /// <summary>
     /// Tests OneWayBind and a converter with a null starting value, and tests it against a non-null value.
     /// </summary>
-    [Fact]
+    [Test]
     public void OneWayBindWithNullStartingValueToNonNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -427,13 +447,13 @@ public class PropertyBindingTest
 
         vm.Property1 = "Baz";
 
-        Assert.Equal("Baz", view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("Baz"));
     }
 
     /// <summary>
     /// Tests OneWayBind and a converter with a non-null starting value, and tests it against a null value.
     /// </summary>
-    [Fact]
+    [Test]
     public void OneWayBindWithNonNullStartingValueToNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -445,13 +465,13 @@ public class PropertyBindingTest
 
         vm.Property1 = null;
 
-        Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
+        Assert.That(string.IsNullOrEmpty(view.SomeTextBox.Text), Is.True);
     }
 
     /// <summary>
     /// Tests OneWayBind and a converter with a non-null starting value, and tests it against a non-null value.
     /// </summary>
-    [Fact]
+    [Test]
     public void OneWayBindWithSelectorAndNonNullStartingValueToNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -461,13 +481,13 @@ public class PropertyBindingTest
 
         vm.Model = null;
 
-        Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
+        Assert.That(string.IsNullOrEmpty(view.SomeTextBox.Text), Is.True);
     }
 
     /// <summary>
     /// Tests OneWayBind initial view model should be garbage collected when overwritten.
     /// </summary>
-    [Fact]
+    [Test]
     public void OneWayBindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable?, WeakReference) GetWeakReference()
@@ -486,13 +506,13 @@ public class PropertyBindingTest
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        Assert.False(weakRef.IsAlive);
+        Assert.That(weakRef.IsAlive, Is.False);
     }
 
     /// <summary>
     /// Tests BindTo  with a null starting value, and tests it against a non-null value.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindToWithNullStartingValueToNonNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -503,13 +523,13 @@ public class PropertyBindingTest
 
         vm.Property1 = "Baz";
 
-        Assert.Equal("Baz", view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("Baz"));
     }
 
     /// <summary>
     /// Tests BindTo  with a non-null starting value, and tests it against a null value.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindToWithNonNullStartingValueToNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -522,13 +542,13 @@ public class PropertyBindingTest
 
         vm.Property1 = null;
 
-        Assert.True(string.IsNullOrEmpty(view.SomeTextBox.Text));
+        Assert.That(string.IsNullOrEmpty(view.SomeTextBox.Text), Is.True);
     }
 
     /// <summary>
     /// Tests BindTo with a converter is not null.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindExpectsConverterFuncsToNotBeNull()
     {
         var vm = new PropertyBindViewModel();
@@ -544,33 +564,33 @@ public class PropertyBindingTest
     /// <summary>
     /// Tests the BindWith func's should work as extension methods.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindWithFuncShouldWorkAsExtensionMethodSmokeTest()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
         vm.JustADecimal = 123.45m;
-        Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(CultureInfo.InvariantCulture), t => decimal.TryParse(t, out var res) ? res : 0m);
 
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         vm.JustADecimal = 1.0M;
-        Assert.Equal(view.SomeTextBox.Text, "1.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.0"));
 
         vm.JustADecimal = 2.0M;
-        Assert.Equal(view.SomeTextBox.Text, "2.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.0"));
 
         view.SomeTextBox.Text = "3.0";
-        Assert.Equal(vm.JustADecimal, 3.0M);
+        Assert.That(vm.JustADecimal, Is.EqualTo(3.0M));
     }
 
     /// <summary>
     /// Tests that bind initial view model should be garbage collected when overwritten.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable?, WeakReference) GetWeakReference()
@@ -589,10 +609,10 @@ public class PropertyBindingTest
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        Assert.False(weakRef.IsAlive);
+        Assert.That(weakRef.IsAlive, Is.False);
     }
 
-    [Fact]
+    [Test]
     public void OneWayBindWithHintTest()
     {
         var dis = new CompositeDisposable();
@@ -601,16 +621,16 @@ public class PropertyBindingTest
         var fixture = new PropertyBinderImplementation();
 
         fixture.OneWayBind(vm, view, vm => vm.JustABoolean, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
-        Assert.Equal(view.SomeTextBox.Visibility, System.Windows.Visibility.Visible);
+        Assert.That(view.SomeTextBox.Visibility, Is.EqualTo(System.Windows.Visibility.Visible));
 
         vm.JustABoolean = true;
-        Assert.Equal(view.SomeTextBox.Visibility, System.Windows.Visibility.Collapsed);
+        Assert.That(view.SomeTextBox.Visibility, Is.EqualTo(System.Windows.Visibility.Collapsed));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void OneWayBindWithHintTestDisposeWithFailure()
     {
         CompositeDisposable? dis = null;
@@ -621,7 +641,7 @@ public class PropertyBindingTest
         Assert.Throws<ArgumentNullException>(() => fixture.OneWayBind(vm, view, vm => vm.JustABoolean, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis!));
     }
 
-    [Fact]
+    [Test]
     public void BindToWithHintTest()
     {
         var dis = new CompositeDisposable();
@@ -629,16 +649,16 @@ public class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
         var obs = vm.WhenAnyValue(x => x.JustABoolean);
         var a = new PropertyBinderImplementation().BindTo(obs, view, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
-        Assert.Equal(view.SomeTextBox.Visibility, System.Windows.Visibility.Visible);
+        Assert.That(view.SomeTextBox.Visibility, Is.EqualTo(System.Windows.Visibility.Visible));
 
         vm.JustABoolean = true;
-        Assert.Equal(view.SomeTextBox.Visibility, System.Windows.Visibility.Collapsed);
+        Assert.That(view.SomeTextBox.Visibility, Is.EqualTo(System.Windows.Visibility.Collapsed));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToView()
     {
         var dis = new CompositeDisposable();
@@ -647,44 +667,44 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustADecimal = 123.45m;
-        Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, update.AsObservable(), d => d.ToString(CultureInfo.InvariantCulture), t => decimal.TryParse(t, out var res) ? res : decimal.Zero, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADecimal = 1.0M;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.0"));
 
         vm.JustADecimal = 2.0M;
-        Assert.Equal(view.SomeTextBox.Text, "1.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.0"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.0"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3.0";
-        Assert.Equal(vm.JustADecimal, 3.0M);
+        Assert.That(vm.JustADecimal, Is.EqualTo(3.0M));
 
         view.SomeTextBox.Text = "4.0";
-        Assert.Equal(vm.JustADecimal, 4.0M);
+        Assert.That(vm.JustADecimal, Is.EqualTo(4.0M));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustADecimal = 2.0M;
-        Assert.Equal(view.SomeTextBox.Text, "4.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4.0"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.0"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithDecimalConverter()
     {
         var dis = new CompositeDisposable();
@@ -693,7 +713,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustADecimal = 123.45m;
-        Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
         var decimalToStringTypeConverter = new DecimalToStringTypeConverter();
 
@@ -702,37 +722,37 @@ public class PropertyBindingTest
         vm.JustADecimal = 1.0M;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         vm.JustADecimal = 2.0M;
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3.00";
-        Assert.Equal(vm.JustADecimal, 3.0M);
+        Assert.That(vm.JustADecimal, Is.EqualTo(3.0M));
 
         view.SomeTextBox.Text = "4.00";
-        Assert.Equal(vm.JustADecimal, 4.0M);
+        Assert.That(vm.JustADecimal, Is.EqualTo(4.0M));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustADecimal = 2.0M;
-        Assert.Equal(view.SomeTextBox.Text, "4.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableDecimalConverter()
     {
         var dis = new CompositeDisposable();
@@ -741,7 +761,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustANullDecimal = 123.45m;
-        Assert.NotEqual(vm.JustANullDecimal.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustANullDecimal.Value.ToString(CultureInfo.InvariantCulture)));
 
         var decimalToStringTypeConverter = new NullableDecimalToStringTypeConverter();
 
@@ -750,41 +770,41 @@ public class PropertyBindingTest
         vm.JustANullDecimal = 1.0M;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         vm.JustANullDecimal = 2.0M;
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3.00";
-        Assert.Equal(vm.JustANullDecimal, 3.0M);
+        Assert.That(vm.JustANullDecimal, Is.EqualTo(3.0M));
 
         // test non numerical
         view.SomeTextBox.Text = "ad3";
-        Assert.Equal(vm.JustANullDecimal, 3.0M);
+        Assert.That(vm.JustANullDecimal, Is.EqualTo(3.0M));
 
         view.SomeTextBox.Text = "4.00";
-        Assert.Equal(vm.JustANullDecimal, 4.0M);
+        Assert.That(vm.JustANullDecimal, Is.EqualTo(4.0M));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustANullDecimal = 2.0M;
-        Assert.Equal(view.SomeTextBox.Text, "4.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewToViewModel()
     {
         var dis = new CompositeDisposable();
@@ -793,44 +813,44 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustADecimal = 123.45m;
-        Assert.NotEqual(vm.JustADecimal.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, update.AsObservable(), d => d.ToString(CultureInfo.InvariantCulture), t => decimal.TryParse(t, out var res) ? res : decimal.Zero, TriggerUpdate.ViewToViewModel).DisposeWith(dis);
 
         view.SomeTextBox.Text = "1.0";
 
         // value should have pre bind value
-        Assert.Equal(vm.JustADecimal, 123.45m);
+        Assert.That(vm.JustADecimal, Is.EqualTo(123.45m));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(vm.JustADecimal, 1.0m);
+        Assert.That(vm.JustADecimal, Is.EqualTo(1.0m));
 
         view.SomeTextBox.Text = "2.0";
-        Assert.Equal(vm.JustADecimal, 1.0m);
+        Assert.That(vm.JustADecimal, Is.EqualTo(1.0m));
 
         update.OnNext(true);
-        Assert.Equal(vm.JustADecimal, 2.0m);
+        Assert.That(vm.JustADecimal, Is.EqualTo(2.0m));
 
         // test reverse bind no trigger required
         vm.JustADecimal = 3.0m;
-        Assert.Equal(view.SomeTextBox.Text, "3.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("3.0"));
 
         vm.JustADecimal = 4.0m;
-        Assert.Equal(view.SomeTextBox.Text, "4.0");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4.0"));
 
         // test forward bind to ensure trigger is still honoured.
         view.SomeTextBox.Text = "2.0";
-        Assert.Equal(vm.JustADecimal, 4.0m);
+        Assert.That(vm.JustADecimal, Is.EqualTo(4.0m));
 
         update.OnNext(true);
-        Assert.Equal(vm.JustADecimal, 2.0m);
+        Assert.That(vm.JustADecimal, Is.EqualTo(2.0m));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithDoubleConverter()
     {
         var dis = new CompositeDisposable();
@@ -839,7 +859,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustADouble = 123.45;
-        Assert.NotEqual(vm.JustADouble.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADouble.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new DoubleToStringTypeConverter();
 
@@ -848,37 +868,37 @@ public class PropertyBindingTest
         vm.JustADouble = 1.0;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         vm.JustADouble = 2.0;
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3.00";
-        Assert.Equal(vm.JustADouble, 3.0);
+        Assert.That(vm.JustADouble, Is.EqualTo(3.0));
 
         view.SomeTextBox.Text = "4.00";
-        Assert.Equal(vm.JustADouble, 4.0);
+        Assert.That(vm.JustADouble, Is.EqualTo(4.0));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustADouble = 2.0;
-        Assert.Equal(view.SomeTextBox.Text, "4.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableDoubleConverter()
     {
         var dis = new CompositeDisposable();
@@ -887,7 +907,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustANullDouble = 123.45;
-        Assert.NotEqual(vm.JustANullDouble.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustANullDouble.Value.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new NullableDoubleToStringTypeConverter();
 
@@ -896,41 +916,41 @@ public class PropertyBindingTest
         vm.JustANullDouble = 1.0;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         vm.JustANullDouble = 2.0;
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3.00";
-        Assert.Equal(vm.JustANullDouble, 3.0);
+        Assert.That(vm.JustANullDouble, Is.EqualTo(3.0));
 
         // test non numerical value
         view.SomeTextBox.Text = "fa0";
-        Assert.Equal(vm.JustANullDouble, 3.0);
+        Assert.That(vm.JustANullDouble, Is.EqualTo(3.0));
 
         view.SomeTextBox.Text = "4.00";
-        Assert.Equal(vm.JustANullDouble, 4.0);
+        Assert.That(vm.JustANullDouble, Is.EqualTo(4.0));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustANullDouble = 2.0;
-        Assert.Equal(view.SomeTextBox.Text, "4.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithDoubleConverterNoRound()
     {
         var dis = new CompositeDisposable();
@@ -939,44 +959,44 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustADouble = 123.45;
-        Assert.NotEqual(vm.JustADouble.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADouble.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustADouble, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADouble = 1.0;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         vm.JustADouble = 2.0;
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3";
-        Assert.Equal(vm.JustADouble, 3.0);
+        Assert.That(vm.JustADouble, Is.EqualTo(3.0));
 
         view.SomeTextBox.Text = "4";
-        Assert.Equal(vm.JustADouble, 4.0);
+        Assert.That(vm.JustADouble, Is.EqualTo(4.0));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustADouble = 2.0;
-        Assert.Equal(view.SomeTextBox.Text, "4");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithSingleConverter()
     {
         var dis = new CompositeDisposable();
@@ -985,7 +1005,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustASingle = 123.45f;
-        Assert.NotEqual(vm.JustASingle.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustASingle.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new SingleToStringTypeConverter();
 
@@ -994,37 +1014,37 @@ public class PropertyBindingTest
         vm.JustASingle = 1.0f;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         vm.JustASingle = 2.0f;
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3.00";
-        Assert.Equal(vm.JustASingle, 3.0f);
+        Assert.That(vm.JustASingle, Is.EqualTo(3.0f));
 
         view.SomeTextBox.Text = "4.00";
-        Assert.Equal(vm.JustASingle, 4.0f);
+        Assert.That(vm.JustASingle, Is.EqualTo(4.0f));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustASingle = 2.0f;
-        Assert.Equal(view.SomeTextBox.Text, "4.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableSingleConverter()
     {
         var dis = new CompositeDisposable();
@@ -1033,7 +1053,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustANullSingle = 123.45f;
-        Assert.NotEqual(vm.JustANullSingle.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustANullSingle.Value.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new NullableSingleToStringTypeConverter();
 
@@ -1042,41 +1062,41 @@ public class PropertyBindingTest
         vm.JustANullSingle = 1.0f;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         vm.JustANullSingle = 2.0f;
-        Assert.Equal(view.SomeTextBox.Text, "1.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3.00";
-        Assert.Equal(vm.JustANullSingle, 3.0f);
+        Assert.That(vm.JustANullSingle, Is.EqualTo(3.0f));
 
         // test non numerical value
         view.SomeTextBox.Text = "fa0";
-        Assert.Equal(vm.JustANullSingle, 3.0f);
+        Assert.That(vm.JustANullSingle, Is.EqualTo(3.0f));
 
         view.SomeTextBox.Text = "4.00";
-        Assert.Equal(vm.JustANullSingle, 4.0f);
+        Assert.That(vm.JustANullSingle, Is.EqualTo(4.0f));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustANullSingle = 2.0f;
-        Assert.Equal(view.SomeTextBox.Text, "4.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4.00"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2.00");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2.00"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithSingleConverterNoRound()
     {
         var dis = new CompositeDisposable();
@@ -1085,44 +1105,44 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustASingle = 123.45f;
-        Assert.NotEqual(vm.JustASingle.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustASingle.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustASingle, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustASingle = 1.0f;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123.45");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         vm.JustASingle = 2.0f;
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3";
-        Assert.Equal(vm.JustASingle, 3.0f);
+        Assert.That(vm.JustASingle, Is.EqualTo(3.0f));
 
         view.SomeTextBox.Text = "4";
-        Assert.Equal(vm.JustASingle, 4.0f);
+        Assert.That(vm.JustASingle, Is.EqualTo(4.0f));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustASingle = 2.0f;
-        Assert.Equal(view.SomeTextBox.Text, "4");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithByteConverter()
     {
         var dis = new CompositeDisposable();
@@ -1131,7 +1151,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustAByte = 123;
-        Assert.NotEqual(vm.JustAByte.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAByte.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new ByteToStringTypeConverter();
 
@@ -1140,37 +1160,37 @@ public class PropertyBindingTest
         vm.JustAByte = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         vm.JustAByte = 2;
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "003";
-        Assert.Equal(vm.JustAByte, 3);
+        Assert.That(vm.JustAByte, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "004";
-        Assert.Equal(vm.JustAByte, 4);
+        Assert.That(vm.JustAByte, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustAByte = 2;
-        Assert.Equal(view.SomeTextBox.Text, "004");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("004"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableByteConverter()
     {
         var dis = new CompositeDisposable();
@@ -1179,7 +1199,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustANullByte = 123;
-        Assert.NotEqual(vm.JustANullByte.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustANullByte.Value.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new NullableByteToStringTypeConverter();
 
@@ -1188,41 +1208,41 @@ public class PropertyBindingTest
         vm.JustANullByte = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         vm.JustANullByte = 2;
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "003";
-        Assert.Equal(vm.JustANullByte.Value, 3);
+        Assert.That(vm.JustANullByte!.Value, Is.EqualTo(3));
 
         // test non numerical value
         view.SomeTextBox.Text = "ad4";
-        Assert.Equal(vm.JustANullByte.Value, 3);
+        Assert.That(vm.JustANullByte!.Value, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "004";
-        Assert.Equal(vm.JustANullByte.Value, 4);
+        Assert.That(vm.JustANullByte!.Value, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustANullByte = 2;
-        Assert.Equal(view.SomeTextBox.Text, "004");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("004"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithByteConverterNoHint()
     {
         var dis = new CompositeDisposable();
@@ -1231,44 +1251,44 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustAByte = 123;
-        Assert.NotEqual(vm.JustAByte.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAByte.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustAByte, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAByte = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         vm.JustAByte = 2;
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3";
-        Assert.Equal(vm.JustAByte, 3);
+        Assert.That(vm.JustAByte, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "4";
-        Assert.Equal(vm.JustAByte, 4);
+        Assert.That(vm.JustAByte, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustAByte = 2;
-        Assert.Equal(view.SomeTextBox.Text, "4");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithShortConverter()
     {
         var dis = new CompositeDisposable();
@@ -1277,7 +1297,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustAInt16 = 123;
-        Assert.NotEqual(vm.JustAInt16.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt16.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new ShortToStringTypeConverter();
 
@@ -1286,37 +1306,37 @@ public class PropertyBindingTest
         vm.JustAInt16 = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         vm.JustAInt16 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "003";
-        Assert.Equal(vm.JustAInt16, 3);
+        Assert.That(vm.JustAInt16, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "004";
-        Assert.Equal(vm.JustAInt16, 4);
+        Assert.That(vm.JustAInt16, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustAInt16 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "004");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("004"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableShortConverter()
     {
         var dis = new CompositeDisposable();
@@ -1325,7 +1345,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustANullInt16 = 123;
-        Assert.NotEqual(vm.JustANullInt16.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustANullInt16.Value.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new NullableShortToStringTypeConverter();
 
@@ -1334,41 +1354,41 @@ public class PropertyBindingTest
         vm.JustANullInt16 = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         vm.JustANullInt16 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "003";
-        Assert.Equal(vm.JustANullInt16.Value, 3);
+        Assert.That(vm.JustANullInt16!.Value, Is.EqualTo(3));
 
         // test non numerical value
         view.SomeTextBox.Text = "fa0";
-        Assert.Equal(vm.JustANullInt16.Value, 3);
+        Assert.That(vm.JustANullInt16!.Value, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "004";
-        Assert.Equal(vm.JustANullInt16.Value, 4);
+        Assert.That(vm.JustANullInt16!.Value, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustANullInt16 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "004");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("004"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithShortConverterNoHint()
     {
         var dis = new CompositeDisposable();
@@ -1377,44 +1397,44 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustAInt16 = 123;
-        Assert.NotEqual(vm.JustAInt16.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt16.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustAInt16, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt16 = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         vm.JustAInt16 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3";
-        Assert.Equal(vm.JustAInt16, 3);
+        Assert.That(vm.JustAInt16, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "4";
-        Assert.Equal(vm.JustAInt16, 4);
+        Assert.That(vm.JustAInt16, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustAInt16 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "4");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithIntegerConverter()
     {
         var dis = new CompositeDisposable();
@@ -1423,7 +1443,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustAInt32 = 123;
-        Assert.NotEqual(vm.JustAInt32.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt32.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new IntegerToStringTypeConverter();
 
@@ -1432,37 +1452,37 @@ public class PropertyBindingTest
         vm.JustAInt32 = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         vm.JustAInt32 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "003";
-        Assert.Equal(vm.JustAInt32, 3);
+        Assert.That(vm.JustAInt32, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "004";
-        Assert.Equal(vm.JustAInt32, 4);
+        Assert.That(vm.JustAInt32, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustAInt32 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "004");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("004"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableIntegerConverter()
     {
         var dis = new CompositeDisposable();
@@ -1471,7 +1491,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustANullInt32 = 123;
-        Assert.NotEqual(vm.JustANullInt32!.Value.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustANullInt32!.Value.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new NullableIntegerToStringTypeConverter();
 
@@ -1480,41 +1500,41 @@ public class PropertyBindingTest
         vm.JustANullInt32 = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         vm.JustANullInt32 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "003";
-        Assert.Equal(vm.JustANullInt32, 3);
+        Assert.That(vm.JustANullInt32, Is.EqualTo(3));
 
         // test if the binding handles a non number
         view.SomeTextBox.Text = "3a4";
-        Assert.Equal(vm.JustANullInt32, 3);
+        Assert.That(vm.JustANullInt32, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "004";
-        Assert.Equal(vm.JustANullInt32, 4);
+        Assert.That(vm.JustANullInt32, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustANullInt32 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "004");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("004"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithIntegerConverterNoHint()
     {
         var dis = new CompositeDisposable();
@@ -1523,44 +1543,44 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustAInt32 = 123;
-        Assert.NotEqual(vm.JustAInt32.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt32.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustAInt32, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt32 = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         vm.JustAInt32 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3";
-        Assert.Equal(vm.JustAInt32, 3);
+        Assert.That(vm.JustAInt32, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "4";
-        Assert.Equal(vm.JustAInt32, 4);
+        Assert.That(vm.JustAInt32, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustAInt32 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "4");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithLongConverter()
     {
         var dis = new CompositeDisposable();
@@ -1569,7 +1589,7 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustAInt64 = 123;
-        Assert.NotEqual(vm.JustAInt64.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt64.ToString(CultureInfo.InvariantCulture)));
 
         var xToStringTypeConverter = new LongToStringTypeConverter();
 
@@ -1578,37 +1598,37 @@ public class PropertyBindingTest
         vm.JustAInt64 = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         vm.JustAInt64 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "001");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("001"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "003";
-        Assert.Equal(vm.JustAInt64, 3);
+        Assert.That(vm.JustAInt64, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "004";
-        Assert.Equal(vm.JustAInt64, 4);
+        Assert.That(vm.JustAInt64, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustAInt64 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "004");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("004"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "002");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("002"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void BindWithFuncToTriggerUpdateTestViewModelToViewWithLongConverterNoHint()
     {
         var dis = new CompositeDisposable();
@@ -1617,40 +1637,40 @@ public class PropertyBindingTest
         var update = new Subject<bool>();
 
         vm.JustAInt64 = 123;
-        Assert.NotEqual(vm.JustAInt64.ToString(CultureInfo.InvariantCulture), view.SomeTextBox.Text);
+        Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt64.ToString(CultureInfo.InvariantCulture)));
 
         view.Bind(vm, x => x.JustAInt64, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt64 = 1;
 
         // value should have pre bind value
-        Assert.Equal(view.SomeTextBox.Text, "123");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("123"));
 
         // trigger UI update
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         vm.JustAInt64 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "1");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("1"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         // test reverse bind no trigger required
         view.SomeTextBox.Text = "3";
-        Assert.Equal(vm.JustAInt64, 3);
+        Assert.That(vm.JustAInt64, Is.EqualTo(3));
 
         view.SomeTextBox.Text = "4";
-        Assert.Equal(vm.JustAInt64, 4);
+        Assert.That(vm.JustAInt64, Is.EqualTo(4));
 
         // test forward bind to ensure trigger is still honoured.
         vm.JustAInt64 = 2;
-        Assert.Equal(view.SomeTextBox.Text, "4");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("4"));
 
         update.OnNext(true);
-        Assert.Equal(view.SomeTextBox.Text, "2");
+        Assert.That(view.SomeTextBox.Text, Is.EqualTo("2"));
 
         dis.Dispose();
-        Assert.True(dis.IsDisposed);
+        Assert.That(dis.IsDisposed, Is.True);
     }
 }

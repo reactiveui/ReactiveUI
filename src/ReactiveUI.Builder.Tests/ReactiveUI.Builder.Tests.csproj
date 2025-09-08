@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <Using Include="NUnit.Framework" />
     <Using Include="Splat" />
   </ItemGroup>
 
