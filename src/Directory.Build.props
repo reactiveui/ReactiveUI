@@ -45,6 +45,9 @@
     <ReactiveUIAndroidTargets>net9.0-android</ReactiveUIAndroidTargets>
     <ReactiveUIAppleTargets>net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst</ReactiveUIAppleTargets>
     
+    <!-- Windows-only targets (these will only work on Windows but are defined globally for reference) -->
+    <ReactiveUIWindowsOnlyTargets>$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
+    
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
     <ReactiveUIModernTargets>net8.0;net9.0</ReactiveUIModernTargets>
   </PropertyGroup>
