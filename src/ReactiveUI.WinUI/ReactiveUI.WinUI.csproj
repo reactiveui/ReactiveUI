@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" Condition="'$(IsWindows)' == 'true'">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIWinUITargets)</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>

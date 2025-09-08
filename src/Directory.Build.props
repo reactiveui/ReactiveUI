@@ -39,14 +39,22 @@
     
     <!-- Granular Target Framework definitions for cross-platform builds -->
     <ReactiveUICoreTargets>netstandard2.0;net8.0;net9.0</ReactiveUICoreTargets>
+    <ReactiveUIAndroidTargets>net9.0-android</ReactiveUIAndroidTargets>
+    
+    <!-- Platform-specific targets - always defined but only used on supported platforms -->
     <ReactiveUIFrameworkTargets>net462;net472</ReactiveUIFrameworkTargets>
     <ReactiveUIWindowsTargets>net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0;net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</ReactiveUIWinUITargets>
-    <ReactiveUIAndroidTargets>net9.0-android</ReactiveUIAndroidTargets>
     <ReactiveUIAppleTargets>net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst</ReactiveUIAppleTargets>
     
-    <!-- Windows-only targets (these will only work on Windows but are defined globally for reference) -->
-    <ReactiveUIWindowsOnlyTargets>$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
+    <!-- Windows-only targets (combines Framework + Windows targets) - conditioned -->
+    <ReactiveUIWindowsOnlyTargets Condition="'$(IsWindows)' == 'true'">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
+    <ReactiveUIWindowsOnlyTargets Condition="'$(IsWindows)' != 'true'">$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
+    
+    <!-- Cross-platform platform detection properties for project-level conditional building -->
+    <IsWindows>$([MSBuild]::IsOsPlatform('Windows'))</IsWindows>
+    <IsMacOS>$([MSBuild]::IsOsPlatform('OSX'))</IsMacOS>
+    <IsLinux>$([MSBuild]::IsOsPlatform('Linux'))</IsLinux>
     
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
     <ReactiveUIModernTargets>net8.0;net9.0</ReactiveUIModernTargets>

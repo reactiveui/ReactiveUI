@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" Condition="'$(IsWindows)' == 'true'">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
