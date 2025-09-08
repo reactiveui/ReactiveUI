@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(WindowsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIWindowsTargets);$(ReactiveUIFrameworkTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <PackageDescription>Provides reactive extensions based xaml components based on the Blend SDK library, allowing you to fire a observable from XAML</PackageDescription>

@@ -32,9 +32,40 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Legacy properties maintained for compatibility -->
     <WindowsTargetFrameworks>net462;net472;net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0;net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</WindowsTargetFrameworks>
     <MobileTargetFrameworks>net8.0-android;net8.0-ios;net8.0-tvos;net8.0-macos;net8.0-maccatalyst;net9.0-android;net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst</MobileTargetFrameworks>
     <BaseTargetFrameworks>netstandard2.0;net8.0;net9.0</BaseTargetFrameworks>
+    
+    <!-- Granular Target Framework definitions for cross-platform builds -->
+    <ReactiveUICoreTargets>netstandard2.0;net8.0;net9.0</ReactiveUICoreTargets>
+    <ReactiveUIFrameworkTargets>net462;net472</ReactiveUIFrameworkTargets>
+    <ReactiveUIWindowsTargets>net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0;net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
+    <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</ReactiveUIWinUITargets>
+    <ReactiveUIAndroidTargets>net9.0-android</ReactiveUIAndroidTargets>
+    <ReactiveUIAppleTargets>net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst</ReactiveUIAppleTargets>
+    
+    <!-- Modern targets for tests and benchmarks (no netstandard) -->
+    <ReactiveUIModernTargets>net8.0;net9.0</ReactiveUIModernTargets>
+  </PropertyGroup>
+  
+  <!-- Build final target framework list based on operating system -->
+  <PropertyGroup>
+    <!-- Start with core targets available on all platforms -->
+    <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
+    
+    <!-- Add Android targets (available on all platforms with Android SDK) -->
+    <ReactiveUIFinalTargetFrameworks>$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAndroidTargets)</ReactiveUIFinalTargetFrameworks>
+    
+    <!-- Add Windows-specific targets (.NET Framework and Windows-specific TFMs) on Windows -->
+    <ReactiveUIFinalTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalTargetFrameworks>
+    
+    <!-- Add Apple targets on macOS and Windows -->
+    <ReactiveUIFinalTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAppleTargets)</ReactiveUIFinalTargetFrameworks>
+    
+    <!-- Final target frameworks for tests/benchmarks (modern .NET only, with platform-specific additions) -->
+    <ReactiveUIFinalModernTargetFrameworks>$(ReactiveUIModernTargets)</ReactiveUIFinalModernTargetFrameworks>
+    <ReactiveUIFinalModernTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFinalModernTargetFrameworks);net472;$(ReactiveUIWindowsTargets)</ReactiveUIFinalModernTargetFrameworks>
     <!-- Ensure all test runs use our runsettings to control cross-assembly parallelism -->
     <RunSettingsFilePath>$(MSBuildThisFileDirectory)tests.runsettings</RunSettingsFilePath>
   </PropertyGroup>  
