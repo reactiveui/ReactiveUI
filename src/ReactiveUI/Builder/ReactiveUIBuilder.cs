@@ -17,7 +17,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     private bool _platformRegistered;
     private bool _coreRegistered;
     private bool _setRxAppMainScheduler;
-    private bool _setRxAppTaskpoolScheduler;
+    private bool _setRxAppTaskPoolScheduler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUIBuilder" /> class.
@@ -68,7 +68,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </returns>
     public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp = true)
     {
-        _setRxAppTaskpoolScheduler = setRxApp;
+        _setRxAppTaskPoolScheduler = setRxApp;
         TaskpoolScheduler = scheduler;
         return this;
     }
@@ -423,7 +423,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
     /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
@@ -450,7 +450,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
@@ -484,7 +484,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <param name="action">The action.</param>
@@ -520,7 +520,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -558,7 +558,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -598,7 +598,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -640,7 +640,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -684,7 +684,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -730,7 +730,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -778,7 +778,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -828,7 +828,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -838,7 +838,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
     /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
     /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
-    /// <typeparam name="T15">The fithteenth type to resolve.</typeparam>
+    /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
     /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
@@ -880,7 +880,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <typeparam name="T5">The fith type to resolve.</typeparam>
+    /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
@@ -890,7 +890,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
     /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
     /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
-    /// <typeparam name="T15">The fithteenth type to resolve.</typeparam>
+    /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
     /// <typeparam name="T16">The sixteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
@@ -935,7 +935,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
                     RxApp.MainThreadScheduler = MainThreadScheduler;
                 }
 
-                if (TaskpoolScheduler != null && _setRxAppTaskpoolScheduler)
+                if (TaskpoolScheduler != null && _setRxAppTaskPoolScheduler)
                 {
                     RxApp.TaskpoolScheduler = TaskpoolScheduler;
                 }
