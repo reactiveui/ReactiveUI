@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" Condition="'$(IsWindows)' == 'true'">
   <!--
     Added 19041 target as a workaround for System.Reactive targeting net5.0-windows10.0.19041.0
     When 19041 is selected by the end user it causes the ControlScheduler in System.Reactive to be exposed and used.
     -->
   <PropertyGroup>
-    <TargetFrameworks>$(WindowsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Forms</PackageDescription>

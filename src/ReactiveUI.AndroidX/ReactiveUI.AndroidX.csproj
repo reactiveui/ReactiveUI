@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net9.0-android</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIAndroidTargets)</TargetFrameworks>
     <PackageDescription>Provides ReactiveUI extensions for .NET Android applications using AndroidX libraries</PackageDescription>
     <PackageId>ReactiveUI.AndroidX</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;androidx;android;net;</PackageTags>

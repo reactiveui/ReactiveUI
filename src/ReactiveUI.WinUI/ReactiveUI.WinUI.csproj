@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" Condition="'$(IsWindows)' == 'true'">
   <PropertyGroup>
-    <TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIWinUITargets)</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for WinUI Desktop</PackageDescription>
     <RootNamespace>ReactiveUI.WinUI.Desktop</RootNamespace>

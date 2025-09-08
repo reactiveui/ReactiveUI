@@ -10,9 +10,10 @@ namespace ReactiveUI.Builder.Tests;
 /// <summary>
 /// Tests ensuring the builder blocks reflection-based initialization.
 /// </summary>
+[TestFixture]
 public class ReactiveUIBuilderBlockingTests
 {
-    [Fact]
+    [Test]
     public void Build_SetsFlag_AndBlocks_InitializeReactiveUI()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -24,6 +25,6 @@ public class ReactiveUIBuilderBlockingTests
         locator.InitializeReactiveUI();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
+        Assert.That(observableProperty, Is.Not.Null);
     }
 }

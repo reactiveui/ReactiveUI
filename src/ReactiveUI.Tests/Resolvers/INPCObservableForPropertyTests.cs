@@ -7,23 +7,28 @@ using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Tests;
 
+[TestFixture]
 public class INPCObservableForPropertyTests
 {
-    [Fact]
+    [Test]
     public void CheckGetAffinityForObjectValues()
     {
         var instance = new INPCObservableForProperty();
 
-        Assert.Equal(5, instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false));
-        Assert.Equal(0, instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true));
-        Assert.Equal(0, instance.GetAffinityForObject(typeof(object), string.Empty, false));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false), Is.EqualTo(5));
+            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true), Is.Zero);
+            Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false), Is.Zero);
 
-        Assert.Equal(5, instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true));
-        Assert.Equal(0, instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false));
-        Assert.Equal(0, instance.GetAffinityForObject(typeof(object), string.Empty, false));
+            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true), Is.EqualTo(5));
+            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false), Is.Zero);
+        }
+
+        Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false), Is.Zero);
     }
 
-    [Fact]
+    [Test]
     public void NotificationOnPropertyChanged()
     {
         var instance = new INPCObservableForProperty();
@@ -41,13 +46,16 @@ public class INPCObservableForPropertyTests
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        Assert.Equal(2, changes.Count);
+        Assert.That(changes, Has.Count.EqualTo(2));
 
-        Assert.Equal(testClass, changes[0].Sender);
-        Assert.Equal(testClass, changes[1].Sender);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        }
     }
 
-    [Fact]
+    [Test]
     public void NotificationOnPropertyChanging()
     {
         var instance = new INPCObservableForProperty();
@@ -65,13 +73,16 @@ public class INPCObservableForPropertyTests
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        Assert.Equal(2, changes.Count);
+        Assert.That(changes, Has.Count.EqualTo(2));
 
-        Assert.Equal(testClass, changes[0].Sender);
-        Assert.Equal(testClass, changes[1].Sender);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        }
     }
 
-    [Fact]
+    [Test]
     public void NotificationOnWholeObjectChanged()
     {
         var instance = new INPCObservableForProperty();
@@ -89,13 +100,16 @@ public class INPCObservableForPropertyTests
         testClass.OnPropertyChanged(null);
         testClass.OnPropertyChanged(string.Empty);
 
-        Assert.Equal(2, changes.Count);
+        Assert.That(changes, Has.Count.EqualTo(2));
 
-        Assert.Equal(testClass, changes[0].Sender);
-        Assert.Equal(testClass, changes[1].Sender);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        }
     }
 
-    [Fact]
+    [Test]
     public void NotificationOnWholeObjectChanging()
     {
         var instance = new INPCObservableForProperty();
@@ -113,10 +127,13 @@ public class INPCObservableForPropertyTests
         testClass.OnPropertyChanging(null);
         testClass.OnPropertyChanging(string.Empty);
 
-        Assert.Equal(2, changes.Count);
+        Assert.That(changes, Has.Count.EqualTo(2));
 
-        Assert.Equal(testClass, changes[0].Sender);
-        Assert.Equal(testClass, changes[1].Sender);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        }
     }
 
     private class TestClassChanged : INotifyPropertyChanged

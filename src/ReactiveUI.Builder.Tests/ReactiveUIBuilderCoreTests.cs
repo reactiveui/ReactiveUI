@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Linq;
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests;
@@ -10,19 +11,20 @@ namespace ReactiveUI.Builder.Tests;
 /// <summary>
 /// Tests for the ReactiveUIBuilder core functionality.
 /// </summary>
+[TestFixture]
 public class ReactiveUIBuilderCoreTests
 {
-    [Fact]
+    [Test]
     public void CreateBuilder_Should_Return_Builder_Instance()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateReactiveUIBuilder();
-        Assert.NotNull(builder);
-        Assert.IsType<ReactiveUIBuilder>(builder);
+        Assert.That(builder, Is.Not.Null);
+        Assert.That(builder, Is.TypeOf<ReactiveUIBuilder>());
     }
 
-    [Fact]
+    [Test]
     public void WithCoreServices_Should_Register_Core_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -31,13 +33,13 @@ public class ReactiveUIBuilderCoreTests
         builder.WithCoreServices().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
+        Assert.That(observableProperty, Is.Not.Null);
 
         var typeConverter = locator.GetService<IBindingTypeConverter>();
-        Assert.NotNull(typeConverter);
+        Assert.That(typeConverter, Is.Not.Null);
     }
 
-    [Fact]
+    [Test]
     public void WithPlatformServices_Should_Register_Platform_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -46,11 +48,11 @@ public class ReactiveUIBuilderCoreTests
         builder.WithPlatformServices().Build();
 
         var services = locator.GetServices<IBindingTypeConverter>();
-        Assert.NotNull(services);
-        Assert.True(services.Any());
+        Assert.That(services, Is.Not.Null);
+        Assert.That(services.Any(), Is.True);
     }
 
-    [Fact]
+    [Test]
     public void WithCustomRegistration_Should_Execute_Custom_Action()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -64,12 +66,12 @@ public class ReactiveUIBuilderCoreTests
             customServiceRegistered = true;
         }).Build();
 
-        Assert.True(customServiceRegistered);
+        Assert.That(customServiceRegistered, Is.True);
         var service = locator.GetService<string>();
-        Assert.Equal("TestValue", service);
+        Assert.That(service, Is.EqualTo("TestValue"));
     }
 
-    [Fact]
+    [Test]
     public void Build_Should_Always_Register_Core_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -79,10 +81,10 @@ public class ReactiveUIBuilderCoreTests
         builder.Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
+        Assert.That(observableProperty, Is.Not.Null);
     }
 
-    [Fact]
+    [Test]
     public void WithCustomRegistration_With_Null_Action_Should_Throw()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -91,7 +93,7 @@ public class ReactiveUIBuilderCoreTests
         Assert.Throws<ArgumentNullException>(() => builder.WithCustomRegistration(null!));
     }
 
-    [Fact]
+    [Test]
     public void WithViewsFromAssembly_Should_Register_Views()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -100,10 +102,10 @@ public class ReactiveUIBuilderCoreTests
         var assembly = typeof(ReactiveUIBuilderCoreTests).Assembly;
 
         builder.WithViewsFromAssembly(assembly).Build();
-        Assert.NotNull(builder);
+        Assert.That(builder, Is.Not.Null);
     }
 
-    [Fact]
+    [Test]
     public void WithViewsFromAssembly_With_Null_Assembly_Should_Throw()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -112,7 +114,7 @@ public class ReactiveUIBuilderCoreTests
         Assert.Throws<ArgumentNullException>(() => builder.WithViewsFromAssembly(null!));
     }
 
-    [Fact]
+    [Test]
     public void WithCoreServices_Called_Multiple_Times_Should_Not_Register_Twice()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -122,11 +124,11 @@ public class ReactiveUIBuilderCoreTests
         builder.WithCoreServices().WithCoreServices().Build();
 
         var services = locator.GetServices<ICreatesObservableForProperty>();
-        Assert.NotNull(services);
-        Assert.True(services.Any());
+        Assert.That(services, Is.Not.Null);
+        Assert.That(services.Any(), Is.True);
     }
 
-    [Fact]
+    [Test]
     public void Builder_Should_Support_Fluent_Chaining()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -142,11 +144,11 @@ public class ReactiveUIBuilderCoreTests
                })
                .Build();
 
-        Assert.True(customServiceRegistered);
+        Assert.That(customServiceRegistered, Is.True);
         var service = locator.GetService<string>();
-        Assert.Equal("Test", service);
+        Assert.That(service, Is.EqualTo("Test"));
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
+        Assert.That(observableProperty, Is.Not.Null);
     }
 }

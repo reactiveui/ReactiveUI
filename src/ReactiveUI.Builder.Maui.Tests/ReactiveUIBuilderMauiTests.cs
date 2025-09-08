@@ -7,9 +7,10 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Maui.Tests;
 
+[TestFixture]
 public class ReactiveUIBuilderMauiTests
 {
-    [Fact]
+    [Test]
     public void WithMaui_Should_Register_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -20,9 +21,9 @@ public class ReactiveUIBuilderMauiTests
                .Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.NotNull(observableProperty);
+        Assert.That(observableProperty, Is.Not.Null);
 
         var typeConverters = locator.GetServices<IBindingTypeConverter>();
-        Assert.NotNull(typeConverters);
+        Assert.That(typeConverters, Is.Not.Null);
     }
 }

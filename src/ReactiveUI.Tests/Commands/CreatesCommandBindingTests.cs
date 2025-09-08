@@ -8,12 +8,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests for the CreateCommand binding.
 /// </summary>
+[TestFixture]
 public class CreatesCommandBindingTests
 {
     /// <summary>
     /// Test that makes sure events binder binds to explicit event.
     /// </summary>
-    [Fact]
+    [Test]
     public void EventBinderBindsToExplicitEvent()
     {
         var input = new TestFixture();
@@ -21,16 +22,19 @@ public class CreatesCommandBindingTests
         var wasCalled = false;
         var cmd = ReactiveCommand.Create<int>(_ => wasCalled = true);
 
-        Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-        Assert.False(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true), Is.GreaterThan(0));
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
+        }
 
         var disposable = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
         input.IsNotNullString = "Foo";
-        Assert.True(wasCalled);
+        Assert.That(wasCalled, Is.True);
 
         wasCalled = false;
         disposable?.Dispose();
         input.IsNotNullString = "Bar";
-        Assert.False(wasCalled);
+        Assert.That(wasCalled, Is.False);
     }
 }

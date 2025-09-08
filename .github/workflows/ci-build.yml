@@ -6,18 +6,21 @@ on:
   pull_request:
     branches: [ main ]
 
+# Needed so the reusable workflow can optionally delete the temp per-OS artifacts it creates.
+permissions:
+  contents: read
+  actions: write
+
 env:
   productNamespacePrefix: "ReactiveUI"
 
-permissions:
-  contents: read
-
 jobs:
   build:
-    permissions:
-      contents: none
     uses: reactiveui/actions-common/.github/workflows/workflow-common-setup-and-build.yml@main
     with:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
       solutionFile: "reactiveui.sln"
+      installWorkloads: true
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

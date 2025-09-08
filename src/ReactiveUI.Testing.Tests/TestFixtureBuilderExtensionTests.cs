@@ -3,168 +3,156 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using FluentAssertions;
-
-using Xunit;
+using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace ReactiveUI.Testing.Tests;
 
 /// <summary>
-/// Test for <see cref="IBuilderExtensions"/>.
+/// Tests for <see cref="IBuilderExtensions"/>.
 /// </summary>
+[TestFixture]
 public sealed class TestFixtureBuilderExtensionTests
 {
-    /// <summary>
-    /// Gets data for the test execution.
-    /// </summary>
-    public static IEnumerable<object[]> Data =>
-        new List<object[]>
-        {
-            new object[] { "testing", string.Empty, string.Empty },
-            new object[] { "testing", "testing", string.Empty },
-            new object[] { "testing", "testing", "one" },
-            new object[] { "testing", "one", "two" }
-        };
+    private static readonly object[][] Data =
+    [
+        ["testing", string.Empty, string.Empty],
+        ["testing", "testing", string.Empty],
+        ["testing", "testing", "one"],
+        ["testing", "one", "two"]
+    ];
+
+    private static readonly object[][] KeyValues =
+    [
+        ["testing", string.Empty],
+        ["testing", "one"],
+        ["testing", "two"],
+        ["testing", "one two"]
+    ];
+
+    private static readonly object[][] KeyValuePairs =
+    [
+        [new KeyValuePair<string, string>("latch", "key")],
+        [new KeyValuePair<string, string>("skeleton", "key")],
+        [new KeyValuePair<string, string>("electronic", "key")],
+        [new KeyValuePair<string, string>("rsa", "key")]
+    ];
 
     /// <summary>
-    /// Gets key value for the test execution.
+    /// Verifies a dictionary is added to the <see cref="TestFixture"/>.
     /// </summary>
-    public static IEnumerable<object[]> KeyValues =>
-        new List<object[]>
-        {
-            new object[] { "testing", string.Empty },
-            new object[] { "testing", "one" },
-            new object[] { "testing", "two" },
-            new object[] { "testing", "one two" }
-        };
-
-    /// <summary>
-    /// Gets key value pairs for the test execution.
-    /// </summary>
-    public static IEnumerable<object[]> KeyValuePairs => new List<object[]>
-    {
-        new object[] { new KeyValuePair<string, string>("latch", "key") },
-        new object[] { new KeyValuePair<string, string>("skeleton", "key") },
-        new object[] { new KeyValuePair<string, string>("electronic", "key") },
-        new object[] { new KeyValuePair<string, string>("rsa", "key") }
-    };
-
-    /// <summary>
-    /// A test to verify the a dictionary is added to the <see cref="TestFixture"/>.
-    /// </summary>
-    [Fact]
+    [Test]
     public void Should_Add_Dictionary()
     {
         // Given, When
         var dictionary = new Dictionary<string, string>
         {
             { "check", "one" },
-            { "testing", "two" }
+            { "testing", "two" },
         };
-        TestFixture builder =
-            new TestFixtureBuilder()
-                .WithDictionary(dictionary);
+
+        TestFixture builder = new TestFixtureBuilder()
+            .WithDictionary(dictionary);
 
         // Then
-        builder.Variables.Should().BeEquivalentTo(dictionary);
-        Assert.Equal(dictionary, builder.Variables);
+        Assert.That(builder.Variables, Is.Not.Null);
+        Assert.That(builder.Variables!, Is.EquivalentTo(dictionary));
     }
 
     /// <summary>
-    /// A test to verify the key value pairs are added to the <see cref="TestFixture"/>.
+    /// Verifies a key/value pair is added to the <see cref="TestFixture"/>.
     /// </summary>
-    /// <param name="key">The key.</param>
-    /// <param name="value">The value.</param>
-    [Theory]
-    [MemberData(nameof(KeyValues))]
+    /// <param name="key">The key to add.</param>
+    /// <param name="value">The value to associate with the key.</param>
+    [TestCaseSource(nameof(KeyValues))]
     public void Should_Add_Key_Value(string key, string value)
     {
         // Given, When
         TestFixture builder = new TestFixtureBuilder().WithKeyValue(key, value);
 
         // Then
-        builder.Variables?[key].Should().BeEquivalentTo(value);
+        Assert.That(builder.Variables, Is.Not.Null);
+        Assert.That(builder.Variables, Does.ContainKey(key));
+        Assert.That(builder.Variables![key], Is.EqualTo(value));
     }
 
     /// <summary>
-    /// A test to verify the key value pairs are added to the <see cref="TestFixture"/>.
+    /// Verifies a key/value pair is added to the <see cref="TestFixture"/>.
     /// </summary>
-    /// <param name="keyValuePair">The key value pair.</param>
-    [Theory]
-    [MemberData(nameof(KeyValuePairs))]
+    /// <param name="keyValuePair">The key/value pair to add.</param>
+    [TestCaseSource(nameof(KeyValuePairs))]
     public void Should_Add_Key_Value_Pair(KeyValuePair<string, string> keyValuePair)
     {
         // Given, When
         TestFixture builder = new TestFixtureBuilder().WithKeyValue(keyValuePair);
 
         // Then
-        builder.Variables?[keyValuePair.Key].Should().BeEquivalentTo(keyValuePair.Value);
+        Assert.That(builder.Variables, Is.Not.Null);
+        Assert.That(builder.Variables, Does.ContainKey(keyValuePair.Key));
+        Assert.That(builder.Variables![keyValuePair.Key], Is.EqualTo(keyValuePair.Value));
     }
 
     /// <summary>
-    /// A test to verify a range of values are added to the <see cref="TestFixture"/>.
+    /// Verifies a range of values are added to <see cref="TestFixture.Tests"/>.
     /// </summary>
-    /// <param name="test1">The first test.</param>
-    /// <param name="test2">The second test.</param>
-    /// <param name="test3">The third test.</param>
-    [Theory]
-    [MemberData(nameof(Data))]
+    /// <param name="test1">The first test value.</param>
+    /// <param name="test2">The second test value.</param>
+    /// <param name="test3">The third test value.</param>
+    [TestCaseSource(nameof(Data))]
     public void Should_Add_Range_To_List(string test1, string test2, string test3)
     {
         // Given, When
-        TestFixture builder = new TestFixtureBuilder().WithTests(new[] { test1, test2, test3 });
+        TestFixture builder = new TestFixtureBuilder().WithTests([test1, test2, test3]);
 
         // Then
-        builder.Tests.Should().BeEquivalentTo(new[] { test1, test2, test3 });
+        Assert.That(builder.Tests, Is.EqualTo([test1, test2, test3]));
     }
 
     /// <summary>
-    /// A test to verify a value added to a list of tests on the <see cref="TestFixture"/>.
+    /// Verifies a single value is added to <see cref="TestFixture.Tests"/>.
     /// </summary>
-    [Fact]
+    [Test]
     public void Should_Add_Value_To_List()
     {
         // Given, When
         TestFixture builder = new TestFixtureBuilder().WithTest("testing");
 
         // Then
-        builder.Tests.Should().BeEquivalentTo(new[] { "testing" });
+        Assert.That(builder.Tests, Is.EqualTo(["testing"]));
     }
 
     /// <summary>
-    /// A test to verify the <see cref="TestFixture"/> count.
+    /// Verifies the <see cref="TestFixture"/> count is correctly returned.
     /// </summary>
-    /// <param name="count">The count.</param>
-    [Theory]
-    [InlineData(1)]
-    [InlineData(100)]
-    [InlineData(1000)]
-    [InlineData(10000)]
-    [InlineData(100000)]
+    /// <param name="count">The expected count of the <see cref="TestFixture"/>.</param>
+    [TestCase(1)]
+    [TestCase(100)]
+    [TestCase(1000)]
+    [TestCase(10000)]
+    [TestCase(100000)]
     public void Should_Return_Count(int count)
     {
         // Given, When
         TestFixture builder = new TestFixtureBuilder().WithCount(count);
 
         // Then
-        builder.Count.Should().Be(count);
+        Assert.That(builder.Count, Is.EqualTo(count));
     }
 
     /// <summary>
-    /// A test to verify the <see cref="TestFixture"/> name.
+    /// Verifies that the <see cref="TestFixture"/> is assigned the expected name.
     /// </summary>
-    /// <param name="name">The name.</param>
-    [Theory]
-    [InlineData("ReactiveUI")]
-    [InlineData("Splat")]
-    [InlineData("Sextant")]
-    [InlineData("Akavache")]
+    /// <param name="name">The expected name to be verified.</param>
+    [TestCase("ReactiveUI")]
+    [TestCase("Splat")]
+    [TestCase("Sextant")]
+    [TestCase("Akavache")]
     public void Should_Return_Name(string name)
     {
         // Given, When
         TestFixture builder = new TestFixtureBuilder().WithName(name);
 
         // Then
-        builder.Name.Should().BeEquivalentTo(name);
+        Assert.That(builder.Name, Is.EqualTo(name));
     }
 }

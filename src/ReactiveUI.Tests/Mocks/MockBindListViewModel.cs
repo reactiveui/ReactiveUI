@@ -16,7 +16,7 @@ public class MockBindListViewModel : ReactiveObject
 
     static MockBindListViewModel()
     {
-        Splat.Locator.CurrentMutable.Register(() => new MockBindListView(), typeof(IViewFor<MockBindListViewModel>));
+        Locator.CurrentMutable.Register(() => new MockBindListView(), typeof(IViewFor<MockBindListViewModel>));
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ public class MockBindListViewModel : ReactiveObject
     /// Gets the item that is currently loaded in the list.
     /// Add or remove elements to modify the list.
     /// </summary>
-    public ISourceList<MockBindListItemViewModel> ActiveListItem { get; } = new SourceList<MockBindListItemViewModel>();
+    public SourceList<MockBindListItemViewModel> ActiveListItem { get; } = new();
 
     /// <summary>
     /// Gets the deepest item of the currect list. (Last element of ActiveListItem).

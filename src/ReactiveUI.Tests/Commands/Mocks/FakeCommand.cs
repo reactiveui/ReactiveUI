@@ -17,8 +17,8 @@ public class FakeCommand : ICommand
     /// </summary>
     public FakeCommand()
     {
-        CanExecuteParameter = default;
-        ExecuteParameter = default;
+        CanExecuteParameter = null;
+        ExecuteParameter = null;
     }
 
     /// <summary>
