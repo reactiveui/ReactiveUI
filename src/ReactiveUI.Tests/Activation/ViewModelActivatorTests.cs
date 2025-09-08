@@ -81,12 +81,10 @@ public class ViewModelActivatorTests
         viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
         using (viewModelActivator.Activate())
+        using (Assert.EnterMultipleScope())
         {
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(activated, Has.Count.EqualTo(1));
-                Assert.That(deactivated.Count, Is.Zero);
-            }
+            Assert.That(activated, Has.Count.EqualTo(1));
+            Assert.That(deactivated.Count, Is.Zero);
         }
 
         using (Assert.EnterMultipleScope())
