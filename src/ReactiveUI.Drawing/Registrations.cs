@@ -27,7 +27,7 @@ public class Registrations : IWantsToRegisterStuff
             throw new ArgumentNullException(nameof(registerFunction));
         }
 
-#if !NETSTANDARD && !NETCOREAPP2_0
+#if NETFRAMEWORK || (NET5_0_OR_GREATER && WINDOWS)
         registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
 #endif
     }

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputType>Exe</OutputType>
     <NoWarn>;1591;1701;1702;1705;CA1822</NoWarn>

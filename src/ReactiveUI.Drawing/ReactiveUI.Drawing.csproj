@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;$(MobileTargetFrameworks)</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);$(WindowsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIFinalTargetFrameworks)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Drawing</AssemblyName>
     <RootNamespace>ReactiveUI.Drawing</RootNamespace>
     <PackageDescription>A extension to the ReactiveUI platform that provides Splat bitmap operation support.</PackageDescription>

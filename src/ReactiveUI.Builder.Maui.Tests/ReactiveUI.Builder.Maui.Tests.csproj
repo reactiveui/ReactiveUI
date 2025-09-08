@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0;net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIFinalModernTargetFrameworks)</TargetFrameworks>
     <UseMaui>true</UseMaui>
     <NoWarn>$(NoWarn);CS1591;SA1600</NoWarn>
     <IsPackable>false</IsPackable>
