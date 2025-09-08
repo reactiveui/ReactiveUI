@@ -291,7 +291,7 @@ public class ReactiveObjectTests
         Assert.That(fixture.AreChangeNotificationsEnabled(), Is.True);
 
         var ser = JsonSerializer.Serialize(fixture);
-        Assert.That(ser.Length, Is.GreaterThan(0));
+        Assert.That(ser, Is.Not.Empty);
         var deser = JsonSerializer.Deserialize<TestFixture>(ser);
         Assert.That(deser, Is.Not.Null);
 

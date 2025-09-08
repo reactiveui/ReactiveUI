@@ -8,7 +8,7 @@ using ReactiveUI.Tests.Properties;
 
 namespace ReactiveUI.Tests.ReactiveProperty.Mocks;
 
-internal class ReactivePropertyVM : ReactiveObject
+public class ReactivePropertyVM : ReactiveObject
 {
     public ReactivePropertyVM()
     {

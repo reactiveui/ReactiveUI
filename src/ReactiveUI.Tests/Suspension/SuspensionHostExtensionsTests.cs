@@ -14,7 +14,7 @@ namespace ReactiveUI.Tests.Suspension;
 public class SuspensionHostExtensionsTests
 {
     /// <summary>
-    /// Verifies that <see cref="SuspensionHost.GetAppState{TAppState}"/> returns the current app state.
+    /// Verifies that GetAppState correctly retrieves the current app state.
     /// </summary>
     [Test]
     public void GetAppStateReturns()

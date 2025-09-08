@@ -192,7 +192,7 @@ public class WpfActiveContentTests
             window.RaiseEvent(loaded);
             host.RaiseEvent(loaded);
 
-            ClassicAssert.IsNull(host.Content);
+            Assert.That(host.Content, Is.Null);
             window.Close();
         }
     }
@@ -285,10 +285,13 @@ public class WpfActiveContentTests
                     await Task.Delay(5).ConfigureAwait(true);
                 }
 
-                Assert.That(
-                            window.TransitioningContent.Content,
-                            Is.EqualTo(v1));
-                ClassicAssert.IsFalse(transitioning);
+                using (Assert.EnterMultipleScope())
+                {
+                    Assert.That(
+                                            window.TransitioningContent.Content,
+                                            Is.EqualTo(v1));
+                    Assert.That(transitioning, Is.False);
+                }
 
                 var v2 = new View2();
                 window.TransitioningContent.Content = v2;
@@ -300,10 +303,13 @@ public class WpfActiveContentTests
                     await Task.Delay(5).ConfigureAwait(true);
                 }
 
-                Assert.That(
-                            window.TransitioningContent.Content,
-                            Is.EqualTo(v2));
-                ClassicAssert.IsFalse(transitioning);
+                using (Assert.EnterMultipleScope())
+                {
+                    Assert.That(
+                                            window.TransitioningContent.Content,
+                                            Is.EqualTo(v2));
+                    Assert.That(transitioning, Is.False);
+                }
             }
 
             async Task RunCycle(

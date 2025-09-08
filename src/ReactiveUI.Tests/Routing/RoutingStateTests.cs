@@ -171,7 +171,7 @@ public class RoutingStateTests
         };
         var viewModel = new TestViewModel();
 
-        Assert.That(fixture.Router.NavigationStack.Count > 0, Is.False);
+        Assert.That(fixture.Router.NavigationStack, Has.Count.LessThanOrEqualTo(0));
 
         fixture.Router.NavigateAndReset.Execute(viewModel);
 

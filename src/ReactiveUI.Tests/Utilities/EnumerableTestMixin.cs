@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-using NUnit.Framework.Legacy;
 
 namespace ReactiveUI.Tests;
 
@@ -17,16 +16,16 @@ public static class EnumerableTestMixin
 
         try
         {
-            ClassicAssert.Equals(left.Length, right.Length);
+            Assert.That(left, Has.Length.EqualTo(right.Length), "Sequence lengths differ.");
             for (var i = 0; i < left.Length; i++)
             {
-                ClassicAssert.Equals(left[i], right[i]);
+                Assert.That(left[i], Is.EqualTo(right[i]), $"Sequences differ at index {i}.");
             }
         }
         catch
         {
-            Debug.WriteLine("lhs: [{0}]", string.Join(",", lhs.ToArray()));
-            Debug.WriteLine("rhs: [{0}]", string.Join(",", rhs.ToArray()));
+            Debug.WriteLine("lhs: [{0}]", string.Join(",", left));
+            Debug.WriteLine("rhs: [{0}]", string.Join(",", right));
             throw;
         }
     }
