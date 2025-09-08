@@ -11,90 +11,124 @@ using ReactiveUI.Testing;
 
 namespace ReactiveUI.Tests;
 
+[TestFixture]
 public class RoutingStateTests
 {
     /// <summary>
     /// Navigations the push pop test.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Fact]
+    [Test]
     public async Task NavigationPushPopTest()
     {
         var input = new TestViewModel { SomeProp = "Foo" };
         var fixture = new RoutingState();
 
-        Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync());
+        Assert.That(await fixture.NavigateBack.CanExecute.FirstAsync(), Is.False);
         await fixture.Navigate.Execute(new TestViewModel());
 
-        Assert.Equal(1, fixture.NavigationStack.Count);
-        Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.NavigationStack, Has.Count.EqualTo(1));
+            Assert.That(await fixture.NavigateBack.CanExecute.FirstAsync(), Is.False);
+        }
 
         await fixture.Navigate.Execute(new TestViewModel());
 
-        Assert.Equal(2, fixture.NavigationStack.Count);
-        Assert.True(await fixture.NavigateBack.CanExecute.FirstAsync());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.NavigationStack, Has.Count.EqualTo(2));
+            Assert.That(await fixture.NavigateBack.CanExecute.FirstAsync(), Is.True);
+        }
 
         var navigatedTo = await fixture.NavigateBack.Execute() ?? throw new InvalidOperationException("Should have valid navigated to screen");
-        Assert.Equal(navigatedTo.GetType(), input.GetType());
-        Assert.Equal(1, fixture.NavigationStack.Count);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(input.GetType(), Is.EqualTo(navigatedTo.GetType()));
+            Assert.That(fixture.NavigationStack, Has.Count.EqualTo(1));
+        }
     }
 
     /// <summary>
     /// Currents the view model observable is accurate.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Fact]
+    [Test]
     public async Task CurrentViewModelObservableIsAccurate()
     {
         var fixture = new RoutingState();
         fixture.CurrentViewModel.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
-        Assert.Equal(1, output.Count);
+        Assert.That(output, Has.Count.EqualTo(1));
 
         await fixture.Navigate.Execute(new TestViewModel { SomeProp = "A" });
-        Assert.Equal(2, output.Count);
+        Assert.That(output, Has.Count.EqualTo(2));
 
         await fixture.Navigate.Execute(new TestViewModel { SomeProp = "B" });
-        Assert.Equal(3, output.Count);
-        Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output, Has.Count.EqualTo(3));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo("B"));
+        }
 
         var navigatedTo = await fixture.NavigateBack.Execute();
-        Assert.Equal(navigatedTo?.GetType(), output.Last()?.GetType());
-        Assert.Equal(4, output.Count);
-        Assert.Equal("A", (output.Last() as TestViewModel)?.SomeProp);
-        Assert.Equal((navigatedTo as TestViewModel)?.SomeProp, (output.Last() as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output.Last()?.GetType(), Is.EqualTo(navigatedTo?.GetType()));
+            Assert.That(output, Has.Count.EqualTo(4));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo("A"));
+        }
+
+        Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo((navigatedTo as TestViewModel)?.SomeProp));
 
         await fixture.Navigate.Execute(new TestViewModel { SomeProp = "B" });
-        Assert.Equal(5, output.Count);
-        Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output, Has.Count.EqualTo(5));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo("B"));
+        }
 
         await fixture.Navigate.Execute(new TestViewModel { SomeProp = "C" });
-        Assert.Equal(6, output.Count);
-        Assert.Equal("C", (output.Last() as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output, Has.Count.EqualTo(6));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo("C"));
+        }
 
         navigatedTo = await fixture.NavigateBack.Execute();
-        Assert.Equal(navigatedTo?.GetType(), output.Last()?.GetType());
-        Assert.Equal(7, output.Count);
-        Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
-        Assert.Equal((navigatedTo as TestViewModel)?.SomeProp, (output.Last() as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output.Last()?.GetType(), Is.EqualTo(navigatedTo?.GetType()));
+            Assert.That(output, Has.Count.EqualTo(7));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo("B"));
+        }
+
+        Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo((navigatedTo as TestViewModel)?.SomeProp));
 
         navigatedTo = await fixture.NavigateBack.Execute();
-        Assert.Equal(navigatedTo?.GetType(), output.Last()?.GetType());
-        Assert.Equal(8, output.Count);
-        Assert.Equal("A", (output.Last() as TestViewModel)?.SomeProp);
-        Assert.Equal((navigatedTo as TestViewModel)?.SomeProp, (output.Last() as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output.Last()?.GetType(), Is.EqualTo(navigatedTo?.GetType()));
+            Assert.That(output, Has.Count.EqualTo(8));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo("A"));
+        }
+
+        Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo((navigatedTo as TestViewModel)?.SomeProp));
 
         navigatedTo = await fixture.NavigateBack.Execute();
-        Assert.Equal(navigatedTo?.GetType(), output.Last()?.GetType());
-        Assert.Equal(9, output.Count);
-        Assert.Equal(null, (output.Last() as TestViewModel)?.SomeProp);
-        Assert.Equal(null, (navigatedTo as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output.Last()?.GetType(), Is.EqualTo(navigatedTo?.GetType()));
+            Assert.That(output, Has.Count.EqualTo(9));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.Null);
+            Assert.That(navigatedTo as TestViewModel, Is.Null);
+        }
     }
 
     /// <summary>
     /// Currents the view model observable is accurate via when any observable.
     /// </summary>
-    [Fact]
+    [Test]
     public void CurrentViewModelObservableIsAccurateViaWhenAnyObservable()
     {
         var fixture = new TestScreen();
@@ -105,24 +139,30 @@ public class RoutingStateTests
 
         fixture.Router = new RoutingState();
 
-        Assert.Equal(1, output.Count);
+        Assert.That(output, Has.Count.EqualTo(1));
 
         fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "A" });
-        Assert.Equal(2, output.Count);
+        Assert.That(output, Has.Count.EqualTo(2));
 
         fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "B" });
-        Assert.Equal(3, output.Count);
-        Assert.Equal("B", (output.Last() as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output, Has.Count.EqualTo(3));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo("B"));
+        }
 
         fixture.Router.NavigateBack.Execute();
-        Assert.Equal(4, output.Count);
-        Assert.Equal("A", (output.Last() as TestViewModel)?.SomeProp);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output, Has.Count.EqualTo(4));
+            Assert.That((output.Last() as TestViewModel)?.SomeProp, Is.EqualTo("A"));
+        }
     }
 
     /// <summary>
     /// Navigates the and reset check navigation stack.
     /// </summary>
-    [Fact]
+    [Test]
     public void NavigateAndResetCheckNavigationStack()
     {
         var fixture = new TestScreen
@@ -131,18 +171,21 @@ public class RoutingStateTests
         };
         var viewModel = new TestViewModel();
 
-        Assert.False(fixture.Router.NavigationStack.Count > 0);
+        Assert.That(fixture.Router.NavigationStack, Has.Count.LessThanOrEqualTo(0));
 
         fixture.Router.NavigateAndReset.Execute(viewModel);
 
-        Assert.True(fixture.Router.NavigationStack.Count == 1);
-        Assert.True(ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.Router.NavigationStack, Has.Count.EqualTo(1));
+            Assert.That(ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel), Is.True);
+        }
     }
 
     /// <summary>
     /// Schedulers the is used for all commands.
     /// </summary>
-    [Fact]
+    [Test]
     public void SchedulerIsUsedForAllCommands() =>
         new TestScheduler().With(
             scheduler =>
@@ -160,22 +203,22 @@ public class RoutingStateTests
                     .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
 
                 fixture.Navigate.Execute(new TestViewModel()).Subscribe();
-                Assert.Empty(navigate);
+                Assert.That(navigate, Is.Empty);
                 scheduler.Start();
-                Assert.NotEmpty(navigate);
+                Assert.That(navigate, Is.Not.Empty);
 
                 fixture.NavigateBack.Execute().Subscribe();
-                Assert.Empty(navigateBack);
+                Assert.That(navigateBack, Is.Empty);
                 scheduler.Start();
-                Assert.NotEmpty(navigateBack);
+                Assert.That(navigateBack, Is.Not.Empty);
 
                 fixture.NavigateAndReset.Execute(new TestViewModel()).Subscribe();
-                Assert.Empty(navigateAndReset);
+                Assert.That(navigateAndReset, Is.Empty);
                 scheduler.Start();
-                Assert.NotEmpty(navigateAndReset);
+                Assert.That(navigateAndReset, Is.Not.Empty);
             });
 
-    [Fact]
+    [Test]
     public void RoutingStateThrows() =>
         new TestScheduler().With(
             scheduler =>
@@ -192,6 +235,6 @@ public class RoutingStateTests
                     .NavigateAndReset
                     .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
 
-                Assert.Throws<Exception>(() => fixture.Navigate.Execute(default(TestViewModel)!).Subscribe());
+                Assert.Throws<Exception>(() => fixture.Navigate.Execute(null!).Subscribe());
             });
 }

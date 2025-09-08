@@ -17,7 +17,7 @@ public class AutoPersistHelperTest
     /// <summary>
     /// Test the automatic persist doesnt work on non data contract classes.
     /// </summary>
-    [Fact]
+    [Test]
     public void AutoPersistDoesntWorkOnNonDataContractClasses()
     {
         var fixture = new HostTestFixture();
@@ -32,13 +32,13 @@ public class AutoPersistHelperTest
             shouldDie = false;
         }
 
-        Assert.False(shouldDie);
+        Assert.That(shouldDie, Is.False);
     }
 
     /// <summary>
     /// Test the automatic persist helper shouldnt trigger on non persistable properties.
     /// </summary>
-    [Fact]
+    [Test]
     public void AutoPersistHelperShouldntTriggerOnNonPersistableProperties() =>
         new TestScheduler().With(scheduler =>
         {
@@ -57,18 +57,18 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(0, timesSaved);
+            Assert.That(timesSaved, Is.Zero);
 
             // Change to not serialized = no saving
             fixture.NotSerialized = "Foo";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(0, timesSaved);
+            Assert.That(timesSaved, Is.Zero);
         });
 
     /// <summary>
     /// Tests the automatic persist helper saves on interval.
     /// </summary>
-    [Fact]
+    [Test]
     public void AutoPersistHelperSavesOnInterval() =>
         new TestScheduler().With(scheduler =>
         {
@@ -87,30 +87,30 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(0, timesSaved);
+            Assert.That(timesSaved, Is.Zero);
 
             // Change = one save
             fixture.IsNotNullString = "Foo";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(1, timesSaved);
+            Assert.That(timesSaved, Is.EqualTo(1));
 
             // Two fast changes = one save
             fixture.IsNotNullString = "Foo";
             fixture.IsNotNullString = "Bar";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(2, timesSaved);
+            Assert.That(timesSaved, Is.EqualTo(2));
 
             // Trigger save twice = one save
             manualSave.OnNext(Unit.Default);
             manualSave.OnNext(Unit.Default);
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(3, timesSaved);
+            Assert.That(timesSaved, Is.EqualTo(3));
         });
 
     /// <summary>
     /// Tests the automatic persist helper disconnects.
     /// </summary>
-    [Fact]
+    [Test]
     public void AutoPersistHelperDisconnects() =>
         new TestScheduler().With(scheduler =>
         {
@@ -129,23 +129,23 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(0, timesSaved);
+            Assert.That(timesSaved, Is.Zero);
 
             // Change = one save
             fixture.IsNotNullString = "Foo";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(1, timesSaved);
+            Assert.That(timesSaved, Is.EqualTo(1));
 
             // Two changes after dispose = no save
             disp.Dispose();
             fixture.IsNotNullString = "Foo";
             fixture.IsNotNullString = "Bar";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(1, timesSaved);
+            Assert.That(timesSaved, Is.EqualTo(1));
 
             // Trigger save after dispose = no save
             manualSave.OnNext(Unit.Default);
             scheduler.AdvanceByMs(2 * 100);
-            Assert.Equal(1, timesSaved);
+            Assert.That(timesSaved, Is.EqualTo(1));
         });
 }

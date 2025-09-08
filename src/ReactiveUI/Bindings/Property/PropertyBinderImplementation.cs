@@ -323,10 +323,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                     Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
                     return fetchedValues;
                 })
-            : (() => new IObservedChange<object, object?>[]
-                {
-                    new ObservedChange<object, object?>(null!, null, viewModel)
-                });
+            : (() =>
+                  [
+                      new ObservedChange<object, object?>(null!, null, viewModel)
+                  ]);
 
         var vFetcher = new Func<IObservedChange<object, object?>[]>(() =>
         {

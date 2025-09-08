@@ -16,13 +16,14 @@ namespace ReactiveUI.AOTTests;
 /// Comprehensive AOT compatibility tests for ReactiveUI that demonstrate
 /// proper AOT attribute usage and provide guidance for developers.
 /// </summary>
+[TestFixture]
 public class ComprehensiveAOTTests
 {
     /// <summary>
     /// Tests that demonstrate AOT-compatible patterns that work well in AOT scenarios.
     /// These tests use string-based property names and explicit schedulers.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ToProperty with string-based property names which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ToProperty with string-based property names which requires AOT suppression")]
     public void AOTCompatiblePatterns_WorkCorrectly()
@@ -32,7 +33,7 @@ public class ComprehensiveAOTTests
         var helper = Observable.Return("test")
             .ToProperty(obj, nameof(TestReactiveObject.ComputedProperty));
 
-        Assert.Equal("test", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("test"));
 
         // Direct property observation works well in AOT
         var changes = new List<string?>();
@@ -41,14 +42,14 @@ public class ComprehensiveAOTTests
         obj.TestProperty = "test1";
         obj.TestProperty = "test2";
 
-        Assert.Contains(nameof(TestReactiveObject.TestProperty), changes);
-        Assert.Equal(2, changes.Count(x => x == nameof(TestReactiveObject.TestProperty)));
+        Assert.That(changes, Does.Contain(nameof(TestReactiveObject.TestProperty)));
+        Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty)), Is.EqualTo(2));
     }
 
     /// <summary>
     /// Tests that interaction patterns work well in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     public void Interactions_WorkInAOT()
     {
         var interaction = new Interaction<string, bool>();
@@ -60,16 +61,16 @@ public class ComprehensiveAOTTests
         });
 
         result = interaction.Handle("test").Wait();
-        Assert.True(result);
+        Assert.That(result, Is.True);
 
         result = interaction.Handle("fail").Wait();
-        Assert.False(result);
+        Assert.That(result, Is.False);
     }
 
     /// <summary>
     /// Tests that message bus functionality works in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBus_WorksInAOT()
     {
         var messageBus = new MessageBus();
@@ -80,16 +81,16 @@ public class ComprehensiveAOTTests
         messageBus.SendMessage("Message1");
         messageBus.SendMessage("Message2");
 
-        Assert.Equal(2, receivedMessages.Count);
-        Assert.Contains("Message1", receivedMessages);
-        Assert.Contains("Message2", receivedMessages);
+        Assert.That(receivedMessages, Has.Count.EqualTo(2));
+        Assert.That(receivedMessages, Does.Contain("Message1"));
+        Assert.That(receivedMessages, Does.Contain("Message2"));
     }
 
     /// <summary>
     /// Tests that demonstrate patterns that require AOT warnings to be suppressed.
     /// These show how to properly use ReactiveCommand in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Demonstrating proper suppression of AOT warnings for ReactiveCommand")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Demonstrating proper suppression of AOT warnings for ReactiveCommand")]
     public void ReactiveCommand_WithProperSuppression_WorksInAOT()
@@ -100,17 +101,17 @@ public class ComprehensiveAOTTests
         var canExecute = true;
         command.CanExecute.Subscribe(canExec => canExecute = canExec);
 
-        Assert.True(canExecute);
+        Assert.That(canExecute, Is.True);
 
         command.Execute().Subscribe();
-        Assert.True(executed);
+        Assert.That(executed, Is.True);
     }
 
     /// <summary>
     /// Tests that demonstrate proper usage of ReactiveProperty with explicit scheduler.
     /// This avoids AOT warnings by providing an explicit scheduler instead of relying on RxApp.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty with explicit scheduler which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty with explicit scheduler which requires AOT suppression")]
     public void ReactiveProperty_WithExplicitScheduler_WorksInAOT()
@@ -124,15 +125,18 @@ public class ComprehensiveAOTTests
 
         property.Value = "changed";
 
-        Assert.Contains("initial", values);
-        Assert.Contains("changed", values);
-        Assert.Equal("changed", property.Value);
+        Assert.That(values, Does.Contain("initial"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(values, Does.Contain("changed"));
+            Assert.That(property.Value, Is.EqualTo("changed"));
+        }
     }
 
     /// <summary>
     /// Tests that ObservableAsPropertyHelper works correctly with string-based binding.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ToProperty with string-based property names which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ToProperty with string-based property names which requires AOT suppression")]
     public void ObservableAsPropertyHelper_StringBased_WorksInAOT()
@@ -146,10 +150,10 @@ public class ComprehensiveAOTTests
             .ObserveOn(scheduler)
             .ToProperty(obj, nameof(TestReactiveObject.ComputedProperty));
 
-        Assert.Equal("initial", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("initial"));
 
         source.OnNext("updated");
-        Assert.Equal("updated", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("updated"));
 
         helper.Dispose();
         source.Dispose();
@@ -158,7 +162,7 @@ public class ComprehensiveAOTTests
     /// <summary>
     /// Tests that demonstrate how to use dependency injection in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     public void DependencyInjection_BasicUsage_WorksInAOT()
     {
         Splat.Builder.AppBuilder.ResetBuilderStateForTests();
@@ -172,14 +176,14 @@ public class ComprehensiveAOTTests
         // Resolve registered types
         var scheduler = Locator.Current.GetService<IScheduler>();
 
-        Assert.NotNull(scheduler);
-        Assert.IsType<CurrentThreadScheduler>(scheduler);
+        Assert.That(scheduler, Is.Not.Null);
+        Assert.That(scheduler, Is.TypeOf<CurrentThreadScheduler>());
     }
 
     /// <summary>
     /// Tests demonstrating view model activation patterns in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     public void ViewModelActivation_PatternWorks_InAOT()
@@ -199,18 +203,27 @@ public class ComprehensiveAOTTests
 
         // Test activation/deactivation cycle
         viewModel.Activator.Activate();
-        Assert.Equal(1, activationCount);
-        Assert.Equal(0, deactivationCount);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(1));
+            Assert.That(deactivationCount, Is.Zero);
+        }
 
         viewModel.Activator.Deactivate();
-        Assert.Equal(1, activationCount);
-        Assert.Equal(1, deactivationCount);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(1));
+            Assert.That(deactivationCount, Is.EqualTo(1));
+        }
 
         // Test multiple activation cycles
         viewModel.Activator.Activate();
         viewModel.Activator.Deactivate();
 
-        Assert.Equal(2, activationCount);
-        Assert.Equal(2, deactivationCount);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(2));
+            Assert.That(deactivationCount, Is.EqualTo(2));
+        }
     }
 }

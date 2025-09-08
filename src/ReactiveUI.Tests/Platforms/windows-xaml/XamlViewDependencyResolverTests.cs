@@ -8,7 +8,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
 #else
-using FactAttribute = Xunit.WpfFactAttribute;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -16,6 +15,8 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests associated with UI and the <see cref="IDependencyResolver"/>.
 /// </summary>
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public sealed class XamlViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;
@@ -25,39 +26,46 @@ public sealed class XamlViewDependencyResolverTests : IDisposable
     /// </summary>
     public XamlViewDependencyResolverTests()
     {
-        _resolver = new ModernDependencyResolver();
-        _resolver.InitializeSplat();
-        _resolver.InitializeReactiveUI();
-        _resolver.RegisterViewsForViewModels(GetType().Assembly);
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+        resolver.InitializeReactiveUI();
+        resolver.RegisterViewsForViewModels(GetType().Assembly);
+
+        _resolver = resolver;
     }
 
     /// <summary>
     /// Test that register views for view model should register all views.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void RegisterViewsForViewModelShouldRegisterAllViews()
     {
         using (_resolver.WithResolver())
+        using (Assert.EnterMultipleScope())
         {
-            Assert.Single(_resolver.GetServices<IViewFor<ExampleViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<AnotherViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>());
-            Assert.Single(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>());
+            Assert.That(_resolver.GetServices<IViewFor<ExampleViewModel>>(), Has.Exactly(1).Items);
+            Assert.That(_resolver.GetServices<IViewFor<AnotherViewModel>>(), Has.Exactly(1).Items);
+            Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>(), Has.Exactly(1).Items);
+            Assert.That(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>(), Has.Exactly(1).Items);
         }
     }
 
     /// <summary>
     /// Test that register views for view model should include contracts.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void RegisterViewsForViewModelShouldIncludeContracts()
     {
         using (_resolver.WithResolver())
         {
-            Assert.Single(_resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract"));
+            Assert.That(
+                        _resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract"),
+                        Has.Exactly(1).Items);
         }
     }
 
     /// <inheritdoc/>
-    public void Dispose() => _resolver?.Dispose();
+    public void Dispose() => _resolver.Dispose();
 }

@@ -4,16 +4,15 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-
 using DynamicData;
-
 using ReactiveUI.Tests.Wpf;
 
 namespace ReactiveUI.Tests;
 
 public class ViewModelViewHostTests
 {
-    [StaFact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void ViewModelViewHostDefaultContentNotNull()
     {
         var uc = new ViewModelViewHost
@@ -46,12 +45,13 @@ public class ViewModelViewHostTests
         new[] { true }.AssertAreEqual(windowActivated);
         new[] { true }.AssertAreEqual(controlActivated);
 
-        Assert.NotNull(uc.Content);
+        Assert.That(uc.Content, Is.Not.Null);
 
         window.Dispatcher.InvokeShutdown();
     }
 
-    [StaFact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void ViewModelViewHostContentNotNullWithViewModelAndActivated()
     {
         Locator.CurrentMutable.Register<TestViewModel>(() => new());
@@ -83,7 +83,7 @@ public class ViewModelViewHostTests
         new[] { true }.AssertAreEqual(controlActivated);
 
         // Test IViewFor<ViewModel> after activated
-        Assert.IsType<TestView>(uc.Content);
+        Assert.That(uc.Content, Is.TypeOf<TestView>());
 
         window.Dispatcher.InvokeShutdown();
     }

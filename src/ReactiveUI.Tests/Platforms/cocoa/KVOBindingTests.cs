@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using Xunit;
+using NUnit.Framework;
 using ReactiveUI.Cocoa;
 
 namespace ReactiveUI.Tests
@@ -41,14 +41,14 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Makes the sure kvo bindings bind to kvo things.
         /// </summary>
-        [Fact]
+        [Test]
         public void MakeSureKVOBindingsBindToKVOThings()
         {
             var input = new FooController();
             var fixture = new KVOObservableForProperty();
 
-            Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(FooController), "View"));
-            Assert.Equal(0, fixture.GetAffinityForObject(typeof(FooController), "ViewModel"));
+            Assert.That(fixture.GetAffinityForObject(typeof(FooController), "View"), Is.Not.EqualTo(0));
+            Assert.That(fixture.GetAffinityForObject(typeof(FooController), "ViewModel"), Is.EqualTo(0));
         }
     }
 }

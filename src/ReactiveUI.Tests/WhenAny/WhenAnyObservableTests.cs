@@ -4,18 +4,20 @@
 // See the LICENSE file in the project root for full license information.
 
 using DynamicData;
+using NUnit.Framework.Legacy;
 
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests WhenAnyObservable.
 /// </summary>
+[TestFixture]
 public class WhenAnyObservableTests
 {
     /// <summary>
     /// Tests that null observables do not cause exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void NullObservablesDoNotCauseExceptions()
     {
         var fixture = new TestWhenAnyObsViewModel
@@ -55,84 +57,92 @@ public class WhenAnyObservableTests
     /// Performs a smoke test on combining WhenAnyObservable.
     /// </summary>
     /// <returns>A task to monitor the progress.</returns>
-    [Fact]
+    [Test]
     public async Task WhenAnyObservableSmokeTestCombining()
     {
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<string?>();
         fixture.WhenAnyObservable(x => x.Command3, x => x.Command1, (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-        Assert.Equal(0, list.Count);
+        Assert.That(list, Is.Empty);
 
         await fixture.Command1!.Execute(1);
         await fixture.Command3.Execute("foo");
-        Assert.Equal(1, list.Count);
+        Assert.That(list, Has.Count.EqualTo(1));
 
         await fixture.Command1.Execute(2);
-        Assert.Equal(2, list.Count);
+        Assert.That(list, Has.Count.EqualTo(2));
 
         await fixture.Command3.Execute("bar");
-        Assert.Equal(3, list.Count);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(list, Has.Count.EqualTo(3));
 
-        Assert.True(
-                    new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(
-                                                                   list,
-                                                                   (expected, actual) => new
-                                                                   {
-                                                                       expected,
-                                                                       actual
-                                                                   }).All(x => x.expected == x.actual));
+            Assert.That(
+                        new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(
+                                                                       list,
+                                                                       (expected, actual) => new
+                                                                       {
+                                                                           expected,
+                                                                           actual
+                                                                       }).All(x => x.expected == x.actual),
+                        Is.True);
+        }
     }
 
     /// <summary>
     /// Performs a smoke test testing WhenAnyObservable merging results.
     /// </summary>
     /// <returns>A task to monitor the progress.</returns>
-    [Fact]
+    [Test]
     public async Task WhenAnyObservableSmokeTestMerging()
     {
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<int>();
         fixture.WhenAnyObservable(x => x.Command1, x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-        Assert.Equal(0, list.Count);
+        Assert.That(list, Is.Empty);
 
         await fixture.Command1!.Execute(1);
-        Assert.Equal(1, list.Count);
+        Assert.That(list, Has.Count.EqualTo(1));
 
         await fixture.Command2.Execute(2);
-        Assert.Equal(2, list.Count);
+        Assert.That(list, Has.Count.EqualTo(2));
 
         await fixture.Command1.Execute(1);
-        Assert.Equal(3, list.Count);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(list, Has.Count.EqualTo(3));
 
-        Assert.True(
-                    new[] { 1, 2, 1, }.Zip(
-                                           list,
-                                           (expected, actual) => new
-                                           {
-                                               expected,
-                                               actual
-                                           }).All(x => x.expected == x.actual));
+            Assert.That(
+                        new[] { 1, 2, 1, }.Zip(
+                                               list,
+                                               (expected, actual) => new
+                                               {
+                                                   expected,
+                                                   actual
+                                               }).All(x => x.expected == x.actual),
+                        Is.True);
+        }
     }
 
     /// <summary>
     /// Tests WhenAnyObservable with null object should update when object isnt null anymore.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
     {
         var fixture = new TestWhenAnyObsViewModel();
         fixture!.WhenAnyObservable(x => x.Changes)!.Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
-        Assert.Equal(0, output.Count);
+        Assert.That(output, Is.Empty);
 
         fixture.MyListOfInts = [];
-        Assert.Equal(0, output.Count);
+        Assert.That(output, Is.Empty);
 
         fixture.MyListOfInts.Add(1);
-        Assert.Equal(1, output.Count);
+        Assert.That(output, Has.Count.EqualTo(1));
 
         fixture.MyListOfInts = null;
-        Assert.Equal(1, output.Count);
+        Assert.That(output, Has.Count.EqualTo(1));
     }
 }

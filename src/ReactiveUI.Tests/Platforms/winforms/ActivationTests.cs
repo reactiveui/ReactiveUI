@@ -10,12 +10,14 @@ namespace ReactiveUI.Tests.Winforms;
 /// <summary>
 /// Tests to make sure the activation works correctly.
 /// </summary>
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class ActivationTests
 {
     /// <summary>
     /// Tests activations for view fetcher supports default winforms components.
     /// </summary>
-    [Fact]
+    [Test]
     public void ActivationForViewFetcherSupportsDefaultWinformsComponents()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
@@ -23,40 +25,40 @@ public class ActivationTests
 
         foreach (var c in supportedComponents)
         {
-            Assert.Equal(10, target.GetAffinityForView(c));
+            Assert.That(target.GetAffinityForView(c), Is.EqualTo(10));
         }
     }
 
     /// <summary>
     /// Tests that determines whether this instance [can fetch activator for form].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanFetchActivatorForForm()
     {
         var form = new TestForm();
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
         var formActivator = target.GetActivationForView(form);
 
-        Assert.NotNull(formActivator);
+        Assert.That(formActivator, Is.Not.Null);
     }
 
     /// <summary>
     /// Tests that determines whether this instance [can fetch activator for control].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanFetchActivatorForControl()
     {
         var control = new TestControl();
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
         var activator = target.GetActivationForView(control);
 
-        Assert.NotNull(activator);
+        Assert.That(activator, Is.Not.Null);
     }
 
     /// <summary>
     /// Smokes the test windows form.
     /// </summary>
-    [Fact]
+    [Test]
     public void SmokeTestWindowsForm()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
@@ -77,28 +79,34 @@ public class ActivationTests
                 }
             });
 
-            Assert.Equal(0, formActivateCount);
-            Assert.Equal(0, formDeActivateCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(formActivateCount, Is.Zero);
+                Assert.That(formDeActivateCount, Is.Zero);
+            }
 
             form.Visible = true;
-            Assert.Equal(1, formActivateCount);
+            Assert.That(formActivateCount, Is.EqualTo(1));
 
             form.Visible = false;
-            Assert.Equal(1, formActivateCount);
-            Assert.Equal(1, formDeActivateCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(formActivateCount, Is.EqualTo(1));
+                Assert.That(formDeActivateCount, Is.EqualTo(1));
+            }
 
             form.Visible = true;
-            Assert.Equal(2, formActivateCount);
+            Assert.That(formActivateCount, Is.EqualTo(2));
 
             form.Close();
-            Assert.Equal(2, formDeActivateCount);
+            Assert.That(formDeActivateCount, Is.EqualTo(2));
         }
     }
 
     /// <summary>
     /// Smokes the test user control.
     /// </summary>
-    [Fact]
+    [Test]
     public void SmokeTestUserControl()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
@@ -124,16 +132,16 @@ public class ActivationTests
             parent.Controls.Add(userControl);
 
             userControl.Visible = true;
-            Assert.Equal(1, userControlActivateCount);
+            Assert.That(userControlActivateCount, Is.EqualTo(1));
             userControl.Visible = false;
-            Assert.Equal(1, userControlDeActivateCount);
+            Assert.That(userControlDeActivateCount, Is.EqualTo(1));
 
             userControl.Visible = true;
-            Assert.Equal(2, userControlActivateCount);
+            Assert.That(userControlActivateCount, Is.EqualTo(2));
 
             // closing the form deactivated the usercontrol
             parent.Close();
-            Assert.Equal(2, userControlDeActivateCount);
+            Assert.That(userControlDeActivateCount, Is.EqualTo(2));
         }
     }
 }

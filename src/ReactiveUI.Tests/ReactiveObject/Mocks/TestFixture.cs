@@ -41,7 +41,7 @@ public class TestFixture : ReactiveObject
         /// <summary>
         /// Initializes a new instance of the <see cref="TestFixture"/> class.
         /// </summary>
-        public TestFixture() => TestCollection = new ObservableCollectionExtended<int>();
+        public TestFixture() => TestCollection = [];
 
         /// <summary>
         /// Gets or sets the is not null string.
