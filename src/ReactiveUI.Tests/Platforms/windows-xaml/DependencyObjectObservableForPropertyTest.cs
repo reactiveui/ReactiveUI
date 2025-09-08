@@ -9,7 +9,6 @@ using DynamicData;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
-using System.Threading;
 using System.Windows.Controls;
 #endif
 

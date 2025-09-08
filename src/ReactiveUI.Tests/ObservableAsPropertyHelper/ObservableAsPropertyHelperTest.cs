@@ -165,6 +165,7 @@ public class ObservableAsPropertyHelperTest
             Assert.That(isSubscribed, Is.False);
             Assert.That(fixture.Value, Is.EqualTo(42));
         }
+
         Assert.That(isSubscribed, Is.True);
     }
 
@@ -432,7 +433,7 @@ public class ObservableAsPropertyHelperTest
             using (Assert.EnterMultipleScope())
             {
                 Assert.That(fixture.Value, Is.EqualTo(4));
-                Assert.That(errors.Count, Is.EqualTo(1));
+                Assert.That(errors, Has.Count.EqualTo(1));
             }
         });
 
@@ -493,8 +494,8 @@ public class ObservableAsPropertyHelperTest
         fixture.IsOnlyOneWord = "FooBar";
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(resultChanging.Count, Is.EqualTo(1));
-            Assert.That(resultChanged.Count, Is.EqualTo(1));
+            Assert.That(resultChanging, Has.Count.EqualTo(1));
+            Assert.That(resultChanged, Has.Count.EqualTo(1));
             Assert.That(resultChanging[0].Value, Is.EqualTo(string.Empty));
             Assert.That(resultChanged[0].Value, Is.EqualTo("Foo"));
         }
@@ -502,8 +503,8 @@ public class ObservableAsPropertyHelperTest
         fixture.IsOnlyOneWord = "Bazz";
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(resultChanging.Count, Is.EqualTo(2));
-            Assert.That(resultChanged.Count, Is.EqualTo(2));
+            Assert.That(resultChanging, Has.Count.EqualTo(2));
+            Assert.That(resultChanged, Has.Count.EqualTo(2));
             Assert.That(resultChanging[1].Value, Is.EqualTo("Foo"));
             Assert.That(resultChanged[1].Value, Is.EqualTo("Baz"));
         }

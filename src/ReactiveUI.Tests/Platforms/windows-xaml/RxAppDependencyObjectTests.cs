@@ -19,7 +19,9 @@ public class RxAppDependencyObjectTests
     {
         RxApp.EnsureInitialized();
 
-        Assert.That(Locator.Current.GetServices<ICreatesObservableForProperty>()
-                           .Any(x => x is DependencyObjectObservableForProperty), Is.True);
+        Assert.That(
+            Locator.Current.GetServices<ICreatesObservableForProperty>()
+                           .Any(x => x is DependencyObjectObservableForProperty),
+            Is.True);
     }
 }

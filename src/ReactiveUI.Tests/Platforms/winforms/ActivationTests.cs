@@ -24,7 +24,7 @@ public class ActivationTests
 
         foreach (var c in supportedComponents)
         {
-            Assert.That(target.GetAffinityForView(c, Is.EqualTo(10)));
+            Assert.That(target.GetAffinityForView(c), Is.EqualTo(10));
         }
     }
 

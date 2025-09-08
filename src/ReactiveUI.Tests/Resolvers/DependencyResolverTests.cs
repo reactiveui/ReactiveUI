@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-
-using System.Linq;
-
 namespace ReactiveUI.Tests;
 
 [TestFixture]
@@ -17,14 +14,14 @@ public sealed class DependencyResolverTests
     public static IEnumerable<TestCaseData> NamespacesToRegister =>
         new List<TestCaseData>
         {
-            new TestCaseData(new[] { RegistrationNamespace.XamForms }),
-            new TestCaseData(new[] { RegistrationNamespace.Winforms }),
-            new TestCaseData(new[] { RegistrationNamespace.Wpf }),
-            new TestCaseData(new[] { RegistrationNamespace.Uno }),
-            new TestCaseData(new[] { RegistrationNamespace.Blazor }),
-            new TestCaseData(new[] { RegistrationNamespace.Drawing }),
-            new TestCaseData(new[] { RegistrationNamespace.XamForms, RegistrationNamespace.Wpf }),
-            new TestCaseData(new[] { RegistrationNamespace.Blazor, RegistrationNamespace.XamForms, RegistrationNamespace.Wpf }),
+            new(new[] { RegistrationNamespace.XamForms }),
+            new(new[] { RegistrationNamespace.Winforms }),
+            new(new[] { RegistrationNamespace.Wpf }),
+            new(new[] { RegistrationNamespace.Uno }),
+            new(new[] { RegistrationNamespace.Blazor }),
+            new(new[] { RegistrationNamespace.Drawing }),
+            new(new[] { RegistrationNamespace.XamForms, RegistrationNamespace.Wpf }),
+            new(new[] { RegistrationNamespace.Blazor, RegistrationNamespace.XamForms, RegistrationNamespace.Wpf }),
         };
 
     [Test]
@@ -39,9 +36,9 @@ public sealed class DependencyResolverTests
                 Assert.That(resolvedServices.Count(), Is.EqualTo(shouldRegistered.Value.Count));
                 foreach (var implementationType in shouldRegistered.Value)
                 {
-                    resolvedServices
-                        .Any(rs => rs.GetType() == implementationType)
-                        .Should().BeTrue();
+                    Assert.That(
+                        resolvedServices.Any(rs => rs.GetType() == implementationType),
+                        Is.True);
                 }
             }
         }
@@ -66,9 +63,9 @@ public sealed class DependencyResolverTests
 
                 foreach (var implementationType in shouldRegistered.Value)
                 {
-                    resolvedServices
-                        .Any(rs => rs.GetType() == implementationType)
-                        .Should().BeTrue();
+                    Assert.That(
+                        resolvedServices.Any(rs => rs.GetType() == implementationType),
+                        Is.True);
                 }
             }
         }
@@ -89,10 +86,15 @@ public sealed class DependencyResolverTests
             {
                 var resolvedServices = resolver.GetServices(shouldRegistered.Key);
 
-                resolvedServices
-                    .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)
-                    .Any(registeredType => !string.IsNullOrEmpty(registeredType) && PlatformRegistrationManager.DefaultRegistrationNamespaces.Except(namespacesToRegister).All(x => !registeredType.Contains(x.ToString())))
-                    .Should().BeTrue();
+                Assert.That(
+                    resolvedServices
+                        .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)
+                        .Any(registeredType =>
+                            !string.IsNullOrEmpty(registeredType) &&
+                            PlatformRegistrationManager.DefaultRegistrationNamespaces
+                                .Except(namespacesToRegister)
+                                .All(x => !registeredType.Contains(x.ToString()))),
+                    Is.True);
             }
         }
     }
@@ -178,8 +180,9 @@ public sealed class DependencyResolverTests
                 implementationTypes.Add(factory().GetType());
             });
 
-            register?.Invoke(platformRegistrations,
-                             [registerParameter]);
+            register?.Invoke(
+                platformRegistrations,
+                [registerParameter]);
         }
     }
 }

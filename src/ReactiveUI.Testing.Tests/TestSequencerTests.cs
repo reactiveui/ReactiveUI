@@ -22,31 +22,35 @@ public class TestSequencerTests
     {
         using var testSequencer = new TestSequencer();
         var subject = new Subject<Unit>();
-        subject.Subscribe(async _ => await testSequencer.AdvancePhaseAsync());
+        subject.Subscribe(async void (_) => await testSequencer.AdvancePhaseAsync());
 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(testSequencer.CurrentPhase, Is.Zero);
             Assert.That(testSequencer.CompletedPhases, Is.Zero);
         }
+
         subject.OnNext(Unit.Default);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(testSequencer.CurrentPhase, Is.EqualTo(1));
             Assert.That(testSequencer.CompletedPhases, Is.Zero);
         }
+
         await testSequencer.AdvancePhaseAsync("Phase 1");
         using (Assert.EnterMultipleScope())
         {
             Assert.That(testSequencer.CurrentPhase, Is.EqualTo(1));
             Assert.That(testSequencer.CompletedPhases, Is.EqualTo(1));
         }
+
         subject.OnNext(Unit.Default);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(testSequencer.CurrentPhase, Is.EqualTo(2));
             Assert.That(testSequencer.CompletedPhases, Is.EqualTo(1));
         }
+
         await testSequencer.AdvancePhaseAsync("Phase 2");
         using (Assert.EnterMultipleScope())
         {

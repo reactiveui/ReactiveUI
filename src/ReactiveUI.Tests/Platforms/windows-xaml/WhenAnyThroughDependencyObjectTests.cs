@@ -6,8 +6,6 @@
 #if NETFX_CORE
 #else
 
-using System.Threading;
-
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -41,7 +39,7 @@ public class WhenAnyThroughDependencyObjectTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(output.Count, Is.Zero);
+            Assert.That(output, Is.Empty);
             Assert.That(fixture.ViewModel, Is.Null);
         }
 

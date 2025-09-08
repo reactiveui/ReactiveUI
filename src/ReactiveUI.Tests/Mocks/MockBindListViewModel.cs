@@ -46,7 +46,7 @@ public class MockBindListViewModel : ReactiveObject
     /// Gets the item that is currently loaded in the list.
     /// Add or remove elements to modify the list.
     /// </summary>
-    public SourceList<MockBindListItemViewModel> ActiveListItem { get; } = new SourceList<MockBindListItemViewModel>();
+    public SourceList<MockBindListItemViewModel> ActiveListItem { get; } = new();
 
     /// <summary>
     /// Gets the deepest item of the currect list. (Last element of ActiveListItem).

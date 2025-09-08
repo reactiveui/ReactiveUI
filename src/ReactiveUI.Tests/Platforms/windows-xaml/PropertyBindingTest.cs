@@ -3,18 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Collections;
 using System.Globalization;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Subjects;
-using System.Reactive.Linq;
-using System.Reactive.Disposables;
-using System.Threading;
 using DynamicData.Binding;
-using NUnit.Framework;
-using ReactiveUI.Testing;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -427,7 +418,7 @@ public class PropertyBindingTest
         view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
         var itemsSourceValue = (IList)view.FakeItemsControl.ItemsSource;
-        Assert.That(itemsSourceValue.OfType<string>().Count() > 1, Is.True);
+        Assert.That(itemsSourceValue.OfType<string>().Count(), Is.GreaterThan(1));
     }
 
     /// <summary>

@@ -41,7 +41,7 @@ public class DefaultPropertyBindingTests
 
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.That(output.Count, Is.Zero);
+        Assert.That(output, Is.Empty);
 
         input.Text = "Foo";
         Assert.That(output, Has.Count.EqualTo(1));
@@ -71,7 +71,7 @@ public class DefaultPropertyBindingTests
         Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.That(output.Count, Is.Zero);
+        Assert.That(output, Is.Empty);
 
         input.Checked = true;
         Assert.That(output, Has.Count.EqualTo(1));
@@ -102,7 +102,7 @@ public class DefaultPropertyBindingTests
         Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = x => x.Value;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.That(output.Count, Is.Zero);
+        Assert.That(output, Is.Empty);
 
         input.Value = "Foo";
         Assert.That(output, Has.Count.EqualTo(1));

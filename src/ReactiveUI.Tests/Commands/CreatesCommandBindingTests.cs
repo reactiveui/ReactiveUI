@@ -24,8 +24,8 @@ public class CreatesCommandBindingTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-            Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true), Is.GreaterThan(0));
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
         }
 
         var disposable = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");

@@ -51,22 +51,50 @@ public class WpfActiveContentTests
 
         var test1 = new MockBindListItemViewModel("Test1");
         view.ViewModel!.ActiveListItem.Add(test1);
-        Assert.That(view.ItemList.Items.Count, Is.EqualTo(1));
-        Assert.That(view.ViewModel.ActiveItem, Is.EqualTo(test1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                        view.ItemList.Items,
+                        Has.Count.EqualTo(1));
+            Assert.That(
+                        view.ViewModel.ActiveItem,
+                        Is.EqualTo(test1));
+        }
 
         var test2 = new MockBindListItemViewModel("Test2");
         view.ViewModel.ActiveListItem.Add(test2);
-        Assert.That(view.ItemList.Items.Count, Is.EqualTo(2));
-        Assert.That(view.ViewModel.ActiveItem, Is.EqualTo(test2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                        view.ItemList.Items,
+                        Has.Count.EqualTo(2));
+            Assert.That(
+                        view.ViewModel.ActiveItem,
+                        Is.EqualTo(test2));
+        }
 
         var test3 = new MockBindListItemViewModel("Test3");
         view.ViewModel.ActiveListItem.Add(test3);
-        Assert.That(view.ItemList.Items.Count, Is.EqualTo(3));
-        Assert.That(view.ViewModel.ActiveItem, Is.EqualTo(test3));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                        view.ItemList.Items,
+                        Has.Count.EqualTo(3));
+            Assert.That(
+                        view.ViewModel.ActiveItem,
+                        Is.EqualTo(test3));
+        }
 
         view.ItemList.SelectedItem = view.ItemList.Items.GetItemAt(0);
-        Assert.That(view.ItemList.Items.Count, Is.EqualTo(1));
-        Assert.That(view.ViewModel.ActiveItem, Is.EqualTo(test1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                        view.ItemList.Items,
+                        Has.Count.EqualTo(1));
+            Assert.That(
+                        view.ViewModel.ActiveItem,
+                        Is.EqualTo(test1));
+        }
 
         window.Close();
     }
@@ -91,17 +119,21 @@ public class WpfActiveContentTests
 
         void ResolveViewBIfViewBIsRegistered(ModernDependencyResolver r)
         {
-            r.Register(() => new FakeViewWithContract.View0(), typeof(IViewFor<FakeViewWithContract.MyViewModel>));
-            r.Register(() => new FakeViewWithContract.ViewA(), typeof(IViewFor<FakeViewWithContract.MyViewModel>), FakeViewWithContract.ContractA);
-            r.Register(() => new FakeViewWithContract.ViewB(), typeof(IViewFor<FakeViewWithContract.MyViewModel>), FakeViewWithContract.ContractB);
+            r.Register(
+                       () => new FakeViewWithContract.View0(),
+                       typeof(IViewFor<FakeViewWithContract.MyViewModel>));
+            r.Register(
+                       () => new FakeViewWithContract.ViewA(),
+                       typeof(IViewFor<FakeViewWithContract.MyViewModel>),
+                       FakeViewWithContract.ContractA);
+            r.Register(
+                       () => new FakeViewWithContract.ViewB(),
+                       typeof(IViewFor<FakeViewWithContract.MyViewModel>),
+                       FakeViewWithContract.ContractB);
 
             var window = Fixture.App?.WpfTestWindowFactory();
             var vm = new FakeViewWithContract.MyViewModel();
-            var host = new ViewModelViewHost
-            {
-                ViewModel = vm,
-                ViewContract = FakeViewWithContract.ContractB,
-            };
+            var host = new ViewModelViewHost { ViewModel = vm, ViewContract = FakeViewWithContract.ContractB, };
 
             window!.RootGrid.Children.Clear();
             window.RootGrid.Children.Add(host);
@@ -110,22 +142,22 @@ public class WpfActiveContentTests
             window.RaiseEvent(loaded);
             host.RaiseEvent(loaded);
 
-            ClassicAssert.NotNull(host.Content);
-            ClassicAssert.IsInstanceOf<FakeViewWithContract.ViewB>(host.Content);
+            Assert.That(host.Content, Is.Not.Null);
+            Assert.That(host.Content, Is.InstanceOf<FakeViewWithContract.ViewB>());
             window.Close();
         }
 
         void ResolveView0WithFallback(ModernDependencyResolver r)
         {
-            r.UnregisterCurrent(typeof(IViewFor<FakeViewWithContract.MyViewModel>), FakeViewWithContract.ContractB);
+            r.UnregisterCurrent(
+                                typeof(IViewFor<FakeViewWithContract.MyViewModel>),
+                                FakeViewWithContract.ContractB);
 
             var window = Fixture.App?.WpfTestWindowFactory();
             var vm = new FakeViewWithContract.MyViewModel();
             var host = new ViewModelViewHost
             {
-                ViewModel = vm,
-                ViewContract = FakeViewWithContract.ContractB,
-                ContractFallbackByPass = false,
+                ViewModel = vm, ViewContract = FakeViewWithContract.ContractB, ContractFallbackByPass = false,
             };
 
             window!.RootGrid.Children.Clear();
@@ -135,22 +167,22 @@ public class WpfActiveContentTests
             window.RaiseEvent(loaded);
             host.RaiseEvent(loaded);
 
-            ClassicAssert.NotNull(host.Content);
-            ClassicAssert.IsInstanceOf<FakeViewWithContract.View0>(host.Content);
+            Assert.That(host.Content, Is.Not.Null);
+            Assert.That(host.Content, Is.InstanceOf<FakeViewWithContract.View0>());
             window.Close();
         }
 
         void ResolveNoneWithFallbackBypass(ModernDependencyResolver r)
         {
-            r.UnregisterCurrent(typeof(IViewFor<FakeViewWithContract.MyViewModel>), FakeViewWithContract.ContractB);
+            r.UnregisterCurrent(
+                                typeof(IViewFor<FakeViewWithContract.MyViewModel>),
+                                FakeViewWithContract.ContractB);
 
             var window = Fixture.App?.WpfTestWindowFactory();
             var vm = new FakeViewWithContract.MyViewModel();
             var host = new ViewModelViewHost
             {
-                ViewModel = vm,
-                ViewContract = FakeViewWithContract.ContractB,
-                ContractFallbackByPass = true,
+                ViewModel = vm, ViewContract = FakeViewWithContract.ContractB, ContractFallbackByPass = true,
             };
 
             window!.RootGrid.Children.Clear();
@@ -180,58 +212,116 @@ public class WpfActiveContentTests
             window.TransitioningContent.TransitionStarted += (_, _) => transitioning = true;
             window.TransitioningContent.TransitionCompleted += (_, _) => transitioning = false;
 
-            await RunCycle(TransitioningContentControl.TransitionDirection.Down, TransitioningContentControl.TransitionType.Bounce).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Left, TransitioningContentControl.TransitionType.Bounce).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Right, TransitioningContentControl.TransitionType.Bounce).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Up, TransitioningContentControl.TransitionType.Bounce).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Down, TransitioningContentControl.TransitionType.Drop).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Left, TransitioningContentControl.TransitionType.Drop).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Right, TransitioningContentControl.TransitionType.Drop).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Up, TransitioningContentControl.TransitionType.Drop).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Down, TransitioningContentControl.TransitionType.Fade).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Left, TransitioningContentControl.TransitionType.Fade).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Right, TransitioningContentControl.TransitionType.Fade).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Up, TransitioningContentControl.TransitionType.Fade).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Down, TransitioningContentControl.TransitionType.Move).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Left, TransitioningContentControl.TransitionType.Move).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Right, TransitioningContentControl.TransitionType.Move).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Up, TransitioningContentControl.TransitionType.Move).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Down, TransitioningContentControl.TransitionType.Slide).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Left, TransitioningContentControl.TransitionType.Slide).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Right, TransitioningContentControl.TransitionType.Slide).ConfigureAwait(true);
-            await RunCycle(TransitioningContentControl.TransitionDirection.Up, TransitioningContentControl.TransitionType.Slide).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Down,
+                           TransitioningContentControl.TransitionType.Bounce).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Left,
+                           TransitioningContentControl.TransitionType.Bounce).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Right,
+                           TransitioningContentControl.TransitionType.Bounce).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Up,
+                           TransitioningContentControl.TransitionType.Bounce).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Down,
+                           TransitioningContentControl.TransitionType.Drop).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Left,
+                           TransitioningContentControl.TransitionType.Drop).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Right,
+                           TransitioningContentControl.TransitionType.Drop).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Up,
+                           TransitioningContentControl.TransitionType.Drop).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Down,
+                           TransitioningContentControl.TransitionType.Fade).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Left,
+                           TransitioningContentControl.TransitionType.Fade).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Right,
+                           TransitioningContentControl.TransitionType.Fade).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Up,
+                           TransitioningContentControl.TransitionType.Fade).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Down,
+                           TransitioningContentControl.TransitionType.Move).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Left,
+                           TransitioningContentControl.TransitionType.Move).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Right,
+                           TransitioningContentControl.TransitionType.Move).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Up,
+                           TransitioningContentControl.TransitionType.Move).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Down,
+                           TransitioningContentControl.TransitionType.Slide).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Left,
+                           TransitioningContentControl.TransitionType.Slide).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Right,
+                           TransitioningContentControl.TransitionType.Slide).ConfigureAwait(true);
+            await RunCycle(
+                           TransitioningContentControl.TransitionDirection.Up,
+                           TransitioningContentControl.TransitionType.Slide).ConfigureAwait(true);
 
             async Task RunOnceAsync()
             {
                 var v1 = new View1();
                 window.TransitioningContent.Content = v1;
-                Assert.That(transitioning, Is.True);
+                Assert.That(
+                            transitioning,
+                            Is.True);
                 while (transitioning)
                 {
                     await Task.Delay(5).ConfigureAwait(true);
                 }
 
-                Assert.That(window.TransitioningContent.Content, Is.EqualTo(v1));
+                Assert.That(
+                            window.TransitioningContent.Content,
+                            Is.EqualTo(v1));
                 ClassicAssert.IsFalse(transitioning);
 
                 var v2 = new View2();
                 window.TransitioningContent.Content = v2;
-                Assert.That(transitioning, Is.True);
+                Assert.That(
+                            transitioning,
+                            Is.True);
                 while (transitioning)
                 {
                     await Task.Delay(5).ConfigureAwait(true);
                 }
 
-                Assert.That(window.TransitioningContent.Content, Is.EqualTo(v2));
+                Assert.That(
+                            window.TransitioningContent.Content,
+                            Is.EqualTo(v2));
                 ClassicAssert.IsFalse(transitioning);
             }
 
-            async Task RunCycle(TransitioningContentControl.TransitionDirection dir, TransitioningContentControl.TransitionType type)
+            async Task RunCycle(
+                TransitioningContentControl.TransitionDirection dir,
+                TransitioningContentControl.TransitionType type)
             {
                 window.TransitioningContent.Direction = dir;
                 window.TransitioningContent.Transition = type;
-                Assert.That(window.TransitioningContent.Direction, Is.EqualTo(dir));
-                Assert.That(window.TransitioningContent.Transition, Is.EqualTo(type));
+                using (Assert.EnterMultipleScope())
+                {
+                    Assert.That(
+                                window.TransitioningContent.Direction,
+                                Is.EqualTo(dir));
+                    Assert.That(
+                                window.TransitioningContent.Transition,
+                                Is.EqualTo(type));
+                }
+
                 await RunOnceAsync().ConfigureAwait(true);
                 await RunOnceAsync().ConfigureAwait(true);
             }
@@ -249,9 +339,15 @@ public class WpfActiveContentTests
     public void DummySuspensionDriverTest()
     {
         var dsd = new DummySuspensionDriver();
-        dsd.LoadState().Select(_ => 1).Subscribe(v => Assert.That(v, Is.EqualTo(1)));
-        dsd.SaveState("Save Me").Select(_ => 2).Subscribe(v => Assert.That(v, Is.EqualTo(2)));
-        dsd.InvalidateState().Select(_ => 3).Subscribe(v => Assert.That(v, Is.EqualTo(3)));
+        dsd.LoadState().Select(_ => 1).Subscribe(v => Assert.That(
+                                                                  v,
+                                                                  Is.EqualTo(1)));
+        dsd.SaveState("Save Me").Select(_ => 2).Subscribe(v => Assert.That(
+                                                                           v,
+                                                                           Is.EqualTo(2)));
+        dsd.InvalidateState().Select(_ => 3).Subscribe(v => Assert.That(
+                                                                        v,
+                                                                        Is.EqualTo(3)));
     }
 
     /// <summary>
@@ -335,15 +431,15 @@ public class WpfActiveContentTests
 
                 var sawExecuting = false;
                 view!.ViewModel!.Command3.IsExecuting
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Subscribe(b =>
-                    {
-                        if (b)
-                        {
-                            sawExecuting = true;
-                        }
-                    })
-                    .DisposeWith(d);
+                     .ObserveOn(RxApp.MainThreadScheduler)
+                     .Subscribe(b =>
+                     {
+                         if (b)
+                         {
+                             sawExecuting = true;
+                         }
+                     })
+                     .DisposeWith(d);
 
                 int? result = null;
                 view.ViewModel.Command3.Subscribe(async r =>
@@ -355,8 +451,15 @@ public class WpfActiveContentTests
                 await view.ViewModel.Command3.Execute();
                 await testSequencer.AdvancePhaseAsync();
 
-                Assert.That(result, Is.EqualTo(100));
-                Assert.That(sawExecuting, Is.True);
+                using (Assert.EnterMultipleScope())
+                {
+                    Assert.That(
+                                result,
+                                Is.EqualTo(100));
+                    Assert.That(
+                                sawExecuting,
+                                Is.True);
+                }
             }
             finally
             {

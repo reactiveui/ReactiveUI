@@ -17,6 +17,9 @@ public sealed class UseInvariantCulture : Attribute, ITestAction
     private CultureInfo? _storedCulture;
 
     /// <inheritdoc/>
+    public ActionTargets Targets => ActionTargets.Test;
+
+    /// <inheritdoc/>
     public void BeforeTest(ITest test)
     {
         _storedCulture = Thread.CurrentThread.CurrentCulture;
@@ -31,7 +34,4 @@ public sealed class UseInvariantCulture : Attribute, ITestAction
             Thread.CurrentThread.CurrentCulture = _storedCulture;
         }
     }
-
-    /// <inheritdoc/>
-    public ActionTargets Targets => ActionTargets.Test;
 }

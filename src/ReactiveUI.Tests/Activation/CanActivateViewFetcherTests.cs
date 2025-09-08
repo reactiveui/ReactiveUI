@@ -54,7 +54,7 @@ public class CanActivateViewFetcherTests
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
         var affinity = canActivateViewFetcher.GetAffinityForView(typeof(ICanActivate));
-        Assert.That(affinity > 0, Is.True);
+        Assert.That(affinity, Is.GreaterThan(0));
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public class CanActivateViewFetcherTests
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
         var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateStub));
-        Assert.That(affinity > 0, Is.True);
+        Assert.That(affinity, Is.GreaterThan(0));
     }
 
     /// <summary>

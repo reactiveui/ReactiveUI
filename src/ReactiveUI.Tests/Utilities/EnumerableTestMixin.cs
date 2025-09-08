@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using NUnit.Framework.Legacy;
 
 namespace ReactiveUI.Tests;
 
@@ -16,10 +17,10 @@ public static class EnumerableTestMixin
 
         try
         {
-            Assert.Equal(left.Length, right.Length);
+            ClassicAssert.Equals(left.Length, right.Length);
             for (var i = 0; i < left.Length; i++)
             {
-                Assert.Equal(left[i], right[i]);
+                ClassicAssert.Equals(left[i], right[i]);
             }
         }
         catch

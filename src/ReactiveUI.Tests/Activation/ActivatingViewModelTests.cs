@@ -55,12 +55,18 @@ public class ActivatingViewModelTests
         }
 
         fixture.Activator.Activate();
-        Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
-        Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(1));
+        }
 
         fixture.Activator.Deactivate();
-        Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
-        Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(1));
+        }
 
         fixture.Activator.Deactivate();
         using (Assert.EnterMultipleScope())

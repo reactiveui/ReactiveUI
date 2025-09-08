@@ -65,20 +65,20 @@ public class ReactiveNotifyPropertyChangedMixinTest
     {
         var data = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>
         {
-            { x => x!.Child!.IsOnlyOneWord!.Length, new[] { "Child", "IsOnlyOneWord", "Length" } },
-            { x => x.SomeOtherParam, new[] { "SomeOtherParam" } },
-            { x => x.Child!.IsNotNullString!, new[] { "Child", "IsNotNullString" } },
-            { x => x.Child!.Changed, new[] { "Child", "Changed" } },
+            { x => x!.Child!.IsOnlyOneWord!.Length, ["Child", "IsOnlyOneWord", "Length"] },
+            { x => x.SomeOtherParam, ["SomeOtherParam"] },
+            { x => x.Child!.IsNotNullString!, ["Child", "IsNotNullString"] },
+            { x => x.Child!.Changed, ["Child", "Changed"] },
         };
 
         var dataTypes = new Dictionary<Expression<Func<HostTestFixture, object>>, Type[]>
         {
-            { x => x.Child!.IsOnlyOneWord!.Length, new[] { typeof(TestFixture), typeof(string), typeof(int) } },
-            { x => x.SomeOtherParam, new[] { typeof(int) } },
-            { x => x.Child!.IsNotNullString!, new[] { typeof(TestFixture), typeof(string) } },
+            { x => x.Child!.IsOnlyOneWord!.Length, [typeof(TestFixture), typeof(string), typeof(int)] },
+            { x => x.SomeOtherParam, [typeof(int)] },
+            { x => x.Child!.IsNotNullString!, [typeof(TestFixture), typeof(string)] },
             {
-                x => x.Child!.Changed,
-                new[] { typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>) }
+                x => x.Child!.Changed, [typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>)
+                ]
             },
         };
 
@@ -127,20 +127,20 @@ public class ReactiveNotifyPropertyChangedMixinTest
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             fixture.Child = new TestFixture { IsOnlyOneWord = "Bar" };
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
         });
 
     /// <summary>
@@ -159,28 +159,28 @@ public class ReactiveNotifyPropertyChangedMixinTest
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
                             changes.All(x => x.Sender == fixture),
@@ -190,8 +190,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
                             Is.True);
                 Assert.That(
                             changes.Select(x => x.Value),
-                            Is.EqualTo(new[] { "Foo", "Bar", "Baz" }));
-            });
+                            Is.EqualTo(["Foo", "Bar", "Baz"]));
+            }
         });
 
     /// <summary>
@@ -211,22 +211,22 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.Zero);
+                        changes,
+                        Is.Empty);
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
                             changes.All(x => x.Sender == fixture),
@@ -236,8 +236,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
                             Is.True);
                 Assert.That(
                             changes.Select(x => x.Value),
-                            Is.EqualTo(new[] { "Pre", "Foo" }));
-            });
+                            Is.EqualTo(["Pre", "Foo"]));
+            }
         });
 
     /// <summary>
@@ -258,16 +258,16 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
                             changes.All(x => x.Sender == fixture),
@@ -277,8 +277,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
                             Is.True);
                 Assert.That(
                             changes.Select(x => x.Value),
-                            Is.EqualTo(new[] { "Pre", "Foo" }));
-            });
+                            Is.EqualTo(["Pre", "Foo"]));
+            }
         });
 
     /// <summary>
@@ -297,28 +297,28 @@ public class ReactiveNotifyPropertyChangedMixinTest
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
                             changes.All(x => x.Sender == fixture),
@@ -328,8 +328,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
                             Is.True);
                 Assert.That(
                             changes.Select(x => x.Value),
-                            Is.EqualTo(new[] { "Foo", "Bar", "Foo" }));
-            });
+                            Is.EqualTo(["Foo", "Bar", "Foo"]));
+            }
         });
 
     /// <summary>
@@ -348,42 +348,42 @@ public class ReactiveNotifyPropertyChangedMixinTest
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             // From "Bar" to null (new TestFixture with null IsOnlyOneWord)
             fixture.Child = new TestFixture();
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
             // Setting null again doesn't change
             fixture.Child.IsOnlyOneWord = null!;
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(4));
+                        changes,
+                        Has.Count.EqualTo(4));
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(4));
+                        changes,
+                        Has.Count.EqualTo(4));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
                             changes.All(x => x.Sender == fixture),
@@ -393,8 +393,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
                             Is.True);
                 Assert.That(
                             changes.Select(x => x.Value),
-                            Is.EqualTo(new[] { "Foo", "Bar", null, "Baz" }));
-            });
+                            Is.EqualTo(["Foo", "Bar", null, "Baz"]));
+            }
         });
 
     /// <summary>
@@ -416,30 +416,30 @@ public class ReactiveNotifyPropertyChangedMixinTest
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             // Child becomes null
             fixture.Child = null!;
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             // From "Bar" to null (child restored but value is null)
             fixture.Child = new TestFixture();
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
                             changes.All(x => x.Sender == fixture),
@@ -449,8 +449,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
                             Is.True);
                 Assert.That(
                             changes.Select(x => x.Value),
-                            Is.EqualTo(new[] { "Foo", "Bar", null }));
-            });
+                            Is.EqualTo(["Foo", "Bar", null]));
+            }
         });
 
     /// <summary>
@@ -469,20 +469,20 @@ public class ReactiveNotifyPropertyChangedMixinTest
             fixture.InpcProperty = new TestFixture();
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.InpcProperty.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             fixture.InpcProperty.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
         });
 
     /// <summary>
@@ -501,28 +501,28 @@ public class ReactiveNotifyPropertyChangedMixinTest
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
                             changes.All(x => x.Sender == fixture),
@@ -532,8 +532,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
                             Is.True);
                 Assert.That(
                             changes.Select(x => x.Value),
-                            Is.EqualTo(new[] { "Foo", "Bar", "Baz" }));
-            });
+                            Is.EqualTo(["Foo", "Bar", "Baz"]));
+            }
         });
 
     /// <summary>
@@ -552,28 +552,28 @@ public class ReactiveNotifyPropertyChangedMixinTest
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(1));
+                        changes,
+                        Has.Count.EqualTo(1));
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(2));
+                        changes,
+                        Has.Count.EqualTo(2));
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
             Assert.That(
-                        changes.Count,
-                        Is.EqualTo(3));
+                        changes,
+                        Has.Count.EqualTo(3));
 
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
                             changes.All(x => x.Sender == fixture),
@@ -583,8 +583,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
                             Is.True);
                 Assert.That(
                             changes.Select(x => x.Value),
-                            Is.EqualTo(new[] { "Foo", "Bar", "Baz" }));
-            });
+                            Is.EqualTo(["Foo", "Bar", "Baz"]));
+            }
         });
 
     /// <summary>
@@ -600,8 +600,8 @@ public class ReactiveNotifyPropertyChangedMixinTest
         obj.SomeOtherParam = 42;
 
         Assert.That(
-                    observedValue == obj.SomeOtherParam,
-                    Is.True);
+                    observedValue,
+                    Is.EqualTo(obj.SomeOtherParam));
     }
 
     /// <summary>
@@ -657,11 +657,11 @@ public class ReactiveNotifyPropertyChangedMixinTest
         var output4 = new List<int?>();
         fixture.WhenAnyValue(x => x.NullableInt).Subscribe(output4.Add);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
-                        output.Count,
-                        Is.EqualTo(1));
+                        output,
+                        Has.Count.EqualTo(1));
             Assert.That(
                         output[0]!.Sender,
                         Is.EqualTo(fixture));
@@ -673,15 +673,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                         Is.EqualTo("Bamf"));
 
             Assert.That(
-                        output2.Count,
-                        Is.EqualTo(1));
+                        output2,
+                        Has.Count.EqualTo(1));
             Assert.That(
                         output2[0],
                         Is.EqualTo("Bamf"));
 
             Assert.That(
-                        output3.Count,
-                        Is.EqualTo(1));
+                        output3,
+                        Has.Count.EqualTo(1));
             Assert.That(
                         output3[0]!.Sender,
                         Is.EqualTo(fixture));
@@ -693,12 +693,12 @@ public class ReactiveNotifyPropertyChangedMixinTest
                         Is.Null);
 
             Assert.That(
-                        output4.Count,
-                        Is.EqualTo(1));
+                        output4,
+                        Has.Count.EqualTo(1));
             Assert.That(
                         output4[0],
                         Is.Null);
-        });
+        }
     }
 
     /// <summary>
@@ -720,7 +720,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         fixture.UsesExprRaiseSet = "abc";
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
                         sender,
@@ -728,13 +728,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
             Assert.That(
                         propertyName,
                         Is.EqualTo(nameof(fixture.UsesExprRaiseSet)));
-        });
+        }
 
         sender = null;
         propertyName = null;
         fixture.PocoProperty = "abc";
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
                         sender,
@@ -742,7 +742,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
             Assert.That(
                         propertyName,
                         Is.Null);
-        });
+        }
     }
 
     /// <summary>
@@ -764,7 +764,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         fixture.UsesExprRaiseSet = "abc";
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
                         sender,
@@ -772,13 +772,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
             Assert.That(
                         propertyName,
                         Is.EqualTo(nameof(fixture.UsesExprRaiseSet)));
-        });
+        }
 
         sender = null;
         propertyName = null;
         fixture.PocoProperty = "abc";
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
                         sender,
@@ -786,7 +786,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
             Assert.That(
                         propertyName,
                         Is.Null);
-        });
+        }
     }
 
     /// <summary>
@@ -812,14 +812,14 @@ public class ReactiveNotifyPropertyChangedMixinTest
                    });
 
             scheduler.Start();
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
-                            output1.Count,
-                            Is.EqualTo(1));
+                            output1,
+                            Has.Count.EqualTo(1));
                 Assert.That(
-                            output2.Count,
-                            Is.EqualTo(1));
+                            output2,
+                            Has.Count.EqualTo(1));
                 Assert.That(
                             output1[0].Sender,
                             Is.EqualTo(fixture));
@@ -832,18 +832,18 @@ public class ReactiveNotifyPropertyChangedMixinTest
                 Assert.That(
                             output2[0].Value,
                             Is.EqualTo("Foo"));
-            });
+            }
 
             fixture.SomeOtherParam = 10;
             scheduler.Start();
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
-                            output1.Count,
-                            Is.EqualTo(2));
+                            output1,
+                            Has.Count.EqualTo(2));
                 Assert.That(
-                            output2.Count,
-                            Is.EqualTo(2));
+                            output2,
+                            Has.Count.EqualTo(2));
                 Assert.That(
                             output1[1].Sender,
                             Is.EqualTo(fixture));
@@ -856,18 +856,18 @@ public class ReactiveNotifyPropertyChangedMixinTest
                 Assert.That(
                             output2[1].Value,
                             Is.EqualTo("Foo"));
-            });
+            }
 
             fixture.Child.IsNotNullString = "Bar";
             scheduler.Start();
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
-                            output1.Count,
-                            Is.EqualTo(3));
+                            output1,
+                            Has.Count.EqualTo(3));
                 Assert.That(
-                            output2.Count,
-                            Is.EqualTo(3));
+                            output2,
+                            Has.Count.EqualTo(3));
                 Assert.That(
                             output1[2].Sender,
                             Is.EqualTo(fixture));
@@ -880,7 +880,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
                 Assert.That(
                             output2[2].Value,
                             Is.EqualTo("Bar"));
-            });
+            }
         });
 
     /// <summary>
@@ -898,21 +898,21 @@ public class ReactiveNotifyPropertyChangedMixinTest
                              x => x.IsOnlyOneWord,
                              x => x?.Length).Subscribe(output2.Add);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
-                        output1.Count,
-                        Is.EqualTo(1));
+                        output1,
+                        Has.Count.EqualTo(1));
             Assert.That(
                         output1[0],
                         Is.EqualTo("Bamf"));
             Assert.That(
-                        output2.Count,
-                        Is.EqualTo(1));
+                        output2,
+                        Has.Count.EqualTo(1));
             Assert.That(
                         output2[0],
                         Is.EqualTo(3));
-        });
+        }
     }
 
     /// <summary>
@@ -938,57 +938,57 @@ public class ReactiveNotifyPropertyChangedMixinTest
                    });
 
             scheduler.Start();
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
-                            output1.Count,
-                            Is.EqualTo(1));
+                            output1,
+                            Has.Count.EqualTo(1));
                 Assert.That(
-                            output2.Count,
-                            Is.EqualTo(1));
+                            output2,
+                            Has.Count.EqualTo(1));
                 Assert.That(
                             output1[0],
                             Is.EqualTo(5));
                 Assert.That(
                             output2[0],
                             Is.EqualTo("Foo"));
-            });
+            }
 
             fixture.SomeOtherParam = 10;
             scheduler.Start();
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
-                            output1.Count,
-                            Is.EqualTo(2));
+                            output1,
+                            Has.Count.EqualTo(2));
                 Assert.That(
-                            output2.Count,
-                            Is.EqualTo(2));
+                            output2,
+                            Has.Count.EqualTo(2));
                 Assert.That(
                             output1[1],
                             Is.EqualTo(10));
                 Assert.That(
                             output2[1],
                             Is.EqualTo("Foo"));
-            });
+            }
 
             fixture.Child.IsNotNullString = "Bar";
             scheduler.Start();
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(
-                            output1.Count,
-                            Is.EqualTo(3));
+                            output1,
+                            Has.Count.EqualTo(3));
                 Assert.That(
-                            output2.Count,
-                            Is.EqualTo(3));
+                            output2,
+                            Has.Count.EqualTo(3));
                 Assert.That(
                             output1[2],
                             Is.EqualTo(10));
                 Assert.That(
                             output2[2],
                             Is.EqualTo("Bar"));
-            });
+            }
         });
 
     /// <summary>
@@ -1031,7 +1031,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
                         weakRef1.IsAlive,
@@ -1042,7 +1042,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
             Assert.That(
                         weakRef3.IsAlive,
                         Is.False);
-        });
+        }
 
         // Keep objs alive till after GC (prevent JIT optimization)
         GC.KeepAlive(obj1);
@@ -1728,7 +1728,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new HostTestFixture();
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
                         fixture.Owner,
@@ -1736,10 +1736,10 @@ public class ReactiveNotifyPropertyChangedMixinTest
             Assert.That(
                         fixture.OwnerName,
                         Is.Null);
-        });
+        }
 
         fixture.Owner = new() { Name = "Fred" };
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(
                         fixture.Owner,
@@ -1747,7 +1747,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
             Assert.That(
                         fixture.OwnerName,
                         Is.EqualTo("Fred"));
-        });
+        }
 
         fixture.Owner!.Name = "Wilma";
         Assert.That(

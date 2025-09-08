@@ -46,7 +46,7 @@ public class XamlViewCommandTests
         var fixture = new CreatesCommandBindingViaEvent();
         var cmd = ReactiveCommand.Create<int>(_ => { });
 
-        Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
 
         var invokeCount = 0;
         cmd.Subscribe(_ => ++invokeCount);

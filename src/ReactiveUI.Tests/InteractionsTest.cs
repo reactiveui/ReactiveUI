@@ -241,9 +241,9 @@ public class InteractionsTest
                 .Handle(Unit.Default)
                 .ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var result).Subscribe();
 
-            Assert.That(result.Count, Is.Zero);
+            Assert.That(result, Is.Empty);
             scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5).Ticks);
-            Assert.That(result.Count, Is.Zero);
+            Assert.That(result, Is.Empty);
             scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6).Ticks);
             Assert.That(result, Has.Count.EqualTo(1));
             Assert.That(result[0], Is.EqualTo("B"));

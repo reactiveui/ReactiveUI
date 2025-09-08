@@ -52,7 +52,7 @@ public class ViewModelActivatorTests
 
         viewModelActivator.Deactivate(false);
 
-        Assert.That(deactivated.Count, Is.Zero);
+        Assert.That(deactivated, Is.Empty);
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class ViewModelActivatorTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(activated, Has.Count.EqualTo(1));
-            Assert.That(deactivated.Count, Is.Zero);
+            Assert.That(deactivated, Is.Empty);
         }
 
         using (Assert.EnterMultipleScope())

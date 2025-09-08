@@ -42,6 +42,7 @@ public class ReactiveObjectTests
                                            Assert.That(x.PropertyName, Is.EqualTo("IsOnlyOneWord"));
                                            Assert.That(fixture.IsOnlyOneWord, Is.EqualTo(beforeSet));
                                        }
+
                                        beforeFired = true;
                                    });
 
@@ -52,8 +53,9 @@ public class ReactiveObjectTests
                                       using (Assert.EnterMultipleScope())
                                       {
                                           Assert.That(x.PropertyName, Is.EqualTo("IsOnlyOneWord"));
-                                          Assert.That(afterSet, Is.EqualTo(fixture.IsOnlyOneWord));
+                                          Assert.That(fixture.IsOnlyOneWord, Is.EqualTo(afterSet));
                                       }
+
                                       afterFired = true;
                                   });
 
@@ -204,6 +206,7 @@ public class ReactiveObjectTests
             Assert.That(fixture.UsesExprRaiseSet, Is.EqualTo("Foo"));
             Assert.That(output, Has.Count.EqualTo(1));
         }
+
         Assert.That(output[0], Is.EqualTo("UsesExprRaiseSet"));
     }
 
@@ -288,7 +291,7 @@ public class ReactiveObjectTests
         Assert.That(fixture.AreChangeNotificationsEnabled(), Is.True);
 
         var ser = JsonSerializer.Serialize(fixture);
-        Assert.That(ser.Length > 0, Is.True);
+        Assert.That(ser.Length, Is.GreaterThan(0));
         var deser = JsonSerializer.Deserialize<TestFixture>(ser);
         Assert.That(deser, Is.Not.Null);
 

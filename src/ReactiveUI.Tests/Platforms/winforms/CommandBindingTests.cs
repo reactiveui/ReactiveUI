@@ -29,8 +29,8 @@ public class CommandBindingTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-            Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true), Is.GreaterThan(0));
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
         }
 
         var commandExecuted = false;
@@ -66,8 +66,8 @@ public class CommandBindingTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-            Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true), Is.GreaterThan(0));
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
         }
 
         var commandExecuted = false;
@@ -102,8 +102,8 @@ public class CommandBindingTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-            Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true), Is.GreaterThan(0));
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
         }
 
         var commandExecuted = false;

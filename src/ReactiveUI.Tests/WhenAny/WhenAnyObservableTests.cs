@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using DynamicData;
+using NUnit.Framework.Legacy;
 
 namespace ReactiveUI.Tests;
 
@@ -63,7 +64,7 @@ public class WhenAnyObservableTests
 
         var list = new List<string?>();
         fixture.WhenAnyObservable(x => x.Command3, x => x.Command1, (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-        Assert.That(list.Count, Is.Zero);
+        Assert.That(list, Is.Empty);
 
         await fixture.Command1!.Execute(1);
         await fixture.Command3.Execute("foo");
@@ -73,16 +74,20 @@ public class WhenAnyObservableTests
         Assert.That(list, Has.Count.EqualTo(2));
 
         await fixture.Command3.Execute("bar");
-        Assert.That(list, Has.Count.EqualTo(3));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(list, Has.Count.EqualTo(3));
 
-        Assert.True(
-                    new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(
-                                                                   list,
-                                                                   (expected, actual) => new
-                                                                   {
-                                                                       expected,
-                                                                       actual
-                                                                   }).All(x => x.expected == x.actual));
+            Assert.That(
+                        new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(
+                                                                       list,
+                                                                       (expected, actual) => new
+                                                                       {
+                                                                           expected,
+                                                                           actual
+                                                                       }).All(x => x.expected == x.actual),
+                        Is.True);
+        }
     }
 
     /// <summary>
@@ -96,7 +101,7 @@ public class WhenAnyObservableTests
 
         var list = new List<int>();
         fixture.WhenAnyObservable(x => x.Command1, x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-        Assert.That(list.Count, Is.Zero);
+        Assert.That(list, Is.Empty);
 
         await fixture.Command1!.Execute(1);
         Assert.That(list, Has.Count.EqualTo(1));
@@ -105,16 +110,20 @@ public class WhenAnyObservableTests
         Assert.That(list, Has.Count.EqualTo(2));
 
         await fixture.Command1.Execute(1);
-        Assert.That(list, Has.Count.EqualTo(3));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(list, Has.Count.EqualTo(3));
 
-        Assert.True(
-                    new[] { 1, 2, 1, }.Zip(
-                                           list,
-                                           (expected, actual) => new
-                                           {
-                                               expected,
-                                               actual
-                                           }).All(x => x.expected == x.actual));
+            Assert.That(
+                        new[] { 1, 2, 1, }.Zip(
+                                               list,
+                                               (expected, actual) => new
+                                               {
+                                                   expected,
+                                                   actual
+                                               }).All(x => x.expected == x.actual),
+                        Is.True);
+        }
     }
 
     /// <summary>
@@ -125,10 +134,10 @@ public class WhenAnyObservableTests
     {
         var fixture = new TestWhenAnyObsViewModel();
         fixture!.WhenAnyObservable(x => x.Changes)!.Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
-        Assert.That(output.Count, Is.Zero);
+        Assert.That(output, Is.Empty);
 
         fixture.MyListOfInts = [];
-        Assert.That(output.Count, Is.Zero);
+        Assert.That(output, Is.Empty);
 
         fixture.MyListOfInts.Add(1);
         Assert.That(output, Has.Count.EqualTo(1));

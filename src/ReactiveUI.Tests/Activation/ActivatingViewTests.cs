@@ -117,15 +117,21 @@ public class ActivatingViewTests
             }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
 
             var newVm = new ActivatingViewModel();
             Assert.That(newVm.IsActiveCount, Is.Zero);
 
             fixture.ViewModel = newVm;
-            Assert.That(vm.IsActiveCount, Is.Zero);
-            Assert.That(newVm.IsActiveCount, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(newVm.IsActiveCount, Is.EqualTo(1));
+            }
         }
     }
 
