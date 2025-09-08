@@ -359,7 +359,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         if (action is not null)
         {
             var current = Current;
-            action(current.GetService<T1>(), current.GetService<T2?>());
+            action(current.GetService<T1>(), current.GetService<T2>());
         }
 
         return this;
@@ -384,7 +384,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         if (action is not null)
         {
             var current = Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>());
+            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>());
         }
 
         return this;
@@ -410,7 +410,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         if (action is not null)
         {
             var current = Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>());
+            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>(), current.GetService<T4>());
         }
 
         return this;
@@ -437,7 +437,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         if (action is not null)
         {
             var current = Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>());
+            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>(), current.GetService<T4>(), current.GetService<T5>());
         }
 
         return this;
@@ -467,11 +467,11 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>());
         }
 
         return this;
@@ -502,12 +502,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>());
         }
 
         return this;
@@ -539,13 +539,13 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>(),
-                   current.GetService<T8?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>(),
+                   current.GetService<T8>());
         }
 
         return this;
@@ -578,14 +578,14 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>(),
-                   current.GetService<T8?>(),
-                   current.GetService<T9?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>(),
+                   current.GetService<T8>(),
+                   current.GetService<T9>());
         }
 
         return this;
@@ -619,15 +619,15 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>(),
-                   current.GetService<T8?>(),
-                   current.GetService<T9?>(),
-                   current.GetService<T10?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>(),
+                   current.GetService<T8>(),
+                   current.GetService<T9>(),
+                   current.GetService<T10>());
         }
 
         return this;
@@ -662,16 +662,16 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>(),
-                   current.GetService<T8?>(),
-                   current.GetService<T9?>(),
-                   current.GetService<T10?>(),
-                   current.GetService<T11?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>(),
+                   current.GetService<T8>(),
+                   current.GetService<T9>(),
+                   current.GetService<T10>(),
+                   current.GetService<T11>());
         }
 
         return this;
@@ -707,17 +707,17 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>(),
-                   current.GetService<T8?>(),
-                   current.GetService<T9?>(),
-                   current.GetService<T10?>(),
-                   current.GetService<T11?>(),
-                   current.GetService<T12?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>(),
+                   current.GetService<T8>(),
+                   current.GetService<T9>(),
+                   current.GetService<T10>(),
+                   current.GetService<T11>(),
+                   current.GetService<T12>());
         }
 
         return this;
@@ -754,18 +754,18 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>(),
-                   current.GetService<T8?>(),
-                   current.GetService<T9?>(),
-                   current.GetService<T10?>(),
-                   current.GetService<T11?>(),
-                   current.GetService<T12?>(),
-                   current.GetService<T13?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>(),
+                   current.GetService<T8>(),
+                   current.GetService<T9>(),
+                   current.GetService<T10>(),
+                   current.GetService<T11>(),
+                   current.GetService<T12>(),
+                   current.GetService<T13>());
         }
 
         return this;
@@ -803,19 +803,19 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>(),
-                   current.GetService<T8?>(),
-                   current.GetService<T9?>(),
-                   current.GetService<T10?>(),
-                   current.GetService<T11?>(),
-                   current.GetService<T12?>(),
-                   current.GetService<T13?>(),
-                   current.GetService<T14?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>(),
+                   current.GetService<T8>(),
+                   current.GetService<T9>(),
+                   current.GetService<T10>(),
+                   current.GetService<T11>(),
+                   current.GetService<T12>(),
+                   current.GetService<T13>(),
+                   current.GetService<T14>());
         }
 
         return this;
@@ -854,20 +854,20 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                    current.GetService<T1>(),
-                   current.GetService<T2?>(),
-                   current.GetService<T3?>(),
-                   current.GetService<T4?>(),
-                   current.GetService<T5?>(),
-                   current.GetService<T6?>(),
-                   current.GetService<T7?>(),
-                   current.GetService<T8?>(),
-                   current.GetService<T9?>(),
-                   current.GetService<T10?>(),
-                   current.GetService<T11?>(),
-                   current.GetService<T12?>(),
-                   current.GetService<T13?>(),
-                   current.GetService<T14?>(),
-                   current.GetService<T15?>());
+                   current.GetService<T2>(),
+                   current.GetService<T3>(),
+                   current.GetService<T4>(),
+                   current.GetService<T5>(),
+                   current.GetService<T6>(),
+                   current.GetService<T7>(),
+                   current.GetService<T8>(),
+                   current.GetService<T9>(),
+                   current.GetService<T10>(),
+                   current.GetService<T11>(),
+                   current.GetService<T12>(),
+                   current.GetService<T13>(),
+                   current.GetService<T14>(),
+                   current.GetService<T15>());
         }
 
         return this;
@@ -907,21 +907,21 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             var current = Current;
             action(
                 current.GetService<T1>(),
-                current.GetService<T2?>(),
-                current.GetService<T3?>(),
-                current.GetService<T4?>(),
-                current.GetService<T5?>(),
-                current.GetService<T6?>(),
-                current.GetService<T7?>(),
-                current.GetService<T8?>(),
-                current.GetService<T9?>(),
-                current.GetService<T10?>(),
-                current.GetService<T11?>(),
-                current.GetService<T12?>(),
-                current.GetService<T13?>(),
-                current.GetService<T14?>(),
-                current.GetService<T15?>(),
-                current.GetService<T16?>());
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>(),
+                current.GetService<T9>(),
+                current.GetService<T10>(),
+                current.GetService<T11>(),
+                current.GetService<T12>(),
+                current.GetService<T13>(),
+                current.GetService<T14>(),
+                current.GetService<T15>(),
+                current.GetService<T16>());
         }
 
         return this;
